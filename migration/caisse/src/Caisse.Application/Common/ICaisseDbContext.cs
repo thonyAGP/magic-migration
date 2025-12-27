@@ -14,6 +14,7 @@ public interface ICaisseDbContext
     DbSet<CaisseParametres> Parametres { get; }
     DbSet<DeviseReference> DeviseReferences { get; }
     DbSet<CcTotalParType> CcTotauxParType { get; }
+    DbSet<ResortCredit> ResortCredits { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
