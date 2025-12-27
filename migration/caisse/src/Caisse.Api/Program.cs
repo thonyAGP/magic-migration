@@ -1,3 +1,4 @@
+using Caisse.Api.Middleware;
 using Caisse.Application;
 using Caisse.Application.Sessions.Commands;
 using Caisse.Application.Sessions.Queries;
@@ -33,6 +34,8 @@ try
     builder.Services.AddInfrastructure(builder.Configuration);
 
     var app = builder.Build();
+
+    app.UseValidationExceptionHandler();
 
     if (app.Environment.IsDevelopment())
     {
