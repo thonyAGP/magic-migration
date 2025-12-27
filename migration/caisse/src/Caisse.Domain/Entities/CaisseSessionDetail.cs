@@ -13,18 +13,18 @@ public class CaisseSessionDetail
     public string Quand { get; private set; } = string.Empty; // 1 char
     public string Date { get; private set; } = string.Empty;
     public string Heure { get; private set; } = string.Empty;
-    public double? Montant { get; private set; }
-    public double? MontantMonnaie { get; private set; }
-    public double? MontantProduits { get; private set; }
-    public double? MontantCartes { get; private set; }
-    public double? MontantCheques { get; private set; }
-    public double? MontantOd { get; private set; }
-    public string? CommentaireEcart { get; private set; }
-    public int? NbreDevises { get; private set; }
+    public double Montant { get; private set; }
+    public double MontantMonnaie { get; private set; }
+    public double MontantProduits { get; private set; }
+    public double MontantCartes { get; private set; }
+    public double MontantCheques { get; private set; }
+    public double MontantOd { get; private set; }
+    public string CommentaireEcart { get; private set; } = string.Empty;
+    public int NbreDevises { get; private set; }
     public string CommentaireEcartDevise { get; private set; } = string.Empty;
-    public double? MontantLibre1 { get; private set; }
-    public double? MontantLibre2 { get; private set; }
-    public double? MontantLibre3 { get; private set; }
+    public double MontantLibre1 { get; private set; }
+    public double MontantLibre2 { get; private set; }
+    public double MontantLibre3 { get; private set; }
     public string TypeCaisseRecIms { get; private set; } = string.Empty;
     public string TerminalCaisse { get; private set; } = string.Empty;
     public string OuvertureAuto { get; private set; } = string.Empty;
@@ -65,12 +65,12 @@ public class CaisseSessionDetail
         double? cheques = null,
         double? od = null)
     {
-        Montant = montant;
-        MontantMonnaie = monnaie;
-        MontantProduits = produits;
-        MontantCartes = cartes;
-        MontantCheques = cheques;
-        MontantOd = od;
+        Montant = montant ?? 0;
+        MontantMonnaie = monnaie ?? 0;
+        MontantProduits = produits ?? 0;
+        MontantCartes = cartes ?? 0;
+        MontantCheques = cheques ?? 0;
+        MontantOd = od ?? 0;
     }
 
     public void SetEcart(string commentaire) => CommentaireEcart = commentaire;

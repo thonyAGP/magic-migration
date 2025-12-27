@@ -54,20 +54,20 @@ public class GetDetailSummaryQueryHandler : IRequestHandler<GetDetailSummaryQuer
         var fermeture = details.Where(d => d.Quand == "F").ToList();
 
         var ouvertureSummary = new MontantSummary(
-            ouverture.Sum(d => d.Montant ?? 0),
-            ouverture.Sum(d => d.MontantMonnaie ?? 0),
-            ouverture.Sum(d => d.MontantProduits ?? 0),
-            ouverture.Sum(d => d.MontantCartes ?? 0),
-            ouverture.Sum(d => d.MontantCheques ?? 0),
-            ouverture.Sum(d => d.MontantOd ?? 0));
+            ouverture.Sum(d => d.Montant),
+            ouverture.Sum(d => d.MontantMonnaie),
+            ouverture.Sum(d => d.MontantProduits),
+            ouverture.Sum(d => d.MontantCartes),
+            ouverture.Sum(d => d.MontantCheques),
+            ouverture.Sum(d => d.MontantOd));
 
         var fermetureSummary = new MontantSummary(
-            fermeture.Sum(d => d.Montant ?? 0),
-            fermeture.Sum(d => d.MontantMonnaie ?? 0),
-            fermeture.Sum(d => d.MontantProduits ?? 0),
-            fermeture.Sum(d => d.MontantCartes ?? 0),
-            fermeture.Sum(d => d.MontantCheques ?? 0),
-            fermeture.Sum(d => d.MontantOd ?? 0));
+            fermeture.Sum(d => d.Montant),
+            fermeture.Sum(d => d.MontantMonnaie),
+            fermeture.Sum(d => d.MontantProduits),
+            fermeture.Sum(d => d.MontantCartes),
+            fermeture.Sum(d => d.MontantCheques),
+            fermeture.Sum(d => d.MontantOd));
 
         var ecartSummary = new MontantSummary(
             fermetureSummary.Total - ouvertureSummary.Total,

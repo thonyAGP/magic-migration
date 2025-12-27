@@ -117,15 +117,15 @@ public class EcartCalculator : IEcartCalculator
     {
         return new EcartMontants
         {
-            Total = detail.Montant ?? 0,
-            Monnaie = detail.MontantMonnaie ?? 0,
-            Produits = detail.MontantProduits ?? 0,
-            Cartes = detail.MontantCartes ?? 0,
-            Cheques = detail.MontantCheques ?? 0,
-            Od = detail.MontantOd ?? 0,
-            Libre1 = detail.MontantLibre1 ?? 0,
-            Libre2 = detail.MontantLibre2 ?? 0,
-            Libre3 = detail.MontantLibre3 ?? 0
+            Total = detail.Montant,
+            Monnaie = detail.MontantMonnaie,
+            Produits = detail.MontantProduits,
+            Cartes = detail.MontantCartes,
+            Cheques = detail.MontantCheques,
+            Od = detail.MontantOd,
+            Libre1 = detail.MontantLibre1,
+            Libre2 = detail.MontantLibre2,
+            Libre3 = detail.MontantLibre3
         };
     }
 
