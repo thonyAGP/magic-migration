@@ -1,0 +1,6 @@
+@Caisse.Api_HostAddress = http://localhost:5287
+
+GET {{Caisse.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
