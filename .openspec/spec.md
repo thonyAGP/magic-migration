@@ -80,25 +80,23 @@ Composant "Sessions_Reprises" - 30 programmes:
   - Scripts SQL: `migration/mecano/sql/`
   - Doc: `openspec/mecano/MECANO_SPEC.md`
 
-- [x] **ADH/Gestion Caisse** - API C# .NET 8 COMPLETE - Valide 2025-12-27
+- [x] **ADH/Gestion Caisse** - API C# .NET 8 COMPLETE - Valide 2025-12-28
   - Solution: `migration/caisse/Caisse.sln`
   - 5 projets: Domain, Application, Infrastructure, Api, Shared
-  - 9 tables mappees, 8 entites, EF Core 8 + CQRS (MediatR)
-  - **24 endpoints** couvrant toutes les tables + ecarts
+  - **Interface graphique complete:** 15 ecrans SPA (HTML/CSS/JS)
+  - **62 endpoints** couvrant tous les modules migres
+  - **458 tests unitaires**
   - Swagger: http://localhost:5287/swagger
-  - Tables: sessions, devises, articles, details, coffre, parametres, devises-ref, caisse-devises
-  - **Flux ouverture/fermeture complet:**
-    - Ouverture: cree session + 4 details (I, C, K, L) + coffre
-    - Fermeture: validation ecart, blocage si > seuil, force avec commentaire
-    - Types mouvements: I (Initial), C (Comptage), K (CoffretVers), L (CoffretLeve)
-    - Moments: O (Ouverture), F (Fermeture), P (Pendant)
-  - **Logique metier ecarts:**
-    - Value Objects: `EcartSession`, `EcartMontants`, `EcartDevise`
-    - Service: `IEcartCalculator` avec regles metier completes
-    - Calcul: V, F, D, L ajoutent; A, K soustraient
-    - Validation: SeuilAlerte configurable, ForceClosureOnEcart
-  - **116 tests unitaires** (validators + ecarts + coffre + ventes)
-  - Commits: `ee415a0` (coffre), `c3250fd` (fix null), `168deb3` (validation commentaire)
+  - Interface: http://localhost:5287/
+
+  **Modules migres:**
+  - Sessions, Devises, Articles, Details, Coffre, Parametres
+  - Ventes (Gift Pass, Resort Credit, Historique)
+  - Zooms (8 endpoints), Members, Solde, Extrait, Garantie
+  - Change (3 endpoints), Telephone, EasyCheckOut, Factures
+  - Identification, EzCard (3 endpoints), Depot (2 endpoints)
+  - **Divers (5 endpoints)** - Langue, Titre, AccesInfo, IntegriteDates, SessionTimestamp
+  - Commits: `ee415a0` (coffre), `a916e27` (Divers module)
 
 - [x] **ADH/Ventes - Prg_237 Solde Gift Pass** - Migre 2025-12-27
   - Endpoint: `GET /api/ventes/solde-giftpass/{societe}/{compte}/{filiation}`
@@ -223,6 +221,10 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ### Terminees
 - [x] **Phase 11: Identification (2 endpoints)** (terminee: 2025-12-28) - Login + Session check, 327 tests total
+- [x] **Phase 12: EzCard (3 endpoints)** (terminee: 2025-12-28) - Cards lookup, deactivation, character validation
+- [x] **Phase 12: Divers (5 endpoints)** (terminee: 2025-12-28) - Langue, Titre, AccesInfo, IntegriteDates, SessionTimestamp
+- [x] **Phase 12: Depot (2 endpoints)** (terminee: 2025-12-28) - Deposit extract, withdrawal
+- [x] **Interface Graphique Complete** (terminee: 2025-12-28) - 15 ecrans SPA (HTML/CSS/JS), 458 tests total
 - [x] **Phase 10: Factures (2 endpoints)** (terminee: 2025-12-28) - Checkout + Creation, 310 tests total
 - [x] **Phase 9: EasyCheckOut (3 endpoints)** (terminee: 2025-12-28) - Solde + Edition + Extrait, 281 tests total
 - [x] **Phase 8: Telephone (2 endpoints)** (terminee: 2025-12-28) - Query + Command, 272 tests total
@@ -308,6 +310,10 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ## Changelog
 
+- 2025-12-28: **Interface Graphique Complete** - 15 ecrans SPA (dashboard, sessions, ventes, EzCard, depot, etc.), 411 tests total
+- 2025-12-28: **Phase 12: Divers** - 5 programmes prioritaires (Prg_42,43,45,47,48), 5 endpoints, 458 tests total
+- 2025-12-28: **Phase 12: Depot** - GetExtraitDepot + RetirerDepot, 2 endpoints
+- 2025-12-28: **Phase 12: EzCard** - GetEzCardByMember + DesactiverEzCard + ValiderCaracteres, 3 endpoints
 - 2025-12-28: **Phase 11: Identification** - VerifierOperateur + VerifierSessionCaisse, 327 tests total
 - 2025-12-28: **Phase 10: Factures** - GetFacturesCheckOut + CreerFacture, calcul TVA
 - 2025-12-28: **Phase 9: EasyCheckOut** - Edition + Extrait queries, complete workflow
