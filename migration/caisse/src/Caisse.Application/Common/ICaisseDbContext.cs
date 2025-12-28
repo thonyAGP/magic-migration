@@ -35,7 +35,7 @@ public interface ICaisseDbContext
     DbSet<TypeTauxChange> TypesTauxChange { get; }
 
     // Tables Member Lookup - Phase 2
-    DbSet<EzCard> EzCards { get; }
+    DbSet<Domain.Entities.EzCard> EzCards { get; }
 
     // Tables Solde - Phase 3
     DbSet<CompteGm> ComptesGm { get; }

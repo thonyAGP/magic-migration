@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Caisse - Migration Magic ADH</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-cash-register"></i>
+                <span>Caisse ADH</span>
+            </div>
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-user" id="userInfo">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-details">
+                <span class="user-name">Non connecte</span>
+                <span class="user-role">-</span>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" class="nav-link active" data-page="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            <li class="nav-section">Session Caisse</li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="identification">
+                    <i class="fas fa-key"></i>
+                    <span>Identification</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="session">
+                    <i class="fas fa-door-open"></i>
+                    <span>Ouverture / Fermeture</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="comptage">
+                    <i class="fas fa-calculator"></i>
+                    <span>Comptage Caisse</span>
+                </a>
+            </li>
+            <li class="nav-section">Operations</li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="ventes">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Ventes</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="devises">
+                    <i class="fas fa-coins"></i>
+                    <span>Devises & Coffre</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="change">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Change</span>
+                </a>
+            </li>
+            <li class="nav-section">Consultation</li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="compte">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Compte Client</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="extrait">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Extrait de Compte</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="garantie">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Garanties</span>
+                </a>
+            </li>
+            <li class="nav-section">Services</li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="checkout">
+                    <i class="fas fa-plane-departure"></i>
+                    <span>Easy Check-Out</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="factures">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Facturation</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="telephone">
+                    <i class="fas fa-phone"></i>
+                    <span>Telephone</span>
+                </a>
+            </li>
+            <li class="nav-section">Cartes & Depots</li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="ezcard">
+                    <i class="fas fa-id-card"></i>
+                    <span>EzCard / Club Pass</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-page="depot">
+                    <i class="fas fa-box"></i>
+                    <span>Depots</span>
+                </a>
+            </li>
+            <li class="nav-section">Referentiels</li>
+            <li class="nav-item">
+                <a href="zooms.html" class="nav-link">
+                    <i class="fas fa-search"></i>
+                    <span>Zooms</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="session-info" id="sessionInfo">
+                <span class="session-status closed">Session fermee</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h2 id="pageTitle">Tableau de bord</h2>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-info">
+                    <span id="villageName">Village: -</span>
+                    <span id="currentDate"></span>
+                </div>
+                <div class="topbar-actions">
+                    <button class="btn-icon" onclick="refreshData()" title="Rafraichir">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="btn-icon" onclick="showSettings()" title="Parametres">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper" id="contentWrapper">
+            <!-- Dashboard Page -->
+            <div class="page active" id="page-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon"><i class="fas fa-cash-register"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-value" id="statSessions">-</span>
+                            <span class="stat-label">Sessions Ouvertes</span>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-value" id="statDevises">-</span>
+                            <span class="stat-label">Devises en Caisse</span>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-value" id="statVentes">-</span>
+                            <span class="stat-label">Ventes du Jour</span>
+                        </div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon"><i class="fas fa-balance-scale"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-value" id="statEcart">0.00</span>
+                            <span class="stat-label">Ecart Caisse</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-clock"></i> Sessions Recentes</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="data-table" id="recentSessions">
+                                <thead>
+                                    <tr>
+                                        <th>Chrono</th>
+                                        <th>Operateur</th>
+                                        <th>Date</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-pie"></i> Repartition Devises</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="devises-chart" id="devisesChart">
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <span>Chargement...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bolt"></i> Actions Rapides</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-actions">
+                            <button class="action-btn" onclick="navigateTo('session')">
+                                <i class="fas fa-door-open"></i>
+                                <span>Ouvrir Session</span>
+                            </button>
+                            <button class="action-btn" onclick="navigateTo('ventes')">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Nouvelle Vente</span>
+                            </button>
+                            <button class="action-btn" onclick="navigateTo('compte')">
+                                <i class="fas fa-search"></i>
+                                <span>Consulter Compte</span>
+                            </button>
+                            <button class="action-btn" onclick="navigateTo('checkout')">
+                                <i class="fas fa-plane-departure"></i>
+                                <span>Easy Check-Out</span>
+                            </button>
+                            <button class="action-btn" onclick="navigateTo('change')">
+                                <i class="fas fa-exchange-alt"></i>
+                                <span>Change Devise</span>
+                            </button>
+                            <button class="action-btn" onclick="navigateTo('comptage')">
+                                <i class="fas fa-calculator"></i>
+                                <span>Comptage</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Identification Page -->
+            <div class="page" id="page-identification">
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <i class="fas fa-user-lock"></i>
+                            <h2>Identification Operateur</h2>
+                        </div>
+                        <form id="loginForm" onsubmit="handleLogin(event)">
+                            <div class="form-group">
+                                <label for="loginSociete">Societe</label>
+                                <input type="text" id="loginSociete" value="C" maxlength="2" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loginOperateur">Code Operateur</label>
+                                <input type="text" id="loginOperateur" maxlength="10" required autofocus>
+                            </div>
+                            <div class="form-group">
+                                <label for="loginPassword">Mot de Passe</label>
+                                <input type="password" id="loginPassword" maxlength="50" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-sign-in-alt"></i> Se Connecter
+                            </button>
+                        </form>
+                        <div id="loginError" class="alert alert-error" style="display: none;"></div>
+                        <div id="loginSuccess" class="alert alert-success" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session Page -->
+            <div class="page" id="page-session">
+                <div class="page-header">
+                    <h3>Gestion Session Caisse</h3>
+                    <div class="page-actions">
+                        <button class="btn btn-secondary" onclick="loadSessions()">
+                            <i class="fas fa-sync-alt"></i> Rafraichir
+                        </button>
+                    </div>
+                </div>
+
+                <div class="session-panels">
+                    <!-- Opening Panel -->
+                    <div class="card session-card">
+                        <div class="card-header success">
+                            <h3><i class="fas fa-door-open"></i> Ouverture Caisse</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="openSessionForm" onsubmit="handleOpenSession(event)">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Societe</label>
+                                        <input type="text" id="openSociete" value="C" maxlength="2" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Operateur</label>
+                                        <input type="text" id="openOperateur" maxlength="10" required>
+                                    </div>
+                                </div>
+
+                                <div class="section-title">Solde Initial</div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Especes</label>
+                                        <input type="number" id="openMontantEspeces" step="0.01" value="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Devises</label>
+                                        <input type="number" id="openMontantDevises" step="0.01" value="0">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Cartes</label>
+                                        <input type="number" id="openMontantCartes" step="0.01" value="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Cheques</label>
+                                        <input type="number" id="openMontantCheques" step="0.01" value="0">
+                                    </div>
+                                </div>
+
+                                <div class="section-title">Apport Coffre</div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Montant Apport</label>
+                                        <input type="number" id="openApportCoffre" step="0.01" value="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Nb Devises</label>
+                                        <input type="number" id="openNbDevises" value="0">
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success btn-block">
+                                    <i class="fas fa-play"></i> Ouvrir Session
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Closing Panel -->
+                    <div class="card session-card">
+                        <div class="card-header danger">
+                            <h3><i class="fas fa-door-closed"></i> Fermeture Caisse</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="closeSessionForm" onsubmit="handleCloseSession(event)">
+                                <div class="form-group">
+                                    <label>Session a Fermer</label>
+                                    <select id="closeSessionSelect" required>
+                                        <option value="">-- Selectionner --</option>
+                                    </select>
+                                </div>
+
+                                <div class="section-title">Comptage Final</div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Especes</label>
+                                        <input type="number" id="closeMontantEspeces" step="0.01" value="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Devises</label>
+                                        <input type="number" id="closeMontantDevises" step="0.01" value="0">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Cartes</label>
+                                        <input type="number" id="closeMontantCartes" step="0.01" value="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Cheques</label>
+                                        <input type="number" id="closeMontantCheques" step="0.01" value="0">
+                                    </div>
+                                </div>
+
+                                <div class="ecart-display" id="ecartDisplay" style="display: none;">
+                                    <div class="ecart-label">Ecart detecte:</div>
+                                    <div class="ecart-value" id="ecartValue">0.00</div>
+                                </div>
+
+                                <div class="form-group" id="commentaireGroup" style="display: none;">
+                                    <label>Commentaire Ecart (obligatoire si ecart)</label>
+                                    <textarea id="closeCommentaire" maxlength="30" rows="2"></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-danger btn-block">
+                                    <i class="fas fa-stop"></i> Fermer Session
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sessions List -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> Sessions en Cours</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table" id="sessionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Chrono</th>
+                                    <th>Operateur</th>
+                                    <th>Date Ouverture</th>
+                                    <th>Heure</th>
+                                    <th>Montant Initial</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comptage Page -->
+            <div class="page" id="page-comptage">
+                <div class="page-header">
+                    <h3>Comptage Caisse</h3>
+                </div>
+
+                <div class="comptage-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-coins"></i> Comptage Especes</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="comptage-grid">
+                                <div class="comptage-section">
+                                    <h4>Billets</h4>
+                                    <div class="comptage-row">
+                                        <span class="denomination">500 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="500" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">200 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="200" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">100 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="100" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">50 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="50" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">20 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="20" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">10 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="10" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">5 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="5" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                </div>
+
+                                <div class="comptage-section">
+                                    <h4>Pieces</h4>
+                                    <div class="comptage-row">
+                                        <span class="denomination">2 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="2" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">1 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="1" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">0.50 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="0.5" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">0.20 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="0.2" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">0.10 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="0.1" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">0.05 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="0.05" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">0.02 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="0.02" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                    <div class="comptage-row">
+                                        <span class="denomination">0.01 EUR</span>
+                                        <input type="number" class="comptage-input" data-value="0.01" value="0" min="0">
+                                        <span class="comptage-total">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="comptage-summary">
+                                <div class="summary-row">
+                                    <span>Total Compte:</span>
+                                    <span class="summary-value" id="totalComptage">0.00 EUR</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Total Theorique:</span>
+                                    <span class="summary-value" id="totalTheorique">0.00 EUR</span>
+                                </div>
+                                <div class="summary-row ecart">
+                                    <span>Ecart:</span>
+                                    <span class="summary-value" id="ecartComptage">0.00 EUR</span>
+                                </div>
+                            </div>
+
+                            <div class="comptage-actions">
+                                <button class="btn btn-secondary" onclick="resetComptage()">
+                                    <i class="fas fa-undo"></i> Reinitialiser
+                                </button>
+                                <button class="btn btn-primary" onclick="validerComptage()">
+                                    <i class="fas fa-check"></i> Valider Comptage
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ventes Page -->
+            <div class="page" id="page-ventes">
+                <div class="page-header">
+                    <h3>Gestion des Ventes</h3>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab active" data-tab="historique">Historique</button>
+                    <button class="tab" data-tab="giftpass">Solde Gift Pass</button>
+                    <button class="tab" data-tab="resortcredit">Resort Credit</button>
+                </div>
+
+                <div class="tab-content active" id="tab-historique">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-history"></i> Historique des Ventes</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="search-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Societe</label>
+                                        <input type="text" id="venteSociete" value="C" maxlength="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Compte</label>
+                                        <input type="text" id="venteCompte" maxlength="20">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Filiation</label>
+                                        <input type="text" id="venteFiliation" maxlength="4">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" onclick="searchVentes()">
+                                            <i class="fas fa-search"></i> Rechercher
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="data-table" id="ventesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Heure</th>
+                                        <th>Article</th>
+                                        <th>Quantite</th>
+                                        <th>Montant</th>
+                                        <th>Mode Paiement</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-giftpass">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-gift"></i> Solde Gift Pass</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="search-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Societe</label>
+                                        <input type="text" id="gpSociete" value="C" maxlength="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Compte</label>
+                                        <input type="text" id="gpCompte" maxlength="20">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Filiation</label>
+                                        <input type="text" id="gpFiliation" maxlength="4">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" onclick="searchGiftPass()">
+                                            <i class="fas fa-search"></i> Rechercher
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="solde-display" id="giftPassResult" style="display: none;">
+                                <div class="solde-card">
+                                    <div class="solde-label">Solde Gift Pass</div>
+                                    <div class="solde-value" id="gpSolde">0.00</div>
+                                    <div class="solde-devise" id="gpDevise">EUR</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-resortcredit">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-credit-card"></i> Resort Credit</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="search-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Societe</label>
+                                        <input type="text" id="rcSociete" value="C" maxlength="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Compte</label>
+                                        <input type="text" id="rcCompte" maxlength="20">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Filiation</label>
+                                        <input type="text" id="rcFiliation" maxlength="4">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Service</label>
+                                        <input type="text" id="rcService" maxlength="10">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" onclick="searchResortCredit()">
+                                            <i class="fas fa-search"></i> Rechercher
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="solde-display" id="resortCreditResult" style="display: none;">
+                                <div class="solde-card">
+                                    <div class="solde-label">Resort Credit Disponible</div>
+                                    <div class="solde-value" id="rcSolde">0.00</div>
+                                    <div class="solde-devise" id="rcDevise">EUR</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Devises Page -->
+            <div class="page" id="page-devises">
+                <div class="page-header">
+                    <h3>Gestion Devises & Coffre</h3>
+                </div>
+
+                <div class="devises-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-coins"></i> Devises en Caisse</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Session</label>
+                                <select id="deviseSessionSelect" onchange="loadDevisesSession()">
+                                    <option value="">-- Selectionner une session --</option>
+                                </select>
+                            </div>
+                            <table class="data-table" id="devisesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Devise</th>
+                                        <th>Libelle</th>
+                                        <th>Quantite</th>
+                                        <th>Montant</th>
+                                        <th>Taux</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-vault"></i> Coffre</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="coffre-status" id="coffreStatus">
+                                <div class="coffre-icon closed">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <span>Coffre Ferme</span>
+                            </div>
+                            <table class="data-table" id="coffreTable">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Devise</th>
+                                        <th>Montant</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Page -->
+            <div class="page" id="page-change">
+                <div class="page-header">
+                    <h3>Operations de Change</h3>
+                </div>
+
+                <div class="change-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-exchange-alt"></i> Calculateur de Change</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="change-calculator">
+                                <div class="change-input">
+                                    <label>Montant</label>
+                                    <input type="number" id="changeMontant" step="0.01" value="100" oninput="calculateChange()">
+                                </div>
+                                <div class="change-arrow">
+                                    <button class="btn-icon" onclick="swapDevises()">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                </div>
+                                <div class="change-output">
+                                    <label>Resultat</label>
+                                    <div class="change-result" id="changeResult">0.00</div>
+                                </div>
+                            </div>
+
+                            <div class="change-devises">
+                                <div class="form-group">
+                                    <label>Devise Source</label>
+                                    <select id="changeDeviseSource" onchange="calculateChange()">
+                                        <option value="EUR">EUR - Euro</option>
+                                        <option value="USD">USD - Dollar US</option>
+                                        <option value="GBP">GBP - Livre Sterling</option>
+                                        <option value="CHF">CHF - Franc Suisse</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Devise Cible</label>
+                                    <select id="changeDeviseCible" onchange="calculateChange()">
+                                        <option value="USD">USD - Dollar US</option>
+                                        <option value="EUR">EUR - Euro</option>
+                                        <option value="GBP">GBP - Livre Sterling</option>
+                                        <option value="CHF">CHF - Franc Suisse</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="change-info">
+                                <span id="changeTaux">Taux: -</span>
+                                <span id="changeType">Type: -</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-list"></i> Taux de Change</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Societe</label>
+                                <input type="text" id="tauxSociete" value="C" maxlength="2">
+                                <button class="btn btn-secondary" onclick="loadTauxChange()">Charger</button>
+                            </div>
+                            <table class="data-table" id="tauxTable">
+                                <thead>
+                                    <tr>
+                                        <th>Devise</th>
+                                        <th>Taux Achat</th>
+                                        <th>Taux Vente</th>
+                                        <th>Date MAJ</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compte Page -->
+            <div class="page" id="page-compte">
+                <div class="page-header">
+                    <h3>Consultation Compte Client</h3>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-search"></i> Recherche Compte</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Societe</label>
+                                    <input type="text" id="compteSociete" value="C" maxlength="2">
+                                </div>
+                                <div class="form-group">
+                                    <label>N Compte</label>
+                                    <input type="text" id="compteNumero" maxlength="20">
+                                </div>
+                                <div class="form-group">
+                                    <label>Filiation</label>
+                                    <input type="text" id="compteFiliation" maxlength="4">
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary" onclick="searchCompte()">
+                                        <i class="fas fa-search"></i> Rechercher
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="compteResult" style="display: none;">
+                    <div class="compte-header-card">
+                        <div class="compte-info">
+                            <div class="compte-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="compte-details">
+                                <h3 id="compteNom">-</h3>
+                                <span id="compteRef">Compte: -</span>
+                            </div>
+                        </div>
+                        <div class="compte-solde">
+                            <span class="solde-label">Solde Global</span>
+                            <span class="solde-amount" id="compteSoldeGlobal">0.00 EUR</span>
+                        </div>
+                    </div>
+
+                    <div class="compte-tabs">
+                        <button class="compte-tab active" data-comptab="soldes">Soldes par Service</button>
+                        <button class="compte-tab" data-comptab="clubmed">Club Med Pass</button>
+                    </div>
+
+                    <div class="compte-tab-content active" id="comptab-soldes">
+                        <div class="card">
+                            <div class="card-body">
+                                <table class="data-table" id="soldesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Service</th>
+                                            <th>Credit</th>
+                                            <th>Debit</th>
+                                            <th>Solde</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="compte-tab-content" id="comptab-clubmed">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="clubmed-pass" id="clubmedPass">
+                                    <div class="pass-icon">
+                                        <i class="fas fa-id-card"></i>
+                                    </div>
+                                    <div class="pass-info">
+                                        <span class="pass-label">Numero Club Med Pass</span>
+                                        <span class="pass-number" id="passNumber">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extrait Page -->
+            <div class="page" id="page-extrait">
+                <div class="page-header">
+                    <h3>Extrait de Compte</h3>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-file-alt"></i> Recherche Extrait</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Societe</label>
+                                    <input type="text" id="extraitSociete" value="C" maxlength="2">
+                                </div>
+                                <div class="form-group">
+                                    <label>Compte</label>
+                                    <input type="text" id="extraitCompte" maxlength="20">
+                                </div>
+                                <div class="form-group">
+                                    <label>Filiation</label>
+                                    <input type="text" id="extraitFiliation" maxlength="4">
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary" onclick="searchExtrait()">
+                                        <i class="fas fa-search"></i> Rechercher
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="printExtrait()">
+                                        <i class="fas fa-print"></i> Imprimer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="extraitResult" style="display: none;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> Mouvements</h3>
+                        <span class="badge" id="extraitCount">0 mouvements</span>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table" id="extraitTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Service</th>
+                                    <th>Libelle</th>
+                                    <th>Debit</th>
+                                    <th>Credit</th>
+                                    <th>Solde</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Garantie Page -->
+            <div class="page" id="page-garantie">
+                <div class="page-header">
+                    <h3>Garanties et Depots</h3>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-shield-alt"></i> Recherche Garanties</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Societe</label>
+                                    <input type="text" id="garantieSociete" value="C" maxlength="2">
+                                </div>
+                                <div class="form-group">
+                                    <label>Compte</label>
+                                    <input type="text" id="garantieCompte" maxlength="20">
+                                </div>
+                                <div class="form-group">
+                                    <label>Filiation</label>
+                                    <input type="text" id="garantieFiliation" maxlength="4">
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary" onclick="searchGarantie()">
+                                        <i class="fas fa-search"></i> Rechercher
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="garantieResult" style="display: none;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> Depots Actifs</h3>
+                        <span class="badge" id="garantieTotal">Total: 0.00 EUR</span>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table" id="garantieTable">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Libelle</th>
+                                    <th>Montant</th>
+                                    <th>Date Depot</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checkout Page -->
+            <div class="page" id="page-checkout">
+                <div class="page-header">
+                    <h3>Easy Check-Out</h3>
+                </div>
+
+                <div class="checkout-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-plane-departure"></i> Departs du Jour</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="search-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Societe</label>
+                                        <input type="text" id="checkoutSociete" value="C" maxlength="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Date</label>
+                                        <input type="date" id="checkoutDate">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" onclick="searchCheckout()">
+                                            <i class="fas fa-search"></i> Rechercher
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="data-table" id="checkoutTable">
+                                <thead>
+                                    <tr>
+                                        <th>Compte</th>
+                                        <th>Nom</th>
+                                        <th>Chambre</th>
+                                        <th>Solde</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-user-check"></i> Checkout Individuel</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Compte</label>
+                                    <input type="text" id="checkoutCompte" maxlength="20">
+                                </div>
+                                <div class="form-group">
+                                    <label>Filiation</label>
+                                    <input type="text" id="checkoutFiliation" maxlength="4">
+                                </div>
+                            </div>
+                            <div class="checkout-actions">
+                                <button class="btn btn-info" onclick="getSoldeCheckout()">
+                                    <i class="fas fa-balance-scale"></i> Solde
+                                </button>
+                                <button class="btn btn-secondary" onclick="getEditionCheckout()">
+                                    <i class="fas fa-file-pdf"></i> Edition
+                                </button>
+                                <button class="btn btn-primary" onclick="getExtraitCheckout()">
+                                    <i class="fas fa-file-alt"></i> Extrait
+                                </button>
+                                <button class="btn btn-success" onclick="processCheckout()">
+                                    <i class="fas fa-check-circle"></i> Valider Checkout
+                                </button>
+                            </div>
+
+                            <div id="checkoutResultPanel" style="display: none;">
+                                <div class="checkout-summary">
+                                    <h4>Resume Checkout</h4>
+                                    <div class="summary-grid">
+                                        <div class="summary-item">
+                                            <span class="label">Solde Final</span>
+                                            <span class="value" id="checkoutSolde">0.00</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="label">Garanties</span>
+                                            <span class="value" id="checkoutGaranties">0.00</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="label">A Payer</span>
+                                            <span class="value highlight" id="checkoutAPayer">0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Factures Page -->
+            <div class="page" id="page-factures">
+                <div class="page-header">
+                    <h3>Facturation</h3>
+                </div>
+
+                <div class="factures-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-file-invoice"></i> Factures Checkout</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="search-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Societe</label>
+                                        <input type="text" id="factSociete" value="C" maxlength="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Compte</label>
+                                        <input type="text" id="factCompte" maxlength="20">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Filiation</label>
+                                        <input type="text" id="factFiliation" maxlength="4">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" onclick="searchFactures()">
+                                            <i class="fas fa-search"></i> Rechercher
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="data-table" id="facturesTable">
+                                <thead>
+                                    <tr>
+                                        <th>N Facture</th>
+                                        <th>Date</th>
+                                        <th>Montant HT</th>
+                                        <th>TVA</th>
+                                        <th>Montant TTC</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-plus-circle"></i> Nouvelle Facture</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="newFactureForm" onsubmit="createFacture(event)">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Compte</label>
+                                        <input type="text" id="newFactCompte" maxlength="20" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Filiation</label>
+                                        <input type="text" id="newFactFiliation" maxlength="4" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Montant HT</label>
+                                        <input type="number" id="newFactMontant" step="0.01" required oninput="calculateTVA()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Taux TVA (%)</label>
+                                        <select id="newFactTauxTVA" onchange="calculateTVA()">
+                                            <option value="20">20%</option>
+                                            <option value="10">10%</option>
+                                            <option value="5.5">5.5%</option>
+                                            <option value="0">0%</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>TVA</label>
+                                        <input type="number" id="newFactTVA" step="0.01" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Montant TTC</label>
+                                        <input type="number" id="newFactTTC" step="0.01" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Libelle</label>
+                                    <input type="text" id="newFactLibelle" maxlength="100">
+                                </div>
+                                <button type="submit" class="btn btn-success btn-block">
+                                    <i class="fas fa-save"></i> Creer Facture
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Telephone Page -->
+            <div class="page" id="page-telephone">
+                <div class="page-header">
+                    <h3>Gestion Telephone</h3>
+                </div>
+
+                <div class="telephone-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-phone"></i> Lignes Telephoniques</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="search-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Societe</label>
+                                        <input type="text" id="telSociete" value="C" maxlength="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Compte</label>
+                                        <input type="text" id="telCompte" maxlength="20">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Chambre</label>
+                                        <input type="text" id="telChambre" maxlength="10">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" onclick="searchLignes()">
+                                            <i class="fas fa-search"></i> Rechercher
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="data-table" id="lignesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Numero</th>
+                                        <th>Chambre</th>
+                                        <th>Compte</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-cog"></i> Gestion Ligne</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Numero Ligne</label>
+                                    <input type="text" id="telNumero" maxlength="20">
+                                </div>
+                                <div class="form-group">
+                                    <label>Compte</label>
+                                    <input type="text" id="telLigneCompte" maxlength="20">
+                                </div>
+                            </div>
+                            <div class="telephone-actions">
+                                <button class="btn btn-success" onclick="ouvrirLigne()">
+                                    <i class="fas fa-phone"></i> Ouvrir Ligne
+                                </button>
+                                <button class="btn btn-danger" onclick="fermerLigne()">
+                                    <i class="fas fa-phone-slash"></i> Fermer Ligne
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EzCard Page -->
+            <div class="page" id="page-ezcard">
+                <div class="page-header">
+                    <h3>Gestion EzCard / Club Med Pass</h3>
+                </div>
+
+                <div class="ezcard-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-id-card"></i> Recherche Carte</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="search-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Societe</label>
+                                        <input type="text" id="ezcardSociete" value="C" maxlength="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Code GM</label>
+                                        <input type="number" id="ezcardCodeGm" min="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Filiation</label>
+                                        <input type="number" id="ezcardFiliation" value="0" min="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" onclick="searchEzCards()">
+                                            <i class="fas fa-search"></i> Rechercher
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="data-table" id="ezcardsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Code Carte</th>
+                                        <th>Statut</th>
+                                        <th>Date Creation</th>
+                                        <th>Date Expiration</th>
+                                        <th>Plafond</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-ban"></i> Desactivation Carte</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Code Carte</label>
+                                    <input type="text" id="ezcardCode" maxlength="20">
+                                </div>
+                                <div class="form-group">
+                                    <label>Motif</label>
+                                    <input type="text" id="ezcardMotif" placeholder="Perdu, Vol, etc." maxlength="100">
+                                </div>
+                            </div>
+                            <button class="btn btn-danger" onclick="desactiverEzCard()">
+                                <i class="fas fa-times-circle"></i> Desactiver la Carte
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-spell-check"></i> Validation Caracteres</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 2">
+                                    <label>Texte a valider</label>
+                                    <input type="text" id="validerTexte" placeholder="Saisir le texte a verifier">
+                                </div>
+                                <div class="form-group">
+                                    <label>Mode strict</label>
+                                    <select id="validerStrictMode">
+                                        <option value="false">Non (remplacer par espaces)</option>
+                                        <option value="true">Oui (supprimer)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="validerCaracteres()">
+                                <i class="fas fa-check"></i> Valider
+                            </button>
+                            <div id="validationResult" class="validation-result" style="margin-top: 15px; display: none;">
+                                <div class="result-status"></div>
+                                <div class="result-cleaned"></div>
+                                <div class="result-detected"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Depot Page -->
+            <div class="page" id="page-depot">
+                <div class="page-header">
+                    <h3>Gestion des Depots</h3>
+                </div>
+
+                <div class="depot-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-box"></i> Recherche Depots</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="search-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Societe</label>
+                                        <input type="text" id="depotSociete" value="C" maxlength="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Code GM</label>
+                                        <input type="number" id="depotCodeGm" min="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Filiation</label>
+                                        <input type="number" id="depotFiliation" value="0" min="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" onclick="searchDepots()">
+                                            <i class="fas fa-search"></i> Rechercher
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="depot-summary" id="depotSummary" style="display: none;">
+                                <div class="summary-item">
+                                    <span class="summary-label">Total Depots:</span>
+                                    <span class="summary-value" id="depotTotal">0.00</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Total Retraits:</span>
+                                    <span class="summary-value" id="depotRetrait">0.00</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Solde Net:</span>
+                                    <span class="summary-value" id="depotSolde">0.00</span>
+                                </div>
+                            </div>
+                            <table class="data-table" id="depotsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Devise</th>
+                                        <th>Montant</th>
+                                        <th>Date Depot</th>
+                                        <th>Etat</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-hand-holding-usd"></i> Retirer Depot</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Type Depot</label>
+                                    <select id="depotType">
+                                        <option value="D">Devise</option>
+                                        <option value="O">Objet</option>
+                                        <option value="S">Scelle</option>
+                                        <option value="G">Garantie</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Devise</label>
+                                    <input type="text" id="depotDevise" value="EUR" maxlength="3">
+                                </div>
+                                <div class="form-group">
+                                    <label>Operateur</label>
+                                    <input type="text" id="depotOperateur" maxlength="20">
+                                </div>
+                            </div>
+                            <button class="btn btn-warning" onclick="retirerDepot()">
+                                <i class="fas fa-sign-out-alt"></i> Retirer le Depot
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Modal</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer" id="modalFooter"></div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

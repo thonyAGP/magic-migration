@@ -29,6 +29,10 @@ using Caisse.Application.Telephone.Commands;
 using Caisse.Application.Factures.Queries;
 using Caisse.Application.Factures.Commands;
 using Caisse.Application.Identification.Queries;
+using Caisse.Application.EzCard.Queries;
+using Caisse.Application.EzCard.Commands;
+using Caisse.Application.Depot.Queries;
+using Caisse.Application.Depot.Commands;
 using Caisse.Infrastructure;
 using MediatR;
 using Serilog;
@@ -59,6 +63,9 @@ try
     }
 
     app.UseHttpsRedirection();
+
+    // Serve static files and default document (index.html)
+    app.UseDefaultFiles();
     app.UseStaticFiles();
 
     // ============ Sessions Endpoints ============
@@ -667,10 +674,70 @@ try
     .WithDescription("Migrated from Magic Prg_328 Verif session caisse ouverte - Session status check")
     .WithOpenApi();
 
-    // ============ Dashboard ============
-    app.MapGet("/", () => Results.Content(GetDashboardHtml(), "text/html"))
-        .WithName("Dashboard")
-        .ExcludeFromDescription();
+    // ============ EzCard Endpoints (Phase 12 - Secondary modules) ============
+    var ezcard = app.MapGroup("/api/ezcard").WithTags("EzCard");
+
+    ezcard.MapGet("/member/{societe}/{codeGm}/{filiation}", async (
+        string societe,
+        int codeGm,
+        int filiation,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetEzCardByMemberQuery(societe, codeGm, filiation));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetEzCardByMember")
+    .WithSummary("Get all EzCards for a member")
+    .WithDescription("Migrated from Magic Prg_80 Card scan read - Reads all cards for a member with status")
+    .WithOpenApi();
+
+    ezcard.MapPost("/desactiver", async (DesactiverEzCardCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("DesactiverEzCard")
+    .WithSummary("Deactivate an EzCard")
+    .WithDescription("Migrated from Magic Prg_83 Deactivate all cards - Sets card status to D (Deactivated)")
+    .WithOpenApi();
+
+    ezcard.MapPost("/valider-caracteres", async (ValiderCaracteresQuery query, IMediator mediator) =>
+    {
+        var result = await mediator.Send(query);
+        return Results.Ok(result);
+    })
+    .WithName("ValiderCaracteres")
+    .WithSummary("Validate and clean forbidden characters in text")
+    .WithDescription("Migrated from Magic Prg_84 CARACT_INTERDIT - Returns cleaned text and list of detected forbidden characters")
+    .WithOpenApi();
+
+    // ============ Depot Endpoints (Phase 12 - Secondary modules) ============
+    var depot = app.MapGroup("/api/depot").WithTags("Depot");
+
+    depot.MapGet("/extrait/{societe}/{codeGm}/{filiation}", async (
+        string societe,
+        int codeGm,
+        int filiation,
+        string? nomVillage,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetExtraitDepotQuery(societe, codeGm, filiation, nomVillage));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetExtraitDepot")
+    .WithSummary("Get deposit extract for a member")
+    .WithDescription("Migrated from Magic Prg_39 Print extrait ObjDevSce - Returns all deposits (objects, currencies, sealed)")
+    .WithOpenApi();
+
+    depot.MapPost("/retirer", async (RetirerDepotCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("RetirerDepot")
+    .WithSummary("Withdraw a deposit")
+    .WithDescription("Migrated from Magic Prg_40 Comptes de depot - Marks a deposit as withdrawn")
+    .WithOpenApi();
 
     app.Run();
 }
@@ -682,403 +749,3 @@ finally
 {
     Log.CloseAndFlush();
 }
-
-static string GetDashboardHtml() => """
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Caisse - Dashboard</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            color: #e0e0e0;
-        }
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-        header { text-align: center; margin-bottom: 3rem; }
-        h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(90deg, #00d9ff, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-        .subtitle { color: #888; font-size: 1.1rem; }
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-        .stat-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,217,255,0.2);
-        }
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #00d9ff;
-        }
-        .stat-label { color: #888; margin-top: 0.5rem; }
-        .section { margin-bottom: 2rem; }
-        .section-title {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            color: #00ff88;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .endpoints { display: grid; gap: 1rem; }
-        .endpoint {
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            border-left: 4px solid #00d9ff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .endpoint:hover { background: rgba(255,255,255,0.08); }
-        .method {
-            background: #00d9ff;
-            color: #000;
-            padding: 0.25rem 0.75rem;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 0.85rem;
-        }
-        .method.post { background: #00ff88; }
-        .method.put { background: #ffa500; }
-        .path { font-family: 'Consolas', monospace; color: #fff; }
-        .desc { color: #888; font-size: 0.9rem; width: 100%; }
-        .test-section {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-        .test-form { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; }
-        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
-        .form-group label { color: #888; font-size: 0.9rem; }
-        .form-group input, .form-group select {
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
-            color: #fff;
-            font-size: 1rem;
-            width: 120px;
-        }
-        .form-group input:focus { outline: none; border-color: #00d9ff; }
-        button {
-            padding: 0.75rem 2rem;
-            border-radius: 8px;
-            border: none;
-            background: linear-gradient(90deg, #00d9ff, #00ff88);
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        button:hover { transform: scale(1.05); }
-        .result {
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            font-family: 'Consolas', monospace;
-            white-space: pre-wrap;
-            display: none;
-        }
-        .result.show { display: block; }
-        .result.success { border-left: 4px solid #00ff88; }
-        .result.error { border-left: 4px solid #ff4444; }
-        .swagger-link {
-            display: inline-block;
-            margin-top: 1rem;
-            color: #00d9ff;
-            text-decoration: none;
-        }
-        .swagger-link:hover { text-decoration: underline; }
-        footer { text-align: center; margin-top: 3rem; color: #666; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🏪 API Caisse</h1>
-            <p class="subtitle">Migration Magic Unipaas → C# .NET 8</p>
-        </header>
-
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-value">52</div>
-                <div class="stat-label">Endpoints</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">36</div>
-                <div class="stat-label">Tables mappées</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">327</div>
-                <div class="stat-label">Tests unitaires</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">11</div>
-                <div class="stat-label">Modules migrés</div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">🔍 Zooms - Phase 1 (8 endpoints)</h2>
-            <div class="endpoints">
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="path">/api/zooms/moyens-reglement/{societe}</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="path">/api/zooms/tables/{nomTable}</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="path">/api/zooms/devises/{societe}</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="path">/api/zooms/garanties/{societe}</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="path">/api/zooms/depots-objets/{societe}</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="path">/api/zooms/depots-devises/{societe}</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="path">/api/zooms/pays</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="path">/api/zooms/types-taux-change/{societe}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">👤 Members - Phase 2</h2>
-            <div class="endpoints">
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/members/club-med-pass/{societe}/{compte}/{filiation}</span>
-                    </div>
-                    <div class="desc">Prg_160 GetCMP - Club Med Pass (ez_card table)</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">💵 Solde - Phase 3</h2>
-            <div class="endpoints">
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/solde/{societe}/{codeAdherent}/{filiation}</span>
-                    </div>
-                    <div class="desc">Prg_192 - Solde compte complet (ventes, dépôts, garanties)</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">📊 Ventes - Phase 4</h2>
-            <div class="endpoints">
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/ventes/solde-giftpass/{societe}/{compte}/{filiation}</span>
-                    </div>
-                    <div class="desc">Prg_237 - Solde Gift Pass (somme cc_total_par_type)</div>
-                </div>
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/ventes/solde-resortcredit/{societe}/{compte}/{filiation}/{service}</span>
-                    </div>
-                    <div class="desc">Prg_250 - Solde Resort Credit (attribué - utilisé)</div>
-                </div>
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/ventes/historique/{societe}/{codeGm}/{filiation}</span>
-                    </div>
-                    <div class="desc">Prg_239-241 - Historique des ventes payantes</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">📋 Extrait - Phase 5</h2>
-            <div class="endpoints">
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/extrait/{societe}/{codeAdherent}/{filiation}</span>
-                    </div>
-                    <div class="desc">Prg_69 - Extrait de compte avec tri et filtres</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">🔒 Garanties - Phase 6</h2>
-            <div class="endpoints">
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/garanties/{societe}/{codeAdherent}/{filiation}</span>
-                    </div>
-                    <div class="desc">Prg_111 - Dépôts de garantie du compte</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">💱 Change - Phase 7</h2>
-            <div class="endpoints">
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/change/devise-locale/{societe}</span>
-                    </div>
-                    <div class="desc">Prg_21 - Devise locale</div>
-                </div>
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/change/taux/{societe}</span>
-                    </div>
-                    <div class="desc">Prg_20 - Taux de change</div>
-                </div>
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/change/calculer</span>
-                    </div>
-                    <div class="desc">Prg_22 - Calcul équivalent devise</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">📞 Telephone - Phase 8</h2>
-            <div class="endpoints">
-                <div class="endpoint">
-                    <div>
-                        <span class="method">GET</span>
-                        <span class="path">/api/telephone/{societe}/{codeGm}/{filiation}</span>
-                    </div>
-                    <div class="desc">Prg_202 - Lignes téléphoniques</div>
-                </div>
-                <div class="endpoint">
-                    <div>
-                        <span class="method post">POST</span>
-                        <span class="path">/api/telephone/gerer</span>
-                    </div>
-                    <div class="desc">Prg_208/210 - Ouvrir/Fermer ligne</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">💰 Sessions & Écarts</h2>
-            <div class="endpoints">
-                <div class="endpoint">
-                    <span class="method post">POST</span>
-                    <span class="path">/api/sessions/ouvrir</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method post">POST</span>
-                    <span class="path">/api/sessions/fermer</span>
-                </div>
-                <div class="endpoint">
-                    <span class="method">GET</span>
-                    <span class="path">/api/ecarts/{utilisateur}/{chronoSession}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="test-section">
-            <h2 class="section-title">🧪 Tester Solde Gift Pass</h2>
-            <div class="test-form">
-                <div class="form-group">
-                    <label>Société</label>
-                    <input type="text" id="societe" value="C" maxlength="2">
-                </div>
-                <div class="form-group">
-                    <label>Compte</label>
-                    <input type="number" id="compte" value="135795">
-                </div>
-                <div class="form-group">
-                    <label>Filiation</label>
-                    <input type="number" id="filiation" value="0">
-                </div>
-                <button onclick="testGiftPass()">Tester</button>
-            </div>
-            <div id="result" class="result"></div>
-        </div>
-
-        <div style="display: flex; gap: 2rem; margin-top: 1.5rem;">
-            <a href="/zooms.html" class="swagger-link" style="background: linear-gradient(90deg, #00d9ff, #00ff88); color: #000; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: bold;">🔍 Ouvrir l'écran Zooms interactif →</a>
-            <a href="/swagger" class="swagger-link">📖 Documentation Swagger →</a>
-        </div>
-
-        <footer>
-            <p>Migration Magic Unipaas v12.03 → C# .NET 8 | CSK0912</p>
-        </footer>
-    </div>
-
-    <script>
-        async function testGiftPass() {
-            const societe = document.getElementById('societe').value;
-            const compte = document.getElementById('compte').value;
-            const filiation = document.getElementById('filiation').value;
-            const resultDiv = document.getElementById('result');
-
-            try {
-                const response = await fetch(`/api/ventes/solde-giftpass/${societe}/${compte}/${filiation}`);
-                const data = await response.json();
-
-                resultDiv.className = 'result show success';
-                resultDiv.innerHTML = `<strong>Résultat:</strong>\n\n` +
-                    `Société: ${data.societe}\n` +
-                    `Compte: ${data.compte}\n` +
-                    `Filiation: ${data.filiation}\n` +
-                    `<span style="color:#00ff88;font-size:1.5rem">Solde: ${data.soldeCreditConso.toLocaleString('fr-FR')} €</span>\n` +
-                    `Enregistrements: ${data.nombreEnregistrements}`;
-            } catch (error) {
-                resultDiv.className = 'result show error';
-                resultDiv.textContent = 'Erreur: ' + error.message;
-            }
-        }
-    </script>
-</body>
-</html>
-""";
