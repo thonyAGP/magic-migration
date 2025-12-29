@@ -16,25 +16,34 @@ using Caisse.Application.CaisseDevises.Queries;
 using Caisse.Application.CaisseDevises.Commands;
 using Caisse.Application.Ecarts.Queries;
 using Caisse.Application.Ventes.Queries;
+using Caisse.Application.Ventes.Commands;
 using Caisse.Application.EasyCheckOut.Commands;
 using Caisse.Application.EasyCheckOut.Queries;
 using Caisse.Application.Zooms.Queries;
 using Caisse.Application.Members.Queries;
 using Caisse.Application.Solde.Queries;
+using Caisse.Application.Solde.Commands;
 using Caisse.Application.Extrait.Queries;
 using Caisse.Application.Garanties.Queries;
 using Caisse.Application.Change.Queries;
+using Caisse.Application.Change.Commands;
 using Caisse.Application.Telephone.Queries;
 using Caisse.Application.Telephone.Commands;
 using Caisse.Application.Factures.Queries;
 using Caisse.Application.Factures.Commands;
 using Caisse.Application.Identification.Queries;
+using Caisse.Application.Identification.Commands;
 using Caisse.Application.EzCard.Queries;
 using Caisse.Application.EzCard.Commands;
 using Caisse.Application.Depot.Queries;
 using Caisse.Application.Depot.Commands;
 using Caisse.Application.Divers.Queries;
 using Caisse.Application.Divers.Commands;
+using Caisse.Application.Utilitaires.Queries;
+using Caisse.Application.Utilitaires.Commands;
+using Caisse.Application.Menus.Queries;
+using Caisse.Application.ChangementCompte.Queries;
+using Caisse.Application.ChangementCompte.Commands;
 using Caisse.Infrastructure;
 using MediatR;
 using Serilog;
@@ -65,8 +74,6 @@ try
     }
 
     app.UseHttpsRedirection();
-
-    // Serve static files and default document (index.html)
     app.UseDefaultFiles();
     app.UseStaticFiles();
 
@@ -302,8 +309,6 @@ try
         return Results.Ok(result);
     })
     .WithName("CalculerEcartSession")
-    .WithSummary("Calculate the discrepancy (écart) for a session")
-    .WithDescription("Returns detailed breakdown of expected vs counted amounts, including by currency/payment mode")
     .WithOpenApi();
 
     // ============ Ventes Endpoints ============
@@ -319,8 +324,6 @@ try
         return Results.Ok(result);
     })
     .WithName("GetSoldeGiftPass")
-    .WithSummary("Get total Gift Pass balance for a client")
-    .WithDescription("Migrated from Magic Prg_237 - Sums solde_credit_conso from cc_total_par_type table")
     .WithOpenApi();
 
     ventes.MapGet("/solde-resortcredit/{societe}/{compte}/{filiation}/{service}", async (
@@ -334,162 +337,8 @@ try
         return Results.Ok(result);
     })
     .WithName("GetSoldeResortCredit")
-    .WithSummary("Get Resort Credit balance for a client/service")
-    .WithDescription("Migrated from Magic Prg_250 - Calculates IF(attribue > utilise, attribue - utilise, 0)")
     .WithOpenApi();
 
-    // ============ EasyCheckOut Endpoints ============
-    var checkout = app.MapGroup("/api/easycheckout").WithTags("EasyCheckOut");
-
-    checkout.MapPost("/solde", async (SoldeEasyCheckOutCommand command, IMediator mediator) =>
-    {
-        var result = await mediator.Send(command);
-        return result.TransactionValidee ? Results.Ok(result) : Results.BadRequest(result);
-    })
-    .WithName("SoldeEasyCheckOut")
-    .WithSummary("Execute Easy Check Out balance calculation")
-    .WithDescription("Migrated from Magic Prg_64 SOLDE_EASY_CHECK_OUT - Complete checkout process with PDF generation")
-    .WithOpenApi();
-
-    checkout.MapGet("/edition", async (
-        bool erreursSeules,
-        bool editionAuto,
-        bool testPes,
-        DateOnly dateEdition,
-        IMediator mediator) =>
-    {
-        var result = await mediator.Send(new EditionEasyCheckOutQuery(erreursSeules, editionAuto, testPes, dateEdition));
-        return Results.Ok(result);
-    })
-    .WithName("EditionEasyCheckOut")
-    .WithSummary("Generate Easy Check Out edition and email")
-    .WithDescription("Migrated from Magic Prg_65 EDITION_EASY_CHECK_OUT - Generates PDF and sends email to clients")
-    .WithOpenApi();
-
-    checkout.MapGet("/extrait/{societe}/{dateDepart}", async (
-        string societe,
-        DateOnly dateDepart,
-        IMediator mediator) =>
-    {
-        var result = await mediator.Send(new ExtraitEasyCheckOutQuery(societe, dateDepart));
-        return Results.Ok(result);
-    })
-    .WithName("ExtraitEasyCheckOut")
-    .WithSummary("Get Easy Check Out extract for next day departures")
-    .WithDescription("Migrated from Magic Prg_53 EXTRAIT_EASY_CHECKOUT - Generates account extract for J+1 departures")
-    .WithOpenApi();
-
-    // ============ Zooms Endpoints (Phase 1) ============
-    var zooms = app.MapGroup("/api/zooms").WithTags("Zooms");
-
-    zooms.MapGet("/moyens-reglement/{societe}", async (string societe, IMediator mediator) =>
-    {
-        var result = await mediator.Send(new GetMoyensReglementQuery(societe));
-        return Results.Ok(result);
-    })
-    .WithName("GetMoyensReglement")
-    .WithSummary("Get payment methods for a company")
-    .WithOpenApi();
-
-    zooms.MapGet("/tables/{nomTable}", async (string nomTable, IMediator mediator) =>
-    {
-        var result = await mediator.Send(new GetTablesReferenceQuery(nomTable));
-        return Results.Ok(result);
-    })
-    .WithName("GetTablesReference")
-    .WithSummary("Get reference table entries (services, articles, etc.)")
-    .WithOpenApi();
-
-    zooms.MapGet("/devises/{societe}", async (string societe, IMediator mediator) =>
-    {
-        var result = await mediator.Send(new GetDevisesZoomQuery(societe));
-        return Results.Ok(result);
-    })
-    .WithName("GetDevisesZoom")
-    .WithSummary("Get currencies for a company")
-    .WithOpenApi();
-
-    zooms.MapGet("/garanties/{societe}", async (string societe, IMediator mediator) =>
-    {
-        var result = await mediator.Send(new GetGarantiesQuery(societe));
-        return Results.Ok(result);
-    })
-    .WithName("GetGaranties")
-    .WithSummary("Get guarantee types for a company")
-    .WithOpenApi();
-
-    zooms.MapGet("/depots-objets/{societe}", async (string societe, IMediator mediator) =>
-    {
-        var result = await mediator.Send(new GetDepotsObjetsQuery(societe));
-        return Results.Ok(result);
-    })
-    .WithName("GetDepotsObjets")
-    .WithSummary("Get deposit object types for a company")
-    .WithOpenApi();
-
-    zooms.MapGet("/depots-devises/{societe}", async (string societe, IMediator mediator) =>
-    {
-        var result = await mediator.Send(new GetDepotsDevisesQuery(societe));
-        return Results.Ok(result);
-    })
-    .WithName("GetDepotsDevises")
-    .WithSummary("Get deposit currencies for a company")
-    .WithOpenApi();
-
-    zooms.MapGet("/pays", async (string? codeLangue, IMediator mediator) =>
-    {
-        var result = await mediator.Send(new GetPaysQuery(codeLangue));
-        return Results.Ok(result);
-    })
-    .WithName("GetPays")
-    .WithSummary("Get countries/nationalities")
-    .WithOpenApi();
-
-    zooms.MapGet("/types-taux-change/{societe}", async (string societe, IMediator mediator) =>
-    {
-        var result = await mediator.Send(new GetTypesTauxChangeQuery(societe));
-        return Results.Ok(result);
-    })
-    .WithName("GetTypesTauxChange")
-    .WithSummary("Get exchange rate types for a company")
-    .WithOpenApi();
-
-    // ============ Members Endpoints (Phase 2) ============
-    var members = app.MapGroup("/api/members").WithTags("Members");
-
-    members.MapGet("/club-med-pass/{societe}/{compte}/{filiation}", async (
-        string societe,
-        int compte,
-        int filiation,
-        IMediator mediator) =>
-    {
-        var result = await mediator.Send(new GetClubMedPassQuery(societe, compte, filiation));
-        return result.Found ? Results.Ok(result) : Results.NotFound(result);
-    })
-    .WithName("GetClubMedPass")
-    .WithSummary("Get Club Med Pass (EzCard) for a member")
-    .WithDescription("Migrated from Magic Prg_160 GetCMP - Returns card_code from ez_card table if status is not in Opposition")
-    .WithOpenApi();
-
-    // ============ Solde Endpoints (Phase 3) ============
-    var solde = app.MapGroup("/api/solde").WithTags("Solde");
-
-    solde.MapGet("/{societe}/{codeAdherent}/{filiation}", async (
-        string societe,
-        int codeAdherent,
-        int filiation,
-        DateOnly? dateSolde,
-        IMediator mediator) =>
-    {
-        var result = await mediator.Send(new GetSoldeCompteQuery(societe, codeAdherent, filiation, dateSolde));
-        return result.Found ? Results.Ok(result) : Results.NotFound(result);
-    })
-    .WithName("GetSoldeCompte")
-    .WithSummary("Get account balance details")
-    .WithDescription("Migrated from Magic Prg_192 SOLDE_COMPTE - Complete balance with deposits, sales, guarantees")
-    .WithOpenApi();
-
-    // ============ Ventes Historique Endpoints (Phase 4) ============
     ventes.MapGet("/historique/{societe}/{codeGm}/{filiation}", async (
         string societe,
         int codeGm,
@@ -503,11 +352,312 @@ try
         return result.Found ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetHistoVentes")
-    .WithSummary("Get sales history for an account")
-    .WithDescription("Migrated from Magic Prg_239-241 Histo ventes payantes - Transaction history with details")
     .WithOpenApi();
 
-    // ============ Extrait Endpoints (Phase 5) ============
+    ventes.MapGet("/historique-igr/{societe}/{codeGm}/{filiation}", async (
+        string societe,
+        int codeGm,
+        int filiation,
+        DateOnly? dateDebut,
+        DateOnly? dateFin,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetHistoVentesIgrQuery(societe, codeGm, filiation, dateDebut, dateFin, limit ?? 50));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetHistoVentesIgr")
+    .WithOpenApi();
+
+    ventes.MapGet("/historique-gratuits/{societe}/{codeGm}/{filiation}", async (
+        string societe,
+        int codeGm,
+        int filiation,
+        DateOnly? dateDebut,
+        DateOnly? dateFin,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetHistoVentesGratuitesQuery(societe, codeGm, filiation, dateDebut, dateFin, limit ?? 50));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetHistoVentesGratuits")
+    .WithOpenApi();
+
+    ventes.MapPost("/initiate", async (InitiateNewSaleCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Created($"/api/ventes/{result.TransactionId}", result) : Results.BadRequest(result);
+    })
+    .WithName("InitiateNewSale")
+    .WithOpenApi();
+
+    ventes.MapPost("/add-detail", async (AddSaleDetailCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("AddSaleDetail")
+    .WithOpenApi();
+
+    ventes.MapPost("/validate", async (ValidateSaleCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("ValidateSale")
+    .WithOpenApi();
+
+    ventes.MapPost("/print-ticket", async (PrintTicketVenteCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("PrintTicketVente")
+    .WithOpenApi();
+
+    ventes.MapPost("/deversement", async (DeversementTransactionCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("DeversementTransaction")
+    .WithOpenApi();
+
+    ventes.MapPost("/choix-pyr", async (ChoixPyrCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("ChoixPyr")
+    .WithOpenApi();
+
+    ventes.MapPost("/creation-pied-ticket", async (CreationPiedTicketCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("CreationPiedTicket")
+    .WithOpenApi();
+
+    ventes.MapGet("/zoom/articles/{societe}", async (
+        string societe,
+        string? searchTerm,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetZoomArticlesQuery(societe, searchTerm, limit ?? 50));
+        return Results.Ok(result);
+    })
+    .WithName("GetZoomArticles")
+    .WithOpenApi();
+
+    ventes.MapGet("/zoom/gratuits/{societe}", async (
+        string societe,
+        string? searchTerm,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetZoomGratuitesQuery(societe, searchTerm, limit ?? 100));
+        return Results.Ok(result);
+    })
+    .WithName("GetZoomGratuits")
+    .WithOpenApi();
+
+    ventes.MapGet("/zoom/payment-methods/{societe}", async (
+        string societe,
+        int? codeGm,
+        string? searchTerm,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetZoomPaymentMethodsQuery(societe, codeGm, searchTerm, limit ?? 100));
+        return Results.Ok(result);
+    })
+    .WithName("GetZoomPaymentMethods")
+    .WithOpenApi();
+
+    ventes.MapGet("/vad-valides/{societe}/{codeGm}/{filiation}", async (
+        string societe,
+        int codeGm,
+        int filiation,
+        DateOnly? dateDebut,
+        DateOnly? dateFin,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetVadValidesQuery(societe, codeGm, filiation, dateDebut, dateFin, limit ?? 50));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetVadValides")
+    .WithOpenApi();
+
+    // ============ EasyCheckOut Endpoints ============
+    var checkout = app.MapGroup("/api/easycheckout").WithTags("EasyCheckOut");
+
+    checkout.MapPost("/solde", async (SoldeEasyCheckOutCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.TransactionValidee ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("SoldeEasyCheckOut")
+    .WithOpenApi();
+
+    checkout.MapGet("/edition", async (
+        bool erreursSeules,
+        bool editionAuto,
+        bool testPes,
+        DateOnly dateEdition,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new EditionEasyCheckOutQuery(erreursSeules, editionAuto, testPes, dateEdition));
+        return Results.Ok(result);
+    })
+    .WithName("EditionEasyCheckOut")
+    .WithOpenApi();
+
+    checkout.MapGet("/extrait/{societe}/{dateDepart}", async (
+        string societe,
+        DateOnly dateDepart,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new ExtraitEasyCheckOutQuery(societe, dateDepart));
+        return Results.Ok(result);
+    })
+    .WithName("ExtraitEasyCheckOut")
+    .WithOpenApi();
+
+    // ============ Zooms Endpoints ============
+    var zooms = app.MapGroup("/api/zooms").WithTags("Zooms");
+
+    zooms.MapGet("/moyens-reglement/{societe}", async (string societe, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetMoyensReglementQuery(societe));
+        return Results.Ok(result);
+    })
+    .WithName("GetMoyensReglement")
+    .WithOpenApi();
+
+    zooms.MapGet("/tables/{nomTable}", async (string nomTable, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetTablesReferenceQuery(nomTable));
+        return Results.Ok(result);
+    })
+    .WithName("GetTablesReference")
+    .WithOpenApi();
+
+    zooms.MapGet("/devises/{societe}", async (string societe, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetDevisesZoomQuery(societe));
+        return Results.Ok(result);
+    })
+    .WithName("GetDevisesZoom")
+    .WithOpenApi();
+
+    zooms.MapGet("/garanties/{societe}", async (string societe, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetGarantiesQuery(societe));
+        return Results.Ok(result);
+    })
+    .WithName("GetGaranties")
+    .WithOpenApi();
+
+    zooms.MapGet("/depots-objets/{societe}", async (string societe, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetDepotsObjetsQuery(societe));
+        return Results.Ok(result);
+    })
+    .WithName("GetDepotsObjets")
+    .WithOpenApi();
+
+    zooms.MapGet("/depots-devises/{societe}", async (string societe, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetDepotsDevisesQuery(societe));
+        return Results.Ok(result);
+    })
+    .WithName("GetDepotsDevises")
+    .WithOpenApi();
+
+    zooms.MapGet("/pays", async (string? codeLangue, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetPaysQuery(codeLangue));
+        return Results.Ok(result);
+    })
+    .WithName("GetPays")
+    .WithOpenApi();
+
+    zooms.MapGet("/types-taux-change/{societe}", async (string societe, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetTypesTauxChangeQuery(societe));
+        return Results.Ok(result);
+    })
+    .WithName("GetTypesTauxChange")
+    .WithOpenApi();
+
+    zooms.MapGet("/comptes/{societe}", async (string societe, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetComptesZoomQuery(societe));
+        return Results.Ok(result);
+    })
+    .WithName("GetComptesZoom")
+    .WithOpenApi();
+
+    // types-objets endpoint removed - TypeObjetZoom entity was incorrect
+
+    // modes-paiement endpoint removed - use moyens-reglement instead (same table)
+
+    // ============ Members Endpoints ============
+    var members = app.MapGroup("/api/members").WithTags("Members");
+
+    members.MapGet("/club-med-pass/{societe}/{compte}/{filiation}", async (
+        string societe,
+        int compte,
+        int filiation,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetClubMedPassQuery(societe, compte, filiation));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetClubMedPass")
+    .WithOpenApi();
+
+    // ============ Solde Endpoints ============
+    var solde = app.MapGroup("/api/solde").WithTags("Solde");
+
+    solde.MapGet("/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        DateOnly? dateSolde,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetSoldeCompteQuery(societe, codeAdherent, filiation, dateSolde));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetSoldeCompte")
+    .WithOpenApi();
+
+    solde.MapGet("/menu/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetSoldeMenuQuery(societe, codeAdherent, filiation));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetSoldeMenu")
+    .WithOpenApi();
+
+    solde.MapPost("/print-guarantee", async (PrintSoldeGarantieCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("PrintSoldeGarantie")
+    .WithOpenApi();
+
+    // ============ Extrait Endpoints ============
     var extrait = app.MapGroup("/api/extrait").WithTags("Extrait");
 
     extrait.MapGet("/{societe}/{codeAdherent}/{filiation}", async (
@@ -525,11 +675,115 @@ try
         return result.Found ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetExtraitCompte")
-    .WithSummary("Generate account statement")
-    .WithDescription("Migrated from Magic Prg_69 EXTRAIT_COMPTE - Account statement with sorting and service filter")
     .WithOpenApi();
 
-    // ============ Garanties Endpoints (Phase 6) ============
+    extrait.MapGet("/detail/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        DateOnly? dateDebut,
+        DateOnly? dateFin,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetExtraitDetailQuery(
+            societe, codeAdherent, filiation, dateDebut, dateFin));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetExtraitDetail")
+    .WithOpenApi();
+
+    extrait.MapGet("/par-nom/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        DateOnly? dateDebut,
+        DateOnly? dateFin,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetExtraitNomQuery(
+            societe, codeAdherent, filiation, dateDebut, dateFin));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetExtraitParNom")
+    .WithOpenApi();
+
+    extrait.MapGet("/par-date/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        DateOnly? dateDebut,
+        DateOnly? dateFin,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetExtraitDateQuery(
+            societe, codeAdherent, filiation, dateDebut, dateFin));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetExtraitParDate")
+    .WithOpenApi();
+
+    extrait.MapGet("/cumul/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        DateOnly? dateDebut,
+        DateOnly? dateFin,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetExtraitCumulQuery(
+            societe, codeAdherent, filiation, dateDebut, dateFin));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetExtraitCumul")
+    .WithOpenApi();
+
+    extrait.MapGet("/impression/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        DateOnly? dateDebut,
+        DateOnly? dateFin,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetExtraitImpQuery(
+            societe, codeAdherent, filiation, dateDebut, dateFin));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetExtraitImpression")
+    .WithOpenApi();
+
+    extrait.MapGet("/date-impression/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        DateOnly? dateDebut,
+        DateOnly? dateFin,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetExtraitDateImpQuery(
+            societe, codeAdherent, filiation, dateDebut, dateFin));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetExtraitDateImpression")
+    .WithOpenApi();
+
+    extrait.MapGet("/par-service/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        DateOnly? dateDebut,
+        DateOnly? dateFin,
+        string? codeService,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetExtraitServiceQuery(
+            societe, codeAdherent, filiation, dateDebut, dateFin, codeService));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetExtraitParService")
+    .WithOpenApi();
+
+    // ============ Garanties Endpoints ============
     var garanties = app.MapGroup("/api/garanties").WithTags("Garanties");
 
     garanties.MapGet("/{societe}/{codeAdherent}/{filiation}", async (
@@ -542,11 +796,33 @@ try
         return result.Found ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetGarantieCompte")
-    .WithSummary("Get account guarantees/deposits")
-    .WithDescription("Migrated from Magic Prg_111 GARANTIE - Account guarantee deposits with available types")
     .WithOpenApi();
 
-    // ============ Change Endpoints (Phase 7) ============
+    garanties.MapGet("/selection", async (
+        string societe,
+        string? typeDepot,
+        string? codeDevise,
+        string? etatDepot,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetGarantieSelectionQuery(societe, typeDepot, codeDevise, etatDepot));
+        return Results.Ok(result);
+    })
+    .WithName("GetGarantieSelection")
+    .WithOpenApi();
+
+    garanties.MapGet("/types/{societe}", async (
+        string societe,
+        string? codeClasse,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetGarantieTypesQuery(societe, codeClasse));
+        return Results.Ok(result);
+    })
+    .WithName("GetGarantieTypes")
+    .WithOpenApi();
+
+    // ============ Change Endpoints ============
     var change = app.MapGroup("/api/change").WithTags("Change");
 
     change.MapGet("/devise-locale/{societe}", async (
@@ -557,8 +833,6 @@ try
         return result.Found ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetDeviseLocale")
-    .WithSummary("Get local currency for a company")
-    .WithDescription("Migrated from Magic Prg_21 - Returns the local/base currency")
     .WithOpenApi();
 
     change.MapGet("/taux/{societe}", async (
@@ -571,8 +845,6 @@ try
         return result.Found ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetTauxChange")
-    .WithSummary("Get exchange rates for a company")
-    .WithDescription("Migrated from Magic Prg_20 - List of available exchange rates")
     .WithOpenApi();
 
     change.MapGet("/calculer", async (
@@ -592,11 +864,29 @@ try
         return result.Success ? Results.Ok(result) : Results.BadRequest(result);
     })
     .WithName("CalculerEquivalent")
-    .WithSummary("Calculate currency equivalent")
-    .WithDescription("Migrated from Magic Prg_22 - Currency conversion with exchange rates")
     .WithOpenApi();
 
-    // ============ Telephone Endpoints (Phase 8) ============
+    change.MapPost("/receipt/purchase", async (
+        PrintReceiptPurchaseCommand command,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("PrintReceiptPurchase")
+    .WithOpenApi();
+
+    change.MapPost("/receipt/sale", async (
+        PrintReceiptSaleCommand command,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("PrintReceiptSale")
+    .WithOpenApi();
+
+    // ============ Telephone Endpoints ============
     var telephone = app.MapGroup("/api/telephone").WithTags("Telephone");
 
     telephone.MapGet("/{societe}/{codeGm}/{filiation}", async (
@@ -609,8 +899,6 @@ try
         return result.Found ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetLignesTelephone")
-    .WithSummary("Get phone lines for an account")
-    .WithDescription("Migrated from Magic Prg_202 - Read autocom codes for a guest")
     .WithOpenApi();
 
     telephone.MapPost("/gerer", async (GererLigneTelephoneCommand command, IMediator mediator) =>
@@ -619,11 +907,17 @@ try
         return result.Success ? Results.Ok(result) : Results.BadRequest(result);
     })
     .WithName("GererLigneTelephone")
-    .WithSummary("Open or close a phone line")
-    .WithDescription("Migrated from Magic Prg_208/210 - OPEN_PHONE_LINE / CLOSE_PHONE_LINE")
     .WithOpenApi();
 
-    // ============ Factures Endpoints (Phase 10) ============
+    telephone.MapPost("/init", async (InitPhoneLineCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("InitPhoneLine")
+    .WithOpenApi();
+
+    // ============ Factures Endpoints ============
     var factures = app.MapGroup("/api/factures").WithTags("Factures");
 
     factures.MapGet("/checkout/{societe}/{codeGm}/{filiation}", async (
@@ -636,8 +930,6 @@ try
         return result.Success ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetFacturesCheckOut")
-    .WithSummary("Get checkout invoices for an account")
-    .WithDescription("Migrated from Magic Prg_54 FACTURES_CHECK_OUT - Invoices for checkout process")
     .WithOpenApi();
 
     factures.MapPost("/creer", async (CreerFactureCommand command, IMediator mediator) =>
@@ -646,11 +938,9 @@ try
         return result.Success ? Results.Ok(result) : Results.BadRequest(result);
     })
     .WithName("CreerFacture")
-    .WithSummary("Create a new VAT invoice")
-    .WithDescription("Migrated from Magic Prg_97 Saisie_facture_tva V3 - Create invoice with TVA calculation")
     .WithOpenApi();
 
-    // ============ Identification Endpoints (Phase 11) ============
+    // ============ Identification Endpoints ============
     var identification = app.MapGroup("/api/identification").WithTags("Identification");
 
     identification.MapPost("/verifier", async (VerifierOperateurQuery query, IMediator mediator) =>
@@ -659,8 +949,6 @@ try
         return result.Authentifie ? Results.Ok(result) : Results.Unauthorized();
     })
     .WithName("VerifierOperateur")
-    .WithSummary("Verify operator credentials")
-    .WithDescription("Migrated from Magic Prg_158 Selection Identification - Login verification")
     .WithOpenApi();
 
     identification.MapGet("/session/{societe}/{codeOperateur}", async (
@@ -672,11 +960,45 @@ try
         return Results.Ok(result);
     })
     .WithName("VerifierSessionCaisse")
-    .WithSummary("Check if a cash session is open")
-    .WithDescription("Migrated from Magic Prg_328 Verif session caisse ouverte - Session status check")
     .WithOpenApi();
 
-    // ============ EzCard Endpoints (Phase 12 - Secondary modules) ============
+    identification.MapGet("/great-member-menu/{societe}/{codeGm}/{filiation}", async (
+        string societe,
+        int codeGm,
+        int filiation,
+        string typeClient,
+        string acces,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetGreatMemberMenuQuery(societe, codeGm, filiation, typeClient, acces));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetGreatMemberMenu")
+    .WithOpenApi();
+
+    identification.MapGet("/great-members", async (
+        string societe,
+        int? village,
+        string? sexe,
+        string? typeClient,
+        string? typeCarte,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetGreatMembersListQuery(societe, village, sexe, typeClient, typeCarte));
+        return Results.Ok(result);
+    })
+    .WithName("GetGreatMembersList")
+    .WithOpenApi();
+
+    identification.MapPost("/selection", async (SelectIdentificationCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("SelectIdentification")
+    .WithOpenApi();
+
+    // ============ EzCard Endpoints ============
     var ezcard = app.MapGroup("/api/ezcard").WithTags("EzCard");
 
     ezcard.MapGet("/member/{societe}/{codeGm}/{filiation}", async (
@@ -689,8 +1011,6 @@ try
         return result.Found ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetEzCardByMember")
-    .WithSummary("Get all EzCards for a member")
-    .WithDescription("Migrated from Magic Prg_80 Card scan read - Reads all cards for a member with status")
     .WithOpenApi();
 
     ezcard.MapPost("/desactiver", async (DesactiverEzCardCommand command, IMediator mediator) =>
@@ -699,8 +1019,6 @@ try
         return result.Success ? Results.Ok(result) : Results.BadRequest(result);
     })
     .WithName("DesactiverEzCard")
-    .WithSummary("Deactivate an EzCard")
-    .WithDescription("Migrated from Magic Prg_83 Deactivate all cards - Sets card status to D (Deactivated)")
     .WithOpenApi();
 
     ezcard.MapPost("/valider-caracteres", async (ValiderCaracteresQuery query, IMediator mediator) =>
@@ -709,11 +1027,9 @@ try
         return Results.Ok(result);
     })
     .WithName("ValiderCaracteres")
-    .WithSummary("Validate and clean forbidden characters in text")
-    .WithDescription("Migrated from Magic Prg_84 CARACT_INTERDIT - Returns cleaned text and list of detected forbidden characters")
     .WithOpenApi();
 
-    // ============ Depot Endpoints (Phase 12 - Secondary modules) ============
+    // ============ Depot Endpoints ============
     var depot = app.MapGroup("/api/depot").WithTags("Depot");
 
     depot.MapGet("/extrait/{societe}/{codeGm}/{filiation}", async (
@@ -727,8 +1043,6 @@ try
         return result.Found ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetExtraitDepot")
-    .WithSummary("Get deposit extract for a member")
-    .WithDescription("Migrated from Magic Prg_39 Print extrait ObjDevSce - Returns all deposits (objects, currencies, sealed)")
     .WithOpenApi();
 
     depot.MapPost("/retirer", async (RetirerDepotCommand command, IMediator mediator) =>
@@ -737,11 +1051,9 @@ try
         return result.Success ? Results.Ok(result) : Results.BadRequest(result);
     })
     .WithName("RetirerDepot")
-    .WithSummary("Withdraw a deposit")
-    .WithDescription("Migrated from Magic Prg_40 Comptes de depot - Marks a deposit as withdrawn")
     .WithOpenApi();
 
-    // ============ Divers Endpoints (Phase 12 - Utility programs) ============
+    // ============ Divers Endpoints ============
     var divers = app.MapGroup("/api/divers").WithTags("Divers");
 
     divers.MapGet("/langue/{societe}/{codeUtilisateur}", async (
@@ -753,8 +1065,6 @@ try
         return Results.Ok(result);
     })
     .WithName("GetLangueUtilisateur")
-    .WithSummary("Get user language and menu visibility")
-    .WithDescription("Migrated from Magic Prg_45 Recuperation langue - Returns language code and visible menus")
     .WithOpenApi();
 
     divers.MapGet("/titre/{codeEcran}", async (
@@ -767,8 +1077,6 @@ try
         return result.Found ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetTitreEcran")
-    .WithSummary("Get screen title in user language")
-    .WithDescription("Migrated from Magic Prg_43 Recuperation du titre - Multilingual screen titles")
     .WithOpenApi();
 
     divers.MapGet("/acces-informaticien/{societe}/{codeUtilisateur}", async (
@@ -782,8 +1090,6 @@ try
         return Results.Ok(result);
     })
     .WithName("VerifierAccesInformaticien")
-    .WithSummary("Check IT admin access")
-    .WithDescription("Migrated from Magic Prg_42 Controle Login Informaticien - Checks if user has IT admin rights")
     .WithOpenApi();
 
     divers.MapPost("/valider-dates", async (ValiderIntegriteDatesQuery query, IMediator mediator) =>
@@ -792,8 +1098,6 @@ try
         return result.IsValid ? Results.Ok(result) : Results.BadRequest(result);
     })
     .WithName("ValiderIntegriteDates")
-    .WithSummary("Validate date integrity for transactions")
-    .WithDescription("Migrated from Magic Prg_48 Controles - Integrite dates - Validates accounting dates")
     .WithOpenApi();
 
     divers.MapPost("/session-timestamp", async (UpdateSessionTimestampCommand command, IMediator mediator) =>
@@ -802,8 +1106,322 @@ try
         return result.Success ? Results.Ok(result) : Results.BadRequest(result);
     })
     .WithName("UpdateSessionTimestamp")
-    .WithSummary("Update session timestamp")
-    .WithDescription("Migrated from Magic Prg_47 Date/Heure session user - Updates the session modification date")
+    .WithOpenApi();
+
+    divers.MapGet("/version", async (IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetVersionQuery());
+        return Results.Ok(result);
+    })
+    .WithName("GetVersion")
+    .WithOpenApi();
+
+    divers.MapGet("/droits-utilisateur/{societe}/{codeUtilisateur}", async (
+        string societe,
+        string codeUtilisateur,
+        string? typeDroit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new SearchUserRightsQuery(societe, codeUtilisateur, typeDroit));
+        return result.UtilisateurTrouve ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("SearchUserRights")
+    .WithOpenApi();
+
+    divers.MapPost("/appeler-programme", async (CallProgramCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("CallProgram")
+    .WithOpenApi();
+
+    // ============ Utilitaires Endpoints ============
+    var utilitaires = app.MapGroup("/api/utilitaires").WithTags("Utilitaires");
+
+    utilitaires.MapPost("/init", async (InitUtilitairesCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("InitUtilitaires")
+    .WithOpenApi();
+
+    utilitaires.MapPost("/backup", async (BackupConfigCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("BackupConfig")
+    .WithOpenApi();
+
+    utilitaires.MapPost("/restore", async (RestoreConfigCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("RestoreConfig")
+    .WithOpenApi();
+
+    utilitaires.MapPost("/export", async (ExportDataCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("ExportData")
+    .WithOpenApi();
+
+    utilitaires.MapPost("/import", async (ImportDataCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("ImportData")
+    .WithOpenApi();
+
+    utilitaires.MapPost("/purge", async (PurgeDataCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("PurgeData")
+    .WithOpenApi();
+
+    utilitaires.MapPost("/maintenance", async (MaintenanceDbCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("MaintenanceDb")
+    .WithOpenApi();
+
+    utilitaires.MapPost("/print-ticket", async (PrintTicketCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("PrintTicket")
+    .WithOpenApi();
+
+    utilitaires.MapGet("/logs", async (
+        string? levelFilter,
+        DateTime? dateDebut,
+        DateTime? dateFin,
+        string? messageFilter,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetLogViewerQuery(levelFilter, dateDebut, dateFin, messageFilter, limit));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetLogViewer")
+    .WithOpenApi();
+
+    utilitaires.MapGet("/system-info", async (IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetSystemInfoQuery());
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("GetSystemInfo")
+    .WithOpenApi();
+
+    // ============ Changement Compte Endpoints ============
+    var changementCompte = app.MapGroup("/api/changement-compte").WithTags("ChangementCompte");
+
+    changementCompte.MapPost("/init", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new InitChangementCompteQuery(societe, codeAdherent, filiation));
+        return Results.Ok(result);
+    })
+    .WithName("InitChangementCompte")
+    .WithOpenApi();
+
+    changementCompte.MapGet("/separation/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        string? typeFiltre,
+        string? valeurFiltre,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetSeparationQuery(
+            societe, codeAdherent, filiation, typeFiltre, valeurFiltre, limit));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetSeparation")
+    .WithOpenApi();
+
+    changementCompte.MapGet("/fusion/{societe}/{codeCompteSource}/{filiationSource}/{codeCompteCible}/{filiationCible}", async (
+        string societe,
+        int codeCompteSource,
+        int filiationSource,
+        int codeCompteCible,
+        int filiationCible,
+        string? typeFiltre,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetFusionQuery(
+            societe, codeCompteSource, filiationSource, codeCompteCible, filiationCible, typeFiltre, limit));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetFusion")
+    .WithOpenApi();
+
+    changementCompte.MapPost("/histo-fus-sep", async (WriteHistoFusSepCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("WriteHistoFusSep")
+    .WithOpenApi();
+
+    changementCompte.MapGet("/histo-fus-sep-det/{societe}/{chrono}", async (
+        string societe,
+        long chrono,
+        string? typeFusSep,
+        string? positionReprise,
+        int? numeroTache,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new ReadHistoFusSepDetQuery(
+            societe, typeFusSep ?? "", chrono, positionReprise ?? "", numeroTache ?? 0));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("ReadHistoFusSepDet")
+    .WithOpenApi();
+
+    changementCompte.MapPost("/histo-fus-sep-det", async (WriteHistoFusSepDetCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("WriteHistoFusSepDet")
+    .WithOpenApi();
+
+    changementCompte.MapPost("/histo-fus-sep-saisie", async (WriteHistoFusSepSaisieCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("WriteHistoFusSepSaisie")
+    .WithOpenApi();
+
+    changementCompte.MapDelete("/histo-fus-sep-saisie/{societe}/{chrono}", async (
+        string societe,
+        long chrono,
+        int codeCompteReference,
+        int filiationReference,
+        int numeroTypologie,
+        int codeCompteSource,
+        IMediator mediator) =>
+    {
+        var command = new DeleteHistoFusSepSaisieCommand(societe, chrono, codeCompteReference, filiationReference, numeroTypologie, codeCompteSource);
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("DeleteHistoFusSepSaisie")
+    .WithOpenApi();
+
+    changementCompte.MapGet("/histo-fus-sep-log/{societe}/{chrono}", async (
+        string societe,
+        long chrono,
+        string? typeFusSep,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new ReadHistoFusSepLogQuery(societe, chrono, typeFusSep, limit));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("ReadHistoFusSepLog")
+    .WithOpenApi();
+
+    changementCompte.MapPost("/histo-fus-sep-log", async (WriteHistoFusSepLogCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("WriteHistoFusSepLog")
+    .WithOpenApi();
+
+    changementCompte.MapPost("/print", async (PrintChangementCompteCommand command, IMediator mediator) =>
+    {
+        var result = await mediator.Send(command);
+        return result.Success ? Results.Ok(result) : Results.BadRequest(result);
+    })
+    .WithName("PrintChangementCompte")
+    .WithOpenApi();
+
+    changementCompte.MapGet("/zoom-comptes-source/{societe}", async (
+        string societe,
+        string? filtre,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetZoomComptesSourceQuery(societe, filtre, limit));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetZoomComptesSource")
+    .WithOpenApi();
+
+    changementCompte.MapGet("/zoom-comptes-cible/{societe}", async (
+        string societe,
+        int? codeAdherentSource,
+        string? filtre,
+        int? limit,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetZoomComptesCibleQuery(
+            societe, codeAdherentSource, filtre, limit));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetZoomComptesCible")
+    .WithOpenApi();
+
+    changementCompte.MapGet("/menu/{societe}/{codeAdherent}/{filiation}", async (
+        string societe,
+        int codeAdherent,
+        int filiation,
+        string? acces,
+        IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetMenuChangementCompteQuery(
+            societe, codeAdherent, filiation, acces));
+        return result.Found ? Results.Ok(result) : Results.NotFound(result);
+    })
+    .WithName("GetMenuChangementCompte")
+    .WithOpenApi();
+
+    // ============ Menus Endpoints ============
+    var menus = app.MapGroup("/api/menus").WithTags("Menus");
+
+    menus.MapGet("/principal", async (IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetMenuPrincipalQuery());
+        return Results.Ok(result);
+    })
+    .WithName("GetMenuPrincipal")
+    .WithOpenApi();
+
+    menus.MapGet("/admin", async (IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetMenuAdminQuery());
+        return Results.Ok(result);
+    })
+    .WithName("GetMenuAdmin")
+    .WithOpenApi();
+
+    menus.MapGet("/caisse", async (IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetMenuCaisseQuery());
+        return Results.Ok(result);
+    })
+    .WithName("GetMenuCaisse")
     .WithOpenApi();
 
     app.Run();

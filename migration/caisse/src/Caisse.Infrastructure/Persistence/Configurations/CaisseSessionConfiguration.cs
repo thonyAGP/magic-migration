@@ -55,20 +55,14 @@ public class CaisseSessionConfiguration : IEntityTypeConfiguration<CaisseSession
             .HasColumnName("pointage")
             .IsRequired();
 
-        // Relationships
+        // Relationships - HasMany with Details (has key)
         builder.HasMany(x => x.Details)
             .WithOne(x => x.Session)
             .HasForeignKey(x => new { x.Utilisateur, x.ChronoSession })
             .HasPrincipalKey(x => new { x.Utilisateur, x.Chrono });
 
-        builder.HasMany(x => x.Articles)
-            .WithOne(x => x.Session)
-            .HasForeignKey(x => new { x.Utilisateur, x.ChronoSession })
-            .HasPrincipalKey(x => new { x.Utilisateur, x.Chrono });
-
-        builder.HasMany(x => x.Devises)
-            .WithOne(x => x.Session)
-            .HasForeignKey(x => new { x.Utilisateur, x.ChronoSession })
-            .HasPrincipalKey(x => new { x.Utilisateur, x.Chrono });
+        // Ignore navigation to keyless entities
+        builder.Ignore(x => x.Articles);
+        builder.Ignore(x => x.Devises);
     }
 }

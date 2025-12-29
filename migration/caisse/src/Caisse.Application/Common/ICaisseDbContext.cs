@@ -33,6 +33,10 @@ public interface ICaisseDbContext
     DbSet<DepotDevise> DepotsDevises { get; }
     DbSet<Pays> Pays { get; }
     DbSet<TypeTauxChange> TypesTauxChange { get; }
+    DbSet<CompteZoom> ComptesZoom { get; }
+    // TypeTauxZoom removed - use TypeTauxChange instead
+    // TypeObjetZoom removed - use DepotObjet instead
+    // ModePaiementZoom removed - use MoyenReglement instead
 
     // Tables Member Lookup - Phase 2
     DbSet<Domain.Entities.EzCard> EzCards { get; }

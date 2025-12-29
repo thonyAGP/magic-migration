@@ -17,7 +17,7 @@ public class PaysConfiguration : IEntityTypeConfiguration<Pays>
         builder.Property(e => e.LangueParlee).HasColumnName("langue_parlee").HasMaxLength(4);
         builder.Property(e => e.Monnaie).HasColumnName("monnaie").HasMaxLength(8);
         builder.Property(e => e.CodeTelephone).HasColumnName("code_telephone");
-        builder.Property(e => e.FeteNationale).HasColumnName("fete_nationale");
+        builder.Property(e => e.FeteNationale).HasColumnName("fete_nationale").HasMaxLength(10);
         builder.Property(e => e.FuseauHoraire).HasColumnName("fuseau_horaire");
         builder.Property(e => e.DecalageHoraire).HasColumnName("decalage_horaire");
         builder.Property(e => e.Inscription).HasColumnName("inscription").HasMaxLength(6);

@@ -12,7 +12,7 @@ public class Pays
     public string LangueParlee { get; set; } = string.Empty;
     public string Monnaie { get; set; } = string.Empty;
     public int CodeTelephone { get; set; }
-    public DateOnly? FeteNationale { get; set; }
+    public string? FeteNationale { get; set; }
     public int FuseauHoraire { get; set; }
     public int DecalageHoraire { get; set; }
     public string Inscription { get; set; } = string.Empty;

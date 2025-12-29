@@ -36,6 +36,10 @@ public class CaisseDbContext : DbContext, ICaisseDbContext
     public DbSet<DepotDevise> DepotsDevises => Set<DepotDevise>();
     public DbSet<Pays> Pays => Set<Pays>();
     public DbSet<TypeTauxChange> TypesTauxChange => Set<TypeTauxChange>();
+    public DbSet<CompteZoom> ComptesZoom => Set<CompteZoom>();
+    // TypeTauxZoom removed - use TypeTauxChange instead (same table cafil102_dat)
+    // TypeObjetZoom removed - use DepotObjet instead (same table cafil077_dat)
+    // ModePaiementZoom removed - use MoyenReglement instead (same table cafil028_dat)
 
     // Tables Member Lookup - Phase 2
     public DbSet<EzCard> EzCards => Set<EzCard>();
