@@ -83,7 +83,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 - [x] **ADH/Gestion Caisse** - API C# .NET 8 COMPLETE - Valide 2025-12-29
   - Solution: `migration/caisse/Caisse.sln`
   - 5 projets: Domain, Application, Infrastructure, Api, Shared
-  - **Interface graphique complete:** 12 ecrans SPA (HTML/CSS/JS)
+  - **Interface graphique complete:** 13 ecrans SPA (HTML/CSS/JS)
   - **~125 endpoints** couvrant tous les modules migres
   - **527 tests unitaires** (100% pass)
   - **Couverture:** 85.5% (9 progs vides exclus, 354 lignes desactivees ignorees)
@@ -104,7 +104,8 @@ Composant "Sessions_Reprises" - 30 programmes:
   **Ecrans SPA (depuis Main > Prg_162):**
   | Ecran | Programmes | Description |
   |-------|------------|-------------|
-  | index.html | Prg_162 | Menu principal Gestion Caisse |
+  | index.html | Prg_162 | Menu principal Gestion Caisse + modales coffre |
+  | sessions.html | Prg_77,80,236 | Liste sessions, Consultation, Historique |
   | zooms.html | Prg_164-189 | Tables de reference (8 zooms) |
   | telephone.html | Prg_202-220 | Lignes telephone (OPEN/CLOSE/STATS) |
   | change.html | Prg_20-25 | Operations de change devises |
@@ -326,6 +327,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ## Changelog
 
+- 2026-01-04: **Navigation SPA complete** - sessions.html (Prg_77/80/236), modales coffre (Prg_233/234/235/163/197), panel navigation 11 ecrans
 - 2026-01-04: **Skill enrichi: Detection code desactive** - ISEMPTY_TSK pour programmes vides, Disabled val="1" pour lignes, 9 progs vides + 354 lignes exclus
 - 2026-01-04: **Rapport couverture complet** - `.openspec/reports/COVERAGE_REPORT_2025-01-04.md`, 85.5% couverture, 12 ecrans SPA, ~125 endpoints
 - 2026-01-04: **Verification REF.ecf** - 5 progs (800,877,895,1066,1095) identifies comme compiles (.eci), non analysables en source
