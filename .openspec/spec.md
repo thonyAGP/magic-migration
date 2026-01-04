@@ -14,7 +14,7 @@ Agent Claude Code specialise pour l'analyse et la migration d'applications Magic
 |--------|--------|------------|------|--------|
 | REF | `D:\Data\Migration\XPA\PMS\REF\Source\` | ~700 | Reference (tables partagees) | Actif |
 | PBP | `D:\Data\Migration\XPA\PMS\PBP\Source\` | ~430 | Editions/Exports | MECANO valide |
-| ADH | `D:\Data\Migration\XPA\PMS\ADH\Source\` | 350 | Adherents/Caisse | En analyse |
+| ADH | `D:\Data\Migration\XPA\PMS\ADH\Source\` | 350 | Adherents/Caisse | **Migre 85.5%** |
 | PBG | `D:\Data\Migration\XPA\PMS\PBG\Source\` | 394 | Planification/Batch (arrivees, logements) | Explore |
 | PVE | `D:\Data\Migration\XPA\PMS\PVE\Source\` | 448 | Point de Vente/POS (TPE, stocks, Mobile POS) | Explore |
 
@@ -83,9 +83,10 @@ Composant "Sessions_Reprises" - 30 programmes:
 - [x] **ADH/Gestion Caisse** - API C# .NET 8 COMPLETE - Valide 2025-12-29
   - Solution: `migration/caisse/Caisse.sln`
   - 5 projets: Domain, Application, Infrastructure, Api, Shared
-  - **Interface graphique complete:** 10 ecrans SPA (HTML/CSS/JS)
-  - **~73 endpoints** couvrant tous les modules migres
+  - **Interface graphique complete:** 12 ecrans SPA (HTML/CSS/JS)
+  - **~125 endpoints** couvrant tous les modules migres
   - **527 tests unitaires** (100% pass)
+  - **Couverture:** 85.5% (9 progs vides exclus, 354 lignes desactivees ignorees)
   - Swagger: http://localhost:5287/swagger
   - Interface: http://localhost:5287/
 
@@ -325,6 +326,9 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ## Changelog
 
+- 2026-01-04: **Skill enrichi: Detection code desactive** - ISEMPTY_TSK pour programmes vides, Disabled val="1" pour lignes, 9 progs vides + 354 lignes exclus
+- 2026-01-04: **Rapport couverture complet** - `.openspec/reports/COVERAGE_REPORT_2025-01-04.md`, 85.5% couverture, 12 ecrans SPA, ~125 endpoints
+- 2026-01-04: **Verification REF.ecf** - 5 progs (800,877,895,1066,1095) identifies comme compiles (.eci), non analysables en source
 - 2025-12-31: **Analyse Main/Prg_162 complete** - Tracage flux CallTask, couverture API validee, 3 gaps combles (DetailAppels, MenuTelephone, ZoomServicesVillage)
 - 2025-12-31: **6 ecrans SPA crees** - ventes.html, extrait.html, garanties.html, easycheckout.html, factures.html, changement-compte.html
 - 2025-12-31: Navigation modules ajoutee a index.html - Panel fixe avec liens vers tous les ecrans

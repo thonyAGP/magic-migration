@@ -252,6 +252,75 @@ Task (MainProgram="Y/N")
 - `Str(val, format)` : Formatage nombre
 </key_concepts>
 
+<dead_code_detection>
+## Detection du Code Desactive (OBLIGATOIRE)
+
+**Principe :** Avant toute analyse ou migration, identifier et EXCLURE le code mort pour optimiser le travail.
+
+### Programmes Vides (ISEMPTY_TSK)
+Dans `ProgramHeaders.xml`, les programmes marques avec `ISEMPTY_TSK="1"` sont des coquilles vides :
+
+```xml
+<Header ISEMPTY_TSK="1" ISN_2="1" LastIsn="1" id="4">
+  <Description fld="1" val="Programme vide"/>
+</Header>
+```
+
+**Programmes vides identifies (ADH) :**
+| Prg ID | Raison |
+|--------|--------|
+| 4, 19, 26 | Placeholders non implementes |
+| 41, 88, 156 | Fonctionnalites abandonnees |
+| 176, 186, 221 | Code obsolete |
+
+### Lignes de Logique Desactivees
+Dans les fichiers `Prg_XXX.xml`, les lignes avec `<Disabled val="1"/>` sont desactivees :
+
+```xml
+<LogicLine id="5">
+  <Operation val="CallTask"/>
+  <Disabled val="1"/>           <!-- LIGNE DESACTIVEE -->
+  <TaskID comp="-1" obj="34"/>
+</LogicLine>
+```
+
+**Detection via Grep :**
+```bash
+# Compter les programmes avec lignes desactivees
+grep -l "Disabled val=\"1\"" Prg_*.xml | wc -l
+
+# Compter total de lignes desactivees
+grep -c "Disabled val=\"1\"" Prg_*.xml
+```
+
+**Statistiques ADH (2025-01-04) :**
+- 70 fichiers contiennent des lignes desactivees
+- 354 lignes de logique desactivees au total
+- Principalement des CallTask et Update abandonnes
+
+### Regles d'Exclusion
+1. **Ne JAMAIS migrer** un programme avec `ISEMPTY_TSK="1"`
+2. **Ignorer** les operations avec `<Disabled val="1"/>`
+3. **Signaler** dans la matrice de couverture (colonne "Statut")
+4. **Documenter** la raison si connue (obsolete, remplace par, etc.)
+
+### Integration dans /magic-analyze
+```
+/magic-analyze 162
+...
+[INFO] 1 ligne desactivee detectee (CallTask vers Prg_34)
+[SKIP] Operation ignoree - code desactive
+```
+
+### Impact sur la Couverture
+| Statut | Description | Action |
+|--------|-------------|--------|
+| EMPTY | Programme vide (ISEMPTY_TSK) | Exclure du scope |
+| DISABLED | Lignes desactivees | Ignorer ces lignes |
+| ACTIVE | Code actif | Migrer normalement |
+| PARTIAL | Mix actif/desactive | Migrer uniquement l'actif |
+</dead_code_detection>
+
 <success_criteria>
 - Fichiers XML Magic correctement parses sans erreur
 - Arborescence des programmes reconstruite fidelement
