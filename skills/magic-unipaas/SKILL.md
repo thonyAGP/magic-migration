@@ -47,6 +47,75 @@ Rechercher une fonction:
 </example_usage>
 </quick_start>
 
+<mandatory_communication>
+## FORMAT OBLIGATOIRE POUR COMMUNIQUER AVEC L'UTILISATEUR
+
+**TOUJOURS utiliser ce format pour referencer une tache ou un element XML :**
+
+```
+XX.XX.X Nom : [nom de la tache] Ligne : XX
+```
+
+**Exemples corrects :**
+- `112.2.9 Nom : Creation Versement v1 Ligne : 32`
+- `102 Nom : Maj lignes saisies archive V3 Ligne : 22`
+- `112.2.11 Nom : MAJ CMP Ligne : 7`
+
+**Regles :**
+- Programme sans sous-tache : `102` (PAS `102.1`)
+- Programme avec sous-taches : `112.2.9` (hierarchie complete)
+- TOUJOURS inclure le nom de la tache
+- TOUJOURS inclure le numero de ligne si on parle d'un element specifique
+- L'utilisateur ne lit PAS le XML - il voit l'IDE Magic
+- Etre clair pour L'UTILISATEUR, pas pour l'agent
+</mandatory_communication>
+
+<critical_rule_xml_to_ide>
+## RÈGLE CRITIQUE : Identification Programme IDE
+
+**AVANT de présenter un cas, TOUJOURS vérifier ces 3 éléments :**
+
+### 1. PROJET (ADH, PBP, REF, VIL, PBG, PVE)
+
+- **TOUJOURS préciser** le projet source
+- Ne JAMAIS assumer que c'est PBP ou ADH
+- Demander à l'utilisateur s'il n'est pas clair quel projet il consulte
+
+### 2. NUMÉRO IDE (pas id XML !)
+
+**L'id XML d'un fichier Prg_XXX.xml n'est PAS toujours le numéro IDE !**
+
+- **PBP** : Numéro IDE = position dans `Progs.xml > ProgramsRepositoryOutLine`
+- **ADH** : Numéro IDE ≈ id XML (mais vérifier quand même)
+- **Autres** : Toujours vérifier dans `Progs.xml`
+
+### 3. NOM DU PROGRAMME (MANDATORY)
+
+**Format obligatoire** : `[Projet] [Numéro IDE] Nom : [Description exacte du XML]`
+
+Exemples :
+- ✅ `ADH 31 Nom : Write histo_Fus_Sep_Det`
+- ✅ `PBP 31 Nom : Edit securite equipage must C2`
+- ❌ `Programme 31` (manque projet et nom)
+- ❌ `31 Nom : ...` (manque projet)
+
+### Procédure OBLIGATOIRE :
+
+1. **Identifier** le PROJET source (ADH, PBP, etc.)
+2. **Lire** la Description dans `<Header Description="...">` du fichier Prg_XXX.xml
+3. **Calculer** le numéro IDE (position dans Progs.xml ou id selon projet)
+4. **Communiquer** : `[PROJET] [N°IDE] Nom : [Description]`
+
+### Erreurs typiques à éviter :
+
+| Erreur | Correction |
+|--------|------------|
+| Mauvais projet | Toujours vérifier/demander le projet |
+| id XML comme numéro | Calculer la position dans Progs.xml |
+| Pas de nom | TOUJOURS inclure Description |
+| Programme sans I/O | Vérifier qu'il a bien des I/O avant de poser la question |
+</critical_rule_xml_to_ide>
+
 <context>
 <magic_version>Magic Unipaas 12.03 (Version val="12030")</magic_version>
 
@@ -223,6 +292,45 @@ Le format des fichiers XML internes (Prg_XXX.xml, DataSources.xml, etc.) n'est *
 - `U` : User - evenement utilisateur
 - `M` : Menu - selection menu
 - `P` : Program - evenement programme
+- `I` : Internal - evenement interne systeme (Zoom, Exit, etc.)
+
+**User Actions et Handlers (valide Session 5)**
+
+Dans l'IDE Magic, les evenements utilisateur sont affiches comme :
+| Type IDE | Description | Exemple |
+|----------|-------------|---------|
+| User Action X | Evenement utilisateur numerote | User Action 4 |
+| Nom personnalise | User Event avec nom lisible | "Ouverture de Caisse" |
+| Zoom on: [Control] | Evenement Zoom sur un controle | Zoom on: Bouton Pointage |
+| Ctrl+X | Raccourci clavier | Ctrl+J |
+| Internal | Evenement systeme | Zoom, Exit |
+
+**Scope des handlers :**
+| Scope | XML | IDE | Signification |
+|-------|-----|-----|---------------|
+| Task | `T` | Task | Handler actif dans cette tache seulement |
+| SubTree | `S` | SubTree | Handler actif dans toute l'arborescence descendante |
+
+**Structure Handler dans le XML :**
+```xml
+<LogicUnit id="12" propagate="78">
+  <Level val="H"/>           <!-- H = Handler -->
+  <Type val="U"/>            <!-- U = User Event -->
+  <Scope val="T"/>           <!-- T = Task, S = SubTree -->
+  <Event>
+    <EventType val="I"/>     <!-- I = Internal -->
+    <InternalEventID val="222"/>  <!-- Numero evenement interne -->
+  </Event>
+  <LogicLines>
+    <CallTask>...</CallTask>
+  </LogicLines>
+</LogicUnit>
+```
+
+**RaiseEvent (Declenchement d'evenement) :**
+- Un handler peut declencher un autre evenement via `Raise Event`
+- Permet le chainage d'evenements (ex: Raise Event User Action 4 → declenche fermeture)
+- Attribut `Wait` : Yes = attend la fin du handler, No = asynchrone
 
 **Composants Partages**
 - REF.ecf : composant de reference contenant les tables partagees
@@ -497,7 +605,15 @@ Le DataView est compose de plusieurs elements XML qui definissent les sources de
 | Direction | A=Ascending, D=Descending | Sens de lecture |
 | EVL_CND | R=Runtime | Evaluation de la condition |
 | Key | 1,2... | Numero de cle/index a utiliser |
-| Mode | **R=Read, W=Write** | **R=lecture seule, W=ecriture** |
+| Mode | **R, W, A, O** | **Type de lien (voir tableau ci-dessous)** |
+
+**Valeurs Mode pour LNK (CONFIRMEES 2026-01-05) :**
+| Mode | Type IDE | Description |
+|------|----------|-------------|
+| R | Link Query | Lecture seule (jointure en lecture) |
+| W | Link Write | Ecriture (modification de la table liee) |
+| A | Link Create | Creation (insertion dans la table liee) |
+| O | Link O. Join | Left Outer Join (jointure externe gauche) |
 | VIEW | 1-N | Position dans la liste des vues |
 | VIEWS | N | Nombre total de vues |
 | DB comp/obj | | Reference a la table (comp=-1=local, comp=2=REF) |
@@ -548,6 +664,59 @@ Exemple avec cle composee (Societe, Compte, Filiation) :
 <Select FieldID="1"><Locate MAX="1" MIN="1"/></Select>  <!-- Societe -->
 <Select FieldID="2"><Locate MAX="2" MIN="2"/></Select>  <!-- Compte -->
 <Select FieldID="3"><Locate MAX="3" MIN="3"/></Select>  <!-- Filiation -->
+```
+
+**STP - Verify Operation (Messages/Alertes) - CONFIRME 2026-01-05**
+```xml
+<STP Buttons="K" DefaultButton="1" Image="E" Mode="W" TXT="Message..." TitleTxt="Warning" VR_DISP="B">
+  <RetValVar val="31"/>        <!-- Variable pour stocker la reponse -->
+  <Condition Exp="19"/>
+</STP>
+```
+
+**Attribut Buttons (boutons affiches) :**
+| XML | IDE | Description |
+|-----|-----|-------------|
+| O | OK | Bouton OK seul |
+| K | OK Cancel | Boutons OK et Annuler |
+| N | Yes No | Boutons Oui et Non |
+
+**Attribut Image (icone affichee) :**
+| XML | IDE | Description |
+|-----|-----|-------------|
+| C | Critical | Panneau rouge (erreur critique) |
+| E | Exclamation | Triangle jaune (avertissement) |
+| Q | Question | Point d'interrogation |
+| I | Information | Icone info |
+| N | None | Pas d'icone |
+
+**Attribut Mode (type de message) :**
+| XML | IDE |
+|-----|-----|
+| E | Error |
+| W | Warning |
+
+**Update vs Evaluate - CONFIRME 2026-01-05**
+
+| Operation | XML | Usage |
+|-----------|-----|-------|
+| **Update** | `<Update FieldID="X" WithValue="Y"/>` | Affecter une valeur a une variable |
+| **Evaluate** | `<Evaluate Exp="X"/>` | Executer une expression pour ses effets de bord (resultat optionnel) |
+
+**Quand utiliser Evaluate :**
+- Fonctions sans resultat utile : `Delay()`, `INIPut()`
+- Combiner plusieurs fonctions : Return code = True si TOUTES reussissent
+- Appeler un programme sans recuperer le retour
+
+```xml
+<!-- Update : stocke le resultat dans variable 25 -->
+<Update FieldID="25" WithValue="18"/>
+
+<!-- Evaluate : execute l'expression 42, ignore le resultat -->
+<Evaluate Exp="42"/>
+
+<!-- Evaluate avec resultat optionnel stocke dans variable 31 -->
+<Evaluate Exp="42" Result="31"/>
 ```
 </key_concepts>
 
