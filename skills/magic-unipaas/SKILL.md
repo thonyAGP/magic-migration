@@ -187,6 +187,31 @@ Task (MainProgram="Y/N")
 | Record Main | R | M | Traitement principal |
 | Record Suffix | R | S | Apres chaque enregistrement |
 
+**Logic Units - Documentation Officielle Magic Software**
+
+Source: [Logic Units (Magic xpa)](https://kb.magicsoftware.com/articles/Knowledge/Logic-Units-xpa), [Engine Execution Rules](https://magicsoftware.my.salesforce-sites.com/PublicKnowledge/articles/bl_Reference/Engine-Execution-Rules-xpa)
+
+| Type | Niveau | Déclencheur | Description |
+|------|--------|-------------|-------------|
+| Task Prefix | Task | Démarrage tâche | Opérations d'initialisation |
+| Task Suffix | Task | Fin tâche | Mise à jour params, totaux rapport |
+| Record Prefix | Record | Après lecture record | Avant interaction utilisateur |
+| Record Suffix | Record | Avant sauvegarde | Si record modifié (ou Force=Yes) |
+| Control Prefix | Control | Curseur entre | Online/Rich Client uniquement |
+| Control Suffix | Control | Curseur sort | Après édition du control |
+| Group Prefix | Group | Changement valeur rupture | En-têtes rapport (Batch) |
+| Group Suffix | Group | Avant nouveau groupe | Pieds de page (Batch) |
+
+**Règle d'imbrication (officielle) :**
+> "A Control logic unit can only be executed inside a Record logic unit cycle, and a Record logic unit can only be executed inside a Task logic unit."
+
+**Format XML interne - NON DOCUMENTÉ PUBLIQUEMENT**
+
+Le format des fichiers XML internes (Prg_XXX.xml, DataSources.xml, etc.) n'est **PAS documenté officiellement** par Magic Software. Cette connaissance provient de :
+- Reverse-engineering des fichiers exportés
+- Expérience communautaire ([magicu-l.groups.io](https://magicu-l.groups.io))
+- Analyse des outils tiers ([Magic Optimizer](https://www.magic-optimizer.com))
+
 **Identifiants Composants (comp)**
 - `comp="-1"` : Composant local (meme projet)
 - `comp="2"` : Composant externe (ex: REF dans PBP)
@@ -374,6 +399,54 @@ IF(Trim({1,2})='COFFRE 2', Str({3,2},'3P0'), Trim({1,2}))
 </Update>
 ```
 
+**Numérotation des Lignes IDE - VALIDÉ PAR SCREENSHOTS (2025-01-05)**
+
+La numérotation des lignes dans le panneau Logic IDE est **CONTINUE** et inclut plusieurs éléments :
+
+| Élément | Consomme une ligne ? | Exemple |
+|---------|---------------------|---------|
+| Header de section (Task Prefix, Record Suffix...) | **OUI** | Ligne 1: "Task Prefix" |
+| LogicLine (Update, Call, Block...) | **OUI** | Ligne 2: Update Variable |
+| Remark (commentaire) | **OUI** | Ligne 3: Remark "Init vars" |
+| Ligne vide | **OUI** | Ligne 4: (vide) |
+| BLOCK (IF/ELSE) | **OUI** | Ligne 5: IF condition... |
+| EndBlock | **OUI** | Ligne 6: EndBlock |
+
+**Ordre des LogicUnits dans une tâche (validé) :**
+```
+Ligne 1-N    : Task Prefix (header + opérations)
+Ligne N+1-M  : Task Suffix (header + opérations)
+Ligne M+1-P  : Record Suffix (header + opérations)
+Ligne P+1... : Autres LogicUnits
+```
+
+**ATTENTION :** L'ordre dans l'IDE dépend de l'ordre dans le XML, PAS du type de LogicUnit !
+- Si le XML liste Record Main avant Task Prefix, l'IDE l'affichera dans cet ordre
+- Le XML reflète l'ordre ORIGINAL de création, pas l'ordre logique d'exécution
+
+**Exemple réel (VIL Task 22.16.1) - Screenshot :**
+```
+Ligne  | Type            | Contenu
+-------|-----------------|------------------
+1      | Task Prefix     | (header de section)
+2      | Update          | Variable CA...
+3      | Remark          | "Calcul initial"
+4      | (vide)          |
+5-8    | ...             | autres opérations
+9      | Record Suffix   | (header de section)
+10-14  | ...             | opérations Record Suffix
+14     | Update          | v.Ecart F.D.R. COFFRE2 With: 32
+...
+18     | Update          | v.Ecart F.D.R. RECEPTION With: 32
+```
+
+**FlowIsn ≠ Ligne IDE**
+
+`FlowIsn` dans le XML est un **ID interne unique**, PAS le numéro de ligne IDE !
+- FlowIsn peut avoir des valeurs non-séquentielles (329, 301, 302, 197...)
+- L'ordre d'apparition dans le XML = ordre d'affichage dans l'IDE
+- Pour trouver la ligne IDE : compter les LogicLine dans l'ordre du XML
+
 **Correspondance XML ↔ IDE (Expression IDs) - CONFIRMÉ**
 
 Les IDs d'expression dans le XML peuvent avoir des **trous** (ex: id=1,2,3,13).
@@ -387,11 +460,11 @@ L'IDE Magic **RENUMÉROTE SÉQUENTIELLEMENT** pour l'affichage (1,2,3,4).
 | id="3" | 3 | 'F' |
 | id="13" | 4 | FP (montant_monnaie FF) |
 
-**Règle:** `WithValue val="4"` dans le XML fait référence à la **4ème expression dans l'ordre séquentiel de l'IDE**, pas à l'id XML!
+**Règle:** `WithValue val="4"` dans le XML référence **Expression #4 dans l'IDE** (le numéro affiché).
 
 **Pour analyser un Update:**
-1. Compter les expressions dans l'ordre du XML (ignorer les IDs, compter la position)
-2. `WithValue val="N"` = N-ème expression dans cet ordre
+1. Ouvrir "Expression Rules" de la tâche dans l'IDE
+2. `WithValue val="N"` = Expression #N (numéro affiché dans la colonne #)
 
 **Structure XML du DataView (FONDAMENTAL)**
 
@@ -763,36 +836,43 @@ CHAQUE TACHE a sa propre liste d'expressions avec sa propre numerotation !
 | Expression id="38" (programme) | ≠ Expression 38 (tache) | SCOPES DIFFERENTS ! |
 | LogicLine id="5" | ligne 5 ? | Verifier visuellement dans l'IDE |
 
-**MAPPING EXPRESSIONS - XML id vs Position IDE (CRITIQUE) :**
+**MAPPING EXPRESSIONS - XML id vs Position IDE (VALIDÉ PAR SCREENSHOTS) :**
 
-L'IDE renumérote les expressions SÉQUENTIELLEMENT (1,2,3...) mais le XML conserve les ID originaux avec des TROUS.
+**RÈGLE FONDAMENTALE :** `WithValue` dans le XML référence le **numéro séquentiel IDE**, PAS l'attribut XML id !
 
-```xml
-<!-- Ordre dans le XML (section <Expressions>) -->
-<Expression id="1">...   <!-- IDE: Expression 1 -->
-<Expression id="2">...   <!-- IDE: Expression 2 -->
-<Expression id="3">...   <!-- IDE: Expression 3 -->
-<Expression id="4">...   <!-- IDE: Expression 4 -->
-<Expression id="30">...  <!-- IDE: Expression 5 (PAS 30!) -->
-<Expression id="6">...   <!-- IDE: Expression 6 -->
-<Expression id="7">...   <!-- IDE: Expression 7 -->
-<Expression id="35">...  <!-- IDE: Expression 8 (PAS 35!) -->
-...
-<Expression id="32">...  <!-- IDE: Expression 31 -->
-<Expression id="38">...  <!-- IDE: Expression 32 -->
-<Expression id="33">...  <!-- IDE: Expression 33 -->
-<Expression id="34">...  <!-- IDE: Expression 34 -->
+L'IDE Magic renumérote les expressions **SÉQUENTIELLEMENT** (1,2,3...) dans le panneau "Expression Rules".
+Le XML conserve les attributs `id` originaux qui peuvent avoir des **TROUS**.
+
+**Correspondance confirmée :**
+```
+WithValue val="N" dans XML  →  Expression #N dans l'IDE (colonne With:)
+                            →  Expression à la Nème position dans "Expression Rules"
 ```
 
-**Methode de mapping :**
-1. Lire TOUTES les `<Expression>` dans l'ordre du XML
-2. Compter leur POSITION (1,2,3...) = numero IDE
-3. Noter l'attribut `id` = reference XML (WithValue, Condition)
+**Exemple vérifié (VIL Prg_558, Task 22.16.1) - Screenshots 2025-01-05 :**
+```
+IDE "Expression Rules: 22.16.1"
+# | Expression              | Description
+---+-------------------------+--------------------
+31 | DK+ExpCalc('10'EXP)+... | Somme complexe (INCORRECTE pour les étoiles)
+32 | DK<>EU                  | FDR Initial <> FDR Previous (CORRECTE!)
+```
 
-**Exemple reel (VIL bug etoiles) :**
-- `WithValue val="32"` dans XML = reference XML id="32"
-- XML id="32" = 31ème expression = IDE Expression 31
-- XML id="38" = 32ème expression = IDE Expression 32 = `DK<>EU` (correct!)
+L'Update avec `With: 32` dans l'IDE utilise **Expression 32** = `DK<>EU`, qui EST la formule correcte !
+
+**Méthode de mapping XML → IDE :**
+1. Ouvrir le panneau "Expression Rules: XX.YY.Z" de la TÂCHE concernée
+2. Le numéro affiché dans la colonne "#" = numéro IDE
+3. `WithValue val="N"` dans XML = Expression #N dans ce panneau
+
+**Ce que le XML conserve (pour info) :**
+```xml
+<!-- Les id XML peuvent avoir des trous (1,2,3,30,6,7,35...) -->
+<Expression id="32">...  <!-- Peut être IDE #31 ou autre selon l'ordre -->
+<Expression id="38">...  <!-- Peut être IDE #32 ou autre selon l'ordre -->
+```
+
+**ATTENTION :** L'attribut `id` dans le XML n'est PAS le numéro IDE !
 
 **Vocabulaire pour les corrections :**
 | Action | Format | Exemple |

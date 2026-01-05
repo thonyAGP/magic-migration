@@ -315,12 +315,27 @@ Le Main Program est une tache speciale:
 ```
 
 ### Types de LogicUnit (handlers)
-| Type | Level | Description |
-|------|-------|-------------|
-| M | R | Task Prefix (init) |
-| S | R | Task Suffix (fin) |
-| P | R | Record Prefix |
-| S | R | Record Suffix |
+
+**Level (niveau) :**
+| Level | Description |
+|-------|-------------|
+| R | Record - exécuté par enregistrement |
+| T | Task - exécuté une fois par tâche |
+| G | Group - rupture de groupe (Batch) |
+| H | Handler - gestionnaire d'événement |
+
+**Type (moment dans le niveau) :**
+| Level | Type | Description IDE |
+|-------|------|-----------------|
+| T | P | Task Prefix (init tâche) |
+| T | S | Task Suffix (fin tâche) |
+| R | P | Record Prefix (avant record) |
+| R | M | Record Main (traitement) |
+| R | S | Record Suffix (après record) |
+| G | P | Group Prefix (en-tête) |
+| G | S | Group Suffix (pied) |
+
+**Source:** [Logic Units (Magic xpa)](https://kb.magicsoftware.com/articles/Knowledge/Logic-Units-xpa)
 
 ---
 
