@@ -1,0 +1,11 @@
+{
+  "hooks": [
+    {
+      "event": "SessionStart",
+      "matcher": "",
+      "commands": [
+        "powershell -NoProfile -ExecutionPolicy Bypass -File \"D:\\Projects\\Lecteur Magic\\.claude\\scripts\\ticket-menu.ps1\""
+      ]
+    }
+  ]
+}

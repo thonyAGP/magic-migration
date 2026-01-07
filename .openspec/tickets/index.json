@@ -1,0 +1,14 @@
+﻿{
+    "lastSync":  "2026-01-07T22:45:33.6054075+01:00",
+    "localTickets":  [
+                         {
+                             "hasLocalData":  true,
+                             "status":  "local-only",
+                             "key":  "CMDS-174321",
+                             "summary":  "CMDS-174321"
+                         }
+                     ],
+    "tickets":  [
+
+                ]
+}
