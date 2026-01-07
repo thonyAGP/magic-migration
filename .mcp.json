@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "magic-interpreter": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "D:\\Projects\\Lecteur Magic\\tools\\MagicMcp\\MagicMcp.csproj"
+      ],
+      "env": {
+        "MAGIC_PROJECTS_PATH": "D:\\Data\\Migration\\XPA\\PMS"
+      }
+    }
+  }
+}

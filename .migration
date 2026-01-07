@@ -1,0 +1,12 @@
+# Projet Migration Magic Unipaas
+
+Ce projet est un projet de migration/experimental.
+Les tests pre-push sont desactives.
+
+## Raison
+- Migration d'applications Magic Unipaas v12.03
+- Code experimental en cours de developpement
+- Tests .NET dans migration/caisse/ (527 tests passent)
+
+## Pour reactiver les tests
+Supprimer ce fichier .migration
