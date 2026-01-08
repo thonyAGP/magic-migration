@@ -19,6 +19,7 @@
       --warning: #d29922;
       --danger: #f85149;
       --purple: #a371f7;
+      --orange: #f0883e;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +35,7 @@
 
     /* Sidebar */
     .sidebar {
-      width: 320px;
+      width: 340px;
       background: var(--bg-secondary);
       border-right: 1px solid var(--border);
       display: flex;
@@ -81,7 +82,7 @@
     }
 
     .nav-section.collapsed .nav-items { display: none; }
-    .nav-section.collapsed .nav-section-title::after { content: '+'; }
+    .nav-section.collapsed .nav-section-title .collapse-icon { transform: rotate(-90deg); }
 
     .nav-section-title {
       font-size: 11px;
@@ -92,28 +93,37 @@
       letter-spacing: 0.5px;
       cursor: pointer;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-    }
-
-    .nav-section-title::after {
-      content: '-';
-      font-size: 14px;
-      font-weight: normal;
+      gap: 8px;
     }
 
     .nav-section-title:hover { color: var(--text-primary); }
 
+    .nav-section-title .collapse-icon {
+      font-size: 10px;
+      transition: transform 0.2s;
+    }
+
+    .nav-section-title .count {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+
     .nav-item {
       display: flex;
-      align-items: center;
-      padding: 8px 16px;
+      flex-direction: column;
+      padding: 10px 16px;
       color: var(--text-secondary);
       text-decoration: none;
       font-size: 13px;
       cursor: pointer;
       transition: all 0.15s;
-      border-left: 2px solid transparent;
+      border-left: 3px solid transparent;
       position: relative;
     }
 
@@ -128,30 +138,45 @@
       border-left-color: var(--accent);
     }
 
+    .nav-item .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .nav-item .title {
       flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .nav-item .subtitle {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .nav-item .actions {
       display: none;
       gap: 4px;
-      margin-left: 8px;
     }
 
     .nav-item:hover .actions { display: flex; }
 
     .nav-item .action-btn {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border: none;
       background: var(--bg-secondary);
       color: var(--text-secondary);
-      border-radius: 3px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 10px;
+      font-size: 11px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -165,16 +190,16 @@
     .nav-item .action-btn.archive:hover { background: var(--warning); }
     .nav-item .action-btn.unarchive:hover { background: var(--success); }
 
+    /* Badges */
     .badge {
       font-size: 9px;
-      padding: 2px 6px;
-      border-radius: 10px;
+      padding: 3px 7px;
+      border-radius: 4px;
       background: var(--bg-tertiary);
       text-transform: uppercase;
-      font-weight: 600;
-      margin-left: 8px;
-      flex-shrink: 0;
+      font-weight: 700;
       cursor: pointer;
+      letter-spacing: 0.3px;
     }
 
     .badge:hover { filter: brightness(1.2); }
@@ -185,8 +210,29 @@
     .badge.progress { background: var(--accent); color: #000; }
     .badge.rejected { background: var(--danger); color: #fff; }
 
-    .archives-section { opacity: 0.7; }
-    .archives-section .nav-item { font-size: 12px; padding: 6px 16px; }
+    /* J+X Badge */
+    .days-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Consolas', monospace;
+    }
+
+    .days-badge.fresh { background: var(--success); color: #000; }      /* J+0 to J+2 */
+    .days-badge.normal { background: var(--accent); color: #000; }      /* J+3 to J+7 */
+    .days-badge.warning { background: var(--orange); color: #000; }     /* J+8 to J+14 */
+    .days-badge.old { background: var(--danger); color: #fff; }         /* J+15+ */
+
+    .date-info {
+      font-size: 10px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    .archives-section { opacity: 0.8; }
+    .archives-section .nav-item { padding: 8px 16px; }
+    .archives-section .nav-item .title { font-size: 12px; }
 
     /* Status dropdown */
     .status-dropdown {
@@ -199,15 +245,15 @@
       border-radius: 6px;
       padding: 4px;
       z-index: 100;
-      min-width: 120px;
+      min-width: 130px;
     }
 
     .status-dropdown.show { display: block; }
 
     .status-option {
       display: block;
-      padding: 6px 10px;
-      font-size: 11px;
+      padding: 8px 12px;
+      font-size: 12px;
       color: var(--text-secondary);
       cursor: pointer;
       border-radius: 4px;
@@ -281,8 +327,6 @@
     .welcome { text-align: center; padding: 64px 32px; }
     .welcome h2 { border: none; color: var(--text-primary); }
     .welcome p { max-width: 400px; margin: 12px auto; }
-    .welcome .tip { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-top: 24px; font-size: 12px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto; }
-    .welcome .tip code { display: block; margin-top: 8px; }
 
     /* Loading */
     .loading { text-align: center; padding: 48px; color: var(--text-secondary); }
@@ -314,11 +358,6 @@
       <div class="welcome">
         <h2>OpenSpec Viewer</h2>
         <p>Selectionnez un document dans la barre laterale.</p>
-        <div class="tip">
-          <strong>Gestion tickets:</strong> Survolez un ticket pour voir les boutons d'action.
-          <br><br>
-          <strong>Changer statut:</strong> Cliquez sur le badge de statut.
-        </div>
       </div>
     </div>
   </main>
@@ -334,17 +373,39 @@
     const saveIndicator = document.getElementById('saveIndicator');
     const saveText = document.getElementById('saveText');
     let indexData = null;
-    let hasChanges = false;
 
     marked.setOptions({ breaks: true, gfm: true });
 
     const STATUSES = [
-      { id: 'progress', label: 'En cours', color: 'accent' },
-      { id: 'spec', label: 'Specification', color: 'purple' },
-      { id: 'dev', label: 'Developpement', color: 'warning' },
-      { id: 'resolved', label: 'Resolu', color: 'success' },
-      { id: 'rejected', label: 'Rejete/KO', color: 'danger' }
+      { id: 'progress', label: 'En cours' },
+      { id: 'spec', label: 'Specification' },
+      { id: 'dev', label: 'Developpement' },
+      { id: 'resolved', label: 'Resolu' },
+      { id: 'rejected', label: 'Rejete/KO' }
     ];
+
+    function getDaysAgo(dateStr) {
+      if (!dateStr) return null;
+      const date = new Date(dateStr);
+      const today = new Date();
+      const diffTime = today - date;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    }
+
+    function getDaysBadgeClass(days) {
+      if (days === null) return 'normal';
+      if (days <= 2) return 'fresh';
+      if (days <= 7) return 'normal';
+      if (days <= 14) return 'warning';
+      return 'old';
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+    }
 
     async function init() {
       try {
@@ -372,10 +433,10 @@
       let html = '';
 
       const principal = indexData.reports.filter(r => r.category === 'principal');
-      html += buildSection('Principal', principal.map(r => ({ title: r.title, file: r.file })));
+      html += buildSection('Principal', principal.map(r => ({ title: r.title, file: r.file })), principal.length);
 
       const reports = indexData.reports.filter(r => r.category === 'reports');
-      html += buildSection('Rapports', reports.map(r => ({ title: r.title, file: r.file })));
+      html += buildSection('Rapports', reports.map(r => ({ title: r.title, file: r.file })), reports.length);
 
       html += buildTicketSection('Tickets en cours', indexData.tickets.active, false);
       html += buildTicketSection('Archives', indexData.tickets.archived, true);
@@ -409,12 +470,18 @@
       });
     }
 
-    function buildSection(title, items) {
+    function buildSection(title, items, count) {
       let html = `<nav class="nav-section">
-        <div class="nav-section-title">${title} <span style="font-weight:normal;opacity:0.5">(${items.length})</span></div>
+        <div class="nav-section-title">
+          <span class="collapse-icon">▼</span>
+          ${title}
+          <span class="count">${count}</span>
+        </div>
         <div class="nav-items">`;
       items.forEach(item => {
-        html += `<a class="nav-item" data-file="${item.file}"><span class="title">${item.title}</span></a>`;
+        html += `<a class="nav-item" data-file="${item.file}">
+          <div class="row"><span class="title">${item.title}</span></div>
+        </a>`;
       });
       html += '</div></nav>';
       return html;
@@ -423,18 +490,39 @@
     function buildTicketSection(title, tickets, isArchive) {
       const archiveClass = isArchive ? 'archives-section collapsed' : '';
       let html = `<nav class="nav-section ${archiveClass}">
-        <div class="nav-section-title">${title} <span style="font-weight:normal;opacity:0.5">(${tickets.length})</span></div>
+        <div class="nav-section-title">
+          <span class="collapse-icon">▼</span>
+          ${title}
+          <span class="count">${tickets.length}</span>
+        </div>
         <div class="nav-items">`;
 
       tickets.forEach(t => {
+        const days = getDaysAgo(t.createdDate);
+        const daysClass = getDaysBadgeClass(days);
+        const daysText = days !== null ? `J+${days}` : '';
+
         const actionBtn = isArchive
           ? `<button class="action-btn unarchive" onclick="unarchiveTicket('${t.id}')" title="Desarchiver">↩</button>`
           : `<button class="action-btn archive" onclick="archiveTicket('${t.id}')" title="Archiver">📥</button>`;
 
+        const lastAnalysisText = t.lastAnalysis ? `Analyse: ${formatDate(t.lastAnalysis)}` : '';
+        const createdText = t.createdDate ? `Cree: ${formatDate(t.createdDate)}` : '';
+
         html += `<a class="nav-item" data-file="${t.file}" data-ticket-id="${t.id}">
-          <span class="title">${t.id}</span>
-          <span class="badge ${t.status}" onclick="toggleStatusDropdown(event, '${t.id}')">${t.status}</span>
-          <div class="actions">${actionBtn}</div>
+          <div class="row">
+            <span class="title">${t.id}</span>
+            ${daysText ? `<span class="days-badge ${daysClass}">${daysText}</span>` : ''}
+            <span class="badge ${t.status}" onclick="toggleStatusDropdown(event, '${t.id}')">${t.status}</span>
+            <div class="actions">${actionBtn}</div>
+          </div>
+          <div class="subtitle">
+            <span>${t.title}</span>
+          </div>
+          <div class="subtitle">
+            <span class="date-info">${createdText}</span>
+            <span class="date-info">${lastAnalysisText}</span>
+          </div>
           <div class="status-dropdown" id="dropdown-${t.id}">
             ${STATUSES.map(s => `<div class="status-option" onclick="changeStatus('${t.id}', '${s.id}')">${s.label}</div>`).join('')}
           </div>
@@ -459,6 +547,7 @@
       if (!ticket) ticket = indexData.tickets.archived.find(t => t.id === ticketId);
       if (ticket) {
         ticket.status = newStatus;
+        ticket.lastAnalysis = new Date().toISOString().split('T')[0];
         saveIndex();
       }
       document.querySelectorAll('.status-dropdown.show').forEach(d => d.classList.remove('show'));
@@ -470,6 +559,7 @@
 
       const ticket = indexData.tickets.active.splice(idx, 1)[0];
       ticket.resolvedDate = new Date().toISOString().split('T')[0];
+      ticket.lastAnalysis = new Date().toISOString().split('T')[0];
       indexData.tickets.archived.unshift(ticket);
 
       saveIndex();
@@ -482,6 +572,7 @@
       const ticket = indexData.tickets.archived.splice(idx, 1)[0];
       delete ticket.resolvedDate;
       ticket.status = 'progress';
+      ticket.lastAnalysis = new Date().toISOString().split('T')[0];
       indexData.tickets.active.push(ticket);
 
       saveIndex();
@@ -495,7 +586,6 @@
       saveText.textContent = 'Sauvegarde...';
 
       try {
-        // Try to save via PUT (works with some servers)
         const response = await fetch('index.json', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -511,7 +601,6 @@
           updateLastUpdated();
         }, 1500);
       } catch (err) {
-        // Fallback: download file
         const blob = new Blob([JSON.stringify(indexData, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -520,7 +609,7 @@
         a.click();
         URL.revokeObjectURL(url);
 
-        saveText.textContent = '↓ Fichier telecharge - remplacez index.json';
+        saveText.textContent = '↓ Telecharge - remplacez index.json';
         saveIndicator.classList.add('error');
         setTimeout(() => {
           saveIndicator.classList.remove('show');
