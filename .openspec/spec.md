@@ -383,6 +383,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ## Changelog
 
+- 2026-01-08: **MCP Tool magic_get_line** - Nouvel outil pour lookup deterministe ligne Data View ET Logic. Parsing colonnes (MagicColumn model, A-Z/AA-ZZ naming). Numerotation Logic continue a travers handlers. Commande /magic-line mise a jour
 - 2026-01-08: **OpenSpec Viewer ONLINE** - Deploiement Vercel sur https://jira.lb2i.com/viewer.html. API serverless pour gestion tickets (archive/unarchive/statut) avec commit auto GitHub. Service Windows local installe au demarrage
 - 2026-01-08: **CMDS-176521 DIAGNOSTIC COMPLET** - Bug affichage prix remise POS (41,857 au lieu de 5,400). PVE IDE 186 (Main Sale) et PVE IDE 201 (Discounts) analyses. Calcul correct (Expression 30/33), bug dans Picture Format ou binding formulaire. Ticket dev ouvert par Davide, fix prevu fin janvier
 - 2026-01-08: **PMS-1373 Spécification COMPLETE** - Découverte champ `cte_flag_annulation` existant (valeurs Normal/Annulation/X-annule). Solution simplifiée: filtre WHERE au lieu de matching +/-. Spec implementation.md créée. Branche feature/PMS-1373-masquer-annulations. Sources synchronisées GitHub (thonyAGP/PMS-Magic-Sources)
