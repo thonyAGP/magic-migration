@@ -18,6 +18,7 @@
       --success: #3fb950;
       --warning: #d29922;
       --danger: #f85149;
+      --purple: #a371f7;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,18 +34,22 @@
 
     /* Sidebar */
     .sidebar {
-      width: 280px;
+      width: 300px;
       background: var(--bg-secondary);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
+      overflow-y: auto;
     }
 
     .sidebar-header {
       padding: 16px;
       border-bottom: 1px solid var(--border);
       background: var(--bg-tertiary);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     .sidebar-header h1 {
@@ -64,10 +69,19 @@
       border-radius: 50%;
     }
 
+    .sidebar-header .updated {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
     .nav-section {
       padding: 12px 0;
       border-bottom: 1px solid var(--border);
     }
+
+    .nav-section.collapsed .nav-items { display: none; }
+    .nav-section.collapsed .nav-section-title::after { content: '+'; }
 
     .nav-section-title {
       font-size: 11px;
@@ -76,10 +90,24 @@
       color: var(--text-secondary);
       padding: 4px 16px 8px;
       letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
+    .nav-section-title::after {
+      content: '-';
+      font-size: 14px;
+      font-weight: normal;
+    }
+
+    .nav-section-title:hover { color: var(--text-primary); }
+
     .nav-item {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       padding: 8px 16px;
       color: var(--text-secondary);
       text-decoration: none;
@@ -100,16 +128,26 @@
       border-left-color: var(--accent);
     }
 
-    .nav-item .badge {
-      float: right;
-      font-size: 10px;
+    .nav-item .title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .badge {
+      font-size: 9px;
       padding: 2px 6px;
       border-radius: 10px;
       background: var(--bg-tertiary);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-left: 8px;
+      flex-shrink: 0;
     }
 
-    .nav-item .badge.status-resolved { background: var(--success); color: #000; }
-    .nav-item .badge.status-progress { background: var(--warning); color: #000; }
+    .badge.resolved { background: var(--success); color: #000; }
+    .badge.dev { background: var(--warning); color: #000; }
+    .badge.spec { background: var(--purple); color: #fff; }
+    .badge.progress { background: var(--accent); color: #000; }
+
+    .archives-section { opacity: 0.7; }
+    .archives-section .nav-item { font-size: 12px; padding: 6px 16px; }
 
     /* Main Content */
     .main {
@@ -167,9 +205,7 @@
       text-decoration: none;
     }
 
-    .content a:hover {
-      text-decoration: underline;
-    }
+    .content a:hover { text-decoration: underline; }
 
     .content ul, .content ol {
       margin: 12px 0;
@@ -213,14 +249,8 @@
       vertical-align: top;
     }
 
-    .content tr:hover td {
-      background: var(--bg-secondary);
-    }
-
-    .content td:first-child {
-      color: var(--text-primary);
-      font-weight: 500;
-    }
+    .content tr:hover td { background: var(--bg-secondary); }
+    .content td:first-child { color: var(--text-primary); font-weight: 500; }
 
     /* Code */
     .content code {
@@ -258,13 +288,6 @@
       font-style: italic;
     }
 
-    /* Loading */
-    .loading {
-      text-align: center;
-      padding: 48px;
-      color: var(--text-secondary);
-    }
-
     /* Welcome */
     .welcome {
       text-align: center;
@@ -278,116 +301,222 @@
 
     .welcome p {
       max-width: 400px;
-      margin: 0 auto;
+      margin: 12px auto;
+    }
+
+    .welcome .tip {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      margin-top: 24px;
+      font-size: 12px;
+      text-align: left;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .welcome .tip code {
+      display: block;
+      margin-top: 8px;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 48px;
+      color: var(--text-secondary);
     }
 
     /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+    /* File tabs for ticket views */
+    .file-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
     }
 
-    ::-webkit-scrollbar-track {
-      background: var(--bg-primary);
+    .file-tab {
+      padding: 6px 12px;
+      font-size: 12px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 4px 4px 0 0;
+      cursor: pointer;
+      color: var(--text-secondary);
     }
 
-    ::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--text-secondary);
-    }
+    .file-tab:hover { color: var(--text-primary); }
+    .file-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
   </style>
 </head>
 <body>
   <aside class="sidebar">
     <div class="sidebar-header">
       <h1>OpenSpec Viewer</h1>
+      <div class="updated" id="lastUpdated"></div>
     </div>
-
-    <nav class="nav-section">
-      <div class="nav-section-title">Principal</div>
-      <a class="nav-item" data-file="spec.md">spec.md</a>
-      <a class="nav-item" data-file="ADH_COVERAGE_ANALYSIS.md">Couverture ADH</a>
-    </nav>
-
-    <nav class="nav-section">
-      <div class="nav-section-title">Rapports</div>
-      <a class="nav-item" data-file="reports/COVERAGE_REPORT_2025-01-04.md">Coverage Report</a>
-      <a class="nav-item" data-file="reports/ADH_SADT_DOCUMENTATION.md">SADT ADH</a>
-      <a class="nav-item" data-file="reports/CMDS-174321_ANALYSIS.md">CMDS-174321 Analysis</a>
-      <a class="nav-item" data-file="reports/PVE_RENTAL_DATES_ANALYSIS_2026-01-04.md">PVE Rental Dates</a>
-      <a class="nav-item" data-file="reports/VIL_FDR_ETOILES_ANALYSIS.md">VIL FDR Etoiles</a>
-    </nav>
-
-    <nav class="nav-section">
-      <div class="nav-section-title">Tickets</div>
-      <a class="nav-item" data-file="tickets/CMDS-174321/resolution.md">
-        CMDS-174321 <span class="badge status-resolved">OK</span>
-      </a>
-      <a class="nav-item" data-file="tickets/CMDS-176521/resolution.md">
-        CMDS-176521 <span class="badge status-progress">DEV</span>
-      </a>
-      <a class="nav-item" data-file="tickets/PMS-1373/implementation.md">
-        PMS-1373 <span class="badge status-progress">SPEC</span>
-      </a>
-    </nav>
+    <div id="navigation"></div>
   </aside>
 
   <main class="main">
     <div class="content" id="content">
       <div class="welcome">
-        <h2>Bienvenue dans OpenSpec Viewer</h2>
-        <p>Selectionnez un document dans la barre laterale pour commencer.</p>
+        <h2>OpenSpec Viewer</h2>
+        <p>Selectionnez un document dans la barre laterale.</p>
+        <div class="tip">
+          <strong>Lancement rapide:</strong>
+          <code>start-viewer.bat</code>
+        </div>
       </div>
     </div>
   </main>
 
   <script>
     const content = document.getElementById('content');
-    const navItems = document.querySelectorAll('.nav-item');
+    const navigation = document.getElementById('navigation');
+    const lastUpdatedEl = document.getElementById('lastUpdated');
+    let indexData = null;
 
-    // Configure marked
-    marked.setOptions({
-      breaks: true,
-      gfm: true
-    });
+    marked.setOptions({ breaks: true, gfm: true });
 
-    // Load file
+    // Load index and build navigation
+    async function init() {
+      try {
+        const response = await fetch('index.json');
+        indexData = await response.json();
+        buildNavigation();
+
+        const date = new Date(indexData.lastUpdated);
+        lastUpdatedEl.textContent = `Maj: ${date.toLocaleDateString('fr-FR')}`;
+
+        // Load from hash
+        if (window.location.hash) {
+          const file = decodeURIComponent(window.location.hash.slice(1));
+          loadFile(file);
+          setActiveNav(file);
+        }
+      } catch (err) {
+        navigation.innerHTML = '<div style="padding:16px;color:var(--danger)">Erreur: index.json non trouve</div>';
+      }
+    }
+
+    function buildNavigation() {
+      let html = '';
+
+      // Principal
+      const principal = indexData.reports.filter(r => r.category === 'principal');
+      html += buildSection('Principal', principal.map(r => ({ title: r.title, file: r.file })));
+
+      // Reports
+      const reports = indexData.reports.filter(r => r.category === 'reports');
+      html += buildSection('Rapports', reports.map(r => ({ title: r.title, file: r.file })));
+
+      // Active tickets
+      html += buildSection('Tickets en cours', indexData.tickets.active.map(t => ({
+        title: t.id + ' - ' + t.title,
+        file: t.file,
+        badge: t.status
+      })));
+
+      // Archived tickets
+      html += buildSection('Archives', indexData.tickets.archived.map(t => ({
+        title: t.id + ' - ' + t.title,
+        file: t.file,
+        badge: t.status,
+        date: t.resolvedDate
+      })), true);
+
+      navigation.innerHTML = html;
+
+      // Event listeners
+      document.querySelectorAll('.nav-section-title').forEach(title => {
+        title.addEventListener('click', () => {
+          title.parentElement.classList.toggle('collapsed');
+        });
+      });
+
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const file = item.dataset.file;
+          loadFile(file);
+          setActiveNav(file);
+          window.location.hash = encodeURIComponent(file);
+        });
+      });
+    }
+
+    function buildSection(title, items, isArchive = false) {
+      const archiveClass = isArchive ? 'archives-section collapsed' : '';
+      let html = `<nav class="nav-section ${archiveClass}">
+        <div class="nav-section-title">${title} <span style="font-weight:normal;opacity:0.5">(${items.length})</span></div>
+        <div class="nav-items">`;
+
+      items.forEach(item => {
+        const badgeHtml = item.badge ? `<span class="badge ${item.badge}">${item.badge}</span>` : '';
+        html += `<a class="nav-item" data-file="${item.file}">
+          <span class="title">${item.title}</span>${badgeHtml}
+        </a>`;
+      });
+
+      html += '</div></nav>';
+      return html;
+    }
+
+    function setActiveNav(file) {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.file === file);
+      });
+    }
+
     async function loadFile(path) {
       content.innerHTML = '<div class="loading">Chargement...</div>';
+
+      // For tickets, show tabs for different files
+      const isTicket = path.includes('tickets/');
+      let tabsHtml = '';
+
+      if (isTicket) {
+        const ticketDir = path.substring(0, path.lastIndexOf('/') + 1);
+        const files = ['analysis.md', 'resolution.md', 'implementation.md', 'notes.md'];
+        const currentFile = path.substring(path.lastIndexOf('/') + 1);
+
+        tabsHtml = '<div class="file-tabs">';
+        for (const f of files) {
+          const fullPath = ticketDir + f;
+          const active = f === currentFile ? 'active' : '';
+          const label = f.replace('.md', '');
+          tabsHtml += `<div class="file-tab ${active}" onclick="loadFile('${fullPath}'); setActiveNav('${fullPath}')">${label}</div>`;
+        }
+        tabsHtml += '</div>';
+      }
 
       try {
         const response = await fetch(path);
         if (!response.ok) throw new Error('Fichier non trouve');
         const text = await response.text();
-        content.innerHTML = marked.parse(text);
+        content.innerHTML = tabsHtml + marked.parse(text);
       } catch (err) {
-        content.innerHTML = `<div class="welcome">
-          <h2>Erreur</h2>
-          <p>Impossible de charger: ${path}</p>
-          <p style="font-size:12px;margin-top:16px;">Astuce: Lancez un serveur local avec <code>npx serve .openspec</code></p>
+        content.innerHTML = tabsHtml + `<div class="welcome">
+          <h2>Fichier non trouve</h2>
+          <p>${path}</p>
         </div>`;
       }
     }
 
-    // Navigation
-    navItems.forEach(item => {
-      item.addEventListener('click', () => {
-        navItems.forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        loadFile(item.dataset.file);
-      });
-    });
+    // Make functions globally available for onclick
+    window.loadFile = loadFile;
+    window.setActiveNav = setActiveNav;
 
-    // Load from URL hash
-    if (window.location.hash) {
-      const file = window.location.hash.slice(1);
-      const item = document.querySelector(`[data-file="${file}"]`);
-      if (item) item.click();
-    }
+    init();
   </script>
 </body>
 </html>

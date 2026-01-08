@@ -1,0 +1,21 @@
+{
+  "lastUpdated": "2026-01-08T12:00:00Z",
+  "reports": [
+    { "id": "spec", "title": "Specification Principale", "file": "spec.md", "category": "principal" },
+    { "id": "coverage-adh", "title": "Couverture ADH", "file": "ADH_COVERAGE_ANALYSIS.md", "category": "principal" },
+    { "id": "coverage-report", "title": "Coverage Report 2025-01-04", "file": "reports/COVERAGE_REPORT_2025-01-04.md", "category": "reports" },
+    { "id": "sadt-adh", "title": "Documentation SADT ADH", "file": "reports/ADH_SADT_DOCUMENTATION.md", "category": "reports" },
+    { "id": "cmds-174321-analysis", "title": "CMDS-174321 Analysis", "file": "reports/CMDS-174321_ANALYSIS.md", "category": "reports" },
+    { "id": "pve-rental", "title": "PVE Rental Dates Analysis", "file": "reports/PVE_RENTAL_DATES_ANALYSIS_2026-01-04.md", "category": "reports" },
+    { "id": "vil-fdr", "title": "VIL FDR Etoiles Analysis", "file": "reports/VIL_FDR_ETOILES_ANALYSIS.md", "category": "reports" }
+  ],
+  "tickets": {
+    "active": [
+      { "id": "PMS-1373", "title": "Masquer annulations extrait", "status": "spec", "file": "tickets/PMS-1373/implementation.md" }
+    ],
+    "archived": [
+      { "id": "CMDS-174321", "title": "Bug date arrivee PB027", "status": "resolved", "file": "tickets/CMDS-174321/resolution.md", "resolvedDate": "2026-01-07" },
+      { "id": "CMDS-176521", "title": "Prix remise POS incorrect", "status": "dev", "file": "tickets/CMDS-176521/resolution.md", "resolvedDate": "2026-01-08" }
+    ]
+  }
+}
