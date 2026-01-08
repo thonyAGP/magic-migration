@@ -33,7 +33,27 @@
       "Bash(powershell -ExecutionPolicy Bypass -File \"D:\\\\Projects\\\\Lecteur Magic\\\\.claude\\\\scripts\\\\ticket-menu.ps1\":*)",
       "mcp__magic-interpreter__magic_get_tree",
       "Bash(find:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "mcp__magic-interpreter__magic_get_position",
+      "Bash(npx serve:*)",
+      "Bash(timeout /t 3 /nobreak)",
+      "Bash(copy \"D:\\\\Projects\\\\Lecteur Magic\\\\.openspec\\\\start-service.vbs\" \"%APPDATA%\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup\\\\OpenSpecViewer.vbs\")",
+      "Bash(cmd /c copy \"D:\\\\Projects\\\\Lecteur Magic\\\\.openspec\\\\start-service.vbs\" \"%APPDATA%\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup\\\\OpenSpecViewer.vbs\")",
+      "Bash(cmd /c dir \"%APPDATA%\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup\\\\OpenSpecViewer.vbs\")",
+      "WebFetch(domain:api.github.com)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun D:\\Projects\\Lecteur Magic\\.claude\\scripts\\hook-tickets-html.ts"
+          }
+        ]
+      }
     ]
   },
   "mcpServers": {

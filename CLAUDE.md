@@ -64,15 +64,115 @@ Ce projet utilise le skill `magic-unipaas` pour toutes les operations d'analyse 
 - Exports de donnees
 - Editions/Etats
 
+## RÈGLE CRITIQUE : FORMAT IDE MAGIC (JAMAIS XML)
+
+### Variables - CONVERSION OBLIGATOIRE
+
+**INTERDIT : `{0,3}`, `{1,2}`, `FieldID="25"`**
+**OBLIGATOIRE : Noms de variables en LETTRES**
+
+| Index | Variable | Index | Variable | Index | Variable |
+|-------|----------|-------|----------|-------|----------|
+| 0 | A | 10 | K | 20 | U |
+| 1 | B | 11 | L | 21 | V |
+| 2 | C | 12 | M | 22 | W |
+| 3 | D | 13 | N | 23 | X |
+| 4 | E | 14 | O | 24 | Y |
+| 5 | F | 15 | P | 25 | Z |
+| 6 | G | 16 | Q | 26 | AA |
+| 7 | H | 17 | R | 27 | AB |
+| 8 | I | 18 | S | ... | ... |
+| 9 | J | 19 | T | 51 | AZ |
+
+**Formule pour index >= 26 :**
+```
+Première lettre = (index // 26) → A=1, B=2...
+Deuxième lettre = (index % 26) → A=0, B=1...
+Exemple: index 30 = (30//26=1=A) + (30%26=4=E) = AE
+```
+
+### Programmes - FORMAT IDE OBLIGATOIRE
+
+**INTERDIT : `Prg_180`, `Prg_195`**
+**OBLIGATOIRE : `[PROJET] IDE [N°] - [Nom Public]`**
+
+| Mauvais | Bon |
+|---------|-----|
+| Prg_180 | PVE IDE 45 - Main Sale |
+| Prg_195 | PVE IDE 52 - Discounts |
+| Prg_315 | PBG IDE 24 - Import GM seminaire |
+
+**Utiliser l'outil MCP** `magic_get_position` pour obtenir la position IDE.
+
+### Expressions - FORMAT LISIBLE
+
+**INTERDIT :**
+```
+`{0,3}*(1-{0,1}/100)`
+```
+
+**OBLIGATOIRE :**
+```
+D*(1-B/100)    -- Prix * (1 - %Remise/100)
+```
+
+### Exemple complet de rapport CORRECT
+
+```markdown
+## Expression 30 (PVE IDE 52 - Discounts)
+
+IF(Val(M,'') <> 0,
+   Val(M,'10.2'),        -- Si prix manuel saisi (variable M)
+   D*(1-B/100))          -- Sinon: Prix(D) * (1 - Remise%(B)/100)
+
+Variables:
+- B = % Remise (index 1)
+- D = Prix original (index 3)
+- M = Prix manuel (index 12)
+```
+
 ## Workflow Tickets Jira
+
+### RÈGLE OBLIGATOIRE : Langage Magic IDE
+
+**TOUTES les résolutions et diagnostics doivent utiliser le langage Magic IDE :**
+
+| Élément | Format obligatoire | Exemple |
+|---------|-------------------|---------|
+| Programme | **[PROJET] IDE [N°] - [Nom]** | PVE IDE 45 - Main Sale |
+| Table | **Table n°XX - [Nom]** | Table n°40 - operations |
+| Sous-tâche | **Tâche XX.YY.Z** | Tâche 22.16.1 |
+| Variable | **Variable [LETTRE]** | Variable D, Variable AE |
+| Expression | **Expression n°XX** | Expression 30 |
+
+**Structure resolution.md obligatoire :**
+```markdown
+## Références Magic IDE
+
+### Tables
+| N° Table | Projet | Nom Logique | Nom Physique | Description |
+
+### Programmes
+| N° Prg | Projet | Nom Public | Description | Fichier Source |
+```
+
+**Double référence autorisée** : Garder le lien XML en plus (`[Prg_69.xml](file://...)`)
+
+### Fichier TICKETS.md à la racine
+
+Maintenir un fichier `TICKETS.md` à la racine du projet avec liens directs vers :
+- Toutes les résolutions actives
+- Liens Jira et GitHub
+- Statut de chaque ticket
 
 ### Analyse de bugs - Bonnes pratiques
 
 Lors de l'analyse d'un ticket Jira, toujours documenter :
 
-1. **Tables suspectes** : Nom complet + champs concernés
-2. **Fichiers d'import** : Nom des fichiers attendus (TXT, CSV, etc.)
-3. **Données requises** : Base de données village + date précise
+1. **Tables suspectes** : **Table n°XX** + Nom complet + champs concernés
+2. **Programmes concernés** : **Programme n°XX (Projet)** avec rôle
+3. **Fichiers d'import** : Nom des fichiers attendus (TXT, CSV, etc.)
+4. **Données requises** : Base de données village + date précise
 
 ### Format de demande de données
 
