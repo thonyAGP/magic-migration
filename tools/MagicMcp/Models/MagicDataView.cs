@@ -15,6 +15,7 @@ public record MagicDataView
 public class MagicMainSource
 {
     public required int TableId { get; init; }
+    public string? ComponentId { get; init; }
     public required string TableName { get; init; }
     public int? IndexId { get; init; }
     public string AccessMode { get; init; } = "R";

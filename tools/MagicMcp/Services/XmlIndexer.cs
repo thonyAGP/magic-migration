@@ -87,7 +87,7 @@ public class XmlIndexer
                 {
                     Id = id,
                     Name = header.Attribute("Description")?.Value ?? $"Program_{id}",
-                    PublicName = header.Attribute("PublicName")?.Value
+                    PublicName = header.Element("Public")?.Attribute("val")?.Value
                 };
             }
         }
@@ -107,7 +107,7 @@ public class XmlIndexer
             IdePosition = idePosition
         };
 
-        // Parse tasks
+        // Parse tasks - find all Task elements
         ParseTasks(doc, program, idePosition);
 
         // Parse expressions
@@ -118,27 +118,31 @@ public class XmlIndexer
 
     private void ParseTasks(XDocument doc, MagicProgram program, int prgIdePosition)
     {
-        var tasks = doc.Descendants("Task").ToList();
-        var taskStack = new Stack<(int Isn2, int Level, string IdePosition)>();
+        // Find all Task elements in the document
+        var allTasks = doc.Descendants("Task").ToList();
         var levelCounters = new Dictionary<int, int>();
 
-        foreach (var taskElement in tasks)
+        foreach (var taskElement in allTasks)
         {
-            var headerElement = taskElement.Element("TaskDefinition")?.Element("Header");
+            // Header is direct child of Task element
+            var headerElement = taskElement.Element("Header");
             if (headerElement == null) continue;
 
             var isn2Attr = headerElement.Attribute("ISN_2");
             if (isn2Attr == null || !int.TryParse(isn2Attr.Value, out int isn2)) continue;
 
             var description = headerElement.Attribute("Description")?.Value ?? "";
-            var taskType = headerElement.Attribute("TaskType")?.Value ?? "B";
+
+            // Get task type from Header
+            var taskTypeElement = headerElement.Element("TaskType");
+            var taskType = taskTypeElement?.Attribute("val")?.Value ?? "B";
 
             // Calculate level by XML nesting
             int level = 0;
             var parent = taskElement.Parent;
             while (parent != null)
             {
-                if (parent.Name == "Task") level++;
+                if (parent.Name == "Task" || parent.Name == "SubTask") level++;
                 parent = parent.Parent;
             }
 
@@ -148,6 +152,7 @@ public class XmlIndexer
             {
                 // Root task = program number only
                 idePosition = prgIdePosition.ToString();
+                levelCounters.Clear();
             }
             else
             {
@@ -157,25 +162,34 @@ public class XmlIndexer
                 levelCounters[level]++;
 
                 // Reset counters for deeper levels
-                for (int l = level + 1; l <= levelCounters.Keys.Max(); l++)
-                    levelCounters.Remove(l);
+                var keysToRemove = levelCounters.Keys.Where(k => k > level).ToList();
+                foreach (var k in keysToRemove)
+                    levelCounters.Remove(k);
 
                 idePosition = BuildIdePosition(prgIdePosition, levelCounters);
             }
 
-            // Determine parent ISN_2
+            // Determine parent ISN_2 by looking at parent Task element
             int? parentIsn2 = null;
-            while (taskStack.Count > 0 && taskStack.Peek().Level >= level)
-                taskStack.Pop();
-            if (taskStack.Count > 0)
-                parentIsn2 = taskStack.Peek().Isn2;
+            var parentTask = taskElement.Parent;
+            while (parentTask != null && parentTask.Name != "Task")
+            {
+                parentTask = parentTask.Parent;
+            }
+            if (parentTask != null)
+            {
+                var parentHeader = parentTask.Element("Header");
+                var parentIsn2Attr = parentHeader?.Attribute("ISN_2");
+                if (parentIsn2Attr != null && int.TryParse(parentIsn2Attr.Value, out int pIsn2))
+                {
+                    parentIsn2 = pIsn2;
+                }
+            }
 
-            taskStack.Push((isn2, level, idePosition));
-
-            // Parse DataView
+            // Parse DataView from Resource element
             var dataView = ParseDataView(taskElement);
 
-            // Parse Logic
+            // Parse Logic from TaskLogic element
             var logicLines = ParseLogicLines(taskElement);
 
             program.Tasks[isn2] = new MagicTask
@@ -204,56 +218,69 @@ public class XmlIndexer
 
     private MagicDataView? ParseDataView(XElement taskElement)
     {
-        var dvElement = taskElement.Element("DataView");
-        if (dvElement == null) return null;
+        // Resource is direct child of Task
+        var resourceElement = taskElement.Element("Resource");
+        if (resourceElement == null) return null;
 
         var dataView = new MagicDataView();
 
-        // Parse Main Source
-        var taskTablesElement = dvElement.Element("TaskTables");
-        var mainSourceElement = taskTablesElement?.Element("Source");
-        if (mainSourceElement != null)
+        // Parse DB elements (tables)
+        var dbElements = resourceElement.Elements("DB").ToList();
+        if (dbElements.Count > 0)
         {
-            var tableIdAttr = mainSourceElement.Attribute("SourceDataSourceNumber");
-            if (tableIdAttr != null && int.TryParse(tableIdAttr.Value, out int tableId))
+            // First DB is typically the main source
+            var firstDb = dbElements[0];
+            var dataObjElement = firstDb.Element("DataObject");
+            if (dataObjElement != null)
             {
-                dataView = dataView with
+                var compAttr = dataObjElement.Attribute("comp");
+                var objAttr = dataObjElement.Attribute("obj");
+                if (objAttr != null && int.TryParse(objAttr.Value, out int tableId))
                 {
-                    MainSource = new MagicMainSource
+                    var accessElement = firstDb.Element("Access");
+                    dataView = dataView with
                     {
-                        TableId = tableId,
-                        TableName = $"Table_{tableId}",
-                        AccessMode = mainSourceElement.Attribute("AccessMode")?.Value ?? "R"
-                    }
-                };
+                        MainSource = new MagicMainSource
+                        {
+                            TableId = tableId,
+                            ComponentId = compAttr?.Value,
+                            TableName = $"Table_{tableId}",
+                            AccessMode = accessElement?.Attribute("val")?.Value ?? "R"
+                        }
+                    };
+                }
             }
-        }
 
-        // Parse Links
-        var links = new List<MagicLink>();
-        var linkElements = taskTablesElement?.Elements("Link") ?? Enumerable.Empty<XElement>();
-        int linkId = 1;
-        foreach (var linkElement in linkElements)
-        {
-            var tableIdAttr = linkElement.Attribute("SourceDataSourceNumber");
-            if (tableIdAttr != null && int.TryParse(tableIdAttr.Value, out int tableId))
+            // Additional DBs are links
+            var links = new List<MagicLink>();
+            for (int i = 1; i < dbElements.Count; i++)
             {
-                links.Add(new MagicLink
+                var dbElement = dbElements[i];
+                var dataObj = dbElement.Element("DataObject");
+                if (dataObj != null)
                 {
-                    Id = linkId++,
-                    TableId = tableId,
-                    TableName = $"Table_{tableId}",
-                    LinkType = linkElement.Attribute("LinkType")?.Value ?? "J"
-                });
+                    var objAttr = dataObj.Attribute("obj");
+                    if (objAttr != null && int.TryParse(objAttr.Value, out int tableId))
+                    {
+                        links.Add(new MagicLink
+                        {
+                            Id = i,
+                            TableId = tableId,
+                            TableName = $"Table_{tableId}",
+                            LinkType = "L"
+                        });
+                    }
+                }
             }
-        }
-        if (links.Count > 0)
-        {
-            dataView = dataView with { Links = links };
+            if (links.Count > 0)
+            {
+                dataView = dataView with { Links = links };
+            }
         }
 
         // Parse Columns
-        var columns = ParseColumns(dvElement.Element("Resource")?.Element("Columns"));
+        var columnsElement = resourceElement.Element("Columns");
+        var columns = ParseColumns(columnsElement);
         if (columns.Count > 0)
         {
             dataView = dataView with { Columns = columns };
@@ -276,61 +303,53 @@ public class XmlIndexer
 
             if (idAttr == null || !int.TryParse(idAttr.Value, out int xmlId)) continue;
 
+            // Get PropertyList for field properties
+            var propList = colElement.Element("PropertyList");
+
             // Get data type from Model element
-            var modelElement = colElement.Descendants("Model").FirstOrDefault();
+            var modelElement = propList?.Element("Model");
             var dataType = ParseFieldType(modelElement?.Attribute("attr_obj")?.Value);
 
             // Get picture
-            var pictureElement = colElement.Descendants("Picture").FirstOrDefault();
+            var pictureElement = propList?.Element("Picture");
             var picture = pictureElement?.Attribute("valUnicode")?.Value
                        ?? pictureElement?.Attribute("val")?.Value;
 
-            // Get definition (2=Virtual, 1=Real, 3=Parameter)
-            var defElement = colElement.Descendants("Definition").FirstOrDefault();
+            // Get definition (1=Real, 2=Virtual/Parameter based on name prefix)
+            var defElement = propList?.Element("Definition");
             var defVal = defElement?.Attribute("val")?.Value;
-            var definition = defVal switch
-            {
-                "1" => "R",  // Real
-                "2" => "V",  // Virtual
-                "3" => "P",  // Parameter
-                _ => "V"
-            };
 
-            // Get source info for Real columns
-            int? sourceColumnNumber = null;
-            var initElement = colElement.Descendants("Init").FirstOrDefault();
-            if (initElement != null)
+            // Determine definition from name prefix and Definition element
+            var name = nameAttr?.Value ?? $"Col_{xmlId}";
+            string definition;
+            if (name.StartsWith(">") || name.StartsWith("&gt;"))
             {
-                var srcColAttr = initElement.Attribute("SrcFldIdx");
-                if (srcColAttr != null && int.TryParse(srcColAttr.Value, out int srcCol))
-                {
-                    sourceColumnNumber = srcCol;
-                }
+                // Parameter (input)
+                definition = "P";
             }
-
-            // Get locate expression
-            int? locateExprId = null;
-            var locateElement = colElement.Descendants("Locate").FirstOrDefault();
-            if (locateElement != null)
+            else if (name.StartsWith("<") || name.StartsWith("&lt;"))
             {
-                var locValAttr = locateElement.Attribute("val");
-                if (locValAttr != null && int.TryParse(locValAttr.Value, out int locId))
-                {
-                    locateExprId = locId;
-                }
+                // Parameter (output)
+                definition = "P";
+            }
+            else if (defVal == "1")
+            {
+                definition = "R"; // Real (from table)
+            }
+            else
+            {
+                definition = "V"; // Virtual
             }
 
             columns.Add(new MagicColumn
             {
-                LineNumber = i + 1,  // 1-based line number
+                LineNumber = i + 1,  // 1-based line number in order of appearance
                 XmlId = xmlId,
                 Variable = MagicColumn.IndexToVariable(i),
-                Name = nameAttr?.Value ?? $"Col_{xmlId}",
+                Name = name,
                 DataType = dataType,
                 Picture = picture,
-                Definition = definition,
-                SourceColumnNumber = sourceColumnNumber,
-                LocateExpressionId = locateExprId
+                Definition = definition
             });
         }
 
@@ -358,44 +377,50 @@ public class XmlIndexer
         var lines = new List<MagicLogicLine>();
         int lineNum = 1;  // Continuous numbering across all handlers
 
-        var logicTable = taskElement.Element("TaskDefinition")?.Element("TaskLogicUnitsTable");
-        if (logicTable == null) return lines;
+        // TaskLogic is direct child of Task
+        var taskLogic = taskElement.Element("TaskLogic");
+        if (taskLogic == null) return lines;
 
-        // Order of handlers in IDE: Task Prefix, Record Prefix, Record Main, Record Suffix, Task Suffix, then Handlers
-        var handlerOrder = new[]
+        // Parse each LogicUnit (handler)
+        foreach (var logicUnit in taskLogic.Elements("LogicUnit"))
         {
-            ("TaskPrefix", "TP"),
-            ("RecordPrefix", "RP"),
-            ("RecordMain", "RM"),
-            ("RecordSuffix", "RS"),
-            ("TaskSuffix", "TS")
-        };
-
-        foreach (var (elementName, handlerType) in handlerOrder)
-        {
-            var handlerElement = logicTable.Element(elementName);
-            if (handlerElement != null)
-            {
-                lineNum = ParseLogicUnit(handlerElement, handlerType, lines, lineNum);
-            }
-        }
-
-        // Parse additional handlers (events)
-        foreach (var handler in logicTable.Elements("LogicUnit"))
-        {
-            var handlerName = handler.Attribute("Name")?.Value ?? "H";
-            lineNum = ParseLogicUnit(handler, handlerName, lines, lineNum);
+            var handlerType = GetHandlerType(logicUnit);
+            lineNum = ParseLogicUnit(logicUnit, handlerType, lines, lineNum);
         }
 
         return lines;
     }
 
+    private string GetHandlerType(XElement logicUnit)
+    {
+        // Determine handler type from Level and Type attributes
+        var levelElement = logicUnit.Element("Level");
+        var typeElement = logicUnit.Element("Type");
+
+        var level = levelElement?.Attribute("val")?.Value ?? "R";
+        var type = typeElement?.Attribute("val")?.Value ?? "M";
+
+        return (level, type) switch
+        {
+            ("T", "P") => "TP", // Task Prefix
+            ("T", "S") => "TS", // Task Suffix
+            ("R", "P") => "RP", // Record Prefix
+            ("R", "M") => "RM", // Record Main
+            ("R", "S") => "RS", // Record Suffix
+            ("H", _) => "H",    // Handler
+            _ => $"{level}{type}"
+        };
+    }
+
     private int ParseLogicUnit(XElement unitElement, string handlerType, List<MagicLogicLine> lines, int startLineNum)
     {
         var lineNum = startLineNum;
-        var logicLines = unitElement.Elements("LogicLine");
 
-        foreach (var logicLine in logicLines)
+        // LogicLines is child of LogicUnit
+        var logicLinesElement = unitElement.Element("LogicLines");
+        if (logicLinesElement == null) return lineNum;
+
+        foreach (var logicLine in logicLinesElement.Elements("LogicLine"))
         {
             // Get the first child element (the operation)
             var operation = logicLine.Elements().FirstOrDefault();
@@ -410,18 +435,16 @@ public class XmlIndexer
                 ["Handler"] = handlerType
             };
 
+            // Copy all attributes as parameters
             foreach (var attr in operation.Attributes())
             {
                 if (attr.Name.LocalName != "Disabled")
                     parameters[attr.Name.LocalName] = attr.Value;
             }
 
-            // Extract specific operation details
-            var condition = operation.Element("Condition")?.Attribute("val")?.Value;
-            if (condition == null && operation.Attribute("Condition") != null)
-            {
-                condition = operation.Attribute("Condition")?.Value;
-            }
+            // Extract condition
+            var conditionElement = operation.Element("Condition");
+            var condition = conditionElement?.Attribute("val")?.Value;
 
             // Add call target info for Call operations
             if (opName == "Call")
@@ -432,6 +455,10 @@ public class XmlIndexer
                     parameters["TargetComp"] = callDb.Attribute("comp")?.Value ?? "";
                     parameters["TargetPrg"] = callDb.Attribute("obj")?.Value ?? "";
                 }
+
+                // Count arguments
+                var args = operation.Elements("Arg").Count();
+                if (args > 0) parameters["ArgCount"] = args.ToString();
             }
 
             // Add link table info for LNK operations
@@ -448,15 +475,15 @@ public class XmlIndexer
             // Add verify message for Verify operations
             if (opName == "Verify")
             {
-                var msgElement = operation.Element("Message");
-                if (msgElement != null)
+                var msgAttr = operation.Attribute("Message");
+                if (msgAttr != null)
                 {
-                    parameters["MessageExpr"] = msgElement.Attribute("val")?.Value ?? "";
+                    parameters["MessageExpr"] = msgAttr.Value;
                 }
-                var returnElement = operation.Element("Return");
-                if (returnElement != null)
+                var returnAttr = operation.Attribute("ReturnVariable");
+                if (returnAttr != null)
                 {
-                    parameters["ReturnVar"] = returnElement.Attribute("FieldID")?.Value ?? "";
+                    parameters["ReturnVar"] = returnAttr.Value;
                 }
             }
 
@@ -500,10 +527,11 @@ public class XmlIndexer
 
     private void ParseExpressions(XDocument doc, MagicProgram program)
     {
-        var exprsElement = doc.Descendants("ExpressionsTable").FirstOrDefault();
+        // Find Expressions element
+        var exprsElement = doc.Descendants("Expressions").FirstOrDefault();
         if (exprsElement == null) return;
 
-        var expressions = exprsElement.Elements("Expression").ToList();
+        var expressions = exprsElement.Elements("Exp").ToList();
         int idePosition = 1;
 
         foreach (var expr in expressions)
