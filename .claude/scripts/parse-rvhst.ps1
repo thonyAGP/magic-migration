@@ -57,9 +57,9 @@ function Parse-ICLI {
         DateFichier = Format-MagicDate $line.Substring(22,6)
         Compte      = $line.Substring(28,9).Trim()
         Filiation   = $line.Substring(37,3)
-        Nom         = $line.Substring(46,30).Trim()
-        Prenom      = $line.Substring(76,20).Trim()
-        Genre       = $line.Substring(112,1)
+        Nom         = $line.Substring(49,30).Trim()
+        Prenom      = $line.Substring(79,20).Trim()
+        Genre       = if ($line.Length -gt 122) { $line.Substring(122,1) } else { "?" }
         RawLine     = $line
     }
 }

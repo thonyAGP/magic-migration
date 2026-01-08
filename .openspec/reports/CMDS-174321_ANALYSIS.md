@@ -275,21 +275,74 @@ ILOGPHUC  CM0000PHUC  241225363116431004      004000UB2+B2A251225040126...
 | 25/12/2025 | RV.HST ligne 9528 | `251225040126` | ✅ CORRECT |
 | **Base PMS** | cafil014_dat | `20260125` | ❌ **ERREUR** |
 
-### Hypothèse du bug d'import - RÉVISÉE
+## ANALYSE BYTE-PAR-BYTE (2026-01-08)
 
-**DÉCOUVERTE** : Le bug affecte aussi SHARMAN India Ray (compte NA 324618615, PMS 676227).
+### Comparaison des 4 lignes ILOG SEEDSMAN
 
-| GM | Date fichier | Date séjour NA | Date PMS erronée | Jour erroné |
-|-----|--------------|----------------|------------------|-------------|
-| SEEDSMAN Zoe | **25**/12 | 25/12/25 | **25**/01/26 | 25 ← fichier ou séjour |
-| SHARMAN India Ray | **24**/12 | 01/01/26 | **24**/01/26 | 24 ← **fichier** ! |
+```
+LIGNE 1 - Filiation 001: ILOGPHUC  CM0000PHUC  241225363116431001      004000UB2+B2A251225040126...
+LIGNE 2 - Filiation 002: ILOGPHUC  CM0000PHUC  241225363116431002      004000UB2+B2A251225040126...
+LIGNE 3 - Filiation 003: ILOGPHUC  CM0000PHUC  241225363116431003      004000UB2+B2A251225040126...
+LIGNE 4 - Filiation 004: ILOGPHUC  CM0000PHUC  241225363116431004      004000UB2+B2A251225040126...
+```
 
-**CAUSE PROBABLE** : Le programme d'import lit la **date du fichier** (JJMMAA dans l'en-tête RV.HST) à la place de la date de séjour pour certains GM (filiation 3).
+**Résultat**: Les 4 lignes sont IDENTIQUES (même longueur 90 chars, mêmes dates, mêmes valeurs hex).
 
-Pattern d'erreur :
-- Jour : pris du **fichier** (241225 → jour 24, ou 251225 → jour 25)
-- Mois : forcé à **01** (janvier)
-- Année : forcée à **2026**
+### Structure positionnelle ILOG
+
+| Position | Longueur | Contenu | Exemple |
+|----------|----------|---------|---------|
+| 0-3 | 4 | Type record | ILOG |
+| 4-7 | 4 | Code village | PHUC |
+| 22-27 | 6 | Date fichier (JJMMAA) | 241225 |
+| 28-36 | 9 | Compte NA | 363116431 |
+| 37-39 | 3 | Filiation | 001-004 |
+| 52-58 | 7 | Type chambre | UB2+B2A |
+| 59-64 | 6 | **DATE DÉBUT (JJMMAA)** | 251225 |
+| 65-70 | 6 | **DATE FIN (JJMMAA)** | 040126 |
+
+### Vérification hexadécimale dates (positions 58-70)
+
+```
+Filiation 001: A25122504012 = 413235313232353034303132
+Filiation 002: A25122504012 = 413235313232353034303132
+Filiation 003: A25122504012 = 413235313232353034303132
+Filiation 004: A25122504012 = 413235313232353034303132
+=> AUCUNE DIFFERENCE !
+```
+
+---
+
+## CONFIRMATION SHARMAN (2026-01-08)
+
+### Données source NA (archive 251210.ZIP)
+
+```
+ILOGPHUC  CM0000PHUC  091225324618615001      005000UC2+C2A010126080126...
+ILOGPHUC  CM0000PHUC  091225324618615002      005000UC2+C2A010126080126...
+ILOGPHUC  CM0000PHUC  091225324618615003      005000UC2+C2A010126080126...
+ILOGPHUC  CM0000PHUC  091225324618615004      005000UC2+C2A010126080126...
+ILOGPHUC  CM0000PHUC  091225324618615005      005000UC2+C2A010126080126...
+```
+
+### Comparaison complète
+
+| Famille | NA Filiation | PMS Filiation | Date Source NA | Date PMS | Status |
+|---------|--------------|---------------|----------------|----------|--------|
+| SHARMAN | 001 | 0 | 010126 | 20260101 | ✅ OK |
+| SHARMAN | 002 | 1 | 010126 | 20260101 | ✅ OK |
+| SHARMAN | **003** | **3** | **010126** | **20260124** | ❌ ERREUR |
+| SHARMAN | 004 | 4 | 010126 | 20260101 | ✅ OK |
+| SHARMAN | 005 | - | 010126 | - | - |
+
+### Pattern d'erreur identifié
+
+| GM | Date Source NA | Date PMS | Erreur |
+|----|----------------|----------|--------|
+| SEEDSMAN Zoe (fil.3) | 251225 (25/12/25) | 20260125 (25/01/26) | Mois 12→01, An +1 |
+| SHARMAN India (fil.3) | 010126 (01/01/26) | 20260124 (24/01/26) | Jour 01→24 |
+
+**Point commun** : Les deux erreurs touchent la **filiation PMS = 3**.
 
 **Note** : Le programme d'import PBG Prg_315 est compilé (sans source XML), l'analyse du code n'est pas possible.
 
@@ -367,19 +420,87 @@ ORDER BY gm_date_debut DESC;
 
 ---
 
-## Fichiers MCP crees (bonus)
+## Outils créés
 
-Dans le cadre de cette analyse, 4 nouveaux outils MCP ont ete implementes:
+### Outils MCP
 
 | Outil | Description |
 |-------|-------------|
 | `magic_find_program` | Recherche fuzzy cross-projet |
-| `magic_list_programs` | Liste paginee avec filtres |
+| `magic_list_programs` | Liste paginée avec filtres |
 | `magic_index_stats` | Statistiques de l'index |
-| `magic_get_dependencies` | Dependances cross-projet |
+| `magic_get_dependencies` | Dépendances cross-projet |
 
 **Build:** `tools/MagicMcp/bin/Release/net8.0/`
 
+### Script de parsing RV.HST
+
+**Chemin:** `.claude/scripts/parse-rvhst.ps1`
+
+**Usage:**
+```powershell
+# Résumé d'un compte
+parse-rvhst.ps1 -Path "C:\temp\import_251225\RV.HST" -Account 363116431 -Summary
+
+# Affichage tabulaire
+parse-rvhst.ps1 -Path "C:\temp\import_251225\RV.HST" -Account 363116431
+
+# Filtrer par type de record
+parse-rvhst.ps1 -Path "C:\temp\import_251225\RV.HST" -Type ILOG
+
+# Recherche par nom
+parse-rvhst.ps1 -Path "C:\temp\import_251225\RV.HST" -Name "SEEDSMAN" -Type ICLI
+```
+
+**Sortie exemple:**
+```
+=== RESUME FICHIER RV.HST ===
+Chemin: C:\temp\import_251225\RV.HST
+Total enregistrements: 29
+  IDOS: 1
+  IPRE: 16
+  ILOG: 4
+  ICLI: 4
+  IIDE: 4
+
+=== DETAILS COMPTE 363116431 ===
+Village: PHUC
+Date fichier: 24/12/25
+Date debut: 25/12/25
+Date fin: 04/01/26
+
+Membres du dossier:
+  Filiation 001: SEEDMAN MICHELLE (F)
+  Filiation 002: SEEDSMAN WARREN (M)
+  Filiation 003: SEEDSMAN JASMINE (F)
+  Filiation 004: SEEDSMAN ZOE (F)
+```
+
 ---
 
-*Rapport genere le 2026-01-06, mis a jour le 2026-01-07*
+## CONCLUSION FINALE
+
+### Cause racine
+
+**Le bug est dans le programme d'import PMS (PBG Prg_315)**, pas dans les fichiers source NA.
+
+**Preuves :**
+1. ✅ Fichiers RV.HST contiennent les dates CORRECTES pour tous les membres
+2. ✅ Comparaison byte-par-byte montre aucune différence entre filiations
+3. ✅ Vérification hex confirme données identiques
+4. ❌ Base PMS contient des dates erronées pour 2 GM (filiation 3)
+5. ❌ Pattern d'erreur non systématique (>450 filiation 3 correctes)
+
+### Nature du bug
+
+Bug **sporadique** affectant la conversion de date lors de l'import, avec un pattern touchant spécifiquement certains enregistrements de filiation 3.
+
+### Actions
+
+1. **Immédiat** : Correction SQL manuelle des 2 enregistrements
+2. **Moyen terme** : Ajouter validation `date_debut <= date_fin` dans l'import
+3. **Investigation** : Si récurrence, analyser le binaire PBG Prg_315
+
+---
+
+*Rapport généré le 2026-01-06, mis à jour le 2026-01-08*
