@@ -31,69 +31,67 @@ Filtrer sur le champ existant `cte_flag_annulation` de la **Table n°40** (`cafi
 
 ## ÉTAPE 1 : Modifier ADH IDE 69 (EXTRAIT_COMPTE)
 
-### 1.1 Ajouter une variable
+### Structure des tâches ADH IDE 69
 
-| Emplacement | Valeur |
-|-------------|--------|
-| **Programme** | ADH IDE 69 |
-| **Sous-tâche** | n°5 "scroll sur compte" |
-| **Section** | Data View > Columns (Variables) |
+| Tâche | Nom | Description |
+|-------|-----|-------------|
+| **69** | EXTRAIT_COMPTE | Programme principal |
+| 69.1 | Recalcul solde | Sous-tâche calcul |
+| 69.1.1 | Solde GM | Sous-sous-tâche |
+| 69.2 | ... | ... |
+| **69.3** | scroll sur compte | **Écran principal extrait** |
 
-**Variable à créer :**
+### 1.1 Variable existante à utiliser
+
+La variable existe déjà dans **Tâche 69.3** :
 
 | Propriété | Valeur |
 |-----------|--------|
-| **Nom** | `W.ExtraitComplet` |
+| **Variable** | **IW** |
+| **Nom** | `v.Edition partielle?` |
 | **Type** | Logical (Boolean) |
-| **Init** | `TRUE` |
-| **Storage** | Virtual |
+| **Position** | Data View > Columns |
 
-### 1.2 Ajouter la question avant édition
+### 1.2 Question existante (Verify Warning)
+
+La question est **DÉJÀ IMPLÉMENTÉE** :
 
 | Emplacement | Valeur |
 |-------------|--------|
 | **Programme** | ADH IDE 69 |
-| **Sous-tâche** | n°5 "scroll sur compte" |
-| **Section** | Logic > Handler "W1 Choix_action" (Control Change) |
-| **Position** | AVANT le premier CallTask vers ADH IDE 180 (SET_LIST_NUMBER) |
-
-**Opération à ajouter : Block IF**
+| **Tâche** | **69.3** (scroll sur compte) |
+| **Section** | Logic |
+| **Ligne** | **21** |
+| **Opération** | **Verify Warning** |
 
 ```
-Block If
-  Condition: W1 Choix_action IN ('N', 'D', 'C', 'I', 'S')
-
-  Action: Message Box (MsgBox)
-    Title   : "Option Extrait"
-    Message : "Voulez-vous éditer l'extrait de compte complet ?"
-    Buttons : Yes/No
-    Default : Yes
-    Return  : W.ExtraitComplet    ← TRUE si Oui, FALSE si Non
-
-End Block
+Tâche 69.3 ligne 21 : Verify Warning
+  Message : "Voulez-vous éditer l'extrait de compte complet ?"
+  Buttons : Yes / No
+  Return  : IW (v.Edition partielle?)
+            TRUE = Yes (extrait complet)
+            FALSE = No (masquer annulations)
 ```
 
-**Alternative ergonomique** : Checkbox sur l'écran
-- Contrôle Checkbox "Extrait complet" lié à `W.ExtraitComplet`
-- Coché par défaut (TRUE)
+**NOTE** : La logique d'interrogation existe déjà. Il reste à propager la variable IW vers les programmes d'édition et à ajouter le filtre.
 
 ### 1.3 Modifier les 5 CallTask
 
 Pour CHAQUE CallTask vers les programmes d'édition, ajouter un argument :
 
-| CallTask vers | N° Prg | Position IDE | Argument à ajouter |
-|---------------|--------|--------------|-------------------|
-| EXTRAIT_NOM | **70** | Handler W1 Choix_action, Block 'N' | Arg 15 = `W.ExtraitComplet` |
-| EXTRAIT_DATE | **71** | Handler W1 Choix_action, Block 'D' | Arg 14 = `W.ExtraitComplet` |
-| EXTRAIT_CUM | **72** | Handler W1 Choix_action, Block 'C' | Arg 13 = `W.ExtraitComplet` |
-| EXTRAIT_IMP | **73** | Handler W1 Choix_action, Block 'I' | Arg 13 = `W.ExtraitComplet` |
-| EXTRAIT_SERVICE | **76** | Handler W1 Choix_action, Block 'S' | Arg 14 = `W.ExtraitComplet` |
+| CallTask vers | IDE | Position | Argument à ajouter |
+|---------------|-----|----------|-------------------|
+| EXTRAIT_NOM | **ADH IDE 70** | Tâche 69.3, Handler W1 Choix_action, Block 'N' | Arg 15 = `IW` |
+| EXTRAIT_DATE | **ADH IDE 71** | Tâche 69.3, Handler W1 Choix_action, Block 'D' | Arg 14 = `IW` |
+| EXTRAIT_CUM | **ADH IDE 72** | Tâche 69.3, Handler W1 Choix_action, Block 'C' | Arg 13 = `IW` |
+| EXTRAIT_IMP | **ADH IDE 73** | Tâche 69.3, Handler W1 Choix_action, Block 'I' | Arg 13 = `IW` |
+| EXTRAIT_SERVICE | **ADH IDE 76** | Tâche 69.3, Handler W1 Choix_action, Block 'S' | Arg 14 = `IW` |
 
 **Procédure :**
-1. Ouvrir le CallTask
+1. Ouvrir le CallTask dans Tâche 69.3
 2. Aller dans Arguments
 3. Ajouter une nouvelle ligne à la fin
-4. Sélectionner la variable `W.ExtraitComplet`
+4. Sélectionner la variable `IW` (v.Edition partielle?)
 
 ---
 
@@ -204,7 +202,7 @@ P.ExtraitComplet OR Trim(A.cte_flag_annulation) = 'Normal'
 
 | IDE | Nom | Modifications |
 |-----|-----|---------------|
-| **ADH IDE 69** | EXTRAIT_COMPTE | +1 variable, +1 MsgBox, modifier 5 CallTask |
+| **ADH IDE 69** | EXTRAIT_COMPTE | Variable IW existe (ligne 21 Verify Warning), modifier 5 CallTask pour passer IW |
 | **ADH IDE 70** | EXTRAIT_NOM | +1 paramètre (n°15), modifier Locate ~17 sous-tâches |
 | **ADH IDE 71** | EXTRAIT_DATE | +1 paramètre (n°14), modifier Locate ~15 sous-tâches |
 | **ADH IDE 72** | EXTRAIT_CUM | +1 paramètre (n°13), modifier Locate ~13 sous-tâches |
@@ -212,6 +210,8 @@ P.ExtraitComplet OR Trim(A.cte_flag_annulation) = 'Normal'
 | **ADH IDE 76** | EXTRAIT_SERVICE | +1 paramètre (n°14), modifier Locate ~15 sous-tâches |
 
 **Total** : 6 programmes, ~75 modifications de Locate
+
+**NOTE IMPORTANTE** : Le Verify Warning et la variable IW existent déjà dans ADH IDE 69 Tâche 69.3 ligne 21.
 
 ---
 

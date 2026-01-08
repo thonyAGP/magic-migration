@@ -131,6 +131,38 @@ Variables:
 - M = Prix manuel (index 12)
 ```
 
+### Tâches et Sous-tâches - NUMÉROTATION HIÉRARCHIQUE
+
+**Format IDE** : `[PrgID].[SubTask].[SubSubTask]`
+
+| Niveau | Format | Exemple | Description |
+|--------|--------|---------|-------------|
+| Programme | **69** | ADH IDE 69 | Programme principal |
+| Sous-tâche niveau 1 | **69.1** | Tâche 69.1 | 1ère sous-tâche |
+| Sous-tâche niveau 2 | **69.1.1** | Tâche 69.1.1 | Sous-sous-tâche |
+| Sous-tâche niveau 1 | **69.2** | Tâche 69.2 | 2ème sous-tâche |
+| Sous-tâche niveau 1 | **69.3** | Tâche 69.3 | 3ème sous-tâche |
+
+**ATTENTION** : Ne pas compter séquentiellement ! La 5ème tâche en ordre d'affichage peut être **69.3** s'il y a des sous-sous-tâches.
+
+### Opérations Logic - NOMS EXACTS
+
+| Opération | Usage | Retour |
+|-----------|-------|--------|
+| **Verify Warning** | Question Yes/No avec avertissement | Variable Logical (TRUE=Yes) |
+| **Verify Error** | Question Yes/No avec erreur | Variable Logical |
+| **Message Box** | Affichage simple OK | Aucun |
+| **Call Task** | Appel sous-tâche/programme | Selon paramètres |
+
+**Format ligne Logic** : `Tâche 69.3 ligne 21 : Verify Warning`
+
+### Nommage Variables Utilisateur
+
+Les variables créées par l'utilisateur ont un préfixe descriptif :
+- `v.` = Variable virtuelle : `v.Edition partielle?`
+- `W.` = Variable de travail : `W.ExtraitComplet`
+- `P.` = Paramètre : `P.Societe`
+
 ## Workflow Tickets Jira
 
 ### RÈGLE OBLIGATOIRE : Langage Magic IDE
