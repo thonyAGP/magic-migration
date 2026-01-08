@@ -5,18 +5,18 @@
 - Ticket récupéré depuis Jira
 - 2 captures d'écran téléchargées
 - Statut "Recette KO" → une première implémentation a échoué
-- Programmes Extrait identifiés (Prg_69-76)
+- Programmes Extrait identifiés (ADH IDE 69-76)
 
 ## 2026-01-07 - Analyse complète
 
-### Prg_69 (EXTRAIT_COMPTE)
+### ADH IDE 69 (EXTRAIT_COMPTE)
 - 466 KB - Découpage tronçons appliqué
 - 12 sous-tâches identifiées
 - Sous-tâche 5 "scroll sur compte" = écran principal
 - Variable clé : `W1 Choix_action` (N/D/C/I/S)
-- Appels vers Prg_70, 71, 72, 73, 76
+- Appels vers ADH IDE 70, 71, 72, 73, 76
 
-### Prg_70 (EXTRAIT_NOM) & Prg_76 (EXTRAIT_SERVICE)
+### ADH IDE 70 (EXTRAIT_NOM) & ADH IDE 76 (EXTRAIT_SERVICE)
 - Structure identique : 14 paramètres
 - 17-19 sous-tâches (imprimantes A4, TMT88, etc.)
 - MainSource : obj=40 = `operations_dat`
@@ -25,7 +25,7 @@
 ### Solution technique validée
 - **Option A : Ajouter paramètre 15** `P.MasquerAnnulations` (Boolean)
 - Modifier les 5 programmes d'édition
-- Modifier Prg_69 pour passer le paramètre
+- Modifier ADH IDE 69 pour passer le paramètre
 
 ## Questions ouvertes
 
@@ -43,7 +43,7 @@ Synchroniser les sources Magic sur GitLab pour :
 
 ## Prochaines étapes
 
-1. ~~Analyser Prg_69 (point d'entrée)~~ ✅
+1. ~~Analyser ADH IDE 69 (point d'entrée)~~ ✅
 2. ~~Tracer le flux d'édition~~ ✅
 3. ~~Identifier où injecter la question~~ ✅ → Sous-tâche 5
 4. ~~Proposer solution technique~~ ✅ → Paramètre 15

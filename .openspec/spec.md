@@ -102,32 +102,32 @@ Composant "Sessions_Reprises" - 30 programmes:
   - ChangementCompte (12 endpoints) - Menu, Separation, Fusion, Historique
   - Menus (5 endpoints) - MenuCaisse, MenuVentes, MenuChange, MenuDepot, MenuFactures
 
-  **Ecrans SPA (flux: Main→Prg_1→Prg_162→Prg_121):**
-  | Ecran | ID Magic | Programmes | Description |
+  **Ecrans SPA (flux: Main→ADH IDE 1→ADH IDE 162→ADH IDE 121):**
+  | Ecran | ID Magic | Programmes ADH IDE | Description |
   |-------|----------|------------|-------------|
-  | index.html | **CA0142** | Prg_121 | Gestion de la caisse (ecran principal SDI) |
-  | ouverture-session.html | **CA0143** | Prg_294 | Ouverture session - grille comptage initial |
-  | sessions.html | - | Prg_77,80,236 | Liste sessions, Consultation, Historique |
-  | zooms.html | - | Prg_164-189 | Tables de reference (8 zooms) |
-  | telephone.html | - | Prg_202-220 | Lignes telephone (OPEN/CLOSE/STATS) |
-  | change.html | - | Prg_20-25 | Operations de change devises |
-  | ventes.html | - | Prg_229-250 | Gift Pass, Resort Credit, Historique |
-  | extrait.html | - | Prg_69-76 | Extrait de compte avec filtres |
-  | garanties.html | - | Prg_111-114 | Depots et cautions |
-  | easycheckout.html | - | Prg_53-67 | Workflow Easy Check-Out |
-  | factures.html | - | Prg_54,89-97 | Gestion facturation TVA |
-  | changement-compte.html | - | Prg_27-37 | Separation/Fusion comptes |
+  | index.html | **CA0142** | ADH IDE 121 | Gestion de la caisse (ecran principal SDI) |
+  | ouverture-session.html | **CA0143** | ADH IDE 294 | Ouverture session - grille comptage initial |
+  | sessions.html | - | ADH IDE 77, 80, 236 | Liste sessions, Consultation, Historique |
+  | zooms.html | - | ADH IDE 164-189 | Tables de reference (8 zooms) |
+  | telephone.html | - | ADH IDE 202-220 | Lignes telephone (OPEN/CLOSE/STATS) |
+  | change.html | - | ADH IDE 20-25 | Operations de change devises |
+  | ventes.html | - | ADH IDE 229-250 | Gift Pass, Resort Credit, Historique |
+  | extrait.html | - | ADH IDE 69-76 | Extrait de compte avec filtres |
+  | garanties.html | - | ADH IDE 111-114 | Depots et cautions |
+  | easycheckout.html | - | ADH IDE 53-67 | Workflow Easy Check-Out |
+  | factures.html | - | ADH IDE 54, 89-97 | Gestion facturation TVA |
+  | changement-compte.html | - | ADH IDE 27-37 | Separation/Fusion comptes |
 
-  **Note flux ecrans:** Prg_162 ("Menu caisse GM") est un menu intermediaire sans form visible.
-  L'ecran principal visible est Prg_121 (CA0142) avec WindowType=2 (SDI).
+  **Note flux ecrans:** ADH IDE 162 ("Menu caisse GM") est un menu intermediaire sans form visible.
+  L'ecran principal visible est ADH IDE 121 (CA0142) avec WindowType=2 (SDI).
 
-- [x] **ADH/Ventes - Prg_237 Solde Gift Pass** - Migre 2025-12-27
+- [x] **ADH/Ventes - ADH IDE 237 Solde Gift Pass** - Migre 2025-12-27
   - Endpoint: `GET /api/ventes/solde-giftpass/{societe}/{compte}/{filiation}`
   - Table: `ccpartyp` (cc_total_par_type)
   - Query CQRS: GetSoldeGiftPassQuery
   - 8 tests unitaires (validator)
 
-- [x] **ADH/Ventes - Prg_250 Solde Resort Credit** - Migre 2025-12-27
+- [x] **ADH/Ventes - ADH IDE 250 Solde Resort Credit** - Migre 2025-12-27
   - Endpoint: `GET /api/ventes/solde-resortcredit/{societe}/{compte}/{filiation}/{service}`
   - Table: `resort_credit`
   - Query CQRS: GetSoldeResortCreditQuery
@@ -142,35 +142,35 @@ Composant "Sessions_Reprises" - 30 programmes:
   - Ecran interactif: `/zooms.html`
   - Fix decimal->double pour colonnes SQL float
 
-- [x] **ADH/Members - Prg_160 GetCMP** - Migre 2025-12-27
+- [x] **ADH/Members - ADH IDE 160 GetCMP** - Migre 2025-12-27
   - Endpoint: `GET /api/members/club-med-pass/{societe}/{compte}/{filiation}`
   - Table: `ezcard` (ez_card)
   - Query CQRS: GetClubMedPassQuery
   - Retourne: CardCode si status != 'O' (Opposition)
   - 14 tests unitaires (validator)
 
-- [x] **ADH/Solde - Prg_192 SOLDE_COMPTE** - Migre 2025-12-28
+- [x] **ADH/Solde - ADH IDE 192 SOLDE_COMPTE** - Migre 2025-12-28
   - Endpoint: `GET /api/solde/{societe}/{compte}/{filiation}`
   - Tables: operations (operations_dat), ccpartyp (cc_total_par_type)
   - Query CQRS: GetSoldeCompteQuery
   - Calcul: SUM(Credit) - SUM(Debit) par service
   - 7 tests unitaires
 
-- [x] **ADH/Ventes - Prg_238 Historique** - Migre 2025-12-28
+- [x] **ADH/Ventes - ADH IDE 238 Historique** - Migre 2025-12-28
   - Endpoint: `GET /api/ventes/historique/{societe}/{compte}/{filiation}`
   - Table: ccventes (cc_ventes)
   - Query CQRS: GetHistoVentesQuery
   - Liste toutes les ventes avec tri par date
   - 7 tests unitaires
 
-- [x] **ADH/Extrait - Prg_69 EXTRAIT_COMPTE** - Migre 2025-12-28
+- [x] **ADH/Extrait - ADH IDE 69 EXTRAIT_COMPTE** - Migre 2025-12-28
   - Endpoint: `GET /api/extrait/{societe}/{compte}/{filiation}`
   - Tables: operations (operations_dat), services (cafil048_dat)
   - Query CQRS: GetExtraitCompteQuery
   - Mouvements tries par date avec cumul progressif
   - 7 tests unitaires
 
-- [x] **ADH/Garantie - Prg_111 GARANTIE** - Migre 2025-12-28
+- [x] **ADH/Garantie - ADH IDE 111 GARANTIE** - Migre 2025-12-28
   - Endpoint: `GET /api/garantie/{societe}/{compte}/{filiation}`
   - Tables: depot_garantie, cafil069_dat (types garantie)
   - Query CQRS: GetGarantieCompteQuery
@@ -241,7 +241,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 - [ ] Mise en production et tests finaux
 
 ### Terminees
-- [x] **Analyse Main/Prg_162 + 6 ecrans** (terminee: 2025-12-31) - Tracage flux CallTask, 3 gaps API combles, 6 ecrans SPA crees
+- [x] **Analyse Main/ADH IDE 162 + 6 ecrans** (terminee: 2025-12-31) - Tracage flux CallTask, 3 gaps API combles, 6 ecrans SPA crees
 - [x] **Phase 11: Identification (2 endpoints)** (terminee: 2025-12-28) - Login + Session check, 327 tests total
 - [x] **Phase 12: EzCard (3 endpoints)** (terminee: 2025-12-28) - Cards lookup, deactivation, character validation
 - [x] **Phase 12: Divers (5 endpoints)** (terminee: 2025-12-28) - Langue, Titre, AccesInfo, IntegriteDates, SessionTimestamp
@@ -252,21 +252,21 @@ Composant "Sessions_Reprises" - 30 programmes:
 - [x] **Phase 8: Telephone (2 endpoints)** (terminee: 2025-12-28) - Query + Command, 272 tests total
 - [x] **Phase 7: Change (3 endpoints)** (terminee: 2025-12-28) - Calcul equivalent devise, 244 tests total
 - [x] **Phase 3-6: Solde, Ventes, Extrait, Garantie** (terminee: 2025-12-28) - 4 queries, 197 tests total
-- [x] **Phase 2: Members (Prg_160 GetCMP)** (terminee: 2025-12-27) - Endpoint members/club-med-pass, 145 tests
+- [x] **Phase 2: Members (ADH IDE 160 GetCMP)** (terminee: 2025-12-27) - Endpoint members/club-med-pass, 145 tests
 - [x] **Phase 1: Zooms (8 endpoints)** (terminee: 2025-12-27) - 7 tables REF, ecran interactif, fix decimal/double
-- [x] **Migration Prg_250 Solde Resort Credit** (terminee: 2025-12-27) - Dashboard HTML, 131 tests
-- [x] **Migration Prg_237 Solde Gift Pass** (terminee: 2025-12-27) - Premier programme Ventes migre, 10 tables, 116 tests
+- [x] **Migration ADH IDE 250 Solde Resort Credit** (terminee: 2025-12-27) - Dashboard HTML, 131 tests
+- [x] **Migration ADH IDE 237 Solde Gift Pass** (terminee: 2025-12-27) - Premier programme Ventes migre, 10 tables, 116 tests
 - [x] **Flux coffre ouverture/fermeture** (terminee: 2025-12-27) - 4 details ouverture (I,C,K,L), validation ecart, 108 tests
 - [x] **Logique metier ecarts** (terminee: 2025-12-27) - Value Objects, IEcartCalculator, validation fermeture
 - [x] **API Caisse complete** (terminee: 2025-12-27) - 24 endpoints, 9 tables, Clean Architecture
-- [x] Analyse Prg_131 Fermeture caisse (terminee: 2025-12-26) - 17 params, 22 sous-taches, 10 tables REF, 21 progs externes
+- [x] Analyse ADH IDE 131 Fermeture caisse (terminee: 2025-12-26) - 17 params, 22 sous-taches, 10 tables REF, 21 progs externes
 - [x] Exploration PBG et PVE (terminee: 2025-12-24) - 394+448 progs, roles identifies
-- [x] Analyse Prg_122 Ouverture caisse (terminee: 2025-12-24) - 15 params, 9 sous-taches, 3 tables REF
+- [x] Analyse ADH IDE 122 Ouverture caisse (terminee: 2025-12-24) - 15 params, 9 sous-taches, 3 tables REF
 - [x] Amelioration skill tables (terminee: 2025-12-24) - Colonnes detaillees, codes StoredAs
 - [x] Migration MECANO (terminee: 2025-12-22) - Scripts SQL valides sur CSK0912
 - [x] Identification composants ADH (terminee: 2025-12-24) - 30 programmes partages identifies
 - [x] Analyse Gestion Caisse (terminee: 2025-12-24) - 41 progs, flux principal identifie
-- [x] Analyse tables REF Prg_121 (terminee: 2025-12-24) - 6 tables identifiees et documentees
+- [x] Analyse tables REF ADH IDE 121 (terminee: 2025-12-24) - 6 tables identifiees et documentees
 - [x] Creation structure OpenSpec (terminee: 2025-12-24)
 
 ## Plans
@@ -313,7 +313,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 | Date | Decision | Contexte | Alternatives rejetees |
 |------|----------|----------|----------------------|
 | 2026-01-05 | **Facteurs DLU calibres X=0.65, Y=2.0** | Validation visuelle CA0142: 939×178 DLU → 610×356 px. Positions boutons fideles | X=0.5/Y=1.0 (trop petit), X=0.53/Y=1.0 (hauteur insuffisante) |
-| 2026-01-04 | **Correction tracage flux** | Prg_162 n'est PAS l'ecran visible - c'est un menu intermediaire (CallTask vers Prg_121). Ecran visible = CA0142 (Prg_121) avec WindowType=2 (SDI) | Considerer Prg_162 comme ecran principal (ERREUR) |
+| 2026-01-04 | **Correction tracage flux** | ADH IDE 162 n'est PAS l'ecran visible - c'est un menu intermediaire (CallTask vers ADH IDE 121). Ecran visible = CA0142 (ADH IDE 121) avec WindowType=2 (SDI) | Considerer ADH IDE 162 comme ecran principal (ERREUR) |
 | 2026-01-04 | Identifier ecrans par ID public | Format CA0XXX visible dans titre ecran correspond au Public Name dans ProgramHeaders.xml | Identifier par nom programme interne |
 | 2025-12-27 | Ecarts via Domain Service | Logique metier dans IEcartCalculator, testable | Calcul inline dans handler |
 | 2025-12-27 | Seuil alerte configurable | Parametre SeuilAlerte avec ForceClosureOnEcart | Seuil fixe en config |
@@ -368,6 +368,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 |--------|--------|---------|-------------|
 | PMS-1373 | **SPEC COMPLETE** | Extrait | Masquer annulations (+/-) dans extrait compte - Branche feature/PMS-1373 |
 | CMDS-174321 | **RÉSOLU** | dates | Bug date arrivee PB027 (+1 mois) - Cause: données corrompues en base |
+| CMDS-176521 | **DIAGNOSTIC OK** | POS/PVE | Prix remise affiche 41,857 au lieu de 5,400 - PVE IDE 186/201 analyses, bug Picture Format |
 
 ## Bases de donnees
 
@@ -382,11 +383,12 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ## Changelog
 
+- 2026-01-08: **CMDS-176521 DIAGNOSTIC COMPLET** - Bug affichage prix remise POS (41,857 au lieu de 5,400). PVE IDE 186 (Main Sale) et PVE IDE 201 (Discounts) analyses. Calcul correct (Expression 30/33), bug dans Picture Format ou binding formulaire. Ticket dev ouvert par Davide, fix prevu fin janvier
 - 2026-01-08: **PMS-1373 Spécification COMPLETE** - Découverte champ `cte_flag_annulation` existant (valeurs Normal/Annulation/X-annule). Solution simplifiée: filtre WHERE au lieu de matching +/-. Spec implementation.md créée. Branche feature/PMS-1373-masquer-annulations. Sources synchronisées GitHub (thonyAGP/PMS-Magic-Sources)
-- 2026-01-07: **CMDS-174321 RÉSOLU - Analyse fichiers NA** - PREUVES: fichiers source NA (RV.HST) contiennent dates CORRECTES (251225=25/12/25) pour tous les SEEDSMAN. Le BUG est dans l'IMPORT PMS (PBG Prg_315), pas dans les données NA. Hypothèse: inversion MM/DD lors conversion date pour filiation 004 uniquement. SQL correction fourni
-- 2026-01-07: **PMS-1373 Analyse Prg_69 EXTRAIT_COMPTE** - Structure complete (466KB, 12 sous-taches). Flux edition identifie (Choix_action → Prg_70/71/72/73/76). Point d'injection: sous-tache 5 "scroll sur compte". Skill enrichi: section "Analyse par Troncons" pour fichiers volumineux
+- 2026-01-07: **CMDS-174321 RÉSOLU - Analyse fichiers NA** - PREUVES: fichiers source NA (RV.HST) contiennent dates CORRECTES (251225=25/12/25) pour tous les SEEDSMAN. Le BUG est dans l'IMPORT PMS (PBG IDE 315), pas dans les données NA. Hypothèse: inversion MM/DD lors conversion date pour filiation 004 uniquement. SQL correction fourni
+- 2026-01-07: **PMS-1373 Analyse ADH IDE 69 EXTRAIT_COMPTE** - Structure complete (466KB, 12 sous-taches). Flux edition identifie (Choix_action → ADH IDE 70/71/72/73/76). Point d'injection: sous-tache 5 "scroll sur compte". Skill enrichi: section "Analyse par Troncons" pour fichiers volumineux
 - 2026-01-07: **Interface Gestion Tickets Jira** - Menu CLI au demarrage (hook SessionStart), 4 commandes (/ticket, /ticket-new, /ticket-learn, /ticket-search), KB SQLite pour capitalisation, structure .openspec/tickets/{KEY}/. Migration CMDS-174321 vers nouvelle structure. 5 scripts PS securises (.env credentials)
-- 2026-01-07: **CMDS-174321 Analyse approfondie** - Tracage flux PB027 (Prg_62→Prg_63). Decouverte: terminal affiche date correcte (25DEC), GUI affiche erreur (25/01). Bug dans affichage GUI, pas import. Tables requises: cafil014_dat, table temp planning. Attente base VPHUKET
+- 2026-01-07: **CMDS-174321 Analyse approfondie** - Tracage flux PB027 (PBG IDE 62→PBG IDE 63). Decouverte: terminal affiche date correcte (25DEC), GUI affiche erreur (25/01). Bug dans affichage GUI, pas import. Tables requises: cafil014_dat, table temp planning. Attente base VPHUKET
 - 2026-01-06: **Analyse CMDS-174321 + MCP Global Index** - Bug date arrivee (NA=25/12/2025, PMS=25/01/2026). Hypothese: inversion DD/MM vs MM/DD. 4 nouveaux outils MCP: magic_find_program, magic_list_programs, magic_index_stats, magic_get_dependencies. Rapport `.openspec/reports/CMDS-174321_ANALYSIS.md`
 - 2026-01-06: **Documentation SADT projet ADH** - Analyse structuree complete. 9 modules fonctionnels, ~350 programmes, 27 dossiers, 20 tables. Rapport `.openspec/reports/ADH_SADT_DOCUMENTATION.md`
 - 2026-01-06: **MCP Server Magic Interpreter** - Serveur MCP C# .NET 8 pour parsing XML deterministe. 5 outils: magic_get_position, magic_get_tree, magic_get_dataview, magic_get_expression, magic_get_logic. 2383 programmes indexes (PBP, REF, VIL, PBG, PVE). Config dans .claude/settings.local.json
@@ -398,22 +400,22 @@ Composant "Sessions_Reprises" - 30 programmes:
 - 2026-01-05: **Skill: Convention nommage variables** - Variables DataView A-Z, AA-ZZ, AAA-ZZZ. Formule: DK = 4*26+11 = 115
 - 2026-01-05: **Skill: Mapping expressions XML→IDE** - XML conserve id originaux avec trous, IDE renumérote séquentiellement. WithValue reference id XML, pas numero IDE
 - 2026-01-05: **Skill enrichi: Debugging/Troubleshooting** - Dead Expressions, ExpCalc function, Remark comme indices, methodologie tracage WithValue, checklist debugging
-- 2026-01-04: **CORRECTION CRITIQUE: Tracage flux ecrans** - Erreur identifiee: Prg_162 considere a tort comme ecran visible alors que c'est un menu intermediaire. Flux reel: Main→Prg_1→Prg_162→Prg_121 (CA0142). Ecran principal = Prg_121 avec WindowType=2 (SDI)
-- 2026-01-04: **ouverture-session.html (CA0143)** - Ecran cree depuis analyse Prg_294. Grille 7 colonnes (Cash/Cartes/Cheques/Produits/TOTAL/OD/Devises), 6 lignes (Solde initial/Appro caisse/Appro produits/Caisse comptee/Controle PMS/Ecart). Boutons Abandon/Valider avec validation ecart
-- 2026-01-04: **index.html corrige (CA0142)** - Reconstruction fidele depuis Prg_121 avec tous les boutons (Ouvrir/Continuer/Fermer session, Appro, Regul Telecollecte, etc.) et zone info utilisateur/coffre/etat
+- 2026-01-04: **CORRECTION CRITIQUE: Tracage flux ecrans** - Erreur identifiee: ADH IDE 162 considere a tort comme ecran visible alors que c'est un menu intermediaire. Flux reel: Main→ADH IDE 1→ADH IDE 162→ADH IDE 121 (CA0142). Ecran principal = ADH IDE 121 avec WindowType=2 (SDI)
+- 2026-01-04: **ouverture-session.html (CA0143)** - Ecran cree depuis analyse ADH IDE 294. Grille 7 colonnes (Cash/Cartes/Cheques/Produits/TOTAL/OD/Devises), 6 lignes (Solde initial/Appro caisse/Appro produits/Caisse comptee/Controle PMS/Ecart). Boutons Abandon/Valider avec validation ecart
+- 2026-01-04: **index.html corrige (CA0142)** - Reconstruction fidele depuis ADH IDE 121 avec tous les boutons (Ouvrir/Continuer/Fermer session, Appro, Regul Telecollecte, etc.) et zone info utilisateur/coffre/etat
 - 2026-01-04: **Skill enrichi: Menu intermediaire vs Ecran visible** - Regles ajoutees: WindowType=2=SDI visible, tracage multi-niveaux obligatoire, ne pas s'arreter au premier CallTask
-- 2026-01-04: **Skill: Flow Tracing & Window Types** - Documentation Window Types (Modal/SDI/MDI), flux d'execution Task Prefix→Suffix, methodologie tracage demarrage depuis MainProgram (Prg_1→Prg_162)
-- 2026-01-04: **Navigation SPA complete** - sessions.html (Prg_77/80/236), modales coffre (Prg_233/234/235/163/197), panel navigation 11 ecrans
+- 2026-01-04: **Skill: Flow Tracing & Window Types** - Documentation Window Types (Modal/SDI/MDI), flux d'execution Task Prefix→Suffix, methodologie tracage demarrage depuis MainProgram (ADH IDE 1→ADH IDE 162)
+- 2026-01-04: **Navigation SPA complete** - sessions.html (ADH IDE 77/80/236), modales coffre (ADH IDE 233/234/235/163/197), panel navigation 11 ecrans
 - 2026-01-04: **Skill enrichi: Detection code desactive** - ISEMPTY_TSK pour programmes vides, Disabled val="1" pour lignes, 9 progs vides + 354 lignes exclus
 - 2026-01-04: **Rapport couverture complet** - `.openspec/reports/COVERAGE_REPORT_2025-01-04.md`, 85.5% couverture, 12 ecrans SPA, ~125 endpoints
 - 2026-01-04: **Verification REF.ecf** - 5 progs (800,877,895,1066,1095) identifies comme compiles (.eci), non analysables en source
-- 2025-12-31: **Analyse Main/Prg_162 complete** - Tracage flux CallTask, couverture API validee, 3 gaps combles (DetailAppels, MenuTelephone, ZoomServicesVillage)
+- 2025-12-31: **Analyse Main/ADH IDE 162 complete** - Tracage flux CallTask, couverture API validee, 3 gaps combles (DetailAppels, MenuTelephone, ZoomServicesVillage)
 - 2025-12-31: **6 ecrans SPA crees** - ventes.html, extrait.html, garanties.html, easycheckout.html, factures.html, changement-compte.html
 - 2025-12-31: Navigation modules ajoutee a index.html - Panel fixe avec liens vers tous les ecrans
 - 2025-12-29: **MIGRATION ADH COMPLETE** - 527 tests unitaires (100% pass), ~70 endpoints, 18 modules migres, build Release operationnel
 - 2025-12-29: Fix validators Societe (MaxLength 2->10), correction tests Ventes orphelins, nettoyage fichiers agents
 - 2025-12-28: **Interface Graphique Complete** - 15 ecrans SPA (dashboard, sessions, ventes, EzCard, depot, etc.), 411 tests total
-- 2025-12-28: **Phase 12: Divers** - 5 programmes prioritaires (Prg_42,43,45,47,48), 5 endpoints, 458 tests total
+- 2025-12-28: **Phase 12: Divers** - 5 programmes prioritaires (ADH IDE 42,43,45,47,48), 5 endpoints, 458 tests total
 - 2025-12-28: **Phase 12: Depot** - GetExtraitDepot + RetirerDepot, 2 endpoints
 - 2025-12-28: **Phase 12: EzCard** - GetEzCardByMember + DesactiverEzCard + ValiderCaracteres, 3 endpoints
 - 2025-12-28: **Phase 11: Identification** - VerifierOperateur + VerifierSessionCaisse, 327 tests total
@@ -422,19 +424,19 @@ Composant "Sessions_Reprises" - 30 programmes:
 - 2025-12-28: **Phase 8: Telephone** - LigneTelephone entity, 2 endpoints (get/gerer), OPEN/CLOSE commands
 - 2025-12-28: **Phase 7: Change** - TauxChange entity, 3 endpoints (devise-locale/taux/calculer), logique conversion bidirectionnelle
 - 2025-12-28: **Phase 3-6: Solde, Ventes, Extrait, Garantie** - 4 nouvelles queries, 7 entites, 52 tests validators
-- 2025-12-27: **Phase 2: Members (Prg_160 GetCMP)** - Endpoint /api/members/club-med-pass, table ezcard, 14 tests, 145 tests total
+- 2025-12-27: **Phase 2: Members (ADH IDE 160 GetCMP)** - Endpoint /api/members/club-med-pass, table ezcard, 14 tests, 145 tests total
 - 2025-12-27: **Phase 1: Zooms (8 endpoints)** - 7 tables REF, 7 entites, ecran interactif /zooms.html, fix decimal->double
-- 2025-12-27: **Migration Prg_250 Solde Resort Credit** - Endpoint /api/ventes/solde-resortcredit, table resort_credit, dashboard HTML visuel, 131 tests
-- 2025-12-27: **Migration Prg_237 Solde Gift Pass** - Premier programme Ventes migre vers C#, endpoint /api/ventes/solde-giftpass, table ccpartyp, 116 tests
+- 2025-12-27: **Migration ADH IDE 250 Solde Resort Credit** - Endpoint /api/ventes/solde-resortcredit, table resort_credit, dashboard HTML visuel, 131 tests
+- 2025-12-27: **Migration ADH IDE 237 Solde Gift Pass** - Premier programme Ventes migre vers C#, endpoint /api/ventes/solde-giftpass, table ccpartyp, 116 tests
 - 2025-12-27: **Flux coffre complet** - Ouverture avec 4 details (I,C,K,L) + coffre, fermeture avec validation ecart, 108 tests
 - 2025-12-27: Fix entites non-null pour DB (commentaire_ecart, montants) + validation CommentaireEcart max 30 car
 - 2025-12-27: **Logique metier ecarts** - Value Objects (EcartSession, EcartMontants, EcartDevise), IEcartCalculator, validation fermeture avec seuil
 - 2025-12-27: FluentValidation + tests - 7 validators, ValidationBehavior pipeline
 - 2025-12-27: **MILESTONE: API Caisse COMPLETE** - 24 endpoints, 9 tables, Clean Architecture
 - 2025-12-26: API Caisse C# .NET 8 fonctionnelle - Solution 5 projets, 9 tables, 32 sessions lues depuis CSK0912
-- 2025-12-26: Analyse Prg_131 Fermeture caisse - 22 sous-taches, 10 tables REF, architecture WS (13 services)
+- 2025-12-26: Analyse ADH IDE 131 Fermeture caisse - 22 sous-taches, 10 tables REF, architecture WS (13 services)
 - 2025-12-24: Exploration PBG (394 progs) et PVE (448 progs) - roles et composants identifies
-- 2025-12-24: Analyse Prg_122 complete - 15 params, 9 sous-taches, tables caisse_devise/devisein_par/cafil045_dat
+- 2025-12-24: Analyse ADH IDE 122 complete - 15 params, 9 sous-taches, tables caisse_devise/devisein_par/cafil045_dat
 - 2025-12-24: Amelioration skill tables - StoredAs codes (6=float, 32=nvarchar) documentes
 - 2025-12-24: Guide ECRANS complet cree - ecrans-guide.md (Controls, Events, Forms)
 - 2025-12-24: Guide EDITIONS complet cree - editions-guide.md (Area, Groups, Page/Counter)
@@ -442,8 +444,8 @@ Composant "Sessions_Reprises" - 30 programmes:
 - 2025-12-24: Analyse COMPLETE 40 fichiers XML (10 par projet) - gaps-analysis-complete.md
 - 2025-12-24: Analyse 10 fichiers XML (ADH/PBP/REF/PBG) - Creation gaps-analysis.md
 - 2025-12-24: Creation xml-structure-guide.md - Guide complet structure XML pour conversion
-- 2025-12-24: Analyse Prg_122 (Ouverture caisse) - Structure XML maitrisee
-- 2025-12-24: Analyse tables REF Prg_121 (6 tables: caisse_session, caisse_session_detail, caisse_parametres, cafil048_dat, user_dat, caisse_session_coffre2)
+- 2025-12-24: Analyse ADH IDE 122 (Ouverture caisse) - Structure XML maitrisee
+- 2025-12-24: Analyse tables REF ADH IDE 121 (6 tables: caisse_session, caisse_session_detail, caisse_parametres, cafil048_dat, user_dat, caisse_session_coffre2)
 - 2025-12-24: Analyse complete Gestion Caisse (41 progs), doc GESTION_CAISSE_SPEC.md
 - 2025-12-24: Ajout projet ADH, identification 30 programmes partages ADH.ecf
 - 2025-12-24: Creation .openspec/spec.md (nouvelle structure)

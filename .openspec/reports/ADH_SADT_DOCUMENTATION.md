@@ -157,11 +157,11 @@ MECANISMES:
 
 | Ref | Fonction | Programmes |
 |-----|----------|------------|
-| A1.1 | Ouverture session | Prg_122, Prg_294 |
-| A1.2 | Fermeture session | Prg_131 |
-| A1.3 | Gestion coffre | Prg_163, Prg_197, Prg_233-235 |
-| A1.4 | Historique sessions | Prg_77, Prg_80, Prg_236 |
-| A1.5 | Appro/Regulation | Prg_123-130 |
+| A1.1 | Ouverture session | ADH IDE 122, ADH IDE 294 |
+| A1.2 | Fermeture session | ADH IDE 131 |
+| A1.3 | Gestion coffre | ADH IDE 163, ADH IDE 197, ADH IDE 233-235 |
+| A1.4 | Historique sessions | ADH IDE 77, ADH IDE 80, ADH IDE 236 |
+| A1.5 | Appro/Regulation | ADH IDE 123-130 |
 
 ---
 
@@ -575,7 +575,7 @@ Tables de reference consultables pour selection de valeurs.
                                       v
                               +-----------------+
                               | GESTION CAISSE  |
-                              |  (Prg_121)      |
+                              | (ADH IDE 121)   |
                               +-----------------+
                                       |
           +---------------------------+---------------------------+
@@ -709,7 +709,7 @@ Ces 30 programmes sont exposes dans le composant ADH.ecf pour utilisation par d'
 
 ## Annexe B : Programmes Analyses (Extrait)
 
-### Module Brazil DataCatching (Prg_4-18)
+### Module Brazil DataCatching (ADH IDE 4-18)
 
 | ID | Description | Type | Params |
 |----|-------------|------|--------|
@@ -728,7 +728,7 @@ Ces 30 programmes sont exposes dans le composant ADH.ecf pour utilisation par d'
 | 17 | Print C/O confirmation | B | 7 |
 | 18 | Print extrait compte | B | 7 |
 
-### Module Change (Prg_20-25)
+### Module Change (ADH IDE 20-25)
 
 | ID | Description | Type | Params |
 |----|-------------|------|--------|
@@ -739,7 +739,7 @@ Ces 30 programmes sont exposes dans le composant ADH.ecf pour utilisation par d'
 | 24 | Print recu change vente | B | 14 |
 | 25 | Change GM | B | 16 |
 
-### Module Changement Compte (Prg_27-37)
+### Module Changement Compte (ADH IDE 27-37)
 
 | ID | Description | Public | Type | Params |
 |----|-------------|--------|------|--------|
@@ -755,14 +755,14 @@ Ces 30 programmes sont exposes dans le composant ADH.ecf pour utilisation par d'
 | 36 | Print Separation ou fusion | - | B | 13 |
 | 37 | Menu changement compte | - | O | 9 |
 
-### Module Depot (Prg_39-40)
+### Module Depot (ADH IDE 39-40)
 
 | ID | Description | Type | Params |
 |----|-------------|------|--------|
 | 39 | Print extrait ObjDevSce | B | 5 |
 | 40 | Comptes de depot | B | 8 |
 
-### Module Divers (Prg_42-52)
+### Module Divers (ADH IDE 42-52)
 
 | ID | Description | Type | Params |
 |----|-------------|------|--------|
@@ -778,7 +778,7 @@ Ces 30 programmes sont exposes dans le composant ADH.ecf pour utilisation par d'
 | 51 | Recherche Droit Solde Free Ext | B | 2 |
 | 52 | Creation adresse_village | B | 0 |
 
-### Module Easy Check Out (Prg_53-66)
+### Module Easy Check Out (ADH IDE 53-66)
 
 | ID | Description | Public | Type | Params |
 |----|-------------|--------|------|--------|
@@ -795,7 +795,7 @@ Ces 30 programmes sont exposes dans le composant ADH.ecf pour utilisation par d'
 | 63 | Test Easy Check-Out Online | - | O | 0 |
 | 64 | Solde Easy Check Out | SOLDE_EASY_CHECK_OUT | B | - |
 
-### Module Gestion Caisse (Prg_123-155)
+### Module Gestion Caisse (ADH IDE 123-155)
 
 | ID | Description | Type | Params | Tables |
 |----|-------------|------|--------|--------|

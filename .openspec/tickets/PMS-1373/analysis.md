@@ -100,7 +100,7 @@ SI option "masquer annulations" = OUI:
 2. **Comment passer le paramètre ?** Variable globale ou paramètre CallTask ?
 3. **Filtrage SQL ou mémoire ?** Dépend de la structure actuelle des programmes
 
-## Analyse Prg_69 (EXTRAIT_COMPTE) - COMPLETE
+## Analyse ADH IDE 69 (EXTRAIT_COMPTE) - COMPLETE
 
 ### Structure découverte (466KB, 12 sous-tâches)
 
@@ -122,15 +122,15 @@ SI option "masquer annulations" = OUI:
 ### Flux d'édition identifié
 
 ```
-Prg_69 (EXTRAIT_COMPTE)
+ADH IDE 69 (EXTRAIT_COMPTE)
   └── Sous-tâche 5 "scroll sur compte"
         │   Variable: W1 Choix_action (Alpha 1)
         │
-        ├── Choix 'N' → CallTask Prg_70 (EXTRAIT_NOM)
-        ├── Choix 'D' → CallTask Prg_71 (EXTRAIT_DATE)
-        ├── Choix 'C' → CallTask Prg_72 (EXTRAIT_CUM)
-        ├── Choix 'I' → CallTask Prg_73 (EXTRAIT_IMP)
-        └── Choix 'S' → CallTask Prg_76 (EXTRAIT_SERVICE)
+        ├── Choix 'N' → CallTask ADH IDE 70 (EXTRAIT_NOM)
+        ├── Choix 'D' → CallTask ADH IDE 71 (EXTRAIT_DATE)
+        ├── Choix 'C' → CallTask ADH IDE 72 (EXTRAIT_CUM)
+        ├── Choix 'I' → CallTask ADH IDE 73 (EXTRAIT_IMP)
+        └── Choix 'S' → CallTask ADH IDE 76 (EXTRAIT_SERVICE)
 ```
 
 ### Tables utilisées (obj REF.ecf)
@@ -169,7 +169,7 @@ Prg_69 (EXTRAIT_COMPTE)
 3. Passer ce paramètre aux programmes 70, 71, 72, 73, 76
 4. Modifier chaque programme d'édition pour filtrer si paramètre = TRUE
 
-### Analyse Prg_70 & Prg_76 - COMPLETE
+### Analyse ADH IDE 70 & ADH IDE 76 - COMPLETE
 
 Les deux programmes ont une **structure identique** avec 14 paramètres :
 
@@ -205,13 +205,13 @@ Cette table est utilisée comme MainSource dans TOUTES les sous-tâches d'impres
 ### Solution recommandée : Option A
 
 1. **Ajouter paramètre 15** : `P.MasquerAnnulations` (Boolean) aux programmes 70, 71, 72, 73, 76
-2. **Modifier Prg_69** : Passer ce paramètre depuis la sous-tâche 5
+2. **Modifier ADH IDE 69** : Passer ce paramètre depuis la sous-tâche 5
 3. **Logique de filtrage** : Dans chaque sous-tâche d'impression, ajouter condition sur MainSource
 
 ### Prochaines étapes
 
-- [x] Analyser Prg_70 (EXTRAIT_NOM) - 14 params, 19 sous-tâches
-- [x] Analyser Prg_76 (EXTRAIT_SERVICE) - 14 params, 17 sous-tâches
+- [x] Analyser ADH IDE 70 (EXTRAIT_NOM) - 14 params, 19 sous-tâches
+- [x] Analyser ADH IDE 76 (EXTRAIT_SERVICE) - 14 params, 17 sous-tâches
 - [x] Identifier table opérations (obj=40 = operations_dat)
 - [ ] Synchroniser sources sur GitLab
 - [ ] Vérifier branche tentative précédente (Recette KO)

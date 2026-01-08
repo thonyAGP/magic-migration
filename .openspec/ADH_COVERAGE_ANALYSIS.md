@@ -16,58 +16,58 @@
 ## 1. Arbre des Dependances Main
 
 ```
-Main (Prg_1)
-├── Prg_45 - Recuperation langue [COUVERT: /api/divers/langue]
-├── Prg_51 - Recherche Droit Solde Free Ext [COUVERT: /api/divers/droits-utilisateur]
-├── Prg_162 - Menu caisse GM - scroll [POINT D'ENTREE PRINCIPAL]
-│   ├── Sessions (Prg_116-155)
-│   │   ├── Prg_121 - Gestion caisse [COUVERT: /api/sessions/*]
-│   │   ├── Prg_122 - Ouverture caisse [COUVERT: /api/sessions/ouvrir]
-│   │   ├── Prg_131 - Fermeture caisse [COUVERT: /api/sessions/fermer]
-│   │   └── Prg_116 - Concurrence sessions [COUVERT: /api/sessions/concurrence]
-│   ├── Ventes (Prg_229-250)
-│   │   ├── Prg_233-236 - Transaction vente [COUVERT: /api/ventes/initiate]
-│   │   ├── Prg_237 - Solde Gift Pass [COUVERT: /api/ventes/solde-giftpass]
-│   │   ├── Prg_238 - Menu vente [COUVERT: /api/menus/caisse]
-│   │   ├── Prg_239-241 - Histo ventes [COUVERT: /api/ventes/historique]
-│   │   ├── Prg_243 - Deversement [COUVERT: /api/ventes/deversement]
-│   │   ├── Prg_248 - Histo IGR [COUVERT: /api/ventes/historique-igr]
-│   │   ├── Prg_249 - Histo Gratuites [COUVERT: /api/ventes/historique-gratuits]
-│   │   └── Prg_250 - Solde Resort Credit [COUVERT: /api/ventes/solde-resortcredit]
-│   ├── Changement Compte (Prg_27-37)
-│   │   ├── Prg_27 - Separation [COUVERT: /api/changement-compte/separation]
-│   │   ├── Prg_28 - Fusion [COUVERT: /api/changement-compte/fusion]
-│   │   └── Prg_29-36 - Historique [COUVERT: /api/changement-compte/histo-*]
-│   ├── Easy Check-Out (Prg_53-67)
-│   │   ├── Prg_53 - Extrait J+1 [COUVERT: /api/easycheckout/extrait]
-│   │   ├── Prg_64 - Solde ECO [COUVERT: /api/easycheckout/solde]
-│   │   └── Prg_65 - Edition ECO [COUVERT: /api/easycheckout/edition]
-│   ├── Extrait Compte (Prg_69-76)
-│   │   ├── Prg_69 - Extrait compte [COUVERT: /api/extrait/{societe}]
-│   │   ├── Prg_70 - Par Nom [COUVERT: /api/extrait/par-nom]
-│   │   ├── Prg_71 - Par Date [COUVERT: /api/extrait/par-date]
-│   │   └── Prg_76 - Par Service [COUVERT: /api/extrait/par-service]
-│   ├── Garanties (Prg_111-114)
-│   │   ├── Prg_111 - Garantie compte [COUVERT: /api/garanties/{societe}]
-│   │   └── Prg_112 - Garantie PMS-584 [COUVERT: /api/garanties/types]
-│   ├── Change (Prg_20-25)
-│   │   ├── Prg_21 - Devise locale [COUVERT: /api/change/devise-locale]
-│   │   ├── Prg_22 - Calcul equivalent [COUVERT: /api/change/calculer]
-│   │   └── Prg_25 - Change GM [COUVERT: /api/change/taux]
-│   ├── Telephone (Prg_202-220)
-│   │   ├── Prg_208 - Affectation code [COUVERT: /api/telephone/{societe}]
-│   │   ├── Prg_210 - Opposition [COUVERT: /api/telephone/gerer]
-│   │   └── Prg_216 - Menu telephone [MANQUANT]
-│   ├── Factures (Prg_54, 89-97)
-│   │   ├── Prg_54 - Factures Checkout [COUVERT: /api/factures/checkout]
-│   │   └── Prg_97 - Saisie facture TVA [COUVERT: /api/factures/creer]
-│   └── Zooms (Prg_252-273)
-│       ├── Prg_252 - Zoom gratuites [COUVERT: /api/ventes/zoom/gratuits]
-│       ├── Prg_253 - Zoom articles [COUVERT: /api/ventes/zoom/articles]
-│       ├── Prg_256 - Zoom reglement [COUVERT: /api/zooms/moyens-reglement]
-│       └── Prg_261-263 - Zoom devises [COUVERT: /api/zooms/devises]
-├── Prg_165 - Start [COUVERT: init session]
-└── Prg_328 - Verif session ouverte [COUVERT: /api/identification/session]
+Main (ADH IDE1)
+├── ADH IDE45 - Recuperation langue [COUVERT: /api/divers/langue]
+├── ADH IDE51 - Recherche Droit Solde Free Ext [COUVERT: /api/divers/droits-utilisateur]
+├── ADH IDE162 - Menu caisse GM - scroll [POINT D'ENTREE PRINCIPAL]
+│   ├── Sessions (ADH IDE116-155)
+│   │   ├── ADH IDE121 - Gestion caisse [COUVERT: /api/sessions/*]
+│   │   ├── ADH IDE122 - Ouverture caisse [COUVERT: /api/sessions/ouvrir]
+│   │   ├── ADH IDE131 - Fermeture caisse [COUVERT: /api/sessions/fermer]
+│   │   └── ADH IDE116 - Concurrence sessions [COUVERT: /api/sessions/concurrence]
+│   ├── Ventes (ADH IDE229-250)
+│   │   ├── ADH IDE233-236 - Transaction vente [COUVERT: /api/ventes/initiate]
+│   │   ├── ADH IDE237 - Solde Gift Pass [COUVERT: /api/ventes/solde-giftpass]
+│   │   ├── ADH IDE238 - Menu vente [COUVERT: /api/menus/caisse]
+│   │   ├── ADH IDE239-241 - Histo ventes [COUVERT: /api/ventes/historique]
+│   │   ├── ADH IDE243 - Deversement [COUVERT: /api/ventes/deversement]
+│   │   ├── ADH IDE248 - Histo IGR [COUVERT: /api/ventes/historique-igr]
+│   │   ├── ADH IDE249 - Histo Gratuites [COUVERT: /api/ventes/historique-gratuits]
+│   │   └── ADH IDE250 - Solde Resort Credit [COUVERT: /api/ventes/solde-resortcredit]
+│   ├── Changement Compte (ADH IDE27-37)
+│   │   ├── ADH IDE27 - Separation [COUVERT: /api/changement-compte/separation]
+│   │   ├── ADH IDE28 - Fusion [COUVERT: /api/changement-compte/fusion]
+│   │   └── ADH IDE29-36 - Historique [COUVERT: /api/changement-compte/histo-*]
+│   ├── Easy Check-Out (ADH IDE53-67)
+│   │   ├── ADH IDE53 - Extrait J+1 [COUVERT: /api/easycheckout/extrait]
+│   │   ├── ADH IDE64 - Solde ECO [COUVERT: /api/easycheckout/solde]
+│   │   └── ADH IDE65 - Edition ECO [COUVERT: /api/easycheckout/edition]
+│   ├── Extrait Compte (ADH IDE69-76)
+│   │   ├── ADH IDE69 - Extrait compte [COUVERT: /api/extrait/{societe}]
+│   │   ├── ADH IDE70 - Par Nom [COUVERT: /api/extrait/par-nom]
+│   │   ├── ADH IDE71 - Par Date [COUVERT: /api/extrait/par-date]
+│   │   └── ADH IDE76 - Par Service [COUVERT: /api/extrait/par-service]
+│   ├── Garanties (ADH IDE111-114)
+│   │   ├── ADH IDE111 - Garantie compte [COUVERT: /api/garanties/{societe}]
+│   │   └── ADH IDE112 - Garantie PMS-584 [COUVERT: /api/garanties/types]
+│   ├── Change (ADH IDE20-25)
+│   │   ├── ADH IDE21 - Devise locale [COUVERT: /api/change/devise-locale]
+│   │   ├── ADH IDE22 - Calcul equivalent [COUVERT: /api/change/calculer]
+│   │   └── ADH IDE25 - Change GM [COUVERT: /api/change/taux]
+│   ├── Telephone (ADH IDE202-220)
+│   │   ├── ADH IDE208 - Affectation code [COUVERT: /api/telephone/{societe}]
+│   │   ├── ADH IDE210 - Opposition [COUVERT: /api/telephone/gerer]
+│   │   └── ADH IDE216 - Menu telephone [MANQUANT]
+│   ├── Factures (ADH IDE54, 89-97)
+│   │   ├── ADH IDE54 - Factures Checkout [COUVERT: /api/factures/checkout]
+│   │   └── ADH IDE97 - Saisie facture TVA [COUVERT: /api/factures/creer]
+│   └── Zooms (ADH IDE252-273)
+│       ├── ADH IDE252 - Zoom gratuites [COUVERT: /api/ventes/zoom/gratuits]
+│       ├── ADH IDE253 - Zoom articles [COUVERT: /api/ventes/zoom/articles]
+│       ├── ADH IDE256 - Zoom reglement [COUVERT: /api/zooms/moyens-reglement]
+│       └── ADH IDE261-263 - Zoom devises [COUVERT: /api/zooms/devises]
+├── ADH IDE165 - Start [COUVERT: init session]
+└── ADH IDE328 - Verif session ouverte [COUVERT: /api/identification/session]
 ```
 
 ---
@@ -211,9 +211,9 @@ Main (Prg_1)
 ## 4. Plan de Correction
 
 ### Phase 1: Gaps API (Immediat)
-1. Ajouter `/api/telephone/detail-appels` - Prg_211
-2. Ajouter `/api/menus/telephone` - Prg_216
-3. Ajouter `/api/zooms/services-village` - Prg_265
+1. Ajouter `/api/telephone/detail-appels` - ADH IDE211
+2. Ajouter `/api/menus/telephone` - ADH IDE216
+3. Ajouter `/api/zooms/services-village` - ADH IDE265
 
 ### Phase 2: Tables REF (Court terme)
 1. Migrer `caisse_ref_moyen_paiement01`

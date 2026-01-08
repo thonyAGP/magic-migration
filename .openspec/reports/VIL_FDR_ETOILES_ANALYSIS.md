@@ -114,4 +114,41 @@ Si les étoiles ne s'affichent pas, le problème est ailleurs :
 
 ---
 
+## Références Magic IDE
+
+### Programme
+
+| IDE | Projet | Nom Public | Description |
+|-----|--------|------------|-------------|
+| 22 | VIL | CV Print base articles | Édition RECAPITULATIF SESSIONS PMS |
+
+### Tâche analysée
+
+| Tâche | Nom | Type |
+|-------|-----|------|
+| 22.16.1 | Record Suffix | Output |
+
+### Variables DataView (Tâche 22.16)
+
+| Variable | Index | Description |
+|----------|-------|-------------|
+| DK | 114 | fdr_ouverture (FDR Initial du jour) |
+| DL | 115 | Somme partielle |
+| DO | 118 | Composant somme |
+| DQ | 120 | Composant somme |
+| DR | 121 | Composant somme |
+| DS | 122 | Composant somme |
+| DT | 123 | Composant somme |
+| EU | 150 | v.FDR fermeture veille (FDR Previous) |
+
+### Expressions clés (Tâche 22.16.1)
+
+| N° IDE | Formule | Rôle |
+|--------|---------|------|
+| 31 | `DK+ExpCalc('10'EXP)+DO+DQ+DR+DS+DT<>DL` | Somme complexe (NON utilisée) |
+| 32 | `DK<>EU` | **Comparaison FDR Initial vs Previous (UTILISÉE)** |
+
+---
+
 *Rapport corrigé le 2026-01-05 - Validation par screenshots IDE*
+*Mis à jour 2026-01-08 - Format IDE Magic*

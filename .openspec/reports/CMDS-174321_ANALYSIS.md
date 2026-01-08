@@ -43,19 +43,19 @@ NA (Easy Arrival)
 [Fichier TXT/CSV]
     |
     v
-PBG Prg_315 "Import GM seminaire via txt"
+PBG IDE 315 "Import GM seminaire via txt"
     |
     v
 Table client_gm (gm_date_debut)
     |
     v
-PBP Prg_62 "Prep tempo arrivant planning"
+PBP IDE 62 "Prep tempo arrivant planning"
     |
     v
 Tables temporaires
     |
     v
-PBP Prg_63 "Affich arrivant planning GM" --> Ecran PB027
+PBP IDE 63 "Affich arrivant planning GM" --> Ecran PB027
 ```
 
 ---
@@ -75,7 +75,7 @@ PBP Prg_63 "Affich arrivant planning GM" --> Ecran PB027
 |---|-----------|-------------|-------------|
 | 1 | **Parsing DD/MM vs MM/DD** | Moyenne | 25/12/2025 interprete comme 12/25/2025 puis converti en 25/01/2026 (mois suivant car jour 25 > max decembre) |
 | 2 | **Donnee source corrompue** | Haute | Le fichier NA pourrait contenir une date incorrecte pour ce GM specifique |
-| 3 | **Bug calcul dans Prg_62** | Faible | Manipulation incorrecte des dates dans la preparation |
+| 3 | **Bug calcul dans PBP IDE 62** | Faible | Manipulation incorrecte des dates dans la preparation |
 | 4 | **Cache non rafraichi** | Faible | Tables temporaires avec ancienne valeur |
 
 ### Analyse de l'hypothese 1 (Parsing)
@@ -106,13 +106,13 @@ Resultat: **25/01/2026** - correspond exactement au bug!
 
 ### Investigation approfondie
 
-3. **Analyser Prg_315 (PBG)**
+3. **Analyser PBG IDE 315**
    - Localiser la lecture du fichier TXT/CSV
    - Verifier le format de date attendu vs recu
    - Chercher les expressions `DVal()` ou conversion de date
 
 4. **Tracer le flux complet**
-   - Ajouter des logs dans Prg_62 pour voir la valeur de `gm_date_debut` en entree
+   - Ajouter des logs dans PBP IDE 62 pour voir la valeur de `gm_date_debut` en entree
    - Comparer avec la valeur affichee en sortie
 
 ---
@@ -123,10 +123,10 @@ Resultat: **25/01/2026** - correspond exactement au bug!
 
 | Composant | Programme | Role |
 |-----------|-----------|------|
-| PBP | Prg_62 (IDE 157) | Preparation donnees temp |
-| PBP | Prg_63 (IDE 158) | Affichage ecran GUI |
+| PBP | PBP IDE 62 | Preparation donnees temp |
+| PBP | PBP IDE 63 | Affichage ecran GUI |
 
-### Champs identifies dans Prg_63
+### Champs identifies dans PBP IDE 63
 
 | FieldID | Column Source | Contenu |
 |---------|---------------|---------|
@@ -148,7 +148,7 @@ Resultat: **25/01/2026** - correspond exactement au bug!
 
 ### Hypothese raffinee
 
-Le bug n'est **PAS dans l'import** mais dans **l'affichage GUI** de Prg_63.
+Le bug n'est **PAS dans l'import** mais dans **l'affichage GUI** de PBP IDE 63.
 
 Possibilites :
 1. **Type de colonne incorrect** : La colonne 12 de la table temporaire est stockee comme String (YYYYMMDD) mais affichee comme Date avec Picture DD/MM/YYYY → inversion des bytes
@@ -263,7 +263,7 @@ ILOGPHUC  CM0000PHUC  241225363116431004      004000UB2+B2A251225040126...
 
 **Les données source NA sont CORRECTES** (251225 = 25/12/2025 pour tous les membres).
 
-**Le BUG est dans le programme d'IMPORT PMS** (PBG Prg_315 ou autre) qui a mal converti la date pour Zoe uniquement.
+**Le BUG est dans le programme d'IMPORT PMS** (PBG IDE 315 ou autre) qui a mal converti la date pour Zoe uniquement.
 
 ### Traçabilité complète (archives NA)
 
@@ -344,7 +344,7 @@ ILOGPHUC  CM0000PHUC  091225324618615005      005000UC2+C2A010126080126...
 
 **Point commun** : Les deux erreurs touchent la **filiation PMS = 3**.
 
-**Note** : Le programme d'import PBG Prg_315 est compilé (sans source XML), l'analyse du code n'est pas possible.
+**Note** : Le programme d'import PBG IDE 315 est compilé (sans source XML), l'analyse du code n'est pas possible.
 
 ---
 
@@ -359,7 +359,7 @@ ILOGPHUC  CM0000PHUC  091225324618615005      005000UC2+C2A010126080126...
    WHERE gm_compte = 676227 AND gm_filiation = 3;
    ```
 
-2. **Investigation Import PBG** : Analyser Prg_315 pour comprendre la conversion de date
+2. **Investigation Import PBG** : Analyser PBG IDE 315 pour comprendre la conversion de date
 3. **Contrôle d'intégrité** : Ajouter une validation `date_debut <= date_fin` dans l'import
 
 ### Conclusion
@@ -416,7 +416,7 @@ ORDER BY gm_date_debut DESC;
 | Fichier | Source | Contenu attendu |
 |---------|--------|-----------------|
 | `*.txt` ou `*.csv` import NA | Easy Arrival / NA | Fichier d'import GM séminaire |
-| Logs import PBG | Dossier logs | Traces de l'import Prg_315 |
+| Logs import PBG | Dossier logs | Traces de l'import PBG IDE 315 |
 
 ---
 
@@ -482,7 +482,7 @@ Membres du dossier:
 
 ### Cause racine
 
-**Le bug est dans le programme d'import PMS (PBG Prg_315)**, pas dans les fichiers source NA.
+**Le bug est dans le programme d'import PMS (PBG IDE 315)**, pas dans les fichiers source NA.
 
 **Preuves :**
 1. ✅ Fichiers RV.HST contiennent les dates CORRECTES pour tous les membres
@@ -499,7 +499,7 @@ Bug **sporadique** affectant la conversion de date lors de l'import, avec un pat
 
 1. **Immédiat** : Correction SQL manuelle des 2 enregistrements
 2. **Moyen terme** : Ajouter validation `date_debut <= date_fin` dans l'import
-3. **Investigation** : Si récurrence, analyser le binaire PBG Prg_315
+3. **Investigation** : Si récurrence, analyser le binaire PBG IDE 315
 
 ---
 

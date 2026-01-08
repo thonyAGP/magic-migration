@@ -17,12 +17,12 @@
 
 ### Programmes impliques
 
-| Projet | Prg ID | IDE | Description | Role |
-|--------|--------|-----|-------------|------|
-| PBP | 62 | 157 | Prep tempo arrivant planning | Preparation donnees temp |
-| PBP | 63 | 158 | Affich arrivant planning GM | Affichage ecran |
-| PBP | 64 | - | Imprim GM arrivant planning | Impression |
-| PBG | 315 | 24 | Import GM seminaire via txt | Import fichiers NA |
+| IDE | Projet | Nom Public | Description |
+|-----|--------|------------|-------------|
+| PBP IDE 62 | PBP | Prep tempo arrivant planning | Preparation donnees temp |
+| PBP IDE 63 | PBP | Affich arrivant planning GM | Affichage ecran |
+| PBP IDE 64 | PBP | Imprim GM arrivant planning | Impression |
+| PBG IDE 315 | PBG | Import GM seminaire via txt | Import fichiers NA |
 
 ### Tables cles
 
@@ -43,19 +43,19 @@ NA (Easy Arrival)
 [Fichier TXT/CSV]
     |
     v
-PBG Prg_315 "Import GM seminaire via txt"
+PBG IDE 315 "Import GM seminaire via txt"
     |
     v
 Table client_gm (gm_date_debut)
     |
     v
-PBP Prg_62 "Prep tempo arrivant planning"
+PBP IDE 62 "Prep tempo arrivant planning"
     |
     v
 Tables temporaires
     |
     v
-PBP Prg_63 "Affich arrivant planning GM" --> Ecran PB027
+PBP IDE 63 "Affich arrivant planning GM" --> Ecran PB027
 ```
 
 ---
@@ -75,7 +75,7 @@ PBP Prg_63 "Affich arrivant planning GM" --> Ecran PB027
 |---|-----------|-------------|-------------|
 | 1 | **Parsing DD/MM vs MM/DD** | Moyenne | 25/12/2025 interprete comme 12/25/2025 puis converti en 25/01/2026 (mois suivant car jour 25 > max decembre) |
 | 2 | **Donnee source corrompue** | Haute | Le fichier NA pourrait contenir une date incorrecte pour ce GM specifique |
-| 3 | **Bug calcul dans Prg_62** | Faible | Manipulation incorrecte des dates dans la preparation |
+| 3 | **Bug calcul dans PBP IDE 62** | Faible | Manipulation incorrecte des dates dans la preparation |
 | 4 | **Cache non rafraichi** | Faible | Tables temporaires avec ancienne valeur |
 
 ### Analyse de l'hypothese 1 (Parsing)
@@ -106,13 +106,13 @@ Resultat: **25/01/2026** - correspond exactement au bug!
 
 ### Investigation approfondie
 
-3. **Analyser Prg_315 (PBG)**
+3. **Analyser PBG IDE 315 - Import NA**
    - Localiser la lecture du fichier TXT/CSV
    - Verifier le format de date attendu vs recu
    - Chercher les expressions `DVal()` ou conversion de date
 
 4. **Tracer le flux complet**
-   - Ajouter des logs dans Prg_62 pour voir la valeur de `gm_date_debut` en entree
+   - Ajouter des logs dans PBP IDE 62 pour voir la valeur de `gm_date_debut` en entree
    - Comparer avec la valeur affichee en sortie
 
 ---
@@ -121,12 +121,12 @@ Resultat: **25/01/2026** - correspond exactement au bug!
 
 ### Tracage du flux PB027
 
-| Composant | Programme | Role |
-|-----------|-----------|------|
-| PBP | Prg_62 (IDE 157) | Preparation donnees temp |
-| PBP | Prg_63 (IDE 158) | Affichage ecran GUI |
+| IDE | Projet | Role |
+|-----|--------|------|
+| PBP IDE 62 | PBP | Preparation donnees temp |
+| PBP IDE 63 | PBP | Affichage ecran GUI |
 
-### Champs identifies dans Prg_63
+### Champs identifies dans PBP IDE 63
 
 | FieldID | Column Source | Contenu |
 |---------|---------------|---------|
@@ -148,7 +148,7 @@ Resultat: **25/01/2026** - correspond exactement au bug!
 
 ### Hypothese raffinee
 
-Le bug n'est **PAS dans l'import** mais dans **l'affichage GUI** de Prg_63.
+Le bug n'est **PAS dans l'import** mais dans **l'affichage GUI** de PBP IDE 63.
 
 Possibilites :
 1. **Type de colonne incorrect** : La colonne 12 de la table temporaire est stockee comme String (YYYYMMDD) mais affichee comme Date avec Picture DD/MM/YYYY → inversion des bytes
@@ -245,7 +245,7 @@ ORDER BY gm_date_debut DESC;
 | Fichier | Source | Contenu attendu |
 |---------|--------|-----------------|
 | `*.txt` ou `*.csv` import NA | Easy Arrival / NA | Fichier d'import GM séminaire |
-| Logs import PBG | Dossier logs | Traces de l'import Prg_315 |
+| Logs import PBG | Dossier logs | Traces de l'import PBG IDE 315 |
 
 ---
 

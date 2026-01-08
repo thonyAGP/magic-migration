@@ -28,36 +28,36 @@
 
 | Bouton | Programme Magic | Endpoint API | Statut |
 |--------|-----------------|--------------|--------|
-| Ouvrir | Prg_122 | POST /api/sessions/ouvrir | ✅ |
-| Fermer | Prg_131 | POST /api/sessions/fermer | ✅ |
-| Continuer | Prg_121 | GET /api/sessions/courante | ✅ |
+| Ouvrir | ADH IDE 122 | POST /api/sessions/ouvrir | ✅ |
+| Fermer | ADH IDE 131 | POST /api/sessions/fermer | ✅ |
+| Continuer | ADH IDE 121 | GET /api/sessions/courante | ✅ |
 | Quitter | - | - | UI Only |
-| Appro caisse | Prg_233 | POST /api/coffre/approvisionner | ✅ |
-| Appro produits | Prg_234 | POST /api/coffre/approvisionner-produits | ✅ |
-| Remise caisse | Prg_235 | POST /api/coffre/remettre | ✅ |
-| Historiques | Prg_236 | GET /api/sessions/historique | ✅ |
-| Regul TPE | Prg_163 | POST /api/sessions/regulariser-tpe | ✅ |
-| Telecollecte | Prg_197 | POST /api/sessions/telecollecte | ✅ |
-| Visu sessions | Prg_77 | GET /api/sessions/liste | ✅ |
-| Consultation | Prg_80 | GET /api/sessions/{id} | ✅ |
-| Impression | Prg_229 | POST /api/ventes/print-ticket | ✅ |
+| Appro caisse | ADH IDE 233 | POST /api/coffre/approvisionner | ✅ |
+| Appro produits | ADH IDE 234 | POST /api/coffre/approvisionner-produits | ✅ |
+| Remise caisse | ADH IDE 235 | POST /api/coffre/remettre | ✅ |
+| Historiques | ADH IDE 236 | GET /api/sessions/historique | ✅ |
+| Regul TPE | ADH IDE 163 | POST /api/sessions/regulariser-tpe | ✅ |
+| Telecollecte | ADH IDE 197 | POST /api/sessions/telecollecte | ✅ |
+| Visu sessions | ADH IDE 77 | GET /api/sessions/liste | ✅ |
+| Consultation | ADH IDE 80 | GET /api/sessions/{id} | ✅ |
+| Impression | ADH IDE 229 | POST /api/ventes/print-ticket | ✅ |
 
 ### 1.2 Modules Secondaires
 
 | Écran | Programmes | Endpoints | Fichier HTML |
 |-------|------------|-----------|--------------|
-| Zooms | Prg_164-189 | 8 | zooms.html |
-| Téléphone | Prg_202-220 | 3 | telephone.html |
-| Change | Prg_20-25 | 3 | change.html |
-| Ventes | Prg_229-250 | 5 | ventes.html |
-| Extrait | Prg_69-76 | 6 | extrait.html |
-| Garanties | Prg_111-114 | 4 | garanties.html |
-| Easy Check-Out | Prg_53-67 | 3 | easycheckout.html |
-| Factures | Prg_54,89-97 | 2 | factures.html |
-| Changement Compte | Prg_27-37 | 12 | changement-compte.html |
-| EzCard | Prg_286+ | 3 | ezcard.html |
-| Dépôt | Prg_112-114 | 2 | depot.html |
-| Sessions | Prg_121-163 | 24 | sessions.html |
+| Zooms | ADH IDE 164-189 | 8 | zooms.html |
+| Téléphone | ADH IDE 202-220 | 3 | telephone.html |
+| Change | ADH IDE 20-25 | 3 | change.html |
+| Ventes | ADH IDE 229-250 | 5 | ventes.html |
+| Extrait | ADH IDE 69-76 | 6 | extrait.html |
+| Garanties | ADH IDE 111-114 | 4 | garanties.html |
+| Easy Check-Out | ADH IDE 53-67 | 3 | easycheckout.html |
+| Factures | ADH IDE 54,89-97 | 2 | factures.html |
+| Changement Compte | ADH IDE 27-37 | 12 | changement-compte.html |
+| EzCard | ADH IDE 286+ | 3 | ezcard.html |
+| Dépôt | ADH IDE 112-114 | 2 | depot.html |
+| Sessions | ADH IDE 121-163 | 24 | sessions.html |
 
 ---
 
@@ -79,14 +79,14 @@
 
 ### 2.2 Statistiques Lignes Désactivées
 
-| Fichier | Lignes désactivées | Type principal |
-|---------|-------------------|----------------|
-| Prg_162.xml | 1 | CallTask |
-| Prg_121.xml | 8 | Update, CallTask |
-| Prg_131.xml | 12 | Evaluate |
-| Prg_233.xml | 3 | CallTask |
+| Programme | Lignes désactivées | Type principal |
+|-----------|-------------------|----------------|
+| ADH IDE 162 | 1 | CallTask |
+| ADH IDE 121 | 8 | Update, CallTask |
+| ADH IDE 131 | 12 | Evaluate |
+| ADH IDE 233 | 3 | CallTask |
 | ... | ... | ... |
-| **TOTAL (70 fichiers)** | **354** | Mixed |
+| **TOTAL (70 programmes)** | **354** | Mixed |
 
 ---
 
@@ -94,13 +94,13 @@
 
 ### 3.1 REF.ecf (Composant Compilé)
 
-| Prg ID | Appelé depuis | Statut |
+| REF ID | Appelé depuis | Statut |
 |--------|---------------|--------|
-| 800 | Prg_162 | Compilé (.eci) - Non analysable |
-| 877 | Prg_162, Prg_121 | Compilé (.eci) - Non analysable |
-| 895 | Prg_233 | Compilé (.eci) - Non analysable |
-| 1066 | Prg_131 | Compilé (.eci) - Non analysable |
-| 1095 | Prg_163 | Compilé (.eci) - Non analysable |
+| 800 | ADH IDE 162 | Compilé (.eci) - Non analysable |
+| 877 | ADH IDE 162, ADH IDE 121 | Compilé (.eci) - Non analysable |
+| 895 | ADH IDE 233 | Compilé (.eci) - Non analysable |
+| 1066 | ADH IDE 131 | Compilé (.eci) - Non analysable |
+| 1095 | ADH IDE 163 | Compilé (.eci) - Non analysable |
 
 **Note :** Ces programmes sont dans le fichier `Ref_Tables.eci` (compilé). Pour les migrer, il faudrait accéder aux sources REF correspondantes.
 

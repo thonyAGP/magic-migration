@@ -23,19 +23,19 @@ La table `cafil018_dat` (operations_dat, obj=40) possède déjà un champ de fla
 ## 2. Architecture Actuelle
 
 ```
-Prg_69 (EXTRAIT_COMPTE)
+ADH IDE 69 (EXTRAIT_COMPTE)
 └── Sous-tâche 5 "scroll sur compte"
     └── LogicUnit id="10" (Handler W1 Choix_action)
-        ├── Choix 'N' → CallTask Prg_70 (EXTRAIT_NOM)      [14 params]
-        ├── Choix 'D' → CallTask Prg_71 (EXTRAIT_DATE)     [13 params]
-        ├── Choix 'C' → CallTask Prg_72 (EXTRAIT_CUM)      [12 params]
-        ├── Choix 'I' → CallTask Prg_73 (EXTRAIT_IMP)      [12 params]
-        └── Choix 'S' → CallTask Prg_76 (EXTRAIT_SERVICE)  [13 params]
+        ├── Choix 'N' → CallTask ADH IDE 70 (EXTRAIT_NOM)      [14 params]
+        ├── Choix 'D' → CallTask ADH IDE 71 (EXTRAIT_DATE)     [13 params]
+        ├── Choix 'C' → CallTask ADH IDE 72 (EXTRAIT_CUM)      [12 params]
+        ├── Choix 'I' → CallTask ADH IDE 73 (EXTRAIT_IMP)      [12 params]
+        └── Choix 'S' → CallTask ADH IDE 76 (EXTRAIT_SERVICE)  [13 params]
 ```
 
 ---
 
-## 3. Modifications Prg_69 (EXTRAIT_COMPTE)
+## 3. Modifications ADH IDE 69 (EXTRAIT_COMPTE)
 
 ### 3.1 Ajouter Variable
 
@@ -72,15 +72,15 @@ Ajouter le paramètre 15 à chaque appel :
 
 | CallTask | Ligne | Ajouter |
 |----------|-------|---------|
-| Prg_70 | 4620 | `<Argument><id val="88"/><Variable val="W.ExtraitComplet"/></Argument>` |
-| Prg_71 | 4805 | `<Argument><id val="89"/><Variable val="W.ExtraitComplet"/></Argument>` |
-| Prg_72 | 4998 | `<Argument><id val="90"/><Variable val="W.ExtraitComplet"/></Argument>` |
-| Prg_73 | 5180 | `<Argument><id val="91"/><Variable val="W.ExtraitComplet"/></Argument>` |
-| Prg_76 | 5371 | `<Argument><id val="92"/><Variable val="W.ExtraitComplet"/></Argument>` |
+| ADH IDE 70 | 4620 | `<Argument><id val="88"/><Variable val="W.ExtraitComplet"/></Argument>` |
+| ADH IDE 71 | 4805 | `<Argument><id val="89"/><Variable val="W.ExtraitComplet"/></Argument>` |
+| ADH IDE 72 | 4998 | `<Argument><id val="90"/><Variable val="W.ExtraitComplet"/></Argument>` |
+| ADH IDE 73 | 5180 | `<Argument><id val="91"/><Variable val="W.ExtraitComplet"/></Argument>` |
+| ADH IDE 76 | 5371 | `<Argument><id val="92"/><Variable val="W.ExtraitComplet"/></Argument>` |
 
 ---
 
-## 4. Modifications Programmes Édition (Prg_70, 71, 72, 73, 76)
+## 4. Modifications Programmes Édition (ADH IDE 70, 71, 72, 73, 76)
 
 ### 4.1 Ajouter Paramètre 15
 
@@ -116,24 +116,24 @@ IF(P.ExtraitComplet, TRUE, cte_flag_annulation = 'Normal')
 
 | Programme | Sous-tâches à modifier | MainSource obj |
 |-----------|------------------------|----------------|
-| Prg_70 | 2-19 (impressions) | 40 (cafil018_dat) |
-| Prg_71 | 2-17 (impressions) | 40 (cafil018_dat) |
-| Prg_72 | 2-15 (impressions) | 40 (cafil018_dat) |
-| Prg_73 | 2-14 (impressions) | 40 (cafil018_dat) |
-| Prg_76 | 2-17 (impressions) | 40 (cafil018_dat) |
+| ADH IDE 70 | 2-19 (impressions) | 40 (cafil018_dat) |
+| ADH IDE 71 | 2-17 (impressions) | 40 (cafil018_dat) |
+| ADH IDE 72 | 2-15 (impressions) | 40 (cafil018_dat) |
+| ADH IDE 73 | 2-14 (impressions) | 40 (cafil018_dat) |
+| ADH IDE 76 | 2-17 (impressions) | 40 (cafil018_dat) |
 
 ---
 
 ## 5. Résumé des Modifications
 
-| Fichier | Action | Complexité |
-|---------|--------|------------|
-| `Prg_69.xml` | +1 variable, +1 question, +5 arguments CallTask | Moyenne |
-| `Prg_70.xml` | +1 paramètre, modifier Range ~17 sous-tâches | Haute |
-| `Prg_71.xml` | +1 paramètre, modifier Range ~15 sous-tâches | Haute |
-| `Prg_72.xml` | +1 paramètre, modifier Range ~13 sous-tâches | Haute |
-| `Prg_73.xml` | +1 paramètre, modifier Range ~12 sous-tâches | Haute |
-| `Prg_76.xml` | +1 paramètre, modifier Range ~15 sous-tâches | Haute |
+| Programme | Action | Complexité |
+|-----------|--------|------------|
+| ADH IDE 69 | +1 variable, +1 question, +5 arguments CallTask | Moyenne |
+| ADH IDE 70 | +1 paramètre, modifier Range ~17 sous-tâches | Haute |
+| ADH IDE 71 | +1 paramètre, modifier Range ~15 sous-tâches | Haute |
+| ADH IDE 72 | +1 paramètre, modifier Range ~13 sous-tâches | Haute |
+| ADH IDE 73 | +1 paramètre, modifier Range ~12 sous-tâches | Haute |
+| ADH IDE 76 | +1 paramètre, modifier Range ~15 sous-tâches | Haute |
 
 **Total** : 6 programmes, ~75 sous-tâches à modifier
 
@@ -176,12 +176,12 @@ IF(P.ExtraitComplet, TRUE, cte_flag_annulation = 'Normal')
 ## 8. Étapes d'Implémentation
 
 1. [ ] Créer branche `feature/PMS-1373-masquer-annulations` ✅
-2. [ ] Modifier Prg_69 (variable + question + CallTask)
-3. [ ] Modifier Prg_70 (paramètre + Range)
-4. [ ] Modifier Prg_71 (paramètre + Range)
-5. [ ] Modifier Prg_72 (paramètre + Range)
-6. [ ] Modifier Prg_73 (paramètre + Range)
-7. [ ] Modifier Prg_76 (paramètre + Range)
+2. [ ] Modifier ADH IDE 69 (variable + question + CallTask)
+3. [ ] Modifier ADH IDE 70 (paramètre + Range)
+4. [ ] Modifier ADH IDE 71 (paramètre + Range)
+5. [ ] Modifier ADH IDE 72 (paramètre + Range)
+6. [ ] Modifier ADH IDE 73 (paramètre + Range)
+7. [ ] Modifier ADH IDE 76 (paramètre + Range)
 8. [ ] Tests unitaires Magic
 9. [ ] Déployer sur environnement de recette
 10. [ ] Validation Jessica Palermo

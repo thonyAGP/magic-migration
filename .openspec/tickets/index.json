@@ -1,14 +1,24 @@
-﻿{
-    "lastSync":  "2026-01-07T22:58:39.1358749+01:00",
-    "localTickets":  [
-                         {
-                             "hasLocalData":  true,
-                             "status":  "local-only",
-                             "key":  "CMDS-174321",
-                             "summary":  "CMDS-174321"
-                         }
-                     ],
-    "tickets":  [
-
-                ]
+{
+    "lastSync": "2026-01-08T12:00:00.0000000+01:00",
+    "localTickets": [
+        {
+            "hasLocalData": true,
+            "status": "local-only",
+            "key": "CMDS-174321",
+            "summary": "Bug date arrivee PB027 (+1 mois)"
+        },
+        {
+            "hasLocalData": true,
+            "status": "local-only",
+            "key": "PMS-1373",
+            "summary": "Masquer annulations dans extrait compte"
+        },
+        {
+            "hasLocalData": true,
+            "status": "local-only",
+            "key": "CMDS-176521",
+            "summary": "Prix remise affiche incorrect dans POS"
+        }
+    ],
+    "tickets": []
 }
