@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-09T15:35:12.840Z",
+  "lastUpdated": "2026-01-09T15:43:50.428Z",
   "reports": [
     {
       "id": "spec",
@@ -53,14 +53,6 @@
   "tickets": {
     "active": [
       {
-        "id": "CMDS-176481",
-        "title": "Gift Pass Discrepancy",
-        "status": "analysis",
-        "file": "tickets/CMDS-176481/analysis.md",
-        "createdDate": "2026-01-09",
-        "lastAnalysis": "2026-01-09"
-      },
-      {
         "id": "PMS-1446",
         "title": "Location ski courts sejours",
         "status": "spec",
@@ -93,6 +85,15 @@
         "status": "progress",
         "file": "tickets/CMDS-176521/resolution.md",
         "createdDate": "2026-01-08",
+        "lastAnalysis": "2026-01-09",
+        "resolvedDate": "2026-01-09"
+      },
+      {
+        "id": "CMDS-176481",
+        "title": "Gift Pass Discrepancy",
+        "status": "analysis",
+        "file": "tickets/CMDS-176481/analysis.md",
+        "createdDate": "2026-01-09",
         "lastAnalysis": "2026-01-09",
         "resolvedDate": "2026-01-09"
       }
