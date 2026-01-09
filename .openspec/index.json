@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-09T10:30:00.000Z",
+  "lastUpdated": "2026-01-09T08:03:13.169Z",
   "reports": [
     {
       "id": "spec",
@@ -75,18 +75,16 @@
         "file": "tickets/CMDS-174321/resolution.md",
         "createdDate": "2026-01-06",
         "lastAnalysis": "2026-01-08"
-      }
-    ],
-    "archived": [
+      },
       {
         "id": "CMDS-176521",
         "title": "Prix remise POS incorrect",
         "status": "progress",
         "file": "tickets/CMDS-176521/resolution.md",
         "createdDate": "2026-01-08",
-        "lastAnalysis": "2026-01-08",
-        "resolvedDate": "2026-01-08"
+        "lastAnalysis": "2026-01-09"
       }
-    ]
+    ],
+    "archived": []
   }
 }
