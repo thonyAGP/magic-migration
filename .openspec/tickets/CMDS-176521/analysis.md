@@ -1,5 +1,7 @@
 # Analyse CMDS-176521
 
+> **Jira** : [CMDS-176521](https://clubmed.atlassian.net/browse/CMDS-176521)
+
 ## Symptome
 
 **Bug d'affichage du prix remise dans le POS**

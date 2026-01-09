@@ -1,5 +1,7 @@
 # Analyse PMS-1373
 
+> **Jira** : [PMS-1373](https://clubmed.atlassian.net/browse/PMS-1373)
+
 ## Symptome
 
 **Demande d'évolution** : Possibilité d'extraire l'extrait de compte GM en masquant les lignes d'annulation (+/-).

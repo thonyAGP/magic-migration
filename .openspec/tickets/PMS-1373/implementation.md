@@ -1,5 +1,7 @@
 # Spécification d'Implémentation PMS-1373
 
+> **Jira** : [PMS-1373](https://clubmed.atlassian.net/browse/PMS-1373)
+
 ## Résumé
 
 **Demande** : Masquer les lignes d'annulation (+/-) dans l'extrait de compte GM.
