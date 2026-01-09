@@ -11,15 +11,31 @@ namespace MagicMcp.Services;
 public partial class XmlIndexer
 {
     private readonly string _projectsBasePath;
+    private readonly TableMappingService? _tableMappingService;
 
     // Regex to match invalid XML character entities (&#x00; to &#x08;, &#x0B;, &#x0C;, &#x0E; to &#x1F;)
     // These entities represent control characters that are invalid in XML 1.0
     [GeneratedRegex(@"&#x(0[0-8BbCc]|1[0-9A-Fa-f]|0[Ee]);|&#([0-8]|1[1-2]|14|1[5-9]|2[0-9]|3[01]);")]
     private static partial Regex InvalidXmlEntityRegex();
 
-    public XmlIndexer(string projectsBasePath)
+    public XmlIndexer(string projectsBasePath, TableMappingService? tableMappingService = null)
     {
         _projectsBasePath = projectsBasePath;
+        _tableMappingService = tableMappingService;
+    }
+
+    /// <summary>
+    /// Get table name with IDE position from XML id
+    /// </summary>
+    private string GetTableName(int xmlId)
+    {
+        if (_tableMappingService != null)
+        {
+            var info = _tableMappingService.GetTableById(xmlId);
+            if (info != null)
+                return $"#{info.IdePosition} {info.LogicalName}";
+        }
+        return $"Table_{xmlId}";
     }
 
     /// <summary>
@@ -338,7 +354,7 @@ public partial class XmlIndexer
                         {
                             TableId = tableId,
                             ComponentId = compAttr?.Value,
-                            TableName = $"Table_{tableId}",
+                            TableName = GetTableName(tableId),
                             AccessMode = accessElement?.Attribute("val")?.Value ?? "R"
                         }
                     };
@@ -360,7 +376,7 @@ public partial class XmlIndexer
                         {
                             Id = i,
                             TableId = tableId,
-                            TableName = $"Table_{tableId}",
+                            TableName = GetTableName(tableId),
                             LinkType = "L"
                         });
                     }

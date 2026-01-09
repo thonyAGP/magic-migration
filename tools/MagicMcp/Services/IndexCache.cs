@@ -11,12 +11,16 @@ public class IndexCache
     private readonly ConcurrentDictionary<string, MagicProject> _projects = new();
     private readonly XmlIndexer _indexer;
     private readonly string[] _projectNames;
+    private readonly TableMappingService _tableMappingService;
 
-    public IndexCache(string projectsBasePath, string[] projectNames)
+    public IndexCache(string projectsBasePath, string[] projectNames, TableMappingService tableMappingService)
     {
-        _indexer = new XmlIndexer(projectsBasePath);
+        _tableMappingService = tableMappingService;
+        _indexer = new XmlIndexer(projectsBasePath, tableMappingService);
         _projectNames = projectNames;
     }
+
+    public TableMappingService TableMapping => _tableMappingService;
 
     public void LoadAllProjects()
     {

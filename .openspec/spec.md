@@ -384,6 +384,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ## Changelog
 
+- 2026-01-10: **Table IDE Position CORRIGE** - Formule: `Position IDE = XML id - (tables sans PublicName avant cet id)`. 12 tables sans PublicName identifiees (ids: 741, 750, 751, 912, 919, 920, 931, 949, 950, 953, 954, 955). Nouveau service TableMappingService.cs centralise. 3 nouveaux outils MCP: magic_get_table, magic_list_tables, magic_table_stats. Scripts PS nettoyes (2 fichiers restants). XmlIndexer mis a jour pour afficher "#IDE NomTable" au lieu de "Table_ID"
 - 2026-01-08: **MCP XmlIndexer REWRITE** - Correction complete du parsing XML. Structure reelle: Task>Header (pas TaskDefinition), Task>Resource>Columns, Task>TaskLogic>LogicUnit>LogicLines. Nouvel outil magic_dump_dataview pour diagnostic. Tables composants via Comps.xml (id/ItemIsn/PublicName mapping)
 - 2026-01-09: **PMS-1446 SPEC COMPLETE** - Location materiel ski courts sejours. Analyse PVE IDE 186/139/256. Solution: calcul auto MODEDAYINC selon duree sejour (< 7 nuits = jour meme, >= 7 = lendemain). Seuil configurable via table. Spec implementation.md creee
 - 2026-01-08: **MCP Tool magic_get_line** - Nouvel outil pour lookup deterministe ligne Data View ET Logic. Parsing colonnes (MagicColumn model, A-Z/AA-ZZ naming). Numerotation Logic continue a travers handlers. Commande /magic-line mise a jour
