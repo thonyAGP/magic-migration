@@ -36,18 +36,19 @@ D'apres PB027 et PB0001, le GM a eu **5 periodes distinctes** :
 
 ## Gift Pass - Historique des mouvements
 
-| Date | Mouvement | Montant | Description |
-|------|-----------|---------|-------------|
-| 31/12/2025 | Credit | +110.00 | Gift Pass initial (arrivee 27/12) |
-| 31/12/2025 | Debit | -110.00 | SIGNATURE 60M (Spa) |
-| 31/12/2025 | Debit | -110.00 | MASSAGES - SWEDISH 60M |
-| **03/01/2026** | **Credit** | **+110.00** | **Gift Pass duplique (BUG)** |
-| 03/01/2026 | Debit | -12.00 | Boutique Sales |
-| 03/01/2026 | Credit? | +12.00 | ? |
-| 04/01/2026 | Debit | -12.00 | Boutique Sales |
-| 05/01/2026 | Credit? | +12.00 | ? |
-| 05/01/2026 | Debit | -19.00 | Boutique Sales |
-| 06/01/2026 | Credit? | +19.00 | ? |
+| Date | Heure | Mouvement | Montant | Utilisateur | Description |
+|------|-------|-----------|---------|-------------|-------------|
+| 27/12/2025 | 10:48 | Credit | +110.00 | AFFAUTO | Gift Pass initial (arrivee) |
+| 31/12/2025 | 10:11 | Debit | -110.00 | Spa Manage | SIGNATURE 60M (Spa) |
+| **31/12/2025** | **14:44** | **Credit** | **+110.00** | **AFFAUTO** | **BUG: Re-credit apres usage** |
+| 31/12/2025 | 14:46 | Debit | -110.00 | Spa Manage | MASSAGES - SWEDISH 60M |
+| **03/01/2026** | **10:08** | **Credit** | **+110.00** | **AFFAUTO** | **BUG: Extension sejour (VSL)** |
+| 03/01/2026 | 10:08 | Debit | -12.00 | Boutique R | Boutique Sales |
+| 03/01/2026 | 10:10 | Credit | +12.00 | AFFAUTO | Re-credit journalier |
+| 04/01/2026 | 18:31 | Debit | -12.00 | Boutique R | Boutique Sales |
+| 05/01/2026 | 09:54 | Credit | +12.00 | AFFAUTO | Re-credit journalier |
+| 05/01/2026 | 09:55 | Debit | -19.00 | Boutique R | Boutique Sales |
+| 06/01/2026 | 09:51 | Credit | +19.00 | AFFAUTO | Re-credit journalier |
 
 **Balance finale** : 110.00 USD (apres reset par Kim a 0)
 
