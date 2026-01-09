@@ -1,5 +1,7 @@
 # PMS-1446 - Location matériel ski courts séjours
 
+> **Jira** : [PMS-1446](https://clubmed.atlassian.net/browse/PMS-1446)
+
 ## Informations Jira
 
 | Champ | Valeur |

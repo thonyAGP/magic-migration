@@ -1,5 +1,7 @@
 # CMDS-174321 - Résolution Technique
 
+> **Jira** : [CMDS-174321](https://clubmed.atlassian.net/browse/CMDS-174321)
+
 ## Statut
 
 **RÉSOLU** - Données corrompues en base (import PMS, pas source NA)

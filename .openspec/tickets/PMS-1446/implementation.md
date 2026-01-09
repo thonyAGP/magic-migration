@@ -1,5 +1,7 @@
 # PMS-1446 - Spécification d'implémentation
 
+> **Jira** : [PMS-1446](https://clubmed.atlassian.net/browse/PMS-1446)
+
 ## Solution retenue : Option 2 + 3
 
 Calcul automatique de MODEDAYINC basé sur la durée du séjour, avec seuil configurable.

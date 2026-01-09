@@ -1,5 +1,7 @@
 # Resolution CMDS-176521
 
+> **Jira** : [CMDS-176521](https://clubmed.atlassian.net/browse/CMDS-176521)
+
 ## Statut: DIAGNOSTIC COMPLET - EN ATTENTE FIX
 
 ## Diagnostic
