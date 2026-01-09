@@ -2,7 +2,7 @@
 
 > **Jira** : <a href="https://clubmed.atlassian.net/browse/CMDS-176521" target="_blank">CMDS-176521</a>
 
-## Statut: BUG IDENTIFIÉ - FIX REQUIS
+## Statut: RÉSOLU ✅
 
 ---
 
@@ -16,138 +16,98 @@
 
 ---
 
-## Programme concerné
+## Fix appliqué
 
-### PVE IDE 181 - Main Sale-664
+### Commit `64688798c` - 23/12/2025
 
-**Fichier source** : `D:\Data\Migration\XPA\PMS\PVE\Source\Prg_181.xml`
+**Auteur** : Alan (alan.lecorre.ext@clubmed.com)
+
+**Message** : "Modification POS du bouton DISCOUNT qui renvoyait une erreur SQL après avoir cliquer sur le bouton payment all filiations"
+
+### Programmes modifiés
+
+| Programme | Modification |
+|-----------|--------------|
+| PVE IDE 180 | Suppression SQL_WHERE_U |
+| **PVE IDE 181** | Suppression SQL_WHERE_U (Task 33) |
+| PVE IDE 284 | Suppression SQL_WHERE_U |
+
+### Modification technique
+
+**Suppression de la condition SQL dans la Task 33** :
+
+```xml
+<!-- AVANT (bug) -->
+<SQL_WHERE_U>
+  <TOKEN>
+    <CODE val="1"/>
+    <SqlWhereFlags val="1"/>
+    <Parent val="3"/>
+    <VAR_ISN val="30"/>
+  </TOKEN>
+</SQL_WHERE_U>
+
+<!-- APRÈS (fix) -->
+<!-- Section supprimée -->
+```
+
+**Changement associé** : `<SqlWhereExist val="Y"/>` → `<SqlWhereExist val="N"/>`
 
 ---
 
-## CAUSE RACINE
+## Analyse initiale (référence)
 
-### Expression 33 (ligne 34526)
+Mon analyse avait identifié un problème potentiel différent :
+
+### Expression 33 - Référence variable suspecte
 
 ```magic
 Round({1,13}*(1-ExpCalc('15'EXP)/100),10,{32768,43})
 ```
 
-### Le Bug
+- `{1,13}` référence index 13 dans Task 19
+- Task 19 n'a pas de variable à l'index 13 (commence à 16)
+- Pourrait causer des valeurs aléatoires
 
-**`{1,13}` référence une variable qui N'EXISTE PAS dans le parent !**
-
-**Task 19 (Forfait_Package=> account)** - Variables disponibles :
-
-| Index | Variable | Description |
-|-------|----------|-------------|
-| 16 | P. Customer | ID client |
-| 17 | P. Package Id OUT | ID package sortie |
-| 18 | P. Action type | Type action |
-| ... | ... | ... |
-| **31** | **P.Prix** | **PRIX DU PRODUIT** |
-| 32 | P.Montant PrePaid | Montant prépayé |
-| ... | ... | ... |
-
-**Il n'y a PAS de variable index 13 dans Task 19 !**
-
-Le prix est stocké à l'**index 31** (`P.Prix`), pas à l'index 13.
+**Note** : Cette analyse reste valide pour investigation future si le bug réapparaît.
 
 ---
 
-## Correction
+## Programmes concernés
 
-### AVANT (bug)
-```magic
-Round({1,13}*(1-ExpCalc('15'EXP)/100),10,{32768,43})
-```
-
-### APRÈS (fix)
-```magic
-Round({1,31}*(1-ExpCalc('15'EXP)/100),10,{32768,43})
-```
-
-### Localisation exacte
-
-| Élément | Valeur |
-|---------|--------|
-| **Programme** | PVE IDE 181 - Main Sale-664 |
-| **Fichier** | Prg_181.xml |
-| **Ligne XML** | 34526 |
-| **Task** | Task 22 (SALE package_Creat_projet_FBO) |
-| **Expression** | Expression 33 |
-
----
-
-## Hiérarchie des tâches
-
-```
-Task 1 - Main Sale-664 (Root)
-  └── Task 19 - Forfait_Package=> account
-        └── Task 22 - SALE package_Creat_projet_FBO
-              └── Expression 33 (calcul prix remisé)
-```
-
-**Depuis Task 22 :**
-- `{0,...}` = Task 22 (seulement Variable 2)
-- `{1,...}` = Task 19 (Variables 16-65, **PAS de 13**)
-- `{1,13}` → **Variable inexistante** → valeur aléatoire/résiduelle
-
----
-
-## Pourquoi 41,857 ?
-
-Quand Magic référence une variable inexistante, il peut :
-1. Retourner 0 (comportement normal)
-2. Utiliser une valeur résiduelle en mémoire
-3. Remonter à un niveau parent supérieur
-
-La valeur **41,857** correspond probablement au **solde du compte** (`V.SoldeCompte` - index 59 dans Task 1) qui "fuite" via le contexte mémoire.
-
----
-
-## Validation requise
-
-- [ ] Modifier Expression 33 : remplacer `{1,13}` par `{1,31}`
-- [ ] Tester avec différents % de remise (5%, 10%, 50%, 100%)
-- [ ] Vérifier que le prix facturé reste correct
-- [ ] Tester sur environnement de dev avant production
-
----
-
-## Programmes similaires à vérifier
-
-| Programme | Description | Même bug potentiel ? |
-|-----------|-------------|---------------------|
-| PVE IDE 284 | Main Sale Sale Bar Code | **OUI** - même structure |
-| PVE IDE 360 | Main Sale-664 (copie) | **OUI** - à vérifier |
+| Programme | Description | Fix appliqué |
+|-----------|-------------|--------------|
+| PVE IDE 180 | Main Sale | ✅ Oui |
+| **PVE IDE 181** | Main Sale-664 | ✅ Oui |
+| PVE IDE 284 | Main Sale Sale Bar Code | ✅ Oui |
 
 ---
 
 ## Références Magic IDE
 
-### Programme
+### Programme principal
 
-| IDE | Projet | Nom Public | Description |
-|-----|--------|------------|-------------|
-| **PVE IDE 181** | PVE | Main Sale-664 | Vente principale 664 |
+| IDE | Projet | Nom Public | Fichier |
+|-----|--------|------------|---------|
+| **PVE IDE 181** | PVE | Main Sale-664 | Prg_181.xml |
 
-### Tâches concernées
+### Historique Git
 
-| Task | ISN_2 | Description | Rôle |
-|------|-------|-------------|------|
-| Task 1 | 1 | Main Sale-664 | Root |
-| Task 19 | 19 | Forfait_Package=> account | Parent du calcul |
-| Task 22 | 22 | SALE package_Creat_projet_FBO | Contient Expression 33 |
+```
+64688798c Modification POS du bouton DISCOUNT (erreur SQL)
+61a174f6b Modification POS PAYMENT ALL FILIATIONS (commentaire)
+c7e0b112a Modification POS payment all filiations (locations)
+```
 
-### Variables Task 19 (pertinentes)
+---
 
-| Index | Variable | Usage |
-|-------|----------|-------|
-| 31 | P.Prix | **Prix produit (CORRECT)** |
-| 32 | P.Montant PrePaid | Montant prépayé |
-| 35 | v Lien Remise Great Members | Lien remise |
+## Validation
+
+- [x] Fix déployé (commit 64688798c)
+- [x] 3 programmes corrigés (180, 181, 284)
+- [ ] Validation fonctionnelle à confirmer
 
 ---
 
 *Dernière mise à jour: 2026-01-09*
-*Bug identifié - Fix: remplacer {1,13} par {1,31} dans Expression 33*
+*Fix appliqué: suppression SQL_WHERE_U dans Task 33*
