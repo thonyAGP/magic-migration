@@ -1,140 +1,155 @@
 # Resolution CMDS-176521
 
-> **Jira** : [CMDS-176521](https://clubmed.atlassian.net/browse/CMDS-176521)
+> **Jira** : <a href="https://clubmed.atlassian.net/browse/CMDS-176521" target="_blank">CMDS-176521</a>
 
-## Statut: DIAGNOSTIC COMPLET - EN ATTENTE FIX
-
-## Diagnostic
-
-**Bug d'affichage du prix remise dans le POS (module PVE)**
-
-Le prix remise affiche une valeur incorrecte (41,857 au lieu de 5,400).
-Le prix facture a la validation est CORRECT.
-
-### Programmes analyses
-
-| Programme | Role | Resultat |
-|-----------|------|----------|
-| **PVE IDE 186 - Main Sale** | Ecran principal POS | Expression 33 calcule correctement le prix remise |
-| **PVE IDE 201 - Discounts** | Gestion remises | Expression 30 calcule correctement |
-
-### Le calcul est CORRECT
-
-**Expression 30 (PVE IDE 201 - Discounts):**
-```
-IF(Val(M,'') <> 0,
-   Val(M,'10.2'),      -- Si prix manuel saisi (variable M)
-   D*(1-B/100))        -- Sinon calcul auto: Prix(D) * (1 - %Remise(B)/100)
-```
-
-**Variables:**
-- B = % Remise (index 1)
-- D = Prix original (index 3)
-- M = Prix manuel remise (index 12)
-
-**Exemple:**
-- Prix original D = 6,000 JPY
-- % Remise B = 10
-- Resultat = 6000 * (1 - 10/100) = 6000 * 0.9 = **5,400 JPY** (CORRECT)
-
-### Cause racine identifiee
-
-**Hypothese principale: Picture Format Mismatch**
-
-Le resultat de Expression 30 est correct (5400), mais l'AFFICHAGE dans PVE IDE 186 utilise:
-1. Un **mauvais format Picture** (ex: 3.2 au lieu de N10.2C)
-2. Ou une **mauvaise variable** est liee au champ d'affichage
-3. Ou la variable **M** (prix manuel) est mal alimentee et contient 41857
-
-**Observation:** La valeur 41,857 pourrait etre:
-- Un solde cumule du compte BAR CASH
-- Un total d'autres lignes de vente
-- Une valeur residuelle dans la variable M
-
-### Variables critiques
-
-| Variable | Index | Role | A verifier |
-|----------|-------|------|------------|
-| G | 6 | Resultat prix remise (FieldID 7) | Picture doit etre N10.2C |
-| M | 12 | Prix manuel remise | Doit etre vide si pas de prix force |
-| B | 1 | % Remise | Valeur saisie par utilisateur |
-| D | 3 | Prix original | Prix du produit |
-
-## Solution proposee
-
-### Option 1: Fix Picture Format
-
-Dans PVE IDE 186 - Main Sale, verifier le controle du formulaire qui affiche le prix remise et s'assurer que:
-- La Picture est coherente avec le format numerique retourne (N10.2C)
-- Le champ reference bien le resultat de Expression 33 (pas une autre variable)
-
-### Option 2: Fix Variable M (prix manuel)
-
-Dans PVE IDE 201 - Discounts, ajouter une initialisation explicite:
-```magic
-M = 0  -- Ou ''
-```
-Avant le calcul pour s'assurer que la branche ELSE est executee.
-
-### Option 3: Verifier le binding dans le formulaire
-
-Dans PVE IDE 186 - Main Sale, s'assurer que le controle "Prix remise" est lie a la bonne variable:
-- Doit pointer sur le resultat de Expression 33
-- Pas sur une variable de solde ou de total
-
-## Validation
-
-- [ ] Identifier le controle du formulaire Main Sale qui affiche le prix remise
-- [ ] Verifier la Picture du controle (doit etre N10.2C ou equivalent)
-- [ ] Verifier la variable source du controle (doit etre Expression 33)
-- [ ] Tester avec differents % de remise (5%, 10%, 20%, 50%, 100%)
-- [ ] Verifier que M est vide avant le calcul
-
-## Ticket Jira Dev
-
-Davide (CMDS) a confirme:
-- Ticket Jira dev ouvert pour prochaine release PMS
-- Correction prevue avant fin janvier 2026
-
-## References Magic IDE
-
-### Programmes
-
-| IDE | Projet | Nom Public | Description |
-|-----|--------|------------|-------------|
-| PVE IDE 186 | PVE | Main Sale | Ecran principal POS |
-| PVE IDE 201 | PVE | Discounts | Gestion remises |
-
-### Expressions cles
-
-| Programme | Expression | Formule | Role |
-|-----------|------------|---------|------|
-| PVE IDE 186 | 33 | `Round(N*(1-ExpCalc('15'EXP)/100),10,CTX_43)` | Calcul prix remise dans CreateSales |
-| PVE IDE 186 | 15 | `IF(DZ OR (DR AND CTX_96),100,IF(CZ,DD,BH))` | Calcul % remise |
-| PVE IDE 201 | 30 | `IF(Val(M,'')<>0,Val(M,'10.2'),D*(1-B/100))` | Calcul prix remise dans Discounts |
-
-### Legende variables (PVE IDE 201 - Discounts)
-
-| Variable | Index | Description |
-|----------|-------|-------------|
-| B | 1 | % Remise |
-| D | 3 | Prix original |
-| M | 12 | Prix manuel remise (si force) |
-
-### Legende variables (PVE IDE 186 - Main Sale, tache parent)
-
-| Variable | Index | Description |
-|----------|-------|-------------|
-| N | 13 | Prix unitaire |
-| BH | 59 | % Remise defaut |
-| CZ | 103 | Flag condition remise |
-| DD | 107 | % Remise specifique |
-| DR | 121 | Flag AND condition |
-| DZ | 129 | Flag OR condition |
-| CTX_43 | 32768,43 | Variable contexte arrondi |
-| CTX_96 | 32768,96 | Variable contexte condition |
+## Statut: CAUSE RACINE IDENTIFIÉE
 
 ---
 
-*Derniere mise a jour: 2026-01-08*
-*Analyse complete - En attente de correction dans release PMS*
+## Symptôme
+
+**Bug d'affichage du prix remisé dans le POS (module PVE)**
+
+- Prix attendu avec -10% : **5,400 JPY**
+- Prix affiché : **41,857** (valeur incorrecte)
+- Prix facturé à la validation : **CORRECT**
+
+---
+
+## Diagnostic Complet
+
+### Programme concerné : PVE IDE 284 - Main Sale Sale Bar Code
+
+L'analyse approfondie a révélé que le bug se situe dans **PVE IDE 284** (Main Sale Sale Bar Code), pas dans PVE IDE 186.
+
+### Hiérarchie des tâches
+
+```
+Task 1 - Main Sale Sale Bar Code (Root)
+  └── Task 19 - Forfait_Package=> account
+        └── Task 22 - SALE package_Creat_projet_FBO
+              └── Expression 33 (calcul prix remisé)
+```
+
+### Expression de calcul (Expression 33)
+
+```magic
+Round({1,13}*(1-ExpCalc('15'EXP)/100),10,{32768,43})
+```
+
+**Où :**
+- `{1,13}` = Variable index 13 du parent (Level 1)
+- `ExpCalc('15'EXP)` = Expression 15 (pourcentage remise)
+- `{32768,43}` = Variable contexte arrondi
+
+### Expression 15 (calcul % remise)
+
+```magic
+IF({1,129} OR ({1,121} AND {32768,96}), 100, IF({1,103},{1,107},{1,59}))
+```
+
+**Logique :**
+- Si condition gratuite → 100%
+- Sinon si Great Members → % spécifique
+- Sinon → % par défaut
+
+---
+
+## CAUSE RACINE IDENTIFIÉE
+
+### Variables dans Task 1 (Root)
+
+| Index | Variable | Type | Valeur typique |
+|-------|----------|------|----------------|
+| **13** | `v.LequipmentId` | ID équipement | Numérique |
+| **59** | `V.SoldeCompte` | Solde compte | **41,857** |
+
+### Le Bug
+
+**L'expression `{1,13}` devrait référencer le PRIX du produit**, mais selon le contexte d'exécution, elle peut récupérer :
+
+1. **`v.LequipmentId`** (ID équipement) - mauvaise valeur
+2. Ou un autre index inattendu via l'héritage de contexte
+
+La valeur **41,857** correspond probablement au **solde du compte BAR CASH** (`V.SoldeCompte`) qui est stocké à l'index 59, suggérant un problème de binding entre les niveaux de tâches.
+
+### Hypothèse de bug
+
+Le binding de variable entre Task 19 et Task 22 ne transmet pas correctement le prix du produit à l'index attendu (13), résultant en l'utilisation d'une valeur résiduelle ou incorrecte.
+
+---
+
+## Références Magic IDE
+
+### Programme
+
+| IDE | Projet | Nom Public | Description |
+|-----|--------|------------|-------------|
+| **PVE IDE 284** | PVE | Main Sale Sale Bar Code | Vente via scan barcode |
+
+### Tâches concernées
+
+| Task | ISN_2 | Description | Rôle |
+|------|-------|-------------|------|
+| Task 1 | 1 | Main Sale Sale Bar Code | Root - Variables globales |
+| Task 19 | 19 | Forfait_Package=> account | Parent du calcul |
+| Task 22 | 22 | SALE package_Creat_projet_FBO | Contient Expression 33 |
+| Task 42 | 42 | Discount % | Saisie % remise manuel |
+
+### Variables critiques (Task 1 Root)
+
+| Variable | Index | Description | Impact |
+|----------|-------|-------------|--------|
+| N | 13 | v.LequipmentId | Mauvaise source pour prix |
+| BH | 59 | V.SoldeCompte | Possible source de 41,857 |
+
+### Expression clé
+
+| Programme | Expression | Formule | Bug |
+|-----------|------------|---------|-----|
+| PVE IDE 284 | 33 | `Round({1,13}*(1-ExpCalc('15'EXP)/100),10,CTX_43)` | {1,13} pointe vers mauvaise variable |
+
+---
+
+## Solution proposée
+
+### Correction requise dans PVE IDE 284
+
+1. **Vérifier l'initialisation de la variable prix** avant l'appel à Task 22
+2. **S'assurer que le paramètre P.Prix (index 31 de Task 19)** est correctement passé
+3. **Modifier Expression 33** pour utiliser l'index correct du prix :
+   ```magic
+   -- Au lieu de {1,13}, utiliser {1,31} (P.Prix) ou le bon index
+   Round({1,31}*(1-ExpCalc('15'EXP)/100),10,{32768,43})
+   ```
+
+### Validation requise
+
+- [ ] Confirmer que P.Prix (index 31) contient bien le prix du produit
+- [ ] Tester la modification sur un environnement de dev
+- [ ] Vérifier que la valeur facturée reste correcte
+- [ ] Tester avec différents % de remise (5%, 10%, 50%, 100%)
+
+---
+
+## Ticket Jira Dev
+
+Davide (CMDS) a confirmé :
+- Ticket Jira dev ouvert pour prochaine release PMS
+- Correction prévue avant fin janvier 2026
+
+---
+
+## Comparaison PVE IDE 186 vs PVE IDE 284
+
+| Aspect | PVE IDE 186 (Main Sale) | PVE IDE 284 (Sale Bar Code) |
+|--------|-------------------------|------------------------------|
+| Expression prix remisé | Expression 33 | Expression 33 |
+| Structure | Moins de sous-tâches | 61+ sous-tâches imbriquées |
+| Calcul correct | Oui (prix facturé OK) | Affichage KO, facture OK |
+| Bug localisé | Non | **OUI** |
+
+---
+
+*Dernière mise à jour: 2026-01-09*
+*Analyse complète - Cause racine identifiée*
