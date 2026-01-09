@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using MagicMcp.Services;
 using ModelContextProtocol.Server;
@@ -9,8 +11,18 @@ namespace MagicMcp.Tools;
 /// MCP Tool: Get cross-project dependencies
 /// </summary>
 [McpServerToolType]
-public static class GetDependenciesTool
+public static partial class GetDependenciesTool
 {
+    // Regex to match invalid XML character entities
+    [GeneratedRegex(@"&#x(0[0-8BbCc]|1[0-9A-Fa-f]|0[Ee]);|&#([0-8]|1[1-2]|14|1[5-9]|2[0-9]|3[01]);")]
+    private static partial Regex InvalidXmlEntityRegex();
+
+    private static XDocument LoadXmlSafe(string path)
+    {
+        var content = File.ReadAllText(path, Encoding.UTF8);
+        var cleanContent = InvalidXmlEntityRegex().Replace(content, "");
+        return XDocument.Parse(cleanContent);
+    }
     private static readonly string ProjectsBasePath =
         Environment.GetEnvironmentVariable("MAGIC_PROJECTS_PATH") ?? @"D:\Data\Migration\XPA\PMS";
 
@@ -122,7 +134,7 @@ public static class GetDependenciesTool
 
         try
         {
-            var doc = XDocument.Load(path);
+            var doc = LoadXmlSafe(path);
             var compElements = doc.Descendants("Component");
 
             foreach (var comp in compElements)
@@ -158,7 +170,7 @@ public static class GetDependenciesTool
 
         try
         {
-            var doc = XDocument.Load(path);
+            var doc = LoadXmlSafe(path);
             var sourceElements = doc.Descendants("DataSource");
 
             foreach (var source in sourceElements)

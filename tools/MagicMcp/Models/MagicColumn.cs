@@ -37,15 +37,40 @@ public class MagicColumn
 
     /// <summary>
     /// Convert 0-based index to Magic variable letter(s)
-    /// 0-25 = A-Z, 26-51 = AA-AZ, 52-77 = BA-BZ, etc.
+    /// Pattern: A-Z (0-25), BA-BZ (26-51), CA-CZ (52-77), DA-DZ (78-103), etc.
     /// </summary>
     public static string IndexToVariable(int index)
     {
+        if (index < 0) return "?";
         if (index < 26)
             return ((char)('A' + index)).ToString();
 
-        int first = index / 26;
-        int second = index % 26;
-        return $"{(char)('A' + first - 1)}{(char)('A' + second)}";
+        // After Z: BA, BB... BZ, CA, CB... CZ, DA...
+        int first = index / 26;    // 1=B, 2=C, 3=D, 4=E...
+        int second = index % 26;   // 0=A, 1=B... 25=Z
+        return $"{(char)('A' + first)}{(char)('A' + second)}";
+    }
+
+    /// <summary>
+    /// Convert variable letter(s) to 0-based index.
+    /// Pattern: A-Z (0-25), BA-BZ (26-51), CA-CZ (52-77), DA-DZ (78-103), etc.
+    /// </summary>
+    public static int VariableToIndex(string variable)
+    {
+        if (string.IsNullOrEmpty(variable)) return -1;
+        variable = variable.ToUpperInvariant();
+
+        if (variable.Length == 1)
+        {
+            return variable[0] - 'A';
+        }
+        else if (variable.Length == 2)
+        {
+            int first = variable[0] - 'A';  // B=1, C=2, D=3...
+            int second = variable[1] - 'A'; // A=0, B=1...
+            return first * 26 + second;
+        }
+
+        return -1;
     }
 }

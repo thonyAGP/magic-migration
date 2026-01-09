@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using MagicMcp.Models;
 using MagicMcp.Services;
@@ -7,8 +9,19 @@ using ModelContextProtocol.Server;
 namespace MagicMcp.Tools;
 
 [McpServerToolType]
-public static class DumpDataViewTool
+public static partial class DumpDataViewTool
 {
+    // Regex to match invalid XML character entities
+    [GeneratedRegex(@"&#x(0[0-8BbCc]|1[0-9A-Fa-f]|0[Ee]);|&#([0-8]|1[1-2]|14|1[5-9]|2[0-9]|3[01]);")]
+    private static partial Regex InvalidXmlEntityRegex();
+
+    private static XDocument LoadXmlSafe(string path)
+    {
+        var content = System.IO.File.ReadAllText(path, Encoding.UTF8);
+        var cleanContent = InvalidXmlEntityRegex().Replace(content, "");
+        return XDocument.Parse(cleanContent);
+    }
+
     [McpServerTool(Name = "magic_dump_dataview")]
     [Description("Dump the complete Data View structure as seen in Magic IDE. Built from Logic operations (DATAVIEW_SRC, Select, LNK, END_LINK, Remark).")]
     public static string DumpDataView(
@@ -52,7 +65,7 @@ public static class DumpDataViewTool
         if (!System.IO.File.Exists(xmlPath))
             return $"ERROR: XML file not found: {xmlPath}";
 
-        var doc = XDocument.Load(xmlPath);
+        var doc = LoadXmlSafe(xmlPath);
 
         // Find the task element by ISN_2
         var taskElement = doc.Descendants("Task")
@@ -66,11 +79,8 @@ public static class DumpDataViewTool
         if (taskElement == null)
             return $"ERROR: Task element with ISN_2={task.Isn2} not found in XML";
 
-        // Parse column definitions
-        var columnDefs = DataViewBuilder.ParseColumnDefinitions(taskElement);
-
-        // Build Data View from Logic
-        var dvLines = DataViewBuilder.BuildFromLogic(taskElement, columnDefs);
+        // Build Data View using the correct algorithm
+        var dvLines = DataViewBuilder.BuildFromTask(taskElement);
 
         // Format output
         var sb = new System.Text.StringBuilder();
@@ -85,43 +95,29 @@ public static class DumpDataViewTool
             return sb.ToString();
         }
 
-        sb.AppendLine("| Line | Type | Var | ColNum | Name | DataType | Picture | Table | Locate |");
-        sb.AppendLine("|------|------|-----|--------|------|----------|---------|-------|--------|");
+        sb.AppendLine("| Line | Type | Var | Name | DataType | Picture |");
+        sb.AppendLine("|------|------|-----|------|----------|---------|");
 
         foreach (var line in dvLines)
         {
             var varStr = line.Variable ?? "";
-            var colNumStr = line.TableColumnNumber?.ToString() ?? "";
-            var nameStr = line.Name ?? "";
-            if (nameStr.Length > 25) nameStr = nameStr.Substring(0, 25) + "...";
+            var nameStr = line.Name ?? line.RemarkText ?? "";
+            if (nameStr.Length > 30) nameStr = nameStr.Substring(0, 30) + "...";
 
             var typeStr = line.DataType ?? "";
             var pictureStr = line.Picture ?? "";
             if (pictureStr.Length > 15) pictureStr = pictureStr.Substring(0, 15) + "...";
 
-            var tableStr = line.TableId.HasValue ? $"{line.TableId}" : "";
-            var locateStr = "";
-            if (line.LocateMin.HasValue || line.LocateMax.HasValue)
-            {
-                locateStr = $"{line.LocateMin}→{line.LocateMax}";
-            }
-
             switch (line.LineType)
             {
-                case "Main Source":
-                    sb.AppendLine($"| {line.LineNumber} | **Main Source** | | | {nameStr} | | | | Index: {line.IndexNumber} |");
-                    break;
-                case "Link Query":
-                    sb.AppendLine($"| {line.LineNumber} | **Link Query** | | | Table {line.TableId} | | | {tableStr} | Index: {line.IndexNumber} |");
-                    break;
-                case "End Link":
-                    sb.AppendLine($"| {line.LineNumber} | **End Link** | | | | | | | |");
-                    break;
                 case "Empty":
-                    sb.AppendLine($"| {line.LineNumber} | *(empty)* | | | | | | | |");
+                    sb.AppendLine($"| {line.LineNumber} | *(empty)* | | | | |");
+                    break;
+                case "Remark":
+                    sb.AppendLine($"| {line.LineNumber} | Remark | | {nameStr} | | |");
                     break;
                 default:
-                    sb.AppendLine($"| {line.LineNumber} | {line.LineType} | {varStr} | {colNumStr} | {nameStr} | {typeStr} | {pictureStr} | {tableStr} | {locateStr} |");
+                    sb.AppendLine($"| {line.LineNumber} | {line.LineType} | {varStr} | {nameStr} | {typeStr} | {pictureStr} |");
                     break;
             }
         }

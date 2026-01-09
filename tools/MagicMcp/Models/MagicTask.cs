@@ -11,6 +11,6 @@ public class MagicTask
     public required string IdePosition { get; init; }
     public int? ParentIsn2 { get; init; }
     public string TaskType { get; init; } = "B";
-    public MagicDataView? DataView { get; init; }
+    public MagicDataView? DataView { get; set; }
     public List<MagicLogicLine> LogicLines { get; init; } = new();
 }

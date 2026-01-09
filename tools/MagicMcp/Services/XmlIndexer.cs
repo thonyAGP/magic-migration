@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using MagicMcp.Models;
 
@@ -6,13 +8,28 @@ namespace MagicMcp.Services;
 /// <summary>
 /// Parses Magic XML files and builds an index
 /// </summary>
-public class XmlIndexer
+public partial class XmlIndexer
 {
     private readonly string _projectsBasePath;
+
+    // Regex to match invalid XML character entities (&#x00; to &#x08;, &#x0B;, &#x0C;, &#x0E; to &#x1F;)
+    // These entities represent control characters that are invalid in XML 1.0
+    [GeneratedRegex(@"&#x(0[0-8BbCc]|1[0-9A-Fa-f]|0[Ee]);|&#([0-8]|1[1-2]|14|1[5-9]|2[0-9]|3[01]);")]
+    private static partial Regex InvalidXmlEntityRegex();
 
     public XmlIndexer(string projectsBasePath)
     {
         _projectsBasePath = projectsBasePath;
+    }
+
+    /// <summary>
+    /// Loads an XML file, removing invalid XML character entities (e.g., &#x10;)
+    /// </summary>
+    private static XDocument LoadXmlSafe(string path)
+    {
+        var content = File.ReadAllText(path, Encoding.UTF8);
+        var cleanContent = InvalidXmlEntityRegex().Replace(content, "");
+        return XDocument.Parse(cleanContent);
     }
 
     public MagicProject IndexProject(string projectName)
@@ -57,7 +74,7 @@ public class XmlIndexer
         var positions = new Dictionary<int, int>();
         if (!File.Exists(path)) return positions;
 
-        var doc = XDocument.Load(path);
+        var doc = LoadXmlSafe(path);
         var programs = doc.Descendants("Program").ToList();
 
         for (int i = 0; i < programs.Count; i++)
@@ -77,7 +94,7 @@ public class XmlIndexer
         var headers = new Dictionary<int, ProgramHeader>();
         if (!File.Exists(path)) return headers;
 
-        var doc = XDocument.Load(path);
+        var doc = LoadXmlSafe(path);
         foreach (var header in doc.Descendants("Header"))
         {
             var idAttr = header.Attribute("id");
@@ -97,7 +114,7 @@ public class XmlIndexer
 
     private MagicProgram ParseProgramFile(string path, int prgId, int idePosition, ProgramHeader? header)
     {
-        var doc = XDocument.Load(path);
+        var doc = LoadXmlSafe(path);
 
         var program = new MagicProgram
         {
@@ -121,6 +138,9 @@ public class XmlIndexer
         // Find all Task elements in the document
         var allTasks = doc.Descendants("Task").ToList();
         var levelCounters = new Dictionary<int, int>();
+
+        // First pass: Parse all tasks with raw column data
+        var taskColumnCounts = new Dictionary<int, int>(); // ISN_2 -> own column count
 
         foreach (var taskElement in allTasks)
         {
@@ -186,7 +206,12 @@ public class XmlIndexer
                 }
             }
 
-            // Parse DataView from Resource element
+            // Count own columns (without offset yet)
+            var columnsElement = taskElement.Element("Resource")?.Element("Columns");
+            var ownColumnCount = columnsElement?.Elements("Column").Count() ?? 0;
+            taskColumnCounts[isn2] = ownColumnCount;
+
+            // Parse DataView from Resource element (will apply offset later)
             var dataView = ParseDataView(taskElement);
 
             // Parse Logic from TaskLogic element
@@ -204,6 +229,75 @@ public class XmlIndexer
                 LogicLines = logicLines
             };
         }
+
+        // Second pass: Calculate variable offsets and update variable names
+        foreach (var task in program.Tasks.Values)
+        {
+            if (task.DataView?.Columns == null || task.DataView.Columns.Count == 0)
+                continue;
+
+            // Calculate offset by traversing parent chain
+            int offset = CalculateVariableOffset(task.Isn2, program.Tasks, taskColumnCounts);
+
+            // Update variable names with offset
+            if (offset > 0)
+            {
+                var updatedColumns = new List<MagicColumn>();
+                foreach (var col in task.DataView.Columns)
+                {
+                    // Parse the original variable index and add offset
+                    int originalIndex = MagicColumn.VariableToIndex(col.Variable);
+                    if (originalIndex >= 0)
+                    {
+                        updatedColumns.Add(new MagicColumn
+                        {
+                            LineNumber = col.LineNumber,
+                            XmlId = col.XmlId,
+                            Variable = MagicColumn.IndexToVariable(offset + originalIndex),
+                            Name = col.Name,
+                            DataType = col.DataType,
+                            Picture = col.Picture,
+                            Definition = col.Definition,
+                            Source = col.Source,
+                            SourceColumnNumber = col.SourceColumnNumber,
+                            LocateExpressionId = col.LocateExpressionId
+                        });
+                    }
+                    else
+                    {
+                        updatedColumns.Add(col);
+                    }
+                }
+
+                // Replace columns with offset-adjusted ones
+                task.DataView = task.DataView with { Columns = updatedColumns };
+            }
+        }
+    }
+
+    /// <summary>
+    /// Calculate variable offset for a task by summing columns from all ancestor tasks.
+    /// Main → Task 61 → Task 61.1 → Task 61.1.1
+    /// Offset for 61.1.1 = columns(Main) + columns(61) + columns(61.1)
+    /// </summary>
+    private int CalculateVariableOffset(int isn2, Dictionary<int, MagicTask> tasks, Dictionary<int, int> columnCounts)
+    {
+        var task = tasks.GetValueOrDefault(isn2);
+        if (task == null || !task.ParentIsn2.HasValue)
+            return 0; // Root task has no offset
+
+        // Traverse parent chain and sum column counts
+        int offset = 0;
+        int? currentParentIsn2 = task.ParentIsn2;
+
+        while (currentParentIsn2.HasValue)
+        {
+            offset += columnCounts.GetValueOrDefault(currentParentIsn2.Value, 0);
+            var parentTask = tasks.GetValueOrDefault(currentParentIsn2.Value);
+            currentParentIsn2 = parentTask?.ParentIsn2;
+        }
+
+        return offset;
     }
 
     private string BuildIdePosition(int prgPosition, Dictionary<int, int> levelCounters)
@@ -278,9 +372,9 @@ public class XmlIndexer
             }
         }
 
-        // Parse Columns
+        // Parse Columns and intercalate Remarks based on FlowIsn
         var columnsElement = resourceElement.Element("Columns");
-        var columns = ParseColumns(columnsElement);
+        var columns = ParseColumnsWithRemarks(taskElement, columnsElement);
         if (columns.Count > 0)
         {
             dataView = dataView with { Columns = columns };
@@ -288,6 +382,154 @@ public class XmlIndexer
 
         return dataView;
     }
+
+    /// <summary>
+    /// Parse columns from XML and intercalate Remarks based on FlowIsn.
+    /// The correct algorithm:
+    /// 1. Columns are displayed in their XML order
+    /// 2. Remarks are inserted after position N where N = FlowIsn
+    /// </summary>
+    private List<MagicColumn> ParseColumnsWithRemarks(XElement taskElement, XElement? columnsElement)
+    {
+        var columns = new List<MagicColumn>();
+        if (columnsElement == null) return columns;
+
+        // Step 1: Parse column data in XML order
+        var columnDataList = new List<ColumnData>();
+        var columnElements = columnsElement.Elements("Column").ToList();
+
+        for (int i = 0; i < columnElements.Count; i++)
+        {
+            var colElement = columnElements[i];
+            var idAttr = colElement.Attribute("id");
+            var nameAttr = colElement.Attribute("name");
+
+            if (idAttr == null || !int.TryParse(idAttr.Value, out int xmlId)) continue;
+
+            // Get PropertyList for field properties
+            var propList = colElement.Element("PropertyList");
+
+            // Get data type from Model element
+            var modelElement = propList?.Element("Model");
+            var dataType = ParseFieldType(modelElement?.Attribute("attr_obj")?.Value);
+
+            // Get picture
+            var pictureElement = propList?.Element("Picture");
+            var picture = pictureElement?.Attribute("valUnicode")?.Value
+                       ?? pictureElement?.Attribute("val")?.Value;
+
+            // Get definition (1=Real, 2=Virtual/Parameter based on name prefix)
+            var defElement = propList?.Element("Definition");
+            var defVal = defElement?.Attribute("val")?.Value;
+
+            // Determine definition from name prefix and Definition element
+            var name = nameAttr?.Value ?? $"Col_{xmlId}";
+            string definition;
+            if (name.StartsWith(">") || name.StartsWith("&gt;"))
+            {
+                definition = "P"; // Parameter (input)
+            }
+            else if (name.StartsWith("<") || name.StartsWith("&lt;"))
+            {
+                definition = "P"; // Parameter (output)
+            }
+            else if (defVal == "1")
+            {
+                definition = "R"; // Real (from table)
+            }
+            else
+            {
+                definition = "V"; // Virtual
+            }
+
+            columnDataList.Add(new ColumnData(xmlId, name, dataType, picture, definition, i));
+        }
+
+        // Step 2: Parse Remarks with FlowIsn from Record Main LogicUnit
+        var remarksByFlowIsn = ParseRemarksFlowIsn(taskElement);
+
+        // Step 3: Build interleaved sequence
+        // FlowIsn N means "insert Remark after position N in the interleaved sequence"
+        int dvLine = 1;
+        int colIndex = 0;
+
+        while (colIndex < columnDataList.Count)
+        {
+            // Add next column
+            var col = columnDataList[colIndex];
+            columns.Add(new MagicColumn
+            {
+                LineNumber = dvLine,
+                XmlId = col.XmlId,
+                Variable = MagicColumn.IndexToVariable(col.VarIndex),
+                Name = col.Name,
+                DataType = col.DataType,
+                Picture = col.Picture,
+                Definition = col.Definition
+            });
+
+            int currentPosition = dvLine;
+            dvLine++;
+            colIndex++;
+
+            // Insert any Remarks that should appear after this position
+            // (we don't add Remarks to MagicColumn list, but we do count them for line numbering)
+            if (remarksByFlowIsn.TryGetValue(currentPosition, out var remarksAtPos))
+            {
+                dvLine += remarksAtPos; // Skip lines for Remarks
+            }
+        }
+
+        return columns;
+    }
+
+    /// <summary>
+    /// Parse Remarks with FlowIsn from Record Main LogicUnit.
+    /// Returns a dictionary: FlowIsn -> count of Remarks at that position.
+    /// </summary>
+    private Dictionary<int, int> ParseRemarksFlowIsn(XElement taskElement)
+    {
+        var remarkCounts = new Dictionary<int, int>();
+
+        var taskLogic = taskElement.Element("TaskLogic");
+        if (taskLogic == null) return remarkCounts;
+
+        // Find Record Main LogicUnit (Level=R, Type=M)
+        var mainUnit = taskLogic.Elements("LogicUnit")
+            .FirstOrDefault(u =>
+            {
+                var level = u.Element("Level")?.Attribute("val")?.Value;
+                var type = u.Element("Type")?.Attribute("val")?.Value;
+                return level == "R" && type == "M";
+            });
+
+        if (mainUnit == null)
+        {
+            mainUnit = taskLogic.Elements("LogicUnit").FirstOrDefault();
+        }
+
+        if (mainUnit == null) return remarkCounts;
+
+        var logicLines = mainUnit.Element("LogicLines");
+        if (logicLines == null) return remarkCounts;
+
+        foreach (var logicLine in logicLines.Elements("LogicLine"))
+        {
+            var remarkEl = logicLine.Element("Remark");
+            if (remarkEl == null) continue;
+
+            var flowIsnAttr = remarkEl.Attribute("FlowIsn");
+            if (flowIsnAttr == null || !int.TryParse(flowIsnAttr.Value, out int flowIsn)) continue;
+
+            if (!remarkCounts.ContainsKey(flowIsn))
+                remarkCounts[flowIsn] = 0;
+            remarkCounts[flowIsn]++;
+        }
+
+        return remarkCounts;
+    }
+
+    private record ColumnData(int XmlId, string Name, string DataType, string? Picture, string Definition, int VarIndex);
 
     private List<MagicColumn> ParseColumns(XElement? columnsElement)
     {
