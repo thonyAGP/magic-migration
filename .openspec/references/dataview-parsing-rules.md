@@ -163,6 +163,38 @@ Index global = 3 + 318 = 321 → LJ
 
 ---
 
+## Règle 1b: Variables dans les Handlers (CACHÉES)
+
+**RÈGLE CRITIQUE** : Les variables déclarées dans les **Handlers** (Logic Unit type "H") comptent aussi dans le total, même si elles ne sont pas visibles dans l'onglet Data View.
+
+### Exemple ADH 122.1
+
+| Source | FieldID | Variable | Visible DV? |
+|--------|---------|----------|-------------|
+| Record Main | 1-12 | GS-HD | Oui |
+| **Handler** | 13 | HE | **Non** |
+| **Handler** | 14 | HF | **Non** |
+
+**Total = 14 variables** (pas 12 !)
+
+### Impact sur le calcul d'offset
+
+```
+ADH 122.1.1.1 ligne 7:
+  Offset = Main (143) + Prg 122 (57) + 122.1 (14) + 122.1.1 (0) = 214
+  FieldID 5 → index 4 → global 218 → HK
+```
+
+### Comment détecter
+
+Parcourir **TOUS** les LogicUnits de la tâche, pas seulement Record Main :
+- Level "R" = Record Main (Data View visible)
+- Level "H" = Handler (variables cachées)
+- Level "TP/TS" = Task Prefix/Suffix
+- Level "RP/RS" = Record Prefix/Suffix
+
+---
+
 ## Règle 2: Column IDs - DISTINCTION Main Source vs Link
 
 ### Main Source: IDs SÉQUENTIELS
