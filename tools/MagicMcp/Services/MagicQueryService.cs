@@ -198,7 +198,7 @@ public class MagicQueryService
     /// Get both DataView column AND Logic operation for a specific line number.
     /// Line numbers are independent in each tab.
     /// </summary>
-    public string GetLine(string projectName, string taskPosition, int lineNumber)
+    public string GetLine(string projectName, string taskPosition, int lineNumber, int mainOffset = 0)
     {
         // Parse task position (e.g., "69.3" -> program 69, task with IdePosition "69.3")
         var parts = taskPosition.Split('.');
@@ -259,7 +259,17 @@ public class MagicQueryService
                     _ => column.Definition
                 };
 
-                sb.AppendLine($"| {column.LineNumber} | **{column.Variable}** | {column.Name} | {column.DataType} | {defType} | {locateInfo} |");
+                // Apply mainOffset to variable if provided
+                var displayVar = column.Variable;
+                if (mainOffset > 0 && !string.IsNullOrEmpty(column.Variable))
+                {
+                    var localIndex = MagicColumn.VariableToIndex(column.Variable);
+                    if (localIndex >= 0)
+                    {
+                        displayVar = MagicColumn.IndexToVariable(localIndex + mainOffset);
+                    }
+                }
+                sb.AppendLine($"| {column.LineNumber} | **{displayVar}** | {column.Name} | {column.DataType} | {defType} | {locateInfo} |");
 
                 // Show expression content if available
                 if (column.LocateExpressionId.HasValue)
