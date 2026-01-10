@@ -113,51 +113,51 @@ Pour afficher les variables globales (pas locales), utiliser `-MainOffset` :
 
 ### RÈGLE CALCUL OFFSET SOUS-TÂCHES
 
-#### Cas 1: Sous-tâches de niveau 1 (ex: 320.1, 320.2, 320.3)
+#### Règles validées (2026-01-11)
 
-**Formule :** `Main + Programme (tâche principale) + variable locale`
+| # | Règle | Description |
+|---|-------|-------------|
+| 1 | **COUNT des Select** | Compter le NOMBRE de Select, pas le max FieldID (gère les gaps/suppressions) |
+| 2 | **Chemin direct** | Compter UNIQUEMENT les ancêtres, PAS les tâches siblings |
+| 3 | **Tous LogicUnits** | Inclure Record Main + Handlers (variables cachées) |
 
-Les sous-tâches de **même niveau** partagent le MÊME offset de départ.
+#### Formule générale
 
-**Exemple ADH 320.3 ligne 7 :**
 ```
-Offset = Main (143) + Prg 320 main task (119) = 262
-Variable locale = F (index 5)
-Index global = 262 + 5 = 267 → JH
+Offset = Main + Σ(Select count de chaque ancêtre dans le chemin)
+Variable = Offset + (FieldID - 1)
 ```
 
-| Programme | Offset sous-tâches niveau 1 | Calcul |
-|-----------|----------------------------|--------|
-| ADH 320 | 262 | 143 + 119 |
-| ADH 285 | 207 | 143 + 64 |
+#### Exemple ADH 285.1.2.5 ligne 5
 
-#### Cas 2: Sous-tâches IMBRIQUÉES (ex: 285.1.2.5)
-
-**Formule :** `Main + Prg main + Subtask niveau 1 + Subtask niveau 2 + ... + variable locale`
-
-Pour les sous-tâches imbriquées, **chaque niveau parent ajoute ses variables**.
-
-**Exemple ADH 285.1.2.5 ligne 5 :**
 ```
-Chemin: 285 (main) → 285.1 → 285.1.2 → 285.1.2.5
+Chemin: Main → 285 main → 285.1 → 285.1.2 → 285.1.2.5
 
-Offset = Main (143)
-       + Prg 285 main (64 vars)
-       + Subtask 285.1 (0 vars)
-       + Subtask 285.1.2 (111 vars)
+Offset = 143 (Main)
+       + 64 (Prg 285 main)
+       + 0 (285.1)
+       + 111 (285.1.2)
        = 318
 
-Variable locale = D (FieldID=4, index 3)
-Index global = 3 + 318 = 321 → LJ
+Ligne 5 = FieldID 4 → index 3 → 318 + 3 = 321 → LJ
 ```
 
-| Niveau | ISN | Nom | Variables | Cumul |
-|--------|-----|-----|-----------|-------|
-| Main ADH | - | - | 143 | 143 |
-| Prg 285 main | 1 | Print ticket vente LEX | 64 | 207 |
-| 285.1 | 2 | Printer 1 | 0 | 207 |
-| 285.1.2 | 5 | Print A4 | 111 | 318 |
-| **285.1.2.5** | 10 | Edition LCO Liberation | 5 | (cible) |
+| Niveau | ISN | Select | Cumul |
+|--------|-----|--------|-------|
+| Main ADH | - | 143 | 143 |
+| Prg 285 main | 1 | 64 | 207 |
+| 285.1 | 2 | 0 | 207 |
+| 285.1.2 | 5 | 111 | 318 |
+| **285.1.2.5** | 10 | 5 | (cible) |
+
+#### Exemple ADH 122.1.1.1 ligne 7
+
+```
+Chemin: Main → 122 main → 122.1 → 122.1.1 → 122.1.1.1
+
+Offset = 143 + 57 + 13 + 0 = 213
+Ligne 7 = FieldID 5 → index 4 → 213 + 4 = 217 → HJ
+```
 
 **Script :** `tools/scripts/calc-nested-offset.ps1`
 
