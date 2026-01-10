@@ -5,7 +5,51 @@
 
 ## Date: 2026-01-10
 
-### Source: ADH IDE 160 (Prg_159.xml) - Task 160.1 (ISN_2=2)
+---
+
+## Source 2: ADH IDE 160 "Liste des GM" (Task Principal)
+
+### Structure Data View Complète
+
+| Ligne | Type | Table IDE | Table Nom | Col ID | Col Nom | Index |
+|-------|------|-----------|-----------|--------|---------|-------|
+| 1 | Main Source | 594 | tempo_ecran_mecano | - | - | 1 |
+| 2-25 | Column | 594 | tempo_ecran_mecano | 1-24 | eme_* | - |
+| 26 | (vide) | - | - | - | - | - |
+| 27 | Link Query | 30 | gm-recherche_____gm | - | - | 3 |
+| 28 | Column | 30 | gm-recherche | 1 | gmr_societe | - |
+| 29 | Column | 30 | gm-recherche | 5 | gmr_type_de_client | - |
+| 30 | Column | 30 | gm-recherche | 6 | gmr_num__club | - |
+| 31 | Column | 30 | gm-recherche | 8 | gmr_filiation_club | - |
+| 32 | Column | 30 | gm-recherche | 2 | gmr_code_gm | - |
+| 33 | Column | 30 | gm-recherche | 3 | gmr_filiation_villag | - |
+| 34 | End Link | - | - | - | - | - |
+| 35 | (vide) | - | - | - | - | - |
+| 36 | Link Query | 47 | compte_gm_________cg | - | - | 1 |
+| 37 | Column | 47 | compte_gm | 1 | cgm_societe | - |
+| 38 | Column | 47 | compte_gm | 2 | cgm_code_adherent | - |
+| 39 | Column | 47 | compte_gm | 6 | cgm_garanti | - |
+| 40 | End Link | - | - | - | - | - |
+| 41 | (vide) | - | - | - | - | - |
+| 42 | Virtual | - | - | 1 | v.num cmp | - |
+
+### Variables Expression Rules
+
+| Variable | Nom Colonne | Type | Data Source |
+|----------|-------------|------|-------------|
+| DY-EK | VG.* | Logical/etc | Virtual (globals) |
+| EN | eme_societe | Alpha | tempo_ecran_mecano |
+| EO | eme_user | Alpha | tempo_ecran_mecano |
+| EP | eme_sequence | Numeric | tempo_ecran_mecano |
+| EQ | eme_code_vente | Alpha | tempo_ecran_mecano |
+| ... | ... | ... | ... |
+| FK | eme_age_num | Numeric | tempo_ecran_mecano |
+
+**Première variable du Main Source = EN** (index ~117)
+
+---
+
+## Source 1: ADH IDE 160.1 "Update Ezcard" (Subtask)
 
 ---
 
@@ -22,9 +66,40 @@ Les variables sont numérotées **globalement** sur tout le programme, pas par t
 
 ---
 
-## Règle 2: Column IDs Non-Séquentiels
+## Règle 2: Column IDs - DISTINCTION Main Source vs Link
 
-Les IDs de colonnes dans les Links sont les **vrais IDs de la table**, pas séquentiels.
+### Main Source: IDs SÉQUENTIELS
+Les colonnes du Main Source sont numérotées **séquentiellement** (1, 2, 3, ..., 24).
+C'est l'ordre de sélection, pas les IDs réels de la table.
+
+### Link Query: IDs RÉELS de la table
+Les colonnes des Links utilisent les **vrais IDs de colonnes** de la table.
+Exemple: 1, 5, 6, 8, 2, 3 (non séquentiel, avec "trous").
+
+### Exemples validés (ADH IDE 160)
+
+**Main Source (tempo_ecran_mecano):**
+```
+Ligne 2:  Col 1  = eme_societe
+Ligne 3:  Col 2  = eme_user
+Ligne 4:  Col 3  = eme_sequence
+...
+Ligne 25: Col 24 = eme_age_num
+```
+
+**Link Query (gm-recherche):**
+```
+Ligne 28: Col 1 = gmr_societe
+Ligne 29: Col 5 = gmr_type_de_client  ← saute 2,3,4
+Ligne 30: Col 6 = gmr_num__club
+Ligne 31: Col 8 = gmr_filiation_club  ← saute 7
+Ligne 32: Col 2 = gmr_code_gm         ← revient en arrière!
+Ligne 33: Col 3 = gmr_filiation_villag
+```
+
+---
+
+## Règle 2b: Column IDs dans Subtasks
 
 Exemple observé dans screenshot Task 160.1:
 ```
