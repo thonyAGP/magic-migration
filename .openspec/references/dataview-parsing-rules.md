@@ -64,6 +64,34 @@ Les variables sont numérotées **globalement** sur tout le programme, pas par t
 
 **Implication**: Pour parser une sous-tâche, il faut connaître le nombre de variables de la tâche parente.
 
+### RÈGLE CRITIQUE : Variables Main TOUJOURS incluses
+
+Quand un programme est appelé, les **variables du Main sont TOUJOURS lues en premier**.
+Il n'existe PAS de "contexte local" - le contexte local n'existe QUE pour le Main lui-même.
+
+**Exemple ADH IDE 320 (Deversement Transaction SAV) :**
+
+| Source | Variables | Plage |
+|--------|-----------|-------|
+| **Main (VG.*)** | DX à EK | Variables virtuelles globales |
+| --- Séparateur --- | | |
+| ADH 320 Parameters | EN à EY | p.Gratuite, p.Annulation... |
+| ADH 320 Columns | EZ à ... | sod_societe, sod_compte... |
+
+**Calcul correct pour ADH 320 ligne 36 :**
+- Ligne 36 = sod_pourcentage_reduction
+- Variable = **FS** (pas AF!)
+- Car offset Main (EK) + offset Parameters (EN-EY) + colonnes
+
+**Mapping colonnes Main Source ADH 320 :**
+| Ligne | Variable | Colonne |
+|-------|----------|---------|
+| 17 | EZ | sod_societe |
+| 18 | FA | sod_compte |
+| 19 | FB | sod_filiation |
+| ... | ... | ... |
+| 36 | **FS** | sod_pourcentage_reduction |
+
 ---
 
 ## Règle 2: Column IDs - DISTINCTION Main Source vs Link
