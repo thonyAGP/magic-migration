@@ -3,6 +3,10 @@
 #
 # Example: ADH 285.1.2.5
 #   = Main (143) + Prg 285 main + 285.1 + 285.1.2 + local var 285.1.2.5
+#
+# RÈGLE IMPORTANTE: Les variables dans les Handlers comptent aussi!
+# Même si elles ne sont pas visibles dans le DataView, elles s'ajoutent
+# à la suite des variables du Record Main.
 
 param(
     [string]$Project = "ADH",
@@ -11,20 +15,49 @@ param(
     [int]$MainOffset = 143       # ADH = 143
 )
 
+function Convert-IndexToVariable($idx) {
+    if ($idx -lt 26) {
+        return [string][char]([int][char]'A' + $idx)
+    } elseif ($idx -lt 702) {
+        $adjusted = $idx - 26
+        $first = [int][math]::Floor($adjusted / 26)
+        $second = [int]($adjusted % 26)
+        return [string][char]([int][char]'A' + $first) + [string][char]([int][char]'A' + $second)
+    } else {
+        # 3-letter variables (AAA onwards)
+        $adjusted = $idx - 702
+        $first = [int][math]::Floor($adjusted / 676)
+        $rem = [int]($adjusted % 676)
+        $second = [int][math]::Floor($rem / 26)
+        $third = [int]($rem % 26)
+        return [string][char]([int][char]'A' + $first) + [string][char]([int][char]'A' + $second) + [string][char]([int][char]'A' + $third)
+    }
+}
+
 $projectsPath = "D:\Data\Migration\XPA\PMS"
 $xmlPath = "$projectsPath\$Project\Source\Prg_$PrgId.xml"
 [xml]$xml = Get-Content $xmlPath -Encoding UTF8
 $root = $xml.Application.ProgramsRepository.Programs.Task
 
 function Count-TaskVariables($task) {
-    $count = 0
+    # RÈGLE: Compter TOUTES les variables (Select) dans TOUS les LogicUnits
+    # pas seulement Record Main - les Handlers (H) peuvent avoir des variables cachées
+    $allFieldIds = @()
+
     foreach ($lu in $task.TaskLogic.LogicUnit) {
-        if ($lu.Level.val -eq 'R') {
-            $count = ($lu.LogicLines.LogicLine | Where-Object { $_.Select }).Count
-            break
+        foreach ($ll in $lu.LogicLines.LogicLine) {
+            if ($ll.Select) {
+                $fieldId = [int]$ll.Select.FieldID
+                if ($fieldId -notin $allFieldIds) {
+                    $allFieldIds += $fieldId
+                }
+            }
         }
     }
-    return $count
+
+    # Le nombre de variables = le FieldID max (car numérotés séquentiellement)
+    if ($allFieldIds.Count -eq 0) { return 0 }
+    return ($allFieldIds | Measure-Object -Maximum).Maximum
 }
 
 function Find-PathToTask {
@@ -117,14 +150,7 @@ foreach ($logicLine in $logicUnit.LogicLines.LogicLine) {
 
         # Global variable
         $globalIdx = $fieldId - 1 + $offset
-        if ($globalIdx -lt 26) {
-            $var = [char]([int][char]'A' + $globalIdx)
-        } else {
-            $adjusted = $globalIdx - 26
-            $first = [int][math]::Floor($adjusted / 26)
-            $second = $adjusted % 26
-            $var = ([char]([int][char]'A' + $first)).ToString() + ([char]([int][char]'A' + $second)).ToString()
-        }
+        $var = Convert-IndexToVariable $globalIdx
 
         $typeStr = switch ($type) { "V" { "Virtual" } "R" { "Column" } "P" { "Param" } default { $type } }
         $output = "{0,3}  [{1,-2}] {2}" -f $lineNum, $var, $typeStr
