@@ -1,12 +1,11 @@
-# PARSE MAGIC DATA VIEW - VERSION DEFINITIVE
-# Règles brutes, pas d'IA
+# PARSE MAGIC DATA VIEW - VERSION DEFINITIVE V2
+# Règles brutes basées sur analyse positions XML vs IDE
 #
-# Structure DV Magic:
-# 1. LogicLines contient l'ordre exact des lignes
-# 2. Select avec Type: V=Virtual, R=Real (table column), P=Parameter
-# 3. LNK définit un Link Query
-# 4. NullLine représente une ligne vide
-# 5. EndLnk ferme un Link Query
+# RÈGLES CLÉS (2026-01-10):
+# 1. Tables: XML obj → Comps.xml ItemIsn → id = IDE position
+# 2. Programmes: Position dans ProgramsRepositoryOutLine = IDE position
+# 3. Data View: Position dans LogicLines = IDE line number
+# 4. Colonnes: Column.val = séquentiel (Main), vrais IDs (Links)
 
 param(
     [string]$Project = "ADH",
@@ -26,56 +25,123 @@ if (-not (Test-Path $xmlPath)) {
 [xml]$xml = Get-Content $xmlPath -Encoding UTF8
 
 # ============================================
-# LOAD TABLE MAPPING
+# LOAD COMPONENT TABLE MAPPING (ItemIsn → IDE id)
 # ============================================
+$compsPath = "$projectsPath\$Project\Source\Comps.xml"
+$tableIsnToIde = @{}  # ItemIsn → { ide, publicName }
+$tablePublicToName = @{}  # PublicName → table name
+
+# First load REF DataSources for table names
 $dsPath = "$projectsPath\REF\Source\DataSources.xml"
-$tableLookup = @{}
 $tableNamesById = @{}
+$dbColumns = @{}
 
 if (Test-Path $dsPath) {
     [xml]$dsXml = Get-Content $dsPath -Encoding UTF8
-
-    $idsWithoutPublic = @()
-    $tablesWithPublic = @()
-
-    # Structure: Application/DataSourceRepository/DataObjects/DataObject
     foreach ($ds in $dsXml.Application.DataSourceRepository.DataObjects.DataObject) {
-        $id = [int]$ds.id
-        $publicName = $ds.Public
+        $id = $ds.id
         $logicalName = $ds.name
+        $publicName = $ds.Public
         if (-not $logicalName) { $logicalName = "Table_$id" }
-
         $tableNamesById["$id"] = $logicalName
-
         if ($publicName) {
-            $tablesWithPublic += [PSCustomObject]@{ Id = $id; Name = $logicalName; Public = $publicName }
-        } else {
-            $idsWithoutPublic += $id
+            $tablePublicToName["$publicName"] = $logicalName
+        }
+        # Store column mappings
+        if ($ds.Columns.Column) {
+            $cols = @{}
+            foreach ($col in $ds.Columns.Column) {
+                $cols["$($col.id)"] = $col.name
+            }
+            $dbColumns["$id"] = $cols
         }
     }
+}
 
-    $idsWithoutPublic = $idsWithoutPublic | Sort-Object
-
-    # Calculate IDE position: Position = id - (tables without Public before this id)
-    foreach ($t in $tablesWithPublic) {
-        $noBefore = @($idsWithoutPublic | Where-Object { $_ -lt $t.Id }).Count
-        $idePos = $t.Id - $noBefore
-        $tableLookup["$($t.Id)"] = @{ ide = $idePos; name = $t.Name }
+# Load Comps.xml for ItemIsn → IDE mapping
+if (Test-Path $compsPath) {
+    [xml]$compsXml = Get-Content $compsPath -Encoding UTF8
+    # Find REF component (id=4 typically named "Ref_Tables")
+    foreach ($comp in $compsXml.Application.ComponentsRepository.Components.Component) {
+        if ($comp.ComponentDataObjects) {
+            foreach ($obj in $comp.ComponentDataObjects.Object) {
+                $ideId = $obj.id.val
+                $itemIsn = $obj.ItemIsn.val
+                $publicName = $obj.PublicName.val
+                if ($itemIsn) {
+                    $tableIsnToIde["$itemIsn"] = @{ ide = $ideId; public = $publicName }
+                }
+            }
+        }
     }
+    Write-Host "Component mapping: $($tableIsnToIde.Count) tables mapped" -ForegroundColor DarkGray
+}
 
-    Write-Host "Table mapping: $($tablesWithPublic.Count) with Public, $($idsWithoutPublic.Count) without" -ForegroundColor DarkGray
+# ============================================
+# LOAD PROGRAM IDE POSITION
+# ============================================
+$progsPath = "$projectsPath\$Project\Source\Progs.xml"
+$prgIdePos = $PrgId  # Default to XML id
+
+if (Test-Path $progsPath) {
+    [xml]$progsXml = Get-Content $progsPath -Encoding UTF8
+    $programs = $progsXml.Application.ProgramsRepositoryOutLine.Programs.Program
+    $pos = 1
+    foreach ($prg in $programs) {
+        if ($prg.id -eq "$PrgId") {
+            $prgIdePos = $pos
+            break
+        }
+        $pos++
+    }
 }
 
 function Get-TableDisplay($objId) {
-    if ($tableLookup.ContainsKey("$objId")) {
-        $info = $tableLookup["$objId"]
-        return "$($info.ide) $($info.name)"
+    # Rule: XML obj = ItemIsn → Comps.xml id = IDE position
+    if ($tableIsnToIde.ContainsKey("$objId")) {
+        $info = $tableIsnToIde["$objId"]
+        $tableName = if ($tablePublicToName.ContainsKey($info.public)) {
+            $tablePublicToName[$info.public]
+        } else {
+            $info.public
+        }
+        return "$($info.ide) $tableName"
     }
+    # Fallback to direct lookup
     if ($tableNamesById.ContainsKey("$objId")) {
         return "? $($tableNamesById["$objId"])"
     }
     return "obj=$objId"
 }
+
+function Get-ColumnName($tableObj, $colId) {
+    # Try ItemIsn-based lookup first
+    if ($tableIsnToIde.ContainsKey("$tableObj")) {
+        $info = $tableIsnToIde["$tableObj"]
+        # Find REF table id by PublicName
+        foreach ($key in $tableNamesById.Keys) {
+            if ($tablePublicToName.ContainsKey($info.public) -and
+                $tableNamesById[$key] -eq $tablePublicToName[$info.public]) {
+                if ($dbColumns.ContainsKey($key)) {
+                    $cols = $dbColumns[$key]
+                    if ($cols.ContainsKey("$colId")) {
+                        return $cols["$colId"]
+                    }
+                }
+                break
+            }
+        }
+    }
+    # Direct lookup
+    if ($dbColumns.ContainsKey("$tableObj")) {
+        $cols = $dbColumns["$tableObj"]
+        if ($cols.ContainsKey("$colId")) {
+            return $cols["$colId"]
+        }
+    }
+    return $null
+}
+
 
 # ============================================
 # FIND TASK (recursive search for nested subtasks)
@@ -116,33 +182,19 @@ if (-not $task) {
 }
 
 $taskName = $task.Header.Description
-$prgIdePos = $PrgId  # TODO: calculate program IDE position too
 Write-Host ""
 Write-Host "=== $Project IDE $prgIdePos - $taskName ===" -ForegroundColor Cyan
 Write-Host ""
 
 # ============================================
-# GET DB LIST + COLUMN NAMES
+# GET DB LIST
 # ============================================
 $dbList = @()
-$dbColumns = @{}  # obj -> column definitions
 $dbIndex = 1
 
 foreach ($db in $task.Resource.DB) {
     $obj = $db.DataObject.obj
     $dbList += @{ Index = $dbIndex; Obj = $obj; Display = (Get-TableDisplay $obj) }
-
-    # Load column names from DataSources.xml for this table
-    if ($dsXml) {
-        $tableNode = $dsXml.Application.DataSourceRepository.DataObjects.DataObject | Where-Object { $_.id -eq $obj }
-        if ($tableNode -and $tableNode.Columns.Column) {
-            $cols = @{}
-            foreach ($col in $tableNode.Columns.Column) {
-                $cols["$($col.id)"] = $col.name
-            }
-            $dbColumns["$obj"] = $cols
-        }
-    }
     $dbIndex++
 }
 
@@ -250,14 +302,8 @@ foreach ($logicLine in $logicUnit.LogicLines.LogicLine) {
             $colName = if ($virtualColumns.ContainsKey("$colNum")) { $virtualColumns["$colNum"] } else { "Virtual $colNum" }
             $output = "{0,3}  [{1,-2}] Virtual     {2}" -f $lineNum, $varLetter, $colName
         } else {
-            # Real column from table - look up name
-            $colName = ""
-            if ($currentTableObj -and $dbColumns.ContainsKey("$currentTableObj")) {
-                $tableCols = $dbColumns["$currentTableObj"]
-                if ($tableCols.ContainsKey("$colNum")) {
-                    $colName = $tableCols["$colNum"]
-                }
-            }
+            # Real column from table - look up name using new mapping
+            $colName = Get-ColumnName $currentTableObj $colNum
             if ($colName) {
                 $output = "{0,3}  [{1,-2}] Column      {2}" -f $lineNum, $varLetter, $colName
             } else {
