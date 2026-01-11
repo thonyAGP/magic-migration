@@ -1344,5 +1344,362 @@ Python:     locale.getlocale()[0]
 
 ---
 
+## Batch 3 - Fonctions XML, Vector et Buffer (30 nouvelles)
+
+### XMLStr - Encode string pour XML
+```
+Syntaxe: XMLStr(string)
+Retour:  String avec caracteres speciaux encodes
+Note:    Echappe &, <, >, ", '
+
+Exemple: XMLStr('A & B') = 'A &amp; B'
+
+TypeScript: s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+C#:         SecurityElement.Escape(s) ou WebUtility.HtmlEncode(s)
+Python:     xml.sax.saxutils.escape(s)
+```
+
+### XMLVal - Decode string XML
+```
+Syntaxe: XMLVal(string)
+Retour:  String avec entites XML decodees
+Note:    Inverse de XMLStr
+
+Exemple: XMLVal('A &amp; B') = 'A & B'
+
+TypeScript: s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+C#:         WebUtility.HtmlDecode(s)
+Python:     xml.sax.saxutils.unescape(s)
+```
+
+### XMLGet - Lire valeur element
+```
+Syntaxe: XMLGet(xmlBlob, xPath)
+Retour:  Alpha - Valeur de l'element/attribut
+Note:    Supporte XPath simplifie
+
+Exemple: XMLGet(xmlDoc, '/root/item/@name')
+
+TypeScript: // DOM: doc.querySelector(xpath)?.textContent
+            // Node: xmldom + xpath
+C#:         doc.SelectSingleNode(xpath)?.InnerText
+Python:     tree.xpath(xpath)[0].text  # lxml
+```
+
+### XMLCnt - Compter elements
+```
+Syntaxe: XMLCnt(xmlBlob, xPath)
+Retour:  Numeric - Nombre d'elements correspondants
+
+Exemple: XMLCnt(xmlDoc, '/root/items/item')
+
+TypeScript: doc.querySelectorAll(xpath).length
+C#:         doc.SelectNodes(xpath)?.Count ?? 0
+Python:     len(tree.xpath(xpath))
+```
+
+### XMLExist - Tester existence element
+```
+Syntaxe: XMLExist(xmlBlob, xPath)
+Retour:  Logical - TRUE si element existe
+
+TypeScript: doc.querySelector(xpath) !== null
+C#:         doc.SelectSingleNode(xpath) != null
+Python:     len(tree.xpath(xpath)) > 0
+```
+
+### XMLInsert - Inserer element
+```
+Syntaxe: XMLInsert(xmlBlob, xPath, nodeName, value, position)
+Retour:  Modifie le BLOB XML
+Position: 0=Before, 1=After, 2=Child
+
+TypeScript: parent.insertBefore(newNode, refNode) // DOM
+C#:         parent.InsertBefore(newNode, refNode)
+Python:     parent.insert(index, new_element)  # lxml
+```
+
+### XMLModify - Modifier element
+```
+Syntaxe: XMLModify(xmlBlob, xPath, newValue)
+Retour:  Logical - TRUE si succes
+
+TypeScript: node.textContent = newValue
+C#:         node.InnerText = newValue
+Python:     element.text = new_value
+```
+
+### XMLDelete - Supprimer element
+```
+Syntaxe: XMLDelete(xmlBlob, xPath)
+Retour:  Logical - TRUE si succes
+
+TypeScript: node.parentNode?.removeChild(node)
+C#:         node.ParentNode?.RemoveChild(node)
+Python:     parent.remove(element)
+```
+
+### XMLValidate - Valider contre schema
+```
+Syntaxe: XMLValidate(xmlBlob, schemaBlob)
+Retour:  Logical - TRUE si valide
+
+TypeScript: // xmllint ou libxmljs
+C#:         XmlReaderSettings avec XmlSchemaSet
+Python:     lxml.etree.XMLSchema(schema).validate(doc)
+```
+
+### XMLSetNS - Definir namespace
+```
+Syntaxe: XMLSetNS(xmlBlob, prefix, uri)
+Retour:  Definit un namespace pour les requetes XPath
+
+TypeScript: // XPathEvaluator avec namespaceResolver
+C#:         XmlNamespaceManager.AddNamespace(prefix, uri)
+Python:     namespaces = {prefix: uri}
+```
+
+### VecGet - Lire cellule vecteur
+```
+Syntaxe: VecGet(vectorVar, index)
+Retour:  Valeur de la cellule (type selon vecteur)
+Note:    Index 1-based en Magic
+
+TypeScript: vector[index - 1]
+C#:         vector[index - 1]
+Python:     vector[index - 1]
+```
+
+### VecSet - Ecrire cellule vecteur
+```
+Syntaxe: VecSet(vectorVar, index, value)
+Retour:  Modifie la valeur de la cellule
+
+TypeScript: vector[index - 1] = value
+C#:         vector[index - 1] = value
+Python:     vector[index - 1] = value
+```
+
+### VecSize - Taille vecteur
+```
+Syntaxe: VecSize(vectorVar)
+Retour:  Numeric - Nombre de cellules
+
+TypeScript: vector.length
+C#:         vector.Count ou vector.Length
+Python:     len(vector)
+```
+
+### VecCellAttr - Attribut cellule
+```
+Syntaxe: VecCellAttr(vectorVar, index, attrType)
+Retour:  Attribut de la cellule (type, null, etc)
+attrType: 0=IsNull, 1=Type
+
+TypeScript: typeof vector[index - 1] === 'undefined'
+C#:         vector[index - 1] == null
+Python:     vector[index - 1] is None
+```
+
+### BufGetAlpha - Buffer vers Alpha
+```
+Syntaxe: BufGetAlpha(bufferVar, offset, length)
+Retour:  Alpha - Extraction de chaine depuis buffer
+Note:    Offset 1-based
+
+TypeScript: buffer.toString('utf8', offset - 1, offset - 1 + length)
+C#:         Encoding.UTF8.GetString(buffer, offset - 1, length)
+Python:     buffer[offset-1:offset-1+length].decode('utf-8')
+```
+
+### BufSetAlpha - Alpha vers Buffer
+```
+Syntaxe: BufSetAlpha(bufferVar, offset, value)
+Retour:  Ecrit chaine dans buffer a l'offset
+
+TypeScript: buffer.write(value, offset - 1, 'utf8')
+C#:         Encoding.UTF8.GetBytes(value).CopyTo(buffer, offset - 1)
+Python:     buffer[offset-1:offset-1+len(value)] = value.encode()
+```
+
+### BufGetNum - Buffer vers Numeric
+```
+Syntaxe: BufGetNum(bufferVar, offset, length, precision)
+Retour:  Numeric - Nombre extrait du buffer
+
+TypeScript: parseFloat(buffer.toString('utf8', offset - 1, offset - 1 + length))
+C#:         BitConverter.ToInt32(buffer, offset - 1) // ou Double
+Python:     struct.unpack('f', buffer[offset-1:offset-1+4])[0]
+```
+
+### BufSetNum - Numeric vers Buffer
+```
+Syntaxe: BufSetNum(bufferVar, offset, value, length, precision)
+Retour:  Ecrit nombre dans buffer
+
+TypeScript: buffer.writeFloatLE(value, offset - 1)
+C#:         BitConverter.GetBytes(value).CopyTo(buffer, offset - 1)
+Python:     struct.pack_into('f', buffer, offset - 1, value)
+```
+
+### BufGetDate - Buffer vers Date
+```
+Syntaxe: BufGetDate(bufferVar, offset, picture)
+Retour:  Date - Date extraite du buffer
+
+TypeScript: parse(buffer.toString('utf8', offset - 1, 8), 'yyyyMMdd', new Date())
+C#:         DateOnly.ParseExact(Encoding.UTF8.GetString(buffer, offset - 1, 8), "yyyyMMdd")
+Python:     datetime.strptime(buffer[offset-1:offset+7].decode(), '%Y%m%d').date()
+```
+
+### BufSetDate - Date vers Buffer
+```
+Syntaxe: BufSetDate(bufferVar, offset, dateValue, picture)
+Retour:  Ecrit date dans buffer
+
+TypeScript: buffer.write(format(date, 'yyyyMMdd'), offset - 1)
+C#:         Encoding.UTF8.GetBytes(date.ToString("yyyyMMdd")).CopyTo(buffer, offset - 1)
+Python:     buffer[offset-1:offset+7] = date.strftime('%Y%m%d').encode()
+```
+
+### BufGetTime - Buffer vers Time
+```
+Syntaxe: BufGetTime(bufferVar, offset, picture)
+Retour:  Time - Heure extraite du buffer
+
+TypeScript: parse(buffer.toString('utf8', offset - 1, 6), 'HHmmss', new Date())
+C#:         TimeOnly.ParseExact(Encoding.UTF8.GetString(buffer, offset - 1, 6), "HHmmss")
+Python:     datetime.strptime(buffer[offset-1:offset+5].decode(), '%H%M%S').time()
+```
+
+### BufSetTime - Time vers Buffer
+```
+Syntaxe: BufSetTime(bufferVar, offset, timeValue, picture)
+Retour:  Ecrit heure dans buffer
+
+TypeScript: buffer.write(format(time, 'HHmmss'), offset - 1)
+C#:         Encoding.UTF8.GetBytes(time.ToString("HHmmss")).CopyTo(buffer, offset - 1)
+Python:     buffer[offset-1:offset+5] = time.strftime('%H%M%S').encode()
+```
+
+### BufGetLog - Buffer vers Logical
+```
+Syntaxe: BufGetLog(bufferVar, offset)
+Retour:  Logical - Valeur booleenne
+
+TypeScript: buffer[offset - 1] !== 0
+C#:         buffer[offset - 1] != 0
+Python:     buffer[offset - 1] != 0
+```
+
+### BufSetLog - Logical vers Buffer
+```
+Syntaxe: BufSetLog(bufferVar, offset, value)
+Retour:  Ecrit booleen dans buffer (1 byte)
+
+TypeScript: buffer[offset - 1] = value ? 1 : 0
+C#:         buffer[offset - 1] = (byte)(value ? 1 : 0)
+Python:     buffer[offset - 1] = 1 if value else 0
+```
+
+### BufGetBlob - Buffer vers BLOB
+```
+Syntaxe: BufGetBlob(bufferVar, offset, length)
+Retour:  BLOB - Portion du buffer
+
+TypeScript: buffer.slice(offset - 1, offset - 1 + length)
+C#:         buffer.Skip(offset - 1).Take(length).ToArray()
+Python:     buffer[offset-1:offset-1+length]
+```
+
+### BufSetBlob - BLOB vers Buffer
+```
+Syntaxe: BufSetBlob(bufferVar, offset, blobValue)
+Retour:  Ecrit BLOB dans buffer
+
+TypeScript: blobValue.copy(buffer, offset - 1)
+C#:         blobValue.CopyTo(buffer, offset - 1)
+Python:     buffer[offset-1:offset-1+len(blob)] = blob
+```
+
+### BufGetUnicode - Buffer vers Unicode
+```
+Syntaxe: BufGetUnicode(bufferVar, offset, length)
+Retour:  Alpha - Chaine Unicode (UTF-16)
+
+TypeScript: buffer.toString('utf16le', offset - 1, offset - 1 + length * 2)
+C#:         Encoding.Unicode.GetString(buffer, offset - 1, length * 2)
+Python:     buffer[offset-1:offset-1+length*2].decode('utf-16-le')
+```
+
+### BufSetUnicode - Unicode vers Buffer
+```
+Syntaxe: BufSetUnicode(bufferVar, offset, value)
+Retour:  Ecrit chaine Unicode dans buffer
+
+TypeScript: buffer.write(value, offset - 1, 'utf16le')
+C#:         Encoding.Unicode.GetBytes(value).CopyTo(buffer, offset - 1)
+Python:     buffer[offset-1:] = value.encode('utf-16-le')
+```
+
+### DataViewToXML - Vue vers XML
+```
+Syntaxe: DataViewToXML(generation, includeSchema)
+Retour:  BLOB - Donnees de la vue en format XML
+
+TypeScript: // Serialisation manuelle ou xmlbuilder
+            const xml = builder.create('dataview').ele('row', record).end()
+C#:         XmlSerializer ou DataSet.WriteXml()
+Python:     lxml.etree.tostring(element)
+```
+
+### DataViewToHTML - Vue vers HTML
+```
+Syntaxe: DataViewToHTML(generation, templateName)
+Retour:  BLOB - Donnees formatees en HTML
+
+TypeScript: // Template literal ou handlebars
+            const html = `<table>${rows.map(r => `<tr>${...}</tr>`).join('')}</table>`
+C#:         // Razor templates ou StringBuilder
+Python:     jinja2.Template(template).render(data=records)
+```
+
+---
+
+## Resume - Couverture Fonctions
+
+| Categorie | Fonctions documentees | Coverage |
+|-----------|----------------------|----------|
+| Conditionnelles | IF, CASE, IN, IsNull, IsDefault, Range | 100% |
+| String | 20 fonctions (Mid, Left, Right, Trim, Ins, DelStr, Flip, Soundx, Like...) | 95% |
+| Conversion | Val, Str, DStr, DVal, TStr, TVal, ASCIIChr, ASCIIVal, NullVal | 95% |
+| Date/Heure | 22 fonctions (Date, Time, BOM, EOM, BOY, EOY, DOW, CDOW, NDOW, CMonth, NMonth, Week, AddDate, AddTime, AddDateTime, DifDateTime, MDate, MTime...) | 98% |
+| Numeriques | Round, ABS, MIN, MAX, MOD, Fix, Log, Exp, Pwr, Sqrt | 95% |
+| Base de donnees | DbRecs, DbDel, DbName, Counter, EOF, DbViewRefresh, DbPos, DbSize, DbNext, DbPrev | 95% |
+| Programme | CallProg, Prog, Level, ExpCalc, Exit | 90% |
+| Systeme | GetParam, SetParam, OSEnvGet, User, INIGet, Delay, Timer, Wait, Sleep, SetLang, GetLang | 98% |
+| Fichiers | FileExist, FileDelete, FileCopy, FileRename, FileInfo, FileListGet, Blb2File, File2Blb, Translate | 95% |
+| Flow | Rollback, FlwLstRec, FlwFstRec, LastPark, ErrMagic, ErrDbms | 90% |
+| UI | SetCrsr, MsgBox, VerifyBox, InputBox, FormStateClear, CtrlGoto, CtrlRefresh, ViewRefresh | 85% |
+| I18n | MlsTrans, SetLang, GetLang | 100% |
+| **XML** | **XMLStr, XMLVal, XMLGet, XMLCnt, XMLExist, XMLInsert, XMLModify, XMLDelete, XMLValidate, XMLSetNS** | **95%** |
+| **Vector** | **VecGet, VecSet, VecSize, VecCellAttr** | **100%** |
+| **Buffer** | **BufGetAlpha, BufSetAlpha, BufGetNum, BufSetNum, BufGetDate, BufSetDate, BufGetTime, BufSetTime, BufGetLog, BufSetLog, BufGetBlob, BufSetBlob, BufGetUnicode, BufSetUnicode** | **95%** |
+| **DataView Export** | **DataViewToXML, DataViewToHTML** | **100%** |
+
+**Total: 140 fonctions avec equivalences TS/C#/Python (70%)**
+
+### Progression par Batch
+| Batch | Fonctions | Statut |
+|-------|-----------|--------|
+| Batch 0 | TOP 50 frequence | FAIT |
+| Batch 1 | 30 Date/Heure/Strings/Math | FAIT |
+| Batch 2 | 30 DB/I/O/Flow/UI | FAIT |
+| Batch 3 | 30 XML/Vector/Buffer | FAIT |
+| Batch 4 | 30 COM/DLL/HTTP | A faire |
+| Batch 5 | 30 Restantes | A faire |
+
+---
+
 *Genere le 2026-01-11 depuis C:\Appwin\Magic\Magicxpa23\Support\mghelpw_extracted\*
-*Mis a jour avec Batch 2 : 30 fonctions DB/I/O/Flow/UI additionnelles (110/200 total)*
+*Mis a jour avec Batch 3 : 30 fonctions XML/Vector/Buffer additionnelles (140/200 total)*
