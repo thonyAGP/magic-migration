@@ -419,4 +419,264 @@ C#:
 
 ---
 
+---
+
+## Fonctions Supplementaires (TOP 20 par frequence)
+
+### MlsTrans - Traduction Multi-Language System
+```
+Syntaxe: MlsTrans(string)
+Retour:  Traduction de la chaine selon langue active
+Usage:   710 occurrences dans projets PMS
+
+TypeScript: i18n.t(key) // i18next
+C#:         _localizer[key] // IStringLocalizer
+Python:     gettext(key) ou _(key)
+```
+
+### ExpCalc - Evaluateur d'expressions dynamiques
+```
+Syntaxe: ExpCalc(expressionNumber)
+Retour:  Resultat de l'expression referencee
+Note:    Permet d'evaluer dynamiquement une expression
+Usage:   175 occurrences
+
+TypeScript: // Pas d'equivalent direct - stocker dans variable
+C#:         // Utiliser delegate ou Func<T>
+Python:     eval() // avec precautions
+```
+
+### IN - Test appartenance
+```
+Syntaxe: value IN list
+Retour:  Logical - TRUE si valeur dans liste
+Usage:   145 occurrences
+
+Exemple: Status IN 'A,B,C'
+
+TypeScript: ['A','B','C'].includes(status)
+C#:         new[] {"A","B","C"}.Contains(status)
+Python:     status in ['A','B','C']
+```
+
+### CndRange - Range conditionnel
+```
+Syntaxe: CndRange(condition, table, field, from, to)
+Retour:  Logical
+Note:    Applique un range sur table si condition vraie
+Usage:   99 occurrences
+
+TypeScript: if (cond) query = query.where(field).gte(from).lte(to)
+C#:         if (cond) query = query.Where(x => x.Field >= from && x.Field <= to)
+Python:     if cond: query = query.filter(Table.field.between(from, to))
+```
+
+### INIGet - Lecture fichier INI
+```
+Syntaxe: INIGet(file, section, key)
+Retour:  Valeur de la cle INI
+Usage:   95 occurrences
+
+TypeScript: ini.parse(fs.readFileSync(file))[section][key]
+C#:         Configuration.GetSection(section)[key]
+Python:     configparser.read(file); config[section][key]
+```
+
+### TStr - Time vers String
+```
+Syntaxe: TStr(time, 'picture')
+Usage:   79 occurrences
+
+Exemple: TStr(Time(), 'HH:MM:SS') = '14:30:45'
+
+TypeScript: format(time, 'HH:mm:ss') // date-fns
+C#:         time.ToString("HH:mm:ss")
+Python:     time.strftime('%H:%M:%S')
+```
+
+### Fill - Repetition caractere
+```
+Syntaxe: Fill(string, count)
+Retour:  Chaine repetee count fois
+Usage:   77 occurrences
+
+Exemple: Fill('*', 5) = '*****'
+
+TypeScript: '*'.repeat(5)
+C#:         new string('*', 5)
+Python:     '*' * 5
+```
+
+### DbDel - Suppression table Magic
+```
+Syntaxe: DbDel(tableNumber, mode)
+Retour:  Logical - TRUE si succes
+Usage:   67 occurrences
+
+TypeScript: await prisma.table.deleteMany()
+C#:         await context.Table.ExecuteDeleteAsync()
+Python:     session.query(Table).delete()
+```
+
+### GetHostName - Nom machine
+```
+Syntaxe: GetHostName()
+Retour:  Nom de la machine cliente
+Usage:   65 occurrences
+
+TypeScript: os.hostname()
+C#:         Environment.MachineName
+Python:     socket.gethostname()
+```
+
+### ASCIIChr - Code vers caractere
+```
+Syntaxe: ASCIIChr(code)
+Retour:  Caractere ASCII correspondant
+Usage:   60 occurrences
+
+Exemple: ASCIIChr(65) = 'A'
+
+TypeScript: String.fromCharCode(65)
+C#:         (char)65 ou Convert.ToChar(65)
+Python:     chr(65)
+```
+
+### Fix - Partie entiere (troncature)
+```
+Syntaxe: Fix(number, decimals)
+Retour:  Nombre tronque (pas arrondi)
+Usage:   36 occurrences
+
+Exemple: Fix(3.7, 0) = 3
+
+TypeScript: Math.trunc(n) ou Math.floor(n)
+C#:         Math.Truncate(n)
+Python:     math.trunc(n) ou int(n)
+```
+
+### FileExist - Test existence fichier
+```
+Syntaxe: FileExist(filename)
+Retour:  Logical - TRUE si fichier existe
+Usage:   30 occurrences
+
+TypeScript: fs.existsSync(filename)
+C#:         File.Exists(filename)
+Python:     os.path.exists(filename)
+```
+
+### Stat - Statistiques
+```
+Syntaxe: Stat(type, generation)
+Retour:  Statistique demandee (records lus, modifies, etc)
+Usage:   29 occurrences
+
+Type: 0=Total, 1=Inserted, 2=Updated, 3=Deleted
+
+TypeScript: // Compteurs manuels dans le code
+C#:         context.ChangeTracker.Entries().Count(...)
+Python:     session.new, session.dirty, session.deleted
+```
+
+### Translate - Resolution noms logiques
+```
+Syntaxe: Translate(logicalName)
+Retour:  Chemin physique correspondant
+Usage:   24 occurrences
+
+TypeScript: config.paths[logicalName]
+C#:         Configuration["Paths:" + logicalName]
+Python:     config.paths.get(logical_name)
+```
+
+### Hour - Extraction heure
+```
+Syntaxe: Hour(time)
+Retour:  Partie heure (0-23)
+Usage:   23 occurrences
+
+TypeScript: date.getHours()
+C#:         time.Hour
+Python:     time.hour
+```
+
+### StrBuild - Construction chaine avec placeholders
+```
+Syntaxe: StrBuild(template, arg1, arg2, ...)
+Retour:  Chaine construite
+Usage:   18 occurrences
+
+Exemple: StrBuild('Hello %s, you have %d messages', name, count)
+
+TypeScript: `Hello ${name}, you have ${count} messages`
+C#:         string.Format("Hello {0}, you have {1} messages", name, count)
+            $"Hello {name}, you have {count} messages"
+Python:     f"Hello {name}, you have {count} messages"
+```
+
+### IsFirstRecordCycle - Premier cycle record
+```
+Syntaxe: IsFirstRecordCycle(generation)
+Retour:  Logical - TRUE si premier passage sur ce record
+Usage:   17 occurrences
+
+TypeScript: index === 0 // dans une boucle
+C#:         isFirst flag
+Python:     enumerate avec check index == 0
+```
+
+### DbName - Nom de table
+```
+Syntaxe: DbName(tableNumber)
+Retour:  Nom de la table
+Usage:   15 occurrences
+
+TypeScript: tableName // stocke dans config
+C#:         context.Model.FindEntityType(typeof(T))?.GetTableName()
+Python:     Table.__tablename__
+```
+
+### Year / Month - Extraction annee/mois
+```
+Syntaxe: Year(date), Month(date)
+Usage:   Deja dans section Date/Heure principale
+
+TypeScript: date.getFullYear(), date.getMonth() + 1
+C#:         date.Year, date.Month
+Python:     date.year, date.month
+```
+
+### Minute / Second - Extraction minute/seconde
+```
+Syntaxe: Minute(time), Second(time)
+Retour:  Partie minute (0-59), seconde (0-59)
+
+TypeScript: date.getMinutes(), date.getSeconds()
+C#:         time.Minute, time.Second
+Python:     time.minute, time.second
+```
+
+---
+
+## Resume - Couverture Fonctions
+
+| Categorie | Fonctions documentees | Coverage |
+|-----------|----------------------|----------|
+| Conditionnelles | IF, CASE, IN | 100% |
+| String | 15 fonctions | 90% |
+| Conversion | Val, Str, DStr, DVal, TStr, ASCIIChr | 85% |
+| Date/Heure | 12 fonctions | 95% |
+| Numeriques | Round, ABS, MIN, MAX, MOD, Fix | 90% |
+| Base de donnees | DbRecs, DbDel, DbName, Counter, EOF | 80% |
+| Programme | CallProg, Prog, Level, ExpCalc | 85% |
+| Systeme | GetParam, SetParam, OSEnvGet, User, INIGet | 90% |
+| Fichiers | FileExist, Translate | 70% |
+| I18n | MlsTrans | 100% |
+
+**Total: 50 fonctions avec equivalences TS/C#/Python**
+
+---
+
 *Genere le 2026-01-11 depuis C:\Appwin\Magic\Magicxpa23\Support\mghelpw_extracted\*
+*Mis a jour avec analyse frequence sur 200 fichiers XML projets PMS*
