@@ -3,6 +3,17 @@
 Ce document reference toutes les fonctions disponibles dans Magic Unipaas 2.3,
 extraites de la documentation officielle (mghelpw.chm).
 
+## Sources Documentation
+
+| Source | Chemin | Contenu |
+|--------|--------|---------|
+| **CHM Principal** | `C:\Appwin\Magic\Magicxpa23\Support\MgHelpW.chm` | Documentation complete |
+| **CHM Extrait** | `C:\Appwin\Magic\Magicxpa23\Support\mghelpw_extracted\` | 484 fichiers HTM |
+| **Function Directory** | `.../Expression_Editor/Function_Directory.htm` | Index alphabetique |
+| **Reference Rapide** | `quick-reference-top30.md` | TOP 30 avec equivalences TS/C#/Python |
+
+**Total fonctions documentees**: ~380+ fonctions dans 28 categories
+
 ---
 
 ## 1. Fonctions Date et Heure

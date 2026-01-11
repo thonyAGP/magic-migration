@@ -300,10 +300,10 @@ Ces valeurs sont dans l'attribut `<Init>` du XML.
 
 ## À Valider
 
-- [ ] Compter exactement les variables de la tâche main pour connaître l'offset subtask
-- [ ] Implémenter résolution ItemIsn → REF table id
-- [ ] Parser la colonne Init
-- [ ] Tester sur d'autres programmes pour valider les règles
+- [x] Compter exactement les variables de la tâche main pour connaître l'offset subtask ✅ `calc-nested-offset.ps1`
+- [x] Implémenter résolution ItemIsn → REF table id ✅ `parse-dataview.ps1` (via Comps.xml)
+- [ ] Parser la colonne Init (attribut `<Init>` du XML)
+- [x] Tester sur d'autres programmes ✅ ADH 285.1.2.5, ADH 122.1.1.1 validés
 
 ---
 

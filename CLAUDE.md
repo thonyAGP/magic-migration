@@ -4,6 +4,49 @@
 
 Agent Claude Code specialise pour l'analyse et la migration d'applications Magic Unipaas v12.03 vers des langages modernes (TypeScript, C#, Python).
 
+## ACTIVATION AUTOMATIQUE - Magic Router
+
+### Detection automatique d'intention
+
+Quand l'utilisateur pose une question sur Magic, **DETECTER automatiquement** l'intention et **ROUTER** vers le bon agent :
+
+| Mots-cles detectes | Agent a utiliser | Action |
+|-------------------|------------------|--------|
+| "analyse", "comprendre", "comment fonctionne" | `magic-analyzer` | Analyse complete |
+| "bug", "erreur", "ticket", "CMDS", "PMS" | `magic-debugger` | Investigation |
+| "migrer", "convertir", "typescript", "c#" | `magic-migrator` | Generation code |
+| "documente", "spec", "rapport" | `magic-documenter` | Documentation |
+| "cherche", "trouve", "ou est" | MCP `magic_find_program` | Recherche |
+| "ligne X", "tache X.Y" | MCP `magic_get_line` | Query precise |
+
+### Agents disponibles
+
+| Agent | Fichier | Specialite |
+|-------|---------|------------|
+| **magic-router** | `.claude/agents/magic-router.md` | Routage intelligent (principal) |
+| **magic-analyzer** | `.claude/agents/magic-analyzer.md` | Analyse programmes |
+| **magic-debugger** | `.claude/agents/magic-debugger.md` | Resolution bugs |
+| **magic-migrator** | `.claude/agents/magic-migrator.md` | Generation code |
+| **magic-documenter** | `.claude/agents/magic-documenter.md` | Documentation |
+
+### Workflow automatique
+
+```
+UTILISATEUR dit quelque chose sur Magic
+         │
+         ▼
+    DETECTER intention
+         │
+         ├─ Analyse ? → Lancer agent magic-analyzer
+         ├─ Debug ?   → Lancer agent magic-debugger
+         ├─ Migrer ?  → Lancer agent magic-migrator
+         ├─ Doc ?     → Lancer agent magic-documenter
+         └─ Query ?   → Appeler MCP directement
+         │
+         ▼
+    REPONDRE en format IDE Magic (OBLIGATOIRE)
+```
+
 ## Skill Principal
 
 Ce projet utilise le skill `magic-unipaas` pour toutes les operations d'analyse et de migration.
@@ -69,6 +112,10 @@ Ce projet utilise le skill `magic-unipaas` pour toutes les operations d'analyse 
 - Editions/Etats
 
 ## RÈGLE CRITIQUE : FORMAT IDE MAGIC (JAMAIS XML)
+
+> **CETTE RÈGLE EST NON-NÉGOCIABLE**
+> Toute communication avec l'utilisateur DOIT utiliser le format IDE Magic.
+> Le format XML brut (ISN, FieldID, Prg_XXX) est INTERDIT dans les réponses.
 
 ### Variables - CONVERSION OBLIGATOIRE
 
@@ -236,6 +283,31 @@ Chaque rapport dans `.openspec/reports/` doit contenir :
 - **TypeScript** : Types stricts, Decimal.js pour numeriques
 - **C#** : .NET 6+, DateOnly/TimeOnly
 - **Python** : Type hints, Decimal
+
+## Sources Documentation Magic
+
+### Documentation officielle (CHM)
+| Fichier | Chemin | Contenu |
+|---------|--------|---------|
+| **MgHelpW.chm** | `C:\Appwin\Magic\Magicxpa23\Support\` | Aide principale (380+ fonctions) |
+| **Magic_xpa_Help_System.chm** | idem | Systeme d'aide complet |
+| **MasteringMagicxpa.chm** | idem | Guide maitrise avance |
+| **TechnicalNotes.chm** | idem | Notes techniques |
+
+### Documentation extraite (HTML)
+**Chemin**: `C:\Appwin\Magic\Magicxpa23\Support\mghelpw_extracted\`
+- 484 fichiers HTM de fonctions
+- `Expression_Editor/Function_Directory.htm` - Index alphabetique
+- Format: Syntax, Parameters, Returns, Examples
+
+### PDF
+- `Mastering Magic xpa.pdf` - Guide complet
+
+### References du projet
+| Fichier | Contenu |
+|---------|---------|
+| `quick-reference-top30.md` | TOP 30 fonctions + equivalences TS/C#/Python |
+| `magic-functions.md` | Reference complete des fonctions |
 
 ## Notes Techniques
 

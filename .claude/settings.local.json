@@ -40,7 +40,18 @@
       "Bash(copy \"D:\\\\Projects\\\\Lecteur Magic\\\\.openspec\\\\start-service.vbs\" \"%APPDATA%\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup\\\\OpenSpecViewer.vbs\")",
       "Bash(cmd /c copy \"D:\\\\Projects\\\\Lecteur Magic\\\\.openspec\\\\start-service.vbs\" \"%APPDATA%\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup\\\\OpenSpecViewer.vbs\")",
       "Bash(cmd /c dir \"%APPDATA%\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup\\\\OpenSpecViewer.vbs\")",
-      "WebFetch(domain:api.github.com)"
+      "WebFetch(domain:api.github.com)",
+      "Bash(set MAGIC_PROJECTS_PATH=D:DataMigrationXPAPMS:*)",
+      "Bash(binReleasenet8.0MagicMcp.exe)",
+      "Bash(cmd /c:*)",
+      "WebFetch(domain:)",
+      "Bash($testInput = @'\n{\n  \"\"tool_name\"\": \"\"Task\"\",\n  \"\"tool_input\"\": {\n    \"\"subagent_type\"\": \"\"magic-analyzer\"\",\n    \"\"prompt\"\": \"\"Analyze ADH program\"\"\n  },\n  \"\"tool_output\"\": \"\"Le programme Prg_69 contient la variable {0,3} qui reference FieldID=25. La table DataObject ISN=40 est utilisee dans Task ISN_2=5.\"\"\n}\n'@)",
+      "Bash(__NEW_LINE__ $testInput)",
+      "Bash(Write-Host \"Exit code: $LASTEXITCODE\")",
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur Magic\" status)",
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur Magic\" diff --stat)",
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur Magic\" log --oneline -5)",
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur Magic\" log --oneline -3)"
     ]
   },
   "hooks": {
@@ -58,12 +69,8 @@
   },
   "mcpServers": {
     "magic-interpreter": {
-      "command": "dotnet",
-      "args": [
-        "run",
-        "--project",
-        "D:\\Projects\\Lecteur Magic\\tools\\MagicMcp\\MagicMcp.csproj"
-      ],
+      "command": "D:\\Projects\\Lecteur Magic\\tools\\MagicMcp\\bin\\Release\\net8.0\\MagicMcp.exe",
+      "args": [],
       "env": {
         "MAGIC_PROJECTS_PATH": "D:\\Data\\Migration\\XPA\\PMS"
       }

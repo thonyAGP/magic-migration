@@ -1,12 +1,13 @@
-# PARSE MAGIC DATA VIEW - VERSION DEFINITIVE V3
+# PARSE MAGIC DATA VIEW - VERSION DEFINITIVE V4
 # Règles brutes basées sur analyse positions XML vs IDE
 #
-# RÈGLES CLÉS (2026-01-10):
+# RÈGLES CLÉS (2026-01-11):
 # 1. Tables: XML obj → Comps.xml ItemIsn → id = IDE position
 # 2. Programmes: Position dans ProgramsRepositoryOutLine = IDE position
 # 3. Data View: Position dans LogicLines = IDE line number
 # 4. Colonnes: Column.val = séquentiel (Main), vrais IDs (Links)
 # 5. Variables: GLOBAL - Main TOUJOURS chargé en premier (offset à ajouter)
+# 6. Init: Task/Record Prefix Updates → WithValue Expression
 
 param(
     [string]$Project = "ADH",
@@ -189,6 +190,65 @@ Write-Host "=== $Project IDE $prgIdePos - $taskName ===" -ForegroundColor Cyan
 Write-Host ""
 
 # ============================================
+# LOAD EXPRESSIONS (for Init resolution)
+# ============================================
+$expressions = @{}
+foreach ($exp in $task.Expressions.Expression) {
+    $id = $exp.id
+    $syntax = $exp.ExpSyntax.val
+    if ($syntax) {
+        # Simplify expression: remove {index,field} refs for display
+        $simplified = $syntax
+        # Replace variable references {32768,X} with VG.X marker
+        $simplified = $simplified -replace '\{32768,(\d+)\}', 'VG.$1'
+        # Replace local refs {0,X} with Var marker
+        $simplified = $simplified -replace '\{0,(\d+)\}', 'Var$1'
+        # Replace task refs {1,X}
+        $simplified = $simplified -replace '\{1,(\d+)\}', 'Parent.$1'
+        $expressions["$id"] = $simplified
+    }
+}
+
+# ============================================
+# BUILD INIT MAP (from Task/Record Prefix)
+# ============================================
+$initMap = @{}  # FieldID → Init expression
+
+# Find Task/Record Prefix or Suffix for Init values
+# Types: TP=Task Prefix, TS=Task Suffix, P=Record Prefix, S=Record Suffix
+foreach ($lu in $task.TaskLogic.LogicUnit) {
+    $level = $lu.Level.val
+    $type = $lu.Type.val
+
+    # Include Prefix (P, TP) and Suffix (S, TS) - all may have inits
+    $isInitSource = ($level -eq "TP") -or ($level -eq "TS") -or
+                    ($level -eq "R" -and ($type -eq "P" -or $type -eq "S"))
+
+    if ($isInitSource) {
+        foreach ($line in $lu.LogicLines.LogicLine) {
+            if ($line.Update) {
+                $upd = $line.Update
+                $fieldId = $upd.FieldID.val
+                $withValue = $upd.WithValue.val
+
+                # Store all Updates (including conditional ones for display)
+                if ($fieldId -and $withValue) {
+                    if ($expressions.ContainsKey("$withValue")) {
+                        $initMap["$fieldId"] = $expressions["$withValue"]
+                    } else {
+                        $initMap["$fieldId"] = "Exp$withValue"
+                    }
+                }
+            }
+        }
+    }
+}
+
+if ($initMap.Count -gt 0) {
+    Write-Host "Init expressions found: $($initMap.Count)" -ForegroundColor DarkGray
+}
+
+# ============================================
 # GET DB LIST
 # ============================================
 $dbList = @()
@@ -231,8 +291,8 @@ if (-not $logicUnit) {
     exit 1
 }
 
-Write-Host "Ln#  Var  Type        Details"
-Write-Host "---  ---  ----------  -------"
+Write-Host "Ln#  Var  Type        Details                          Init"
+Write-Host "---  ---  ----------  -------------------------------  ----"
 
 $lineNum = 1
 $inLink = $false
@@ -293,27 +353,37 @@ foreach ($logicLine in $logicUnit.LogicLines.LogicLine) {
             $varLetter = "V$fieldIdx"
         }
 
+        # Get Init expression if available
+        $initExpr = ""
+        if ($initMap.ContainsKey("$fieldId")) {
+            $initExpr = $initMap["$fieldId"]
+            # Truncate if too long
+            if ($initExpr.Length -gt 25) {
+                $initExpr = $initExpr.Substring(0, 22) + "..."
+            }
+        }
+
         # Check if it's a parameter (IsParameter can be XmlElement with val)
         $isParam = $sel.IsParameter.val
         if (-not $isParam) { $isParam = $sel.IsParameter }
         if ($isParam -eq "Y") {
             # colNum is the position in virtual columns list
             $colName = if ($virtualColumns.ContainsKey("$colNum")) { $virtualColumns["$colNum"] } else { "Param $colNum" }
-            $output = "{0,3}  [{1,-2}] Parameter   {2}" -f $lineNum, $varLetter, $colName
+            $padded = "{0,-32}" -f $colName
+            $output = "{0,3}  [{1,-2}] Parameter   {2} {3}" -f $lineNum, $varLetter, $padded, $initExpr
         }
         # Get column info based on type
         elseif ($type -eq "V") {
             # Virtual column - colNum is position in list
             $colName = if ($virtualColumns.ContainsKey("$colNum")) { $virtualColumns["$colNum"] } else { "Virtual $colNum" }
-            $output = "{0,3}  [{1,-2}] Virtual     {2}" -f $lineNum, $varLetter, $colName
+            $padded = "{0,-32}" -f $colName
+            $output = "{0,3}  [{1,-2}] Virtual     {2} {3}" -f $lineNum, $varLetter, $padded, $initExpr
         } else {
             # Real column from table - look up name using new mapping
             $colName = Get-ColumnName $currentTableObj $colNum
-            if ($colName) {
-                $output = "{0,3}  [{1,-2}] Column      {2}" -f $lineNum, $varLetter, $colName
-            } else {
-                $output = "{0,3}  [{1,-2}] Column      Col {2}" -f $lineNum, $varLetter, $colNum
-            }
+            if (-not $colName) { $colName = "Col $colNum" }
+            $padded = "{0,-32}" -f $colName
+            $output = "{0,3}  [{1,-2}] Column      {2} {3}" -f $lineNum, $varLetter, $padded, $initExpr
         }
     }
 
