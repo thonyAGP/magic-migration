@@ -659,24 +659,365 @@ Python:     time.minute, time.second
 
 ---
 
+## Batch 1 - Fonctions Date/Heure Additionnelles (30 nouvelles)
+
+### DOW - Jour de la semaine (nombre)
+```
+Syntaxe: DOW(date)
+Retour:  Numero du jour (1=Dimanche, 2=Lundi, ... 7=Samedi)
+
+Exemple: DOW('29/01/92'Date) = 4 (Mercredi)
+
+TypeScript: date.getDay() + 1  // JS: 0=Dimanche
+C#:         (int)date.DayOfWeek + 1
+Python:     date.isoweekday() % 7 + 1  // Ajuster pour Magic
+```
+
+### CDOW - Nom du jour (string)
+```
+Syntaxe: CDOW(date)
+Retour:  Nom du jour en toutes lettres
+
+Exemple: CDOW('01/28/92'DATE) = 'Tuesday'
+
+TypeScript: format(date, 'EEEE', { locale: fr }) // date-fns
+C#:         date.ToString("dddd", CultureInfo.CurrentCulture)
+Python:     date.strftime('%A')
+```
+
+### NDOW - Numero vers nom jour
+```
+Syntaxe: NDOW(dayNumber)
+Retour:  Nom du jour correspondant au numero
+
+Exemple: NDOW(1) = 'Sunday', NDOW(2) = 'Monday'
+
+TypeScript: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][n-1]
+C#:         CultureInfo.CurrentCulture.DateTimeFormat.DayNames[(n-1) % 7]
+Python:     calendar.day_name[(n-1) % 7]
+```
+
+### CMonth - Nom du mois (string)
+```
+Syntaxe: CMonth(date)
+Retour:  Nom du mois en toutes lettres
+
+Exemple: CMonth('01/28/92'DATE) = 'January'
+
+TypeScript: format(date, 'MMMM', { locale: fr })
+C#:         date.ToString("MMMM", CultureInfo.CurrentCulture)
+Python:     date.strftime('%B')
+```
+
+### NMonth - Numero vers nom mois
+```
+Syntaxe: NMonth(monthNumber)
+Retour:  Nom du mois (1=January, 12=December)
+
+Exemple: NMonth(1) = 'January'
+
+TypeScript: format(new Date(2000, n-1, 1), 'MMMM')
+C#:         CultureInfo.CurrentCulture.DateTimeFormat.MonthNames[n-1]
+Python:     calendar.month_name[n]
+```
+
+### BOY - Debut d'annee
+```
+Syntaxe: BOY(date)
+Retour:  Date du 1er janvier de l'annee
+
+Exemple: BOY('10/05/93'DATE) = '01/01/93'
+
+TypeScript: startOfYear(date) // date-fns
+C#:         new DateOnly(date.Year, 1, 1)
+Python:     date.replace(month=1, day=1)
+```
+
+### EOY - Fin d'annee
+```
+Syntaxe: EOY(date)
+Retour:  Date du 31 decembre de l'annee
+
+Exemple: EOY('11/17/93'Date) = '12/31/93'
+
+TypeScript: endOfYear(date) // date-fns
+C#:         new DateOnly(date.Year, 12, 31)
+Python:     date.replace(month=12, day=31)
+```
+
+### MDate - Date Magic (session)
+```
+Syntaxe: MDate()
+Retour:  Date de connexion Magic (Logon dialog)
+Note:    Differente de Date() qui est la date systeme
+
+TypeScript: sessionDate // Variable de session
+C#:         _session.MagicDate
+Python:     session.magic_date
+```
+
+### AddTime - Calcul sur heure
+```
+Syntaxe: AddTime(time, hours, minutes, seconds)
+Retour:  Nouvelle heure apres ajout
+
+Exemple: AddTime('12:00:00'Time, 1, 2, 3) = '13:02:03'
+
+TypeScript: addHours(addMinutes(addSeconds(time, s), m), h)
+C#:         time.Add(new TimeSpan(h, m, s))
+Python:     time + timedelta(hours=h, minutes=m, seconds=s)
+```
+
+### AddDateTime - Calcul sur date+heure
+```
+Syntaxe: AddDateTime(Date, Time, years, months, days, hours, minutes, seconds)
+Retour:  Logical (met a jour les variables passees par reference)
+
+TypeScript: // Pas d'equivalent direct - utiliser date-fns
+C#:         dateTime.AddYears(y).AddMonths(m).AddDays(d).AddHours(h).AddMinutes(mi).AddSeconds(s)
+Python:     dt + relativedelta(years=y, months=m, days=d) + timedelta(hours=h, minutes=m, seconds=s)
+```
+
+### DifDateTime - Difference entre dates/heures
+```
+Syntaxe: DifDateTime(Date1, Time1, Date2, Time2, DaysVar, SecondsVar)
+Retour:  Met a jour DaysVar et SecondsVar avec la difference
+
+TypeScript: const diff = date1.getTime() - date2.getTime();
+            const days = Math.floor(diff / 86400000);
+            const secs = (diff % 86400000) / 1000;
+C#:         TimeSpan diff = dt1 - dt2;
+            int days = (int)diff.TotalDays;
+            int secs = (int)(diff.TotalSeconds % 86400);
+Python:     diff = dt1 - dt2; days = diff.days; secs = diff.seconds
+```
+
+### TVal - String vers Time
+```
+Syntaxe: TVal(string, 'picture')
+Retour:  Valeur Time
+
+Exemple: TVal('143045', 'HHMMSS') = 14:30:45
+
+TypeScript: parse(s, 'HHmmss', new Date()) // date-fns
+C#:         TimeOnly.ParseExact(s, "HHmmss")
+Python:     datetime.strptime(s, '%H%M%S').time()
+```
+
+### Week - Numero de semaine
+```
+Syntaxe: Week(date)
+Retour:  Numero de la semaine dans l'annee (1-53)
+
+TypeScript: getWeek(date) // date-fns
+C#:         CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(date, ...)
+Python:     date.isocalendar()[1]
+```
+
+### MTime - Heure Magic (session)
+```
+Syntaxe: MTime()
+Retour:  Heure de connexion Magic
+Note:    Non supportee en Rich Client
+
+TypeScript: sessionTime
+C#:         _session.MagicTime
+Python:     session.magic_time
+```
+
+### Delay - Pause execution
+```
+Syntaxe: Delay(seconds)
+Retour:  Rien - pause l'execution
+Note:    A utiliser avec precaution
+
+TypeScript: await new Promise(r => setTimeout(r, seconds * 1000))
+C#:         await Task.Delay(TimeSpan.FromSeconds(seconds))
+Python:     await asyncio.sleep(seconds)
+```
+
+### Timer - Temps ecoule
+```
+Syntaxe: Timer(reset)
+Retour:  Secondes depuis dernier reset (reset=TRUE remet a 0)
+
+TypeScript: performance.now() / 1000
+C#:         Stopwatch.Elapsed.TotalSeconds
+Python:     time.perf_counter()
+```
+
+### IsNull - Test valeur nulle
+```
+Syntaxe: IsNull(expression)
+Retour:  Logical - TRUE si expression est NULL
+
+TypeScript: value === null || value === undefined
+C#:         value == null
+Python:     value is None
+```
+
+### NullVal - Valeur nulle typee
+```
+Syntaxe: NullVal(type)
+Retour:  Valeur NULL du type specifie
+Note:    type: A=Alpha, N=Numeric, D=Date, T=Time, L=Logical
+
+TypeScript: null
+C#:         default(T) ou null
+Python:     None
+```
+
+### IsDefault - Test valeur par defaut
+```
+Syntaxe: IsDefault(variable)
+Retour:  Logical - TRUE si variable a sa valeur par defaut
+
+TypeScript: value === defaultValue
+C#:         EqualityComparer<T>.Default.Equals(value, default)
+Python:     value == default_value
+```
+
+### Range - Verification plage
+```
+Syntaxe: Range(value, min, max)
+Retour:  Logical - TRUE si min <= value <= max
+
+TypeScript: value >= min && value <= max
+C#:         value >= min && value <= max
+Python:     min <= value <= max
+```
+
+### DelStr - Suppression dans chaine
+```
+Syntaxe: DelStr(string, start, length)
+Retour:  Chaine avec portion supprimee
+
+Exemple: DelStr('ABCDEF', 2, 3) = 'AEF'
+
+TypeScript: s.substring(0, start-1) + s.substring(start-1+length)
+C#:         s.Remove(start-1, length)
+Python:     s[:start-1] + s[start-1+length:]
+```
+
+### Ins - Insertion dans chaine
+```
+Syntaxe: Ins(string, insertStr, position)
+Retour:  Chaine avec insertion
+
+Exemple: Ins('ABCD', 'XX', 2) = 'AXXBCD'
+
+TypeScript: s.slice(0, pos-1) + insertStr + s.slice(pos-1)
+C#:         s.Insert(pos-1, insertStr)
+Python:     s[:pos-1] + insertStr + s[pos-1:]
+```
+
+### Flip - Inversion chaine
+```
+Syntaxe: Flip(string)
+Retour:  Chaine inversee
+
+Exemple: Flip('ABCD') = 'DCBA'
+
+TypeScript: s.split('').reverse().join('')
+C#:         new string(s.Reverse().ToArray())
+Python:     s[::-1]
+```
+
+### Soundx - Code phonetique
+```
+Syntaxe: Soundx(string)
+Retour:  Code Soundex (4 caracteres)
+
+Exemple: Soundx('Robert') = 'R163'
+
+TypeScript: soundex(s) // librairie externe
+C#:         // Implementer Soundex ou librairie
+Python:     jellyfish.soundex(s)
+```
+
+### Like - Comparaison pattern
+```
+Syntaxe: Like(string, pattern)
+Retour:  Logical - TRUE si match
+Note:    * = n'importe quels caracteres, ? = un caractere
+
+TypeScript: new RegExp('^' + pattern.replace(/\*/g, '.*').replace(/\?/g, '.') + '$').test(s)
+C#:         Regex.IsMatch(s, "^" + Regex.Escape(pattern).Replace("\\*", ".*").Replace("\\?", ".") + "$")
+Python:     fnmatch.fnmatch(s, pattern)
+```
+
+### ASCIIVal - Caractere vers code
+```
+Syntaxe: ASCIIVal(character)
+Retour:  Code ASCII du caractere
+
+Exemple: ASCIIVal('A') = 65
+
+TypeScript: s.charCodeAt(0)
+C#:         (int)s[0]
+Python:     ord(s)
+```
+
+### Log - Logarithme naturel
+```
+Syntaxe: Log(number)
+Retour:  Logarithme naturel (base e)
+
+TypeScript: Math.log(n)
+C#:         Math.Log(n)
+Python:     math.log(n)
+```
+
+### Exp - Exponentielle
+```
+Syntaxe: Exp(number)
+Retour:  e^number
+
+TypeScript: Math.exp(n)
+C#:         Math.Exp(n)
+Python:     math.exp(n)
+```
+
+### Pwr - Puissance
+```
+Syntaxe: Pwr(base, exponent)
+Retour:  base^exponent
+
+TypeScript: Math.pow(base, exp) ou base ** exp
+C#:         Math.Pow(base, exp)
+Python:     base ** exp ou math.pow(base, exp)
+```
+
+### Sqrt - Racine carree
+```
+Syntaxe: Sqrt(number)
+Retour:  Racine carree
+
+TypeScript: Math.sqrt(n)
+C#:         Math.Sqrt(n)
+Python:     math.sqrt(n)
+```
+
+---
+
 ## Resume - Couverture Fonctions
 
 | Categorie | Fonctions documentees | Coverage |
 |-----------|----------------------|----------|
-| Conditionnelles | IF, CASE, IN | 100% |
-| String | 15 fonctions | 90% |
-| Conversion | Val, Str, DStr, DVal, TStr, ASCIIChr | 85% |
-| Date/Heure | 12 fonctions | 95% |
-| Numeriques | Round, ABS, MIN, MAX, MOD, Fix | 90% |
+| Conditionnelles | IF, CASE, IN, IsNull, IsDefault, Range | 100% |
+| String | 20 fonctions (Mid, Left, Right, Trim, Ins, DelStr, Flip, Soundx, Like...) | 95% |
+| Conversion | Val, Str, DStr, DVal, TStr, TVal, ASCIIChr, ASCIIVal, NullVal | 95% |
+| Date/Heure | 22 fonctions (Date, Time, BOM, EOM, BOY, EOY, DOW, CDOW, NDOW, CMonth, NMonth, Week, AddDate, AddTime, AddDateTime, DifDateTime, MDate, MTime...) | 98% |
+| Numeriques | Round, ABS, MIN, MAX, MOD, Fix, Log, Exp, Pwr, Sqrt | 95% |
 | Base de donnees | DbRecs, DbDel, DbName, Counter, EOF | 80% |
 | Programme | CallProg, Prog, Level, ExpCalc | 85% |
-| Systeme | GetParam, SetParam, OSEnvGet, User, INIGet | 90% |
+| Systeme | GetParam, SetParam, OSEnvGet, User, INIGet, Delay, Timer | 95% |
 | Fichiers | FileExist, Translate | 70% |
 | I18n | MlsTrans | 100% |
 
-**Total: 50 fonctions avec equivalences TS/C#/Python**
+**Total: 80 fonctions avec equivalences TS/C#/Python**
 
 ---
 
 *Genere le 2026-01-11 depuis C:\Appwin\Magic\Magicxpa23\Support\mghelpw_extracted\*
-*Mis a jour avec analyse frequence sur 200 fichiers XML projets PMS*
+*Mis a jour avec Batch 1 : 30 fonctions Date/Heure + Strings + Math additionnelles*

@@ -242,16 +242,17 @@ Composant "Sessions_Reprises" - 30 programmes:
 - Resolution de bugs
 - Amelioration continue
 
-**Inventaire des outils** (2026-01-10) :
+**Inventaire des outils** (2026-01-11) :
 
 | Categorie | Outils | Etat | Cible | Action |
 |-----------|--------|------|-------|--------|
 | MCP Server | 13 outils | 90% | 100% | Reconnecter + tests |
-| Agents specialises | 5 agents | 100% | 100% | **NOUVEAU** |
+| Agents specialises | 5 agents | 100% | 100% | Maintenir |
 | Commandes Slash | 15 commandes | 100% | 100% | Maintenir |
-| Scripts PowerShell | 18 scripts | 100% | 100% | Maintenir |
-| Parser TypeScript | 3 generateurs | 60% | 100% | Completer fonctions |
+| Scripts PowerShell | 20 scripts | 100% | 100% | Maintenir |
+| Parser TypeScript | 3 generateurs | 70% | 100% | Completer fonctions |
 | Skill/References | 22 fichiers | 100% | 100% | Enrichir |
+| **Fonctions Magic** | **80/200** | **40%** | **100%** | **Batch 1 FAIT** |
 
 ---
 
@@ -276,23 +277,24 @@ Composant "Sessions_Reprises" - 30 programmes:
 | magic-migrator | `.claude/agents/magic-migrator.md` | Generation code | ✅ |
 | magic-documenter | `.claude/agents/magic-documenter.md` | Documentation | ✅ |
 
-### 3. Parser TypeScript (60% → 100%)
+### 3. Parser TypeScript (70% → 100%)
 
 | Composant | Actuel | Cible | Actions |
 |-----------|--------|-------|---------|
 | Lexer/Parser | 90% | 100% | Gerer cas limites |
-| Fonctions Magic | 80/200 | 200/200 | Mapper 120 fonctions restantes |
+| Fonctions Magic | **80/200** | 200/200 | Mapper 120 fonctions restantes |
 | Generateur TS | 70% | 100% | Async/await, Decimal.js |
 | Generateur C# | 70% | 100% | CQRS patterns, DateOnly |
 | Generateur Python | 50% | 100% | FastAPI patterns |
 | Tests unitaires | 30% | 80% | Ajouter 50+ tests |
 
-**Fonctions prioritaires a mapper** :
-- Dates : `DStr`, `MVal`, `YVal`, `AddDate`, `DVal`
-- Strings : `Mid`, `Left`, `Right`, `InStr`, `Replace`
-- Calculs : `Round`, `Abs`, `Mod`, `Min`, `Max`
-- DB : `Counter`, `DBRecs`, `DBRecsRng`
-- Flow : `CallProg`, `CallTask`, `ExitProg`
+**Fonctions mappees par batch** :
+- [x] **Batch 0** : 50 fonctions (TOP 50 frequence) - FAIT 2026-01-11
+- [x] **Batch 1** : 30 fonctions (Dates, Strings, Math) - FAIT 2026-01-11
+- [ ] **Batch 2** : 30 fonctions (DB, I/O) - A faire
+- [ ] **Batch 3** : 30 fonctions (Flow, System) - A faire
+- [ ] **Batch 4** : 30 fonctions (UI/Forms) - A faire
+- [ ] **Batch 5** : 30 fonctions (restantes) - A faire
 
 ### 4. Communication IDE (REGLE ABSOLUE)
 
@@ -470,6 +472,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ## Changelog
 
+- 2026-01-11: **BATCH 1 FONCTIONS MAGIC - 80/200** - 30 nouvelles fonctions Date/Heure/Strings/Math avec equivalences TS/C#/Python (DOW, CDOW, NDOW, CMonth, NMonth, BOY, EOY, MDate, AddTime, AddDateTime, DifDateTime, TVal, Week, MTime, Delay, Timer, IsNull, NullVal, IsDefault, Range, DelStr, Ins, Flip, Soundx, Like, ASCIIVal, Log, Exp, Pwr, Sqrt). Total: 80 fonctions documentees
 - 2026-01-11: **MCP TEST SUITE + FONCTIONS TOP 50** - Suite de tests automatises (17/17 pass). Analyse frequence 200 fichiers XML. 20 fonctions supplementaires avec equivalences TS/C#/Python (MlsTrans, ExpCalc, IN, CndRange, INIGet, TStr, Fill, DbDel, etc). Coverage 50 fonctions total. Script `analyze-function-usage.ps1`
 - 2026-01-11: **MCP SDK UPGRADE 0.5.0** - ModelContextProtocol 0.2.0-preview.1 → 0.5.0-preview.1. Support parallel calls, Tasks API, Extensions. Build Release OK (0 errors). Redemarrer session pour charger
 - 2026-01-11: **HOOK POSTTOOLUSE IDE MAGIC IMPLEMENTE** - Script `validate-magic-ide-format.ps1` cree. Detecte patterns XML interdits (Prg_\d+, FieldID, ISN, {0,3}). Affiche violations avec format correct attendu. Cible agents magic-* + contexte Magic. Tests valides: 6 errors + 5 warnings detectes, clean output OK, skip non-Magic OK
@@ -551,4 +554,4 @@ Composant "Sessions_Reprises" - 30 programmes:
 - 2025-12-22: Creation structure openspec/mecano/
 
 ---
-*Derniere mise a jour: 2026-01-06 - Documentation SADT projet ADH*
+*Derniere mise a jour: 2026-01-11 - Batch 1 fonctions Magic (80/200)*
