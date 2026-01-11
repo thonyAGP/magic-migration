@@ -6,6 +6,13 @@
       "commands": [
         "powershell -NoProfile -ExecutionPolicy Bypass -File \"D:\\Projects\\Lecteur Magic\\.claude\\scripts\\ticket-menu.ps1\""
       ]
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "Task",
+      "commands": [
+        "powershell -NoProfile -ExecutionPolicy Bypass -File \"D:\\Projects\\Lecteur Magic\\.claude\\scripts\\validate-magic-ide-format.ps1\""
+      ]
     }
   ]
 }

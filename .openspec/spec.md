@@ -233,12 +233,98 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ## Taches
 
+### 🎯 PRIORITE N°1 : Consolidation Infrastructure Outils
+
+**Objectif** : Avoir un ecosysteme d'outils fiable et complet pour :
+- Lecture/parsing XML Magic
+- Migration vers langages modernes (TS, C#, Python)
+- Documentation automatique
+- Resolution de bugs
+- Amelioration continue
+
+**Inventaire des outils** (2026-01-10) :
+
+| Categorie | Outils | Etat | Cible | Action |
+|-----------|--------|------|-------|--------|
+| MCP Server | 13 outils | 90% | 100% | Reconnecter + tests |
+| Agents specialises | 5 agents | 100% | 100% | **NOUVEAU** |
+| Commandes Slash | 15 commandes | 100% | 100% | Maintenir |
+| Scripts PowerShell | 18 scripts | 100% | 100% | Maintenir |
+| Parser TypeScript | 3 generateurs | 60% | 100% | Completer fonctions |
+| Skill/References | 22 fichiers | 100% | 100% | Enrichir |
+
+---
+
+## 📋 PLAN VERS 100% - Roadmap detaillee
+
+### 1. MCP Server (90% → 100%)
+
+| Tache | Priorite | Effort | Statut |
+|-------|----------|--------|--------|
+| Reconnecter magic-interpreter | P0 | 5min | ⏳ Redemarrer session |
+| Tests automatises des 13 outils | P1 | 2h | A faire |
+| Gestion erreurs robuste | P2 | 1h | A faire |
+| Documentation API MCP | P2 | 1h | A faire |
+
+### 2. Agents specialises (100% - COMPLET)
+
+| Agent | Fichier | Role | Statut |
+|-------|---------|------|--------|
+| magic-router | `.claude/agents/magic-router.md` | Routage intelligent | ✅ |
+| magic-analyzer | `.claude/agents/magic-analyzer.md` | Analyse programmes | ✅ |
+| magic-debugger | `.claude/agents/magic-debugger.md` | Resolution bugs | ✅ |
+| magic-migrator | `.claude/agents/magic-migrator.md` | Generation code | ✅ |
+| magic-documenter | `.claude/agents/magic-documenter.md` | Documentation | ✅ |
+
+### 3. Parser TypeScript (60% → 100%)
+
+| Composant | Actuel | Cible | Actions |
+|-----------|--------|-------|---------|
+| Lexer/Parser | 90% | 100% | Gerer cas limites |
+| Fonctions Magic | 80/200 | 200/200 | Mapper 120 fonctions restantes |
+| Generateur TS | 70% | 100% | Async/await, Decimal.js |
+| Generateur C# | 70% | 100% | CQRS patterns, DateOnly |
+| Generateur Python | 50% | 100% | FastAPI patterns |
+| Tests unitaires | 30% | 80% | Ajouter 50+ tests |
+
+**Fonctions prioritaires a mapper** :
+- Dates : `DStr`, `MVal`, `YVal`, `AddDate`, `DVal`
+- Strings : `Mid`, `Left`, `Right`, `InStr`, `Replace`
+- Calculs : `Round`, `Abs`, `Mod`, `Min`, `Max`
+- DB : `Counter`, `DBRecs`, `DBRecsRng`
+- Flow : `CallProg`, `CallTask`, `ExitProg`
+
+### 4. Communication IDE (REGLE ABSOLUE)
+
+| Element | Format INTERDIT | Format OBLIGATOIRE |
+|---------|-----------------|-------------------|
+| Programme | Prg_69, ISN 4523 | ADH IDE 69 - EXTRAIT_COMPTE |
+| Variable | {0,3}, FieldID 25 | Variable D |
+| Tache | Task ISN_2=5 | Tache 69.3 |
+| Ligne | LogicLine id=15 | Tache 69.3 ligne 21 |
+| Table | DataObject ISN=40 | Table n°40 - operations |
+| Expression | Expression ISN=30 | Expression 30 |
+
+**Outils MCP a utiliser systematiquement** :
+- `magic_get_position` → Convertir en format IDE
+- `magic_get_line` → DataView + Logic formatee
+
+---
+
+**Sous-taches prioritaires** :
+- [x] **P1.1** Architecture agents Magic Router (fait: 2026-01-10)
+- [x] **P1.2** Creer 5 agents specialises (fait: 2026-01-10)
+- [x] **P1.3** Enrichir CLAUDE.md avec regles IDE (fait: 2026-01-10)
+- [ ] **P1.4** Reconnecter MCP (redemarrer session)
+- [ ] **P1.5** Completer parser TypeScript (120 fonctions)
+- [ ] **P1.6** Tests automatises outils MCP
+
 ### A traiter
 - [ ] Tests d'integration sur CSK0912
 - [ ] Documentation utilisateur API
 
 ### En cours
-- [ ] Mise en production et tests finaux
+- [x] **P1.1** Reparer connexion MCP magic-interpreter (en cours: 2026-01-10)
 
 ### Terminees
 - [x] **Analyse Main/ADH IDE 162 + 6 ecrans** (terminee: 2025-12-31) - Tracage flux CallTask, 3 gaps API combles, 6 ecrans SPA crees
@@ -384,6 +470,10 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ## Changelog
 
+- 2026-01-11: **HOOK POSTTOOLUSE IDE MAGIC IMPLEMENTE** - Script `validate-magic-ide-format.ps1` cree. Detecte patterns XML interdits (Prg_\d+, FieldID, ISN, {0,3}). Affiche violations avec format correct attendu. Cible agents magic-* + contexte Magic. Tests valides: 6 errors + 5 warnings detectes, clean output OK, skip non-Magic OK
+- 2026-01-11: **VEILLE TECHNOLOGIQUE COMPLETE** - Claude Code 2.1.0 (agent hooks, real-time thinking), MCP Nov 2025 (parallel calls, Tasks API), TypeScript 2025 best practices. 5 actions recommandees: Hook PostToolUse IDE Magic (HAUTE), Parallel Calls MCP (MOYENNE), Upgrade CC 2.1.0 (MOYENNE), Tasks API prototype (BASSE), --experimental-strip-types (BASSE). Rapport: `.openspec/veille-report-2026-01-11.md` + page HTML interactive. Prochain: 18 janvier
+- 2026-01-11: **REFERENCE RAPIDE TOP 30 FONCTIONS** - Extraction documentation CHM Magic xpa 2.3 (484 fichiers HTM). Reference rapide creee: `quick-reference-top30.md`. 30 fonctions critiques avec equivalences TS/C#/Python. Source: `C:\Appwin\Magic\Magicxpa23\Support\mghelpw_extracted\`
+- 2026-01-10: **ARCHITECTURE MAGIC ROUTER COMPLETE** - 5 agents specialises crees (magic-router, magic-analyzer, magic-debugger, magic-migrator, magic-documenter). Detection automatique d'intention + routage intelligent. Regles IDE renforcees dans CLAUDE.md. Plan 100% documente avec roadmap detaillee
 - 2026-01-10: **REGLES POSITION XML→IDE VALIDEES** - Script parse-dataview.ps1 V2 complet. Tables: XML obj=ItemIsn→Comps.xml id=IDE position. Programmes: IDE position=ordre dans ProgramsRepositoryOutLine. Variables: A-Z, AA-ZZ numerotation correcte. Colonnes: sequentielles Main Source, vrais IDs pour Links. Tests valides: ADH 294→IDE 297, ADH 159→IDE 160. Documentation: xml-position-rules.md, dataview-parsing-rules.md
 - 2026-01-08: **MCP XmlIndexer REWRITE** - Correction complete du parsing XML. Structure reelle: Task>Header (pas TaskDefinition), Task>Resource>Columns, Task>TaskLogic>LogicUnit>LogicLines. Nouvel outil magic_dump_dataview pour diagnostic. Tables composants via Comps.xml (id/ItemIsn/PublicName mapping)
 - 2026-01-09: **PMS-1446 SPEC COMPLETE** - Location materiel ski courts sejours. Analyse PVE IDE 186/139/256. Solution: calcul auto MODEDAYINC selon duree sejour (< 7 nuits = jour meme, >= 7 = lendemain). Seuil configurable via table. Spec implementation.md creee
