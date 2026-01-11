@@ -252,7 +252,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 | Scripts PowerShell | 20 scripts | 100% | 100% | Maintenir |
 | Parser TypeScript | 3 generateurs | 70% | 100% | Completer fonctions |
 | Skill/References | 22 fichiers | 100% | 100% | Enrichir |
-| **Fonctions Magic** | **80/200** | **40%** | **100%** | **Batch 1 FAIT** |
+| **Fonctions Magic** | **110/200** | **55%** | **100%** | **Batch 2 FAIT** |
 
 ---
 
@@ -282,7 +282,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 | Composant | Actuel | Cible | Actions |
 |-----------|--------|-------|---------|
 | Lexer/Parser | 90% | 100% | Gerer cas limites |
-| Fonctions Magic | **80/200** | 200/200 | Mapper 120 fonctions restantes |
+| Fonctions Magic | **110/200** | 200/200 | Mapper 90 fonctions restantes |
 | Generateur TS | 70% | 100% | Async/await, Decimal.js |
 | Generateur C# | 70% | 100% | CQRS patterns, DateOnly |
 | Generateur Python | 50% | 100% | FastAPI patterns |
@@ -291,7 +291,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 **Fonctions mappees par batch** :
 - [x] **Batch 0** : 50 fonctions (TOP 50 frequence) - FAIT 2026-01-11
 - [x] **Batch 1** : 30 fonctions (Dates, Strings, Math) - FAIT 2026-01-11
-- [ ] **Batch 2** : 30 fonctions (DB, I/O) - A faire
+- [x] **Batch 2** : 30 fonctions (DB, I/O, Flow, UI) - FAIT 2026-01-12
 - [ ] **Batch 3** : 30 fonctions (Flow, System) - A faire
 - [ ] **Batch 4** : 30 fonctions (UI/Forms) - A faire
 - [ ] **Batch 5** : 30 fonctions (restantes) - A faire
@@ -472,6 +472,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 
 ## Changelog
 
+- 2026-01-12: **BATCH 2 FONCTIONS MAGIC - 110/200** - 30 nouvelles fonctions DB/I/O/Flow/UI avec equivalences TS/C#/Python (DbViewRefresh, DbPos, DbSize, DbNext, DbPrev, Rollback, SetCrsr, Wait, Sleep, ErrMagic, ErrDbms, Exit, FlwLstRec, FlwFstRec, LastPark, FileDelete, FileCopy, FileRename, FileInfo, FileListGet, Blb2File, File2Blb, MsgBox, VerifyBox, InputBox, FormStateClear, CtrlGoto, CtrlRefresh, ViewRefresh, SetLang, GetLang). Total: 110 fonctions documentees (55%)
 - 2026-01-11: **BATCH 1 FONCTIONS MAGIC - 80/200** - 30 nouvelles fonctions Date/Heure/Strings/Math avec equivalences TS/C#/Python (DOW, CDOW, NDOW, CMonth, NMonth, BOY, EOY, MDate, AddTime, AddDateTime, DifDateTime, TVal, Week, MTime, Delay, Timer, IsNull, NullVal, IsDefault, Range, DelStr, Ins, Flip, Soundx, Like, ASCIIVal, Log, Exp, Pwr, Sqrt). Total: 80 fonctions documentees
 - 2026-01-11: **MCP TEST SUITE + FONCTIONS TOP 50** - Suite de tests automatises (17/17 pass). Analyse frequence 200 fichiers XML. 20 fonctions supplementaires avec equivalences TS/C#/Python (MlsTrans, ExpCalc, IN, CndRange, INIGet, TStr, Fill, DbDel, etc). Coverage 50 fonctions total. Script `analyze-function-usage.ps1`
 - 2026-01-11: **MCP SDK UPGRADE 0.5.0** - ModelContextProtocol 0.2.0-preview.1 → 0.5.0-preview.1. Support parallel calls, Tasks API, Extensions. Build Release OK (0 errors). Redemarrer session pour charger
@@ -554,4 +555,4 @@ Composant "Sessions_Reprises" - 30 programmes:
 - 2025-12-22: Creation structure openspec/mecano/
 
 ---
-*Derniere mise a jour: 2026-01-11 - Batch 1 fonctions Magic (80/200)*
+*Derniere mise a jour: 2026-01-12 - Batch 2 fonctions Magic (110/200)*

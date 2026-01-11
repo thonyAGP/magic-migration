@@ -306,7 +306,7 @@ Elles sont stockées comme **Update** dans les LogicUnits Prefix/Suffix:
 </LogicUnit>
 ```
 
-**Script**: `parse-dataview.ps1` V5 résout maintenant les Init.
+**Script**: `parse-dataview.ps1` V6 résout maintenant les Init avec conditions.
 
 ---
 
@@ -343,6 +343,28 @@ Ligne 19: [GV] Column utilisateur VG.LOGIN
 
 ---
 
+## Règle 7: Conditions Block IF (2026-01-11)
+
+Les initialisations peuvent être conditionnelles, encadrées par des Block IF/END_BLK dans le Prefix/Suffix.
+
+**Structure XML**:
+```xml
+<LogicLine><BLOCK EndBlock="26" Type="I"><Condition Exp="9" /></BLOCK></LogicLine>
+<LogicLine><Update><FieldID val="11"/><WithValue val="11"/></Update></LogicLine>
+<LogicLine><END_BLK /></LogicLine>
+```
+
+**Affichage dans le script** (deux formats):
+
+| Format | Exemple |
+|--------|---------|
+| **Compact** | `'O' [IF Trim(GI)<>'']` |
+| **Expanded** | `'O' [IF Trim(P.Card Id)<>'']` |
+
+**Note**: Pour les blocs imbriqués multiples, le script track une pile de conditions, mais cela peut devenir complexe. L'affichage est surtout utile pour les conditions simples.
+
+---
+
 ## Screenshots de Référence
 
 ### Screenshot 1: Task 160.1 Data View
@@ -365,18 +387,19 @@ Ligne 19: [GV] Column utilisateur VG.LOGIN
 - [x] Tester sur d'autres programmes ✅ ADH 285.1.2.5, ADH 122.1.1.1 validés
 - [x] Calcul automatique offset sous-tâches ✅ `parse-dataview.ps1` V5 (via path traversal)
 - [x] Résolution VG.X → noms réels ✅ `parse-dataview.ps1` V5 (via Prg_1.xml)
+- [x] Affichage conditions Block IF ✅ `parse-dataview.ps1` V6 (compact + expanded)
 
 ---
 
 ## Scripts Associés
 
-- `tools/scripts/parse-dataview.ps1` - **Parser Data View V5** (offset auto, Init, VG resolution)
+- `tools/scripts/parse-dataview.ps1` - **Parser Data View V6** (offset auto, Init, VG resolution, conditions)
 - `tools/scripts/calc-nested-offset.ps1` - Calcul offset sous-tâches imbriquées (standalone)
 - `tools/scripts/debug-param.ps1` - Debug paramètres
 - `tools/scripts/debug-cols.ps1` - Debug colonnes
 - `tools/scripts/check-prg.ps1` - Vérification header programme
 
-### Usage parse-dataview.ps1 V5
+### Usage parse-dataview.ps1 V6
 
 ```powershell
 # Simple - offset calculé automatiquement
@@ -387,6 +410,13 @@ Ligne 19: [GV] Column utilisateur VG.LOGIN
 # Path: Main(143) + Liste des GM(47) = 190
 # VG names loaded: 118 variables
 # Init expressions found: 4
-# ...
-# 19  [GV] Column      utilisateur                      VG.LOGIN
+#
+# Ln#  Var  Type        Details                          Init (Compact)
+# 16  [GS] Column      status                           'O' [IF Trim(GI)<>'']
+# 17  [GT] Column      date_operation                   Date() [IF Trim(GI)<>'']
+# 19  [GV] Column      utilisateur                      VG.LOGIN [IF Trim(GI)<>'']
+#
+# === EXPANDED VIEW (Init avec noms colonnes) ===
+# [GS] 'O' [IF Trim(P.Card Id)<>'']
+# [GV] VG.LOGIN [IF Trim(P.Card Id)<>'']
 ```

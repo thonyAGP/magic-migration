@@ -1000,6 +1000,319 @@ Python:     math.sqrt(n)
 
 ---
 
+## Batch 2 - Fonctions DB, I/O et Flow (30 nouvelles)
+
+### DbViewRefresh - Rafraichir vue
+```
+Syntaxe: DbViewRefresh(tableNumber)
+Retour:  Logical - TRUE si succes
+Note:    Force relecture depuis la base
+
+TypeScript: await prisma.$queryRaw`SELECT 1` // Force reconnect
+C#:         await context.Database.ExecuteSqlRawAsync("SELECT 1")
+Python:     session.expire_all()
+```
+
+### DbPos - Position dans resultset
+```
+Syntaxe: DbPos(generation)
+Retour:  Numeric - Position courante (1-based)
+
+TypeScript: currentIndex + 1
+C#:         position // variable de boucle
+Python:     position # via enumerate
+```
+
+### DbSize - Taille resultset
+```
+Syntaxe: DbSize(generation)
+Retour:  Numeric - Nombre total de records dans le resultset
+
+TypeScript: records.length
+C#:         records.Count ou recordCount
+Python:     len(records)
+```
+
+### DbNext / DbPrev - Navigation
+```
+Syntaxe: DbNext(tableNumber), DbPrev(tableNumber)
+Retour:  Logical - TRUE si navigation reussie
+
+TypeScript: index++; hasNext = index < records.length
+C#:         reader.Read() // DataReader
+Python:     next(iterator, None)
+```
+
+### Rollback - Annulation transaction
+```
+Syntaxe: Rollback()
+Retour:  Annule les modifications en cours
+Note:    Utilise dans error handlers
+
+TypeScript: await prisma.$transaction.rollback()
+C#:         await transaction.RollbackAsync()
+Python:     session.rollback()
+```
+
+### SetCrsr - Curseur souris
+```
+Syntaxe: SetCrsr(cursorType)
+Retour:  Change le curseur souris
+Note:    0=Arrow, 1=Wait, 2=Crosshair...
+
+TypeScript: document.body.style.cursor = 'wait'
+C#:         Cursor.Current = Cursors.WaitCursor
+Python:     # GUI specific (tkinter, Qt...)
+```
+
+### Wait - Attente utilisateur
+```
+Syntaxe: Wait(seconds)
+Retour:  Pause execution
+Note:    Bloque l'execution pendant N secondes
+
+TypeScript: await new Promise(r => setTimeout(r, seconds * 1000))
+C#:         await Task.Delay(TimeSpan.FromSeconds(seconds))
+Python:     await asyncio.sleep(seconds) ou time.sleep(seconds)
+```
+
+### Sleep - Pause execution
+```
+Syntaxe: Sleep(milliseconds)
+Retour:  Pause en millisecondes
+
+TypeScript: await new Promise(r => setTimeout(r, ms))
+C#:         await Task.Delay(ms)
+Python:     await asyncio.sleep(ms / 1000)
+```
+
+### ErrMagic - Code erreur Magic
+```
+Syntaxe: ErrMagic()
+Retour:  Numeric - Dernier code erreur Magic (0=OK)
+
+TypeScript: lastError?.code ?? 0
+C#:         _lastErrorCode
+Python:     last_error_code
+```
+
+### ErrDbms - Code erreur DBMS
+```
+Syntaxe: ErrDbms()
+Retour:  Numeric - Code erreur base de donnees
+
+TypeScript: error instanceof PrismaClientKnownRequestError ? error.code : 0
+C#:         (exception as SqlException)?.Number ?? 0
+Python:     error.pgcode ou error.errno
+```
+
+### Exit - Sortie programme
+```
+Syntaxe: Exit()
+Retour:  Termine le programme courant
+Note:    Retourne au programme appelant
+
+TypeScript: return // ou throw new ExitException()
+C#:         return // ou throw new OperationCanceledException()
+Python:     return # ou raise SystemExit
+```
+
+### FlwLstRec - Dernier record de la vue
+```
+Syntaxe: FlwLstRec()
+Retour:  Logical - TRUE si dernier record actif
+
+TypeScript: currentIndex === records.length - 1
+C#:         isLastRecord
+Python:     is_last_record
+```
+
+### FlwFstRec - Premier record de la vue
+```
+Syntaxe: FlwFstRec()
+Retour:  Logical - TRUE si premier record actif
+
+TypeScript: currentIndex === 0
+C#:         isFirstRecord
+Python:     is_first_record
+```
+
+### LastPark - Dernier controle actif
+```
+Syntaxe: LastPark()
+Retour:  Numeric - ID du dernier controle active
+
+TypeScript: document.activeElement?.id
+C#:         lastFocusedControl?.Name
+Python:     last_focused_widget
+```
+
+### FileDelete - Suppression fichier
+```
+Syntaxe: FileDelete(filename)
+Retour:  Logical - TRUE si succes
+
+TypeScript: fs.unlinkSync(filename); return true
+C#:         File.Delete(filename); return true
+Python:     os.remove(filename)
+```
+
+### FileCopy - Copie fichier
+```
+Syntaxe: FileCopy(source, destination)
+Retour:  Logical - TRUE si succes
+
+TypeScript: fs.copyFileSync(source, dest); return true
+C#:         File.Copy(source, dest); return true
+Python:     shutil.copy(source, dest)
+```
+
+### FileRename - Renommage fichier
+```
+Syntaxe: FileRename(oldName, newName)
+Retour:  Logical - TRUE si succes
+
+TypeScript: fs.renameSync(oldName, newName); return true
+C#:         File.Move(oldName, newName); return true
+Python:     os.rename(old_name, new_name)
+```
+
+### FileInfo - Informations fichier
+```
+Syntaxe: FileInfo(filename, infoType)
+Retour:  Alpha - Info demandee (taille, date, etc)
+Type:    1=Size, 2=CreatedDate, 3=ModifiedDate, 4=Attributes
+
+TypeScript: fs.statSync(filename) // .size, .mtime, .mode
+C#:         new FileInfo(filename) // .Length, .CreationTime
+Python:     os.stat(filename) // .st_size, .st_mtime
+```
+
+### FileListGet - Liste fichiers
+```
+Syntaxe: FileListGet(path, pattern, resultVar)
+Retour:  Liste des fichiers correspondant au pattern
+
+Exemple: FileListGet('C:\Temp\', '*.txt', A)
+
+TypeScript: fs.readdirSync(path).filter(f => f.match(pattern))
+C#:         Directory.GetFiles(path, pattern)
+Python:     glob.glob(os.path.join(path, pattern))
+```
+
+### Blb2File - BLOB vers fichier
+```
+Syntaxe: Blb2File(blobVar, filename)
+Retour:  Logical - TRUE si succes
+
+TypeScript: fs.writeFileSync(filename, Buffer.from(blob))
+C#:         await File.WriteAllBytesAsync(filename, blobData)
+Python:     with open(filename, 'wb') as f: f.write(blob_data)
+```
+
+### File2Blb - Fichier vers BLOB
+```
+Syntaxe: File2Blb(filename, blobVar)
+Retour:  Logical - TRUE si succes
+
+TypeScript: const blob = fs.readFileSync(filename)
+C#:         var data = await File.ReadAllBytesAsync(filename)
+Python:     with open(filename, 'rb') as f: data = f.read()
+```
+
+### MsgBox - Boite de message
+```
+Syntaxe: MsgBox(title, message, style)
+Retour:  Numeric - Bouton clique (1=OK, 2=Cancel...)
+Style:   0=OK, 1=OK/Cancel, 2=Yes/No...
+
+TypeScript: // Browser: confirm(message), Node: inquirer
+C#:         MessageBox.Show(message, title, buttons)
+Python:     messagebox.showinfo(title, message) # tkinter
+```
+
+### VerifyBox - Boite confirmation
+```
+Syntaxe: VerifyBox(message)
+Retour:  Logical - TRUE si Yes/OK clique
+
+TypeScript: confirm(message)
+C#:         MessageBox.Show(message, "", MessageBoxButtons.YesNo) == DialogResult.Yes
+Python:     messagebox.askyesno("", message)
+```
+
+### InputBox - Saisie utilisateur
+```
+Syntaxe: InputBox(title, prompt, defaultValue)
+Retour:  Alpha - Valeur saisie ou vide si annule
+
+TypeScript: prompt(message, defaultValue)
+C#:         // WinForms InputBox ou custom dialog
+Python:     simpledialog.askstring(title, prompt)
+```
+
+### FormStateClear - Efface etat formulaire
+```
+Syntaxe: FormStateClear(formName)
+Retour:  Efface les parametres de position/taille sauvegardes
+
+TypeScript: localStorage.removeItem(`form_${formName}`)
+C#:         Properties.Settings.Default.Remove(formName)
+Python:     config.remove_section(form_name)
+```
+
+### CtrlGoto - Navigation vers controle
+```
+Syntaxe: CtrlGoto(controlName)
+Retour:  Deplace le focus vers le controle specifie
+
+TypeScript: document.getElementById(controlName)?.focus()
+C#:         this.Controls[controlName]?.Focus()
+Python:     widget.focus_set()
+```
+
+### CtrlRefresh - Rafraichir controle
+```
+Syntaxe: CtrlRefresh(controlName)
+Retour:  Force le redessin du controle
+
+TypeScript: element.style.display = 'none'; element.offsetHeight; element.style.display = ''
+C#:         control.Refresh() ou control.Invalidate()
+Python:     widget.update()
+```
+
+### ViewRefresh - Rafraichir vue
+```
+Syntaxe: ViewRefresh(tableNumber)
+Retour:  Recharge les donnees de la vue
+
+TypeScript: await fetchData() // re-fetch
+C#:         await LoadDataAsync()
+Python:     await load_data()
+```
+
+### SetLang - Change langue
+```
+Syntaxe: SetLang(languageCode)
+Retour:  Change la langue de l'interface
+
+TypeScript: i18n.changeLanguage(lang)
+C#:         Thread.CurrentThread.CurrentUICulture = new CultureInfo(lang)
+Python:     gettext.translation(lang).install()
+```
+
+### GetLang - Langue courante
+```
+Syntaxe: GetLang()
+Retour:  Alpha - Code langue active (ex: 'FRA', 'ENG')
+
+TypeScript: i18n.language
+C#:         CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
+Python:     locale.getlocale()[0]
+```
+
+---
+
 ## Resume - Couverture Fonctions
 
 | Categorie | Fonctions documentees | Coverage |
@@ -1009,15 +1322,27 @@ Python:     math.sqrt(n)
 | Conversion | Val, Str, DStr, DVal, TStr, TVal, ASCIIChr, ASCIIVal, NullVal | 95% |
 | Date/Heure | 22 fonctions (Date, Time, BOM, EOM, BOY, EOY, DOW, CDOW, NDOW, CMonth, NMonth, Week, AddDate, AddTime, AddDateTime, DifDateTime, MDate, MTime...) | 98% |
 | Numeriques | Round, ABS, MIN, MAX, MOD, Fix, Log, Exp, Pwr, Sqrt | 95% |
-| Base de donnees | DbRecs, DbDel, DbName, Counter, EOF | 80% |
-| Programme | CallProg, Prog, Level, ExpCalc | 85% |
-| Systeme | GetParam, SetParam, OSEnvGet, User, INIGet, Delay, Timer | 95% |
-| Fichiers | FileExist, Translate | 70% |
-| I18n | MlsTrans | 100% |
+| Base de donnees | DbRecs, DbDel, DbName, Counter, EOF, DbViewRefresh, DbPos, DbSize, DbNext, DbPrev | 95% |
+| Programme | CallProg, Prog, Level, ExpCalc, Exit | 90% |
+| Systeme | GetParam, SetParam, OSEnvGet, User, INIGet, Delay, Timer, Wait, Sleep, SetLang, GetLang | 98% |
+| Fichiers | FileExist, FileDelete, FileCopy, FileRename, FileInfo, FileListGet, Blb2File, File2Blb, Translate | 95% |
+| Flow | Rollback, FlwLstRec, FlwFstRec, LastPark, ErrMagic, ErrDbms | 90% |
+| UI | SetCrsr, MsgBox, VerifyBox, InputBox, FormStateClear, CtrlGoto, CtrlRefresh, ViewRefresh | 85% |
+| I18n | MlsTrans, SetLang, GetLang | 100% |
 
-**Total: 80 fonctions avec equivalences TS/C#/Python**
+**Total: 110 fonctions avec equivalences TS/C#/Python (55%)**
+
+### Progression par Batch
+| Batch | Fonctions | Statut |
+|-------|-----------|--------|
+| Batch 0 | TOP 50 frequence | FAIT |
+| Batch 1 | 30 Date/Heure/Strings/Math | FAIT |
+| Batch 2 | 30 DB/I/O/Flow/UI | FAIT |
+| Batch 3 | 30 XML/Vector/Buffer | A faire |
+| Batch 4 | 30 COM/DLL/HTTP | A faire |
+| Batch 5 | 20 Restantes | A faire |
 
 ---
 
 *Genere le 2026-01-11 depuis C:\Appwin\Magic\Magicxpa23\Support\mghelpw_extracted\*
-*Mis a jour avec Batch 1 : 30 fonctions Date/Heure + Strings + Math additionnelles*
+*Mis a jour avec Batch 2 : 30 fonctions DB/I/O/Flow/UI additionnelles (110/200 total)*

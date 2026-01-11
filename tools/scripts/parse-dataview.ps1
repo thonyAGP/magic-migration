@@ -1,4 +1,4 @@
-# PARSE MAGIC DATA VIEW - VERSION DEFINITIVE V5
+# PARSE MAGIC DATA VIEW - VERSION DEFINITIVE V6
 # Règles brutes basées sur analyse positions XML vs IDE
 #
 # RÈGLES CLÉS (2026-01-11):
@@ -7,8 +7,9 @@
 # 3. Data View: Position dans LogicLines = IDE line number
 # 4. Colonnes: Column.val = séquentiel (Main), vrais IDs (Links)
 # 5. Variables: GLOBAL - Main TOUJOURS chargé en premier (offset AUTO-CALCULÉ)
-# 6. Init: Task/Record Prefix Updates → WithValue Expression
+# 6. Init: Task/Record Prefix Updates → WithValue Expression + Condition (Block IF)
 # 7. Offset: Calculé automatiquement via chemin Main → Tâche cible
+# 8. Conditions: Affichage compact (variables) ET expanded (noms colonnes)
 
 param(
     [string]$Project = "ADH",
@@ -297,51 +298,185 @@ if (Test-Path $mainPrgPath) {
 }
 
 # ============================================
-# LOAD EXPRESSIONS (for Init resolution)
+# GET DB LIST (needed for field mapping)
 # ============================================
-$expressions = @{}
-foreach ($exp in $task.Expressions.Expression) {
-    $id = $exp.id
-    $syntax = $exp.ExpSyntax.val
-    if ($syntax) {
-        # Simplify expression: remove {index,field} refs for display
-        $simplified = $syntax
+$dbList = @()
+$dbIndex = 1
 
-        # Replace variable references {32768,X} with actual VG name
-        $simplified = [regex]::Replace($simplified, '\{32768,(\d+)\}', {
-            param($match)
-            $vgId = $match.Groups[1].Value
-            if ($vgNames.ContainsKey($vgId)) {
-                return $vgNames[$vgId]
+foreach ($db in $task.Resource.DB) {
+    $obj = $db.DataObject.obj
+    $dbList += @{ Index = $dbIndex; Obj = $obj; Display = (Get-TableDisplay $obj) }
+    $dbIndex++
+}
+
+# ============================================
+# BUILD FIELD TO COLUMN NAME MAP (for expanded view)
+# MUST be done BEFORE expression resolution
+# ============================================
+$fieldToColName = @{}  # FieldID → column name (for expanded view)
+
+# First, add virtual columns from Resource.Columns
+foreach ($col in $task.Resource.Columns.Column) {
+    $colId = $col.id
+    $colName = $col.name
+    if ($colName) {
+        $fieldToColName["$colId"] = $colName
+    }
+}
+
+# Parse ALL LogicUnits to get FieldID → column name mapping
+# Track current table context for real columns
+$currentTableObjForMapping = if ($dbList.Count -gt 0) { $dbList[0].Obj } else { $null }
+
+foreach ($lu in $task.TaskLogic.LogicUnit) {
+    foreach ($line in $lu.LogicLines.LogicLine) {
+        # Track table context changes
+        if ($line.DATAVIEW_SRC) {
+            $idx = $line.DATAVIEW_SRC.IDX
+            if ($idx -and $idx -ne "0") {
+                $db = $dbList | Where-Object { $_.Index -eq [int]$idx } | Select-Object -First 1
+                if ($db) { $currentTableObjForMapping = $db.Obj }
             }
-            return "VG.$vgId"
-        })
+        }
+        elseif ($line.LNK) {
+            $currentTableObjForMapping = $line.LNK.DB.obj
+        }
+        elseif ($line.END_LINK) {
+            # Reset to main table
+            if ($dbList.Count -gt 0) { $currentTableObjForMapping = $dbList[0].Obj }
+        }
+        elseif ($line.Select) {
+            $sel = $line.Select
+            $fieldId = $sel.FieldID
+            $colNum = $sel.Column.val
+            if ($colNum -is [System.Xml.XmlElement]) {
+                $colNum = $colNum.InnerText
+            }
+            $type = $sel.Type.val
+            if (-not $type) { $type = $sel.Type }
 
-        # Replace local refs {0,X} with Var letter
-        $simplified = [regex]::Replace($simplified, '\{0,(\d+)\}', {
-            param($match)
-            $fieldId = [int]$match.Groups[1].Value
-            $idx = $fieldId - 1 + $MainOffset
-            return Convert-IndexToVariable $idx
-        })
+            # Get column name based on type
+            $isParam = $sel.IsParameter.val
+            if (-not $isParam) { $isParam = $sel.IsParameter }
 
-        # Replace parent task refs {1,X}
-        $simplified = [regex]::Replace($simplified, '\{1,(\d+)\}', {
-            param($match)
-            $fieldId = [int]$match.Groups[1].Value
-            # Parent offset is MainOffset minus current task's contribution
-            # For simplicity, just show as Parent.Letter
-            return "Parent." + (Convert-IndexToVariable ($fieldId - 1))
-        })
+            $colName = $null
+            if ($isParam -eq "Y" -or $type -eq "V") {
+                # Parameter or Virtual - Column.val is POSITION (1-based), not ID
+                $colIdx = [int]$colNum - 1  # Convert to 0-based index
+                $cols = @($task.Resource.Columns.Column)
+                if ($colIdx -ge 0 -and $colIdx -lt $cols.Count) {
+                    $colName = $cols[$colIdx].name
+                }
+            } else {
+                # Real column - use current table context
+                if ($currentTableObjForMapping) {
+                    $colName = Get-ColumnName $currentTableObjForMapping $colNum
+                }
+            }
 
-        $expressions["$id"] = $simplified
+            if ($colName -and -not $fieldToColName.ContainsKey("$fieldId")) {
+                $fieldToColName["$fieldId"] = $colName
+            }
+        }
     }
 }
 
 # ============================================
-# BUILD INIT MAP (from Task/Record Prefix)
+# EXPRESSION RESOLUTION FUNCTIONS
 # ============================================
-$initMap = @{}  # FieldID → Init expression
+# Resolve expression to COMPACT format (variable letters: GI, GJ, etc.)
+function Resolve-ExpressionCompact {
+    param([string]$syntax)
+
+    $result = $syntax
+
+    # Replace VG refs {32768,X} with VG.Name
+    $result = [regex]::Replace($result, '\{32768,(\d+)\}', {
+        param($match)
+        $vgId = $match.Groups[1].Value
+        if ($vgNames.ContainsKey($vgId)) {
+            return $vgNames[$vgId]
+        }
+        return "VG.$vgId"
+    })
+
+    # Replace local refs {0,X} with variable letter
+    $result = [regex]::Replace($result, '\{0,(\d+)\}', {
+        param($match)
+        $fieldId = [int]$match.Groups[1].Value
+        $idx = $fieldId - 1 + $MainOffset
+        return Convert-IndexToVariable $idx
+    })
+
+    # Replace parent task refs {1,X}
+    $result = [regex]::Replace($result, '\{1,(\d+)\}', {
+        param($match)
+        $fieldId = [int]$match.Groups[1].Value
+        return "Parent." + (Convert-IndexToVariable ($fieldId - 1))
+    })
+
+    return $result
+}
+
+# Resolve expression to EXPANDED format (column names: P.Card Id, etc.)
+function Resolve-ExpressionExpanded {
+    param([string]$syntax)
+
+    $result = $syntax
+
+    # Replace VG refs {32768,X} with VG.Name
+    $result = [regex]::Replace($result, '\{32768,(\d+)\}', {
+        param($match)
+        $vgId = $match.Groups[1].Value
+        if ($vgNames.ContainsKey($vgId)) {
+            return $vgNames[$vgId]
+        }
+        return "VG.$vgId"
+    })
+
+    # Replace local refs {0,X} with column name if available
+    $result = [regex]::Replace($result, '\{0,(\d+)\}', {
+        param($match)
+        $fieldId = $match.Groups[1].Value
+        if ($fieldToColName.ContainsKey($fieldId)) {
+            return $fieldToColName[$fieldId]
+        }
+        # Fallback to variable letter
+        $idx = [int]$fieldId - 1 + $MainOffset
+        return Convert-IndexToVariable $idx
+    })
+
+    # Replace parent task refs {1,X}
+    $result = [regex]::Replace($result, '\{1,(\d+)\}', {
+        param($match)
+        $fieldId = [int]$match.Groups[1].Value
+        return "Parent." + (Convert-IndexToVariable ($fieldId - 1))
+    })
+
+    return $result
+}
+
+# ============================================
+# LOAD EXPRESSIONS (both compact and expanded)
+# ============================================
+$expressionsCompact = @{}   # id → compact form (variable letters)
+$expressionsExpanded = @{}  # id → expanded form (column names)
+$expressionsRaw = @{}       # id → raw syntax
+
+foreach ($exp in $task.Expressions.Expression) {
+    $id = $exp.id
+    $syntax = $exp.ExpSyntax.val
+    if ($syntax) {
+        $expressionsRaw["$id"] = $syntax
+        $expressionsCompact["$id"] = Resolve-ExpressionCompact $syntax
+        $expressionsExpanded["$id"] = Resolve-ExpressionExpanded $syntax
+    }
+}
+
+# ============================================
+# BUILD INIT MAP WITH CONDITIONS (from Prefix/Suffix)
+# ============================================
+$initMap = @{}  # FieldID → { compact, expanded, condCompact, condExpanded }
 
 # Find Task/Record Prefix or Suffix for Init values
 # Types: TP=Task Prefix, TS=Task Suffix, P=Record Prefix, S=Record Suffix
@@ -354,18 +489,52 @@ foreach ($lu in $task.TaskLogic.LogicUnit) {
                     ($level -eq "R" -and ($type -eq "P" -or $type -eq "S"))
 
     if ($isInitSource) {
+        # Track current block condition
+        $currentCondCompact = $null
+        $currentCondExpanded = $null
+        $blockStack = @()  # Stack for nested blocks
+
         foreach ($line in $lu.LogicLines.LogicLine) {
-            if ($line.Update) {
+            # Handle BLOCK IF
+            if ($line.BLOCK) {
+                $condExpId = $line.BLOCK.Condition.Exp
+                if ($condExpId) {
+                    $condCompact = if ($expressionsCompact.ContainsKey("$condExpId")) { $expressionsCompact["$condExpId"] } else { "Exp$condExpId" }
+                    $condExpanded = if ($expressionsExpanded.ContainsKey("$condExpId")) { $expressionsExpanded["$condExpId"] } else { "Exp$condExpId" }
+                    $blockStack += @{ compact = $condCompact; expanded = $condExpanded }
+                    $currentCondCompact = $condCompact
+                    $currentCondExpanded = $condExpanded
+                }
+            }
+            # Handle END_BLK
+            elseif ($line.END_BLK) {
+                if ($blockStack.Count -gt 0) {
+                    $blockStack = $blockStack[0..($blockStack.Count - 2)]  # Pop
+                    if ($blockStack.Count -gt 0) {
+                        $lastBlock = $blockStack[-1]
+                        $currentCondCompact = $lastBlock.compact
+                        $currentCondExpanded = $lastBlock.expanded
+                    } else {
+                        $currentCondCompact = $null
+                        $currentCondExpanded = $null
+                    }
+                }
+            }
+            # Handle UPDATE
+            elseif ($line.Update) {
                 $upd = $line.Update
                 $fieldId = $upd.FieldID.val
                 $withValue = $upd.WithValue.val
 
-                # Store all Updates (including conditional ones for display)
                 if ($fieldId -and $withValue) {
-                    if ($expressions.ContainsKey("$withValue")) {
-                        $initMap["$fieldId"] = $expressions["$withValue"]
-                    } else {
-                        $initMap["$fieldId"] = "Exp$withValue"
+                    $valueCompact = if ($expressionsCompact.ContainsKey("$withValue")) { $expressionsCompact["$withValue"] } else { "Exp$withValue" }
+                    $valueExpanded = if ($expressionsExpanded.ContainsKey("$withValue")) { $expressionsExpanded["$withValue"] } else { "Exp$withValue" }
+
+                    $initMap["$fieldId"] = @{
+                        compact = $valueCompact
+                        expanded = $valueExpanded
+                        condCompact = $currentCondCompact
+                        condExpanded = $currentCondExpanded
                     }
                 }
             }
@@ -375,18 +544,6 @@ foreach ($lu in $task.TaskLogic.LogicUnit) {
 
 if ($initMap.Count -gt 0) {
     Write-Host "Init expressions found: $($initMap.Count)" -ForegroundColor DarkGray
-}
-
-# ============================================
-# GET DB LIST
-# ============================================
-$dbList = @()
-$dbIndex = 1
-
-foreach ($db in $task.Resource.DB) {
-    $obj = $db.DataObject.obj
-    $dbList += @{ Index = $dbIndex; Obj = $obj; Display = (Get-TableDisplay $obj) }
-    $dbIndex++
 }
 
 # ============================================
@@ -401,6 +558,8 @@ foreach ($col in $task.Resource.Columns.Column) {
     $virtualColumns["$pos"] = $colName      # By position (for Select Column val)
     $virtualColumns["id$colId"] = $colName  # By id (backup)
     $virtualColumnsList += $colName
+    # Also add to fieldToColName for expanded view
+    $fieldToColName["$colId"] = $colName
     $pos++
 }
 
@@ -420,17 +579,24 @@ if (-not $logicUnit) {
     exit 1
 }
 
-Write-Host "Ln#  Var  Type        Details                          Init"
-Write-Host "---  ---  ----------  -------------------------------  ----"
+Write-Host ""
+Write-Host "Ln#  Var  Type        Details                          Init (Compact)"
+Write-Host "---  ---  ----------  -------------------------------  --------------"
 
 $lineNum = 1
 $inLink = $false
 $currentTableObj = $null  # Track current table for column names
 $mainTableIdx = 1  # Main table DB index
 
+# Collect lines for display
+$outputLines = @()
+
 foreach ($logicLine in $logicUnit.LogicLines.LogicLine) {
     $output = $null
     $varLetter = ""
+    $initCompact = ""
+    $initExpanded = ""
+    $fieldId = $null
 
     # ----------------------------------------
     # DATAVIEW_SRC - Main table
@@ -473,37 +639,47 @@ foreach ($logicLine in $logicUnit.LogicLines.LogicLine) {
         $fieldIdx = $fieldId - 1 + $MainOffset
         $varLetter = Convert-IndexToVariable $fieldIdx
 
-        # Get Init expression if available
-        $initExpr = ""
+        # Get Init expression if available (both formats)
         if ($initMap.ContainsKey("$fieldId")) {
-            $initExpr = $initMap["$fieldId"]
-            # Truncate if too long
-            if ($initExpr.Length -gt 25) {
-                $initExpr = $initExpr.Substring(0, 22) + "..."
+            $initInfo = $initMap["$fieldId"]
+            $initCompact = $initInfo.compact
+            $initExpanded = $initInfo.expanded
+
+            # Add condition if present
+            if ($initInfo.condCompact) {
+                $initCompact = "$initCompact [IF $($initInfo.condCompact)]"
+                $initExpanded = "$initExpanded [IF $($initInfo.condExpanded)]"
             }
         }
 
         # Check if it's a parameter (IsParameter can be XmlElement with val)
         $isParam = $sel.IsParameter.val
         if (-not $isParam) { $isParam = $sel.IsParameter }
+
+        $colName = ""
         if ($isParam -eq "Y") {
             # colNum is the position in virtual columns list
             $colName = if ($virtualColumns.ContainsKey("$colNum")) { $virtualColumns["$colNum"] } else { "Param $colNum" }
             $padded = "{0,-32}" -f $colName
-            $output = "{0,3}  [{1,-2}] Parameter   {2} {3}" -f $lineNum, $varLetter, $padded, $initExpr
+            $output = "{0,3}  [{1,-2}] Parameter   {2}" -f $lineNum, $varLetter, $padded
         }
         # Get column info based on type
         elseif ($type -eq "V") {
             # Virtual column - colNum is position in list
             $colName = if ($virtualColumns.ContainsKey("$colNum")) { $virtualColumns["$colNum"] } else { "Virtual $colNum" }
             $padded = "{0,-32}" -f $colName
-            $output = "{0,3}  [{1,-2}] Virtual     {2} {3}" -f $lineNum, $varLetter, $padded, $initExpr
+            $output = "{0,3}  [{1,-2}] Virtual     {2}" -f $lineNum, $varLetter, $padded
         } else {
             # Real column from table - look up name using new mapping
             $colName = Get-ColumnName $currentTableObj $colNum
             if (-not $colName) { $colName = "Col $colNum" }
             $padded = "{0,-32}" -f $colName
-            $output = "{0,3}  [{1,-2}] Column      {2} {3}" -f $lineNum, $varLetter, $padded, $initExpr
+            $output = "{0,3}  [{1,-2}] Column      {2}" -f $lineNum, $varLetter, $padded
+        }
+
+        # Store column name for fieldToColName (for real columns)
+        if ($colName -and -not $fieldToColName.ContainsKey("$fieldId")) {
+            $fieldToColName["$fieldId"] = $colName
         }
     }
 
@@ -551,10 +727,52 @@ foreach ($logicLine in $logicUnit.LogicLines.LogicLine) {
 
     # Output if we have something
     if ($output) {
-        Write-Host $output
+        # Store for later display
+        $outputLines += @{
+            line = $output
+            initCompact = $initCompact
+            initExpanded = $initExpanded
+        }
         $lineNum++
+    }
+}
+
+# Display compact view
+foreach ($item in $outputLines) {
+    $line = $item.line
+    $init = $item.initCompact
+    if ($init) {
+        # Truncate if too long
+        if ($init.Length -gt 40) {
+            $init = $init.Substring(0, 37) + "..."
+        }
+        Write-Host "$line $init"
+    } else {
+        Write-Host $line
     }
 }
 
 Write-Host ""
 Write-Host "Total: $($lineNum - 1) lines" -ForegroundColor DarkGray
+
+# ============================================
+# EXPANDED VIEW (only for lines with Init)
+# ============================================
+$hasInit = $outputLines | Where-Object { $_.initExpanded }
+if ($hasInit) {
+    Write-Host ""
+    Write-Host "=== EXPANDED VIEW (Init avec noms colonnes) ===" -ForegroundColor Yellow
+    Write-Host ""
+
+    $lineIdx = 1
+    foreach ($item in $outputLines) {
+        if ($item.initExpanded) {
+            # Extract variable from line (e.g., "[GS]")
+            if ($item.line -match '\[([A-Z]+)\]') {
+                $var = $matches[1]
+                Write-Host "[$var] $($item.initExpanded)" -ForegroundColor Green
+            }
+        }
+        $lineIdx++
+    }
+}
