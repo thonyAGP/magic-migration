@@ -1,4 +1,4 @@
-# PARSE MAGIC DATA VIEW - VERSION DEFINITIVE V4
+# PARSE MAGIC DATA VIEW - VERSION DEFINITIVE V5
 # Règles brutes basées sur analyse positions XML vs IDE
 #
 # RÈGLES CLÉS (2026-01-11):
@@ -6,15 +6,68 @@
 # 2. Programmes: Position dans ProgramsRepositoryOutLine = IDE position
 # 3. Data View: Position dans LogicLines = IDE line number
 # 4. Colonnes: Column.val = séquentiel (Main), vrais IDs (Links)
-# 5. Variables: GLOBAL - Main TOUJOURS chargé en premier (offset à ajouter)
+# 5. Variables: GLOBAL - Main TOUJOURS chargé en premier (offset AUTO-CALCULÉ)
 # 6. Init: Task/Record Prefix Updates → WithValue Expression
+# 7. Offset: Calculé automatiquement via chemin Main → Tâche cible
 
 param(
     [string]$Project = "ADH",
     [int]$PrgId = 159,
     [int]$TaskIsn = 1,
-    [int]$MainOffset = 0  # Offset des variables du Main (0 = vue locale, 143 = ADH global)
+    [int]$MainOffset = 143  # Offset Main projet (ADH=143, à ajuster par projet)
 )
+
+# ============================================
+# FONCTIONS CALCUL OFFSET AUTOMATIQUE
+# ============================================
+
+function Convert-IndexToVariable($idx) {
+    if ($idx -lt 26) {
+        return [string][char]([int][char]'A' + $idx)
+    } elseif ($idx -lt 702) {
+        $adjusted = $idx - 26
+        $first = [int][math]::Floor($adjusted / 26)
+        $second = [int]($adjusted % 26)
+        return [string][char]([int][char]'A' + $first) + [string][char]([int][char]'A' + $second)
+    } else {
+        $adjusted = $idx - 702
+        $first = [int][math]::Floor($adjusted / 676)
+        $rem = [int]($adjusted % 676)
+        $second = [int][math]::Floor($rem / 26)
+        $third = [int]($rem % 26)
+        return [string][char]([int][char]'A' + $first) + [string][char]([int][char]'A' + $second) + [string][char]([int][char]'A' + $third)
+    }
+}
+
+function Count-TaskSelects($taskNode) {
+    # Compter le NOMBRE de Select dans TOUS les LogicUnits (pas le max FieldID)
+    $count = 0
+    foreach ($lu in $taskNode.TaskLogic.LogicUnit) {
+        $count += @($lu.LogicLines.LogicLine | Where-Object { $_.Select }).Count
+    }
+    return $count
+}
+
+function Find-PathToTask {
+    param($node, [int]$targetIsn, [System.Collections.ArrayList]$path)
+
+    if ($node.Header.ISN_2 -eq $targetIsn) {
+        return $true
+    }
+
+    if ($node.Task) {
+        foreach ($subtask in @($node.Task)) {
+            $newPath = [System.Collections.ArrayList]::new($path)
+            [void]$newPath.Add($subtask)
+            if (Find-PathToTask $subtask $targetIsn $newPath) {
+                $path.Clear()
+                $path.AddRange($newPath)
+                return $true
+            }
+        }
+    }
+    return $false
+}
 
 $projectsPath = "D:\Data\Migration\XPA\PMS"
 $xmlPath = "$projectsPath\$Project\Source\Prg_$PrgId.xml"
@@ -184,10 +237,64 @@ if (-not $task) {
     exit 1
 }
 
+# ============================================
+# CALCUL AUTOMATIQUE DE L'OFFSET
+# ============================================
+# Trouver le chemin depuis la racine vers la tâche cible
+$path = [System.Collections.ArrayList]::new()
+[void]$path.Add($mainTask)
+$found = Find-PathToTask $mainTask $TaskIsn $path
+
+# Calculer l'offset cumulatif le long du chemin (SAUF la tâche cible)
+$calculatedOffset = $MainOffset
+$pathDetails = @()
+
+for ($i = 0; $i -lt $path.Count; $i++) {
+    $pathTask = $path[$i]
+    $taskVars = Count-TaskSelects $pathTask
+    $taskDesc = $pathTask.Header.Description
+
+    if ($i -lt $path.Count - 1) {
+        # Ajouter à l'offset pour tous SAUF la tâche cible
+        $calculatedOffset += $taskVars
+        $pathDetails += "$taskDesc($taskVars)"
+    }
+}
+
 $taskName = $task.Header.Description
 Write-Host ""
 Write-Host "=== $Project IDE $prgIdePos - $taskName ===" -ForegroundColor Cyan
+
+# Afficher le chemin et l'offset calculé
+if ($path.Count -gt 1) {
+    Write-Host "Path: Main($MainOffset) + $($pathDetails -join ' + ') = $calculatedOffset" -ForegroundColor DarkGray
+} else {
+    Write-Host "Offset: $calculatedOffset (Main)" -ForegroundColor DarkGray
+}
 Write-Host ""
+
+# Utiliser l'offset calculé
+$MainOffset = $calculatedOffset
+
+# ============================================
+# LOAD VG NAMES (from Main program Prg_1.xml)
+# ============================================
+$vgNames = @{}
+$mainPrgPath = "$projectsPath\$Project\Source\Prg_1.xml"
+if (Test-Path $mainPrgPath) {
+    [xml]$mainPrgXml = Get-Content $mainPrgPath -Encoding UTF8
+    $mainPrgTask = $mainPrgXml.Application.ProgramsRepository.Programs.Task
+    if ($mainPrgTask.Resource.Columns.Column) {
+        foreach ($col in $mainPrgTask.Resource.Columns.Column) {
+            $colId = $col.id
+            $colName = $col.name
+            if ($colName) {
+                $vgNames["$colId"] = $colName
+            }
+        }
+    }
+    Write-Host "VG names loaded: $($vgNames.Count) variables" -ForegroundColor DarkGray
+}
 
 # ============================================
 # LOAD EXPRESSIONS (for Init resolution)
@@ -199,12 +306,34 @@ foreach ($exp in $task.Expressions.Expression) {
     if ($syntax) {
         # Simplify expression: remove {index,field} refs for display
         $simplified = $syntax
-        # Replace variable references {32768,X} with VG.X marker
-        $simplified = $simplified -replace '\{32768,(\d+)\}', 'VG.$1'
-        # Replace local refs {0,X} with Var marker
-        $simplified = $simplified -replace '\{0,(\d+)\}', 'Var$1'
-        # Replace task refs {1,X}
-        $simplified = $simplified -replace '\{1,(\d+)\}', 'Parent.$1'
+
+        # Replace variable references {32768,X} with actual VG name
+        $simplified = [regex]::Replace($simplified, '\{32768,(\d+)\}', {
+            param($match)
+            $vgId = $match.Groups[1].Value
+            if ($vgNames.ContainsKey($vgId)) {
+                return $vgNames[$vgId]
+            }
+            return "VG.$vgId"
+        })
+
+        # Replace local refs {0,X} with Var letter
+        $simplified = [regex]::Replace($simplified, '\{0,(\d+)\}', {
+            param($match)
+            $fieldId = [int]$match.Groups[1].Value
+            $idx = $fieldId - 1 + $MainOffset
+            return Convert-IndexToVariable $idx
+        })
+
+        # Replace parent task refs {1,X}
+        $simplified = [regex]::Replace($simplified, '\{1,(\d+)\}', {
+            param($match)
+            $fieldId = [int]$match.Groups[1].Value
+            # Parent offset is MainOffset minus current task's contribution
+            # For simplicity, just show as Parent.Letter
+            return "Parent." + (Convert-IndexToVariable ($fieldId - 1))
+        })
+
         $expressions["$id"] = $simplified
     }
 }
@@ -340,18 +469,9 @@ foreach ($logicLine in $logicUnit.LogicLines.LogicLine) {
         if (-not $type) { $type = $sel.Type.InnerText }
         if (-not $type) { $type = $sel.Type }
 
-        # Calculate variable letter (with Main offset for global context)
+        # Calculate variable letter (with auto-calculated offset)
         $fieldIdx = $fieldId - 1 + $MainOffset
-        if ($fieldIdx -lt 26) {
-            $varLetter = [char]([int][char]'A' + $fieldIdx)
-        } elseif ($fieldIdx -lt 702) {  # Up to ZZ (26 + 26*26 = 702)
-            $adjusted = $fieldIdx - 26
-            $first = [int][math]::Floor($adjusted / 26)
-            $second = $adjusted % 26
-            $varLetter = ([char]([int][char]'A' + $first)).ToString() + ([char]([int][char]'A' + $second)).ToString()
-        } else {  # AAA onwards (rare)
-            $varLetter = "V$fieldIdx"
-        }
+        $varLetter = Convert-IndexToVariable $fieldIdx
 
         # Get Init expression if available
         $initExpr = ""

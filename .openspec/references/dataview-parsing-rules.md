@@ -3,7 +3,7 @@
 > Document de référence basé sur les screenshots IDE Magic vs parsing XML.
 > Ces règles sont "brutes" et validées visuellement - ne pas modifier sans validation IDE.
 
-## Date: 2026-01-10
+## Date: 2026-01-11
 
 ---
 
@@ -92,19 +92,18 @@ Il n'existe PAS de "contexte local" - le contexte local n'existe QUE pour le Mai
 | ... | ... | ... |
 | 36 | **FS** | sod_pourcentage_reduction |
 
-### Script parse-dataview.ps1 - Paramètre MainOffset
+### Script parse-dataview.ps1 - Offset AUTOMATIQUE (V5)
 
-Pour afficher les variables globales (pas locales), utiliser `-MainOffset` :
+Depuis la V5, l'offset est **calculé automatiquement** par le script via le chemin d'ancêtres.
 
 ```powershell
-# Vue locale (par défaut) - variables commencent à A
-./parse-dataview.ps1 -Project ADH -PrgId 317
+# L'offset est calculé automatiquement (plus besoin de MainOffset manuel)
+./parse-dataview.ps1 -Project ADH -PrgId 159 -TaskIsn 2
 
-# Vue globale ADH - variables incluent le Main (offset 143)
-./parse-dataview.ps1 -Project ADH -PrgId 317 -MainOffset 143
+# Sortie: Path: Main(143) + Liste des GM(47) = 190
 ```
 
-**Offsets connus par projet :**
+**Offsets Main par projet (utilisés comme base):**
 | Projet | MainOffset | Dernière variable Main |
 |--------|------------|----------------------|
 | ADH | 143 | EK (VG.Masque) |
@@ -307,7 +306,40 @@ Elles sont stockées comme **Update** dans les LogicUnits Prefix/Suffix:
 </LogicUnit>
 ```
 
-**Script**: `parse-dataview.ps1` V4 résout maintenant les Init.
+**Script**: `parse-dataview.ps1` V5 résout maintenant les Init.
+
+---
+
+## Règle 6: Résolution VG.X → Noms (2026-01-11)
+
+Les références aux variables globales VG ont le format `{32768,X}` où X est l'ID de colonne dans le Main program (Prg_1.xml).
+
+**Exemple**:
+- `{32768,1}` → `VG.LOGIN` (colonne id=1 de Prg_1.xml)
+- `{32768,5}` → `VG.Societe`
+
+**Résolution automatique dans le script**:
+```powershell
+# Le script charge les noms VG depuis Prg_1.xml
+$vgNames = @{}
+[xml]$mainPrgXml = Get-Content "$projectsPath\$Project\Source\Prg_1.xml" -Encoding UTF8
+foreach ($col in $mainPrgXml.Application.ProgramsRepository.Programs.Task.Resource.Columns.Column) {
+    $vgNames["$($col.id)"] = $col.name
+}
+
+# Puis remplace {32768,X} par le nom réel
+$simplified = [regex]::Replace($expr, '\{32768,(\d+)\}', {
+    param($match)
+    $vgId = $match.Groups[1].Value
+    if ($vgNames.ContainsKey($vgId)) { return $vgNames[$vgId] }
+    return "VG.$vgId"
+})
+```
+
+**Résultat** :
+```
+Ligne 19: [GV] Column utilisateur VG.LOGIN
+```
 
 ---
 
@@ -331,13 +363,30 @@ Elles sont stockées comme **Update** dans les LogicUnits Prefix/Suffix:
 - [x] Implémenter résolution ItemIsn → REF table id ✅ `parse-dataview.ps1` (via Comps.xml)
 - [x] Parser la colonne Init ✅ `parse-dataview.ps1` V4 (via Update dans Prefix/Suffix)
 - [x] Tester sur d'autres programmes ✅ ADH 285.1.2.5, ADH 122.1.1.1 validés
+- [x] Calcul automatique offset sous-tâches ✅ `parse-dataview.ps1` V5 (via path traversal)
+- [x] Résolution VG.X → noms réels ✅ `parse-dataview.ps1` V5 (via Prg_1.xml)
 
 ---
 
 ## Scripts Associés
 
-- `tools/scripts/parse-dataview.ps1` - Parser Data View avec MainOffset
-- `tools/scripts/calc-nested-offset.ps1` - **Calcul offset sous-tâches imbriquées**
+- `tools/scripts/parse-dataview.ps1` - **Parser Data View V5** (offset auto, Init, VG resolution)
+- `tools/scripts/calc-nested-offset.ps1` - Calcul offset sous-tâches imbriquées (standalone)
 - `tools/scripts/debug-param.ps1` - Debug paramètres
 - `tools/scripts/debug-cols.ps1` - Debug colonnes
 - `tools/scripts/check-prg.ps1` - Vérification header programme
+
+### Usage parse-dataview.ps1 V5
+
+```powershell
+# Simple - offset calculé automatiquement
+./parse-dataview.ps1 -Project ADH -PrgId 159 -TaskIsn 2
+
+# Sortie:
+# === ADH IDE 160 - Update Ezcard ===
+# Path: Main(143) + Liste des GM(47) = 190
+# VG names loaded: 118 variables
+# Init expressions found: 4
+# ...
+# 19  [GV] Column      utilisateur                      VG.LOGIN
+```
