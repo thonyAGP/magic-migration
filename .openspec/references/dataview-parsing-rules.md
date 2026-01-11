@@ -280,7 +280,34 @@ La colonne Init contient des expressions d'initialisation:
 - `Time()` → Fonction heure courante
 - `VG.LOGIN` → Variable globale LOGIN
 
-Ces valeurs sont dans l'attribut `<Init>` du XML.
+**CORRECTION (2026-01-11)**: Les valeurs Init ne sont PAS dans un attribut `<Init>`.
+Elles sont stockées comme **Update** dans les LogicUnits Prefix/Suffix:
+
+| LogicUnit | Level | Type | Usage |
+|-----------|-------|------|-------|
+| Task Prefix | TP | - | Initialisations globales tâche |
+| Record Prefix | R | P | Initialisations par enregistrement |
+| Record Suffix | R | S | Mises à jour après traitement |
+| Task Suffix | TS | - | Finalisations tâche |
+
+**Structure XML**:
+```xml
+<LogicUnit>
+  <Level val="R"/>
+  <Type val="S"/>  <!-- S = Suffix -->
+  <LogicLines>
+    <LogicLine>
+      <Update FlowIsn="24">
+        <FieldID val="12"/>        <!-- Variable à initialiser -->
+        <WithValue val="6"/>       <!-- Expression ID -->
+        ...
+      </Update>
+    </LogicLine>
+  </LogicLines>
+</LogicUnit>
+```
+
+**Script**: `parse-dataview.ps1` V4 résout maintenant les Init.
 
 ---
 
@@ -302,7 +329,7 @@ Ces valeurs sont dans l'attribut `<Init>` du XML.
 
 - [x] Compter exactement les variables de la tâche main pour connaître l'offset subtask ✅ `calc-nested-offset.ps1`
 - [x] Implémenter résolution ItemIsn → REF table id ✅ `parse-dataview.ps1` (via Comps.xml)
-- [ ] Parser la colonne Init (attribut `<Init>` du XML)
+- [x] Parser la colonne Init ✅ `parse-dataview.ps1` V4 (via Update dans Prefix/Suffix)
 - [x] Tester sur d'autres programmes ✅ ADH 285.1.2.5, ADH 122.1.1.1 validés
 
 ---
