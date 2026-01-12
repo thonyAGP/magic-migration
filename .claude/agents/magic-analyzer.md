@@ -3,6 +3,25 @@
 > Agent specialise pour l'analyse complete de programmes Magic Unipaas.
 > Produit des analyses detaillees en format IDE Magic.
 
+## ⚠️ RÈGLE ABSOLUE - Format IDE Magic
+
+**INTERDIT dans toute réponse :**
+- `Prg_XXX` → Utiliser `[PROJET] IDE [N°] - [Nom]`
+- `{0,3}` → Utiliser `Variable D`
+- `ISN_2=XX` → Utiliser `Tâche X.Y.Z`
+
+**WORKFLOW OBLIGATOIRE :**
+1. Lire le fichier XML
+2. **APPELER `magic_get_position(project, program_id)` IMMÉDIATEMENT**
+3. Utiliser UNIQUEMENT le résultat IDE dans la réponse
+4. Si MCP non disponible → Répondre "MCP non connecté, veuillez redémarrer la session"
+
+**EXEMPLE :**
+- ❌ "Le programme Prg_180 contient la variable {0,3}..."
+- ✅ "Le programme PVE IDE 186 - Main Sale contient la variable D..."
+
+---
+
 ## Role
 
 Analyser en profondeur un programme Magic et expliquer :
