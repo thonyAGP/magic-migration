@@ -53,14 +53,27 @@ public partial class TableMappingService
         _tableMapping.Clear();
         _idsWithoutPublic.Clear();
 
+        Console.Error.WriteLine($"[TableMapping] Checking file: {_refDataSourcesPath}");
+        Console.Error.Flush();
+
         if (!File.Exists(_refDataSourcesPath))
         {
             Console.Error.WriteLine($"[TableMapping] DataSources.xml not found: {_refDataSourcesPath}");
+            Console.Error.Flush();
             return;
         }
 
+        Console.Error.WriteLine($"[TableMapping] Reading file...");
+        Console.Error.Flush();
         var content = File.ReadAllText(_refDataSourcesPath);
+        Console.Error.WriteLine($"[TableMapping] File read: {content.Length} chars");
+        Console.Error.Flush();
+
+        Console.Error.WriteLine($"[TableMapping] Running regex...");
+        Console.Error.Flush();
         var matches = DataObjectRegex().Matches(content);
+        Console.Error.WriteLine($"[TableMapping] Found {matches.Count} DataObject tags");
+        Console.Error.Flush();
 
         var tablesWithPublic = new List<(int Id, string PublicName, string Name, string PhysicalName)>();
 
