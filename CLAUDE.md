@@ -117,6 +117,43 @@ Ce projet utilise le skill `magic-unipaas` pour toutes les operations d'analyse 
 > Toute communication avec l'utilisateur DOIT utiliser le format IDE Magic.
 > Le format XML brut (ISN, FieldID, Prg_XXX) est INTERDIT dans les réponses.
 
+### ⚠️ WORKFLOW OBLIGATOIRE - Référence Programme
+
+**AVANT** de mentionner un programme Magic dans une analyse ou réponse :
+
+```
+1. IDENTIFIER le fichier XML source (ex: Prg_139.xml)
+2. APPELER magic_get_position(project, programId)
+3. UTILISER UNIQUEMENT le résultat IDE dans la réponse
+```
+
+**JAMAIS** : Déduire que Prg_139.xml = IDE 139 (c'est FAUX dans 90% des cas !)
+
+**Exemple** :
+```
+❌ INTERDIT : "PVE IDE 139" (c'est le numéro du fichier XML, pas l'IDE)
+✅ CORRECT  : magic_get_position("PVE", 139) → "PVE IDE 145 - Initialization"
+```
+
+**Mapping réel (exemples PVE)** :
+| Fichier XML | Position IDE | Nom |
+|-------------|--------------|-----|
+| Prg_139.xml | **IDE 145** | Initialization |
+| Prg_180.xml | **IDE 186** | Main Sale |
+| Prg_256.xml | **IDE 263** | Choix - Select AM/PM |
+
+### 🚫 Hook de validation actif
+
+Un hook `validate-magic-ide.ts` **BLOQUE** toute écriture dans `.openspec/tickets/` contenant :
+
+| Pattern bloqué | Action requise |
+|----------------|----------------|
+| `Prg_XXX` | → `magic_get_position` |
+| `{0,3}` | → Convertir en Variable X |
+| `ISN`, `ISN_2` | → Format Tâche X.Y.Z |
+| `FieldID` | → Nom de variable |
+| `obj=XX` | → Table n°XX ou `magic_get_table` |
+
 ### Variables - CONVERSION OBLIGATOIRE
 
 **INTERDIT : `{0,3}`, `{1,2}`, `FieldID="25"`**

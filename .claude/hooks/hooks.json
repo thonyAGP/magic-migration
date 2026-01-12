@@ -8,6 +8,20 @@
       ]
     },
     {
+      "event": "PreToolUse",
+      "matcher": "Task",
+      "commands": [
+        "powershell -NoProfile -ExecutionPolicy Bypass -File \"D:\\Projects\\Lecteur Magic\\.claude\\scripts\\inject-magic-rules.ps1\""
+      ]
+    },
+    {
+      "event": "PreToolUse",
+      "matcher": "Edit|Write",
+      "commands": [
+        "powershell -NoProfile -ExecutionPolicy Bypass -File \"D:\\Projects\\Lecteur Magic\\.claude\\scripts\\validate-ticket-files.ps1\""
+      ]
+    },
+    {
       "event": "PostToolUse",
       "matcher": "Task",
       "commands": [

@@ -34,10 +34,10 @@
 
 | Programme | Nom | Rôle | Statut |
 |-----------|-----|------|--------|
-| **PVE IDE 186** | Select Product | Programme principal vente/location | Principal |
-| **PVE IDE 189** | Package Rental date | Calendrier sélection dates | DÉSACTIVÉ |
-| **PVE IDE 139** | Initialization | Initialisation paramètres POS | SetParam |
-| **PVE IDE 256** | Choix - Select AM/PM | Sélection mode AM/PM | Config |
+| **PVE IDE 186** | Main Sale | Programme principal vente/location | Principal |
+| **PVE IDE 195** | Package Rental date | Calendrier sélection dates | DÉSACTIVÉ |
+| **PVE IDE 145** | Initialization | Initialisation paramètres POS | SetParam |
+| **PVE IDE 263** | Choix - Select AM/PM | Sélection mode AM/PM | Config |
 
 ### Paramètre clé : MODEDAYINC
 
@@ -116,8 +116,8 @@ END IF
 ```
 
 **Points de modification** :
-1. **PVE IDE 139** (Initialization) : Ajouter calcul durée séjour
-2. **PVE IDE 186** (Select Product) : Utiliser la nouvelle logique
+1. **PVE IDE 145** (Initialization) : Ajouter calcul durée séjour
+2. **PVE IDE 186** (Main Sale) : Utiliser la nouvelle logique
 3. **Expression 15** : Adapter le calcul
 
 **Avantages** :

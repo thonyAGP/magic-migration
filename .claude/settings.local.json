@@ -55,7 +55,8 @@
       "Bash(git -C \"D:\\\\Projects\\\\Lecteur Magic\" log --oneline -4)",
       "Bash(git -C \"D:\\\\Projects\\\\Lecteur Magic\" status --short)",
       "Bash(git -C \"D:\\\\Projects\\\\Lecteur Magic\" diff .claude/settings.local.json)",
-      "Bash(git -C \"D:\\\\Projects\\\\Lecteur Magic\" diff .openspec/references/dataview-parsing-rules.md)"
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur Magic\" diff .openspec/references/dataview-parsing-rules.md)",
+      "Bash(start \"\" \"D:\\\\Projects\\\\Lecteur Magic\\\\tools\\\\MagicMcp\\\\bin\\\\Release\\\\net8.0\\\\MagicMcp.exe\")"
     ]
   },
   "hooks": {
