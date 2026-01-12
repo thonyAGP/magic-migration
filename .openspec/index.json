@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-12T09:30:00.000Z",
+  "lastUpdated": "2026-01-12T15:55:12.839Z",
   "reports": [
     {
       "id": "spec",
@@ -53,14 +53,6 @@
   "tickets": {
     "active": [
       {
-        "id": "PMS-1437",
-        "title": "POS SKI Early Return dates incorrectes",
-        "status": "analysis",
-        "file": "tickets/PMS-1437/analysis.md",
-        "createdDate": "2026-01-12",
-        "lastAnalysis": "2026-01-12"
-      },
-      {
         "id": "PMS-1446",
         "title": "Location ski courts sejours",
         "status": "spec",
@@ -104,6 +96,15 @@
         "createdDate": "2026-01-09",
         "lastAnalysis": "2026-01-09",
         "resolvedDate": "2026-01-09"
+      },
+      {
+        "id": "PMS-1437",
+        "title": "POS SKI Early Return dates incorrectes",
+        "status": "analysis",
+        "file": "tickets/PMS-1437/analysis.md",
+        "createdDate": "2026-01-12",
+        "lastAnalysis": "2026-01-12",
+        "resolvedDate": "2026-01-12"
       }
     ]
   }
