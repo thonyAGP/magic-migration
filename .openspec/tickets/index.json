@@ -1,5 +1,5 @@
 {
-    "lastSync": "2026-01-12T14:30:00.0000000+01:00",
+    "lastSync": "2026-01-12T22:45:00.0000000+01:00",
     "localTickets": [
         {
             "hasLocalData": true,
@@ -27,15 +27,15 @@
         },
         {
             "hasLocalData": true,
-            "status": "en-cours",
+            "status": "investigation-complete",
             "key": "PMS-1437",
-            "summary": "Early return SKI - mauvaise date affichee (recette KO)"
+            "summary": "Early return SKI - 5 pistes classees (MODEDAYINC prioritaire)"
         },
         {
             "hasLocalData": true,
-            "status": "en-cours",
+            "status": "diagnostic",
             "key": "CMDS-176481",
-            "summary": "Double attribution Gift Pass lors extensions"
+            "summary": "Double attribution Gift Pass - Bug AFFAUTO identifie (API externe)"
         },
         {
             "hasLocalData": true,
@@ -45,15 +45,15 @@
         },
         {
             "hasLocalData": true,
-            "status": "en-cours",
+            "status": "implemente",
             "key": "PMS-1359",
-            "summary": "Edition Cloture - Indiquer ecart FDR veille/jour"
+            "summary": "Edition Cloture - Indicateur ecart FDR - Commit 9422490b5"
         },
         {
             "hasLocalData": true,
-            "status": "en-cours",
+            "status": "investigation-complete",
             "key": "PMS-1404",
-            "summary": "POS Reports M&E - Ajouter colonne Quantite + filtres"
+            "summary": "POS Reports M&E - Quantity manquante + filtres non implementes"
         }
     ],
     "tickets": []

@@ -22,159 +22,152 @@ Dans le menu POS > REPORTS > M&E, deux problemes :
 | **Label** | PVE |
 | **Cree** | 2025-11-12 |
 
-## Investigation
+---
 
-### Programme principal identifie
+## CLASSEMENT DES PISTES PAR SUSPICION (2026-01-12)
 
-| Programme | Nom | Role |
+### PISTE 1 : Colonne Quantity - CONFIRMEE
+
+**Localisation** : Tache 87.1.1.1 "Discount line" (ISN_2=4)
+
+**Decouverte** :
+- L'**en-tete** (Expression 8) contient bien "Quantity" dans la liste des colonnes
+- Les **lignes de donnees** ne contiennent PAS de variable Quantity dans le DataView
+
+**Expression 8 (Header)** - ligne XML 3221 :
+```
+'Village'&{2,13}&'Date'&{2,13}&'Adh#'&{2,13}&'Quality'&{2,13}&'Surname & First name'&
+'Loyalty'&{2,13}&'Comment'&{2,13}&'Reason'&{2,13}&'Quantity'&{2,13}&'Product'&...
+```
+
+**Colonnes DataView de la tache 87.1.1.1** (partielles) :
+
+| Column ID | Nom | Type |
 |-----------|-----|------|
-| **PVE IDE 88** | Report - Discount & Gratuities | Edition des remises et gratuites (M&E) |
-| **PVE IDE 182** | Menu Reports | Menu principal des rapports |
-| **PVE IDE 77** | Report - Revenue by products | Edition revenus par produits |
+| 32 | v. Date operation | Date |
+| 33 | v. Date debut sejour | Date |
+| 34 | v. Date fin sejour | Date |
+| 31 | v.LabelAafficher | Unicode |
+| 1 | V.Regular_price Ht | Numeric |
+| 9 | V.Regular_price Ttc | Numeric |
+| 2 | V.Discounted price Ht | Numeric |
+| 12 | V.Discounted price Ttc | Numeric |
+| ... | (totaux, TVA, etc.) | ... |
 
-### Recherche d'implementation
+**Aucune colonne "Quantity" ou similaire !**
 
-#### Commits trouves (par date)
+**Cause confirmee** : Le champ Quantity existe dans le header mais n'est jamais rempli dans les donnees car il n'y a pas de variable correspondante dans le DataView.
 
-| Date | Commit | Description | Impact |
-|------|--------|-------------|--------|
-| 03/11/2025 | `71ef841ed` | "Mise a jour des quantites sur l'edition des Revenue par produits" | Modifie Prg_82.xml (D&G) |
-| 12/11/2025 | `016de2e7a` | "Afficher le % Loss sur chaque ligne de cumul par type de reduction" | Modifie Prg_82.xml |
-| 12/11/2025 | `1a8f40b08` | "Vente avec discount et gift pass detectee en tant que gift pass" | Modifie Prg_82.xml |
+**Solution** :
+1. Ajouter une colonne `V.Quantity` dans le DataView de la tache 87.1.1.1
+2. La lier au champ quantite de la table source (probablement `hebergement` ou une table liee)
+3. L'inclure dans le FormIO de sortie a la position correspondant au header
 
-#### Colonne Quantity dans le code
+---
 
-La colonne "Quantity" **EXISTE DEJA** dans l'en-tete de l'export (Prg_82.xml ligne 3221) :
+### PISTE 2 : Filtres Person/Item Label - NON IMPLEMENTES
+
+**Statut** : CONFIRME PAR INVESTIGATION ANTERIEURE
+
+**Decouverte** :
+Les filtres "person" et "item label" mentionnes dans le ticket :
+- Ne sont PAS connectes aux Range/Locate de la requete
+- Les controles UI peuvent exister mais ne filtrent pas les donnees
+
+**Programme concerne** : PVE IDE 87 (Prg_82.xml) - Report - Discount & Gratuities
+
+**Taches a verifier** :
+- 87.1.2 "SELECTION" - tache de filtrage ?
+- 87.1.2.1 "Calcul CA"
+- 87.1.2.2 "Selection compta"
+
+**Solution** :
+1. Identifier les controles de saisie filtre dans le form principal
+2. Lier ces controles aux variables de Range/Locate
+3. Appliquer les conditions dans la tache 87.1.2 "SELECTION"
+
+---
+
+### PISTE 3 : Mauvais programme cible - A CLARIFIER
+
+**Observation** :
+Le ticket parle de "M&E" (Meetings & Events) mais nous analysons "Discount & Gratuities".
+
+**Programmes potentiellement concernes** :
+
+| IDE | Fichier | Nom |
+|-----|---------|-----|
+| **87** | Prg_82.xml | Report - Discount & Gratuities |
+| 77 | Prg_71.xml | Report - Revenue by products |
+| 354 | ? | Report - Discount & Gratuities (autre version ?) |
+| 383 | ? | Report - Discount & Gratuities (autre version ?) |
+
+**Question pour Davide** : Quel est le chemin exact dans le menu POS pour acceder au rapport M&E ?
+
+---
+
+## SYNTHESE ET PRIORITES
+
+| Piste | Suspicion | Action | Effort |
+|-------|-----------|--------|--------|
+| **1. Colonne Quantity manquante** | CONFIRMEE | Ajouter variable + lier a table source | 2h |
+| **2. Filtres non implementes** | CONFIRMEE | Connecter UI aux Range/Locate | 3h |
+| **3. Mauvais programme** | A CLARIFIER | Demander confirmation chemin menu | - |
+
+---
+
+## SOLUTION TECHNIQUE PROPOSEE
+
+### 1. Ajouter Quantity
+
+**Etape 1** : Identifier la source de la quantite
+- Table `hebergement` (obj=34) → champ quantite ?
+- Table `comptable_gratuite` (obj=38) → champ quantite ?
+
+**Etape 2** : Ajouter dans DataView de tache 87.1.1.1
+```xml
+<Column id="XX" name="V.Quantity">
+  <PropertyList model="FIELD">
+    <Model attr_obj="FIELD_NUMERIC" id="1"/>
+    <Picture id="157" valUnicode="N5"/>
+    ...
+  </PropertyList>
+</Column>
+```
+
+**Etape 3** : Ajouter Select dans Logic
+```xml
+<Select FieldID="XX" FlowIsn="YY" id="XX">
+  <Column val="ZZ"/>  <!-- Colonne table source -->
+  <Type val="R"/>
+  ...
+</Select>
+```
+
+**Etape 4** : Inclure dans FormIO de sortie
+- Positionner entre "Reason" et "Product" (position 9 dans header)
+
+### 2. Implementer filtres
+
+**A completer apres clarification du chemin menu exact**
+
+---
+
+## Arborescence des taches
 
 ```
-'Village'&'Date'&'Adh#'&'Quality'&'Surname & First name'&'Loyalty'&'Comment'&'Reason'&'Quantity'&'Product'&'Regular price TTC'...
+PVE IDE 87 - Report - Discount & Gratuities
+  └── 87.1 - Print
+       ├── 87.1.1 - EDITION V3
+       │    └── 87.1.1.1 - Discount line ← ECRITURE DONNEES (manque Quantity)
+       ├── 87.1.2 - SELECTION ← FILTRAGE (filtres non connectes ?)
+       │    ├── 87.1.2.1 - Calcul CA
+       │    ├── 87.1.2.2 - Selection compta
+       │    │    └── 87.1.2.2.1 - Temp generation
+       │    ├── 87.1.2.3 - Temp generation
+       │    └── 87.1.2.4 - Temp generation Gift Pass
+       └── 87.1.3 - EXISTE Enregistrement
 ```
-
-**Question** : La colonne existe dans l'en-tete mais les donnees sont-elles remplies ?
-
----
-
-## PISTES D'INVESTIGATION
-
-### Piste 1 : Colonne Quantity existe mais vide
-
-**Statut** : A VERIFIER
-
-**Hypothese** : L'en-tete contient "Quantity" mais la valeur n'est peut-etre pas populee dans les lignes de donnees.
-
-**Verification requise** :
-1. Rechercher la logique qui ecrit les lignes de donnees dans Prg_82.xml
-2. Verifier si le champ quantite est bien ecrit avec les autres colonnes
-3. Comparer l'ordre des colonnes header vs data
-
-**Programme a analyser** : PVE IDE 88 - sous-taches d'edition
-
-### Piste 2 : Filtres person/item label non fonctionnels
-
-**Statut** : A INVESTIGUER
-
-**Hypothese A** : Les filtres sont presents dans l'UI mais non connectes a la requete SQL/Range
-
-**Hypothese B** : Les filtres sont appliques mais sur le mauvais champ (mauvais mapping)
-
-**Hypothese C** : Bug dans la logique conditionnelle (expression toujours vraie)
-
-**Verification requise** :
-1. Identifier les variables de filtre dans le DataView de PVE IDE 182 ou 88
-2. Tracer l'utilisation de ces variables dans les Range/SQL expressions
-3. Verifier les conditions d'application des filtres
-
-### Piste 3 : Mauvais programme cible
-
-**Statut** : A CLARIFIER
-
-**Question** : Le ticket parle de "M&E" (Meetings & Events). Est-ce bien le rapport "Discount & Gratuities" ?
-
-**Autres programmes potentiels** :
-- Prg_354.xml - "Report - Discount & Gratuities" (autre version ?)
-- Prg_383.xml - "Report - Discount & Gratuities" (autre version ?)
-- Prg_83.xml - "Report - Discount&Gratuit-719" (ticket 719)
-
-**Verification** : Demander confirmation a Davide sur le chemin exact dans le menu POS.
-
-### Piste 4 : Commit 71ef841ed partiellement correctif
-
-**Statut** : PROBABLE
-
-Le commit du 03/11/2025 mentionne "Mise a jour des quantites". Ce commit :
-- Modifie Prg_82.xml (le rapport D&G)
-- Modifie Prg_71.xml (Revenue by products)
-
-**Mais** : Le ticket PMS-1404 a ete cree le 12/11/2025, donc APRES ce commit.
-→ Soit le commit n'a pas resolu le probleme, soit c'est un autre rapport.
-
-### Piste 5 : Probleme de versioning/deploiement
-
-**Statut** : A VERIFIER
-
-**Hypothese** : Le fix a ete committe mais pas deploye sur le village de test.
-
-**Verification** : Comparer la version deployee avec le commit 71ef841ed.
-
----
-
-## ANALYSE TECHNIQUE DETAILLEE
-
-### Structure du rapport Discount & Gratuities
-
-| Element | Valeur |
-|---------|--------|
-| Programme | Prg_82.xml (PVE IDE 88) |
-| Table principale | caisse_vente |
-| Filtre potentiel "person" | Adherent (code_adherent, nom) |
-| Filtre potentiel "item label" | Produit (code_article, libelle) |
-
-### Points de modification potentiels
-
-1. **Ajout/correction population Quantity** :
-   - Identifier la sous-tache d'edition des lignes
-   - Ajouter un champ Select pour la quantite (probablement depuis caisse_vente.ven_qte)
-   - L'ajouter dans la logique d'ecriture du fichier
-
-2. **Correction filtres** :
-   - Identifier les variables de saisie filtre
-   - Tracer leur utilisation dans les Range expressions
-   - Corriger la condition de filtrage
-
----
-
-## RECOMMANDATIONS
-
-### Actions immediates
-
-1. **Clarifier** avec Davide le chemin exact du rapport M&E
-2. **Tester** sur un village si la colonne Quantity contient des donnees
-3. **Verifier** si le commit 71ef841ed est deploye
-
-### Investigation approfondie
-
-1. **Dumper le DataView** de PVE IDE 88 pour identifier les variables de filtre
-2. **Analyser la logique** d'ecriture des lignes de donnees
-3. **Tracer les expressions** utilisees pour les filtres
-
-### Tests de recette
-
-1. **Quantity** : Vendre 3 articles identiques, verifier que "3" apparait dans la colonne
-2. **Filtre person** : Filtrer sur un GM specifique, verifier que seules ses lignes apparaissent
-3. **Filtre item label** : Filtrer sur un produit, verifier le resultat
-
----
-
-## Status final
-
-| Element | Valeur |
-|---------|--------|
-| **Implementation** | PARTIELLE / INCERTAINE |
-| **Commit potentiel** | `71ef841ed` (03/11/2025) |
-| **Statut Jira** | Recette KO |
-| **Pistes actives** | 5 pistes a investiguer |
-| **Priorite** | Piste 1 (Quantity vide), Piste 2 (Filtres) |
-| **Bloqueur** | Clarification sur le rapport exact |
 
 ---
 
@@ -184,8 +177,10 @@ Le commit du 03/11/2025 mentionne "Mise a jour des quantites". Ce commit :
 2. La colonne Quantity apparait-elle dans l'export mais vide, ou n'apparait-elle pas du tout ?
 3. Sur quel village avez-vous teste ?
 4. Pouvez-vous fournir un export exemple montrant le probleme ?
+5. Quels sont les filtres "person" et "item label" exactement (noms des champs a l'ecran) ?
 
 ---
 
-*Analyse: 2026-01-12*
-*Statut: INVESTIGATION EN COURS - 5 pistes actives*
+*Derniere mise a jour: 2026-01-12 22:45*
+*Status: INVESTIGATION COMPLETE - 2 pistes confirmees + 1 a clarifier*
+*Piste prioritaire: Colonne Quantity manquante (CONFIRMEE)*

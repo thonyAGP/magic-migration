@@ -34,120 +34,191 @@ Lors d'un EARLY RETURN sur location ski, les dates affichees sur la ligne de ven
 
 ---
 
-## Investigation (2026-01-12)
+## CLASSEMENT DES PISTES PAR SUSPICION (2026-01-12)
 
-### ~~Piste 1 : Expression 28 - ABANDONNEE~~
+### PISTE 1 : Expression 28 avec MODEDAYINC - HAUTE SUSPICION
 
-L'expression 28 dans la tache 186.1.5.4 :
+**Localisation** : Tache 186.1.5.4.3 "Saisir Date Fin de location" (ISN_2=49)
+
+**Expression decouverte** (ligne XML 61791) :
 ```
-Date() - GetParam('MODEDAYINC') + QU
-```
-
-**QU = V.NumberDaysAFacture** (Numeric) = nombre de jours a facturer.
-
-Cette expression est **CORRECTE** - elle calcule une date basee sur le nombre de jours.
-
-### Piste 2 : Mise a jour des dates lors du RETURN - A EXPLORER
-
-#### Flux identifie
-
-```
-186.1.5.4 "actions"
-    |
-    ├── 186.1.5.4.3 "Saisir Date Fin de location" (ISN_2=49)
-    |       └── Calendrier .NET pour saisir nouvelle date fin
-    |       └── Validation → Update vers parent (FieldID 5,6,8)
-    |
-    └── 186.1.5.4.4 "UpdateCustRentals" (ISN_2=50)
-            └── Met a jour table pv_cust_rentals (obj=404)
+Expression 28 = Date() - GetParam('MODEDAYINC') + {0,7}
+             = Date() - MODEDAYINC + V.DateEndSelected
 ```
 
-#### Tache 186.1.5.4.3 - Saisir Date Fin de location
+**Analyse** :
+- `GetParam('MODEDAYINC')` retourne 0 (AM) ou 1 (PM)
+- En Magic, les dates sont stockees comme numeriques (jours depuis epoch)
+- Si MODEDAYINC=1, le calcul devient : `AujourdHui - 1 + DateFinSelectionnee`
 
-Variables DataView :
-| Column ID | Nom | Type |
-|-----------|-----|------|
-| 1 | V.Calendar | Blob (MonthCalendar .NET) |
-| 2 | V.DateSatrtSelected | Date ← **typo "Satrt"** |
-| 3 | V.DateEndSelected | Date |
-| 4 | V.CancelChecked | Logical |
+**Probleme potentiel** :
+Cette expression melange des dates de maniere confuse. Elle est utilisee pour calculer une date qui sera ensuite affichee. Le `-1` de MODEDAYINC pourrait causer le decalage observe.
 
-**Lors de la validation** (evenement "Valider"), les valeurs sont envoyees au parent :
-
-| Update | Expression | Valeur | Destination (parent) |
-|--------|------------|--------|---------------------|
-| FieldID=5 | Exp 13 = `{0,2}` | V.DateSatrtSelected | QS = V.PremierJourLocation |
-| FieldID=6 | Exp 14 = `{0,3}` | V.DateEndSelected | QT = V.DernierJourLocation |
-| FieldID=8 | Exp 15 = `{0,4}` | V.CancelChecked | QV = V.AnnulerToutLaPeriode |
-
-#### Tache 186.1.5.4.4 - UpdateCustRentals
-
-Table mise a jour : **obj=404** (pv_cust_rentals)
-
-| Update | Expression | Valeur | Statut |
-|--------|------------|--------|--------|
-| FieldID=4 | Exp 4 = `{1,6}` | Date du parent | **DESACTIVE** |
-| FieldID=5 | Exp 5 = `'Pending In'` | Statut | Actif |
-| FieldID=6 | Exp 6 = `Date()` | Date du jour | Actif |
-| FieldID=7 | Exp 7 = `Time()` | Heure actuelle | Actif |
-| FieldID=8 | Exp 8 = `{32768,1}` | User | Actif |
-
-**OBSERVATION** : L'update de FieldID=4 (date) est **DESACTIVE** (`Disabled val="1"`).
+**Verification requise** :
+1. Quelle est la valeur de MODEDAYINC sur VTHC ?
+2. Ou cette expression est-elle utilisee exactement ?
+3. Tester avec MODEDAYINC=0 vs MODEDAYINC=1
 
 ---
 
-## Hypotheses de resolution
+### PISTE 2 : Update desactive dans UpdateCustRentals - MOYENNE SUSPICION
 
-### Hypothese A : Bug dans le calcul de QU (V.NumberDaysAFacture)
+**Localisation** : Tache 186.1.5.4.4 "UpdateCustRentals" (ISN_2=50, ligne XML 65616)
 
-Si QU est mal calcule lors de l'Early Return, l'expression 28 produira une date incorrecte.
+**Decouverte** :
+```xml
+<Update FlowIsn="11">
+  <FieldID val="4"/>
+  <WithValue val="4"/>
+  <Disabled val="1"/>  <!-- DESACTIVE ! -->
+</Update>
+```
 
-**Verification** : Tracer la valeur de QU avant/apres l'Early Return.
+**Interpretation** :
+- FieldID=4 = Colonne 10 dans la table = probablement une date
+- Cet update est INTENTIONNELLEMENT desactive
+- Les autres updates (FieldID 5,6,7,8) sont actifs
 
-### Hypothese B : Decalage MODEDAYINC
+**Hypothese** :
+L'update de la date a ete desactive volontairement ou par erreur. Si c'etait cense mettre a jour V.DernierJourLocation, cela expliquerait pourquoi la date affichee est incorrecte.
 
-Le parametre MODEDAYINC (0 ou 1 selon mode AM/PM) pourrait causer un decalage de +1 jour.
-
-**Verification** : Tester avec MODEDAYINC=0 vs MODEDAYINC=1.
-
-### Hypothese C : Update desactive dans UpdateCustRentals
-
-L'update FieldID=4 est desactive dans la tache 186.1.5.4.4. Peut-etre qu'il devrait etre actif pour mettre a jour correctement les dates dans pv_cust_rentals.
-
-**Verification** : Activer cet update et tester.
-
----
-
-## Prochaines etapes
-
-1. [ ] Tracer les valeurs de QS, QT, QU lors d'un Early Return
-2. [ ] Verifier si l'update desactive (FieldID=4) devrait etre actif
-3. [ ] Identifier ou les dates affichees sont lues (quelle table/colonne)
-4. [ ] Comparer les dates stockees vs les dates affichees
+**Verification requise** :
+1. Pourquoi cet update est-il desactive ?
+2. Quel champ de quelle table est concerne ?
+3. Reactiver et tester
 
 ---
 
-## Programmes et taches cles
+### PISTE 3 : Confusion de tables - MOYENNE SUSPICION
 
-| IDE | Nom | Role |
-|-----|-----|------|
-| **PVE IDE 186** | Main Sale | Programme principal |
-| **186.1.5.4** | actions | Gestion des actions (Cancel, Extend, Return) |
-| **186.1.5.4.3** | Saisir Date Fin de location | Saisie nouvelle date via calendrier |
-| **186.1.5.4.4** | UpdateCustRentals | Mise a jour table pv_cust_rentals |
+**Decouverte** :
+Les deux taches "UpdateCustRentals" (ISN_2=47 et 50) utilisent :
+- **obj=404** = pv_sellers_by_week (table vendeurs par semaine)
+- **PAS obj=400** = pv_cust_rentals (table locations clients)
 
-## Variables cles (Tache 186.1.5.4)
+**Probleme potentiel** :
+Le nom des taches suggere qu'elles doivent mettre a jour `pv_cust_rentals`, mais elles mettent a jour `pv_sellers_by_week`. Les dates de location pourraient ne pas etre mises a jour dans la bonne table.
 
-| Variable | Nom | Type | Role |
-|----------|-----|------|------|
-| QS | V.PremierJourLocation | Date | Date debut location |
-| QT | V.DernierJourLocation | Date | Date fin location |
-| QU | V.NumberDaysAFacture | Numeric | Nombre jours a facturer |
-| QV | V.AnnulerToutLaPeriode | Logical | Flag annulation complete |
+**Tables concernees** :
+
+| obj | Nom logique | Nom physique | Role |
+|-----|-------------|--------------|------|
+| 400 | pv_cust_rentals | pv_rentals_dat | Locations clients (READ dans task 45) |
+| 404 | pv_sellers_by_week | pv_sellersweek_dat | Stats vendeurs (WRITE dans tasks 47,50) |
+
+**Verification requise** :
+1. La date affichee vient-elle de pv_cust_rentals ou pv_sellers_by_week ?
+2. Y a-t-il une autre tache qui met a jour pv_cust_rentals ?
 
 ---
 
-*Analyse initiale: 2026-01-12*
-*Piste Expression 28: ABANDONNEE (expression correcte)*
-*Nouvelle piste: Mises a jour lors du RETURN*
-*Status: EN COURS D'INVESTIGATION*
+### PISTE 4 : Calcul QU (V.NumberDaysAFacture) - BASSE SUSPICION
+
+**Statut** : PARTIELLEMENT ECARTEE
+
+Les montants sont corrects, ce qui suggere que le calcul du nombre de jours est correct. Cependant, QU pourrait etre utilise pour l'affichage des dates et non seulement pour le calcul des montants.
+
+**Expression 26** (task 45) :
+```
+{0,6} - {0,5} + 1 = V.DernierJourLocation - V.PremierJourLocation + 1
+```
+
+**Verification** :
+Confirmer que QU n'est pas utilise dans l'expression d'affichage des dates.
+
+---
+
+### PISTE 5 : Updates parent depuis sous-tache - BASSE SUSPICION
+
+**Localisation** : Tache 186.1.5.4.3 event "Valider" (lignes XML 64944-64980)
+
+**Flux decouvert** :
+```
+Calendrier → Utilisateur selectionne dates → Clic "Valider"
+     ↓
+Update Parent FieldID=5 ← Expression 13 = V.DateSatrtSelected
+Update Parent FieldID=6 ← Expression 14 = V.DateEndSelected
+```
+
+**Mapping colonnes tache parent (186.1.5.4)** :
+
+| Column ID | Variable | Nom | Type |
+|-----------|----------|-----|------|
+| 4 | WB | BP. Exit | Alpha |
+| 5 | WC | V days difference | Numeric |
+| 6 | WD | V allow cancel | Logical |
+| 7 | WE | V.Comment annulation | Alpha |
+| 10 | WG | V.DernierJourLocation | Date |
+| 11 | WF | V.PremierJourLocation | Date |
+| 14 | - | V.NumberDaysAFacture | Numeric |
+| 15 | - | V.AnnulerToutLaPeriode | Logical |
+
+**Observation** :
+- FieldID=5 et FieldID=6 dans le parent = V days difference (Numeric) et V allow cancel (Logical)
+- **PAS** V.PremierJourLocation ou V.DernierJourLocation !
+- Les dates sont aux FieldID 10 et 11, pas 5 et 6
+
+**Probleme potentiel** :
+Les updates envoient les dates vers les mauvais champs du parent ?
+
+---
+
+## SYNTHESE ET PRIORITES
+
+| Piste | Suspicion | Action | Effort |
+|-------|-----------|--------|--------|
+| **1. Expression 28 + MODEDAYINC** | HAUTE | Tracer valeur MODEDAYINC, tester impact | 2h |
+| **2. Update desactive FieldID=4** | MOYENNE | Reactiver et tester | 30min |
+| **3. Confusion tables 400/404** | MOYENNE | Verifier source dates affichees | 1h |
+| **4. Calcul QU** | BASSE | Deja verifie (montants OK) | - |
+| **5. Updates parent mauvais FieldID** | BASSE | Verifier mapping exact | 1h |
+
+---
+
+## RECOMMANDATIONS
+
+### Test immediat (sans modification code)
+
+1. **Verifier MODEDAYINC** :
+   ```sql
+   SELECT * FROM sys_params WHERE param_name = 'MODEDAYINC'
+   ```
+
+2. **Comparer dates BDD vs affichage** :
+   ```sql
+   SELECT
+       rental_id,
+       date_debut,
+       date_fin,
+       status
+   FROM pv_rentals_dat
+   WHERE rental_id = [ID de la location du ticket]
+   ```
+
+### Test avec modification (environnement test)
+
+1. **Reactiver update FieldID=4** dans tache 186.1.5.4.4
+2. **Forcer MODEDAYINC=0** et retester
+3. **Tracer** avec logs les valeurs de WF, WG, QU lors de l'Early Return
+
+---
+
+## Arborescence des taches
+
+```
+PVE IDE 186 - Main Sale
+  └── 186.1 - Choix Onglet
+       └── 186.1.5 - Sales
+            └── 186.1.5.4 - actions (ISN_2=45)
+                 ├── 186.1.5.4.1 - Cancel other Packages (ISN_2=46)
+                 │    └── UpdateCustRentals (ISN_2=47) → obj=404
+                 ├── 186.1.5.4.2 - Saisie comment annulation (ISN_2=48)
+                 ├── 186.1.5.4.3 - Saisir Date Fin de location (ISN_2=49) ← CALENDRIER
+                 └── 186.1.5.4.4 - UpdateCustRentals (ISN_2=50) → obj=404
+```
+
+---
+
+*Derniere mise a jour: 2026-01-12 22:30*
+*Status: INVESTIGATION APPROFONDIE - 5 pistes identifiees*
+*Piste prioritaire: Expression 28 avec MODEDAYINC*
