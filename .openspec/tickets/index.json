@@ -39,9 +39,9 @@
         },
         {
             "hasLocalData": true,
-            "status": "attente-info",
+            "status": "diagnostic",
             "key": "CMDS-176818",
-            "summary": "En attente informations Jira"
+            "summary": "Tickets Epson police grande et coupes - Config imprimante"
         }
     ],
     "tickets": []
