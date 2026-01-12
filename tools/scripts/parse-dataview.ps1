@@ -266,9 +266,40 @@ for ($i = 0; $i -lt $path.Count; $i++) {
     }
 }
 
+# Noms et chemin de tâche
+$programName = $mainTask.Header.Description
 $taskName = $task.Header.Description
+
+# Calculer le chemin hiérarchique (ex: 192.1.1)
+function Get-TaskPath {
+    param($node, [int]$targetIsn, [string]$currentPath)
+
+    if ([int]$node.Header.ISN_2 -eq $targetIsn) {
+        return $currentPath
+    }
+
+    if ($node.Task) {
+        $subtasks = @($node.Task)
+        for ($i = 0; $i -lt $subtasks.Count; $i++) {
+            $childPath = if ($currentPath -eq "") { "$($i+1)" } else { "$currentPath.$($i+1)" }
+            $result = Get-TaskPath $subtasks[$i] $targetIsn $childPath
+            if ($result) { return $result }
+        }
+    }
+    return $null
+}
+
+$taskPath = Get-TaskPath $mainTask $TaskIsn ""
+$fullTaskPath = if ($taskPath) { "$prgIdePos.$taskPath" } else { "$prgIdePos" }
+
 Write-Host ""
-Write-Host "=== $Project IDE $prgIdePos - $taskName ===" -ForegroundColor Cyan
+if ($TaskIsn -eq [int]$mainTask.Header.ISN_2) {
+    # Tâche principale du programme
+    Write-Host "=== $Project IDE $prgIdePos - $programName ===" -ForegroundColor Cyan
+} else {
+    # Sous-tâche
+    Write-Host "=== $Project IDE $prgIdePos - $programName | Tâche $fullTaskPath ($taskName) ===" -ForegroundColor Cyan
+}
 
 # Afficher le chemin et l'offset calculé
 if ($path.Count -gt 1) {
