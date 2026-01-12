@@ -32,179 +32,122 @@ Lors d'un EARLY RETURN sur location ski, les dates affichees sur la ligne de ven
 | **Assignee** | Anthony Leberre |
 | **Labels** | PVE |
 
-## Investigation
+---
 
-### Programmes identifies
+## Investigation (2026-01-12)
 
-| IDE | Fichier | Description | Role |
-|-----|---------|-------------|------|
-| **PVE IDE 186** | Prg_180.xml | Main Sale | Programme principal ventes |
-| **PVE IDE 437** | Prg_431.xml | OD credit PoS Early Return | Credit OD Early Return |
-| **PVE IDE 189** | Prg_183.xml | Generate Preview Payments | Calcul paiements |
-| **PVE IDE 194** | Prg_188.xml | Delete Product | Suppression produit |
+### ~~Piste 1 : Expression 28 - ABANDONNEE~~
 
-### Tache suspecte
-
-**PVE IDE 186.1.5.4 "actions"**
-
-Chemin hierarchique :
+L'expression 28 dans la tache 186.1.5.4 :
 ```
-PVE IDE 186 (Main Sale)
-  └── 186.1 (Choix Onglet) [ISN=2]
-        └── 186.1.5 (Sales) [ISN=37]
-              └── 186.1.5.4 (actions) [ISN=45]
+Date() - GetParam('MODEDAYINC') + QU
 ```
 
-### Variables pertinentes (Tache 186.1.5.4)
+**QU = V.NumberDaysAFacture** (Numeric) = nombre de jours a facturer.
 
-**Offset cumulatif** : 143 (Main PVE) + 119 (186) + 3 (186.1) + 165 (186.1.5) = **430**
+Cette expression est **CORRECTE** - elle calcule une date basee sur le nombre de jours.
 
-| Position | Variable | Column ID | Nom | Type | Role |
-|----------|----------|-----------|-----|------|------|
-| 0 | QO | 4 | BP. Exit | Alpha 1 | Bouton sortie |
-| 1 | QP | 5 | V days difference | Numeric 2.1 | Difference jours |
-| 2 | QQ | 6 | V allow cancel | Logical | Autorisation annulation |
-| 3 | **QR** | **7** | **V.Comment annulation** | **Alpha 100** | **Commentaire** |
-| 4 | **QS** | **11** | **V.PremierJourLocation** | **Date** | **Premier jour location** |
-| 5 | QT | 10 | V.DernierJourLocation | Date | Dernier jour location |
-| 6 | QU | 14 | V.NumberDaysAFacture | Numeric 2 | Nb jours a facturer |
-| 7 | QV | 15 | V.AnnulerToutLaPeriode | Logical | Flag annulation complete |
+### Piste 2 : Mise a jour des dates lors du RETURN - A EXPLORER
 
-### Expression suspecte
+#### Flux identifie
 
-**Expression 28** (Tache 186.1.5.4 "actions", ligne XML 61792)
-
-```magic
-Date()- GetParam('MODEDAYINC')+ {0,7}
+```
+186.1.5.4 "actions"
+    |
+    ├── 186.1.5.4.3 "Saisir Date Fin de location" (ISN_2=49)
+    |       └── Calendrier .NET pour saisir nouvelle date fin
+    |       └── Validation → Update vers parent (FieldID 5,6,8)
+    |
+    └── 186.1.5.4.4 "UpdateCustRentals" (ISN_2=50)
+            └── Met a jour table pv_cust_rentals (obj=404)
 ```
 
-**Traduction** :
-```
-Date() - MODEDAYINC + Variable QR (V.Comment annulation)
-```
+#### Tache 186.1.5.4.3 - Saisir Date Fin de location
 
-### PROBLEME IDENTIFIE
+Variables DataView :
+| Column ID | Nom | Type |
+|-----------|-----|------|
+| 1 | V.Calendar | Blob (MonthCalendar .NET) |
+| 2 | V.DateSatrtSelected | Date ← **typo "Satrt"** |
+| 3 | V.DateEndSelected | Date |
+| 4 | V.CancelChecked | Logical |
 
-L'Expression 28 utilise **{0,7} = Variable QR = "V.Comment annulation"** qui est de type **ALPHA (string)**.
+**Lors de la validation** (evenement "Valider"), les valeurs sont envoyees au parent :
 
-Pour un calcul de date, la variable correcte devrait etre :
-- **{0,11} = Variable QS = "V.PremierJourLocation"** (type DATE)
+| Update | Expression | Valeur | Destination (parent) |
+|--------|------------|--------|---------------------|
+| FieldID=5 | Exp 13 = `{0,2}` | V.DateSatrtSelected | QS = V.PremierJourLocation |
+| FieldID=6 | Exp 14 = `{0,3}` | V.DateEndSelected | QT = V.DernierJourLocation |
+| FieldID=8 | Exp 15 = `{0,4}` | V.CancelChecked | QV = V.AnnulerToutLaPeriode |
 
-### Relation avec PMS-1446
+#### Tache 186.1.5.4.4 - UpdateCustRentals
 
-Ce bug utilise le meme parametre **MODEDAYINC** que PMS-1446 (Location ski courts sejours).
+Table mise a jour : **obj=404** (pv_cust_rentals)
 
-| Ticket | Probleme | Parametre |
-|--------|----------|-----------|
-| PMS-1446 | Calcul mode jour incorrect | MODEDAYINC |
-| **PMS-1437** | **Date affichee incorrecte (+1 jour)** | **MODEDAYINC** |
+| Update | Expression | Valeur | Statut |
+|--------|------------|--------|--------|
+| FieldID=4 | Exp 4 = `{1,6}` | Date du parent | **DESACTIVE** |
+| FieldID=5 | Exp 5 = `'Pending In'` | Statut | Actif |
+| FieldID=6 | Exp 6 = `Date()` | Date du jour | Actif |
+| FieldID=7 | Exp 7 = `Time()` | Heure actuelle | Actif |
+| FieldID=8 | Exp 8 = `{32768,1}` | User | Actif |
 
-## Hypotheses
-
-### Hypothese 1 : Variable incorrecte (HAUTE probabilite)
-
-L'Expression 28 reference la mauvaise variable :
-- **Actuel** : {0,7} = Variable QR = V.Comment annulation (string)
-- **Attendu** : {0,11} = Variable QS = V.PremierJourLocation (date)
-
-### Hypothese 2 : Logique MODEDAYINC (MOYENNE probabilite)
-
-Le calcul `Date() - MODEDAYINC + offset` ajoute systematiquement 1 jour quand MODEDAYINC = 0 (meme jour).
-
-### Hypothese 3 : Affichage vs Calcul (BASSE probabilite)
-
-Le calcul est correct mais l'affichage utilise une autre source de donnees.
-
-## Fix propose
-
-### Localisation
-
-| Element | Valeur |
-|---------|--------|
-| **Programme** | PVE IDE 186 - Main Sale |
-| **Tache** | Tache 186.1.5.4 - "actions" |
-| **Expression** | Expression 28 (ligne XML 61792) |
-| **Fichier** | `D:\Data\Migration\XPA\PMS\PVE\Source\Prg_180.xml` |
-
-### Modification
-
-| Element | Avant (bug) | Apres (fix) |
-|---------|-------------|-------------|
-| Expression 28 | `Date()- GetParam('MODEDAYINC')+ {0,7}` | `Date()- GetParam('MODEDAYINC')+ {0,11}` |
-| Variable | QR (V.Comment annulation) | QS (V.PremierJourLocation) |
-
-### XML avant
-
-```xml
-<Expression id="28">
-  <ExpSyntax val="Date()- GetParam('MODEDAYINC')+ {0,7}"/>
-  <ExpAttribute val="N"/>
-</Expression>
-```
-
-### XML apres
-
-```xml
-<Expression id="28">
-  <ExpSyntax val="Date()- GetParam('MODEDAYINC')+ {0,11}"/>
-  <ExpAttribute val="N"/>
-</Expression>
-```
-
-## Verification requise
-
-Avant d'appliquer le fix, verifier :
-
-1. **Logique metier** : Le calcul `Date() - MODEDAYINC + PremierJourLocation` a-t-il du sens ?
-2. **Autres utilisations** : Expression 28 est-elle utilisee ailleurs ?
-3. **Tests** : Valider sur un cas Early Return en environnement de test
-
-## Autres occurrences MODEDAYINC
-
-Le parametre MODEDAYINC est utilise 3 fois dans Prg_180.xml (PVE IDE 186) :
-
-| Ligne XML | Tache | Expression |
-|-----------|-------|------------|
-| 20610 | Tache 186.1.2 CreateSales | `Date()- GetParam('MODEDAYINC')+ {0,16}` |
-| 61792 | Tache 186.1.5.4 actions | `Date()- GetParam('MODEDAYINC')+ {0,7}` |
-| 63415 | Tache 186.1.5.5/6 | `Date()- GetParam('MODEDAYINC')+ {0,27}` |
-
-**Toutes ces expressions doivent etre verifiees** pour s'assurer qu'elles utilisent la bonne variable.
+**OBSERVATION** : L'update de FieldID=4 (date) est **DESACTIVE** (`Disabled val="1"`).
 
 ---
 
-## Verification MCP (2026-01-12)
+## Hypotheses de resolution
 
-### Arbre confirme
-```
-PVE IDE 186 - Main Sale
-  └── 186.1.5.4 (actions) [ISN_2=45] ✅
-```
+### Hypothese A : Bug dans le calcul de QU (V.NumberDaysAFacture)
 
-### DataView Tache 186.1.5.4 (variables locales)
+Si QU est mal calcule lors de l'Early Return, l'expression 28 produira une date incorrecte.
 
-| Ligne | Variable | Column ID | Nom | Type |
-|-------|----------|-----------|-----|------|
-| 5 | **D** | **7** | V.Comment annulation | **Alpha 100** ❌ |
-| 7 | **E** | **11** | V.PremierJourLocation | **Date** ✅ |
+**Verification** : Tracer la valeur de QU avant/apres l'Early Return.
 
-### Confirmation du bug
+### Hypothese B : Decalage MODEDAYINC
 
-L'expression ligne 61792 utilise `{0,7}` (Column ID 7) qui pointe vers **V.Comment annulation** (string).
+Le parametre MODEDAYINC (0 ou 1 selon mode AM/PM) pourrait causer un decalage de +1 jour.
 
-Pour un calcul de date, elle devrait utiliser `{0,11}` (Column ID 11) qui pointe vers **V.PremierJourLocation** (date).
+**Verification** : Tester avec MODEDAYINC=0 vs MODEDAYINC=1.
 
-### Status
+### Hypothese C : Update desactive dans UpdateCustRentals
 
-| Element | Valeur |
-|---------|--------|
-| **Analyse** | CONFIRMEE par MCP ✅ |
-| **Fix** | {0,7} → {0,11} |
-| **Fichier** | Prg_180.xml ligne 61792 |
-| **Prochaine etape** | Validation equipe Magic |
+L'update FieldID=4 est desactive dans la tache 186.1.5.4.4. Peut-etre qu'il devrait etre actif pour mettre a jour correctement les dates dans pv_cust_rentals.
+
+**Verification** : Activer cet update et tester.
+
+---
+
+## Prochaines etapes
+
+1. [ ] Tracer les valeurs de QS, QT, QU lors d'un Early Return
+2. [ ] Verifier si l'update desactive (FieldID=4) devrait etre actif
+3. [ ] Identifier ou les dates affichees sont lues (quelle table/colonne)
+4. [ ] Comparer les dates stockees vs les dates affichees
+
+---
+
+## Programmes et taches cles
+
+| IDE | Nom | Role |
+|-----|-----|------|
+| **PVE IDE 186** | Main Sale | Programme principal |
+| **186.1.5.4** | actions | Gestion des actions (Cancel, Extend, Return) |
+| **186.1.5.4.3** | Saisir Date Fin de location | Saisie nouvelle date via calendrier |
+| **186.1.5.4.4** | UpdateCustRentals | Mise a jour table pv_cust_rentals |
+
+## Variables cles (Tache 186.1.5.4)
+
+| Variable | Nom | Type | Role |
+|----------|-----|------|------|
+| QS | V.PremierJourLocation | Date | Date debut location |
+| QT | V.DernierJourLocation | Date | Date fin location |
+| QU | V.NumberDaysAFacture | Numeric | Nombre jours a facturer |
+| QV | V.AnnulerToutLaPeriode | Logical | Flag annulation complete |
 
 ---
 
 *Analyse initiale: 2026-01-12*
-*Verification MCP: 2026-01-12*
-*Status: CONFIRME - A valider avec l'equipe avant fix*
+*Piste Expression 28: ABANDONNEE (expression correcte)*
+*Nouvelle piste: Mises a jour lors du RETURN*
+*Status: EN COURS D'INVESTIGATION*
