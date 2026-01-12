@@ -237,5 +237,35 @@ Cette table est utilisée comme MainSource dans TOUTES les sous-tâches d'impres
 
 ---
 
+## Verification MCP (2026-01-12)
+
+### Structure ADH IDE 69 confirmée
+
+| IDE | Nom | Role |
+|-----|-----|------|
+| 69 | Extrait de compte | Point d'entrée |
+| 69.1 | Recalcul solde | Calcul |
+| 69.2 | Presence Ecritures GIFT PASS | Vérification GP |
+| **69.3** | **scroll sur compte** | **Écran principal** ✅ |
+| 69.3.1 | Choix Edition | Menu Print/Email |
+| 69.4 | Reaffichage infos compte | Refresh |
+
+### Point d'injection confirmé
+
+**Tâche 69.3 "scroll sur compte"** est le bon endroit pour :
+1. Ajouter la question "Masquer annulations ?"
+2. Passer le paramètre aux programmes d'édition (70, 71, 72, 73, 76)
+
+### Status
+
+| Element | Valeur |
+|---------|--------|
+| **Analyse** | CONFIRMÉE par MCP ✅ |
+| **Point d'injection** | Tâche 69.3 |
+| **Prochaine étape** | Implémenter paramètre P.MasquerAnnulations |
+
+---
+
 *Rapport généré le 2026-01-07*
-*Statut: EN COURS D'ANALYSE*
+*Verification MCP: 2026-01-12*
+*Statut: PRÊT POUR IMPLÉMENTATION*

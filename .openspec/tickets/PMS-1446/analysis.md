@@ -174,3 +174,36 @@ Cela permet :
 
 - Image attachée : Règles Club Med Alpes Hiver (Semaine/Courts séjours/Dates libres)
 - Fichier : `image-20251231-160101.png`
+
+---
+
+## Verification MCP (2026-01-12)
+
+### PVE IDE 186 (Main Sale) confirmé
+
+**27 paramètres** dont les clés pour le calcul :
+
+| Param | Nom | Type | Role |
+|-------|-----|------|------|
+| 42 | v.Deb_Sejour | Date | Date début séjour GM ✅ |
+| 43 | v.Fin_sejour | Date | Date fin séjour GM ✅ |
+
+### Calcul durée séjour disponible
+
+Les variables `v.Deb_Sejour` et `v.Fin_sejour` sont déjà passées en paramètres.
+Le calcul `DureeSejour = v.Fin_sejour - v.Deb_Sejour` est donc faisable.
+
+### Status
+
+| Element | Valeur |
+|---------|--------|
+| **Analyse** | CONFIRMÉE par MCP ✅ |
+| **Variables disponibles** | v.Deb_Sejour, v.Fin_sejour |
+| **Solution** | Option 2+3 (calcul auto + seuil configurable) |
+| **Prochaine étape** | Valider avec le métier |
+
+---
+
+*Analyse: 2026-01-09*
+*Verification MCP: 2026-01-12*
+*Statut: SPEC COMPLETE - En attente validation métier*
