@@ -1,5 +1,5 @@
 {
-    "lastSync": "2026-01-08T12:00:00.0000000+01:00",
+    "lastSync": "2026-01-12T10:00:00.0000000+01:00",
     "localTickets": [
         {
             "hasLocalData": true,
@@ -24,6 +24,24 @@
             "status": "en-cours",
             "key": "PMS-1446",
             "summary": "Location materiel ski courts sejours"
+        },
+        {
+            "hasLocalData": true,
+            "status": "en-cours",
+            "key": "PMS-1437",
+            "summary": "Early return SKI - mauvaise date affichee"
+        },
+        {
+            "hasLocalData": true,
+            "status": "en-cours",
+            "key": "CMDS-176481",
+            "summary": "Double attribution Gift Pass lors extensions"
+        },
+        {
+            "hasLocalData": true,
+            "status": "attente-info",
+            "key": "CMDS-176818",
+            "summary": "En attente informations Jira"
         }
     ],
     "tickets": []
