@@ -173,5 +173,38 @@ Le parametre MODEDAYINC est utilise 3 fois dans Prg_180.xml (PVE IDE 186) :
 
 ---
 
-*Analyse: 2026-01-12*
-*Status: A verifier avec l'equipe avant fix*
+## Verification MCP (2026-01-12)
+
+### Arbre confirme
+```
+PVE IDE 186 - Main Sale
+  └── 186.1.5.4 (actions) [ISN_2=45] ✅
+```
+
+### DataView Tache 186.1.5.4 (variables locales)
+
+| Ligne | Variable | Column ID | Nom | Type |
+|-------|----------|-----------|-----|------|
+| 5 | **D** | **7** | V.Comment annulation | **Alpha 100** ❌ |
+| 7 | **E** | **11** | V.PremierJourLocation | **Date** ✅ |
+
+### Confirmation du bug
+
+L'expression ligne 61792 utilise `{0,7}` (Column ID 7) qui pointe vers **V.Comment annulation** (string).
+
+Pour un calcul de date, elle devrait utiliser `{0,11}` (Column ID 11) qui pointe vers **V.PremierJourLocation** (date).
+
+### Status
+
+| Element | Valeur |
+|---------|--------|
+| **Analyse** | CONFIRMEE par MCP ✅ |
+| **Fix** | {0,7} → {0,11} |
+| **Fichier** | Prg_180.xml ligne 61792 |
+| **Prochaine etape** | Validation equipe Magic |
+
+---
+
+*Analyse initiale: 2026-01-12*
+*Verification MCP: 2026-01-12*
+*Status: CONFIRME - A valider avec l'equipe avant fix*
