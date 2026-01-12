@@ -259,6 +259,53 @@ Lors de l'analyse d'un ticket Jira, toujours documenter :
 3. **Fichiers d'import** : Nom des fichiers attendus (TXT, CSV, etc.)
 4. **Données requises** : Base de données village + date précise
 
+### EXIGENCE CRITIQUE : Precision des resolutions (OBLIGATOIRE)
+
+**TOUTE resolution de bug ou nouvelle fonctionnalite DOIT etre precise au niveau :**
+
+| Element | Precision requise | Exemple |
+|---------|-------------------|---------|
+| **Programme** | Projet + IDE + Nom | PVE IDE 181 - Main Sale-664 |
+| **Sous-tache** | Numero hierarchique | Tache 181.55.3 |
+| **Ligne Logic** | Numero exact | Tache 181.55 ligne 12 |
+| **Expression** | Numero IDE | Expression 33 |
+| **Variable fautive** | Lettre + Nom logique | Variable D (v.Compte) |
+| **Variable correcte** | Lettre + Nom logique | Variable V (prix) |
+| **Formule avant** | Expression lisible | `Round(D*(1-W/100), 10, arrondi)` |
+| **Formule apres** | Expression lisible | `Round(V*(1-W/100), 10, arrondi)` |
+
+**Template resolution OBLIGATOIRE :**
+
+```markdown
+## Fix technique
+
+### Localisation
+- **Programme** : [PROJET] IDE [N] - [Nom]
+- **Sous-tache** : Tache X.Y.Z
+- **Ligne Logic** : Tache X.Y ligne NN
+
+### Modification Expression
+| Expression | Variable | Avant (bug) | Apres (fix) |
+|------------|----------|-------------|-------------|
+| Expression 33 | Position 1 | Variable D (v.Compte) | Variable V (prix) |
+
+### Formule complete (format IDE)
+- **Avant** : `Round(D*(1-W/100), 10, arrondi_sys)`
+- **Apres** : `Round(V*(1-W/100), 10, arrondi_sys)`
+
+### Variables concernees
+| Variable | Nom logique | Role |
+|----------|-------------|------|
+| D | v.Compte | Numero GM (incorrect) |
+| V | prix | Prix unitaire (correct) |
+| W | discount | Pourcentage remise |
+```
+
+**Cette precision est NON-NEGOCIABLE pour :**
+- Permettre la revue du fix par un developpeur
+- Permettre le rollback si necessaire
+- Capitaliser les patterns de bugs dans la Knowledge Base
+
 ### Format de demande de données
 
 À la fin de chaque analyse, être proactif et demander :

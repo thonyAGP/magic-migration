@@ -186,7 +186,29 @@ SI premiere_arrivee_sejour ET NOT extension
 
 Le batch **AFFAUTO** (Affectation Automatique) qui s'execute quotidiennement recalcule et recredite le Gift Pass de maniere incorrecte.
 
-**Programme suspect :** PBG IDE 65 - Traitement des arrivants ou un batch specifique Gift Pass
+**Programme suspect :** PBG IDE 65 - Traitement des arrivants ou batch specifique Gift Pass
+
+### Programme d'appel API identifie
+
+| Programme | Nom Public | Role |
+|-----------|------------|------|
+| **PBG IDE 808** | CurlAffAuto | Appel API externe pour affectation automatique |
+
+**Structure PBG IDE 808** :
+- Tache 808.1 : Programme principal (4 sous-taches)
+- Tache 808.2 : Lecture parametres (AFFAUTOWSURL, AFFAUTOAPIKEY, AFFAUTOMETHOD)
+- Tache 808.3 : Write curl (construction commande)
+- Tache 808.4 : XML check (verification reponse)
+
+**Parametres API lus depuis table obj=1065** :
+- `AFFAUTOWSURL` : URL de l'API
+- `AFFAUTOAPIKEY` : Cle API
+- `AFFAUTOMETHOD` : Methode HTTP
+
+**Conclusion** : Le bug d'attribution Gift Pass est probablement dans :
+1. L'API externe appelee (logique de declenchement)
+2. Le programme appelant PBG IDE 808 (condition de declenchement)
+3. La logique de detection "nouvelle arrivee vs extension"
 
 ---
 
