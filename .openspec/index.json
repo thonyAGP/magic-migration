@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-12T22:48:34.556Z",
+  "lastUpdated": "2026-01-12T22:48:51.150Z",
   "reports": [
     {
       "id": "spec",
@@ -61,14 +61,6 @@
         "lastAnalysis": "2026-01-09"
       },
       {
-        "id": "PMS-1437",
-        "title": "Early return SKI - 5 pistes classees (MODEDAYINC prioritaire)",
-        "status": "analysis",
-        "file": "tickets/PMS-1437/analysis.md",
-        "createdDate": "2026-01-09",
-        "lastAnalysis": "2026-01-12"
-      },
-      {
         "id": "PMS-1404",
         "title": "POS Reports M&E - Quantity manquante + filtres",
         "status": "analysis",
@@ -126,6 +118,15 @@
         "title": "Double attribution Gift Pass - Bug AFFAUTO",
         "status": "analysis",
         "file": "tickets/CMDS-176481/analysis.md",
+        "createdDate": "2026-01-09",
+        "lastAnalysis": "2026-01-12",
+        "resolvedDate": "2026-01-12"
+      },
+      {
+        "id": "PMS-1437",
+        "title": "Early return SKI - 5 pistes classees (MODEDAYINC prioritaire)",
+        "status": "analysis",
+        "file": "tickets/PMS-1437/analysis.md",
         "createdDate": "2026-01-09",
         "lastAnalysis": "2026-01-12",
         "resolvedDate": "2026-01-12"
