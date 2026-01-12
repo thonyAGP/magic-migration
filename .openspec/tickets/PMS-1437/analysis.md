@@ -38,18 +38,18 @@ Lors d'un EARLY RETURN sur location ski, les dates affichees sur la ligne de ven
 
 | IDE | Fichier | Description | Role |
 |-----|---------|-------------|------|
-| **PVE IDE 45** | Prg_180.xml | Main Sale | Programme principal ventes |
+| **PVE IDE 186** | Prg_180.xml | Main Sale | Programme principal ventes |
 | **PVE IDE 437** | Prg_431.xml | OD credit PoS Early Return | Credit OD Early Return |
-| **PVE IDE 52** | Prg_183.xml | Generate Preview Payments | Calcul paiements |
-| **PVE IDE 55** | Prg_188.xml | Delete Product | Suppression produit |
+| **PVE IDE 189** | Prg_183.xml | Generate Preview Payments | Calcul paiements |
+| **PVE IDE 194** | Prg_188.xml | Delete Product | Suppression produit |
 
 ### Tache suspecte
 
-**PVE IDE 45 - Tache 180.45 "actions"**
+**PVE IDE 186 - Tache 186.45 "actions"**
 
 Cette sous-tache gere les actions de vente incluant l'Early Return.
 
-### Variables pertinentes (Tache 180.45)
+### Variables pertinentes (Tache 186.45)
 
 | Variable | ID | Nom | Type | Role |
 |----------|-----|-----|------|------|
@@ -62,7 +62,7 @@ Cette sous-tache gere les actions de vente incluant l'Early Return.
 
 ### Expression suspecte
 
-**Expression 28** (Tache 180.45, ligne 61792)
+**Expression 28** (Tache 186.45, ligne XML 61792)
 
 ```magic
 Date()- GetParam('MODEDAYINC')+ {0,7}
@@ -111,8 +111,8 @@ Le calcul est correct mais l'affichage utilise une autre source de donnees.
 
 | Element | Valeur |
 |---------|--------|
-| **Programme** | PVE IDE 45 - Main Sale |
-| **Tache** | Tache 180.45 - "actions" |
+| **Programme** | PVE IDE 186 - Main Sale |
+| **Tache** | Tache 186.45 - "actions" |
 | **Expression** | Expression 28 (ligne XML 61792) |
 | **Fichier** | `D:\Data\Migration\XPA\PMS\PVE\Source\Prg_180.xml` |
 
@@ -151,13 +151,13 @@ Avant d'appliquer le fix, verifier :
 
 ## Autres occurrences MODEDAYINC
 
-Le parametre MODEDAYINC est utilise 3 fois dans Prg_180.xml :
+Le parametre MODEDAYINC est utilise 3 fois dans Prg_180.xml (PVE IDE 186) :
 
-| Ligne | Tache | Expression |
-|-------|-------|------------|
-| 20610 | 180.12 CreateSales | `Date()- GetParam('MODEDAYINC')+ {0,16}` |
-| 61792 | 180.45 actions | `Date()- GetParam('MODEDAYINC')+ {0,7}` |
-| 63415 | 180.46/47 | `Date()- GetParam('MODEDAYINC')+ {0,27}` |
+| Ligne XML | Tache | Expression |
+|-----------|-------|------------|
+| 20610 | Tache 186.12 CreateSales | `Date()- GetParam('MODEDAYINC')+ {0,16}` |
+| 61792 | Tache 186.45 actions | `Date()- GetParam('MODEDAYINC')+ {0,7}` |
+| 63415 | Tache 186.46/47 | `Date()- GetParam('MODEDAYINC')+ {0,27}` |
 
 **Toutes ces expressions doivent etre verifiees** pour s'assurer qu'elles utilisent la bonne variable.
 
