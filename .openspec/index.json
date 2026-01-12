@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-12T23:15:00.000Z",
+  "lastUpdated": "2026-01-12T22:48:34.556Z",
   "reports": [
     {
       "id": "spec",
@@ -77,14 +77,6 @@
         "lastAnalysis": "2026-01-12"
       },
       {
-        "id": "CMDS-176481",
-        "title": "Double attribution Gift Pass - Bug AFFAUTO",
-        "status": "analysis",
-        "file": "tickets/CMDS-176481/analysis.md",
-        "createdDate": "2026-01-09",
-        "lastAnalysis": "2026-01-09"
-      },
-      {
         "id": "CMDS-176818",
         "title": "Tickets Epson police grande - Config imprimante",
         "status": "analysis",
@@ -128,6 +120,15 @@
         "createdDate": "2026-01-08",
         "lastAnalysis": "2026-01-09",
         "resolvedDate": "2026-01-09"
+      },
+      {
+        "id": "CMDS-176481",
+        "title": "Double attribution Gift Pass - Bug AFFAUTO",
+        "status": "analysis",
+        "file": "tickets/CMDS-176481/analysis.md",
+        "createdDate": "2026-01-09",
+        "lastAnalysis": "2026-01-12",
+        "resolvedDate": "2026-01-12"
       }
     ]
   }
