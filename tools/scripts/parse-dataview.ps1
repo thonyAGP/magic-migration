@@ -23,14 +23,18 @@ param(
 # ============================================
 
 function Convert-IndexToVariable($idx) {
+    # Pattern: A-Z (0-25), BA-BZ (26-51), CA-CZ (52-77), etc.
+    # Note: After Z comes BA (not AA!) - this is the Magic IDE convention
+    if ($idx -lt 0) { return "?" }
     if ($idx -lt 26) {
         return [string][char]([int][char]'A' + $idx)
     } elseif ($idx -lt 702) {
-        $adjusted = $idx - 26
-        $first = [int][math]::Floor($adjusted / 26)
-        $second = [int]($adjusted % 26)
+        # BA starts at 26: first = 26/26 = 1 (B), second = 26%26 = 0 (A)
+        $first = [int][math]::Floor($idx / 26)
+        $second = [int]($idx % 26)
         return [string][char]([int][char]'A' + $first) + [string][char]([int][char]'A' + $second)
     } else {
+        # For 3-letter variables (AAA starts at 702)
         $adjusted = $idx - 702
         $first = [int][math]::Floor($adjusted / 676)
         $rem = [int]($adjusted % 676)

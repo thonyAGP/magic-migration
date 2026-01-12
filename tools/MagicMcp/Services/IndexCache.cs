@@ -13,6 +13,29 @@ public class IndexCache
     private readonly string[] _projectNames;
     private readonly TableMappingService _tableMappingService;
 
+    /// <summary>
+    /// Main program offset per project (number of Select operations in Prg_1.xml).
+    /// Variables in all programs inherit these VG (Virtual Global) variables.
+    /// </summary>
+    private static readonly Dictionary<string, int> MainOffsets = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["ADH"] = 117,
+        ["PVE"] = 143,
+        ["PBG"] = 91,
+        ["VIL"] = 52,
+        ["PBP"] = 88,
+        ["REF"] = 107
+    };
+
+    /// <summary>
+    /// Get the Main program offset for a project.
+    /// This is the count of VG variables that are loaded for all programs.
+    /// </summary>
+    public static int GetMainOffset(string projectName)
+    {
+        return MainOffsets.GetValueOrDefault(projectName.ToUpperInvariant(), 0);
+    }
+
     public IndexCache(string projectsBasePath, string[] projectNames, TableMappingService tableMappingService)
     {
         _tableMappingService = tableMappingService;

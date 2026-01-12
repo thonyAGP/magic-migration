@@ -120,56 +120,80 @@ Ce projet utilise le skill `magic-unipaas` pour toutes les operations d'analyse 
 ### Variables - CONVERSION OBLIGATOIRE
 
 **INTERDIT : `{0,3}`, `{1,2}`, `FieldID="25"`**
-**OBLIGATOIRE : Noms de variables en LETTRES**
+**OBLIGATOIRE : Noms de variables GLOBAUX (avec offset cumulatif)**
 
-> **ATTENTION** : La lettre de variable est basée sur la **POSITION dans le DataView**,
-> PAS sur le Column ID. Le Column ID peut être non-séquentiel !
+> **RÈGLE CRITIQUE** : Les variables sont numérotées GLOBALEMENT sur tout le programme.
+> Dans une sous-tâche 186.1.5.4, les variables ne commencent PAS à A !
+> Elles continuent après celles de Main + 186 + 186.1 + 186.1.5.
 
-#### Règle de conversion {niveau,columnID} → Variable
+#### Offset Main par projet (VG variables)
 
-1. **Identifier la tâche** où la variable est définie
-2. **Compter la position** de la colonne dans le DataView de CETTE tâche
-3. **Appliquer la lettre** selon la position (0=A, 1=B, 2=C...)
+| Projet | Main Offset | Dernière VG |
+|--------|-------------|-------------|
+| **ADH** | 117 | EK |
+| **PVE** | 143 | EQ |
+| **PBG** | 91 | CM |
+| **VIL** | 52 | BA |
+| **PBP** | 88 | CJ |
+| **REF** | 107 | EC |
 
-#### Exemple concret
+#### Calcul offset cumulatif
 
-DataView d'une sous-tâche :
-```xml
-<Column id="4" name="BP. Exit"/>      <!-- Position 0 = A -->
-<Column id="5" name="V days diff"/>   <!-- Position 1 = B -->
-<Column id="6" name="V allow"/>       <!-- Position 2 = C -->
-<Column id="7" name="V.Comment"/>     <!-- Position 3 = D -->
-<Column id="11" name="V.DateDebut"/>  <!-- Position 4 = E -->
-<Column id="10" name="V.DateFin"/>    <!-- Position 5 = F -->
+```
+Offset = Main + Σ(Select count de chaque ancêtre dans le chemin)
+
+Exemple PVE IDE 186.1.5.4:
+  Offset = 143 (Main PVE)
+         + 119 (186 main)
+         + 3 (186.1 Choix Onglet)
+         + 165 (186.1.5 Sales)
+         = 430
+
+Variable position 0 dans 186.1.5.4 = Index 430 = QO
+Variable position 3 dans 186.1.5.4 = Index 433 = QR
 ```
 
-Conversion :
-- `{0,7}` → Column ID 7 → Position 3 → **Variable D**
-- `{0,11}` → Column ID 11 → Position 4 → **Variable E**
-- `{0,10}` → Column ID 10 → Position 5 → **Variable F**
+#### Conversion {niveau,columnID} → Variable GLOBALE
 
-#### Table de référence Position → Lettre
+1. **Trouver le chemin IDE** de la tâche (ex: 186.1.5.4)
+2. **Calculer l'offset cumulatif** (Main + ancêtres)
+3. **Trouver la position locale** via le Column ID dans le DataView
+4. **Appliquer la formule** : `Index global = Offset + Position locale`
+5. **Convertir** l'index en lettres
 
-| Position | Variable | Position | Variable | Position | Variable |
-|----------|----------|----------|----------|----------|----------|
-| 0 | A | 10 | K | 20 | U |
-| 1 | B | 11 | L | 21 | V |
-| 2 | C | 12 | M | 22 | W |
-| 3 | D | 13 | N | 23 | X |
-| 4 | E | 14 | O | 24 | Y |
-| 5 | F | 15 | P | 25 | Z |
-| 6 | G | 16 | Q | 26 | **BA** |
-| 7 | H | 17 | R | 27 | BB |
-| 8 | I | 18 | S | ... | ... |
-| 9 | J | 19 | T | 51 | BZ |
+**Outil** : `./tools/scripts/parse-dataview.ps1 -Project PVE -PrgId 180 -TaskIsn 45 -MainOffset 143`
 
-**Formule pour position >= 26 :**
+#### Exemple complet (PVE IDE 186.1.5.4)
+
+DataView de la sous-tâche (offset = 430) :
 ```
-Première lettre = chr(65 + (position // 26)) → B pour 26-51, C pour 52-77...
-Deuxième lettre = chr(65 + (position % 26)) → A-Z
-Exemple: position 26 = BA
-Exemple: position 30 = BE
-Exemple: position 52 = CA
+Ligne 3:  [QO] Virtual  BP. Exit           (position 0)
+Ligne 5:  [QP] Virtual  V days difference  (position 1)
+Ligne 6:  [QQ] Virtual  V allow cancel     (position 2)
+Ligne 7:  [QR] Virtual  V.Comment annul    (position 3)
+Ligne 13: [QS] Virtual  V.PremierJour      (position 4)
+```
+
+Conversion expressions :
+- `{0,7}` → Column ID 7 → Position 3 → Index 433 → **Variable QR**
+- `{0,11}` → Column ID 11 → Position 4 → Index 434 → **Variable QS**
+
+#### Table de référence Index → Lettre
+
+| Index | Variable | Index | Variable | Index | Variable |
+|-------|----------|-------|----------|-------|----------|
+| 0-25 | A-Z | 26 | **BA** | 52 | CA |
+| 25 | Z | 27 | BB | 53 | CB |
+| | | ... | ... | ... | ... |
+| | | 51 | BZ | 77 | CZ |
+
+**Formule pour index >= 26 :**
+```
+Première lettre = chr(65 + (index // 26)) → B pour 26-51, C pour 52-77...
+Deuxième lettre = chr(65 + (index % 26)) → A-Z
+Exemple: index 26 = BA (pas AA!)
+Exemple: index 52 = CA
+Exemple: index 430 = QO (Q=16, O=14 → 16*26+14=430)
 ```
 
 ### Programmes - FORMAT IDE OBLIGATOIRE
@@ -214,17 +238,22 @@ Variables:
 
 ### Tâches et Sous-tâches - NUMÉROTATION HIÉRARCHIQUE
 
-**Format IDE** : `[PrgID].[SubTask].[SubSubTask]`
+**Format IDE** : `[PROJET] IDE [PrgIDE].[Pos1].[Pos2].[Pos3]`
 
 | Niveau | Format | Exemple | Description |
 |--------|--------|---------|-------------|
-| Programme | **69** | ADH IDE 69 | Programme principal |
-| Sous-tâche niveau 1 | **69.1** | Tâche 69.1 | 1ère sous-tâche |
-| Sous-tâche niveau 2 | **69.1.1** | Tâche 69.1.1 | Sous-sous-tâche |
-| Sous-tâche niveau 1 | **69.2** | Tâche 69.2 | 2ème sous-tâche |
-| Sous-tâche niveau 1 | **69.3** | Tâche 69.3 | 3ème sous-tâche |
+| Programme | **186** | PVE IDE 186 | Programme principal |
+| Sous-tâche niveau 1 | **186.1** | Tâche 186.1 | 1ère sous-tâche |
+| Sous-tâche niveau 2 | **186.1.5** | Tâche 186.1.5 | 5ème enfant de 186.1 |
+| Sous-tâche niveau 3 | **186.1.5.4** | Tâche 186.1.5.4 | 4ème enfant de 186.1.5 |
 
-**ATTENTION** : Ne pas compter séquentiellement ! La 5ème tâche en ordre d'affichage peut être **69.3** s'il y a des sous-sous-tâches.
+> **RÈGLE** : La position est basée sur l'ordre dans le parent, PAS sur ISN_2.
+> ISN_2=45 peut correspondre à position 186.1.5.4 (pas "186.45").
+
+**Outil** : `./tools/scripts/get-task-ide-path.ps1 -Project PVE -IdePos 186 -TaskIsn 45`
+
+**INTERDIT** : "Tâche 186.45" (utilise ISN_2)
+**CORRECT** : "Tâche 186.1.5.4" (utilise position hiérarchique)
 
 ### Opérations Logic - NOMS EXACTS
 

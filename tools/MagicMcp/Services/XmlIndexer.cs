@@ -50,6 +50,8 @@ public partial class XmlIndexer
 
     public MagicProject IndexProject(string projectName)
     {
+        _currentProjectName = projectName; // Store for offset calculation
+
         var sourcePath = Path.Combine(_projectsBasePath, projectName, "Source");
         if (!Directory.Exists(sourcePath))
             throw new DirectoryNotFoundException($"Project source path not found: {sourcePath}");
@@ -156,7 +158,8 @@ public partial class XmlIndexer
         var levelCounters = new Dictionary<int, int>();
 
         // First pass: Parse all tasks with raw column data
-        var taskColumnCounts = new Dictionary<int, int>(); // ISN_2 -> own column count
+        // RÈGLE: Compter les Select dans TOUS les LogicUnits, pas les Column dans Resource
+        var taskSelectCounts = new Dictionary<int, int>(); // ISN_2 -> count of Select operations
 
         foreach (var taskElement in allTasks)
         {
@@ -222,10 +225,23 @@ public partial class XmlIndexer
                 }
             }
 
-            // Count own columns (without offset yet)
-            var columnsElement = taskElement.Element("Resource")?.Element("Columns");
-            var ownColumnCount = columnsElement?.Elements("Column").Count() ?? 0;
-            taskColumnCounts[isn2] = ownColumnCount;
+            // Count Select operations in ALL LogicUnits (Record Main + Handlers)
+            // This is the CORRECT way to count variables (not Column count in Resource)
+            var taskLogicElement = taskElement.Element("TaskLogic");
+            int selectCount = 0;
+            if (taskLogicElement != null)
+            {
+                foreach (var logicUnit in taskLogicElement.Elements("LogicUnit"))
+                {
+                    var logicLinesElement = logicUnit.Element("LogicLines");
+                    if (logicLinesElement != null)
+                    {
+                        selectCount += logicLinesElement.Elements("LogicLine")
+                            .Count(ll => ll.Element("Select") != null);
+                    }
+                }
+            }
+            taskSelectCounts[isn2] = selectCount;
 
             // Parse DataView from Resource element (will apply offset later)
             var dataView = ParseDataView(taskElement);
@@ -247,13 +263,18 @@ public partial class XmlIndexer
         }
 
         // Second pass: Calculate variable offsets and update variable names
+        // Include Main program offset (VG variables from Prg_1.xml)
+        int mainOffset = GetMainOffsetForProject(program);
+
         foreach (var task in program.Tasks.Values)
         {
             if (task.DataView?.Columns == null || task.DataView.Columns.Count == 0)
                 continue;
 
-            // Calculate offset by traversing parent chain
-            int offset = CalculateVariableOffset(task.Isn2, program.Tasks, taskColumnCounts);
+            // Calculate offset by traversing parent chain using Select counts
+            // Total offset = Main offset + sum of ancestor Select counts
+            int ancestorOffset = CalculateVariableOffset(task.Isn2, program.Tasks, taskSelectCounts);
+            int offset = mainOffset + ancestorOffset;
 
             // Update variable names with offset
             if (offset > 0)
@@ -291,24 +312,36 @@ public partial class XmlIndexer
         }
     }
 
+    // Current project name being indexed (set in IndexProject)
+    private string? _currentProjectName;
+
     /// <summary>
-    /// Calculate variable offset for a task by summing columns from all ancestor tasks.
-    /// Main → Task 61 → Task 61.1 → Task 61.1.1
-    /// Offset for 61.1.1 = columns(Main) + columns(61) + columns(61.1)
+    /// Get Main program offset for the current project (from IndexCache static configuration).
     /// </summary>
-    private int CalculateVariableOffset(int isn2, Dictionary<int, MagicTask> tasks, Dictionary<int, int> columnCounts)
+    private int GetMainOffsetForProject(MagicProgram program)
+    {
+        return IndexCache.GetMainOffset(_currentProjectName ?? "");
+    }
+
+    /// <summary>
+    /// Calculate variable offset for a task by summing Select operations from all ancestor tasks.
+    /// Main → Task 61 → Task 61.1 → Task 61.1.1
+    /// Offset for 61.1.1 = Selects(61) + Selects(61.1)
+    /// Note: Main project offset is added separately via GetMainOffsetForProject.
+    /// </summary>
+    private int CalculateVariableOffset(int isn2, Dictionary<int, MagicTask> tasks, Dictionary<int, int> selectCounts)
     {
         var task = tasks.GetValueOrDefault(isn2);
         if (task == null || !task.ParentIsn2.HasValue)
             return 0; // Root task has no offset
 
-        // Traverse parent chain and sum column counts
+        // Traverse parent chain and sum Select counts
         int offset = 0;
         int? currentParentIsn2 = task.ParentIsn2;
 
         while (currentParentIsn2.HasValue)
         {
-            offset += columnCounts.GetValueOrDefault(currentParentIsn2.Value, 0);
+            offset += selectCounts.GetValueOrDefault(currentParentIsn2.Value, 0);
             var parentTask = tasks.GetValueOrDefault(currentParentIsn2.Value);
             currentParentIsn2 = parentTask?.ParentIsn2;
         }

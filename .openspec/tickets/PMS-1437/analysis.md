@@ -45,28 +45,34 @@ Lors d'un EARLY RETURN sur location ski, les dates affichees sur la ligne de ven
 
 ### Tache suspecte
 
-**PVE IDE 186 - Tache 186.45 "actions"**
+**PVE IDE 186.1.5.4 "actions"**
 
-Cette sous-tache gere les actions de vente incluant l'Early Return.
+Chemin hierarchique :
+```
+PVE IDE 186 (Main Sale)
+  └── 186.1 (Choix Onglet) [ISN=2]
+        └── 186.1.5 (Sales) [ISN=37]
+              └── 186.1.5.4 (actions) [ISN=45]
+```
 
-### Variables pertinentes (Tache 186.45)
+### Variables pertinentes (Tache 186.1.5.4)
 
-> **Note** : La lettre est basee sur la POSITION dans le DataView, pas le Column ID.
+**Offset cumulatif** : 143 (Main PVE) + 119 (186) + 3 (186.1) + 165 (186.1.5) = **430**
 
 | Position | Variable | Column ID | Nom | Type | Role |
 |----------|----------|-----------|-----|------|------|
-| 0 | A | 4 | BP. Exit | Alpha 1 | Bouton sortie |
-| 1 | B | 5 | V days difference | Numeric 2.1 | Difference jours |
-| 2 | C | 6 | V allow cancel | Logical | Autorisation annulation |
-| 3 | **D** | **7** | **V.Comment annulation** | **Alpha 100** | **Commentaire** |
-| 4 | **E** | **11** | **V.PremierJourLocation** | **Date** | **Premier jour location** |
-| 5 | F | 10 | V.DernierJourLocation | Date | Dernier jour location |
-| 6 | G | 14 | V.NumberDaysAFacture | Numeric 2 | Nb jours a facturer |
-| 7 | H | 15 | V.AnnulerToutLaPeriode | Logical | Flag annulation complete |
+| 0 | QO | 4 | BP. Exit | Alpha 1 | Bouton sortie |
+| 1 | QP | 5 | V days difference | Numeric 2.1 | Difference jours |
+| 2 | QQ | 6 | V allow cancel | Logical | Autorisation annulation |
+| 3 | **QR** | **7** | **V.Comment annulation** | **Alpha 100** | **Commentaire** |
+| 4 | **QS** | **11** | **V.PremierJourLocation** | **Date** | **Premier jour location** |
+| 5 | QT | 10 | V.DernierJourLocation | Date | Dernier jour location |
+| 6 | QU | 14 | V.NumberDaysAFacture | Numeric 2 | Nb jours a facturer |
+| 7 | QV | 15 | V.AnnulerToutLaPeriode | Logical | Flag annulation complete |
 
 ### Expression suspecte
 
-**Expression 28** (Tache 186.45, ligne XML 61792)
+**Expression 28** (Tache 186.1.5.4 "actions", ligne XML 61792)
 
 ```magic
 Date()- GetParam('MODEDAYINC')+ {0,7}
@@ -74,15 +80,15 @@ Date()- GetParam('MODEDAYINC')+ {0,7}
 
 **Traduction** :
 ```
-Date() - MODEDAYINC + Variable D (V.Comment annulation)
+Date() - MODEDAYINC + Variable QR (V.Comment annulation)
 ```
 
 ### PROBLEME IDENTIFIE
 
-L'Expression 28 utilise **{0,7} = Variable D = "V.Comment annulation"** qui est de type **ALPHA (string)**.
+L'Expression 28 utilise **{0,7} = Variable QR = "V.Comment annulation"** qui est de type **ALPHA (string)**.
 
 Pour un calcul de date, la variable correcte devrait etre :
-- **{0,11} = Variable E = "V.PremierJourLocation"** (type DATE)
+- **{0,11} = Variable QS = "V.PremierJourLocation"** (type DATE)
 
 ### Relation avec PMS-1446
 
@@ -98,8 +104,8 @@ Ce bug utilise le meme parametre **MODEDAYINC** que PMS-1446 (Location ski court
 ### Hypothese 1 : Variable incorrecte (HAUTE probabilite)
 
 L'Expression 28 reference la mauvaise variable :
-- **Actuel** : {0,7} = Variable D = V.Comment annulation (string)
-- **Attendu** : {0,11} = Variable E = V.PremierJourLocation (date)
+- **Actuel** : {0,7} = Variable QR = V.Comment annulation (string)
+- **Attendu** : {0,11} = Variable QS = V.PremierJourLocation (date)
 
 ### Hypothese 2 : Logique MODEDAYINC (MOYENNE probabilite)
 
@@ -116,7 +122,7 @@ Le calcul est correct mais l'affichage utilise une autre source de donnees.
 | Element | Valeur |
 |---------|--------|
 | **Programme** | PVE IDE 186 - Main Sale |
-| **Tache** | Tache 186.45 - "actions" |
+| **Tache** | Tache 186.1.5.4 - "actions" |
 | **Expression** | Expression 28 (ligne XML 61792) |
 | **Fichier** | `D:\Data\Migration\XPA\PMS\PVE\Source\Prg_180.xml` |
 
@@ -125,7 +131,7 @@ Le calcul est correct mais l'affichage utilise une autre source de donnees.
 | Element | Avant (bug) | Apres (fix) |
 |---------|-------------|-------------|
 | Expression 28 | `Date()- GetParam('MODEDAYINC')+ {0,7}` | `Date()- GetParam('MODEDAYINC')+ {0,11}` |
-| Variable | D (V.Comment annulation) | E (V.PremierJourLocation) |
+| Variable | QR (V.Comment annulation) | QS (V.PremierJourLocation) |
 
 ### XML avant
 
@@ -159,9 +165,9 @@ Le parametre MODEDAYINC est utilise 3 fois dans Prg_180.xml (PVE IDE 186) :
 
 | Ligne XML | Tache | Expression |
 |-----------|-------|------------|
-| 20610 | Tache 186.12 CreateSales | `Date()- GetParam('MODEDAYINC')+ {0,16}` |
-| 61792 | Tache 186.45 actions | `Date()- GetParam('MODEDAYINC')+ {0,7}` |
-| 63415 | Tache 186.46/47 | `Date()- GetParam('MODEDAYINC')+ {0,27}` |
+| 20610 | Tache 186.1.2 CreateSales | `Date()- GetParam('MODEDAYINC')+ {0,16}` |
+| 61792 | Tache 186.1.5.4 actions | `Date()- GetParam('MODEDAYINC')+ {0,7}` |
+| 63415 | Tache 186.1.5.5/6 | `Date()- GetParam('MODEDAYINC')+ {0,27}` |
 
 **Toutes ces expressions doivent etre verifiees** pour s'assurer qu'elles utilisent la bonne variable.
 
