@@ -1,47 +1,46 @@
-# PMS-1446 - Spécification d'implémentation
+# PMS-1446 - Specification d'implementation
 
 > **Jira** : [PMS-1446](https://clubmed.atlassian.net/browse/PMS-1446)
 
-## Solution retenue : Option 2 + 3
+## Solution retenue : Calcul automatique + seuil configurable
 
-Calcul automatique de MODEDAYINC basé sur la durée du séjour, avec seuil configurable.
+Calcul automatique de MODEDAYINC base sur la duree du sejour, avec seuil configurable en table.
 
 ---
 
-## 1. Table de configuration (Option 3)
+## 1. Table de configuration
 
-### Nouvelle table ou ajout à table existante REF
+### Nouvelle table ou ajout a table existante REF
 
-| Champ | Type | Valeur défaut | Description |
+| Champ | Type | Valeur defaut | Description |
 |-------|------|---------------|-------------|
-| SEUIL_COURT_SEJOUR | Numeric | 7 | Nb nuits seuil (< = court séjour) |
-| MODEDAYINC_COURT | Numeric | 0 | Incrément courts séjours (jour même) |
-| MODEDAYINC_LONG | Numeric | 1 | Incrément longs séjours (lendemain) |
+| SEUIL_COURT_SEJOUR | Numeric | 7 | Nb nuits seuil (< = court sejour) |
+| MODEDAYINC_COURT | Numeric | 0 | Increment courts sejours (jour meme) |
+| MODEDAYINC_LONG | Numeric | 1 | Increment longs sejours (lendemain) |
 
-### Emplacement suggéré
+### Emplacement suggere
 
-Option A : Table `pos_parametres` existante (si existe)
-Option B : Nouvelle table `pos_rental_config`
+- Option A : Table `pos_parametres` existante (si existe)
+- Option B : Nouvelle table `pos_rental_config`
 
 ---
 
-## 2. Modifications PVE IDE 139 (Initialization)
+## 2. Modifications PVE IDE 145 - Initialization
 
 ### Localisation
-- **Programme** : PVE IDE 139 - Initialization
-- **Fichier source** : `Prg_139.xml`
-- **Sous-tâche** : Tâche 139.2 (Task Suffix)
 
-### Modification Expression 4
+- **Programme** : PVE IDE 145 - Initialization
+- **Tache** : Tache 145.1 (Init mode day / Interfaces)
 
-**Actuel (ligne 665)** :
-```magic
-SetParam('MODEDAYINC', {0,2})
--- Prend la valeur de la table modes AM/PM directement
+### Modification requise
+
+**Actuel** :
+```
+SetParam('MODEDAYINC', [valeur table modes AM/PM])
 ```
 
 **Nouveau** :
-```magic
+```
 SetParam('MODEDAYINC',
     IF(DureeSejour < GetParam('SEUIL_COURT_SEJOUR'),
        GetParam('MODEDAYINC_COURT'),
@@ -50,86 +49,55 @@ SetParam('MODEDAYINC',
 )
 ```
 
-### Nouvelles variables requises
+### Nouvelles operations a ajouter
 
-| Variable | Source | Description |
-|----------|--------|-------------|
-| DureeSejour | Calculée | P.Fin sejour - P.date debut sejour |
+1. **Charger parametres depuis table config** :
+   - Lire SEUIL_COURT_SEJOUR
+   - Lire MODEDAYINC_COURT
+   - Lire MODEDAYINC_LONG
 
-### Nouvelles expressions à ajouter
+2. **Calcul duree sejour** :
+   - DureeSejour = Date fin - Date debut
 
-```magic
--- Expression N : Charger paramètres depuis table config
-SetParam('SEUIL_COURT_SEJOUR', {table_config, champ_seuil})
-SetParam('MODEDAYINC_COURT', {table_config, champ_inc_court})
-SetParam('MODEDAYINC_LONG', {table_config, champ_inc_long})
+---
 
--- Expression N+1 : Calcul durée séjour
-DureeSejour = P.Fin_sejour - P.date_debut_sejour
+## 3. Modifications PVE IDE 186 - Main Sale
+
+### Variables existantes a utiliser
+
+| Variable | Nom | Type | Usage |
+|----------|-----|------|-------|
+| **BG** | v.Deb_Sejour | Date | Date arrivee |
+| **BH** | v.Fin_sejour | Date | Date depart |
+
+### Nouvelle logique
+
+Avant l'appel a `GetParam('MODEDAYINC')`, calculer :
+
+```
+v.DureeSejour = Variable BH - Variable BG
+v.EstCourtSejour = (v.DureeSejour < 7)
+
+SI v.EstCourtSejour ALORS
+    DateDebutLocation = Date()           -- Jour meme
+SINON
+    DateDebutLocation = Date() + 1       -- Lendemain
+FIN SI
 ```
 
 ---
 
-## 3. Modifications PVE IDE 186 (Select Product)
+## 4. Regles AM/PM (inchangees)
 
-### Localisation
-- **Programme** : PVE IDE 186 - Select Product
-- **Fichier source** : `Prg_186.xml`
-
-### Variables existantes à utiliser
-
-| Variable | Colonne | Nom | Usage |
-|----------|---------|-----|-------|
-| E | 30 | P.date debut sejour | Date arrivée |
-| F | 41 | P.Fin sejour | Date départ |
-
-### Nouvelle logique dans Record Main
-
-Avant l'appel à `GetParam('MODEDAYINC')`, calculer :
-
-```magic
--- Pseudo-code logique
-v.DureeSejour = F - E                    -- P.Fin sejour - P.date debut sejour
-v.EstCourtSejour = (v.DureeSejour < 7)   -- Comparaison avec seuil
-
--- Puis dans Expression 15 (calcul date début location)
-IF v.EstCourtSejour THEN
-    DateDebutLocation = Date()           -- Jour même
-ELSE
-    DateDebutLocation = Date() + 1       -- Lendemain (comportement actuel)
-END IF
-```
-
-### Expression 15 actuelle (ligne 6627)
-```magic
-Date() - GetParam('MODEDAYINC') + {0,10}
-```
-
-### Expression 15 modifiée
-```magic
-Date() - IF(({0,F} - {0,E}) < GetParam('SEUIL_COURT_SEJOUR'),
-            GetParam('MODEDAYINC_COURT'),
-            GetParam('MODEDAYINC_LONG')
-         ) + {0,10}
-```
-
-**Où** :
-- `{0,F}` = Variable F (P.Fin sejour) - à remplacer par index réel
-- `{0,E}` = Variable E (P.date debut sejour) - à remplacer par index réel
-
----
-
-## 4. Règles AM/PM (inchangées)
-
-Les règles AM/PM existantes restent identiques :
+Les regles AM/PM existantes restent identiques :
 
 | Heure | Condition | Comportement |
 |-------|-----------|--------------|
 | < 12:00 | Matin | Selon mode AM |
-| 12:00 - 15:00 | Mi-journée | Demi-journée |
-| > 15:00 | Après-midi | Selon mode PM |
+| 12:00 - 15:00 | Mi-journee | Demi-journee |
+| > 15:00 | Apres-midi | Selon mode PM |
 
-Ces règles s'appliquent **après** le calcul du MODEDAYINC.
+Ces regles s'appliquent **apres** le calcul du MODEDAYINC.
 
 ---
 
@@ -137,110 +105,102 @@ Ces règles s'appliquent **après** le calcul du MODEDAYINC.
 
 ### Cas de test requis
 
-| # | Durée séjour | Mode | Heure vente | Date début attendue |
+| # | Duree sejour | Mode | Heure vente | Date debut attendue |
 |---|--------------|------|-------------|---------------------|
-| 1 | 7 nuits | AM | 10:00 | Lendemain arrivée |
-| 2 | 7 nuits | PM | 14:00 | Lendemain arrivée |
-| 3 | 6 nuits | AM | 10:00 | Jour arrivée |
-| 4 | 6 nuits | PM | 14:00 | Jour arrivée |
-| 5 | 4 nuits | AM | 10:00 | Jour arrivée |
-| 6 | 3 nuits | PM | 16:00 | Jour arrivée |
-| 7 | 8 nuits | AM | 09:00 | Lendemain arrivée |
-| 8 | 14 nuits | PM | 13:00 | Lendemain arrivée |
+| 1 | 7 nuits | AM | 10:00 | Lendemain arrivee |
+| 2 | 7 nuits | PM | 14:00 | Lendemain arrivee |
+| 3 | 6 nuits | AM | 10:00 | Jour arrivee |
+| 4 | 6 nuits | PM | 14:00 | Jour arrivee |
+| 5 | 4 nuits | AM | 10:00 | Jour arrivee |
+| 6 | 3 nuits | PM | 16:00 | Jour arrivee |
+| 7 | 8 nuits | AM | 09:00 | Lendemain arrivee |
+| 8 | 14 nuits | PM | 13:00 | Lendemain arrivee |
 
 ### Cas limites
 
-| # | Cas | Durée | Attendu |
+| # | Cas | Duree | Attendu |
 |---|-----|-------|---------|
 | 9 | Seuil exact | 7 nuits | Lendemain (>= seuil) |
-| 10 | Seuil -1 | 6 nuits | Jour même (< seuil) |
-| 11 | 1 nuit | 1 nuit | Jour même |
-| 12 | Dates libres 5 nuits | 5 nuits | Jour même |
+| 10 | Seuil -1 | 6 nuits | Jour meme (< seuil) |
+| 11 | 1 nuit | 1 nuit | Jour meme |
+| 12 | Dates libres 5 nuits | 5 nuits | Jour meme |
 
 ---
 
 ## 6. Configuration annuelle
 
-### Procédure de modification du seuil
+### Procedure de modification du seuil
 
 1. Ouvrir la table de configuration POS
 2. Modifier la valeur `SEUIL_COURT_SEJOUR`
 3. Sauvegarder
-4. Redémarrer les sessions POS
+4. Redemarrer les sessions POS
 
-**Aucun développement requis pour changer le seuil.**
+**Aucun developpement requis pour changer le seuil.**
 
 ### Exemple de changement
 
-Si Club Med décide que le seuil passe à 5 nuits :
+Si Club Med decide que le seuil passe a 5 nuits :
 
-| Paramètre | Ancienne valeur | Nouvelle valeur |
+| Parametre | Ancienne valeur | Nouvelle valeur |
 |-----------|-----------------|-----------------|
 | SEUIL_COURT_SEJOUR | 7 | 5 |
 
-Résultat :
-- Séjours < 5 nuits → Matériel jour arrivée
-- Séjours >= 5 nuits → Matériel lendemain
+Resultat :
+- Sejours < 5 nuits -> Materiel jour arrivee
+- Sejours >= 5 nuits -> Materiel lendemain
 
 ---
 
-## 7. Impact et dépendances
+## 7. Impact et dependances
 
-### Programmes impactés
+### Programmes impactes
 
 | Programme | Type modification |
 |-----------|-------------------|
-| PVE IDE 139 | Ajout lecture config + calcul |
-| PVE IDE 186 | Modification Expression 15 |
-| PVE IDE 349 | Idem (variante V4) |
-| PVE IDE 353 | Idem (variante V4) |
-| PVE IDE 397 | Idem (variante V4) |
-| PVE IDE 405 | Idem (Best Of) |
+| PVE IDE 145 | Ajout lecture config + calcul |
+| PVE IDE 186 | Utilise nouvelle valeur MODEDAYINC |
 
-### Tables impactées
+### Composants non impactes
 
-| Table | Modification |
-|-------|--------------|
-| Nouvelle table config | Création |
-| pos_parametres (si utilisée) | Ajout champs |
-
-### Composants non impactés
-
-- PVE IDE 189 (Package Rental date) - reste désactivé
-- PVE IDE 256 (Choix AM/PM) - inchangé
-- Logique AM/PM - inchangée
-- Calcul prix - inchangé
+- Logique AM/PM - inchangee
+- Calcul prix - inchange
+- Interface utilisateur - inchangee
 
 ---
 
 ## 8. Estimation effort
 
-| Tâche | Effort |
+| Tache | Effort |
 |-------|--------|
-| Création/modification table config | 0.5j |
-| Modification PVE IDE 139 | 0.5j |
-| Modification PVE IDE 186 + variantes | 1j |
+| Creation/modification table config | 0.5j |
+| Modification PVE IDE 145 | 0.5j |
 | Tests unitaires | 1j |
-| Tests intégration | 0.5j |
+| Tests integration | 0.5j |
 | Documentation | 0.5j |
-| **Total** | **4 jours** |
+| **Total** | **3 jours** |
 
 ---
 
 ## 9. Risques
 
-| Risque | Probabilité | Impact | Mitigation |
+| Risque | Probabilite | Impact | Mitigation |
 |--------|-------------|--------|------------|
-| Régression calcul dates | Moyenne | Élevé | Tests exhaustifs |
-| Performance (calcul supplémentaire) | Faible | Faible | Calcul simple |
+| Regression calcul dates | Moyenne | Eleve | Tests exhaustifs |
+| Performance (calcul supplementaire) | Faible | Faible | Calcul simple |
 | Erreur seuil config | Faible | Moyen | Validation valeur > 0 |
 
 ---
 
 ## Validation
 
-- [ ] Validation métier de la solution
+- [ ] Validation metier de la solution
 - [ ] Validation technique Magic
 - [ ] Identification table configuration exacte
-- [ ] Planification développement
+- [ ] Planification developpement
 - [ ] Environnement de test disponible
+
+---
+
+*Specification: 2026-01-13*
+*Statut: EN ATTENTE VALIDATION*
