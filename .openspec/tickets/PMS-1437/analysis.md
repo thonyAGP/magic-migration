@@ -34,16 +34,17 @@ Lors d'un EARLY RETURN sur location ski, les dates affichees sur la ligne de ven
 
 ---
 
-## CLASSEMENT DES PISTES PAR SUSPICION (2026-01-12)
+## CLASSEMENT DES PISTES PAR SUSPICION (2026-01-13)
 
-### PISTE 1 : Expression 28 avec MODEDAYINC - HAUTE SUSPICION
+### PISTE 1 : Expression avec MODEDAYINC - HAUTE SUSPICION
 
-**Localisation** : Tache 186.1.5.4.3 "Saisir Date Fin de location" (ISN_2=49)
+**Localisation** : Tache 186.1.5.4.3 "Saisir Date Fin de location"
 
-**Expression decouverte** (ligne XML 61791) :
+**Programme** : PVE IDE 186 - Main Sale
+
+**Expression decouverte** :
 ```
-Expression 28 = Date() - GetParam('MODEDAYINC') + {0,7}
-             = Date() - MODEDAYINC + V.DateEndSelected
+Expression 28 = Date() - GetParam('MODEDAYINC') + Variable F
 ```
 
 **Analyse** :
@@ -63,115 +64,106 @@ Cette expression melange des dates de maniere confuse. Elle est utilisee pour ca
 
 ### PISTE 2 : Update desactive dans UpdateCustRentals - MOYENNE SUSPICION
 
-**Localisation** : Tache 186.1.5.4.4 "UpdateCustRentals" (ISN_2=50, ligne XML 65616)
+**Localisation** : Tache 186.1.5.4.4 "UpdateCustRentals"
 
 **Decouverte** :
-```xml
-<Update FlowIsn="11">
-  <FieldID val="4"/>
-  <WithValue val="4"/>
-  <Disabled val="1"/>  <!-- DESACTIVE ! -->
-</Update>
-```
+Un Update est DESACTIVE dans cette tache.
 
 **Interpretation** :
-- FieldID=4 = Colonne 10 dans la table = probablement une date
-- Cet update est INTENTIONNELLEMENT desactive
-- Les autres updates (FieldID 5,6,7,8) sont actifs
+- Cet update etait cense mettre a jour un champ date
+- Il a ete desactive volontairement ou par erreur
+- Les autres updates sont actifs
 
 **Hypothese** :
-L'update de la date a ete desactive volontairement ou par erreur. Si c'etait cense mettre a jour V.DernierJourLocation, cela expliquerait pourquoi la date affichee est incorrecte.
+L'update de la date a ete desactive, ce qui explique pourquoi la date affichee est incorrecte apres l'Early Return.
 
 **Verification requise** :
 1. Pourquoi cet update est-il desactive ?
-2. Quel champ de quelle table est concerne ?
+2. Quel champ est concerne ?
 3. Reactiver et tester
 
 ---
 
-### PISTE 3 : Confusion de tables - MOYENNE SUSPICION
+### PISTE 3 : Variables de dates dans Tache 186.1.5.4 - MOYENNE SUSPICION
 
-**Decouverte** :
-Les deux taches "UpdateCustRentals" (ISN_2=47 et 50) utilisent :
-- **obj=404** = pv_sellers_by_week (table vendeurs par semaine)
-- **PAS obj=400** = pv_cust_rentals (table locations clients)
+**Variables du DataView** :
 
-**Probleme potentiel** :
-Le nom des taches suggere qu'elles doivent mettre a jour `pv_cust_rentals`, mais elles mettent a jour `pv_sellers_by_week`. Les dates de location pourraient ne pas etre mises a jour dans la bonne table.
+| Variable | Nom | Type | Role |
+|----------|-----|------|------|
+| **E** | V.PremierJourLocation | Date | Premier jour de location |
+| **F** | V.DernierJourLocation | Date | Dernier jour de location |
+| **G** | V.NumberDaysAFacture | Numeric | Nombre de jours a facturer |
 
-**Tables concernees** :
+**Observation** :
+Les variables E et F sont les dates de location. Si elles ne sont pas mises a jour correctement lors de l'Early Return, l'affichage sera incorrect.
 
-| obj | Nom logique | Nom physique | Role |
-|-----|-------------|--------------|------|
-| 400 | pv_cust_rentals | pv_rentals_dat | Locations clients (READ dans task 45) |
-| 404 | pv_sellers_by_week | pv_sellersweek_dat | Stats vendeurs (WRITE dans tasks 47,50) |
-
-**Verification requise** :
-1. La date affichee vient-elle de pv_cust_rentals ou pv_sellers_by_week ?
-2. Y a-t-il une autre tache qui met a jour pv_cust_rentals ?
+**Hypothese** :
+Les updates envoient les dates vers les mauvaises variables ?
 
 ---
 
-### PISTE 4 : Calcul QU (V.NumberDaysAFacture) - BASSE SUSPICION
+### PISTE 4 : Calcul du nombre de jours (Variable G) - BASSE SUSPICION
 
 **Statut** : PARTIELLEMENT ECARTEE
 
-Les montants sont corrects, ce qui suggere que le calcul du nombre de jours est correct. Cependant, QU pourrait etre utilise pour l'affichage des dates et non seulement pour le calcul des montants.
+Les montants sont corrects, ce qui suggere que le calcul du nombre de jours est correct.
 
-**Expression 26** (task 45) :
+**Expression concernee** :
 ```
-{0,6} - {0,5} + 1 = V.DernierJourLocation - V.PremierJourLocation + 1
+Variable G = Variable F - Variable E + 1
 ```
 
 **Verification** :
-Confirmer que QU n'est pas utilise dans l'expression d'affichage des dates.
-
----
-
-### PISTE 5 : Updates parent depuis sous-tache - BASSE SUSPICION
-
-**Localisation** : Tache 186.1.5.4.3 event "Valider" (lignes XML 64944-64980)
-
-**Flux decouvert** :
-```
-Calendrier → Utilisateur selectionne dates → Clic "Valider"
-     ↓
-Update Parent FieldID=5 ← Expression 13 = V.DateSatrtSelected
-Update Parent FieldID=6 ← Expression 14 = V.DateEndSelected
-```
-
-**Mapping colonnes tache parent (186.1.5.4)** :
-
-| Column ID | Variable | Nom | Type |
-|-----------|----------|-----|------|
-| 4 | WB | BP. Exit | Alpha |
-| 5 | WC | V days difference | Numeric |
-| 6 | WD | V allow cancel | Logical |
-| 7 | WE | V.Comment annulation | Alpha |
-| 10 | WG | V.DernierJourLocation | Date |
-| 11 | WF | V.PremierJourLocation | Date |
-| 14 | - | V.NumberDaysAFacture | Numeric |
-| 15 | - | V.AnnulerToutLaPeriode | Logical |
-
-**Observation** :
-- FieldID=5 et FieldID=6 dans le parent = V days difference (Numeric) et V allow cancel (Logical)
-- **PAS** V.PremierJourLocation ou V.DernierJourLocation !
-- Les dates sont aux FieldID 10 et 11, pas 5 et 6
-
-**Probleme potentiel** :
-Les updates envoient les dates vers les mauvais champs du parent ?
+Confirmer que Variable G n'est pas utilise dans l'expression d'affichage des dates.
 
 ---
 
 ## SYNTHESE ET PRIORITES
 
-| Piste | Suspicion | Action | Effort |
-|-------|-----------|--------|--------|
-| **1. Expression 28 + MODEDAYINC** | HAUTE | Tracer valeur MODEDAYINC, tester impact | 2h |
-| **2. Update desactive FieldID=4** | MOYENNE | Reactiver et tester | 30min |
-| **3. Confusion tables 400/404** | MOYENNE | Verifier source dates affichees | 1h |
-| **4. Calcul QU** | BASSE | Deja verifie (montants OK) | - |
-| **5. Updates parent mauvais FieldID** | BASSE | Verifier mapping exact | 1h |
+| Piste | Suspicion | Action |
+|-------|-----------|--------|
+| **1. Expression 28 + MODEDAYINC** | HAUTE | Tracer valeur MODEDAYINC, tester impact |
+| **2. Update desactive** | MOYENNE | Reactiver et tester |
+| **3. Variables E/F mal mises a jour** | MOYENNE | Verifier mapping exact |
+| **4. Calcul Variable G** | BASSE | Deja verifie (montants OK) |
+
+---
+
+## ARBORESCENCE DES TACHES
+
+```
+PVE IDE 186 - Main Sale
+  |
+  +-- Tache 186.1 - Choix Onglet
+       |
+       +-- Tache 186.1.5 - Sales
+            |
+            +-- Tache 186.1.5.4 - actions
+                 |
+                 +-- Tache 186.1.5.4.1 - Cancel other Packages
+                 |    +-- Tache 186.1.5.4.1.1 - UpdateCustRentals
+                 |
+                 +-- Tache 186.1.5.4.2 - Saisie comment annulation
+                 |
+                 +-- Tache 186.1.5.4.3 - Saisir Date Fin de location  <-- CALENDRIER
+                 |
+                 +-- Tache 186.1.5.4.4 - UpdateCustRentals  <-- UPDATE DESACTIVE
+```
+
+---
+
+## VARIABLES TACHE 186.1.5.4
+
+| Variable | Nom | Type | Description |
+|----------|-----|------|-------------|
+| A | BP. Exit | Alpha | Bouton sortie |
+| B | V days difference | Numeric | Difference jours |
+| C | V allow cancel | Logical | Autoriser annulation |
+| D | V.Comment annulation | Alpha | Commentaire |
+| **E** | **V.PremierJourLocation** | Date | Premier jour |
+| **F** | **V.DernierJourLocation** | Date | Dernier jour |
+| G | V.NumberDaysAFacture | Numeric | Jours a facturer |
+| H | V.AnnulerToutLaPeriode | Logical | Annuler toute periode |
 
 ---
 
@@ -197,28 +189,12 @@ Les updates envoient les dates vers les mauvais champs du parent ?
 
 ### Test avec modification (environnement test)
 
-1. **Reactiver update FieldID=4** dans tache 186.1.5.4.4
+1. **Reactiver update desactive** dans Tache 186.1.5.4.4
 2. **Forcer MODEDAYINC=0** et retester
-3. **Tracer** avec logs les valeurs de WF, WG, QU lors de l'Early Return
+3. **Tracer** avec logs les valeurs de Variable E, Variable F, Variable G lors de l'Early Return
 
 ---
 
-## Arborescence des taches
-
-```
-PVE IDE 186 - Main Sale
-  └── 186.1 - Choix Onglet
-       └── 186.1.5 - Sales
-            └── 186.1.5.4 - actions (ISN_2=45)
-                 ├── 186.1.5.4.1 - Cancel other Packages (ISN_2=46)
-                 │    └── UpdateCustRentals (ISN_2=47) → obj=404
-                 ├── 186.1.5.4.2 - Saisie comment annulation (ISN_2=48)
-                 ├── 186.1.5.4.3 - Saisir Date Fin de location (ISN_2=49) ← CALENDRIER
-                 └── 186.1.5.4.4 - UpdateCustRentals (ISN_2=50) → obj=404
-```
-
----
-
-*Derniere mise a jour: 2026-01-12 22:30*
-*Status: INVESTIGATION APPROFONDIE - 5 pistes identifiees*
+*Derniere mise a jour: 2026-01-13*
+*Status: INVESTIGATION APPROFONDIE - 4 pistes identifiees*
 *Piste prioritaire: Expression 28 avec MODEDAYINC*
