@@ -331,6 +331,36 @@ Les variables créées par l'utilisateur ont un préfixe descriptif :
 
 ## Workflow Tickets Jira
 
+### ACCÈS JIRA API (OBLIGATOIRE)
+
+> **JAMAIS utiliser WebFetch pour Jira** - Utiliser le script PowerShell avec token API.
+
+**Script disponible** : `.claude/scripts/jira-fetch.ps1`
+
+**Credentials** : `.env` (JIRA_EMAIL, JIRA_TOKEN, JIRA_BASE_URL)
+
+**Commandes :**
+```powershell
+# Récupérer un ticket avec commentaires
+powershell -ExecutionPolicy Bypass -File ".claude/scripts/jira-fetch.ps1" -IssueKey "PMS-1402" -WithComments
+
+# Avec pièces jointes
+powershell -ExecutionPolicy Bypass -File ".claude/scripts/jira-fetch.ps1" -IssueKey "PMS-1402" -WithComments -WithAttachments
+
+# Format JSON brut
+powershell -ExecutionPolicy Bypass -File ".claude/scripts/jira-fetch.ps1" -IssueKey "PMS-1402" -Raw
+```
+
+**Autres scripts Jira :**
+| Script | Usage |
+|--------|-------|
+| `jira-fetch.ps1` | Récupérer un ticket complet |
+| `jira-list-active.ps1` | Lister tickets actifs |
+| `jira-download-attachments.ps1` | Télécharger pièces jointes |
+| `jira-cache-sync.ps1` | Synchroniser cache local |
+
+---
+
 ### RÈGLE OBLIGATOIRE : Langage Magic IDE
 
 **TOUTES les résolutions et diagnostics doivent utiliser le langage Magic IDE :**
