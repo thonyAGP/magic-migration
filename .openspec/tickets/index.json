@@ -54,6 +54,12 @@
             "status": "investigation-complete",
             "key": "PMS-1404",
             "summary": "POS Reports M&E - Quantity manquante + filtres non implementes"
+        },
+        {
+            "hasLocalData": true,
+            "status": "analyse-initiale",
+            "key": "PMS-1402",
+            "summary": "Automatisation Taxe de sejour - Batch nuit + OD automatique"
         }
     ],
     "tickets": []
