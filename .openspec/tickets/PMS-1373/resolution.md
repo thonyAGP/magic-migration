@@ -47,7 +47,7 @@ La variable existe déjà dans **Tâche 69.3** :
 
 | Propriété | Valeur |
 |-----------|--------|
-| **Variable** | **IW** |
+| **Variable** | **KZ** |
 | **Nom** | `v.Edition partielle?` |
 | **Type** | Logical (Boolean) |
 | **Position** | Data View > Columns |
@@ -68,12 +68,12 @@ La question est **DÉJÀ IMPLÉMENTÉE** :
 Tâche 69.3 ligne 21 : Verify Warning
   Message : "Voulez-vous éditer l'extrait de compte complet ?"
   Buttons : Yes / No
-  Return  : IW (v.Edition partielle?)
+  Return  : KZ (v.Edition partielle?)
             TRUE = Yes (extrait complet)
             FALSE = No (masquer annulations)
 ```
 
-**NOTE** : La logique d'interrogation existe déjà. Il reste à propager la variable IW vers les programmes d'édition et à ajouter le filtre.
+**NOTE** : La logique d'interrogation existe déjà. Il reste à propager la variable KZ vers les programmes d'édition et à ajouter le filtre.
 
 ### 1.3 Modifier les 5 CallTask
 
@@ -81,17 +81,17 @@ Pour CHAQUE CallTask vers les programmes d'édition, ajouter un argument :
 
 | CallTask vers | IDE | Position | Argument à ajouter |
 |---------------|-----|----------|-------------------|
-| EXTRAIT_NOM | **ADH IDE 70** | Tâche 69.3, Handler W1 Choix_action, Block 'N' | Arg 15 = `IW` |
-| EXTRAIT_DATE | **ADH IDE 71** | Tâche 69.3, Handler W1 Choix_action, Block 'D' | Arg 14 = `IW` |
-| EXTRAIT_CUM | **ADH IDE 72** | Tâche 69.3, Handler W1 Choix_action, Block 'C' | Arg 13 = `IW` |
-| EXTRAIT_IMP | **ADH IDE 73** | Tâche 69.3, Handler W1 Choix_action, Block 'I' | Arg 13 = `IW` |
-| EXTRAIT_SERVICE | **ADH IDE 76** | Tâche 69.3, Handler W1 Choix_action, Block 'S' | Arg 14 = `IW` |
+| EXTRAIT_NOM | **ADH IDE 70** | Tâche 69.3, Handler Variable KN (W1 Choix_action), Block 'N' | Arg 15 = `KZ` |
+| EXTRAIT_DATE | **ADH IDE 71** | Tâche 69.3, Handler Variable KN (W1 Choix_action), Block 'D' | Arg 14 = `KZ` |
+| EXTRAIT_CUM | **ADH IDE 72** | Tâche 69.3, Handler Variable KN (W1 Choix_action), Block 'C' | Arg 13 = `KZ` |
+| EXTRAIT_IMP | **ADH IDE 73** | Tâche 69.3, Handler Variable KN (W1 Choix_action), Block 'I' | Arg 13 = `KZ` |
+| EXTRAIT_SERVICE | **ADH IDE 76** | Tâche 69.3, Handler Variable KN (W1 Choix_action), Block 'S' | Arg 14 = `KZ` |
 
 **Procédure :**
 1. Ouvrir le CallTask dans Tâche 69.3
 2. Aller dans Arguments
 3. Ajouter une nouvelle ligne à la fin
-4. Sélectionner la variable `IW` (v.Edition partielle?)
+4. Sélectionner la variable `KZ` (v.Edition partielle?)
 
 ---
 
@@ -202,7 +202,7 @@ P.ExtraitComplet OR Trim(A.cte_flag_annulation) = 'Normal'
 
 | IDE | Nom | Modifications |
 |-----|-----|---------------|
-| **ADH IDE 69** | EXTRAIT_COMPTE | Variable IW existe (ligne 21 Verify Warning), modifier 5 CallTask pour passer IW |
+| **ADH IDE 69** | EXTRAIT_COMPTE | Variable KZ existe (ligne 21 Verify Warning), modifier 5 CallTask pour passer KZ |
 | **ADH IDE 70** | EXTRAIT_NOM | +1 paramètre (n°15), modifier Locate ~17 sous-tâches |
 | **ADH IDE 71** | EXTRAIT_DATE | +1 paramètre (n°14), modifier Locate ~15 sous-tâches |
 | **ADH IDE 72** | EXTRAIT_CUM | +1 paramètre (n°13), modifier Locate ~13 sous-tâches |
@@ -211,7 +211,7 @@ P.ExtraitComplet OR Trim(A.cte_flag_annulation) = 'Normal'
 
 **Total** : 6 programmes, ~75 modifications de Locate
 
-**NOTE IMPORTANTE** : Le Verify Warning et la variable IW existent déjà dans ADH IDE 69 Tâche 69.3 ligne 21.
+**NOTE IMPORTANTE** : Le Verify Warning et la variable KZ existent déjà dans ADH IDE 69 Tâche 69.3 ligne 21.
 
 ---
 

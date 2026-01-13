@@ -12,7 +12,7 @@
 
 ## 1. Découverte Clé : Champ Annulation Existant
 
-La table `cafil018_dat` (operations_dat, obj=40) possède déjà un champ de flag :
+La **Table n°40** (`cafil018_dat` / operations_dat) possède déjà un champ de flag :
 
 | Champ | Type | Valeurs |
 |-------|------|---------|
@@ -24,10 +24,12 @@ La table `cafil018_dat` (operations_dat, obj=40) possède déjà un champ de fla
 
 ## 2. Architecture Actuelle
 
+> **Note** : Offset Main ADH = 117. Variables globales dans Tâche 69.3.
+
 ```
 ADH IDE 69 (EXTRAIT_COMPTE)
-└── Sous-tâche 5 "scroll sur compte"
-    └── LogicUnit id="10" (Handler W1 Choix_action)
+└── Tâche 69.3 "scroll sur compte"
+    └── Handler Variable KN (W1 Choix_action)
         ├── Choix 'N' → CallTask ADH IDE 70 (EXTRAIT_NOM)      [14 params]
         ├── Choix 'D' → CallTask ADH IDE 71 (EXTRAIT_DATE)     [13 params]
         ├── Choix 'C' → CallTask ADH IDE 72 (EXTRAIT_CUM)      [12 params]
@@ -39,60 +41,55 @@ ADH IDE 69 (EXTRAIT_COMPTE)
 
 ## 3. Modifications ADH IDE 69 (EXTRAIT_COMPTE)
 
-### 3.1 Ajouter Variable
+### 3.1 Variable existante
 
-| Variable | Type | Description |
-|----------|------|-------------|
-| `W.ExtraitComplet` | Boolean | TRUE = extrait complet, FALSE = masquer annulations |
+La variable existe DÉJÀ dans **Tâche 69.3** :
 
-**Emplacement** : Section `<Columns>` de la sous-tâche 5
+| Variable | Nom | Type | Ligne DataView |
+|----------|-----|------|----------------|
+| **KZ** | v. Edition partielle ? | Numeric | Ligne 24 |
 
-### 3.2 Ajouter Question (Message Box)
+**Note** : TRUE = extrait complet, FALSE = masquer annulations
 
-**Point d'injection** : LogicUnit id="10", AVANT ligne 4549 (premier CallTask obj="180")
+### 3.2 Question existante (Verify Warning)
 
-```xml
-<!-- NOUVEAU : Question Extrait Complet -->
-<STP FlowIsn="XXX">
-  <Condition val="Y"/>
-  <Modifier val="S"/>
-  <Message>
-    <Text val="Voulez-vous éditer l'extrait de compte complet ?"/>
-    <Title val="Option Extrait"/>
-    <Buttons val="YN"/>  <!-- Oui/Non -->
-    <DefaultButton val="1"/>
-    <ReturnVariable val="W.ExtraitComplet"/>  <!-- TRUE si Oui -->
-  </Message>
-</STP>
-```
+La question est **DÉJÀ IMPLÉMENTÉE** dans la logique :
+
+| Emplacement | Valeur |
+|-------------|--------|
+| **Programme** | ADH IDE 69 |
+| **Tâche** | Tâche 69.3 (scroll sur compte) |
+| **Opération** | Verify Warning |
+| **Message** | "Voulez-vous éditer l'extrait de compte complet ?" |
+| **Retour** | Variable **KZ** (TRUE = Oui, FALSE = Non) |
 
 **Alternative UX** : Checkbox sur l'écran plutôt que popup (meilleure ergonomie)
 
 ### 3.3 Modifier les 5 CallTask
 
-Ajouter le paramètre 15 à chaque appel :
+Ajouter un argument **Variable KZ** à chaque CallTask :
 
-| CallTask | Ligne | Ajouter |
-|----------|-------|---------|
-| ADH IDE 70 | 4620 | `<Argument><id val="88"/><Variable val="W.ExtraitComplet"/></Argument>` |
-| ADH IDE 71 | 4805 | `<Argument><id val="89"/><Variable val="W.ExtraitComplet"/></Argument>` |
-| ADH IDE 72 | 4998 | `<Argument><id val="90"/><Variable val="W.ExtraitComplet"/></Argument>` |
-| ADH IDE 73 | 5180 | `<Argument><id val="91"/><Variable val="W.ExtraitComplet"/></Argument>` |
-| ADH IDE 76 | 5371 | `<Argument><id val="92"/><Variable val="W.ExtraitComplet"/></Argument>` |
+| CallTask vers | Tâche | Block | Argument à ajouter |
+|---------------|-------|-------|-------------------|
+| ADH IDE 70 | Tâche 69.3, Handler KN | Block 'N' | Arg 15 = **Variable KZ** |
+| ADH IDE 71 | Tâche 69.3, Handler KN | Block 'D' | Arg 14 = **Variable KZ** |
+| ADH IDE 72 | Tâche 69.3, Handler KN | Block 'C' | Arg 13 = **Variable KZ** |
+| ADH IDE 73 | Tâche 69.3, Handler KN | Block 'I' | Arg 13 = **Variable KZ** |
+| ADH IDE 76 | Tâche 69.3, Handler KN | Block 'S' | Arg 14 = **Variable KZ** |
 
 ---
 
 ## 4. Modifications Programmes Édition (ADH IDE 70, 71, 72, 73, 76)
 
-### 4.1 Ajouter Paramètre 15
+### 4.1 Ajouter Paramètre d'entrée
 
-Pour CHAQUE programme d'édition :
+Pour CHAQUE programme d'édition, ajouter un paramètre :
 
 | # | Nom Paramètre | Type | Direction | Description |
 |---|---------------|------|-----------|-------------|
-| 15 | P.ExtraitComplet | Boolean | Entrée | TRUE=tout, FALSE=masquer annulations |
+| 15 | P.ExtraitComplet | Logical | Input | TRUE=tout, FALSE=masquer annulations |
 
-**Emplacement** : Section `<Parameters>` du programme
+**Emplacement** : Task Properties > Parameters du programme
 
 ### 4.2 Modifier le Filtrage MainSource
 
@@ -116,13 +113,13 @@ IF(P.ExtraitComplet, TRUE, cte_flag_annulation = 'Normal')
 
 ### 4.3 Localisation des Modifications par Programme
 
-| Programme | Sous-tâches à modifier | MainSource obj |
-|-----------|------------------------|----------------|
-| ADH IDE 70 | 2-19 (impressions) | 40 (cafil018_dat) |
-| ADH IDE 71 | 2-17 (impressions) | 40 (cafil018_dat) |
-| ADH IDE 72 | 2-15 (impressions) | 40 (cafil018_dat) |
-| ADH IDE 73 | 2-14 (impressions) | 40 (cafil018_dat) |
-| ADH IDE 76 | 2-17 (impressions) | 40 (cafil018_dat) |
+| Programme | Sous-tâches à modifier | MainSource |
+|-----------|------------------------|------------|
+| ADH IDE 70 | Tâches 70.2 à 70.19 (impressions) | **Table n°40** (cafil018_dat) |
+| ADH IDE 71 | Tâches 71.2 à 71.17 (impressions) | **Table n°40** (cafil018_dat) |
+| ADH IDE 72 | Tâches 72.2 à 72.15 (impressions) | **Table n°40** (cafil018_dat) |
+| ADH IDE 73 | Tâches 73.2 à 73.14 (impressions) | **Table n°40** (cafil018_dat) |
+| ADH IDE 76 | Tâches 76.2 à 76.17 (impressions) | **Table n°40** (cafil018_dat) |
 
 ---
 
