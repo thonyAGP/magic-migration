@@ -188,16 +188,106 @@ PVE IDE 87 - Report - Discount & Gratuities
 | ✅ Colonne Quantity | **RESOLU** - s'affiche correctement |
 | ❌ Filtres Person/Item Label | **KO** - ne filtrent pas les données |
 
-### Prochaine action
+---
 
-**Priorité** : Implémenter les filtres dans PVE IDE 87 - Tâche 87.1.2 (SELECTION)
+## INVESTIGATION FILTRES (2026-01-18)
 
-1. Identifier les contrôles de saisie dans le formulaire
-2. Lier aux variables de Range/Locate
-3. Appliquer les conditions dans la requête
+### DECOUVERTE CRITIQUE : Filtres NON IMPLEMENTES
+
+**Conclusion** : Les filtres "person" et "item label" **N'EXISTENT PAS** dans le code actuel.
+Il ne s'agit pas de filtres qui ne fonctionnent pas, mais de filtres qui n'ont **JAMAIS ETE CREES**.
+
+### Programmes analyses
+
+| Fichier | Programme | Paramètres | Filtres person/item |
+|---------|-----------|------------|---------------------|
+| Prg_82.xml | PVE IDE 82 - Report - Discount & Gratuities | 12 | ❌ ABSENTS |
+| Prg_83.xml | PVE IDE 83 - Report - Discount&Gratuit-719 | 13 | ❌ ABSENTS |
+| Prg_87.xml | PVE IDE 87 - Report - Selection/Tempo | 11 | ❌ ABSENTS |
+| Prg_354.xml | PVE IDE 354 - Report - Discount & Gratuities | 12 | ❌ ABSENTS |
+| Prg_383.xml | PVE IDE 383 - Report - Discount & Gratuities | 11 | ❌ ABSENTS |
+| Prg_176.xml | PVE IDE 176 - Menu Reports | 0 | ❌ ABSENTS |
+
+### Parametres existants (PVE IDE 82/83)
+
+| # | Paramètre | Type | Description |
+|---|-----------|------|-------------|
+| 1 | P. Village name | Alpha | Nom du village |
+| 2 | P. Currency | Alpha | Devise |
+| 3 | P. Amount format | Alpha | Format montant |
+| 4 | P. Amount format sans Z | Alpha | Format sans zéros |
+| 5 | P. Decimales | Numeric | Nombre décimales |
+| 6 | P. HD Contrôle | Logical | Flag HD |
+| 7 | P Période nombre JH | Numeric | Jours/Hommes |
+| 8 | P Jours Période | Numeric | Jours période |
+| 9 | P Date mini | Date | Date début |
+| 10 | P Date maxi | Date | Date fin |
+| 11 | P Discount & Free of Charge | Numeric | Type remise |
+| 12 | P.I Flag Cloture Service | Logical | Flag clôture |
+| 13 | (IDE 83) P.? | Logical | Paramètre additionnel |
+
+**AUCUN paramètre "person" ou "item label" !**
+
+### Flux d'appel
+
+```
+Menu Reports (PVE IDE 176)
+    │
+    └── CallTask FlowIsn="83" ──► PVE IDE 83 - Report - Discount&Gratuit-719
+                                      │
+                                      └── CallTask FlowIsn="87" ──► PVE IDE 87 - Selection/Tempo
+```
+
+### Pistes d'implementation
+
+**PISTE A : Ajouter filtres en paramètres**
+
+1. **Modifier PVE IDE 83** (ou 82/354/383 selon version utilisée)
+   - Ajouter 2 nouveaux paramètres : `P.Filter Person` (Alpha), `P.Filter Item Label` (Alpha)
+   - Passer ces paramètres à PVE IDE 87
+
+2. **Modifier PVE IDE 87** (Report - Selection/Tempo)
+   - Ajouter les paramètres filtres dans le DataView
+   - Appliquer conditions dans Tâche 87.1.2 "SELECTION"
+   - Utiliser Range/Locate pour filtrer les données
+
+3. **Modifier l'interface Menu Reports (PVE IDE 176)**
+   - Ajouter 2 champs de saisie pour les filtres
+   - Lier aux paramètres du CallTask vers IDE 83
+
+**PISTE B : Identifier tables sources**
+
+Tables utilisées par PVE IDE 87 :
+| obj | Table probable |
+|-----|----------------|
+| 379 | ? (à identifier via Comps.xml) |
+| 403 | ? |
+| 413 | ? |
+| 1471 | ? |
+| 762 | ? |
+
+Champs potentiels à filtrer :
+- `person` → Table clients/adhérents (champ nom/prénom)
+- `item label` → Table articles (champ libellé produit)
+
+### Questions pour clarification
+
+1. **Où ces filtres sont-ils affichés ?**
+   - Dans le Menu Reports (PVE IDE 176) ?
+   - Dans un écran de saisie préalable ?
+   - L'utilisateur les voit-il mais ils ne fonctionnent pas ?
+
+2. **Quel est le comportement attendu ?**
+   - Filtrer par nom de personne (GM) ?
+   - Filtrer par libellé d'article ?
+   - Recherche exacte ou partielle (LIKE) ?
+
+3. **Quelle version du rapport est utilisée ?**
+   - PVE IDE 82, 83, 354 ou 383 ?
+   - Dépend du village et de la configuration
 
 ---
 
 *Derniere mise a jour: 2026-01-18*
-*Status: EN COURS - Colonne OK, Filtres KO*
-*Piste prioritaire: Filtres Person/Item Label non fonctionnels*
+*Status: EN COURS - Colonne OK, Filtres JAMAIS IMPLEMENTES*
+*Action requise: Clarification + Développement nouvelle fonctionnalité*
