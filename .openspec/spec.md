@@ -73,6 +73,63 @@ Composant "Sessions_Reprises" - 30 programmes:
 | 3 | Expressions IF/CASE complexes | VALIDE |
 | 4 | Editions/exports | PARTIEL |
 
+### Infrastructure Git Sources PMS
+
+Architecture de synchronisation des sources Magic PMS :
+
+```
+                    ┌─────────────────────────────────────────────────────┐
+                    │     S:\SOURCES_XPA\PMS (BARE REPO - ORIGIN)         │
+                    │     Partage réseau: //lvissvinstall/dev-01$         │
+                    │     ══════════════════════════════════════          │
+                    │     SOURCE DE VÉRITÉ pour les sources Magic         │
+                    │     Tous les devs poussent ici                      │
+                    └─────────────────────────────────────────────────────┘
+                                          │
+            ┌─────────────────────────────┼─────────────────────────────┐
+            │                             │                             │
+            ▼                             ▼                             ▼
+┌───────────────────────┐   ┌───────────────────────┐   ┌───────────────────────┐
+│ C:\Migration\XPA\PMS  │   │ D:\Data\Migration\    │   │      GitHub           │
+│                       │   │    XPA\PMS            │   │ thonyAGP/PMS-Magic-   │
+│ POSTE DEV PRINCIPAL   │   │                       │   │      Sources          │
+│ ═══════════════════   │   │ ANALYSE & MIGRATION   │   │ ═══════════════════   │
+│ - Développement Magic │   │ ═══════════════════   │   │ - Backup cloud        │
+│ - Push vers S:        │   │ - Lecture seule Magic │   │ - Historique complet  │
+│ - Modifs .opt locales │   │ - Docs MECANO/migration│  │ - Accessible externe  │
+│                       │   │ - Sync depuis S: + GH │   │                       │
+│ remote: origin → S:   │   │ remote: origin → S:   │   │                       │
+│                       │   │ remote: github → GH   │   │                       │
+└───────────────────────┘   └───────────────────────┘   └───────────────────────┘
+```
+
+| Emplacement | Role | Remote(s) | Usage |
+|-------------|------|-----------|-------|
+| **S:\SOURCES_XPA\PMS** | Bare repo (serveur) | - | Source de vérité, tous les devs y poussent |
+| **C:\Migration\XPA\PMS** | Clone dev | origin → S: | Développement Magic, modifications .opt |
+| **D:\Data\Migration\XPA\PMS** | Clone analyse | origin → S:, github → GH | Analyse, migration, documentation |
+| **GitHub** | Backup cloud | - | Historique, accès externe, backup |
+
+**Commandes de synchronisation :**
+
+```powershell
+# Mettre à jour C: depuis S:
+git -C 'C:\Migration\XPA\PMS' stash push -m 'WIP' --include-untracked
+git -C 'C:\Migration\XPA\PMS' pull --rebase origin master
+git -C 'C:\Migration\XPA\PMS' stash pop
+
+# Mettre à jour D: depuis S: et pousser vers GitHub
+git -C 'D:\Data\Migration\XPA\PMS' stash push -m 'WIP'
+git -C 'D:\Data\Migration\XPA\PMS' pull --rebase origin master
+git -C 'D:\Data\Migration\XPA\PMS' push github master
+git -C 'D:\Data\Migration\XPA\PMS' stash pop
+```
+
+**Notes importantes :**
+- Les fichiers `.opt` sont des configs locales Magic, ils diffèrent entre C: et D:
+- Les conflits sur ProgramHeaders.xml/Progs.xml : toujours prendre la version origin (production)
+- S: nécessite parfois `git config --global --add safe.directory` pour les accès directs
+
 ## Fonctionnalites
 
 ### Modules valides
@@ -579,5 +636,7 @@ Composant "Sessions_Reprises" - 30 programmes:
 - 2025-12-22: Validation MECANO sur base CSK0912
 - 2025-12-22: Creation structure openspec/mecano/
 
+- 2026-01-18: **INFRASTRUCTURE GIT DOCUMENTEE** - Architecture 4 repos (S: origin, C: dev, D: analyse, GitHub backup). Commandes sync, gestion conflits .opt/ProgramHeaders, schéma ASCII complet
+
 ---
-*Derniere mise a jour: 2026-01-12 - PARSER TYPESCRIPT COMPLET (200 fonctions dans 4 generateurs)*
+*Derniere mise a jour: 2026-01-18 - Infrastructure Git Sources PMS documentee*
