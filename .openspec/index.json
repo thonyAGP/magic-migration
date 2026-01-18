@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-12T22:48:51.150Z",
+  "lastUpdated": "2026-01-18T19:45:54.831Z",
   "reports": [
     {
       "id": "spec",
@@ -52,14 +52,6 @@
   ],
   "tickets": {
     "active": [
-      {
-        "id": "PMS-1446",
-        "title": "Location ski courts sejours - Calcul MODEDAYINC",
-        "status": "spec",
-        "file": "tickets/PMS-1446/implementation.md",
-        "createdDate": "2026-01-09",
-        "lastAnalysis": "2026-01-09"
-      },
       {
         "id": "PMS-1404",
         "title": "POS Reports M&E - Quantity manquante + filtres",
@@ -130,6 +122,15 @@
         "createdDate": "2026-01-09",
         "lastAnalysis": "2026-01-12",
         "resolvedDate": "2026-01-12"
+      },
+      {
+        "id": "PMS-1446",
+        "title": "Location ski courts sejours - Calcul MODEDAYINC",
+        "status": "spec",
+        "file": "tickets/PMS-1446/implementation.md",
+        "createdDate": "2026-01-09",
+        "lastAnalysis": "2026-01-18",
+        "resolvedDate": "2026-01-18"
       }
     ]
   }
