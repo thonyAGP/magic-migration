@@ -177,6 +177,27 @@ PVE IDE 87 - Report - Discount & Gratuities
 
 ---
 
-*Derniere mise a jour: 2026-01-13*
-*Status: INVESTIGATION COMPLETE - 2 pistes confirmees + 1 a clarifier*
-*Piste prioritaire: Colonne Quantity manquante (CONFIRMEE)*
+## MISE A JOUR 2026-01-18
+
+### Retour Recette (15/01/2026)
+
+**Davide Morandi** : "la colonne s'affiche bien mais les filtres ne fonctionnent toujours pas"
+
+| Element | Statut |
+|---------|--------|
+| ✅ Colonne Quantity | **RESOLU** - s'affiche correctement |
+| ❌ Filtres Person/Item Label | **KO** - ne filtrent pas les données |
+
+### Prochaine action
+
+**Priorité** : Implémenter les filtres dans PVE IDE 87 - Tâche 87.1.2 (SELECTION)
+
+1. Identifier les contrôles de saisie dans le formulaire
+2. Lier aux variables de Range/Locate
+3. Appliquer les conditions dans la requête
+
+---
+
+*Derniere mise a jour: 2026-01-18*
+*Status: EN COURS - Colonne OK, Filtres KO*
+*Piste prioritaire: Filtres Person/Item Label non fonctionnels*
