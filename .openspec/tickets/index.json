@@ -60,6 +60,24 @@
             "status": "analyse-initiale",
             "key": "PMS-1402",
             "summary": "Automatisation Taxe de sejour - Batch nuit + OD automatique"
+        },
+        {
+            "hasLocalData": true,
+            "status": "analyse-initiale",
+            "key": "PMS-1407",
+            "summary": "Validation auto Back Office - Bug regression VV/Vol"
+        },
+        {
+            "hasLocalData": true,
+            "status": "analyse-initiale",
+            "key": "PMS-1414",
+            "summary": "Validation groupee seminaire - Vol retour non requis"
+        },
+        {
+            "hasLocalData": true,
+            "status": "analyse-initiale",
+            "key": "PMS-1332",
+            "summary": "Fiche police date fin 00/00/0000 - Sans limite pour GO"
         }
     ],
     "tickets": []
