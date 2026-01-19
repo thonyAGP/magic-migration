@@ -61,6 +61,14 @@
         "lastAnalysis": "2026-01-18"
       },
       {
+        "id": "PMS-1407",
+        "title": "Validation auto Back Office - NON REGRESSION (Magic.ini)",
+        "status": "diagnostic-ok",
+        "file": "tickets/PMS-1407/analysis.md",
+        "createdDate": "2025-11-13",
+        "lastAnalysis": "2026-01-18"
+      },
+      {
         "id": "CMDS-176818",
         "title": "Tickets Epson police grande - Config imprimante",
         "status": "analysis",

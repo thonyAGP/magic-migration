@@ -66,9 +66,10 @@
         },
         {
             "hasLocalData": true,
-            "status": "analyse-initiale",
+            "status": "diagnostic-ok",
             "key": "PMS-1407",
-            "summary": "Validation auto Back Office - Bug regression VV/Vol"
+            "summary": "Validation auto Back Office - NON REGRESSION (Magic.ini local)",
+            "lastAnalysis": "2026-01-18"
         },
         {
             "hasLocalData": true,
