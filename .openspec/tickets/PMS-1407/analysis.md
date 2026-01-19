@@ -1,5 +1,7 @@
 # PMS-1407 - Validation automatique Back Office
 
+> **Jira** : [PMS-1407](https://clubmed.atlassian.net/browse/PMS-1407)
+
 ## Informations Jira
 
 | Champ | Valeur |
@@ -29,40 +31,40 @@ Regression: lorsque le valide en automatique, je dois pouvoir valider des GM qui
 
 ---
 
-## Analyse Magic IDE (2026-01-18)
+## Analyse Magic IDE (2026-01-19)
 
 ### Programme principal
 
 | Projet | IDE | Nom | Public Name |
 |--------|-----|-----|-------------|
-| **PBG** | **59** | Validation Auto filiations | VALID_AUTO_FILIATION |
+| **PBG** | **121** | Validation Auto filiations | VALID_AUTO_FILIATION |
 
-> **CORRECTION** : L'analyse initiale mentionnait PBG IDE 121 ("Interruption Personnel") qui est un programme different. Le bon programme est **PBG IDE 59**.
+> **Note** : Fichier source `Prg_59.xml` (ISN=59) → Position IDE **121** dans ProgramsRepositoryOutLine.
 
 ### Arborescence des taches
 
 ```
-PBG IDE 59 - Validation Auto filiations (VALID_AUTO_FILIATION)
+PBG IDE 121 - Validation Auto filiations (VALID_AUTO_FILIATION)
 |
-+-- Tache 59.1 - Verif Logement et Vol      <-- POINT DE VERIFICATION VV/Vol
++-- Tache 121.1 - Verif Logement et Vol      <-- POINT DE VERIFICATION VV/Vol
 |
-+-- Tache 59.2 - Creation VV Aller
++-- Tache 121.2 - Creation VV Aller
 |
-+-- Tache 59.3 - Creation VV retour
++-- Tache 121.3 - Creation VV retour
 |
-+-- Tache 59.4 - Zoom Village/Village
++-- Tache 121.4 - Zoom Village/Village
 |
-+-- Tache 59.5 - Validation Arrivee
++-- Tache 121.5 - Validation Arrivee
      |
-     +-- Tache 59.5.1 - Marquage Periodes
-     +-- Tache 59.5.2 - Marquage Periodes Circuit
-     +-- Tache 59.5.3 - Marquage Recherche
-     +-- Tache 59.5.4 - Marquage Validation
-     +-- Tache 59.5.5 - Creation Historique
-     +-- Tache 59.5.6 - Creation Specif Greque
+     +-- Tache 121.5.1 - Marquage Periodes
+     +-- Tache 121.5.2 - Marquage Periodes Circuit
+     +-- Tache 121.5.3 - Marquage Recherche
+     +-- Tache 121.5.4 - Marquage Validation
+     +-- Tache 121.5.5 - Creation Historique
+     +-- Tache 121.5.6 - Creation Specif Greque
           |
-          +-- Tache 59.5.6.1 - Creation Specif Greque (nested)
-          +-- Tache 59.5.6.2 - Verif si GO Greek
+          +-- Tache 121.5.6.1 - Creation Specif Greque (nested)
+          +-- Tache 121.5.6.2 - Verif si GO Greek
 ```
 
 ### Parametres du programme (18 params)
@@ -84,7 +86,7 @@ PBG IDE 59 - Validation Auto filiations (VALID_AUTO_FILIATION)
 | S | P0 New Code Vol RETOUR | Alpha | Nouveau code vol retour |
 | T | P0 New Heure RETOUR | Alpha | Heure vol retour |
 
-### Tache 59.1 - Verif Logement et Vol (detail)
+### Tache 121.1 - Verif Logement et Vol (detail)
 
 **Tables utilisees :**
 - Table n°34 (REF) - Filiations (cafil014_dat)
@@ -136,6 +138,6 @@ Sections susceptibles d'affecter la validation automatique :
 
 ---
 
-*Derniere mise a jour: 2026-01-18*
+*Derniere mise a jour: 2026-01-19*
 *Status: EN ATTENTE - Probleme de configuration locale, pas de bug code*
-*Programme: PBG IDE 59 - VALID_AUTO_FILIATION*
+*Programme: PBG IDE 121 - VALID_AUTO_FILIATION (source: Prg_59.xml)*
