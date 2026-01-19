@@ -80,24 +80,33 @@ ANALYSE TERMINÉE
       │
       ▼
 ┌─────────────────────────────────────────────────────┐
-│ 3. METTRE À JOUR INDEX.JSON                         │
-│    - .openspec/index.json (site jira.lb2i.com)      │
+│ 3. METTRE À JOUR LES DEUX INDEX.JSON                │
+│    - .openspec/index.json (site jira.lb2i.com)  !!  │
 │    - .openspec/tickets/index.json (local)           │
-│    - Ajouter champ "program": "PROJET IDE XXX"      │
+│    - Ajouter dans "active" avec "program" field     │
 └─────────────────────────────────────────────────────┘
       │
       ▼
 ┌─────────────────────────────────────────────────────┐
 │ 4. COMMIT & PUSH (AUTOMATIQUE)                      │
-│    - git add .openspec/tickets/{KEY}/ index.json    │
+│    - git add .openspec/ (les deux index.json)       │
 │    - git commit -m "docs(tickets): ..."             │
 │    - git push origin master  ← OBLIGATOIRE          │
-│    - Le site jira.lb2i.com est mis à jour           │
+└─────────────────────────────────────────────────────┘
+      │
+      ▼
+┌─────────────────────────────────────────────────────┐
+│ 5. VÉRIFICATION PLAYWRIGHT (OBLIGATOIRE)            │
+│    - Lancer test sur https://jira.lb2i.com          │
+│    - Vérifier: ticket visible, IDE, date, status    │
+│    - Si KO: corriger et re-push                     │
 └─────────────────────────────────────────────────────┘
 ```
 
-> **RÈGLE CRITIQUE** : Le `git push` est OBLIGATOIRE après chaque analyse de ticket.
-> Sans le push, le site jira.lb2i.com n'affiche pas les nouvelles analyses.
+> **RÈGLES CRITIQUES** :
+> 1. Mettre à jour `.openspec/index.json` (pas seulement tickets/index.json)
+> 2. Le `git push` est OBLIGATOIRE après chaque analyse
+> 3. La vérification Playwright est OBLIGATOIRE pour valider le déploiement
 
 #### Commande de vérification position IDE
 
