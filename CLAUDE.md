@@ -18,6 +18,102 @@ Quand l'utilisateur pose une question sur Magic, **DETECTER automatiquement** l'
 | "documente", "spec", "rapport" | `magic-documenter` | Documentation |
 | "cherche", "trouve", "ou est" | MCP `magic_find_program` | Recherche |
 | "ligne X", "tache X.Y" | MCP `magic_get_line` | Query precise |
+| "ticket PMS-XXXX", "CMDS-XXXX" | Script Jira + MCP | Fetch auto + analyse |
+
+### REGLE AUTOMATIQUE - Tickets Jira
+
+**Quand un numero de ticket est mentionne (PMS-XXXX, CMDS-XXXXXX) :**
+
+1. **TOUJOURS** fetcher les infos Jira en premier :
+   ```powershell
+   powershell -NoProfile -ExecutionPolicy Bypass -File ".claude/scripts/jira-fetch.ps1" -IssueKey "PMS-XXXX"
+   ```
+
+2. **PUIS** utiliser les outils MCP pour trouver les programmes concernes
+
+3. **CREER** le dossier ticket si inexistant : `.openspec/tickets/{KEY}/analysis.md`
+
+**Scripts Jira disponibles :**
+| Script | Usage |
+|--------|-------|
+| `jira-fetch.ps1 -IssueKey KEY` | Recuperer titre + description |
+| `jira-fetch.ps1 -IssueKey KEY -WithComments` | Avec commentaires |
+| `jira-fetch.ps1 -IssueKey KEY -WithAttachments` | Avec liste pieces jointes |
+| `jira-download-attachments.ps1 -IssueKey KEY` | Telecharger les PJ |
+
+### VALIDATION POST-ANALYSE TICKET (OBLIGATOIRE)
+
+> **RÈGLE CRITIQUE** : Après CHAQUE analyse de ticket, effectuer ces contrôles AVANT de soumettre le rapport.
+
+#### Checklist de validation
+
+| # | Contrôle | Action si KO |
+|---|----------|--------------|
+| 1 | **Position IDE correcte** | Vérifier dans `Progs.xml > ProgramsRepositoryOutLine` |
+| 2 | **Lien Jira présent** | Ajouter `[{KEY}](https://clubmed.atlassian.net/browse/{KEY})` |
+| 3 | **Numérotation tâches** | Utiliser IDE.1, IDE.2 (pas ISN_2) |
+| 4 | **Variables globales** | Calculer offset cumulatif (pas variables locales A,B,C) |
+| 5 | **Tables avec n°** | Format "Table n°XX - Nom" |
+
+#### Workflow de validation
+
+```
+ANALYSE TERMINÉE
+      │
+      ▼
+┌─────────────────────────────────────────────────────┐
+│ 1. VÉRIFIER POSITION IDE                            │
+│    - Lire Progs.xml > ProgramsRepositoryOutLine     │
+│    - Trouver position du Program id="XX"            │
+│    - Position = (ligne - première_ligne) + 1        │
+│    - Prg_59.xml ≠ IDE 59 (souvent différent!)       │
+└─────────────────────────────────────────────────────┘
+      │
+      ▼
+┌─────────────────────────────────────────────────────┐
+│ 2. VÉRIFIER CONTENU ANALYSIS.MD                     │
+│    - [ ] Lien Jira en haut du fichier               │
+│    - [ ] Programme: PROJET IDE XXX (pas Prg_XX)     │
+│    - [ ] Tâches: XXX.1, XXX.2 (position IDE)        │
+│    - [ ] Note source: "Prg_XX.xml → IDE YYY"        │
+└─────────────────────────────────────────────────────┘
+      │
+      ▼
+┌─────────────────────────────────────────────────────┐
+│ 3. METTRE À JOUR INDEX.JSON                         │
+│    - .openspec/index.json (site jira.lb2i.com)      │
+│    - .openspec/tickets/index.json (local)           │
+│    - Ajouter champ "program": "PROJET IDE XXX"      │
+└─────────────────────────────────────────────────────┘
+      │
+      ▼
+   COMMIT & PUSH
+```
+
+#### Commande de vérification position IDE
+
+```powershell
+# Trouver la position IDE d'un programme
+# Exemple: Prg_59.xml dans PBG → chercher id="59" dans ProgramsRepositoryOutLine
+grep -n 'id="59"' "D:\Data\Migration\XPA\PMS\PBG\Source\Progs.xml"
+# Résultat ligne 251, première entrée ligne 131 → Position = 251-131+1 = 121
+```
+
+#### Exemple de header analysis.md CORRECT
+
+```markdown
+# PMS-XXXX - Titre du ticket
+
+> **Jira** : [PMS-XXXX](https://clubmed.atlassian.net/browse/PMS-XXXX)
+
+## Programme principal
+
+| Projet | IDE | Nom | Public Name |
+|--------|-----|-----|-------------|
+| **PBG** | **121** | Validation Auto filiations | VALID_AUTO_FILIATION |
+
+> **Note** : Fichier source `Prg_59.xml` (ISN=59) → Position IDE **121**.
+```
 
 ### Agents disponibles
 
