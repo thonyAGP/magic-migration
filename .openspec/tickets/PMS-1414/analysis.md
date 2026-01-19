@@ -33,48 +33,93 @@ Lors de la validation groupee d'un seminaire, le systeme exige le vol retour alo
 
 > **Calcul position** : Progs.xml ligne 254 contient id="56" -> Position = 254 - 131 + 1 = **124**
 
-### Arborescence des taches concernees
+### Arborescence complete des taches
 
 ```
-PBG IDE 124 - Validation Arrivants
+PBG IDE 124 - Validation Arrivants (Main, ISN_2=1)
 |
-+-- Tache 124.X - [Parent a identifier]
++-- Tache 124.1 - Determination Age Bebe (ISN_2=2)
++-- Tache 124.2 - Test Base Validation (ISN_2=3)
++-- Tache 124.3 - Affichage Validation (ISN_2=4)  <-- Ecran principal
 |    |
-|    +-- Sous-tache ISN_2=35 - Verif Existence Groupe Vol  <-- POINT CLE
+|    +-- Tache 124.3.1 - Affichage Hebergement (ISN_2=5)
+|    +-- Tache 124.3.2 - Affichage Prestations (ISN_2=6)
+|    +-- Tache 124.3.3 - Affichage Circuits (ISN_2=7)
+|    +-- Tache 124.3.4 - Recherche Nom (ISN_2=9)
+|    +-- Tache 124.3.5 - Validation Arrivant (ISN_2=10)  <-- Expressions VV
+|    |    |
+|    |    +-- Tache 124.3.5.1 - Verif Logement et Vol (ISN_2=11)
+|    |    +-- Tache 124.3.5.2 - Creation VV Aller (ISN_2=12)
+|    |    +-- Tache 124.3.5.3 - Creation VV Retour (ISN_2=13)
+|    |    +-- Tache 124.3.5.4 - Zoom Village/Village (ISN_2=14)
+|    |    +-- Tache 124.3.5.5 - Validation Arrivee (ISN_2=16)
+|    |    +-- Tache 124.3.5.6 - Validation Credit Bar (ISN_2=70)
+|    |
+|    +-- Tache 124.3.6 - Devalidation Arrivant (ISN_2=25)
+|    +-- Tache 124.3.7 - Validation Serie (ISN_2=34)  <-- SEMINAIRES
+|    |    |
+|    |    +-- Tache 124.3.7.1 - Verif Existence Groupe Vol (ISN_2=35)  <-- POINT CLE
+|    |    +-- Tache 124.3.7.2 - Verif Existence Groupe/Transf (ISN_2=78)
+|    |    +-- Tache 124.3.7.3 - Verif Existence Seminaire (ISN_2=36)
+|    |    +-- Tache 124.3.7.4 - Validation Automatique v1 (ISN_2=38)
+|    |    +-- Tache 124.3.7.5 - Validation Automatique TRA 2.0 (ISN_2=81)
+|    |    +-- Tache 124.3.7.6 - Zoom Village/Village (ISN_2=49)
+|    |
+|    +-- Tache 124.3.8 - Liste des Filiations (ISN_2=52)
+|    +-- Tache 124.3.9 - Arr.differee (ISN_2=59)
+|    +-- Tache 124.3.10 - Lecture email (ISN_2=65)
 |
-+-- Expressions de verification vol :
-     - Expression 56 : "Code vol aller non renseigne !"
-     - Expression 57 : {0,12}=''  (Vol aller vide)
-     - Expression 58 : "Code vol retour non renseigne !"  <-- MESSAGE BLOQUANT
-     - Expression 59 : {0,14}=''  (Vol retour vide)
++-- Tache 124.4 - Test fdp Turquie (ISN_2=90)
 ```
 
-### Variables DataView identifiees (niveau 0)
-
-| Variable | Column ID | Nom logique | Role |
-|----------|-----------|-------------|------|
-| ? | 4 | Type transport aller | Valeurs: A, Z, H, C, VV1, VV2, VV3 |
-| ? | 5 | Type transport retour | Valeurs: A, Z, H, C, VV1, VV2, VV3 |
-| ? | 10 | Flag confirmation | N = non confirme |
-| ? | 12 | Code vol aller | Vide si pas de vol |
-| ? | 14 | Code vol retour | Vide si pas de vol |
-
-> **Note** : Les lettres exactes des variables necessitent le calcul d'offset avec `magic_get_line`.
-
-### Expressions VV (Village/Village)
+### Expressions de verification vol (Tache 124.3.7.1)
 
 | Expression | Formule | Description |
 |------------|---------|-------------|
-| **12** | `{0,4}='VV1' OR {0,4}='VV2' OR {0,4}='VV3'` | Aller = Mode VV |
-| **13** | `{0,5}='VV1' OR {0,5}='VV2' OR {0,5}='VV3'` | Retour = Mode VV |
+| **56** | `'Code vol aller non renseigne !'` | Message erreur vol aller |
+| **57** | `W2-New-Code-Vol-Aller=''` | Vol aller vide |
+| **58** | `'Code vol retour non renseigne !'` | Message erreur vol retour (BLOQUANT) |
+| **59** | `W2-New-Code-Vol-Retour=''` | Vol retour vide |
+
+### Variables DataView - Tache 124.3.7 (Validation Serie)
+
+| Position | Column ID | Nom variable | Role |
+|----------|-----------|--------------|------|
+| 0 | 18 | v.choix GroupArriv ou Seminaire | Choix mode |
+| 1 | 19 | v.titre | Titre ecran |
+| 2 | 20 | W2-Liste Combo Vols | Liste deroulante vols |
+| 4 | 21 | W2-Autorisation | Flag autorisation |
+| 5 | 22 | W2-Accord Suite | Flag suite |
+| 6 | 23 | W2-Date Arrivee | Date arrivee prevue |
+| 8 | 25 | W2-Code-Vol | Code vol selectionne |
+| 10 | 27 | W2-Code-Vol-Aller | Code vol aller actuel |
+| 11 | 28 | W2-Code-Vol-Retour | Code vol retour actuel |
+| **12** | **29** | **W2-New-Code-Vol-Aller** | Nouveau code vol aller → `{0,12}` |
+| 14 | 31 | **W2-New-Code-Vol-Retour** | Nouveau code vol retour → `{0,14}` |
+
+### Expressions VV (Tache 124.3.5 - Validation Arrivant)
+
+Ces expressions sont dans une tache differente, utilisees pour la validation individuelle :
+
+| Expression | Formule | Description |
+|------------|---------|-------------|
+| **12** | `{0,4}='VV1' OR {0,4}='VV2' OR {0,4}='VV3'` | Type transport aller = VV |
+| **13** | `{0,5}='VV1' OR {0,5}='VV2' OR {0,5}='VV3'` | Type transport retour = VV |
 | **27** | Idem 12 | Doublon aller VV |
 | **28** | `({0,5}='VV1' OR {0,5}='VV2' OR {0,5}='VV3') AND {0,10}<>'N'` | Retour VV ET confirme |
 
+> **Important** : Les expressions VV sont definies dans Tache 124.3.5 mais la Tache 124.3.7 (Validation Serie) ne semble PAS utiliser ces expressions.
+
 ### Tables utilisees
 
-| N Table | Projet | Nom Logique | Description |
-|---------|--------|-------------|-------------|
-| **134** | REF | cafil112_dat01 | Table vols/transport (a confirmer) |
+| N Table | Projet | Nom Physique | Description |
+|---------|--------|--------------|-------------|
+| **30** | REF | cafil014_dat | Table filiations (compte GM) |
+| **31** | REF | cafil015_dat | Table planning GM |
+| **34** | REF | cafil014_dat | Filiations (jointure) |
+| **104** | REF | (a verifier) | Table hebergement |
+| **131** | REF | (a verifier) | Table validation |
+| **134** | REF | cafil112_dat01 | Table vols/transport |
 
 ---
 
@@ -82,84 +127,87 @@ PBG IDE 124 - Validation Arrivants
 
 ### PISTE 1 : Condition de blocage vol retour (HAUTE PRIORITE)
 
-**Objectif** : Trouver OU et COMMENT Expression 59 (vol retour vide) bloque la validation.
+**Objectif** : Trouver OU Expression 59 (vol retour vide) bloque la validation dans Tache 124.3.7.1.
 
 **Actions** :
-1. Chercher `Condition val="59"` dans la Logic de PBG IDE 124
-2. Chercher les `STP Mode="E"` (Error) qui utilisent Expression 58
-3. Verifier si la condition est dans la sous-tache "Verif Existence Groupe Vol" (ISN_2=35)
+1. Chercher `Condition val="59"` dans la Logic de Tache 124.3.7.1
+2. Chercher les operations `STP Mode="E"` (Error) qui utilisent Expression 58
+3. Verifier quelle condition combine Expression 59 avec le type transport
 
 **Commande MCP** :
 ```
-magic_get_line(project="PBG", taskPosition="124.X.35", lineNumber=*, mainOffset=91)
+magic_get_line(project="PBG", taskPosition="124.3.7.1", lineNumber=*, mainOffset=91)
 ```
 
-### PISTE 2 : Logique de bypass VV existante (MOYENNE PRIORITE)
+### PISTE 2 : Absence d'expressions VV dans Validation Serie (HAUTE PRIORITE)
 
-**Objectif** : Verifier si le mode VV bypass deja la verification vol retour.
+**Constat** : Les expressions VV (12, 13, 27, 28) sont dans Tache 124.3.5, pas dans Tache 124.3.7.
 
-**Observations** :
-- Expression 12 teste si aller = VV1/VV2/VV3
-- Expression 13 teste si retour = VV1/VV2/VV3
-- Ces expressions sont definies mais leur utilisation dans la Logic doit etre tracee
+**Hypothese** : La Tache 124.3.7 "Validation Serie" n'a PAS de logique pour bypasser le vol retour quand le mode est VV. Elle verifie uniquement si les codes vol sont remplis.
 
 **Actions** :
-1. Trouver ou Expression 12/13 est utilisee comme condition
-2. Verifier si `{0,4}='VV2'` devrait bypasser la verification vol retour
-3. Comparer avec la logique pour `{0,4}='A'` (Aller vol)
+1. Verifier si la Tache 124.3.7.1 a des expressions pour le type transport
+2. Si non, creer des expressions similaires a 12/13 pour cette tache
+3. Ajouter condition : `NOT(type_transport_retour IN ('VV1','VV2','VV3'))` avant l'erreur
 
 ### PISTE 3 : Validation vol aller seul (MOYENNE PRIORITE)
 
-**Objectif** : Comprendre pourquoi vol aller seul ne suffit pas.
+**Objectif** : Permettre vol aller seul (type 'A') sans vol retour.
 
-**Hypothese** : La logique actuelle exige TOUJOURS un vol retour, meme si :
-- L'aller est par vol (type 'A')
-- Le retour est par VV (type VV1/VV2/VV3)
+**Hypothese** : Meme si le type transport aller = 'A' (vol), le systeme exige un vol retour.
 
 **Actions** :
-1. Analyser Expression 5 : `{0,4}='A' AND ({2,4}='VV1' OR {2,4}='VV2' OR {2,4}='VV3')`
-2. Verifier si cette expression est utilisee pour autoriser vol aller + VV retour
+1. Analyser la condition complete de l'erreur vol retour
+2. Verifier si type_transport_aller est pris en compte
+3. Ajouter condition : `OR type_transport_aller = 'A'`
 
-### PISTE 4 : Configuration INI (BASSE PRIORITE)
+### PISTE 4 : Comparaison avec validation individuelle (BASSE PRIORITE)
 
-**Contexte** : Le projet utilise `INIGet('[MAGIC_LOGICAL_NAMES]club_traitement_bateau')` pour certains modes.
+**Contexte** : La validation individuelle (Tache 124.3.5) fonctionne correctement avec VV.
 
-**Fichiers concernes** :
-- Prg_118.xml (PBG IDE 193) : Expression 11/12 teste mode bateau
-- Prg_21.xml (PBG IDE 141) : Expression 22 teste mode bateau
-
-**Question** : Le mode bateau/VV est-il configure differemment selon les villages ?
+**Actions** :
+1. Comparer la logique de Tache 124.3.5 vs Tache 124.3.7
+2. Identifier les expressions manquantes dans 124.3.7
+3. Recopier/adapter la logique VV
 
 ---
 
 ## SOLUTION POTENTIELLE
 
+### Diagnostic principal
+
+La Tache 124.3.7 "Validation Serie" (seminaires) ne possede probablement PAS les memes conditions VV que la Tache 124.3.5 "Validation Arrivant" (individuel).
+
 ### Modification proposee
 
-**Avant** (logique actuelle) :
+**Dans Tache 124.3.7.1 - Verif Existence Groupe Vol** :
+
+Ajouter une expression qui teste le type transport :
 ```
-SI Vol_Retour_Vide ET Type_Transport_Retour <> VV
-ALORS Erreur "Code vol retour non renseigne !"
+Expression XX : {parent,type_transport_retour}='VV1'
+             OR {parent,type_transport_retour}='VV2'
+             OR {parent,type_transport_retour}='VV3'
 ```
 
-**Apres** (logique corrigee) :
+Modifier la condition de l'erreur vol retour :
 ```
-SI Vol_Retour_Vide
-   ET Type_Transport_Retour <> VV1
-   ET Type_Transport_Retour <> VV2
-   ET Type_Transport_Retour <> VV3
-   ET Type_Transport_Aller <> 'A'  -- AJOUT : vol aller seul autorise
-ALORS Erreur "Code vol retour non renseigne !"
+AVANT : SI W2-New-Code-Vol-Retour = ''
+        ALORS Erreur "Code vol retour non renseigne !"
+
+APRES : SI W2-New-Code-Vol-Retour = ''
+           ET Type_Transport_Retour NOT IN ('VV1','VV2','VV3')
+           ET Type_Transport_Aller <> 'A'
+        ALORS Erreur "Code vol retour non renseigne !"
 ```
 
-### Localisation probable du fix
+### Localisation precise du fix
 
 | Element | Valeur |
 |---------|--------|
 | **Programme** | PBG IDE 124 - Validation Arrivants |
-| **Sous-tache** | ISN_2=35 - Verif Existence Groupe Vol |
-| **Expression a modifier** | Condition de l'operation Error qui affiche "Code vol retour non renseigne !" |
-| **Modification** | Ajouter condition OR sur type transport = VV OU vol aller seul |
+| **Tache** | Tache 124.3.7.1 - Verif Existence Groupe Vol |
+| **Expression a modifier** | Condition utilisant Expression 59 |
+| **Modification** | Ajouter condition OR sur type transport VV/vol aller |
 
 ---
 
@@ -168,21 +216,21 @@ ALORS Erreur "Code vol retour non renseigne !"
 | Element | Detail |
 |---------|--------|
 | **Base de donnees** | Village avec seminaires actifs |
-| **Scenario de test** | Seminaire avec GM arrivant par vol aller seul |
+| **Scenario de test 1** | Seminaire avec GM arrivant par vol aller seul |
 | **Scenario de test 2** | Seminaire avec GM arrivant par VV2 (sans vol retour) |
-| **Table a extraire** | cafil112_dat (structure et exemples) |
+| **Table a extraire** | cafil014_dat (filiations avec type transport) |
 
 ---
 
 ## Questions pour clarification
 
-1. **Quel village teste ?** - Pour avoir les bonnes donnees
-2. **Le mode VV fonctionne-t-il ?** - Ou seulement le vol retour pose probleme ?
-3. **Message d'erreur exact ?** - "Code vol retour non renseigne !" ou autre ?
-4. **Ecran concerne ?** - Interface de validation groupee seminaire
+1. **Quel village teste ?** - Pour avoir les bonnes donnees seminaire
+2. **Le mode VV fonctionne-t-il en validation individuelle ?** - Confirmer que seul le mode serie pose probleme
+3. **Message d'erreur exact ?** - "Code vol retour non renseigne !" ou autre formulation ?
+4. **Ecran concerne ?** - Interface de validation groupee seminaire (Tache 124.3.7)
 
 ---
 
 *Derniere mise a jour: 2026-01-19*
-*Status: INVESTIGATION EN COURS - 4 pistes de recherche identifiees*
+*Status: INVESTIGATION EN COURS - Diagnostic : expressions VV manquantes dans Tache 124.3.7*
 *Programme: PBG IDE 124 - Validation Arrivants (source: Prg_56.xml)*
