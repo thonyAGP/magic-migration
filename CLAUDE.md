@@ -87,8 +87,17 @@ ANALYSE TERMINÉE
 └─────────────────────────────────────────────────────┘
       │
       ▼
-   COMMIT & PUSH
+┌─────────────────────────────────────────────────────┐
+│ 4. COMMIT & PUSH (AUTOMATIQUE)                      │
+│    - git add .openspec/tickets/{KEY}/ index.json    │
+│    - git commit -m "docs(tickets): ..."             │
+│    - git push origin master  ← OBLIGATOIRE          │
+│    - Le site jira.lb2i.com est mis à jour           │
+└─────────────────────────────────────────────────────┘
 ```
+
+> **RÈGLE CRITIQUE** : Le `git push` est OBLIGATOIRE après chaque analyse de ticket.
+> Sans le push, le site jira.lb2i.com n'affiche pas les nouvelles analyses.
 
 #### Commande de vérification position IDE
 
