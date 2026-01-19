@@ -66,7 +66,8 @@
         "status": "diagnostic-ok",
         "file": "tickets/PMS-1407/analysis.md",
         "createdDate": "2025-11-13",
-        "lastAnalysis": "2026-01-18"
+        "lastAnalysis": "2026-01-19",
+        "program": "PBG IDE 121"
       },
       {
         "id": "CMDS-176818",
