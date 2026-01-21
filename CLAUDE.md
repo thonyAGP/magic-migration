@@ -22,7 +22,10 @@ Quand l'utilisateur pose une question sur Magic, **DETECTER automatiquement** l'
 
 ### REGLE AUTOMATIQUE - Tickets Jira
 
-> **REGLE CRITIQUE** : Apres CHAQUE analyse de ticket, **TOUJOURS commit et push automatiquement** pour que les resultats soient visibles sur https://jira.lb2i.com. Ne JAMAIS attendre que l'utilisateur le demande.
+> **REGLES CRITIQUES** (apres CHAQUE analyse de ticket) :
+> 1. **TOUJOURS commit et push automatiquement** pour que les resultats soient visibles sur https://jira.lb2i.com
+> 2. **TOUJOURS verifier le deploiement avec Playwright** : `npx playwright test tests/e2e/verify-tickets.spec.ts`
+> 3. Ne JAMAIS attendre que l'utilisateur demande ces actions
 
 **Quand un numero de ticket est mentionne (PMS-XXXX, CMDS-XXXXXX) :**
 
