@@ -85,6 +85,22 @@
             "status": "analyse-initiale",
             "key": "PMS-1332",
             "summary": "Fiche police date fin 00/00/0000 - Sans limite pour GO"
+        },
+        {
+            "hasLocalData": true,
+            "status": "pret-implementation",
+            "key": "PMS-1412",
+            "summary": "POS SKI Japon - Impression facture obligatoire meme si mail",
+            "lastAnalysis": "2026-01-21",
+            "program": "PVE IDE 199"
+        },
+        {
+            "hasLocalData": true,
+            "status": "analyse-initiale",
+            "key": "PMS-1400",
+            "summary": "POS Reports - Evolution REVENUE CANCELATIONS (Gift Pass, Payment Type, Totaux)",
+            "lastAnalysis": "2026-01-21",
+            "program": "PVE IDE 75"
         }
     ],
     "tickets": []

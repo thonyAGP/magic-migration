@@ -93,6 +93,24 @@
         "createdDate": "2025-11-18",
         "lastAnalysis": "2026-01-19",
         "program": "PBG IDE 124"
+      },
+      {
+        "id": "PMS-1412",
+        "title": "POS SKI Japon - Impression facture obligatoire meme si mail",
+        "status": "pret-implementation",
+        "file": "tickets/PMS-1412/analysis.md",
+        "createdDate": "2025-11-17",
+        "lastAnalysis": "2026-01-21",
+        "program": "PVE IDE 199"
+      },
+      {
+        "id": "PMS-1400",
+        "title": "POS Reports - Evolution REVENUE CANCELATIONS",
+        "status": "analysis",
+        "file": "tickets/PMS-1400/analysis.md",
+        "createdDate": "2025-11-06",
+        "lastAnalysis": "2026-01-21",
+        "program": "PVE IDE 75"
       }
     ],
     "archived": [
