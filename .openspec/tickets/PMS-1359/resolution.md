@@ -1,4 +1,4 @@
-# PMS-1359 - Resolution
+﻿# PMS-1359 - Resolution
 
 > **Jira** : [PMS-1359](https://clubmed.atlassian.net/browse/PMS-1359)
 
@@ -86,3 +86,7 @@ L'implementation cote Magic est terminee. Le ticket peut passer en recette fonct
 ---
 
 *Resolution documentee le 2026-01-22*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

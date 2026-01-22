@@ -1,6 +1,6 @@
 # Resolution CMDS-176521
 
-> **Jira** : <a href="https://clubmed.atlassian.net/browse/CMDS-176521" target="_blank">CMDS-176521</a>
+> **Jira** : [CMDS-176521](https://clubmed.atlassian.net/browse/CMDS-176521)
 
 ## Statut: RÉSOLU ✅
 
@@ -73,5 +73,5 @@ Le calcul du prix était correct (d'où la facturation correcte), mais l'afficha
 
 ---
 
-*Dernière mise à jour: 2026-01-09*
+*Dernière mise à jour : 2026-01-22T18:55*
 *Fix: remplacement numéro adhérent par prix_net dans expression d'affichage*

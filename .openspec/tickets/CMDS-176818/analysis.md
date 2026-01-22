@@ -1,4 +1,4 @@
-# Analyse CMDS-176818
+﻿# Analyse CMDS-176818
 
 > **Jira** : [CMDS-176818](https://clubmed.atlassian.net/browse/CMDS-176818)
 
@@ -111,5 +111,5 @@ Si apres reset imprimante le probleme persiste, verifier dans PMS :
 
 ---
 
-*Analyse: 2026-01-12*
+$12026-01-22T18:55*
 *Statut: DIAGNOSTIC - Probleme configuration imprimante*

@@ -1,4 +1,4 @@
-# PMS-1446 - Specification d'implementation
+﻿# PMS-1446 - Specification d'implementation
 
 > **Jira** : [PMS-1446](https://clubmed.atlassian.net/browse/PMS-1446)
 
@@ -206,3 +206,7 @@ Resultat :
 
 *Specification: 2026-01-13*
 *Statut: EN ATTENTE VALIDATION*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

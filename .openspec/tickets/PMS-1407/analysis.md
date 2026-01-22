@@ -1,4 +1,4 @@
-# PMS-1407 - Validation automatique Back Office
+﻿# PMS-1407 - Validation automatique Back Office
 
 > **Jira** : [PMS-1407](https://clubmed.atlassian.net/browse/PMS-1407)
 
@@ -141,3 +141,7 @@ Sections susceptibles d'affecter la validation automatique :
 *Derniere mise a jour: 2026-01-19*
 *Status: EN ATTENTE - Probleme de configuration locale, pas de bug code*
 *Programme: PBG IDE 121 - VALID_AUTO_FILIATION (source: Prg_59.xml)*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

@@ -1,4 +1,4 @@
-# Analyse PMS-1404
+﻿# Analyse PMS-1404
 
 > **Jira** : [PMS-1404](https://clubmed.atlassian.net/browse/PMS-1404)
 
@@ -291,3 +291,7 @@ Champs potentiels à filtrer :
 *Derniere mise a jour: 2026-01-18*
 *Status: EN COURS - Colonne OK, Filtres JAMAIS IMPLEMENTES*
 *Action requise: Clarification + Développement nouvelle fonctionnalité*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

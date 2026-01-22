@@ -1,4 +1,4 @@
-# PMS-1332 - Date fiche police 00/00/0000
+﻿# PMS-1332 - Date fiche police 00/00/0000
 
 ## Informations Jira
 
@@ -73,3 +73,7 @@ PBG IDE 93 - Saisie des fiches de police
 - [ ] Analyse detaillee de la logique
 - [ ] Identification du point de modification
 - [ ] Proposition de correction
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

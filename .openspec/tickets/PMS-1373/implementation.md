@@ -1,4 +1,4 @@
-# Spécification d'Implémentation PMS-1373
+﻿# Spécification d'Implémentation PMS-1373
 
 > **Jira** : [PMS-1373](https://clubmed.atlassian.net/browse/PMS-1373)
 
@@ -190,3 +190,7 @@ IF(P.ExtraitComplet, TRUE, cte_flag_annulation = 'Normal')
 
 *Spécification générée le 2026-01-08*
 *Branche : feature/PMS-1373-masquer-annulations*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

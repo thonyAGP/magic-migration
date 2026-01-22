@@ -1,4 +1,4 @@
-# PMS-1359 - Details Implementation
+﻿# PMS-1359 - Details Implementation
 
 > **Jira** : [PMS-1359](https://clubmed.atlassian.net/browse/PMS-1359)
 
@@ -175,3 +175,7 @@ Les variables `v.Ecart F.D.R. COFFRE2` et `v.Ecart F.D.R. RECEPTION ?` sont des 
 ---
 
 *Implementation documentee le 2026-01-22*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

@@ -1,4 +1,4 @@
-# CMDS-174321 - Résolution Technique
+﻿# CMDS-174321 - Résolution Technique
 
 > **Jira** : [CMDS-174321](https://clubmed.atlassian.net/browse/CMDS-174321)
 
@@ -124,3 +124,7 @@ Vérifier dans PBG IDE 315 - Import NA :
 ---
 
 *Résolution générée le 2026-01-08*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

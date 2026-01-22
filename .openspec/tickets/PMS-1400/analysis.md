@@ -1,4 +1,4 @@
-# PMS-1400 - POS REPORTS: Evolution report REVENUE CANCELATIONS
+﻿# PMS-1400 - POS REPORTS: Evolution report REVENUE CANCELATIONS
 
 > **Jira** : [PMS-1400](https://clubmed.atlassian.net/browse/PMS-1400)
 
@@ -297,5 +297,5 @@ Trim({3,1})&{3,8}&'Total'&{3,8}&...&Trim(v.PaymentType)&{3,8}&...
 
 ---
 
-*Analyse: 2026-01-21*
+$12026-01-22T18:55*
 *Status: ANALYSE INITIALE - Questions ouvertes*

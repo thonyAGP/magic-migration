@@ -1,4 +1,4 @@
-# PMS-1453 - Caisse Adhérent : Vente transfert > heure erronée
+﻿# PMS-1453 - Caisse Adhérent : Vente transfert > heure erronée
 
 > **Jira** : [PMS-1453](https://clubmed.atlassian.net/browse/PMS-1453)
 > **Protocole** : `.claude/protocols/ticket-analysis.md` appliqué
@@ -148,3 +148,7 @@ Les champs TIME dans Magic sont stockés en secondes (0 à 86399 pour 00:00:00 �
 ---
 
 *Analyse : 2026-01-22 18:14*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

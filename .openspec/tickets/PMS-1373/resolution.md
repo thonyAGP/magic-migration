@@ -1,4 +1,4 @@
-# PMS-1373 - Résolution Technique
+﻿# PMS-1373 - Résolution Technique
 
 ## Principe
 
@@ -266,3 +266,7 @@ Le `Trim()` est important car le champ peut contenir des espaces.
 ---
 
 *Résolution générée le 2026-01-08*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

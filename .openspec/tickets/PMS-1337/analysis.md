@@ -1,4 +1,4 @@
-# PMS-1337 - Lancement de 2 instances de Caisse Adherent
+﻿# PMS-1337 - Lancement de 2 instances de Caisse Adherent
 
 > **Jira** : [PMS-1337](https://clubmed.atlassian.net/browse/PMS-1337)
 
@@ -139,3 +139,7 @@ Le controle actuel verifie uniquement le **terminal**. Mais il devrait verifier 
 
 ---
 *Analyse effectuee le 21/01/2026*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

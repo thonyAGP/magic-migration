@@ -1,4 +1,4 @@
-# PMS-1414 - Validation groupee seminaire
+﻿# PMS-1414 - Validation groupee seminaire
 
 > **Jira** : [PMS-1414](https://clubmed.atlassian.net/browse/PMS-1414)
 
@@ -234,3 +234,7 @@ APRES : SI W2-New-Code-Vol-Retour = ''
 *Derniere mise a jour: 2026-01-19*
 *Status: INVESTIGATION EN COURS - Diagnostic : expressions VV manquantes dans Tache 124.3.7*
 *Programme: PBG IDE 124 - Validation Arrivants (source: Prg_56.xml)*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

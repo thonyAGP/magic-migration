@@ -1,4 +1,4 @@
-# PMS-1446 - Location materiel ski courts sejours
+﻿# PMS-1446 - Location materiel ski courts sejours
 
 > **Jira** : [PMS-1446](https://clubmed.atlassian.net/browse/PMS-1446)
 
@@ -166,6 +166,6 @@ FIN SI
 
 ---
 
-*Analyse: 2026-01-09*
+$12026-01-22T18:55*
 *Verification MCP: 2026-01-13*
 *Statut: SPEC COMPLETE - En attente validation metier*

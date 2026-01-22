@@ -1,4 +1,4 @@
-# Analyse PMS-1373
+﻿# Analyse PMS-1373
 
 > **Jira** : [PMS-1373](https://clubmed.atlassian.net/browse/PMS-1373)
 
@@ -322,3 +322,7 @@ Voir : `.openspec/patterns/add-filter-parameter.md`
 *Verification MCP: 2026-01-12*
 *Implementation: 2026-01-08*
 *Statut: IMPLEMENTE - EN ATTENTE RECETTE*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

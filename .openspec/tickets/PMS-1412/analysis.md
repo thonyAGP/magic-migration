@@ -1,4 +1,4 @@
-# PMS-1412 - POS SKI: Loi japonaise impression facture obligatoire
+﻿# PMS-1412 - POS SKI: Loi japonaise impression facture obligatoire
 
 > **Jira** : [PMS-1412](https://clubmed.atlassian.net/browse/PMS-1412)
 
@@ -241,3 +241,7 @@ Ligne X+2 : End Block
 
 *Analyse: 2026-01-21 (mise a jour)*
 *Status: PRET POUR IMPLEMENTATION*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

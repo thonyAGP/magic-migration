@@ -1,4 +1,4 @@
-# Analyse CMDS-176481
+﻿# Analyse CMDS-176481
 
 > **Jira** : [CMDS-176481](https://clubmed.atlassian.net/browse/CMDS-176481)
 
@@ -215,3 +215,7 @@ Le batch **AFFAUTO** (Affectation Automatique) qui s'execute quotidiennement rec
 *Analyse completee: 2026-01-09*
 *Base verifiee: TUR0801*
 *Pieces jointes: 7 screenshots dans attachments/*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*

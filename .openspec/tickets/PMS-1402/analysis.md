@@ -1,4 +1,4 @@
-# Analyse PMS-1402
+﻿# Analyse PMS-1402
 
 > **Jira** : [PMS-1402](https://clubmed.atlassian.net/browse/PMS-1402)
 
@@ -174,3 +174,7 @@ FIN SI
 
 *Derniere mise a jour: 2026-01-13*
 *Status: ANALYSE INITIALE - Questions en suspens*
+
+---
+
+*DerniÃ¨re mise Ã  jour : 2026-01-22T18:55*
