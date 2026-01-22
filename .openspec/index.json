@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-21T17:00:00.000Z",
+  "lastUpdated": "2026-01-22T10:44:27.044Z",
   "reports": [
     {
       "id": "spec",
@@ -52,15 +52,6 @@
   ],
   "tickets": {
     "active": [
-      {
-        "id": "PMS-1337",
-        "title": "Double lancement Caisse Adherent - Controle session/utilisateur",
-        "status": "analysis",
-        "file": "tickets/PMS-1337/analysis.md",
-        "createdDate": "2025-06-19",
-        "lastAnalysis": "2026-01-21",
-        "program": "ADH IDE 156"
-      },
       {
         "id": "PMS-1404",
         "title": "POS Reports M&E - Quantity OK, filtres JAMAIS implementes",
@@ -176,6 +167,16 @@
         "createdDate": "2026-01-09",
         "lastAnalysis": "2026-01-18",
         "resolvedDate": "2026-01-18"
+      },
+      {
+        "id": "PMS-1337",
+        "title": "Double lancement Caisse Adherent - Controle session/utilisateur",
+        "status": "analysis",
+        "file": "tickets/PMS-1337/analysis.md",
+        "createdDate": "2025-06-19",
+        "lastAnalysis": "2026-01-22",
+        "program": "ADH IDE 156",
+        "resolvedDate": "2026-01-22"
       }
     ]
   }
