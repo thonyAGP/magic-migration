@@ -338,10 +338,169 @@
     ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
 
     /* File tabs */
-    .file-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .file-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; flex-wrap: wrap; }
     .file-tab { padding: 6px 12px; font-size: 12px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px 4px 0 0; cursor: pointer; color: var(--text-secondary); }
     .file-tab:hover { color: var(--text-primary); }
     .file-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+    .file-tab.commits { background: var(--bg-tertiary); border-color: var(--purple); color: var(--purple); }
+    .file-tab.commits:hover { background: var(--purple); color: #fff; }
+    .file-tab.commits.active { background: var(--purple); color: #fff; }
+
+    /* Ticket header with date/time */
+    .ticket-header {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .ticket-header .ticket-id {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .ticket-header .ticket-meta {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .ticket-header .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .ticket-header .meta-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+    }
+
+    .ticket-header .meta-value {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .ticket-header .meta-value.highlight {
+      color: var(--success);
+      font-family: 'SF Mono', 'Consolas', monospace;
+    }
+
+    /* Analysis time in sidebar */
+    .analysis-time {
+      font-size: 10px;
+      color: var(--purple);
+      font-family: 'SF Mono', 'Consolas', monospace;
+      margin-top: 2px;
+    }
+
+    /* Commits panel */
+    .commits-panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .commits-panel h3 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      color: var(--purple);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .commit-item {
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      border-left: 3px solid var(--purple);
+    }
+
+    .commit-item .commit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .commit-item .commit-hash {
+      font-family: 'SF Mono', 'Consolas', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      background: var(--bg-primary);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .commit-item .commit-date {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .commit-item .commit-message {
+      font-size: 13px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .commit-item .commit-files {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .commit-item .commit-files code {
+      font-size: 10px;
+      background: var(--bg-primary);
+      padding: 1px 4px;
+      border-radius: 3px;
+      margin-right: 4px;
+    }
+
+    .commits-empty {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+    }
+
+    .commits-loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary);
+    }
+
+    .btn-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 12px;
+      margin-top: 16px;
+    }
+
+    .btn-github:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
   </style>
 </head>
 <body>
@@ -405,6 +564,24 @@
       if (!dateStr) return '-';
       const date = new Date(dateStr);
       return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+    }
+
+    function formatDateTime(dateStr) {
+      if (!dateStr) return '-';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) +
+             ' ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatFullDateTime(dateStr) {
+      if (!dateStr) return '-';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      }) + ' a ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     }
 
     async function init() {
@@ -506,8 +683,11 @@
           ? `<button class="action-btn unarchive" onclick="unarchiveTicket('${t.id}')" title="Desarchiver">↩</button>`
           : `<button class="action-btn archive" onclick="archiveTicket('${t.id}')" title="Archiver">📥</button>`;
 
-        const lastAnalysisText = t.lastAnalysis ? `Analyse: ${formatDate(t.lastAnalysis)}` : '';
+        // Use lastAnalysisTime if available, fallback to lastAnalysis
+        const analysisTimeStr = t.lastAnalysisTime || t.lastAnalysis;
+        const lastAnalysisText = analysisTimeStr ? formatDateTime(analysisTimeStr) : '-';
         const createdText = t.createdDate ? `Cree: ${formatDate(t.createdDate)}` : '';
+        const programText = t.program ? `<span class="date-info" style="color: var(--accent);">${t.program}</span>` : '';
 
         html += `<a class="nav-item" data-file="${t.file}" data-ticket-id="${t.id}">
           <div class="row">
@@ -521,8 +701,9 @@
           </div>
           <div class="subtitle">
             <span class="date-info">${createdText}</span>
-            <span class="date-info">${lastAnalysisText}</span>
+            ${programText}
           </div>
+          <div class="analysis-time">Analyse: ${lastAnalysisText}</div>
           <div class="status-dropdown" id="dropdown-${t.id}">
             ${STATUSES.map(s => `<div class="status-option" onclick="changeStatus('${t.id}', '${s.id}')">${s.label}</div>`).join('')}
           </div>
@@ -604,35 +785,132 @@
       });
     }
 
-    async function loadFile(path) {
+    async function loadFile(path, showCommits = false) {
       content.innerHTML = '<div class="loading">Chargement...</div>';
 
       const isTicket = path.includes('tickets/');
+      let headerHtml = '';
       let tabsHtml = '';
+      let ticketId = null;
+      let ticketData = null;
 
       if (isTicket) {
         const ticketDir = path.substring(0, path.lastIndexOf('/') + 1);
         const files = ['analysis.md', 'resolution.md', 'implementation.md', 'notes.md'];
         const currentFile = path.substring(path.lastIndexOf('/') + 1);
 
+        // Extract ticket ID from path
+        const match = path.match(/tickets\/([A-Z]+-\d+)\//);
+        if (match) {
+          ticketId = match[1];
+          // Find ticket data in index
+          ticketData = [...indexData.tickets.active, ...indexData.tickets.archived]
+            .find(t => t.id === ticketId);
+        }
+
+        // Build ticket header with date/time
+        if (ticketData) {
+          const analysisTime = ticketData.lastAnalysisTime || ticketData.lastAnalysis;
+          const fullDateTime = formatFullDateTime(analysisTime);
+          const jiraUrl = `https://clubmed.atlassian.net/browse/${ticketId}`;
+
+          headerHtml = `
+            <div class="ticket-header">
+              <div>
+                <a href="${jiraUrl}" target="_blank" class="ticket-id">${ticketId}</a>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">${ticketData.title}</div>
+              </div>
+              <div class="ticket-meta">
+                <div class="meta-item">
+                  <span class="meta-label">Derniere analyse</span>
+                  <span class="meta-value highlight">${fullDateTime}</span>
+                </div>
+                ${ticketData.program ? `
+                <div class="meta-item">
+                  <span class="meta-label">Programme</span>
+                  <span class="meta-value">${ticketData.program}</span>
+                </div>` : ''}
+                <div class="meta-item">
+                  <span class="meta-label">Statut</span>
+                  <span class="meta-value">${ticketData.status}</span>
+                </div>
+              </div>
+            </div>`;
+        }
+
+        // Build tabs with Commits tab
         tabsHtml = '<div class="file-tabs">';
         for (const f of files) {
           const fullPath = ticketDir + f;
-          const active = f === currentFile ? 'active' : '';
+          const active = (f === currentFile && !showCommits) ? 'active' : '';
           const label = f.replace('.md', '');
-          tabsHtml += `<div class="file-tab ${active}" onclick="loadFile('${fullPath}'); setActiveNav('${fullPath}')">${label}</div>`;
+          tabsHtml += `<div class="file-tab ${active}" onclick="loadFile('${fullPath}'); setActiveNav('${ticketDir}analysis.md')">${label}</div>`;
         }
+        // Add Commits tab
+        const commitsActive = showCommits ? 'active' : '';
+        tabsHtml += `<div class="file-tab commits ${commitsActive}" onclick="loadFile('${ticketDir}analysis.md', true); setActiveNav('${ticketDir}analysis.md')">📜 Commits</div>`;
         tabsHtml += '</div>';
+      }
+
+      // If showing commits panel
+      if (showCommits && ticketId) {
+        content.innerHTML = headerHtml + tabsHtml + buildCommitsPanel(ticketId);
+        return;
       }
 
       try {
         const response = await fetch(path + '?t=' + Date.now());
         if (!response.ok) throw new Error('Fichier non trouve');
         const text = await response.text();
-        content.innerHTML = tabsHtml + marked.parse(text);
+        content.innerHTML = headerHtml + tabsHtml + marked.parse(text);
       } catch (err) {
-        content.innerHTML = tabsHtml + `<div class="welcome"><h2>Fichier non trouve</h2><p>${path}</p></div>`;
+        content.innerHTML = headerHtml + tabsHtml + `<div class="welcome"><h2>Fichier non trouve</h2><p>${path}</p></div>`;
       }
+    }
+
+    function buildCommitsPanel(ticketId) {
+      // Get commits data from index (if available) or show placeholder
+      const ticket = [...indexData.tickets.active, ...indexData.tickets.archived]
+        .find(t => t.id === ticketId);
+
+      const commits = ticket?.commits || [];
+      const githubUrl = `https://github.com/thonyAGP/lecteur-magic/commits/master/.openspec/tickets/${ticketId}`;
+
+      if (commits.length === 0) {
+        return `
+          <div class="commits-panel">
+            <h3>📜 Historique Git</h3>
+            <div class="commits-empty">
+              <p>Les commits pour ce ticket seront synchronises automatiquement.</p>
+              <p style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);">
+                En attendant, vous pouvez consulter l'historique sur GitHub :
+              </p>
+              <a href="${githubUrl}" target="_blank" class="btn-github">
+                🔗 Voir sur GitHub
+              </a>
+            </div>
+          </div>`;
+      }
+
+      let commitsHtml = commits.map(c => `
+        <div class="commit-item">
+          <div class="commit-header">
+            <span class="commit-hash">${c.hash?.substring(0, 7) || '?'}</span>
+            <span class="commit-date">${formatDateTime(c.date)}</span>
+          </div>
+          <div class="commit-message">${c.message || '-'}</div>
+          ${c.files ? `<div class="commit-files">${c.files.map(f => `<code>${f}</code>`).join('')}</div>` : ''}
+        </div>
+      `).join('');
+
+      return `
+        <div class="commits-panel">
+          <h3>📜 Historique Git (${commits.length} commits)</h3>
+          ${commitsHtml}
+          <a href="${githubUrl}" target="_blank" class="btn-github">
+            🔗 Voir tous les commits sur GitHub
+          </a>
+        </div>`;
     }
 
     window.loadFile = loadFile;
