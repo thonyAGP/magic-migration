@@ -26,26 +26,21 @@
 
 ## 2. Localisation Programmes
 
-### Appels MCP effectués
+### magic_find_program("{recherche}")
 
-#### magic_find_program("{recherche}")
-```
 | Project | IDE | ID | Name | Public |
 |---------|-----|----|------|--------|
 | ... | ... | ... | ... | ... |
-```
 
-#### magic_get_position("{projet}", {id})
-```
-Résultat : {PROJET} IDE {N} - {Nom}
-```
+### magic_get_position("{projet}", {id})
 
-#### magic_get_tree("{projet}", {id})
-```
+Résultat : **{PROJET} IDE {N} - {Nom}**
+
+### magic_get_tree("{projet}", {id})
+
 | IDE | ISN_2 | Nom | Niveau |
 |-----|-------|-----|--------|
 | ... | ... | ... | ... |
-```
 
 ### Programmes identifiés
 
@@ -57,16 +52,14 @@ Résultat : {PROJET} IDE {N} - {Nom}
 
 ## 3. Traçage Flux
 
-### Appels MCP effectués
+### magic_get_logic("{projet}", {id}, {isn2})
 
-#### magic_get_logic("{projet}", {id})
-```
 | Ligne | Opération | Condition | Cible |
 |-------|-----------|-----------|-------|
 | ... | ... | ... | ... |
-```
 
-#### Résolution des CallTask/CallProgram
+### Résolution des CallTask/CallProgram
+
 - Ligne {N} : TargetPrg={X} → `magic_get_position()` → **{PROJET} IDE {Y}**
 
 ### Diagramme du flux
@@ -90,34 +83,26 @@ Résultat : {PROJET} IDE {N} - {Nom}
 
 ### Calcul mainOffset
 
-```
 Tâche analysée : {PROJET} IDE {N.X.Y.Z}
 
-mainOffset = {offset Main projet}
-           + {colonnes de N}
-           + {colonnes de N.X}
-           + {colonnes de N.X.Y}
-           = {TOTAL}
-```
+| Niveau | Colonnes | Cumul |
+|--------|----------|-------|
+| Main | {offset Main projet} | {offset} |
+| Tâche {N} | {colonnes} | {cumul} |
+| Tâche {N.X} | {colonnes} | {cumul} |
+| **TOTAL** | | **{TOTAL}** |
 
-### Appels MCP effectués
+### magic_get_line("{projet}", "{task}", {ligne}, {mainOffset})
 
-#### magic_get_expression("{projet}", {expressionId})
-```
-Expression {N} :
-{formule brute}
-```
-
-#### magic_get_line("{projet}", "{task}", {ligne}, {mainOffset})
-```
-Variable {LETTRE} = {nom logique} ({Type}, {Format})
-```
+| Variable | Nom logique | Type | Format |
+|----------|-------------|------|--------|
+| {LETTRE} | {nom} | {type} | {format} |
 
 ### Décodage {N,Y} → Variables globales
 
-| Référence | FieldID | Position locale | Index global | Variable | Nom logique |
-|-----------|---------|-----------------|--------------|----------|-------------|
-| {0,X} | X | {pos} | {index} | **{VAR}** | {nom} |
+| Référence | Position locale | Index global | Variable | Nom logique |
+|-----------|-----------------|--------------|----------|-------------|
+| {0,X} | {pos} | {index} | **{VAR}** | {nom} |
 
 ### Formule décodée (lisible)
 
@@ -128,18 +113,6 @@ Variable {LETTRE} = {nom logique} ({Type}, {Format})
 ---
 
 ## 5. Root Cause
-
-### Hypothèse
-
-"{Description de l'hypothèse}"
-
-### Vérification
-
-- Appel MCP : `{outil}("{params}")`
-- Résultat : {observation}
-- Conclusion : {confirme ou infirme}
-
-### Root Cause identifiée
 
 | Élément | Valeur |
 |---------|--------|
@@ -152,52 +125,12 @@ Variable {LETTRE} = {nom logique} ({Type}, {Format})
 
 ---
 
-## 6. Solution
+## Données requises
 
-### Localisation exacte
-
-- **Programme** : {PROJET} IDE {N} - {Nom}
-- **Sous-tâche** : Tâche {N.X.Y}
-- **Ligne Logic** : Ligne {L}
-- **Expression** : Expression {E}
-
-### Modification
-
-| Élément | Avant (bug) | Après (fix) |
-|---------|-------------|-------------|
-| {cible} | {valeur actuelle} | {valeur corrigée} |
-
-### Formule complète
-
-**Avant** :
-```
-{formule avec erreur, variables nommées}
-```
-
-**Après** :
-```
-{formule corrigée, variables nommées}
-```
-
-### Variables concernées
-
-| Variable | Nom logique | Rôle | Statut |
-|----------|-------------|------|--------|
-| {VAR} | {nom} | {rôle} | {Modifié/Ajouté/Retiré/Inchangé} |
-
----
-
-## Checklist validation
-
-- [ ] Tous les programmes ont un IDE vérifié par `magic_get_position`
-- [ ] Toutes les variables utilisent le mainOffset correct
-- [ ] Au moins une expression est décodée avec formule lisible
-- [ ] La root cause identifie : Programme + Tâche + Ligne + Expression
-- [ ] La solution donne : Avant/Après avec variables nommées
-- [ ] Le diagramme de flux ASCII est présent
-- [ ] Les deux index.json sont mis à jour
+- Base de données : Village {NOM} à la date {JJ/MM/AAAA}
+- Fichier(s) : {nom_fichier.ext}
+- Table(s) à extraire : {nom_table}
 
 ---
 
 *Analyse : {DATE}*
-*Protocole : ticket-analysis.md v1.0*

@@ -25,20 +25,17 @@
 
 ## 2. Localisation Programmes
 
-### Appels MCP effectués
+### magic_find_program("purge")
 
-#### magic_find_program("purge")
-```
 | Project | IDE | ID | Name | Public |
 |---------|-----|----|------|--------|
 | REF | 746 | 723 | Purge caisse | PURGE |
 | REF | 747 | 724 | Purge caisse PMS-690 | |
 | REF | 748 | 725 | Lancement Purge | |
 | PBG | 274 | 784 | Affichage Log Purge Unit | |
-```
 
-#### magic_get_tree("REF", 723)
-```
+### magic_get_tree("REF", 723)
+
 | IDE | ISN_2 | Nom | Niveau |
 |-----|-------|-----|--------|
 | 746 | 1 | Purge caisse | 0 |
@@ -50,8 +47,6 @@
 | 746.3.3 | 13 | comptage caisse | 2 |
 | 746.3.4 | 16 | session | 2 |
 | 746.3.5 | 21 | coffre | 2 |
-| ... | ... | ... | ... |
-```
 
 ### Programmes identifiés
 
@@ -70,10 +65,8 @@
 
 ## 3. Traçage Flux
 
-### Appels MCP effectués
+### magic_get_logic("REF", 723, 1)
 
-#### magic_get_logic("REF", 723, 1)
-```
 | Ligne | Opération | Condition |
 |-------|-----------|-----------|
 | 11 | BLOCK | NOT VG.47 |
@@ -83,7 +76,6 @@
 | 15 | CallTask | Sous-tâche 24 : session_user_inconnue |
 | 16 | CallTask | Sous-tâche 29 : session_a_zero |
 | 17 | CallTask | Sous-tâche 35 : Suppression utilisateur |
-```
 
 ### Diagramme du flux
 
@@ -134,8 +126,6 @@ La purge devrait :
 
 ## 5. Root Cause
 
-### Root Cause identifiée
-
 | Élément | Valeur |
 |---------|--------|
 | **Programme** | REF IDE 746 - Purge caisse |
@@ -145,57 +135,11 @@ La purge devrait :
 
 ---
 
-## 6. Solution
-
-### Approche recommandée
-
-Modifier le critère de sélection pour :
-
-1. **Créer une sous-tâche** qui recherche la date de fin maximale dans `fra_sejour` pour chaque GM/GO
-2. **Utiliser cette date** comme critère de purge au lieu de `gmr_fin_sejour`
-
-### Pseudo-code du fix
-
-**Avant** :
-```
-SI gmr_fin_sejour < Date_Purge ALORS
-   Purger le GM/GO
-```
-
-**Après** :
-```
-date_fin_reelle = MAX(fra_sejour.date_fin WHERE societe=S AND compte=C AND filiation=F)
-SI date_fin_reelle IS NULL ALORS
-   date_fin_reelle = gmr_fin_sejour
-SI date_fin_reelle < Date_Purge ALORS
-   Purger le GM/GO
-```
-
-### Tables concernées
-
-| Table | Champ | Rôle |
-|-------|-------|------|
-| fra_sejour (321) | date_fin | Date fin de chaque tronçon |
-| gm-recherche (cafil008_dat) | gmr_fin_sejour | Date fin 1er tronçon (actuel) |
-
----
-
-## Checklist validation
-
-- [x] Tous les programmes ont un IDE vérifié par `magic_get_position`
-- [x] Le flux de purge est tracé
-- [x] La root cause est identifiée : critère de sélection incorrect
-- [x] La solution propose une approche avec MAX(fra_sejour)
-- [x] Diagramme de flux ASCII présent
-
----
-
-## Données requises pour compléter l'analyse
+## Données requises
 
 - Base de données : Village avec GO multi-tronçons
 - Exemple de GM/GO avec tronçon 1 (fin 7/12/2025) et tronçon 2 (fin juin 2026)
 
 ---
 
-*Analyse : 2026-01-22*
-*Parser utilisé : magic-logic-parser-v5.ps1*
+*Analyse : 2026-01-22 18:14*
