@@ -46,18 +46,18 @@
 | Variable | Nom | Type | Precision | Role |
 |----------|-----|------|-----------|------|
 | **ET** | v.total FDR Init | Numeric | 11.3 | FDR initial du jour courant |
-| **EU** | v.total FDR Final | Numeric | 11.3 | FDR final du jour courant |
-| **EV** | v.Ecart F.D.R. COFFRE2 | Logical | - | TRUE si ecart detecte sur COFFRE2 |
-| **EW** | v.Ecart F.D.R. RECEPTION ? | Logical | - | TRUE si ecart detecte sur RECEPTION |
-| **EX** | v.FDR fermeture de la veille | Numeric | 11.3 | Montant FDR cloture session J-1 |
-| **FA** | v.Session de Fermeture prec exi | Logical | - | TRUE si une session J-1 existe |
+| **EU** | v.FDR fermeture de la veille | Numeric | 11.3 | Montant FDR cloture session J-1 |
+| **EV** | v.Session de Fermeture prec exi | Logical | - | TRUE si une session J-1 existe |
+| **EW** | v.total FDR Final | Numeric | 11.3 | FDR final du jour courant |
+| **EX** | v.Ecart F.D.R. COFFRE2 | Logical | - | TRUE si ecart detecte sur COFFRE2 |
+| **EY** | v.Ecart F.D.R. RECEPTION ? | Logical | - | TRUE si ecart detecte sur RECEPTION |
 
 ### Dans Tache 22.16.1.1 (ISN_2=56) - Update FDR Precedent
 
 | Variable | Nom | Type | Source |
 |----------|-----|------|--------|
-| **EY** | utilisateur | Unicode | temp_histo_sessions_caisse (Table 246) |
-| **EZ** | chrono en cours | Numeric | temp_histo_sessions_caisse (Table 246) |
+| **EZ** | utilisateur | Unicode | temp_histo_sessions_caisse (Table 246) |
+| **FA** | chrono en cours | Numeric | temp_histo_sessions_caisse (Table 246) |
 | **FJ** | montant | Numeric | histo_sessions_caisse_detail (Table 249) |
 
 ---
@@ -91,34 +91,45 @@ Ligne 22: END_LINK
 #### Task Prefix (Handler P)
 
 ```
-Ligne 1: Update Parent.FieldID_81 = Expression 11 ('FALSE')
-Ligne 2: Update Parent.FieldID_82 = Expression 10 (formatage COFFRE)
+Ligne 2: Update EU (v.FDR fermeture de la veille) = Expression 11, valeur 0
+Ligne 3: Update EV (v.Session de Fermeture prec exi) = Expression 10, valeur 'FALSE'LOG
 ```
 
-> Les FieldID 81 et 82 du parent (Tache 22.16.1) recoivent les valeurs calculees.
+> Les variables EU et EV du parent (Tache 22.16.1) sont initialisees en debut de tache.
 
 #### Record Suffix (Handler S)
 
 ```
-Ligne 1: IF Expression 6 (FJ<>0) THEN
-Ligne 2:   Call Task 57 (CAISSE v1) IF Expression 7 (NOT BE)
-Ligne 3:   Call Task 58 (CAISSE T2H) IF Expression 8 (BE)
-Ligne 5: END IF
+Ligne 5: Block IF Expression 6
+           → FJ<>0
+           → (montant <> 0)
+Ligne 6:   Call SubTask 1 (CAISSE v1) Condition: Expression 7
+             → NOT VG.Hostname au lieu de...
+Ligne 7:   Call SubTask 2 (CAISSE T2H) Condition: Expression 8
+             → VG.Hostname au lieu de...
+Ligne 9: Block End }
 ```
 
 ---
 
 ## Expressions cles
 
-| ID | Formule | Description |
-|----|---------|-------------|
-| 1 | **CA** | p.Date Comptable (parametre Main niveau 3) |
-| 2 | **EY** | Utilisateur (temp_histo_sessions_caisse) |
-| 3 | **EZ-1** | Chrono en cours - 1 = chrono session precedente |
-| 6 | **FJ<>0** | Verifie qu'on a trouve des donnees FDR (montant <> 0) |
-| 7 | **NOT BE** | Condition pour appeler CAISSE v1 (VG.BE = flag T2H) |
-| 8 | **BE** | Condition pour appeler CAISSE T2H |
-| 9 | **IF(Trim(DI)='COFFRE 2', Str(CB,'3P0'), Trim(DI))** | Formatage conditionnel du type utilisateur |
+| ID | Formule (variables) | Formule (traduction) | Description |
+|----|---------------------|----------------------|-------------|
+| 6 | `FJ<>0` | `montant <> 0` | Verifie qu'on a trouve des donnees FDR |
+| 7 | `NOT VG.Hostname` | `NOT (VG.Hostname au lieu de...)` | Condition pour appeler CAISSE v1 |
+| 8 | `VG.Hostname` | `VG.Hostname au lieu de...` | Condition pour appeler CAISSE T2H |
+| 10 | `'FALSE'LOG` | valeur logique FALSE | Initialise EV (session existe) |
+| 11 | `0` | valeur numerique 0 | Initialise EU (montant FDR veille) |
+
+### Expressions du DataView (Record Main)
+
+| ID | Formule (variables) | Formule (traduction) | Description |
+|----|---------------------|----------------------|-------------|
+| 1 | `CA` | `p.Date Comptable` | Date comptable du niveau 3 |
+| 2 | `EZ` | `utilisateur` | Utilisateur courant |
+| 3 | `FA-1` | `chrono en cours - 1` | Chrono session precedente |
+| 9 | `IF(Trim(DI)='COFFRE 2', Str(CB,'3P0'), Trim(DI))` | `IF(type_utilisateur='COFFRE 2', formater(chrono), type_utilisateur)` | Formatage conditionnel |
 
 ---
 
