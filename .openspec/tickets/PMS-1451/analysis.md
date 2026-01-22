@@ -1,221 +1,306 @@
-# PMS-1451 - PURGE prend uniquement le 1er tronçon de séjour
+# PMS-1451 - PURGE prend uniquement le 1er troncon de sejour
 
 > **Jira** : [PMS-1451](https://clubmed.atlassian.net/browse/PMS-1451)
-> **Protocole** : `.claude/protocols/ticket-analysis.md` appliqué
+> **Protocole** : `.claude/protocols/ticket-analysis.md` applique
 
 ---
 
 ## 1. Contexte Jira
 
-| Élément | Valeur |
+| Element | Valeur |
 |---------|--------|
-| **Symptôme** | "Tous les GO qui avaient plusieurs tronçons de séjour ont été archivés même si leur date de fin était juin 2026" |
-| **Données entrée** | Purge lancée le 3/12 pour la date du 26/12 |
-| **Attendu** | Le système doit regarder la date de départ du 2ème tronçon (GM et GO) |
-| **Obtenu** | Le système regarde uniquement la date de départ du 1er tronçon (le 7/12) |
+| **Symptome** | "Tous les GO qui avaient plusieurs troncons de sejour ont ete archives meme si leur date de fin etait juin 2026" |
+| **Donnees entree** | Purge lancee le 3/12 pour la date du 26/12 |
+| **Attendu** | Le systeme doit regarder la date de depart du 2eme troncon (GM et GO) |
+| **Obtenu** | Le systeme regarde uniquement la date de depart du 1er troncon (le 7/12) |
 | **Reporter** | Jessica Palermo |
 | **Date** | 2026-01-06 |
 
 ### Indices extraits du ticket
-- Tronçons de séjour multiples → **Table n°167 - troncon (cafil145_dat)**
-- Date fin séjour GM → **Table n°30 - gm-recherche (cafil008_dat)** champ `gmr_fin_sejour`
-- Sélection archivage → Programme de sélection à identifier
+
+- Troncons de sejour multiples -> **Table n166 - troncon (cafil145_dat)**
+- Date fin sejour GM -> **Table n30 - gm-recherche (cafil008_dat)** champ `gmr_fin_sejour`
+- Selection archivage -> Programme de selection a identifier
 
 ---
 
-## 2. Localisation Programmes - CORRIGÉE
+## 2. Clarification PUG vs REF
 
-### Programme de sélection pour archivage (TROUVÉ)
+### Confusion initiale
 
-| Projet | IDE | Fichier | Nom | Rôle |
+L'utilisateur a indique "PMS-1451 est present dans le projet PUG". Apres investigation :
+
+| Projet | Programme | Role | Bug ? |
+|--------|-----------|------|-------|
+| **PUG** | PUG IDE 18 "Purge Batch" | Purge des donnees **CAISSE** (sessions, ventes, coffre) | **NON** |
+| **REF** | REF IDE 749.1 "selection" | Selection des **GO a archiver** | **OUI** |
+
+### Analyse de PUG IDE 18
+
+| Element | Constat |
+|---------|---------|
+| Fichier | Prg_101.xml |
+| Role | Purge intersaison des donnees de caisse |
+| Reference cafil145_dat | Presente (ligne 34786) mais **uniquement comme nom de table dans DELETE SQL** |
+| DataView | Ne lit PAS la table troncon pour verifier les dates |
+
+**Conclusion** : PUG IDE 18 **supprime** les enregistrements mais **ne decide pas** lesquels supprimer.
+La **selection** des GO a archiver est faite par **REF IDE 749.1**.
+
+---
+
+## 3. Localisation du bug - REF IDE 749.1
+
+### Programme fautif identifie
+
+| Projet | IDE | Fichier | Nom | Role |
 |--------|-----|---------|-----|------|
-| **REF** | **749** | Prg_726.xml | **lancement reparation** | Orchestrateur archivage |
-| **REF** | **749.1** | Prg_726.xml | **séléction** | **SÉLECTION DES GO À ARCHIVER** |
-| **REF** | **749.2** | Prg_726.xml | supress des arrivées avant dim | Nettoyage zselect |
+| **REF** | **749** | Prg_726.xml | lancement reparation | Orchestrateur archivage |
+| **REF** | **749.1** | Prg_726.xml | **selection** | **SELECTION DES GO A ARCHIVER** |
+| **REF** | **749.2** | Prg_726.xml | supress des arrivees avant dim | Nettoyage zselect |
 
-### Programmes de suppression (appelés après sélection)
+### DataView de REF IDE 749.1 (LE BUG)
 
-| Projet | IDE | Fichier | Nom | Table cible |
-|--------|-----|---------|-----|-------------|
-| REF | 750 | Prg_727.xml | suppress voyages | Table n°39 |
-| REF | 751 | Prg_728.xml | suppress gmrecherche | Table n°30 |
-| REF | 752 | Prg_729.xml | suppress gmcomplet | Table n°31 |
-| REF | 753 | Prg_730.xml | suppress prestation | Table n°36 |
-| REF | 754 | Prg_731.xml | suppress hebergement | Table n°34 |
-| REF | 755 | Prg_732.xml | suppress personnel | Table n°35 |
-| REF | 756 | Prg_733.xml | suppress personnelarrivee | Table n°207 |
-| REF | 757 | Prg_734.xml | suppress voyagearrivee | Table n°166 |
-| REF | 758 | Prg_735.xml | suppress go | Table n°817 |
-| REF | 759 | Prg_736.xml | suppress accompagnant | Table n°200 |
-| REF | 760 | Prg_737.xml | suppress troncon | Table n°167 |
-| REF | 761 | Prg_738.xml | suppress resa | Table n°165 |
-
-> **Note** : REF IDE 746 "Purge caisse" est un programme DIFFÉRENT qui purge les sessions de caisse (users/sessions), pas les GM/GO.
-
----
-
-## 3. Analyse du programme de sélection (REF IDE 749.1)
-
-### DataView de la tâche 749.1 "séléction"
-
-| Source | Table | Accès | Rôle |
+| Source | Table | Acces | Role |
 |--------|-------|-------|------|
-| **Main Source** | Table n°31 - gm_complet (cafil011_dat) | READ | Itère sur tous les GM |
-| **Link 1** | Table n°34 - hebergement (cafil012_dat) | READ | Joint l'hébergement |
-| **Link 2** | Table n°34 - hebergement (cafil012_dat) | READ | Second lien (autre clé) |
-| **Link 3** | **Table n°808 - zselect** | **WRITE** | **Écrit la liste des GO à supprimer** |
+| **Main Source** | Table n31 - gm_complet (cafil011_dat) | **WRITE** | Itere sur tous les GM |
+| **Link 1** | Table n34 - hebergement (cafil012_dat) | READ | Joint l'hebergement |
+| **Link 2** | Table n808 - zselect | WRITE | Ecrit la liste des GO a supprimer |
+| **MANQUANT** | **Table n167 - troncon (cafil145_dat)** | - | **NON JOINT = BUG** |
 
-### Variables du programme principal (REF IDE 749)
+### Root Cause
 
-| Variable | Nom | Type | Description |
-|----------|-----|------|-------------|
-| A | V.N°d'import début | Numeric | N° import de départ |
-| B | V.compteur | Numeric | Compteur |
-| **C** | **date a partir d'ou on suprime** | **Date** | **Date de purge** |
-| D | B.lancement | Alpha | Bouton lancement |
-
-### Expressions clés de la tâche 749.1
-
-| N° | Expression | Valeur | Description |
-|----|------------|--------|-------------|
-| 3 | `{1,3}` | Parent Variable C | Date de purge (depuis formulaire) |
-| 6 | `{0,9}` | Field 9 DataView | Une date du GM |
-
-### Range de sélection
-
-```
-Main Source : Table n°31 (gm_complet)
-Range sur colonne 42 (date) avec :
-  - MIN = Expression 3 = {1,3} = Date de purge
-
-→ Sélectionne les GM où la date (colonne 42) < Date purge
-```
-
-### ⚠️ CE QUI MANQUE
-
-**La tâche 749.1 NE JOINT PAS la table n°167 (troncon).**
-
-Elle ne vérifie donc pas `MAX(tro_date_depart_vol) WHERE tro_code_a_i_r = 'R'`.
+Le programme REF IDE 749.1 utilise une **date du gm_complet** (1er troncon) pour decider si un GM doit etre archive, **sans verifier** s'il existe d'autres troncons avec des dates plus tardives.
 
 ---
 
-## 4. Flux complet d'archivage
+## 4. Exemple concret (du ticket)
 
-```
-┌───────────────────────────────────────────────────────────────┐
-│  REF IDE 749 - lancement reparation                           │
-│  Formulaire "Lancement de la sélection"                       │
-│  Variable C = "date a partir d'ou on suprime"                 │
-└───────────────────────┬───────────────────────────────────────┘
-                        │ Bouton "Lancement"
-                        ▼
-┌───────────────────────────────────────────────────────────────┐
-│  Tâche 749.1 - séléction                                      │
-│  ─────────────────────────────────────────────────────────────│
-│  Main Source: Table n°31 (gm_complet)                         │
-│  Link 1: Table n°34 (hebergement)                             │
-│  Link 2: Table n°34 (hebergement)                             │
-│  Link 3: Table n°808 (zselect) [WRITE]    ◄── ÉCRIT ICI      │
-│  ─────────────────────────────────────────────────────────────│
-│  Range: date < Variable C (date purge)                        │
-│                                                               │
-│  ⚠️ PAS DE LINK vers Table n°167 (troncon)                   │
-│  ⚠️ Ne vérifie pas tro_date_depart_vol                       │
-└───────────────────────┬───────────────────────────────────────┘
-                        │ Remplit zselect
-                        ▼
-┌───────────────────────────────────────────────────────────────┐
-│  Tâche 749.2 - supress des arrivées avant dim                 │
-│  Nettoie zselect (supprime selon Range date)                  │
-└───────────────────────┬───────────────────────────────────────┘
-                        │
-                        ▼
-┌───────────────────────────────────────────────────────────────┐
-│  CallTask REF IDE 750-761 (suppress *)                        │
-│  ─────────────────────────────────────────────────────────────│
-│  Chaque programme lit zselect et supprime dans sa table       │
-│  cible les enregistrements correspondants.                    │
-└───────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 5. Root Cause - CONFIRMÉE
-
-| Élément | Valeur |
-|---------|--------|
-| **Programme** | **REF IDE 749.1** (Tâche "séléction" dans Prg_726.xml) |
-| **Main Source** | Table n°31 - gm_complet (cafil011_dat) |
-| **Problème** | La Range utilise une date du GM sans vérifier les tronçons |
-| **Table manquante** | Table n°167 - troncon (cafil145_dat) |
-| **Champ à vérifier** | `MAX(tro_date_depart_vol) WHERE tro_code_a_i_r = 'R'` |
-| **Impact** | GM/GO avec plusieurs tronçons archivés à tort |
-
-### Exemple concret (ticket)
-
-| Tronçon | Date départ | Code A/I/R | Commentaire |
+| Troncon | Date depart | Code A/I/R | Commentaire |
 |---------|-------------|------------|-------------|
-| 1er | 07/12/2025 | R (Retour) | Vérifié par sélection actuelle |
-| 2ème | 15/06/2026 | R (Retour) | **NON VÉRIFIÉ** |
+| 1er | 07/12/2025 | R (Retour) | Verifie par selection actuelle |
+| 2eme | 15/06/2026 | R (Retour) | **NON VERIFIE** |
 
-- Date utilisée dans sélection = **07/12/2025** (depuis gm_complet)
+- Date utilisee dans selection = **07/12/2025** (depuis gm_complet)
 - Date purge = 26/12/2025
-- Résultat : GM archivé car 07/12 < 26/12
-- **Attendu** : Garder car dernier tronçon = 15/06/2026 > 26/12/2025
+- Resultat : GM archive car 07/12 < 26/12
+- **Attendu** : Garder car dernier troncon = 15/06/2026 > 26/12/2025
 
 ---
 
-## 6. Tables concernées
+## 5. Tables concernees
 
-### Table n°31 - gm_complet (cafil011_dat)
+### Table n31 - gm_complet (cafil011_dat)
 
-**Rôle** : Main Source du programme de sélection
+**Role** : Main Source du programme de selection
 
 | Champ | Type | Description |
 |-------|------|-------------|
-| code_gm | Numeric | Numéro compte |
+| code_gm | Numeric | Numero compte |
 | filiation | Numeric | Filiation |
 | ... | ... | Autres champs GM |
 
-### Table n°167 - troncon (cafil145_dat)
+### Table n167 - troncon (cafil145_dat)
 
-**Rôle** : À ajouter comme Link pour vérifier la vraie date de fin
+**Role** : A ajouter comme Link pour verifier la vraie date de fin
 
 | Champ | Type | Description |
 |-------|------|-------------|
-| tro_societe | Unicode | Code société |
-| tro_compte | Numeric | Numéro compte GM |
+| tro_societe | Unicode | Code societe |
+| tro_compte | Numeric | Numero compte GM |
 | tro_filiation | Numeric | Filiation |
 | tro_code_a_i_r | Unicode | **A**ller / **I**nterne / **R**etour |
-| tro_date_depart_vol | Date | **Date départ du vol** |
-| tro_date_arrivee_vol | Date | Date arrivée du vol |
+| tro_date_depart_vol | Date | **Date depart du vol** |
+| tro_date_arrivee_vol | Date | Date arrivee du vol |
 
 **Index** : cafil145_dat_IDX_1 (societe, compte, filiation, code_a_i_r, date_depart)
 
-### Table n°808 - zselect (Selection des noms a supprimer)
+### Table n808 - zselect (Selection des noms a supprimer)
 
-**Rôle** : Table intermédiaire contenant la liste des GM/GO à supprimer
-
-| Champ | Type | Description |
-|-------|------|-------------|
-| societe | Alpha | Code société |
-| compte | Numeric | Numéro compte |
-| filiation | Numeric | Filiation |
-| nom | Alpha | Nom |
-| prenom | Alpha | Prénom |
-| ... | ... | Autres champs |
+**Role** : Table intermediaire contenant la liste des GM/GO a supprimer
 
 ---
 
-## Données requises
+## 6. Fix propose
 
-- Base de données : Village concerné à la date 03/12/2025 (date purge)
-- Table(s) à extraire :
-  - `cafil011_dat` (gm_complet des GO archivés)
-  - `cafil145_dat` (tronçons de ces GO)
-  - `ztrocafil145` (tronçons supprimés lors de la purge)
+### Modification de REF IDE 749.1
+
+#### 1. Ajouter un Link vers Table n167 (troncon)
+
+| Link | Table | Acces | Cles de jointure |
+|------|-------|-------|------------------|
+| **Link 3** (nouveau) | Table n167 - troncon | READ | `tro_societe`, `tro_compte`, `tro_filiation` |
+
+#### 2. Ajouter une variable virtuelle
+
+| Variable | Type | Expression | Description |
+|----------|------|------------|-------------|
+| **V.MaxDateRetour** | Date | Voir ci-dessous | Date du dernier vol retour |
+
+**Expression pour V.MaxDateRetour** :
+```
+DbSum(Table n167, tro_date_depart_vol,
+      tro_compte = code_gm AND
+      tro_filiation = filiation AND
+      tro_code_a_i_r = 'R',
+      MAX)
+```
+
+#### 3. Modifier la condition de selection (Range)
+
+| Element | Avant (bug) | Apres (fix) |
+|---------|-------------|-------------|
+| Condition Range | `date_gm < Variable C` | `V.MaxDateRetour < Variable C` |
+| Variable C | Date de purge (formulaire) | Inchange |
+
+### Pseudo-code
+
+**Avant (BUG)** :
+```
+FOR EACH gm_complet WHERE date < DatePurge
+    INSERT INTO zselect (compte, filiation, ...)
+END FOR
+
+-> Ne verifie PAS si le GM a d'autres troncons apres DatePurge
+```
+
+**Apres (FIX)** :
+```
+FOR EACH gm_complet
+    max_date_retour = MAX(troncon.tro_date_depart_vol)
+                      WHERE tro_compte = compte
+                      AND tro_filiation = filiation
+                      AND tro_code_a_i_r = 'R'
+
+    IF max_date_retour IS NULL THEN
+        max_date_retour = date_gm  -- Fallback si pas de troncon
+
+    IF max_date_retour < DatePurge THEN
+        INSERT INTO zselect (compte, filiation, ...)
+    END IF
+END FOR
+
+-> Verifie la date du DERNIER troncon retour
+```
 
 ---
 
-*Analyse : 2026-01-22T19:30*
-*Programme identifié : REF IDE 749.1 "séléction"*
+## 7. Flux d'archivage complet
+
+```
++---------------------------------------------------------------+
+|  REF IDE 749 - lancement reparation                           |
+|  Formulaire "Lancement de la selection"                       |
+|  Variable C = "date a partir d'ou on suprime"                 |
++-----------------------+---------------------------------------+
+                        | Bouton "Lancement"
+                        v
++---------------------------------------------------------------+
+|  Tache 749.1 - selection                      <-- FIX ICI    |
+|  -------------------------------------------------------------|
+|  Main Source: Table n31 (gm_complet)                         |
+|  Link 1: Table n34 (hebergement)                             |
+|  Link 2: Table n808 (zselect) [WRITE]                        |
+|  -------------------------------------------------------------|
+|  [!] AJOUTER: Link 3 vers Table n167 (troncon)               |
+|  [!] AJOUTER: Variable V.MaxDateRetour                       |
+|  [!] MODIFIER: Condition Range sur V.MaxDateRetour           |
++-----------------------+---------------------------------------+
+                        | Remplit zselect
+                        v
++---------------------------------------------------------------+
+|  Tache 749.2 - supress des arrivees avant dim                 |
+|  Nettoie zselect                                              |
++-----------------------+---------------------------------------+
+                        |
+                        v
++---------------------------------------------------------------+
+|  CallTask REF IDE 750-761 (suppress *)                        |
+|  Chaque programme lit zselect et supprime dans sa table       |
++---------------------------------------------------------------+
+```
+
+---
+
+## 8. Validation
+
+### Tests de non-regression
+
+| Scenario | Donnees test | Resultat attendu |
+|----------|--------------|------------------|
+| GO 1 troncon, fin < purge | Troncon R au 01/12 | Archive |
+| GO 1 troncon, fin > purge | Troncon R au 15/01 | Conserve |
+| GO 2 troncons, 2eme > purge | T1=07/12, T2=15/06 | **Conserve** |
+| GO 2 troncons, 2eme < purge | T1=01/11, T2=15/12 | Archive |
+| GM sans troncon R | Seulement A et I | Conserve (fallback) |
+
+### Requete SQL de verification
+
+```sql
+-- Trouver les GM qui auraient du etre conserves lors de la purge du 26/12
+SELECT gmc.code_gm, gmc.filiation,
+       MIN(t.tro_date_depart_vol) as premier_retour,
+       MAX(t.tro_date_depart_vol) as dernier_retour
+FROM cafil011_dat gmc  -- gm_complet
+JOIN cafil145_dat t ON t.tro_compte = gmc.code_gm
+                   AND t.tro_filiation = gmc.filiation
+                   AND t.tro_code_a_i_r = 'R'
+GROUP BY gmc.code_gm, gmc.filiation
+HAVING MIN(t.tro_date_depart_vol) < '2025-12-26'
+   AND MAX(t.tro_date_depart_vol) > '2025-12-26'
+```
+
+---
+
+## 9. Recuperation des donnees
+
+Les donnees supprimees sont dans la base **ARCHIVAGE**, pas definitivement perdues.
+
+**Tables archivees** :
+- Table n722 - arc_gm-recherche
+- Autres tables arc_*
+
+---
+
+## References Magic IDE
+
+### Tables concernees
+
+| N Table | Nom Logique | Nom Physique | Role |
+|---------|-------------|--------------|------|
+| 30 | gm-recherche | cafil008_dat | Index recherche GM |
+| 31 | gm_complet | cafil011_dat | Main Source selection |
+| 34 | hebergement | cafil012_dat | Lie dans selection |
+| 167 | troncon | cafil145_dat | **A ajouter** |
+| 808 | zselect | - | Liste GM a supprimer |
+
+### Programmes
+
+| IDE | Projet | Nom | Fichier | Role |
+|-----|--------|-----|---------|------|
+| 749 | REF | lancement reparation | Prg_726.xml | Orchestrateur |
+| 749.1 | REF | selection | Prg_726.xml | **A modifier** |
+| 749.2 | REF | supress des arrivees avant dim | Prg_726.xml | Nettoyage |
+| 750-761 | REF | suppress * | Prg_727-738.xml | Suppressions |
+| 18 | PUG | Purge Batch | Prg_101.xml | Purge caisse (non concerne) |
+
+---
+
+## Statut
+
+| Etape | Statut | Date |
+|-------|--------|------|
+| Analyse | Terminee | 2026-01-22 |
+| Clarification PUG vs REF | Terminee | 2026-01-22 |
+| Diagnostic confirme | **REF IDE 749.1** | 2026-01-22 |
+| Validation solution | En attente | |
+| Implementation | En attente | |
+| Tests | En attente | |
+| Deploiement | En attente | |
+
+---
+
+*Derniere mise a jour : 2026-01-22T22:00*
+*Programme a modifier : REF IDE 749.1 "selection"*
+*Fix : Ajouter Link Table n167 + verifier MAX(tro_date_depart_vol) WHERE tro_code_a_i_r = 'R'*
+*Note : PUG IDE 18 n'est PAS concerne - c'est la purge caisse, pas l'archivage GO*
