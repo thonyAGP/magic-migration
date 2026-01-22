@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-22T10:44:38.048Z",
+  "lastUpdated": "2026-01-22T10:44:41.267Z",
   "reports": [
     {
       "id": "spec",
@@ -60,14 +60,6 @@
         "createdDate": "2025-11-13",
         "lastAnalysis": "2026-01-19",
         "program": "PBG IDE 121"
-      },
-      {
-        "id": "CMDS-176818",
-        "title": "Tickets Epson police grande - Config imprimante",
-        "status": "analysis",
-        "file": "tickets/CMDS-176818/analysis.md",
-        "createdDate": "2026-01-12",
-        "lastAnalysis": "2026-01-12"
       },
       {
         "id": "PMS-1359",
@@ -175,6 +167,15 @@
         "title": "POS Reports M&E - Quantity OK, filtres JAMAIS implementes",
         "status": "investigation-complete",
         "file": "tickets/PMS-1404/analysis.md",
+        "createdDate": "2026-01-12",
+        "lastAnalysis": "2026-01-22",
+        "resolvedDate": "2026-01-22"
+      },
+      {
+        "id": "CMDS-176818",
+        "title": "Tickets Epson police grande - Config imprimante",
+        "status": "analysis",
+        "file": "tickets/CMDS-176818/analysis.md",
         "createdDate": "2026-01-12",
         "lastAnalysis": "2026-01-22",
         "resolvedDate": "2026-01-22"
