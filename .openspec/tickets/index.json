@@ -112,11 +112,11 @@
         },
         {
             "hasLocalData": true,
-            "status": "analyse-initiale",
+            "status": "diagnostic-confirme",
             "key": "PMS-1451",
-            "summary": "PURGE prend uniquement le 1er troncon de sejour au lieu du dernier",
+            "summary": "PURGE prend uniquement le 1er troncon de sejour - Fix REF IDE 749.1",
             "lastAnalysis": "2026-01-22",
-            "program": "REF IDE 746"
+            "program": "REF IDE 749.1"
         },
         {
             "hasLocalData": true,
