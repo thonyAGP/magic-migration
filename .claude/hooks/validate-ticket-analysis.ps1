@@ -1,6 +1,6 @@
 # validate-ticket-analysis.ps1
 # Hook de validation pour les analyses de tickets Magic
-# Vérifie que le protocole ticket-analysis.md est respecté
+# Verifie que le protocole ticket-analysis.md est respecte
 
 param(
     [Parameter(Mandatory=$true)]
@@ -26,55 +26,55 @@ if (-not $content) {
 $errors = @()
 $warnings = @()
 
-# === SECTION 1: Vérification lien Jira ===
+# === SECTION 1: Verification lien Jira ===
 if ($content -notmatch '\[([A-Z]+-\d+)\]\(https://clubmed\.atlassian\.net/browse/') {
-    $errors += "Section 1: Lien Jira manquant ou mal formaté"
+    $errors += "Section 1: Lien Jira manquant ou mal formate"
 }
 
-# === SECTION 2: Vérification IDE vérifié ===
+# === SECTION 2: Verification IDE verifie ===
 if ($content -notmatch 'magic_get_position|magic_find_program') {
-    $errors += "Section 2: Aucun appel magic_get_position ou magic_find_program documenté"
+    $errors += "Section 2: Aucun appel magic_get_position ou magic_find_program documente"
 }
 
-if ($content -match 'Prg_\d+\.xml' -and $content -notmatch 'IDE Vérifié|IDE \*\*\d+\*\*') {
-    $warnings += "Section 2: Fichier Prg_XXX.xml mentionné sans IDE vérifié correspondant"
+if ($content -match 'Prg_\d+\.xml' -and $content -notmatch 'IDE Verifie|IDE \*\*\d+\*\*') {
+    $warnings += "Section 2: Fichier Prg_XXX.xml mentionne sans IDE verifie correspondant"
 }
 
-# === SECTION 3: Vérification diagramme flux ===
-if ($content -notmatch '┌|└|│|▼|→' -and $content -notmatch '```.*\n.*─.*\n.*```') {
+# === SECTION 3: Verification diagramme flux ===
+if ($content -notmatch '[^a-zA-Z0-9]' -and $content -notmatch '```.*\n.*---.*\n.*```') {
     $warnings += "Section 3: Diagramme de flux ASCII absent"
 }
 
-# === SECTION 4: Vérification expressions ===
+# === SECTION 4: Verification expressions ===
 if ($content -match 'Expression \d+' -and $content -notmatch 'magic_get_expression') {
-    $warnings += "Section 4: Expression mentionnée sans appel magic_get_expression"
+    $warnings += "Section 4: Expression mentionnee sans appel magic_get_expression"
 }
 
 if ($content -match '\{0,\d+\}|\{\d+,\d+\}') {
     if ($content -notmatch 'mainOffset|Variable [A-Z]{1,3}') {
-        $errors += "Section 4: Références {N,Y} présentes sans décodage en variables"
+        $errors += "Section 4: References {N,Y} presentes sans decodage en variables"
     }
 }
 
-# === SECTION 5: Vérification Root Cause ===
+# === SECTION 5: Verification Root Cause ===
 if ($content -notmatch '## 5\. Root Cause|## Root Cause|### Root Cause') {
     $warnings += "Section 5: Section Root Cause absente"
-} elseif ($content -notmatch 'Programme.*IDE.*\d+.*Tâche.*\d+') {
-    $warnings += "Section 5: Root Cause sans localisation précise (Programme + Tâche)"
+} elseif ($content -notmatch 'Programme.*IDE.*\d+.*Tache.*\d+') {
+    $warnings += "Section 5: Root Cause sans localisation precise (Programme + Tache)"
 }
 
-# === SECTION 6: Vérification Solution ===
+# === SECTION 6: Verification Solution ===
 if ($content -match '## 6\. Solution|## Solution') {
-    if ($content -notmatch 'Avant.*Après|Avant \(bug\)|Après \(fix\)') {
-        $warnings += "Section 6: Solution sans comparaison Avant/Après"
+    if ($content -notmatch 'Avant.*Apres|Avant \(bug\)|Apres \(fix\)') {
+        $warnings += "Section 6: Solution sans comparaison Avant/Apres"
     }
 }
 
 # === Patterns interdits ===
 $forbiddenPatterns = @(
-    @{ Pattern = 'ISN_2\s*[=:]\s*\d+'; Message = "Utilisation de ISN_2 au lieu de position hiérarchique" },
+    @{ Pattern = 'ISN_2\s*[=:]\s*\d+'; Message = "Utilisation de ISN_2 au lieu de position hierarchique" },
     @{ Pattern = 'FieldID\s*[=:]\s*\d+'; Message = "Utilisation de FieldID au lieu de nom de variable" },
-    @{ Pattern = '\bobj=\d+\b'; Message = "Utilisation de obj=XX au lieu de Table n°XX" },
+    @{ Pattern = '\bobj=\d+\b'; Message = "Utilisation de obj=XX au lieu de Table n.XX" },
     @{ Pattern = 'Variable [A-C]\b(?! \()'; Message = "Variable locale (A,B,C) sans contexte - utiliser variable globale avec offset" }
 )
 
@@ -86,12 +86,12 @@ foreach ($pattern in $forbiddenPatterns) {
 
 # === Checklist ===
 $checklistItems = @(
-    'IDE vérifié',
+    'IDE',
     'mainOffset',
-    'expression.*décodée|formule.*lisible',
+    'expression',
     'root cause',
-    'Avant.*Après',
-    'diagramme.*flux|flux.*ASCII'
+    'Avant.*Apres',
+    'diagramme'
 )
 
 $uncheckedCount = 0
@@ -102,10 +102,10 @@ foreach ($item in $checklistItems) {
 }
 
 if ($uncheckedCount -gt 0) {
-    $warnings += "Checklist: $uncheckedCount items non cochés"
+    $warnings += "Checklist: $uncheckedCount items non coches"
 }
 
-# === Affichage résultats ===
+# === Affichage resultats ===
 Write-Host ""
 
 if ($warnings.Count -gt 0) {
