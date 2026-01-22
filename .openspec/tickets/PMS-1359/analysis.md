@@ -271,41 +271,57 @@ magic_get_logic(project="VIL", programId=558, taskIsn2=56)
 
 ### Expressions de la tache 22.16.1.1 (ISN_2=56)
 
-| ID Exp | Formule brute | Type | Description |
-|--------|---------------|------|-------------|
-| 1 | `{3,1}` | Date | Reference colonne 1 niveau 3 (date courante) |
-| 2 | `{0,1}` | User | Variable utilisateur |
-| 3 | `{0,2}-1` | Numeric | Chrono courant - 1 = chrono precedent |
+| # | Expression IDE | Type | Description |
+|---|----------------|------|-------------|
+| 1 | **CA** | Date | p.Date Comptable (variable Main niveau 3) |
+| 2 | **EY** | Unicode | utilisateur (temp_histo_sessions_caisse) |
+| 3 | **EZ-1** | Numeric | chrono en cours - 1 = chrono precedent |
 | 4 | `'F'` | Alpha | Constante "F" (Fermeture) |
 | 5 | `'F'` | Alpha | Constante "F" (Fermeture) |
-| 6 | `{0,12}<>0` | Boolean | Variable 12 differente de 0 → donnees trouvees |
-| 7 | `NOT {32768,25}` | Boolean | Negation VG.25 → condition CAISSE v1 |
-| 8 | `NOT {32768,39}` | Boolean | Negation VG.39 → condition CAISSE T2H |
-| 9 | `{32768,39}` | Boolean | Variable globale 39 |
-| 10 | `IF(Trim({1,2})='COFFRE 2',Str({3,2},'3P0'),Trim({1,2}))` | Alpha | Formatage conditionnel |
-| 11 | `'FALSE'LOG` | Boolean | Constante FALSE |
-| 89 | (non documentee) | Boolean | Condition globale des handlers |
+| 6 | **FJ<>0** | Boolean | montant <> 0 → donnees FDR trouvees |
+| 7 | **NOT BE** | Boolean | Negation VG.BE → condition CAISSE v1 |
+| 8 | **BE** | Boolean | VG.BE → condition CAISSE T2H |
+| 9 | **IF(Trim(DI)='COFFRE 2', Str(CB,'3P0'), Trim(DI))** | Alpha | Formatage conditionnel type coffre |
+| 10 | `'FALSE'LOG` | Boolean | Constante FALSE |
+| 11 | `0` | Numeric | Constante 0 |
 
-### Decodage des references {niveau, colonne}
+### Variables de la tache 22.16.1.1 (Update FDR Precedent)
 
-| Reference | Niveau | Signification |
-|-----------|--------|---------------|
-| `{0,X}` | 0 | Variable locale de la tache courante |
-| `{1,X}` | 1 | Variable du parent (22.16.1) |
-| `{2,X}` | 2 | Variable du grand-parent (22.16) |
-| `{3,X}` | 3 | Variable de l'arriere-grand-parent (22) |
-| `{32768,X}` | 32768 | Variable globale Main (VG.) |
+| Variable | Nom | Type | Source |
+|----------|-----|------|--------|
+| **EY** | utilisateur | Unicode | temp_histo_sessions_caisse |
+| **EZ** | chrono en cours | Numeric | temp_histo_sessions_caisse |
+| **FA** | date_comptable | Date | temp_histo_sessions_caisse |
+| **FB** | utilisateur | Unicode | histo_sessions_caisse |
+| **FC** | chrono_precedent | Numeric | histo_sessions_caisse |
+| **FD** | date_comptable | Date | histo_sessions_caisse |
+| **FE** | utilisateur | Unicode | histo_sessions_caisse_detail |
+| **FF** | chrono_session | Numeric | histo_sessions_caisse_detail |
+| **FG** | chrono_detail | Numeric | histo_sessions_caisse_detail |
+| **FH** | type | Unicode | histo_sessions_caisse_detail |
+| **FI** | quand | Unicode | histo_sessions_caisse_detail |
+| **FJ** | montant | Numeric | histo_sessions_caisse_detail |
 
-### Variables FDR dans la tache parente 22.16.1 (ISN_2=19)
+### Variables parentes utilisees dans les expressions
 
-| Col ID | Variable | Type | Role |
-|--------|----------|------|------|
-| 18 | v.total FDR Init | Numeric 11.3 | FDR initial du jour |
-| 19 | v.total FDR Final | Numeric 11.3 | FDR final du jour |
-| 39 | v.Ecart F.D.R. COFFRE2 | Logical | TRUE si ecart detecte sur COFFRE2 |
-| 40 | v.Ecart F.D.R. RECEPTION ? | Logical | TRUE si ecart detecte sur RECEPTION |
-| 41 | v.FDR fermeture de la veille | Numeric 11.3 | Montant FDR cloture J-1 |
-| 42 | v.Session de Fermeture prec exi | Logical | TRUE si session J-1 existe |
+| Variable | Niveau | Nom | Tache source |
+|----------|--------|-----|--------------|
+| **CA** | 3 | p.Date Comptable | Main (22) |
+| **CB** | 3 | (chrono ou valeur) | Main (22) |
+| **DI** | 1 | type coffre | Reception (22.16.1) |
+| **BE** | VG | variable globale | Main VIL |
+
+### Variables FDR dans la tache parente 22.16.1 (ISN_2=19) - Reception
+
+> Ces variables sont visibles dans ta capture d'ecran en haut de la liste (ET a EX).
+
+| Variable | Nom | Type | Role |
+|----------|-----|------|------|
+| **ET** | v.Ecart de ligne RECEPTION ? | Logical | Flag ligne reception |
+| **EU** | v.FDR fermeture de la veille | Numeric | Montant FDR cloture J-1 |
+| **EV** | v.Session de Fermeture prec ex | Logical | TRUE si session J-1 existe |
+| **EW** | v.Ecart F.D.R. COFFRE2 | Logical | TRUE si ecart detecte sur COFFRE2 |
+| **EX** | v.Ecart F.D.R. RECEPTION ? | Logical | TRUE si ecart detecte sur RECEPTION |
 
 ---
 

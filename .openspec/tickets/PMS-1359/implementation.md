@@ -43,14 +43,22 @@
 
 ### Dans Tache 22.16.1 (ISN_2=19) - Reception
 
-| Col ID | Nom variable | Type | Precision | Role |
-|--------|--------------|------|-----------|------|
-| 18 | v.total FDR Init | Numeric | 11.3 | FDR initial du jour courant |
-| 19 | v.total FDR Final | Numeric | 11.3 | FDR final du jour courant |
-| 39 | v.Ecart F.D.R. COFFRE2 | Logical | - | TRUE si ecart detecte sur COFFRE2 |
-| 40 | v.Ecart F.D.R. RECEPTION ? | Logical | - | TRUE si ecart detecte sur RECEPTION |
-| 41 | v.FDR fermeture de la veille | Numeric | 11.3 | Montant FDR cloture session J-1 |
-| 42 | v.Session de Fermeture prec exi | Logical | - | TRUE si une session J-1 existe |
+| Variable | Nom | Type | Precision | Role |
+|----------|-----|------|-----------|------|
+| **ET** | v.total FDR Init | Numeric | 11.3 | FDR initial du jour courant |
+| **EU** | v.total FDR Final | Numeric | 11.3 | FDR final du jour courant |
+| **EV** | v.Ecart F.D.R. COFFRE2 | Logical | - | TRUE si ecart detecte sur COFFRE2 |
+| **EW** | v.Ecart F.D.R. RECEPTION ? | Logical | - | TRUE si ecart detecte sur RECEPTION |
+| **EX** | v.FDR fermeture de la veille | Numeric | 11.3 | Montant FDR cloture session J-1 |
+| **FA** | v.Session de Fermeture prec exi | Logical | - | TRUE si une session J-1 existe |
+
+### Dans Tache 22.16.1.1 (ISN_2=56) - Update FDR Precedent
+
+| Variable | Nom | Type | Source |
+|----------|-----|------|--------|
+| **EY** | utilisateur | Unicode | temp_histo_sessions_caisse (Table 246) |
+| **EZ** | chrono en cours | Numeric | temp_histo_sessions_caisse (Table 246) |
+| **FJ** | montant | Numeric | histo_sessions_caisse_detail (Table 249) |
 
 ---
 
@@ -92,9 +100,9 @@ Ligne 2: Update Parent.FieldID_82 = Expression 10 (formatage COFFRE)
 #### Record Suffix (Handler S)
 
 ```
-Ligne 1: IF Expression 6 ({0,12}<>0) THEN
-Ligne 2:   Call Task 57 (CAISSE v1) IF Expression 7 (NOT VG.25)
-Ligne 3:   Call Task 58 (CAISSE T2H) IF Expression 8 (NOT VG.39)
+Ligne 1: IF Expression 6 (FJ<>0) THEN
+Ligne 2:   Call Task 57 (CAISSE v1) IF Expression 7 (NOT BE)
+Ligne 3:   Call Task 58 (CAISSE T2H) IF Expression 8 (BE)
 Ligne 5: END IF
 ```
 
@@ -104,11 +112,13 @@ Ligne 5: END IF
 
 | ID | Formule | Description |
 |----|---------|-------------|
-| 3 | `{0,2}-1` | Calcule le chrono de la session precedente |
-| 6 | `{0,12}<>0` | Verifie qu'on a trouve des donnees FDR |
-| 7 | `NOT {32768,25}` | Condition pour appeler CAISSE v1 |
-| 8 | `NOT {32768,39}` | Condition pour appeler CAISSE T2H |
-| 10 | `IF(Trim({1,2})='COFFRE 2', Str({3,2},'3P0'), Trim({1,2}))` | Formatage conditionnel du type |
+| 1 | **CA** | p.Date Comptable (parametre Main niveau 3) |
+| 2 | **EY** | Utilisateur (temp_histo_sessions_caisse) |
+| 3 | **EZ-1** | Chrono en cours - 1 = chrono session precedente |
+| 6 | **FJ<>0** | Verifie qu'on a trouve des donnees FDR (montant <> 0) |
+| 7 | **NOT BE** | Condition pour appeler CAISSE v1 (VG.BE = flag T2H) |
+| 8 | **BE** | Condition pour appeler CAISSE T2H |
+| 9 | **IF(Trim(DI)='COFFRE 2', Str(CB,'3P0'), Trim(DI))** | Formatage conditionnel du type utilisateur |
 
 ---
 
@@ -145,7 +155,7 @@ La lecture se fait en ordre **descendant** sur le chrono pour toujours avoir la 
 
 ### Gestion multi-utilisateurs
 
-Chaque utilisateur (COFFRE, RECEPTION, etc.) est traite independamment grace au filtre sur Expression 9 (`{32768,39}`).
+Chaque utilisateur (COFFRE, RECEPTION, etc.) est traite independamment grace au filtre sur la variable **DI** (type utilisateur).
 
 ### Flags vs Affichage
 
