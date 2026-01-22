@@ -109,6 +109,22 @@
             "summary": "POS Reports - Evolution REVENUE CANCELATIONS (Gift Pass, Payment Type, Totaux)",
             "lastAnalysis": "2026-01-21",
             "program": "PVE IDE 75"
+        },
+        {
+            "hasLocalData": true,
+            "status": "analyse-initiale",
+            "key": "PMS-1451",
+            "summary": "PURGE prend uniquement le 1er troncon de sejour au lieu du dernier",
+            "lastAnalysis": "2026-01-22",
+            "program": "REF IDE 746"
+        },
+        {
+            "hasLocalData": true,
+            "status": "analyse-initiale",
+            "key": "PMS-1453",
+            "summary": "Caisse Adherent - Vente transfert > heure erronee (validation 00:00-23:59)",
+            "lastAnalysis": "2026-01-22",
+            "program": "ADH IDE 244"
         }
     ],
     "tickets": []

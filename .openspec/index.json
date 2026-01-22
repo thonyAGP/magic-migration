@@ -209,6 +209,26 @@
                                        "lastAnalysis":  "2026-01-21",
                                        "lastAnalysisTime":  "2026-01-21T22:30:00+01:00",
                                        "program":  "PVE IDE 75"
+                                   },
+                                   {
+                                       "id":  "PMS-1451",
+                                       "title":  "PURGE prend uniquement le 1er troncon de sejour",
+                                       "status":  "analysis",
+                                       "file":  "tickets/PMS-1451/analysis.md",
+                                       "createdDate":  "2026-01-06",
+                                       "lastAnalysis":  "2026-01-22",
+                                       "lastAnalysisTime":  "2026-01-22T19:00:00+01:00",
+                                       "program":  "REF IDE 746"
+                                   },
+                                   {
+                                       "id":  "PMS-1453",
+                                       "title":  "Caisse Adherent - Vente transfert heure erronee",
+                                       "status":  "analysis",
+                                       "file":  "tickets/PMS-1453/analysis.md",
+                                       "createdDate":  "2026-01-06",
+                                       "lastAnalysis":  "2026-01-22",
+                                       "lastAnalysisTime":  "2026-01-22T19:00:00+01:00",
+                                       "program":  "ADH IDE 244"
                                    }
                                ],
                     "archived":  [
