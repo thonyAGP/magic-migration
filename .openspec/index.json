@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-22T10:44:27.044Z",
+  "lastUpdated": "2026-01-22T10:44:38.048Z",
   "reports": [
     {
       "id": "spec",
@@ -52,14 +52,6 @@
   ],
   "tickets": {
     "active": [
-      {
-        "id": "PMS-1404",
-        "title": "POS Reports M&E - Quantity OK, filtres JAMAIS implementes",
-        "status": "investigation-complete",
-        "file": "tickets/PMS-1404/analysis.md",
-        "createdDate": "2026-01-12",
-        "lastAnalysis": "2026-01-18"
-      },
       {
         "id": "PMS-1407",
         "title": "Validation auto Back Office - NON REGRESSION (Magic.ini)",
@@ -176,6 +168,15 @@
         "createdDate": "2025-06-19",
         "lastAnalysis": "2026-01-22",
         "program": "ADH IDE 156",
+        "resolvedDate": "2026-01-22"
+      },
+      {
+        "id": "PMS-1404",
+        "title": "POS Reports M&E - Quantity OK, filtres JAMAIS implementes",
+        "status": "investigation-complete",
+        "file": "tickets/PMS-1404/analysis.md",
+        "createdDate": "2026-01-12",
+        "lastAnalysis": "2026-01-22",
         "resolvedDate": "2026-01-22"
       }
     ]
