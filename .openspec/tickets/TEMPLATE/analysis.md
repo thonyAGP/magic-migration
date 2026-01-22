@@ -133,4 +133,4 @@ Tâche analysée : {PROJET} IDE {N.X.Y.Z}
 
 ---
 
-*Analyse : {DATE}*
+*Analyse : {YYYY-MM-DDTHH:MM}*

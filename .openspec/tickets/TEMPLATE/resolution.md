@@ -42,4 +42,4 @@
 
 ---
 
-*Dernière mise à jour : {DATE}*
+*Dernière mise à jour : {YYYY-MM-DDTHH:MM}*
