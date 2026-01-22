@@ -23,9 +23,27 @@ Quand l'utilisateur pose une question sur Magic, **DETECTER automatiquement** l'
 ### REGLE AUTOMATIQUE - Tickets Jira
 
 > **REGLES CRITIQUES** (apres CHAQUE analyse de ticket) :
-> 1. **TOUJOURS commit et push automatiquement** pour que les resultats soient visibles sur https://jira.lb2i.com
-> 2. **TOUJOURS verifier le deploiement avec Playwright** : `npx playwright test tests/e2e/verify-tickets.spec.ts`
-> 3. Ne JAMAIS attendre que l'utilisateur demande ces actions
+> 1. **LIRE LE PROTOCOLE** : `.claude/protocols/ticket-analysis.md` AVANT de commencer
+> 2. **DOCUMENTER CHAQUE APPEL MCP** : Verbose mode obligatoire
+> 3. **TOUJOURS commit et push automatiquement** pour que les resultats soient visibles sur https://jira.lb2i.com
+> 4. **TOUJOURS verifier le deploiement avec Playwright** : `npx playwright test tests/e2e/verify-tickets.spec.ts`
+> 5. Ne JAMAIS attendre que l'utilisateur demande ces actions
+
+### PROTOCOLE D'ANALYSE (OBLIGATOIRE)
+
+> **AVANT** toute analyse de ticket, lire `.claude/protocols/ticket-analysis.md`
+> Ce protocole définit les 6 étapes obligatoires et la documentation verbeuse.
+
+| Étape | Action | Output requis |
+|-------|--------|---------------|
+| 1. Contexte | Fetch Jira + extraire indices | Tableau symptôme/attendu/obtenu |
+| 2. Localisation | `magic_get_position` pour CHAQUE programme | Tableau IDE vérifié |
+| 3. Traçage | `magic_get_logic` + résoudre CallTask | Diagramme ASCII |
+| 4. Expressions | `magic_get_expression` + décoder {N,Y} | Formule lisible avec variables |
+| 5. Root Cause | Hypothèse + vérification MCP | Localisation exacte |
+| 6. Solution | Avant/Après avec variables nommées | Fix précis et vérifiable |
+
+**Template** : Copier `.openspec/tickets/TEMPLATE/analysis.md` pour chaque nouveau ticket.
 
 **Quand un numero de ticket est mentionne (PMS-XXXX, CMDS-XXXXXX) :**
 
