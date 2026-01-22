@@ -4,26 +4,59 @@
 
 ## Diagnostic
 
-Le programme de purge (REF IDE 746) utilise `gmr_fin_sejour` pour déterminer si un GM/GO doit être purgé. Cette date correspond au **premier tronçon de séjour uniquement**.
+Le champ `gmr_fin_sejour` de la table **n°30 - gm-recherche (cafil008_dat)** contient la date de fin du **premier tronçon de séjour** uniquement.
 
-Pour les GM/GO avec plusieurs tronçons, il faut prendre la date de fin du **dernier tronçon** dans la table `fra_sejour`.
+Pour les GM/GO avec plusieurs tronçons (ex: prolongation de séjour), la purge utilise cette date incorrecte et archive des personnes dont le séjour réel n'est pas terminé.
 
 ## Solution proposée
 
-### Approche
+### Approche 1 : Modifier le critère de purge (RECOMMANDÉE)
 
-Modifier le critère de sélection pour :
-1. Rechercher la date de fin maximale dans `fra_sejour` pour chaque GM/GO
-2. Utiliser cette date comme critère de purge
+Remplacer l'utilisation de `gmr_fin_sejour` par une sous-requête sur la table troncon :
+
+```sql
+-- Critère actuel (BUG)
+WHERE gmr_fin_sejour < @Date_Purge
+
+-- Critère corrigé
+WHERE (
+    SELECT MAX(tro_date_depart_vol)
+    FROM cafil145_dat
+    WHERE tro_societe = gmr_societe
+      AND tro_compte = gmr_code_gm
+      AND tro_filiation = gmr_filiation_villag
+      AND tro_code_a_i_r = 'R'  -- Retour uniquement
+) < @Date_Purge
+```
+
+**Avantages** :
+- Ne modifie pas la structure existante
+- Calcul dynamique basé sur les vraies données
+
+**Inconvénients** :
+- Performance (sous-requête pour chaque GM)
+
+### Approche 2 : Mettre à jour gmr_fin_sejour lors de l'import
+
+Modifier **PBG IDE 225 - Traitement des Adherents** pour que `gmr_fin_sejour` contienne la date du **dernier** tronçon et non du premier.
+
+**Avantages** :
+- Pas de modification de la purge
+- Performance optimale
+
+**Inconvénients** :
+- Impact potentiel sur d'autres fonctionnalités utilisant `gmr_fin_sejour`
+- Nécessite de retraiter les données existantes
 
 ### Tables concernées
 
 | Table | Champ | Rôle |
 |-------|-------|------|
-| fra_sejour (321) | date_fin | Date fin de chaque tronçon |
-| gm-recherche (cafil008_dat) | gmr_fin_sejour | Date fin 1er tronçon (actuel) |
+| n°30 - gm-recherche (cafil008_dat) | gmr_fin_sejour | Date fin actuelle (1er tronçon) |
+| n°167 - troncon (cafil145_dat) | tro_date_depart_vol | Date départ de chaque tronçon |
+| n°167 - troncon (cafil145_dat) | tro_code_a_i_r | A=Aller, I=Interne, R=Retour |
 
-### Pseudo-code du fix
+### Pseudo-code du fix (Approche 1)
 
 **Avant** :
 ```
@@ -33,9 +66,14 @@ SI gmr_fin_sejour < Date_Purge ALORS
 
 **Après** :
 ```
-date_fin_reelle = MAX(fra_sejour.date_fin WHERE societe=S AND compte=C AND filiation=F)
+date_fin_reelle = MAX(tro_date_depart_vol)
+                  FROM cafil145_dat
+                  WHERE compte = gmr_code_gm
+                    AND tro_code_a_i_r = 'R'
+
 SI date_fin_reelle IS NULL ALORS
    date_fin_reelle = gmr_fin_sejour
+
 SI date_fin_reelle < Date_Purge ALORS
    Purger le GM/GO
 ```
