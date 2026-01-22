@@ -18,6 +18,43 @@
 
 ---
 
+## PARALLÉLISATION (OPTIMISATION TEMPS)
+
+> Pour réduire le temps d'analyse, lancer les appels **indépendants** en parallèle.
+
+### Appels parallélisables par étape
+
+| Étape | Appels pouvant être parallélisés |
+|-------|----------------------------------|
+| **ÉTAPE 2** | `magic_find_program()` pour chaque nom de programme |
+| **ÉTAPE 2** | `magic_get_table()` pour chaque table mentionnée |
+| **ÉTAPE 3** | `magic_get_logic()` pour chaque tâche du flux |
+| **ÉTAPE 4** | `magic_get_expression()` pour chaque expression |
+
+### Exemple de parallélisation
+
+```
+// Mauvais (séquentiel) - ~20 min
+magic_find_program("Main Sale")  // attendre
+magic_get_position("PVE", 180)   // attendre
+magic_get_table("246")           // attendre
+magic_get_table("249")           // attendre
+
+// Bon (parallèle) - ~5 min
+[EN PARALLÈLE]
+  - magic_find_program("Main Sale")
+  - magic_get_table("246")
+  - magic_get_table("249")
+[SÉQUENTIEL après]
+  - magic_get_position("PVE", 180)  // dépend du résultat find
+```
+
+### Règle
+
+Utiliser **Task tool avec plusieurs appels** dans un seul message pour paralléliser.
+
+---
+
 ## ÉTAPE 1 : CONTEXTE JIRA (5 min)
 
 ### Actions obligatoires
@@ -166,9 +203,32 @@ Tâche : PVE IDE 186 (Main)
 Pour chaque expression suspecte :
 
 ```
+1. magic_decode_expression(project, programId, taskIsn2, expressionId, mainOffset)
+   → Decode automatiquement {N,Y} en variables globales
+   → Retourne formule lisible + tableau de correspondances
+
+OU (methode manuelle si besoin) :
 1. magic_get_expression(project, expressionId)  → Obtenir formule brute
 2. magic_get_line(project, task, line, mainOffset) → Contexte variables
-3. Décoder manuellement les {N,Y} en variables globales
+3. Decoder manuellement les {N,Y} en variables globales
+```
+
+### Nouvel outil automatise (RECOMMANDE)
+
+```
+magic_decode_expression(project, programId, taskIsn2, expressionId, mainOffset)
+
+Parametres :
+- project     : PVE, ADH, VIL, PBG, PBP, REF
+- programId   : ID du programme (ex: 180)
+- taskIsn2    : ISN_2 de la tache (ex: 45)
+- expressionId: ID de l'expression (ex: 30)
+- mainOffset  : Offset Main du projet (voir tableau ci-dessous)
+
+Retourne :
+- Formule originale
+- Formule decodee avec lettres de variables
+- Tableau de correspondances {N,Y} → Variable
 ```
 
 ### Calcul mainOffset (CRITIQUE)
