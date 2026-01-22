@@ -70,19 +70,37 @@ magic_get_position(project="VIL", programId=558)
 magic_get_tree(project="VIL", programId=558)
 ```
 
-**Resultat** : Arborescence de 37 taches sur 4 niveaux.
+**Resultat** : Arborescence de 38 taches sur 5 niveaux (0 a 4).
 
-**Extrait pertinent pour ce ticket** :
+**Structure complete niveau 1** (16 sous-taches directes) :
 ```
 VIL IDE 22 (Main: Print recap sessions)
-├── 22.1-22.15 ... (autres sous-taches)
-├── 22.16 (ISN_2=18) Edition
-│   └── 22.16.1 (ISN_2=19) Reception
-│       ├── 22.16.1.1 (ISN_2=55) ...
-│       └── 22.16.1.2 (ISN_2=56) Update FDR Precedent  <-- TACHE CLE
-│           ├── 22.16.1.2.1 (ISN_2=57) CAISSE v1
-│           └── 22.16.1.2.2 (ISN_2=58) CAISSE T2H
-└── 22.17-22.37 ... (autres sous-taches)
+├── 22.1  Telecollectes TPE auto v1
+├── 22.2  Telecollectes TPE auto T2H
+├── 22.3  Recap Change vente
+├── 22.4  Update FDR
+├── 22.5  Lecture 18 v1
+├── 22.6  Lecture 18 T2H
+├── 22.7  Lecture Ventes v1
+├── 22.8  Lecture Ventes T2H
+├── 22.9  Telecollectes v1
+├── 22.10 Telecollectes T2H
+├── 22.11 Recap OD
+├── 22.12 Recap Change achat
+├── 22.13 Recap Ecarts
+├── 22.14 Comptage Reception
+├── 22.15 PC Coffre 1
+└── 22.16 Edition  <-- BRANCHE CONCERNEE
+```
+
+**Extrait branche 22.16 (Edition)** :
+```
+22.16 (ISN_2=18) Edition
+└── 22.16.1 (ISN_2=19) Reception
+    ├── 22.16.1.1 (ISN_2=56) Update FDR Precedent  <-- TACHE CLE
+    │   ├── 22.16.1.1.1 (ISN_2=57) CAISSE v1
+    │   └── 22.16.1.1.2 (ISN_2=58) CAISSE T2H
+    └── 22.16.1.1 (ISN_2=20) Telecollecte
 ```
 
 ### Programmes identifies
@@ -113,7 +131,7 @@ Table 471 (comptage_coffre_devise)
     │ MAIN SOURCE
     ▼
 ┌──────────────────────────────────────────────────┐
-│ Tache 22.16.1.2 - Update FDR Precedent           │
+│ Tache 22.16.1.1 - Update FDR Precedent           │
 │                                                   │
 │  LINK → Table 246 (caisse_session)               │
 │         - Filtre: utilisateur, chrono-1, date    │
@@ -136,7 +154,7 @@ Table 471 (comptage_coffre_devise)
 magic_get_logic(project="VIL", programId=558, taskIsn2=56)
 ```
 
-**Resultat** : Tache 22.16.1.2 (ISN_2=56) - "Update FDR Precedent"
+**Resultat** : Tache 22.16.1.1 (ISN_2=56) - "Update FDR Precedent"
 
 ### Logic Unit 1 : Record Main (Handler M - Level R)
 
@@ -220,7 +238,7 @@ magic_get_logic(project="VIL", programId=558, taskIsn2=56)
                                     │ CallTask
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ Tache 22.16.1.2 (ISN_2=56) - Update FDR Precedent                        │
+│ Tache 22.16.1.1 (ISN_2=56) - Update FDR Precedent                        │
 │ ══════════════════════════════════════════════════                       │
 │                                                                          │
 │ RECORD MAIN :                                                            │
@@ -241,7 +259,7 @@ magic_get_logic(project="VIL", programId=558, taskIsn2=56)
                           ┌─────────┴─────────┐
                           ▼                   ▼
             ┌─────────────────────┐ ┌─────────────────────┐
-            │ Tache 22.16.1.2.1   │ │ Tache 22.16.1.2.2   │
+            │ Tache 22.16.1.1.1   │ │ Tache 22.16.1.1.2   │
             │ (ISN_2=57)          │ │ (ISN_2=58)          │
             │ CAISSE v1           │ │ CAISSE T2H          │
             └─────────────────────┘ └─────────────────────┘
@@ -251,7 +269,7 @@ magic_get_logic(project="VIL", programId=558, taskIsn2=56)
 
 ## 5. Analyse Expressions
 
-### Expressions de la tache 22.16.1.2 (ISN_2=56)
+### Expressions de la tache 22.16.1.1 (ISN_2=56)
 
 | ID Exp | Formule brute | Type | Description |
 |--------|---------------|------|-------------|
@@ -301,8 +319,8 @@ magic_get_logic(project="VIL", programId=558, taskIsn2=56)
 | Detecter session precedente | OUI | Variable `v.Session de Fermeture prec exi` | Col 42, Tache 22.16.1 |
 | Flag ecart COFFRE2 | OUI | Variable `v.Ecart F.D.R. COFFRE2` | Col 39, Tache 22.16.1 |
 | Flag ecart RECEPTION | OUI | Variable `v.Ecart F.D.R. RECEPTION ?` | Col 40, Tache 22.16.1 |
-| Lecture session J-1 | OUI | Link Table 246 avec chrono-1 | Tache 22.16.1.2 ligne 8-12 |
-| Lecture montant FDR | OUI | Link Table 249 avec type='F' | Tache 22.16.1.2 ligne 15-22 |
+| Lecture session J-1 | OUI | Link Table 246 avec chrono-1 | Tache 22.16.1.1 ligne 8-12 |
+| Lecture montant FDR | OUI | Link Table 249 avec type='F' | Tache 22.16.1.1 ligne 15-22 |
 
 ### Commit reference
 

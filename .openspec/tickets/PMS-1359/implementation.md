@@ -11,7 +11,7 @@
 | **Programme** | VIL IDE 22 - Print recap sessions |
 | **Fichier source** | `Prg_558.xml` (ISN=558) |
 | **Tache principale** | 22.16.1 (ISN_2=19) - Reception |
-| **Tache cle** | 22.16.1.2 (ISN_2=56) - Update FDR Precedent |
+| **Tache cle** | 22.16.1.1 (ISN_2=56) - Update FDR Precedent |
 | **Commit** | `9422490b5` (01/10/2025) |
 
 ---
@@ -56,7 +56,7 @@
 
 ## Logic detaillee
 
-### Tache 22.16.1.2 - Update FDR Precedent
+### Tache 22.16.1.1 - Update FDR Precedent
 
 #### Record Main (Handler M)
 
