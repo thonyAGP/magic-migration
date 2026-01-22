@@ -229,6 +229,16 @@
                                        "lastAnalysis":  "2026-01-22",
                                        "lastAnalysisTime":  "2026-01-22T18:14:00+01:00",
                                        "program":  "ADH IDE 244"
+                                   },
+                                   {
+                                       "id":  "PMS-1381",
+                                       "title":  "Messages verrouillages pendant PURGE",
+                                       "status":  "diagnostic-ok",
+                                       "file":  "tickets/PMS-1381/analysis.md",
+                                       "createdDate":  "2025-09-24",
+                                       "lastAnalysis":  "2026-01-22",
+                                       "lastAnalysisTime":  "2026-01-22T21:00:00+01:00",
+                                       "program":  "PUG IDE 18"
                                    }
                                ],
                     "archived":  [

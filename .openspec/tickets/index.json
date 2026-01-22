@@ -125,6 +125,14 @@
             "summary": "Caisse Adherent - Vente transfert > heure erronee (validation 00:00-23:59)",
             "lastAnalysis": "2026-01-22",
             "program": "ADH IDE 244"
+        },
+        {
+            "hasLocalData": true,
+            "status": "diagnostic-ok",
+            "key": "PMS-1381",
+            "summary": "Messages verrouillages PURGE - Comportement normal gestion concurrence",
+            "lastAnalysis": "2026-01-22",
+            "program": "PUG IDE 18"
         }
     ],
     "tickets": []
