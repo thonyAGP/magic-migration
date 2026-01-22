@@ -548,6 +548,7 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 
 ## Changelog
 
+- 2026-01-22: **PARSER MAGIC V3 DETERMINISTE 100%** - Nouveau script `magic-logic-parser-v3.ps1` avec formule d'offset automatique et correcte. Formule: Offset = colonnes_ancetres_complets + colonnes_table_tache_cible. Teste sur VIL Prg_558 tache 19: Offset=131→EB, EU=v.FDR fermeture, EV=v.Session prec. Parsing ExpSyntax pour expressions. Documentation: `skills/magic-unipaas/references/dataview-offset-formula.md`
 - 2026-01-12: **MCP SERVER 100% COMPLET** - Tests unitaires C# (27/27 pass), hooks validation IDE Magic (PreToolUse + PostToolUse). Suite: `tools/MagicMcp.Tests/`. Patterns interdits detectes: Prg_XXX, {0,3}, ISN_2, FieldID, obj=XX. Hook PreToolUse bloque ecriture fichiers tickets avec violations
 - 2026-01-12: **MCP INSPECTOR CONFIGURE** - Script `tools/start-mcp-inspector.ps1` pour dev MCP sans redemarrer Claude Code. Workflow: modifier code → rebuild → tester dans navigateur (http://localhost:6274). MCP Server passe de 90% a 95%
 - 2026-01-12: **PARSER TYPESCRIPT COMPLET - 200 fonctions** - Enrichissement des 4 fichiers generateurs: function-registry.ts (+100 definitions, 16 nouvelles categories), typescript-generator.ts (+150 mappings), csharp-generator.ts (+150 mappings .NET 6+), python-generator.ts (+150 mappings). Total: +1023 lignes. Commit 2b92ed9
