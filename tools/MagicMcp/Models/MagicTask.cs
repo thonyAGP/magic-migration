@@ -13,4 +13,5 @@ public class MagicTask
     public string TaskType { get; init; } = "B";
     public MagicDataView? DataView { get; set; }
     public List<MagicLogicLine> LogicLines { get; init; } = new();
+    public List<MagicTaskForm> Forms { get; init; } = new();
 }

@@ -199,7 +199,9 @@ Useful for project-level code quality assessment.")]
         sb.AppendLine("```");
         sb.AppendLine($"Total Programs:     {orphanStats.TotalPrograms}");
         sb.AppendLine($"├── Active:         {orphanStats.UsedPrograms + orphanStats.CallableByName} ({Percent(orphanStats.UsedPrograms + orphanStats.CallableByName, orphanStats.TotalPrograms)})");
-        sb.AppendLine($"├── Cross-project:  {orphanStats.CrossProjectPossible} ({Percent(orphanStats.CrossProjectPossible, orphanStats.TotalPrograms)})");
+        sb.AppendLine($"├── Cross-project:  {orphanStats.CrossProjectTarget + orphanStats.CrossProjectPossible} ({Percent(orphanStats.CrossProjectTarget + orphanStats.CrossProjectPossible, orphanStats.TotalPrograms)})");
+        sb.AppendLine($"│   ├── Confirmed:  {orphanStats.CrossProjectTarget}");
+        sb.AppendLine($"│   └── Possible:   {orphanStats.CrossProjectPossible}");
         sb.AppendLine($"├── Empty:          {orphanStats.EmptyPrograms} ({Percent(orphanStats.EmptyPrograms, orphanStats.TotalPrograms)})");
         sb.AppendLine($"└── Orphan:         {orphanStats.ConfirmedOrphans} ({Percent(orphanStats.ConfirmedOrphans, orphanStats.TotalPrograms)})");
         sb.AppendLine("```");
