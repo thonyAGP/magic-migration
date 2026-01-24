@@ -303,7 +303,7 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 
 | Categorie | Outils | Etat | Cible | Action |
 |-----------|--------|------|-------|--------|
-| MCP Server | **24 outils** | **100%** | 100% | **+magic_get_form_controls (UI controls)** |
+| MCP Server | **28 outils** | **100%** | 100% | **+4 outils migration_spec** |
 | Agents specialises | 5 agents | 100% | 100% | Maintenir |
 | Commandes Slash | 15 commandes | 100% | 100% | Maintenir |
 | Scripts PowerShell | **31 scripts** | 100% | 100% | **+auto-capitalize, track-metrics, Generate-MigrationSpec** |
@@ -322,6 +322,10 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 | `magic_kb_constant_conditions` | Detecte conditions constantes (IF(0,...)) | **NOUVEAU** |
 | `magic_kb_constant_stats` | Statistiques conditions constantes | **NOUVEAU** |
 | `magic_kb_dynamic_calls` | Detecte appels ProgIdx() dynamiques | **NOUVEAU** |
+| `magic_migration_inventory` | Inventaire programmes avec scores complexite | **NOUVEAU** |
+| `magic_migration_dependencies` | Appels cross-projet (entrants/sortants) | **NOUVEAU** |
+| `magic_migration_stats` | Statistiques projet (tables, forms, effort) | **NOUVEAU** |
+| `magic_migration_projects` | Liste projets KB avec stats | **NOUVEAU** |
 
 ### Offsets dynamiques (2026-01-24) - NOUVEAU
 
@@ -649,6 +653,8 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-01-24: **MigrationSpecTool.cs** - 4 outils MCP pour extraction specs migration (inventory, dependencies, stats, projects)
+- 2026-01-24: **DecodeExpressionTool cache** - Integration ExpressionCacheService pour cache persistant expressions
 - 2026-01-24: **Schema KB v2** - 3 nouvelles tables (decoded_expressions, ticket_metrics, resolution_patterns)
 - 2026-01-24: **ExpressionCacheService** - Cache expressions decodees pour eviter recalcul offsets
 - 2026-01-24: **auto-capitalize-pattern.ps1** - Extraction et capitalisation patterns KB depuis analysis.md

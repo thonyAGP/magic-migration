@@ -2,6 +2,7 @@ using MagicMcp.Services;
 using MagicMcp.Tools;
 using MagicKnowledgeBase.Database;
 using MagicKnowledgeBase.Indexing;
+using MagicKnowledgeBase.Queries;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ModelContextProtocol.Server;
@@ -74,6 +75,14 @@ try
         }
     }
 
+    // Create expression cache service (uses Knowledge Base for persistent storage)
+    var expressionCacheService = new ExpressionCacheService(knowledgeDb);
+    Log("[MagicMcp] Expression cache service ready");
+
+    // Create migration extractor (queries Knowledge Base for migration specs)
+    var migrationExtractor = new MigrationExtractor(knowledgeDb);
+    Log("[MagicMcp] Migration extractor ready");
+
     // Build and run MCP server
     var builder = Host.CreateApplicationBuilder(args);
 
@@ -83,6 +92,8 @@ try
     builder.Services.AddSingleton(offsetCalculator);
     builder.Services.AddSingleton(globalIndex);
     builder.Services.AddSingleton(knowledgeDb);
+    builder.Services.AddSingleton(expressionCacheService);
+    builder.Services.AddSingleton(migrationExtractor);
 
     builder.Services
         .AddMcpServer()

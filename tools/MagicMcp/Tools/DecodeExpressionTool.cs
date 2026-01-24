@@ -7,7 +7,8 @@ using ModelContextProtocol.Server;
 namespace MagicMcp.Tools;
 
 /// <summary>
-/// Tool to decode {N,Y} references in Magic expressions to global variable names
+/// Tool to decode {N,Y} references in Magic expressions to global variable names.
+/// Uses ExpressionCacheService for persistent caching to avoid recalculating offsets.
 /// </summary>
 [McpServerToolType]
 public static class DecodeExpressionTool
@@ -15,41 +16,108 @@ public static class DecodeExpressionTool
     /// <summary>
     /// Decode an expression by replacing {N,Y} references with global variable names.
     /// Offset is calculated automatically using the validated formula.
+    /// Results are cached for performance.
     /// </summary>
     [McpServerTool(Name = "magic_decode_expression")]
     [Description("Decode {N,Y} references in a Magic expression to global variable names. " +
-                 "Offset is calculated automatically using validated formula: Main_VG + Σ(Selects, excluding Access=W).")]
+                 "Offset is calculated automatically using validated formula: Main_VG + Σ(Selects, excluding Access=W). " +
+                 "Results are cached in Knowledge Base.")]
     public static string DecodeExpression(
         IndexCache cache,
         OffsetCalculator offsetCalculator,
+        ExpressionCacheService expressionCache,
         [Description("Project name (ADH, PBP, REF, VIL, PBG, PVE)")] string project,
         [Description("Program ID (e.g., 180)")] int programId,
         [Description("Task ISN_2 where the expression is used")] int taskIsn2,
         [Description("Expression ID to decode")] int expressionId)
     {
-        // Get expression
+        // Try to get from cache first
+        var cachedResult = expressionCache.Get(project, programId, expressionId);
+        if (cachedResult != null)
+        {
+            return FormatCachedResult(cachedResult, expressionId);
+        }
+
+        // Not in cache - compute
         var expression = cache.GetExpression(project, programId, expressionId);
         if (expression == null)
             return $"ERROR: Expression #{expressionId} not found in program {programId}";
 
-        // Get task to access DataView
         var task = cache.GetTask(project, programId, taskIsn2);
         if (task == null)
             return $"ERROR: Task ISN_2={taskIsn2} not found in program {programId}";
 
-        // Calculate cumulative offset using validated formula
         var offsetResult = offsetCalculator.CalculateOffset(project, programId, taskIsn2);
         var cumulativeOffset = offsetResult.Success ? offsetResult.Offset : 0;
 
-        // Decode the expression
         var result = DecodeExpressionContent(expression.Content, task, cumulativeOffset, cache, project, programId);
 
+        // Convert mappings to VariableInfo for caching
+        var variables = result.Mappings
+            .Where(m => m.Variable != "?")
+            .Select(m => new VariableInfo
+            {
+                Variable = m.Variable,
+                Name = m.LogicalName,
+                Position = m.GlobalIndex
+            })
+            .ToList();
+
+        // Cache the result
+        expressionCache.Set(project, programId, expressionId,
+            expression.Content, result.DecodedExpression, variables, cumulativeOffset);
+
+        return FormatDecodeResult(expression.Id, expression.Content, result, cumulativeOffset, false);
+    }
+
+    private static string FormatCachedResult(CachedDecodedExpression cached, int expressionId)
+    {
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine($"## Expression {expression.Id} decodee");
+        sb.AppendLine($"## Expression {expressionId} decodee (from cache)");
         sb.AppendLine();
         sb.AppendLine("### Formule originale");
         sb.AppendLine("```");
-        sb.AppendLine(expression.Content);
+        sb.AppendLine(cached.RawExpression ?? "[N/A]");
+        sb.AppendLine("```");
+        sb.AppendLine();
+        sb.AppendLine("### Formule decodee");
+        sb.AppendLine("```");
+        sb.AppendLine(cached.DecodedText);
+        sb.AppendLine("```");
+        sb.AppendLine();
+
+        if (cached.Variables != null && cached.Variables.Count > 0)
+        {
+            sb.AppendLine("### Variables utilisees");
+            sb.AppendLine();
+            sb.AppendLine("| Variable | Nom logique | Position |");
+            sb.AppendLine("|----------|-------------|----------|");
+            foreach (var v in cached.Variables)
+            {
+                sb.AppendLine($"| **{v.Variable}** | {v.Name} | {v.Position} |");
+            }
+            sb.AppendLine();
+        }
+
+        if (cached.OffsetUsed.HasValue)
+        {
+            sb.AppendLine($"**Offset cumulatif utilise:** {cached.OffsetUsed.Value}");
+        }
+        sb.AppendLine();
+        sb.AppendLine($"*Cached at: {cached.CachedAt:yyyy-MM-dd HH:mm:ss}*");
+
+        return sb.ToString();
+    }
+
+    private static string FormatDecodeResult(int exprId, string original, DecodeResult result, int offset, bool fromCache)
+    {
+        var sb = new System.Text.StringBuilder();
+        var cacheNote = fromCache ? " (from cache)" : "";
+        sb.AppendLine($"## Expression {exprId} decodee{cacheNote}");
+        sb.AppendLine();
+        sb.AppendLine("### Formule originale");
+        sb.AppendLine("```");
+        sb.AppendLine(original);
         sb.AppendLine("```");
         sb.AppendLine();
         sb.AppendLine("### Formule decodee");
@@ -69,7 +137,7 @@ public static class DecodeExpressionTool
                 sb.AppendLine($"| `{{{m.Level},{m.ColumnId}}}` | {m.Level} | {m.ColumnId} | {m.LocalPosition} | {m.GlobalIndex} | **{m.Variable}** | {m.LogicalName} |");
             }
             sb.AppendLine();
-            sb.AppendLine($"**Offset cumulatif utilise:** {cumulativeOffset}");
+            sb.AppendLine($"**Offset cumulatif utilise:** {offset}");
         }
 
         return sb.ToString();
