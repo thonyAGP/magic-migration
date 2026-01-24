@@ -1,0 +1,203 @@
+{
+  "version": "1.0",
+  "description": "Index des patterns de resolution connus pour les tickets Magic",
+  "patterns": [
+    {
+      "id": "date-format-inversion",
+      "name": "Inversion format date (MM/DD vs DD/MM)",
+      "file": "date-format-inversion.md",
+      "tickets_source": ["CMDS-174321"],
+      "symptoms": [
+        "date incorrecte",
+        "date decalee d'un mois",
+        "25/12 devient 25/01",
+        "inversion mois/jour"
+      ],
+      "keywords": ["date", "arrivee", "import", "NA", "parsing"],
+      "domain": "import",
+      "solution_type": "bug_logic",
+      "root_cause_pattern": "Parsing YYMMDD avec inversion MM/DD",
+      "fix_type": "Corriger logique parsing date"
+    },
+    {
+      "id": "add-filter-parameter",
+      "name": "Ajout parametre de filtre",
+      "file": "add-filter-parameter.md",
+      "tickets_source": ["PMS-1373"],
+      "symptoms": [
+        "masquer lignes",
+        "filtrer donnees",
+        "afficher seulement",
+        "cacher annulations"
+      ],
+      "keywords": ["filtre", "masquer", "cacher", "extrait", "annulation"],
+      "domain": "display",
+      "solution_type": "new_feature",
+      "root_cause_pattern": "Pas de parametre de filtre dans le Range/Locate",
+      "fix_type": "Ajouter parametre + modifier Locate expression"
+    },
+    {
+      "id": "picture-format-mismatch",
+      "name": "Format Picture incorrect (decimales)",
+      "file": "picture-format-mismatch.md",
+      "tickets_source": ["CMDS-176521"],
+      "symptoms": [
+        "prix incorrect",
+        "montant sans decimales",
+        "41857 au lieu de 41.85",
+        "valeur multipliee"
+      ],
+      "keywords": ["format", "picture", "decimales", "prix", "montant"],
+      "domain": "display",
+      "solution_type": "bug_format",
+      "root_cause_pattern": "Picture Format N10 au lieu de N10.2",
+      "fix_type": "Corriger Picture Format dans DataView"
+    },
+    {
+      "id": "table-link-missing",
+      "name": "Liaison table manquante",
+      "file": "table-link-missing.md",
+      "tickets_source": ["PMS-1451"],
+      "symptoms": [
+        "donnees non affichees",
+        "champ vide",
+        "jointure manquante",
+        "relation absente"
+      ],
+      "keywords": ["lien", "table", "jointure", "relation", "link"],
+      "domain": "data",
+      "solution_type": "bug_data",
+      "root_cause_pattern": "Link Table manquant dans DataView",
+      "fix_type": "Ajouter Link Table avec expression de jointure"
+    },
+    {
+      "id": "session-validation-missing",
+      "name": "Validation session manquante",
+      "file": "session-validation-missing.md",
+      "tickets_source": ["PMS-1337"],
+      "symptoms": [
+        "session non verifiee",
+        "acces sans controle",
+        "droits ignores"
+      ],
+      "keywords": ["session", "validation", "droits", "acces", "controle"],
+      "domain": "security",
+      "solution_type": "bug_security",
+      "root_cause_pattern": "Pas de verification session avant operation",
+      "fix_type": "Ajouter condition verification session"
+    },
+    {
+      "id": "time-source-hardcoded",
+      "name": "Heure source hardcodee au lieu de Time(0)",
+      "file": "time-source-hardcoded.md",
+      "tickets_source": [],
+      "symptoms": [
+        "heure incorrecte",
+        "toujours meme heure",
+        "heure fixe"
+      ],
+      "keywords": ["heure", "Time(0)", "MTime", "timestamp"],
+      "domain": "date",
+      "solution_type": "bug_logic",
+      "root_cause_pattern": "Heure hardcodee '08:00:00' au lieu de Time(0)",
+      "fix_type": "Remplacer valeur fixe par Time(0)"
+    },
+    {
+      "id": "orphan-program-called",
+      "name": "Programme orphelin appele dynamiquement",
+      "file": "orphan-program-called.md",
+      "tickets_source": [],
+      "symptoms": [
+        "programme introuvable",
+        "erreur ProgIdx",
+        "appel dynamique echoue"
+      ],
+      "keywords": ["orphelin", "ProgIdx", "dynamique", "PublicName"],
+      "domain": "architecture",
+      "solution_type": "bug_reference",
+      "root_cause_pattern": "Programme sans PublicName mais appele via ProgIdx('nom')",
+      "fix_type": "Ajouter PublicName ou verifier appel"
+    },
+    {
+      "id": "dead-code-reactivation",
+      "name": "Code desactive a reactiver",
+      "file": "dead-code-reactivation.md",
+      "tickets_source": [],
+      "symptoms": [
+        "fonctionnalite disparue",
+        "code ne s'execute plus",
+        "option ne marche plus"
+      ],
+      "keywords": ["desactive", "[D]", "code mort", "reactiver"],
+      "domain": "logic",
+      "solution_type": "config_change",
+      "root_cause_pattern": "Tache ou ligne marquee [D] (Disabled)",
+      "fix_type": "Reactiver la tache/ligne"
+    },
+    {
+      "id": "expression-wrong-variable",
+      "name": "Expression utilise mauvaise variable",
+      "file": "expression-wrong-variable.md",
+      "tickets_source": [],
+      "symptoms": [
+        "calcul incorrect",
+        "valeur inattendue",
+        "mauvaise variable"
+      ],
+      "keywords": ["expression", "{N,Y}", "variable", "calcul"],
+      "domain": "logic",
+      "solution_type": "bug_logic",
+      "root_cause_pattern": "Expression utilise {0,X} au lieu de {0,Y}",
+      "fix_type": "Corriger index variable dans expression"
+    },
+    {
+      "id": "calltask-condition-false",
+      "name": "Condition CallTask toujours fausse",
+      "file": "calltask-condition-false.md",
+      "tickets_source": [],
+      "symptoms": [
+        "sous-programme jamais appele",
+        "tache non executee",
+        "condition toujours fausse"
+      ],
+      "keywords": ["CallTask", "condition", "IF(0", "jamais"],
+      "domain": "logic",
+      "solution_type": "bug_logic",
+      "root_cause_pattern": "Condition IF(0,...) ou variable constante = 0",
+      "fix_type": "Corriger condition ou reactiver"
+    },
+    {
+      "id": "ski-rental-duration-calc",
+      "name": "Calcul duree location ski",
+      "file": "ski-rental-duration-calc.md",
+      "tickets_source": ["PMS-1446"],
+      "symptoms": [
+        "mode day inc",
+        "MODEDAYINC",
+        "duree sejour",
+        "location ski"
+      ],
+      "keywords": ["ski", "location", "duree", "MODEDAYINC", "sejour"],
+      "domain": "business_logic",
+      "solution_type": "new_feature",
+      "root_cause_pattern": "Calcul MODEDAYINC base sur duree sejour",
+      "fix_type": "Ajouter logique calcul automatique selon duree"
+    }
+  ],
+  "search_algorithm": {
+    "description": "Algorithme de matching pour suggerer patterns",
+    "steps": [
+      "1. Extraire mots-cles du symptome ticket",
+      "2. Comparer avec keywords et symptoms de chaque pattern",
+      "3. Scorer par nombre de matches",
+      "4. Retourner top 3 patterns avec score > 2"
+    ],
+    "minimum_score": 2
+  },
+  "stats": {
+    "total_patterns": 11,
+    "from_resolved_tickets": 4,
+    "generic_patterns": 7,
+    "last_updated": "2026-01-24"
+  }
+}

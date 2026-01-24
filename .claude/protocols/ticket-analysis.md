@@ -2,6 +2,30 @@
 
 > **LECTURE OBLIGATOIRE** avant toute analyse de ticket.
 > Ce protocole garantit une analyse structurée et vérifiable.
+>
+> **Skill orchestrateur**: `/ticket-analyze {KEY}` - Force toutes les phases automatiquement
+
+---
+
+## SKILL ORCHESTRATEUR (RECOMMANDÉ)
+
+Pour garantir le respect du protocole, utiliser le skill:
+
+```
+/ticket-analyze PMS-1234
+```
+
+Ce skill:
+1. Force les 6 phases dans l'ordre
+2. Bloque si une phase est incomplete
+3. Suggere des patterns KB similaires
+4. Valide automatiquement avant commit
+
+**Fichiers du skill**:
+- Skill: `skills/ticket-analyze/SKILL.md`
+- Templates questions: `skills/ticket-analyze/templates/questions.json`
+- Index patterns: `skills/ticket-analyze/templates/patterns.json`
+- Patterns KB: `.openspec/patterns/*.md`
 
 ---
 
@@ -414,3 +438,65 @@ Avant de committer l'analyse :
 3. **TOUJOURS** utiliser `magic_get_line` (offset automatique via OffsetCalculator)
 4. **JAMAIS** citer une expression sans la décoder en variables lisibles
 5. **TOUJOURS** donner la localisation exacte : Programme.Tâche.Ligne
+
+---
+
+## KNOWLEDGE BASE PATTERNS
+
+Avant d'analyser un ticket, consulter les patterns KB existants:
+
+### Patterns disponibles
+
+| Pattern | Symptômes | Solution type |
+|---------|-----------|---------------|
+| `date-format-inversion.md` | Date +1 mois, inversion MM/DD | Corriger parsing YYMMDD |
+| `add-filter-parameter.md` | Masquer lignes, filtrer données | Ajouter param + Range/Locate |
+| `picture-format-mismatch.md` | Prix sans décimales | Corriger Picture Format |
+| `table-link-missing.md` | Données incomplètes, jointure | Ajouter Link Table |
+| `ski-rental-duration-calc.md` | Calcul selon durée séjour | Condition sur dates |
+
+### Utilisation
+
+```
+# Rechercher patterns similaires
+/ticket-search "date incorrecte"
+
+# Après résolution, capitaliser
+/ticket-learn PMS-1234
+```
+
+**Index complet**: `.openspec/patterns/README.md`
+
+---
+
+## VALIDATION HOOK (v2.0)
+
+Le hook `.claude/hooks/validate-ticket-analysis.ps1` valide:
+
+### Phases vérifiées
+
+| Phase | Validation |
+|-------|------------|
+| 1. Contexte | Lien Jira présent |
+| 2. Localisation | magic_get_position/find_program appelé |
+| 3. Flux | Diagramme ASCII présent |
+| 4. Expressions | {N,Y} décodées via MCP |
+| 5. Root Cause | Localisation précise (Programme + Tâche) |
+| 6. Solution | Avant/Après documenté |
+
+### Patterns bloquants
+
+Le hook BLOQUE si:
+- ISN_2 utilisé au lieu de position IDE
+- FieldID utilisé au lieu de nom variable
+- Calcul offset manuel détecté
+- Référence {N,Y} non décodée
+
+### Score minimum
+
+**5/6 phases validées** pour passer
+
+---
+
+*Protocole v2.0 - 2026-01-24*
+*Skill orchestrateur: `/ticket-analyze`*

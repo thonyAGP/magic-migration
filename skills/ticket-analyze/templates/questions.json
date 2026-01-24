@@ -1,0 +1,175 @@
+{
+  "version": "1.0",
+  "description": "Questions standardisees pour debloquer l'analyse de tickets Magic",
+  "categories": {
+    "contexte_insuffisant": {
+      "description": "Quand le ticket Jira manque d'informations essentielles",
+      "questions": [
+        {
+          "id": "q_menu_path",
+          "question": "Quel est le chemin menu exact pour reproduire le bug?",
+          "example": "Menu Caisse > Extrait de compte > Edition par Nom"
+        },
+        {
+          "id": "q_expected_vs_actual",
+          "question": "Quelle est la valeur attendue vs la valeur affichee?",
+          "example": "Attendu: 150.00 EUR, Affiche: 41.85 EUR"
+        },
+        {
+          "id": "q_environment",
+          "question": "Sur quel environnement (village, base de donnees)?",
+          "example": "Village: CSK0912, Base: LENOVO_LB2I\\SQLEXPRESS"
+        },
+        {
+          "id": "q_screenshot",
+          "question": "Pouvez-vous fournir une capture d'ecran avec les donnees de test?",
+          "example": "Joindre screenshot avec compte GM visible"
+        },
+        {
+          "id": "q_repro_steps",
+          "question": "Quelles sont les etapes exactes pour reproduire?",
+          "example": "1. Ouvrir session, 2. Chercher compte 12345, 3. Cliquer Extrait"
+        }
+      ]
+    },
+    "programme_non_trouve": {
+      "description": "Quand magic_find_program() ne retourne rien",
+      "questions": [
+        {
+          "id": "q_screen_title",
+          "question": "Quel est le nom exact du programme dans le titre de l'ecran Magic?",
+          "example": "Titre fenetre: 'CA0142 - Gestion Caisse'"
+        },
+        {
+          "id": "q_module",
+          "question": "Dans quel module se trouve le bug: Caisse, Ventes, Editions, Batch, Planning?",
+          "example": "Module: Caisse Adherent (ADH)"
+        },
+        {
+          "id": "q_public_code",
+          "question": "Y a-t-il un code visible dans l'interface (ex: CA0142, PB027)?",
+          "example": "Code visible en haut a gauche: PB027"
+        },
+        {
+          "id": "q_menu_structure",
+          "question": "Depuis quel menu principal accede-t-on a cet ecran?",
+          "example": "Menu principal > Adherents > Gestion Caisse"
+        }
+      ]
+    },
+    "root_cause_non_identifiee": {
+      "description": "Quand l'analyse n'aboutit pas a une cause racine",
+      "questions": [
+        {
+          "id": "q_test_data",
+          "question": "Pouvez-vous fournir un jeu de donnees de test precis?",
+          "example": "Compte GM: 572185684, Societe: 9003, Date: 25/12/2025"
+        },
+        {
+          "id": "q_reproducibility",
+          "question": "Le bug est-il reproductible systematiquement ou intermittent?",
+          "example": "Systematique: 100% sur ce compte, OK sur d'autres"
+        },
+        {
+          "id": "q_since_when",
+          "question": "Depuis quand ce bug apparait-il (date approximative)?",
+          "example": "Depuis le 15/01/2026, apres mise a jour X"
+        },
+        {
+          "id": "q_other_cases",
+          "question": "Avez-vous d'autres cas similaires a comparer?",
+          "example": "Meme bug sur compte 572185685 mais pas sur 572185686"
+        },
+        {
+          "id": "q_recent_changes",
+          "question": "Y a-t-il eu des modifications recentes dans ce module?",
+          "example": "Deploiement PMS v2.1.3 le 10/01/2026"
+        }
+      ]
+    },
+    "display_bug": {
+      "description": "Bug d'affichage ecran",
+      "questions": [
+        {
+          "id": "q_field_name",
+          "question": "Quel est le nom du champ qui affiche une valeur incorrecte?",
+          "example": "Champ 'Montant TTC' dans la grille des ventes"
+        },
+        {
+          "id": "q_correct_source",
+          "question": "D'ou vient la valeur correcte (autre ecran, rapport, base)?",
+          "example": "Dans SQL: SELECT montant FROM ventes = 150.00"
+        },
+        {
+          "id": "q_format",
+          "question": "Le format est-il incorrect (decimales, date, devise)?",
+          "example": "Affiche 4185 au lieu de 41.85 (decimale manquante)"
+        }
+      ]
+    },
+    "logic_bug": {
+      "description": "Bug de calcul ou logique metier",
+      "questions": [
+        {
+          "id": "q_calculation",
+          "question": "Quel calcul donne un resultat incorrect?",
+          "example": "Total = Prix * Quantite - Remise, mais remise non appliquee"
+        },
+        {
+          "id": "q_input_values",
+          "question": "Quelles sont les valeurs d'entree exactes?",
+          "example": "Prix: 100, Quantite: 5, Remise: 10%"
+        },
+        {
+          "id": "q_expected_result",
+          "question": "Quel est le resultat attendu avec ces valeurs?",
+          "example": "Attendu: (100*5) - 10% = 450 EUR"
+        }
+      ]
+    },
+    "date_bug": {
+      "description": "Bug lie aux dates/heures",
+      "questions": [
+        {
+          "id": "q_date_format",
+          "question": "Quel est le format de date attendu vs affiche?",
+          "example": "Attendu: 25/12/2025, Affiche: 25/01/2026"
+        },
+        {
+          "id": "q_date_source",
+          "question": "D'ou vient cette date (saisie, import, calcul)?",
+          "example": "Date importee depuis fichier NA (format YYMMDD)"
+        },
+        {
+          "id": "q_timezone",
+          "question": "Y a-t-il un probleme de fuseau horaire?",
+          "example": "Serveur en UTC, client en Europe/Paris"
+        }
+      ]
+    },
+    "config_bug": {
+      "description": "Bug de configuration ou environnement",
+      "questions": [
+        {
+          "id": "q_config_file",
+          "question": "Quel fichier de configuration est utilise?",
+          "example": "Application.ini dans C:\\PMS\\Config\\"
+        },
+        {
+          "id": "q_permissions",
+          "question": "L'utilisateur a-t-il les permissions necessaires?",
+          "example": "Profil: Caissier, Droits: Lecture/Ecriture Caisse"
+        },
+        {
+          "id": "q_other_users",
+          "question": "D'autres utilisateurs ont-ils le meme probleme?",
+          "example": "Seul Jean DUPONT a le bug, pas Marie MARTIN"
+        }
+      ]
+    }
+  },
+  "usage": {
+    "how_to_use": "Selectionner la categorie appropriee selon le type de blocage, puis poser les questions dans l'ordre jusqu'a obtenir l'info manquante",
+    "priority": "Toujours commencer par les questions de contexte_insuffisant si le ticket est vague"
+  }
+}
