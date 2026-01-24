@@ -137,6 +137,23 @@ public record DbTableUsage
 }
 
 /// <summary>
+/// Task form record (UI screen info)
+/// </summary>
+public record DbTaskForm
+{
+    public long Id { get; init; }
+    public long TaskId { get; init; }
+    public int FormEntryId { get; init; }
+    public string? FormName { get; init; }
+    public int? PositionX { get; init; }
+    public int? PositionY { get; init; }
+    public int? Width { get; init; }
+    public int? Height { get; init; }
+    public int? WindowType { get; init; }
+    public string? Font { get; init; }
+}
+
+/// <summary>
 /// Table record from DataSources.xml
 /// </summary>
 public record DbTable

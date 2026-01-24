@@ -166,6 +166,34 @@ public class BatchIndexer
         var programHeaders = scanner.ParseProgramHeaders();
         var programPositions = scanner.ParseProgramPositions();
 
+        // Validate for orphan programs (XML exists but not in headers)
+        var orphanValidation = scanner.ValidateOrphans();
+        if (orphanValidation.HasOrphans)
+        {
+            _progress?.Report(new IndexProgress
+            {
+                Phase = "Validation",
+                Message = $"{projectName}: Found {orphanValidation.OrphanPrograms.Count} orphan programs (XML without header entry)",
+                CurrentProject = projectName
+            });
+
+            // Add orphan programs to headers dictionary for indexing
+            foreach (var orphan in orphanValidation.OrphanPrograms)
+            {
+                programHeaders[orphan.Id] = orphan;
+            }
+        }
+
+        if (orphanValidation.HasGhosts)
+        {
+            _progress?.Report(new IndexProgress
+            {
+                Phase = "Validation",
+                Message = $"{projectName}: Found {orphanValidation.GhostEntries.Count} ghost entries (header without XML)",
+                CurrentProject = projectName
+            });
+        }
+
         // Parse programs in batches (no offset applied, done at display time)
         var parser = new ProgramParser();
         var batchSize = 50;
@@ -277,6 +305,23 @@ public class BatchIndexer
                                 CalleeProjectName = c.TargetProject,
                                 CalleeXmlId = c.TargetProgramXmlId,
                                 ArgCount = c.ArgCount
+                            }), tx);
+                        }
+
+                        // Insert task forms (UI screens)
+                        if (task.Forms.Count > 0)
+                        {
+                            _db.BulkInsertTaskForms(task.Forms.Select(f => new DbTaskForm
+                            {
+                                TaskId = taskId,
+                                FormEntryId = f.FormEntryId,
+                                FormName = f.FormName,
+                                PositionX = f.PositionX,
+                                PositionY = f.PositionY,
+                                Width = f.Width,
+                                Height = f.Height,
+                                WindowType = f.WindowType,
+                                Font = f.Font
                             }), tx);
                         }
 

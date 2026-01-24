@@ -60,6 +60,24 @@ CREATE TABLE IF NOT EXISTS tasks (
 CREATE INDEX IF NOT EXISTS idx_tasks_program ON tasks(program_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_ide ON tasks(ide_position);
 
+-- Task Forms (UI info for screens)
+CREATE TABLE IF NOT EXISTS task_forms (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    form_entry_id INTEGER NOT NULL,
+    form_name TEXT,
+    position_x INTEGER,
+    position_y INTEGER,
+    width INTEGER,
+    height INTEGER,
+    window_type INTEGER,
+    font TEXT,
+    UNIQUE(task_id, form_entry_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_task_forms_task ON task_forms(task_id);
+CREATE INDEX IF NOT EXISTS idx_task_forms_name ON task_forms(form_name);
+
 -- DataView columns (~150,000 rows expected)
 CREATE TABLE IF NOT EXISTS dataview_columns (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
