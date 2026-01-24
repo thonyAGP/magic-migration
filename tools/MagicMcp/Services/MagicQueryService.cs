@@ -342,6 +342,181 @@ public class MagicQueryService
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Get Forms (UI screens) attached to a task
+    /// </summary>
+    public string GetForms(string projectName, int programId, int? isn2 = null)
+    {
+        var program = _cache.GetProgram(projectName, programId);
+        if (program == null)
+            return $"ERROR: Program {programId} not found in project {projectName}";
+
+        // Default to root task (ISN_2=1)
+        var taskIsn2 = isn2 ?? 1;
+        var task = _cache.GetTask(projectName, programId, taskIsn2);
+        if (task == null)
+            return $"ERROR: Task ISN_2={taskIsn2} not found in program {programId}";
+
+        if (task.Forms.Count == 0)
+            return $"Task {projectName.ToUpper()} IDE {task.IdePosition} - {task.Description} has no Forms attached.";
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"## Forms pour {projectName.ToUpper()} IDE {task.IdePosition} - {task.Description}");
+        sb.AppendLine();
+        sb.AppendLine("| # | Nom | Type | Dimensions | Position |");
+        sb.AppendLine("|---|-----|------|------------|----------|");
+
+        foreach (var form in task.Forms)
+        {
+            var name = form.FormName ?? "(sans nom)";
+            var typeDesc = form.IsMainScreen ? $"**{form.WindowTypeDescription}**" : form.WindowTypeDescription;
+            var dims = $"{form.Width}x{form.Height}";
+            var pos = $"({form.PositionX}, {form.PositionY})";
+
+            sb.AppendLine($"| {form.FormEntryId} | {name} | {typeDesc} | {dims} | {pos} |");
+        }
+
+        // Highlight main screen if found
+        var mainScreen = task.Forms.FirstOrDefault(f => f.IsMainScreen);
+        if (mainScreen != null)
+        {
+            sb.AppendLine();
+            sb.AppendLine($"**Ecran principal:** {mainScreen.ToIdeFormat(projectName, program.IdePosition, task.Description)}");
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Get Form Controls (buttons, fields, tables) for a task
+    /// </summary>
+    public string GetFormControls(string projectName, int programId, int? isn2 = null, int? formEntryId = null, string? controlTypeFilter = null)
+    {
+        var program = _cache.GetProgram(projectName, programId);
+        if (program == null)
+            return $"ERROR: Program {programId} not found in project {projectName}";
+
+        // Default to root task (ISN_2=1)
+        var taskIsn2 = isn2 ?? 1;
+        var task = _cache.GetTask(projectName, programId, taskIsn2);
+        if (task == null)
+            return $"ERROR: Task ISN_2={taskIsn2} not found in program {programId}";
+
+        if (task.Forms.Count == 0)
+            return $"Task {projectName.ToUpper()} IDE {task.IdePosition} - {task.Description} has no Forms attached.";
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"## Form Controls pour {projectName.ToUpper()} IDE {task.IdePosition} - {task.Description}");
+        sb.AppendLine();
+
+        // Filter to specific form if requested
+        var forms = formEntryId.HasValue
+            ? task.Forms.Where(f => f.FormEntryId == formEntryId.Value).ToList()
+            : task.Forms;
+
+        if (!forms.Any())
+            return $"ERROR: Form entry {formEntryId} not found";
+
+        foreach (var form in forms)
+        {
+            var formName = form.FormName ?? "(sans nom)";
+            sb.AppendLine($"### Form {form.FormEntryId}: {formName} ({form.WindowTypeDescription})");
+            sb.AppendLine();
+
+            var controls = form.Controls.AsEnumerable();
+
+            // Apply type filter if specified
+            if (!string.IsNullOrEmpty(controlTypeFilter))
+            {
+                controls = controls.Where(c =>
+                    c.ControlType.Contains(controlTypeFilter, StringComparison.OrdinalIgnoreCase) ||
+                    c.ControlTypeName.Contains(controlTypeFilter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var controlList = controls.ToList();
+
+            if (controlList.Count == 0)
+            {
+                sb.AppendLine("*Aucun contrôle" + (string.IsNullOrEmpty(controlTypeFilter) ? "" : $" de type '{controlTypeFilter}'") + "*");
+                sb.AppendLine();
+                continue;
+            }
+
+            // Group by control type for better readability
+            var grouped = controlList.GroupBy(c => c.ControlType).OrderBy(g => g.Key);
+
+            foreach (var group in grouped)
+            {
+                var typeName = group.First().ControlTypeName;
+                sb.AppendLine($"#### {typeName}s ({group.Count()})");
+                sb.AppendLine();
+
+                if (group.Key == "PUSH_BUTTON")
+                {
+                    // Buttons table
+                    sb.AppendLine("| ID | Label | Position | Event | Visible |");
+                    sb.AppendLine("|----|-------|----------|-------|---------|");
+                    foreach (var ctrl in group.OrderBy(c => c.TabOrder ?? c.ControlId))
+                    {
+                        var label = ctrl.Label ?? "-";
+                        var pos = $"({ctrl.X},{ctrl.Y})";
+                        var evt = ctrl.RaiseEventId.HasValue ? $"Event {ctrl.RaiseEventId}" : "-";
+                        var visible = ctrl.VisibleExprId.HasValue ? $"Expr {ctrl.VisibleExprId}" : "Yes";
+                        sb.AppendLine($"| {ctrl.ControlId} | {label} | {pos} | {evt} | {visible} |");
+                    }
+                }
+                else if (group.Key == "EDIT" || group.Key == "COMBO_BOX")
+                {
+                    // Input fields table
+                    sb.AppendLine("| ID | Field | Position | Size | Visible |");
+                    sb.AppendLine("|----|-------|----------|------|---------|");
+                    foreach (var ctrl in group.OrderBy(c => c.TabOrder ?? c.ControlId))
+                    {
+                        var field = ctrl.FieldId.HasValue ? $"Field {ctrl.FieldId}" : "-";
+                        var pos = $"({ctrl.X},{ctrl.Y})";
+                        var size = $"{ctrl.Width}x{ctrl.Height}";
+                        var visible = ctrl.VisibleExprId.HasValue ? $"Expr {ctrl.VisibleExprId}" : "Yes";
+                        sb.AppendLine($"| {ctrl.ControlId} | {field} | {pos} | {size} | {visible} |");
+                    }
+                }
+                else if (group.Key == "TABLE" || group.Key == "COLUMN")
+                {
+                    // Tables and columns
+                    sb.AppendLine("| ID | Title | Position | Size | Parent |");
+                    sb.AppendLine("|----|-------|----------|------|--------|");
+                    foreach (var ctrl in group.OrderBy(c => c.ControlId))
+                    {
+                        var title = ctrl.ColumnTitle ?? ctrl.Label ?? "-";
+                        var pos = $"({ctrl.X},{ctrl.Y})";
+                        var size = $"{ctrl.Width}x{ctrl.Height}";
+                        var parent = ctrl.ParentControlId.HasValue ? $"#{ctrl.ParentControlId}" : "-";
+                        sb.AppendLine($"| {ctrl.ControlId} | {title} | {pos} | {size} | {parent} |");
+                    }
+                }
+                else
+                {
+                    // Generic table for other controls
+                    sb.AppendLine("| ID | Label | Position | Size |");
+                    sb.AppendLine("|----|-------|----------|------|");
+                    foreach (var ctrl in group.OrderBy(c => c.ControlId))
+                    {
+                        var label = ctrl.Label ?? ctrl.ColumnTitle ?? "-";
+                        var pos = $"({ctrl.X},{ctrl.Y})";
+                        var size = $"{ctrl.Width}x{ctrl.Height}";
+                        sb.AppendLine($"| {ctrl.ControlId} | {label} | {pos} | {size} |");
+                    }
+                }
+                sb.AppendLine();
+            }
+
+            // Summary
+            sb.AppendLine($"**Total: {controlList.Count} contrôles**");
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
+    }
+
     private string FormatLogicDetails(MagicLogicLine line, string projectName, int programId)
     {
         switch (line.Operation)

@@ -14,17 +14,9 @@ Console.SetError(stderr);
 var projectsBasePath = Environment.GetEnvironmentVariable("MAGIC_PROJECTS_PATH")
     ?? @"D:\Data\Migration\XPA\PMS";
 
-// Dynamically discover all projects with Magic programs
-var projectNames = Directory.GetDirectories(projectsBasePath)
-    .Select(d => Path.GetFileName(d))
-    .Where(name =>
-    {
-        var sourcePath = Path.Combine(projectsBasePath, name, "Source");
-        if (!Directory.Exists(sourcePath)) return false;
-        return Directory.GetFiles(sourcePath, "Prg_*.xml", SearchOption.AllDirectories).Length > 0;
-    })
-    .OrderBy(n => n)
-    .ToArray();
+// Use ProjectDiscoveryService for dynamic project discovery
+var projectDiscovery = new ProjectDiscoveryService(projectsBasePath);
+var projectNames = projectDiscovery.DiscoverProjects();
 
 void Log(string msg)
 {

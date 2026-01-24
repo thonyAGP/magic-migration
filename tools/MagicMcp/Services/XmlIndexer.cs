@@ -229,6 +229,9 @@ public partial class XmlIndexer
             // Parse Logic from TaskLogic element
             var logicLines = ParseLogicLines(taskElement);
 
+            // Parse Forms (UI screens)
+            var forms = ParseTaskForms(taskElement);
+
             program.Tasks[isn2] = new MagicTask
             {
                 Isn2 = isn2,
@@ -238,7 +241,8 @@ public partial class XmlIndexer
                 ParentIsn2 = parentIsn2,
                 TaskType = taskType,
                 DataView = dataView,
-                LogicLines = logicLines
+                LogicLines = logicLines,
+                Forms = forms
             };
         }
 
@@ -332,6 +336,231 @@ public partial class XmlIndexer
         }
 
         return dataView;
+    }
+
+    /// <summary>
+    /// Parse TaskForms (UI screen information) from a Task element.
+    /// TaskForms contains FormEntry elements with form properties.
+    /// </summary>
+    private List<MagicTaskForm> ParseTaskForms(XElement taskElement)
+    {
+        var forms = new List<MagicTaskForm>();
+
+        var taskFormsElement = taskElement.Element("TaskForms");
+        if (taskFormsElement == null) return forms;
+
+        foreach (var formEntry in taskFormsElement.Elements("FormEntry"))
+        {
+            var idAttr = formEntry.Attribute("id");
+            if (idAttr == null || !int.TryParse(idAttr.Value, out int formEntryId)) continue;
+
+            var propList = formEntry.Element("PropertyList");
+            if (propList == null) continue;
+
+            // Extract form properties
+            var formNameElement = propList.Element("FormName");
+            var formName = formNameElement?.Attribute("valUnicode")?.Value
+                        ?? formNameElement?.Attribute("val")?.Value;
+
+            var width = GetIntAttribute(propList.Element("Width"), "val", 0);
+            var height = GetIntAttribute(propList.Element("Height"), "val", 0);
+            var posX = GetIntAttribute(propList.Element("X"), "val", 0);
+            var posY = GetIntAttribute(propList.Element("Y"), "val", 0);
+            var windowType = GetIntAttribute(propList.Element("WindowType"), "val", 0);
+
+            var fontElement = propList.Element("Font");
+            var font = fontElement?.Attribute("val")?.Value;
+
+            // Parse Controls inside this FormEntry
+            var controls = ParseFormControls(formEntry);
+
+            forms.Add(new MagicTaskForm
+            {
+                FormEntryId = formEntryId,
+                FormName = formName,
+                PositionX = posX,
+                PositionY = posY,
+                Width = width,
+                Height = height,
+                WindowType = windowType,
+                Font = font,
+                Controls = controls
+            });
+        }
+
+        return forms;
+    }
+
+    /// <summary>
+    /// Parse Control elements inside a FormEntry
+    /// </summary>
+    private List<MagicFormControl> ParseFormControls(XElement formEntry)
+    {
+        var controls = new List<MagicFormControl>();
+
+        foreach (var controlElement in formEntry.Elements("Control"))
+        {
+            var idAttr = controlElement.Attribute("id");
+            if (idAttr == null || !int.TryParse(idAttr.Value, out int controlId)) continue;
+
+            var propList = controlElement.Element("PropertyList");
+            if (propList == null) continue;
+
+            // Get control type from PropertyList model attribute
+            var modelAttr = propList.Attribute("model");
+            var controlType = ParseControlType(modelAttr?.Value);
+
+            // Position and dimensions
+            var x = GetIntAttribute(propList.Element("X"), "val", 0);
+            var y = GetIntAttribute(propList.Element("Y"), "val", 0);
+            var width = GetIntAttribute(propList.Element("Width"), "val", 0);
+            var height = GetIntAttribute(propList.Element("Height"), "val", 0);
+
+            // Label (from Format or Text)
+            var formatElement = propList.Element("Format");
+            var label = formatElement?.Attribute("valUnicode")?.Value
+                     ?? formatElement?.Attribute("val")?.Value;
+
+            // Try Text element if Format not found
+            if (string.IsNullOrEmpty(label))
+            {
+                var textElement = propList.Element("Text");
+                label = textElement?.Attribute("valUnicode")?.Value
+                     ?? textElement?.Attribute("val")?.Value;
+            }
+
+            // FieldID (link to DataView column)
+            var dataElement = propList.Element("Data");
+            int? fieldId = null;
+            if (dataElement != null)
+            {
+                var fieldIdAttr = dataElement.Attribute("FieldID");
+                if (fieldIdAttr != null && int.TryParse(fieldIdAttr.Value, out int fid))
+                    fieldId = fid;
+            }
+
+            // Visible expression
+            int? visibleExprId = null;
+            var visibleElement = propList.Element("Visible");
+            if (visibleElement != null)
+            {
+                var expAttr = visibleElement.Attribute("Exp");
+                if (expAttr != null && int.TryParse(expAttr.Value, out int vid))
+                    visibleExprId = vid;
+            }
+
+            // Enabled expression
+            int? enabledExprId = null;
+            var enabledElement = propList.Element("Enabled");
+            if (enabledElement != null)
+            {
+                var expAttr = enabledElement.Attribute("Exp");
+                if (expAttr != null && int.TryParse(expAttr.Value, out int eid))
+                    enabledExprId = eid;
+            }
+
+            // Tab order
+            int? tabOrder = null;
+            var tabOrderElement = propList.Element("TabOrder");
+            if (tabOrderElement != null)
+            {
+                var valAttr = tabOrderElement.Attribute("val");
+                if (valAttr != null && int.TryParse(valAttr.Value, out int tval))
+                    tabOrder = tval;
+            }
+
+            // RaiseEvent (for buttons)
+            int? raiseEventId = null;
+            var raiseEventElement = propList.Element("RaiseEvent");
+            if (raiseEventElement != null)
+            {
+                var internalEventElement = raiseEventElement.Element("InternalEventID");
+                if (internalEventElement != null)
+                {
+                    var valAttr = internalEventElement.Attribute("val");
+                    if (valAttr != null && int.TryParse(valAttr.Value, out int evtId))
+                        raiseEventId = evtId;
+                }
+            }
+
+            // Parent control ID (ISN_FATHER for columns)
+            int? parentControlId = null;
+            var isnFatherElement = propList.Element("ISN_FATHER");
+            if (isnFatherElement != null)
+            {
+                var valAttr = isnFatherElement.Attribute("val");
+                if (valAttr != null && int.TryParse(valAttr.Value, out int pid))
+                    parentControlId = pid;
+            }
+
+            // Column title (for table columns)
+            var columnTitleElement = propList.Element("ColumnTitle");
+            var columnTitle = columnTitleElement?.Attribute("valUnicode")?.Value
+                           ?? columnTitleElement?.Attribute("val")?.Value;
+
+            // Check if disabled
+            var disabledElement = propList.Element("Disabled");
+            var isDisabled = disabledElement?.Attribute("val")?.Value == "1";
+
+            // Additional properties
+            var props = new Dictionary<string, string>();
+
+            // Modifiable property
+            var modifiableElement = propList.Element("Modifiable");
+            if (modifiableElement != null)
+                props["Modifiable"] = modifiableElement.Attribute("val")?.Value ?? "";
+
+            // DefaultImageFile (for images)
+            var imageElement = propList.Element("DefaultImageFile");
+            if (imageElement != null)
+                props["DefaultImage"] = imageElement.Attribute("val")?.Value ?? "";
+
+            controls.Add(new MagicFormControl
+            {
+                ControlId = controlId,
+                ControlType = controlType,
+                X = x,
+                Y = y,
+                Width = width,
+                Height = height,
+                Label = label,
+                FieldId = fieldId,
+                VisibleExprId = visibleExprId,
+                EnabledExprId = enabledExprId,
+                TabOrder = tabOrder,
+                RaiseEventId = raiseEventId,
+                ParentControlId = parentControlId,
+                ColumnTitle = columnTitle,
+                IsDisabled = isDisabled,
+                Properties = props
+            });
+        }
+
+        return controls;
+    }
+
+    /// <summary>
+    /// Parse control type from model attribute (e.g., "CTRL_GUI0_PUSH_BUTTON" -> "PUSH_BUTTON")
+    /// </summary>
+    private static string ParseControlType(string? modelValue)
+    {
+        if (string.IsNullOrEmpty(modelValue))
+            return "UNKNOWN";
+
+        // Model format: CTRL_GUI0_TYPE or CTRL_TYPE
+        if (modelValue.StartsWith("CTRL_GUI0_"))
+            return modelValue.Substring("CTRL_GUI0_".Length);
+        if (modelValue.StartsWith("CTRL_"))
+            return modelValue.Substring("CTRL_".Length);
+
+        return modelValue;
+    }
+
+    private static int GetIntAttribute(XElement? element, string attrName, int defaultValue)
+    {
+        var attr = element?.Attribute(attrName);
+        if (attr == null) return defaultValue;
+        return int.TryParse(attr.Value, out int val) ? val : defaultValue;
     }
 
     /// <summary>

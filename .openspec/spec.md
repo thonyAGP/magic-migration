@@ -299,17 +299,109 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 - Resolution de bugs
 - Amelioration continue
 
-**Inventaire des outils** (2026-01-12) :
+**Inventaire des outils** (2026-01-24) :
 
 | Categorie | Outils | Etat | Cible | Action |
 |-----------|--------|------|-------|--------|
-| MCP Server | 19 outils | **100%** | 100% | **+6 outils orphan/dead code** |
+| MCP Server | **24 outils** | **100%** | 100% | **+magic_get_form_controls (UI controls)** |
 | Agents specialises | 5 agents | 100% | 100% | Maintenir |
 | Commandes Slash | 15 commandes | 100% | 100% | Maintenir |
-| Scripts PowerShell | 20 scripts | 100% | 100% | Maintenir |
+| Scripts PowerShell | **28 scripts** | 100% | 100% | **+7 scripts ticket-pipeline/** |
 | Parser TypeScript | 3 generateurs | **100%** | 100% | **COMPLET** |
-| Skill/References | 22 fichiers | 100% | 100% | Enrichir |
+| Skill/References | **24 fichiers** | 100% | 100% | **+skill ticket-analyze** |
 | **Fonctions Magic** | **200/200** | **100%** | **100%** | **COMPLET** |
+| **Workflow Tickets** | **Orchestre v2.0** | **100%** | 100% | **NOUVEAU - 6 phases, 5 patterns KB** |
+
+### Nouveaux outils MCP (2026-01-24)
+
+| Outil | Description | Statut |
+|-------|-------------|--------|
+| `magic_get_forms` | Affiche les Forms (UI screens) d'une tache avec WindowType, dimensions | **NOUVEAU** |
+| `magic_get_form_controls` | **Affiche les Controls (boutons, champs, tables) dans une Form** | **NOUVEAU** |
+| `magic_kb_constant_conditions` | Detecte conditions constantes (IF(0,...)) | **NOUVEAU** |
+| `magic_kb_constant_stats` | Statistiques conditions constantes | **NOUVEAU** |
+| `magic_kb_dynamic_calls` | Detecte appels ProgIdx() dynamiques | **NOUVEAU** |
+
+### Offsets dynamiques (2026-01-24) - NOUVEAU
+
+**Calcul automatique du Main offset au chargement des projets.**
+
+| Projet | Offset Calcule | Offset Hardcode | Status |
+|--------|----------------|-----------------|--------|
+| ADH | 118 | 117 | Delta +1 (Remark?) |
+| VIL | 52 | 52 | MATCH |
+| PBP | 88 | 88 | MATCH |
+| PVE | 143 | 143 | Dynamique |
+| PBG | 91 | 91 | Dynamique |
+| REF | 107 | 107 | Dynamique |
+
+**Formule:** Main_VG = nombre de Columns dans Task ISN_2=1 du premier programme
+
+### Skill ticket-analyze (2026-01-24) - NOUVEAU
+
+**Orchestrateur workflow analyse tickets Magic** - Force les 6 phases du protocole.
+
+| Fichier | Role |
+|---------|------|
+| `skills/ticket-analyze/SKILL.md` | Skill principal |
+| `skills/ticket-analyze/templates/questions.json` | Questions standardisees (6 categories) |
+| `skills/ticket-analyze/templates/patterns.json` | Index 11 patterns KB |
+| `.openspec/patterns/*.md` | 5 patterns documentes |
+| `.claude/hooks/validate-ticket-analysis.ps1` | Hook validation v2.0 |
+| `.claude/protocols/ticket-analysis.md` | Protocole mis a jour |
+
+**Phases orchestrees** :
+1. Contexte Jira (5 min)
+2. Localisation programmes (10 min)
+3. Tracage flux + diagramme ASCII (15 min)
+4. Analyse expressions {N,Y} (20 min)
+5. Root Cause ou piste documentee (10 min)
+6. Solution Avant/Apres (5 min)
+
+**Patterns KB capitalises** :
+- `date-format-inversion.md` (CMDS-174321)
+- `add-filter-parameter.md` (PMS-1373)
+- `picture-format-mismatch.md` (CMDS-176521)
+- `table-link-missing.md` (PMS-1451)
+- `ski-rental-duration-calc.md` (PMS-1446)
+
+**Commandes** :
+```
+/ticket-analyze PMS-1234   # Analyse orchestree
+/ticket-search "symptome"  # Recherche patterns
+/ticket-learn PMS-1234     # Capitaliser resolution
+```
+
+### Pipeline Automatise (2026-01-24) - NOUVEAU
+
+**Pipeline PowerShell 100% automatique** - Lit XML/KB directement, aucune dependance Claude.
+
+| Script | Role | Inputs | Outputs |
+|--------|------|--------|---------|
+| `Run-TicketPipeline.ps1` | Orchestrateur | TicketKey | analysis.md |
+| `auto-extract-context.ps1` | Phase 1 | Jira/fichiers | context.json |
+| `auto-find-programs.ps1` | Phase 2 | Noms programmes | programs.json (IDE verifie) |
+| `auto-trace-flow.ps1` | Phase 3 | Programmes | flow.json + diagram.txt |
+| `auto-decode-expressions.ps1` | Phase 4 | Expressions | expressions.json (decodees) |
+| `auto-match-patterns.ps1` | Phase 5 | Symptomes | patterns.json (scores) |
+| `auto-generate-analysis.ps1` | Phase 6 | State | analysis.md complet |
+
+**Usage** :
+```powershell
+# Pipeline complet
+.\tools\ticket-pipeline\Run-TicketPipeline.ps1 -TicketKey "PMS-1234"
+
+# Mode offline (sans Jira)
+.\tools\ticket-pipeline\Run-TicketPipeline.ps1 -TicketKey "PMS-1234" -SkipJira
+```
+
+**Caracteristiques** :
+- Lecture directe Knowledge Base SQLite (~/.magic-kb/knowledge.db)
+- Parsing XML Prg_XXX.xml pour expressions et flux
+- Calcul offset automatique (formule validee: Main_VG + Σ Selects)
+- Generation diagramme ASCII automatique
+- Matching patterns KB avec scoring (minimum 2 points)
+- Generation analysis.md conforme au protocole
 
 ---
 
@@ -404,6 +496,10 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 - [x] **P1.1** Reparer connexion MCP magic-interpreter (en cours: 2026-01-10)
 
 ### Terminees
+- [x] **Form Controls + Discovery + Validation** (terminee: 2026-01-24) - magic_get_form_controls outil MCP, ProjectDiscoveryService, KbIndexRunner validate mode
+- [x] **Forms MCP + Offsets dynamiques** (terminee: 2026-01-24) - magic_get_forms outil MCP, calcul automatique Main offset, MagicTaskForm model
+- [x] **Skill ticket-analyze v2.0** (terminee: 2026-01-24) - Orchestrateur 6 phases, 5 patterns KB, hook validation, templates questions
+- [x] **Audit Workflow Analyse Tickets** (terminee: 2026-01-24) - 3 outils MCP (constant conditions, dynamic calls), detection ECF dynamique, hook enrichi
 - [x] **Parser TypeScript COMPLET** (terminee: 2026-01-12) - 200 fonctions dans 4 fichiers (registry, TS, C#, Python)
 - [x] **Analyse Main/ADH IDE 162 + 6 ecrans** (terminee: 2025-12-31) - Tracage flux CallTask, 3 gaps API combles, 6 ecrans SPA crees
 - [x] **Phase 11: Identification (2 endpoints)** (terminee: 2025-12-28) - Login + Session check, 327 tests total
@@ -551,10 +647,13 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-01-24: **magic_get_form_controls** - nouvel outil MCP pour parser les Controls UI (boutons, champs, tables)
+- 2026-01-24: **ProjectDiscoveryService** - service centralise pour decouverte dynamique des projets
+- 2026-01-24: **KbIndexRunner validate** - mode validation integrite KB (9 checks)
+- 2026-01-24: **magic_get_forms** - nouvel outil MCP pour afficher les Forms (UI screens)
+- 2026-01-24: **Offsets dynamiques** - calcul automatique du Main offset au chargement
 - 2026-01-24: +6 outils MCP (orphan detection, dead code, project health)
 - 2026-01-24: Nouvelle regle magic-analysis.md pour workflow tickets
-- 2026-01-24: Script magic-task-analyzer.ps1 enrichi avec dead code stats
-- 2026-01-24: Optimisation contexte (separation changelog, prompt Lanceur_Claude)
 - 2026-01-22: Parser Magic V3 deterministe 100%
 
 ---

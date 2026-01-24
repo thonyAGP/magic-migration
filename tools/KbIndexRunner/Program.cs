@@ -4,6 +4,146 @@ using MagicKnowledgeBase.Indexing;
 using Microsoft.Data.Sqlite;
 using System.Diagnostics;
 
+// Validate mode: run integrity checks
+if (args.Length > 0 && args[0] == "validate")
+{
+    var validateDb = new KnowledgeDb();
+    using var conn = new SqliteConnection($"Data Source={validateDb.DbPath}");
+    conn.Open();
+
+    Console.WriteLine("=== Magic Knowledge Base Validation ===");
+    Console.WriteLine($"Database: {validateDb.DbPath}");
+    var fileInfo = new FileInfo(validateDb.DbPath);
+    Console.WriteLine($"Size: {fileInfo.Length / 1024.0 / 1024.0:F2} MB");
+    Console.WriteLine();
+
+    int passed = 0, failed = 0, warnings = 0;
+
+    // Check 1: PRAGMA integrity_check
+    Console.WriteLine("1. SQLite Integrity Check");
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = "PRAGMA integrity_check";
+        var integrityResult = cmd.ExecuteScalar()?.ToString();
+        if (integrityResult == "ok")
+        {
+            Console.WriteLine("   [PASS] Database integrity OK");
+            passed++;
+        }
+        else
+        {
+            Console.WriteLine($"   [FAIL] Database integrity FAILED: {integrityResult}");
+            failed++;
+        }
+    }
+
+    // Check 2: Foreign key validation
+    Console.WriteLine("2. Foreign Key Validation");
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = "PRAGMA foreign_key_check";
+        using var reader = cmd.ExecuteReader();
+        if (!reader.HasRows)
+        {
+            Console.WriteLine("   [PASS] All foreign keys valid");
+            passed++;
+        }
+        else
+        {
+            Console.WriteLine("   [FAIL] Foreign key violations found");
+            failed++;
+        }
+    }
+
+    // Check 3: Table counts
+    Console.WriteLine("3. Table Statistics");
+    var tableChecks = new[] {
+        ("projects", 1),
+        ("programs", 100),
+        ("tasks", 1000),
+        ("expressions", 5000),
+        ("program_calls", 100),
+        ("tables", 50)
+    };
+    foreach (var (table, minExpected) in tableChecks)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = $"SELECT COUNT(*) FROM {table}";
+        var count = Convert.ToInt32(cmd.ExecuteScalar());
+        if (count >= minExpected)
+        {
+            Console.WriteLine($"   [PASS] {table}: {count:N0} rows");
+            passed++;
+        }
+        else
+        {
+            Console.WriteLine($"   [WARN] {table}: {count:N0} rows (expected >= {minExpected})");
+            warnings++;
+        }
+    }
+
+    // Check 4: Orphan program_calls
+    Console.WriteLine("4. Orphan Detection");
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT COUNT(*) FROM program_calls pc
+            WHERE NOT EXISTS (SELECT 1 FROM tasks t WHERE t.id = pc.caller_task_id)";
+        var orphans = Convert.ToInt32(cmd.ExecuteScalar());
+        if (orphans == 0)
+        {
+            Console.WriteLine("   [PASS] No orphan callers in program_calls");
+            passed++;
+        }
+        else
+        {
+            Console.WriteLine($"   [WARN] {orphans} orphan caller references");
+            warnings++;
+        }
+    }
+
+    // Summary
+    Console.WriteLine();
+    Console.WriteLine("=== VALIDATION SUMMARY ===");
+    Console.WriteLine($"Passed:   {passed}");
+    Console.WriteLine($"Warnings: {warnings}");
+    Console.WriteLine($"Failed:   {failed}");
+
+    return failed == 0 ? 0 : 1;
+}
+
+// Query mode: check task forms
+if (args.Length > 0 && args[0] == "forms")
+{
+    var queryDb = new KnowledgeDb();
+    using var conn = new SqliteConnection($"Data Source={queryDb.DbPath}");
+    conn.Open();
+
+    Console.WriteLine("=== TASK FORMS STATISTICS ===");
+
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = "SELECT COUNT(*) FROM task_forms";
+    Console.WriteLine($"Total task forms: {cmd.ExecuteScalar()}");
+
+    cmd.CommandText = @"
+        SELECT form_name, COUNT(*) as cnt, window_type
+        FROM task_forms
+        WHERE form_name IS NOT NULL
+        GROUP BY form_name
+        ORDER BY cnt DESC
+        LIMIT 20";
+    Console.WriteLine("\nTop 20 form names:");
+    using var reader = cmd.ExecuteReader();
+    while (reader.Read())
+    {
+        var name = reader[0]?.ToString() ?? "(null)";
+        var cnt = reader[1];
+        var wtype = reader[2]?.ToString() ?? "?";
+        Console.WriteLine($"  [{wtype}] {name} ({cnt}x)");
+    }
+    return 0;
+}
+
 // Query mode: find most complex programs
 if (args.Length > 0 && args[0] == "complex")
 {
@@ -43,7 +183,7 @@ if (args.Length > 0 && args[0] == "complex")
         }
         Console.WriteLine();
     }
-    return;
+    return 0;
 }
 
 // Query mode: details for a specific program
@@ -75,7 +215,7 @@ if (args.Length > 1 && args[0] == "query")
         Console.WriteLine($"  XML ID (Prg_X.xml): {reader[5]}");
         Console.WriteLine($"  Program Calls: {reader[6]}");
     }
-    return;
+    return 0;
 }
 
 var projectsBasePath = args.Length > 0 ? args[0] : @"D:\Data\Migration\XPA\PMS";
@@ -153,3 +293,5 @@ Console.WriteLine($"Logic Lines:     {stats.LogicLineCount:N0}");
 Console.WriteLine($"Program Calls:   {stats.ProgramCallCount:N0}");
 Console.WriteLine();
 Console.WriteLine($"Database path: {db.DbPath}");
+
+return 0;
