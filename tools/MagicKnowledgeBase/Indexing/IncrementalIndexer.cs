@@ -15,18 +15,8 @@ public class IncrementalIndexer
     private readonly IProgress<IndexProgress>? _progress;
     private readonly ChangeDetector _changeDetector;
 
-    /// <summary>
-    /// Main offsets per project
-    /// </summary>
-    private static readonly Dictionary<string, int> MainOffsets = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["ADH"] = 117,
-        ["PVE"] = 143,
-        ["PBG"] = 91,
-        ["VIL"] = 52,
-        ["PBP"] = 88,
-        ["REF"] = 107
-    };
+    // NOTE: MainOffsets are defined in BatchIndexer.cs - single source of truth
+    // The offset is stored in the projects table (main_offset column) at indexing time
 
     public IncrementalIndexer(KnowledgeDb db, string projectsBasePath, IProgress<IndexProgress>? progress = null)
     {

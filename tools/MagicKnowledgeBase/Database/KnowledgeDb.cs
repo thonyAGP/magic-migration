@@ -525,6 +525,41 @@ public class KnowledgeDb : IDisposable
         }
     }
 
+    public void BulkInsertTaskForms(IEnumerable<DbTaskForm> forms, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO task_forms (task_id, form_entry_id, form_name, position_x, position_y, width, height, window_type, font)
+            VALUES (@task_id, @form_entry_id, @form_name, @position_x, @position_y, @width, @height, @window_type, @font)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pFormEntryId = cmd.Parameters.Add("@form_entry_id", SqliteType.Integer);
+        var pFormName = cmd.Parameters.Add("@form_name", SqliteType.Text);
+        var pPosX = cmd.Parameters.Add("@position_x", SqliteType.Integer);
+        var pPosY = cmd.Parameters.Add("@position_y", SqliteType.Integer);
+        var pWidth = cmd.Parameters.Add("@width", SqliteType.Integer);
+        var pHeight = cmd.Parameters.Add("@height", SqliteType.Integer);
+        var pWindowType = cmd.Parameters.Add("@window_type", SqliteType.Integer);
+        var pFont = cmd.Parameters.Add("@font", SqliteType.Text);
+
+        foreach (var form in forms)
+        {
+            pTaskId.Value = form.TaskId;
+            pFormEntryId.Value = form.FormEntryId;
+            pFormName.Value = form.FormName ?? (object)DBNull.Value;
+            pPosX.Value = form.PositionX ?? (object)DBNull.Value;
+            pPosY.Value = form.PositionY ?? (object)DBNull.Value;
+            pWidth.Value = form.Width ?? (object)DBNull.Value;
+            pHeight.Value = form.Height ?? (object)DBNull.Value;
+            pWindowType.Value = form.WindowType ?? (object)DBNull.Value;
+            pFont.Value = form.Font ?? (object)DBNull.Value;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
     // =========================================================================
     // FILE HASH OPERATIONS
     // =========================================================================

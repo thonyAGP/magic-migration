@@ -14,6 +14,12 @@ public partial class ProgramParser
     [GeneratedRegex(@"&#x(0[0-8BbCc]|1[0-9A-Fa-f]|0[Ee]);|&#([0-8]|1[1-2]|14|1[5-9]|2[0-9]|3[01]);")]
     private static partial Regex InvalidXmlEntityRegex();
 
+    /// <summary>
+    /// Pattern to detect ProgIdx('program_name') dynamic calls in expressions
+    /// </summary>
+    [GeneratedRegex(@"ProgIdx\s*\(\s*['""]([^'""]+)['""]", RegexOptions.IgnoreCase)]
+    private static partial Regex ProgIdxPattern();
+
     public ParsedProgram ParseProgram(string filePath, int xmlId, int idePosition, ProgramHeaderInfo? header, string projectName)
     {
         var doc = LoadXmlSafe(filePath);
@@ -51,8 +57,11 @@ public partial class ProgramParser
         // Parse tasks
         ParseTasks(doc, program, idePosition, projectName);
 
-        // Parse expressions
+        // Parse expressions and dynamic calls
         ParseExpressions(doc, program);
+
+        // Detect ProgIdx() calls in expressions
+        DetectDynamicCalls(program);
 
         return program;
     }
@@ -126,6 +135,9 @@ public partial class ProgramParser
             // Parse Logic
             var (logicLines, programCalls) = ParseLogicLines(taskElement, projectName);
 
+            // Parse TaskForms (UI screens)
+            var forms = ParseTaskForms(taskElement);
+
             program.Tasks[isn2] = new ParsedTask
             {
                 Isn2 = isn2,
@@ -139,7 +151,8 @@ public partial class ProgramParser
                 Columns = columns,
                 LogicLines = logicLines,
                 TableUsages = tableUsages,
-                ProgramCalls = programCalls
+                ProgramCalls = programCalls,
+                Forms = forms
             };
         }
 
@@ -321,6 +334,74 @@ public partial class ProgramParser
         return remarkCounts;
     }
 
+    private List<ParsedTaskForm> ParseTaskForms(XElement taskElement)
+    {
+        var forms = new List<ParsedTaskForm>();
+
+        var taskFormsElement = taskElement.Element("TaskForms");
+        if (taskFormsElement == null) return forms;
+
+        foreach (var formEntry in taskFormsElement.Elements("FormEntry"))
+        {
+            var idAttr = formEntry.Attribute("id");
+            if (idAttr == null || !int.TryParse(idAttr.Value, out int formId)) continue;
+
+            var propList = formEntry.Element("PropertyList");
+            if (propList == null) continue;
+
+            // FormName is in element with id="311"
+            var formNameElement = propList.Elements().FirstOrDefault(e =>
+                e.Attribute("id")?.Value == "311");
+            var formName = formNameElement?.Attribute("valUnicode")?.Value
+                ?? formNameElement?.Attribute("val")?.Value;
+
+            // WindowType is in element with id="358"
+            var windowTypeElement = propList.Elements().FirstOrDefault(e =>
+                e.Attribute("id")?.Value == "358");
+            int? windowType = null;
+            if (windowTypeElement?.Attribute("val")?.Value is string wtVal &&
+                int.TryParse(wtVal, out int wt))
+            {
+                windowType = wt;
+            }
+
+            // Position X, Y, Width, Height (if available)
+            int? posX = null, posY = null, width = null, height = null;
+            var leftElement = propList.Elements().FirstOrDefault(e =>
+                e.Attribute("id")?.Value == "319");
+            var topElement = propList.Elements().FirstOrDefault(e =>
+                e.Attribute("id")?.Value == "320");
+            var widthElement = propList.Elements().FirstOrDefault(e =>
+                e.Attribute("id")?.Value == "325");
+            var heightElement = propList.Elements().FirstOrDefault(e =>
+                e.Attribute("id")?.Value == "326");
+
+            if (leftElement?.Attribute("val")?.Value is string lVal && int.TryParse(lVal, out int l)) posX = l;
+            if (topElement?.Attribute("val")?.Value is string tVal && int.TryParse(tVal, out int t)) posY = t;
+            if (widthElement?.Attribute("val")?.Value is string wVal && int.TryParse(wVal, out int w)) width = w;
+            if (heightElement?.Attribute("val")?.Value is string hVal && int.TryParse(hVal, out int h)) height = h;
+
+            // Font (if available)
+            var fontElement = propList.Elements().FirstOrDefault(e =>
+                e.Attribute("id")?.Value == "330");
+            var font = fontElement?.Attribute("val")?.Value;
+
+            forms.Add(new ParsedTaskForm
+            {
+                FormEntryId = formId,
+                FormName = formName,
+                PositionX = posX,
+                PositionY = posY,
+                Width = width,
+                Height = height,
+                WindowType = windowType,
+                Font = font
+            });
+        }
+
+        return forms;
+    }
+
     private (List<ParsedLogicLine> lines, List<ParsedProgramCall> calls) ParseLogicLines(XElement taskElement, string projectName)
     {
         var lines = new List<ParsedLogicLine>();
@@ -485,6 +566,27 @@ public partial class ProgramParser
         }
     }
 
+    /// <summary>
+    /// Detect ProgIdx() dynamic calls in expressions
+    /// </summary>
+    private void DetectDynamicCalls(ParsedProgram program)
+    {
+        foreach (var (exprKey, expr) in program.Expressions)
+        {
+            var matches = ProgIdxPattern().Matches(expr.Content);
+            foreach (Match match in matches)
+            {
+                var targetPublicName = match.Groups[1].Value;
+                program.DynamicCalls.Add(new ParsedDynamicCall
+                {
+                    ExpressionIdePosition = expr.IdePosition,
+                    TargetPublicName = targetPublicName,
+                    FullMatch = match.Value
+                });
+            }
+        }
+    }
+
     private static string BuildIdePosition(int prgPosition, Dictionary<int, int> levelCounters)
     {
         var parts = new List<string> { prgPosition.ToString() };
@@ -562,6 +664,10 @@ public record ParsedProgram
     public required string ProjectName { get; init; }
     public Dictionary<int, ParsedTask> Tasks { get; } = new();
     public Dictionary<int, ParsedExpression> Expressions { get; } = new();
+    /// <summary>
+    /// Dynamic calls detected via ProgIdx() in expressions
+    /// </summary>
+    public List<ParsedDynamicCall> DynamicCalls { get; } = new();
 }
 
 public record ParsedTask
@@ -578,6 +684,7 @@ public record ParsedTask
     public List<ParsedLogicLine> LogicLines { get; init; } = new();
     public List<ParsedTableUsage> TableUsages { get; init; } = new();
     public List<ParsedProgramCall> ProgramCalls { get; init; } = new();
+    public List<ParsedTaskForm> Forms { get; init; } = new();
 }
 
 public record ParsedColumn
@@ -626,4 +733,29 @@ public record ParsedExpression
     public int IdePosition { get; init; }
     public required string Content { get; init; }
     public string? Comment { get; init; }
+}
+
+public record ParsedTaskForm
+{
+    public int FormEntryId { get; init; }
+    public string? FormName { get; init; }
+    public int? PositionX { get; init; }
+    public int? PositionY { get; init; }
+    public int? Width { get; init; }
+    public int? Height { get; init; }
+    public int? WindowType { get; init; }
+    public string? Font { get; init; }
+}
+
+/// <summary>
+/// A dynamic program call detected via ProgIdx() in an expression
+/// </summary>
+public record ParsedDynamicCall
+{
+    /// <summary>Expression IDE position where ProgIdx was found</summary>
+    public int ExpressionIdePosition { get; init; }
+    /// <summary>Target program PublicName from ProgIdx('name')</summary>
+    public required string TargetPublicName { get; init; }
+    /// <summary>Full match string (e.g., "ProgIdx('EXTRAIT_COMPTE')")</summary>
+    public required string FullMatch { get; init; }
 }

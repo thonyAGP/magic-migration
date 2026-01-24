@@ -11,7 +11,8 @@ public class OrphanDetectionService
     private readonly KnowledgeDb _db;
 
     /// <summary>
-    /// Known ECF shared program IDE positions per project
+    /// Known ECF shared program IDE positions per project.
+    /// These programs are exposed in .ecf files and can be called from other projects.
     /// </summary>
     private static readonly Dictionary<string, HashSet<int>> EcfPrograms = new()
     {
@@ -37,14 +38,60 @@ public class OrphanDetectionService
         },
         ["REF"] = new HashSet<int>
         {
-            // REF.ecf - shared tables and utilities
-            // TODO: Add known REF shared programs
+            // REF.ecf - shared tables and programs
+            // REF programs are typically called via component references (comp!="-1")
+            // Detection is dynamic via IsCrossProjectTarget() method
+        },
+        ["PBP"] = new HashSet<int>
+        {
+            // PBP.ecf - Editions exports (used by other projects for reporting)
+            // Detection is dynamic
         }
     };
+
+    /// <summary>
+    /// Cache of programs that are called from other projects (cross-project targets)
+    /// </summary>
+    private HashSet<long>? _crossProjectTargets;
 
     public OrphanDetectionService(KnowledgeDb db)
     {
         _db = db;
+    }
+
+    /// <summary>
+    /// Check if a program is called from another project (cross-project call target)
+    /// </summary>
+    public bool IsCrossProjectTarget(long programId)
+    {
+        // Build cache on first access
+        _crossProjectTargets ??= BuildCrossProjectTargetsCache();
+        return _crossProjectTargets.Contains(programId);
+    }
+
+    /// <summary>
+    /// Build a cache of all programs that are called from different projects
+    /// </summary>
+    private HashSet<long> BuildCrossProjectTargetsCache()
+    {
+        var targets = new HashSet<long>();
+
+        using var cmd = _db.Connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT DISTINCT pc.callee_program_id
+            FROM program_calls pc
+            JOIN tasks t ON pc.caller_task_id = t.id
+            JOIN programs caller ON t.program_id = caller.id
+            JOIN programs callee ON pc.callee_program_id = callee.id
+            WHERE caller.project_id != callee.project_id";
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            targets.Add(reader.GetInt64(0));
+        }
+
+        return targets;
     }
 
     /// <summary>
@@ -80,8 +127,14 @@ public class OrphanDetectionService
             var callerCount = reader.GetInt32(4);
             var taskCount = reader.GetInt32(5);
 
-            // Check if in ECF shared list
-            var isInEcf = EcfPrograms.TryGetValue(projectName, out var ecfSet) && ecfSet.Contains(idePosition);
+            // Check if in ECF shared list (static list from documentation)
+            var isInStaticEcf = EcfPrograms.TryGetValue(projectName, out var ecfSet) && ecfSet.Contains(idePosition);
+
+            // Check if dynamically called from another project
+            var isCrossProjectTarget = IsCrossProjectTarget(programId);
+
+            // Combined ECF status
+            var isInEcf = isInStaticEcf || isCrossProjectTarget;
 
             // Determine status
             OrphanStatus status;
@@ -93,7 +146,11 @@ public class OrphanDetectionService
             {
                 status = OrphanStatus.CallableByName;
             }
-            else if (isInEcf)
+            else if (isCrossProjectTarget)
+            {
+                status = OrphanStatus.CrossProjectTarget;
+            }
+            else if (isInStaticEcf)
             {
                 status = OrphanStatus.CrossProjectPossible;
             }
@@ -107,7 +164,8 @@ public class OrphanDetectionService
             }
 
             // Skip ECF programs unless requested
-            if (!includeEcfPrograms && isInEcf && status == OrphanStatus.CrossProjectPossible)
+            if (!includeEcfPrograms && isInEcf &&
+                (status == OrphanStatus.CrossProjectPossible || status == OrphanStatus.CrossProjectTarget))
             {
                 continue;
             }
@@ -141,6 +199,7 @@ public class OrphanDetectionService
             TotalPrograms = all.Count,
             UsedPrograms = all.Count(a => a.Status == OrphanStatus.Used),
             CallableByName = all.Count(a => a.Status == OrphanStatus.CallableByName),
+            CrossProjectTarget = all.Count(a => a.Status == OrphanStatus.CrossProjectTarget),
             CrossProjectPossible = all.Count(a => a.Status == OrphanStatus.CrossProjectPossible),
             EmptyPrograms = all.Count(a => a.Status == OrphanStatus.EmptyProgram),
             ConfirmedOrphans = all.Count(a => a.Status == OrphanStatus.Orphan)
@@ -364,7 +423,9 @@ public enum OrphanStatus
     Used,
     /// <summary>Program has PublicName and can be called by ProgIdx()</summary>
     CallableByName,
-    /// <summary>Program is in ECF and may be called from other projects</summary>
+    /// <summary>Program is confirmed called from another project (cross-project call found in KB)</summary>
+    CrossProjectTarget,
+    /// <summary>Program is in static ECF list and may be called from other projects</summary>
     CrossProjectPossible,
     /// <summary>Program has no tasks (ISEMPTY_TSK)</summary>
     EmptyProgram,
@@ -380,6 +441,7 @@ public record OrphanStats
     public int TotalPrograms { get; init; }
     public int UsedPrograms { get; init; }
     public int CallableByName { get; init; }
+    public int CrossProjectTarget { get; init; }
     public int CrossProjectPossible { get; init; }
     public int EmptyPrograms { get; init; }
     public int ConfirmedOrphans { get; init; }
