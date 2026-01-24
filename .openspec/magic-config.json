@@ -1,0 +1,244 @@
+﻿{
+    "projectsBasePath":  "D:\\Data\\Migration\\XPA\\PMS",
+    "projects":  {
+                     "active":  [
+                                    "ADH",
+                                    "PBP",
+                                    "REF",
+                                    "VIL",
+                                    "PBG",
+                                    "PVE",
+                                    "PUG"
+                                ],
+                     "all":  [
+                                 "ADH",
+                                 "CAB",
+                                 "CAP",
+                                 "EXB",
+                                 "EXF",
+                                 "EXM",
+                                 "FIN",
+                                 "GES",
+                                 "IMPORT",
+                                 "LOG",
+                                 "MAI",
+                                 "MENU",
+                                 "NET",
+                                 "PBG",
+                                 "PBP",
+                                 "PBS",
+                                 "POO",
+                                 "PTR",
+                                 "PUG",
+                                 "PVE",
+                                 "QUA",
+                                 "REF",
+                                 "REQ",
+                                 "RET",
+                                 "TPE",
+                                 "TST",
+                                 "UTILS",
+                                 "VIL",
+                                 "WEL"
+                             ],
+                     "details":  [
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\ADH\\Source",
+                                         "ProgramCount":  350,
+                                         "Name":  "ADH"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\CAB\\Source",
+                                         "ProgramCount":  36,
+                                         "Name":  "CAB"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\CAP\\Source",
+                                         "ProgramCount":  51,
+                                         "Name":  "CAP"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\EXB\\Source",
+                                         "ProgramCount":  49,
+                                         "Name":  "EXB"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\EXF\\Source",
+                                         "ProgramCount":  43,
+                                         "Name":  "EXF"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\EXM\\Source",
+                                         "ProgramCount":  23,
+                                         "Name":  "EXM"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\FIN\\Source",
+                                         "ProgramCount":  18,
+                                         "Name":  "FIN"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\GES\\Source",
+                                         "ProgramCount":  121,
+                                         "Name":  "GES"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\Import\\Source",
+                                         "ProgramCount":  456,
+                                         "Name":  "IMPORT"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\LOG\\Source",
+                                         "ProgramCount":  26,
+                                         "Name":  "LOG"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\MAI\\Source",
+                                         "ProgramCount":  102,
+                                         "Name":  "MAI"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\Menu\\Source",
+                                         "ProgramCount":  23,
+                                         "Name":  "MENU"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\NET\\Source",
+                                         "ProgramCount":  15,
+                                         "Name":  "NET"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\PBG\\Source",
+                                         "ProgramCount":  401,
+                                         "Name":  "PBG"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\PBP\\Source",
+                                         "ProgramCount":  419,
+                                         "Name":  "PBP"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\PBS\\Source",
+                                         "ProgramCount":  99,
+                                         "Name":  "PBS"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\POO\\Source",
+                                         "ProgramCount":  80,
+                                         "Name":  "POO"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\PTR\\Source",
+                                         "ProgramCount":  47,
+                                         "Name":  "PTR"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\PUG\\Source",
+                                         "ProgramCount":  25,
+                                         "Name":  "PUG"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\PVE\\Source",
+                                         "ProgramCount":  449,
+                                         "Name":  "PVE"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\QUA\\Source",
+                                         "ProgramCount":  30,
+                                         "Name":  "QUA"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\REF\\Source",
+                                         "ProgramCount":  901,
+                                         "Name":  "REF"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\REQ\\Source",
+                                         "ProgramCount":  75,
+                                         "Name":  "REQ"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\RET\\Source",
+                                         "ProgramCount":  18,
+                                         "Name":  "RET"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\TPE\\Source",
+                                         "ProgramCount":  3,
+                                         "Name":  "TPE"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\TST\\Source",
+                                         "ProgramCount":  8,
+                                         "Name":  "TST"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\UTILS\\Source",
+                                         "ProgramCount":  2,
+                                         "Name":  "UTILS"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\VIL\\Source",
+                                         "ProgramCount":  222,
+                                         "Name":  "VIL"
+                                     },
+                                     {
+                                         "Path":  "D:\\Data\\Migration\\XPA\\PMS\\WEL\\Source",
+                                         "ProgramCount":  117,
+                                         "Name":  "WEL"
+                                     }
+                                 ]
+                 },
+    "villages":  {
+                     "count":  32,
+                     "codes":  [
+                                   "AGS",
+                                   "ARK",
+                                   "BAH",
+                                   "BIN",
+                                   "BOR",
+                                   "CAN",
+                                   "CAP",
+                                   "CHA",
+                                   "CHE",
+                                   "CSK",
+                                   "DJE",
+                                   "GRE",
+                                   "IXT",
+                                   "MAR",
+                                   "MEI",
+                                   "MRM",
+                                   "OPU",
+                                   "PLM",
+                                   "POM",
+                                   "PRA",
+                                   "PUN",
+                                   "RIO",
+                                   "SAM",
+                                   "SAN",
+                                   "SER",
+                                   "SMP",
+                                   "TRI",
+                                   "TUR",
+                                   "VAL",
+                                   "VIT",
+                                   "VPH",
+                                   "YUC"
+                               ]
+                 },
+    "generated":  "2026-01-24T11:21:46",
+    "patterns":  {
+                     "village":  "\\\\b(AGS|ARK|BAH|BIN|BOR|CAN|CAP|CHA|CHE|CSK|DJE|GRE|IXT|MAR|MEI|MRM|OPU|PLM|POM|PRA|PUN|RIO|SAM|SAN|SER|SMP|TRI|TUR|VAL|VIT|VPH|YUC)\\\\b",
+                     "table":  [
+                                   "table\\s+([a-z_]+\\d*_dat)",
+                                   "cafil\\d+_dat",
+                                   "cc[a-z_]+"
+                               ],
+                     "program":  [
+                                     "programme\\s+([A-Z_]+\\d*)",
+                                     "program\\s+([A-Z_]+\\d*)",
+                                     "PRG[_-]?(\\d+)",
+                                     "IDE\\s+(\\d+)"
+                                 ]
+                 }
+}

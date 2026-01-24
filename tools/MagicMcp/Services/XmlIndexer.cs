@@ -157,10 +157,8 @@ public partial class XmlIndexer
         var allTasks = doc.Descendants("Task").ToList();
         var levelCounters = new Dictionary<int, int>();
 
-        // First pass: Parse all tasks with raw column data
-        // RÈGLE: Compter les Select dans TOUS les LogicUnits, pas les Column dans Resource
-        var taskSelectCounts = new Dictionary<int, int>(); // ISN_2 -> count of Select operations
-
+        // Parse all tasks with raw column data (no offset applied here)
+        // Offset calculation is done at display time using OffsetCalculator
         foreach (var taskElement in allTasks)
         {
             // Header is direct child of Task element
@@ -225,25 +223,7 @@ public partial class XmlIndexer
                 }
             }
 
-            // Count Select operations in ALL LogicUnits (Record Main + Handlers)
-            // This is the CORRECT way to count variables (not Column count in Resource)
-            var taskLogicElement = taskElement.Element("TaskLogic");
-            int selectCount = 0;
-            if (taskLogicElement != null)
-            {
-                foreach (var logicUnit in taskLogicElement.Elements("LogicUnit"))
-                {
-                    var logicLinesElement = logicUnit.Element("LogicLines");
-                    if (logicLinesElement != null)
-                    {
-                        selectCount += logicLinesElement.Elements("LogicLine")
-                            .Count(ll => ll.Element("Select") != null);
-                    }
-                }
-            }
-            taskSelectCounts[isn2] = selectCount;
-
-            // Parse DataView from Resource element (will apply offset later)
+            // Parse DataView from Resource element (raw local indices, no offset)
             var dataView = ParseDataView(taskElement);
 
             // Parse Logic from TaskLogic element
@@ -262,92 +242,14 @@ public partial class XmlIndexer
             };
         }
 
-        // Second pass: Calculate variable offsets and update variable names
-        // Include Main program offset (VG variables from Prg_1.xml)
-        int mainOffset = GetMainOffsetForProject(program);
-
-        foreach (var task in program.Tasks.Values)
-        {
-            if (task.DataView?.Columns == null || task.DataView.Columns.Count == 0)
-                continue;
-
-            // Calculate offset by traversing parent chain using Select counts
-            // Total offset = Main offset + sum of ancestor Select counts
-            int ancestorOffset = CalculateVariableOffset(task.Isn2, program.Tasks, taskSelectCounts);
-            int offset = mainOffset + ancestorOffset;
-
-            // Update variable names with offset
-            if (offset > 0)
-            {
-                var updatedColumns = new List<MagicColumn>();
-                foreach (var col in task.DataView.Columns)
-                {
-                    // Parse the original variable index and add offset
-                    int originalIndex = MagicColumn.VariableToIndex(col.Variable);
-                    if (originalIndex >= 0)
-                    {
-                        updatedColumns.Add(new MagicColumn
-                        {
-                            LineNumber = col.LineNumber,
-                            XmlId = col.XmlId,
-                            Variable = MagicColumn.IndexToVariable(offset + originalIndex),
-                            Name = col.Name,
-                            DataType = col.DataType,
-                            Picture = col.Picture,
-                            Definition = col.Definition,
-                            Source = col.Source,
-                            SourceColumnNumber = col.SourceColumnNumber,
-                            LocateExpressionId = col.LocateExpressionId
-                        });
-                    }
-                    else
-                    {
-                        updatedColumns.Add(col);
-                    }
-                }
-
-                // Replace columns with offset-adjusted ones
-                task.DataView = task.DataView with { Columns = updatedColumns };
-            }
-        }
+        // NOTE: We no longer apply offset at indexing time.
+        // OffsetCalculator is used at display time for correct offset calculation.
+        // This ensures the validated formula (Main_VG + Σ Selects, excluding Access=W) is used.
+        // Variables are stored with raw LOCAL indices (A=0, B=1, C=2...).
     }
 
     // Current project name being indexed (set in IndexProject)
     private string? _currentProjectName;
-
-    /// <summary>
-    /// Get Main program offset for the current project (from IndexCache static configuration).
-    /// </summary>
-    private int GetMainOffsetForProject(MagicProgram program)
-    {
-        return IndexCache.GetMainOffset(_currentProjectName ?? "");
-    }
-
-    /// <summary>
-    /// Calculate variable offset for a task by summing Select operations from all ancestor tasks.
-    /// Main → Task 61 → Task 61.1 → Task 61.1.1
-    /// Offset for 61.1.1 = Selects(61) + Selects(61.1)
-    /// Note: Main project offset is added separately via GetMainOffsetForProject.
-    /// </summary>
-    private int CalculateVariableOffset(int isn2, Dictionary<int, MagicTask> tasks, Dictionary<int, int> selectCounts)
-    {
-        var task = tasks.GetValueOrDefault(isn2);
-        if (task == null || !task.ParentIsn2.HasValue)
-            return 0; // Root task has no offset
-
-        // Traverse parent chain and sum Select counts
-        int offset = 0;
-        int? currentParentIsn2 = task.ParentIsn2;
-
-        while (currentParentIsn2.HasValue)
-        {
-            offset += selectCounts.GetValueOrDefault(currentParentIsn2.Value, 0);
-            var parentTask = tasks.GetValueOrDefault(currentParentIsn2.Value);
-            currentParentIsn2 = parentTask?.ParentIsn2;
-        }
-
-        return offset;
-    }
 
     private string BuildIdePosition(int prgPosition, Dictionary<int, int> levelCounters)
     {
@@ -666,25 +568,24 @@ public partial class XmlIndexer
     private List<MagicLogicLine> ParseLogicLines(XElement taskElement)
     {
         var lines = new List<MagicLogicLine>();
-        int lineNum = 1;  // Continuous numbering across all handlers
+        int globalLineNum = 1;  // Continuous numbering across all handlers (for backward compat)
 
         // TaskLogic is direct child of Task
         var taskLogic = taskElement.Element("TaskLogic");
         if (taskLogic == null) return lines;
 
-        // Parse each LogicUnit (handler)
+        // Parse each LogicUnit (handler) with its own line numbering
         foreach (var logicUnit in taskLogic.Elements("LogicUnit"))
         {
-            var handlerType = GetHandlerType(logicUnit);
-            lineNum = ParseLogicUnit(logicUnit, handlerType, lines, lineNum);
+            var (handlerType, handlerName) = GetHandlerTypeAndName(logicUnit);
+            globalLineNum = ParseLogicUnit(logicUnit, handlerType, handlerName, lines, globalLineNum);
         }
 
         return lines;
     }
 
-    private string GetHandlerType(XElement logicUnit)
+    private (string Type, string Name) GetHandlerTypeAndName(XElement logicUnit)
     {
-        // Determine handler type from Level and Type attributes
         var levelElement = logicUnit.Element("Level");
         var typeElement = logicUnit.Element("Type");
 
@@ -693,51 +594,63 @@ public partial class XmlIndexer
 
         return (level, type) switch
         {
-            ("T", "P") => "TP", // Task Prefix
-            ("T", "S") => "TS", // Task Suffix
-            ("R", "P") => "RP", // Record Prefix
-            ("R", "M") => "RM", // Record Main
-            ("R", "S") => "RS", // Record Suffix
-            ("H", _) => "H",    // Handler
-            _ => $"{level}{type}"
+            ("T", "P") => ("TP", "Task Prefix"),
+            ("T", "S") => ("TS", "Task Suffix"),
+            ("R", "P") => ("RP", "Record Prefix"),
+            ("R", "M") => ("RM", "Record Main"),
+            ("R", "S") => ("RS", "Record Suffix"),
+            ("H", _) => ("H", "Handler"),
+            _ => ($"{level}{type}", $"Handler {level}{type}")
         };
     }
 
-    private int ParseLogicUnit(XElement unitElement, string handlerType, List<MagicLogicLine> lines, int startLineNum)
+    private int ParseLogicUnit(XElement unitElement, string handlerType, string handlerName, List<MagicLogicLine> lines, int startGlobalLineNum)
     {
-        var lineNum = startLineNum;
+        var globalLineNum = startGlobalLineNum;
+        int handlerLineNum = 1;  // Line number within this handler section
 
         // LogicLines is child of LogicUnit
         var logicLinesElement = unitElement.Element("LogicLines");
-        if (logicLinesElement == null) return lineNum;
+        if (logicLinesElement == null) return globalLineNum;
 
-        foreach (var logicLine in logicLinesElement.Elements("LogicLine"))
+        var logicLineElements = logicLinesElement.Elements("LogicLine").ToList();
+        if (logicLineElements.Count == 0) return globalLineNum;
+
+        // Add handler header line (Line 1 of each section in IDE Logic tab)
+        lines.Add(new MagicLogicLine
         {
-            // Get the first child element (the operation)
+            LineNumber = globalLineNum++,
+            HandlerLineNumber = handlerLineNum++,
+            HandlerType = handlerType,
+            HandlerName = handlerName,
+            IsHandlerHeader = true,
+            Operation = handlerName,
+            Parameters = new Dictionary<string, string> { ["Handler"] = handlerType }
+        });
+
+        // Parse operation lines (Line 2+ in IDE)
+        foreach (var logicLine in logicLineElements)
+        {
             var operation = logicLine.Elements().FirstOrDefault();
             if (operation == null) continue;
 
             var opName = operation.Name.LocalName;
             var isDisabled = operation.Attribute("Disabled")?.Value == "1";
 
-            // Build parameters dictionary
             var parameters = new Dictionary<string, string>
             {
                 ["Handler"] = handlerType
             };
 
-            // Copy all attributes as parameters
             foreach (var attr in operation.Attributes())
             {
                 if (attr.Name.LocalName != "Disabled")
                     parameters[attr.Name.LocalName] = attr.Value;
             }
 
-            // Extract condition
             var conditionElement = operation.Element("Condition");
             var condition = conditionElement?.Attribute("val")?.Value;
 
-            // Add call target info for Call operations
             if (opName == "Call")
             {
                 var callDb = operation.Element("DB");
@@ -746,13 +659,10 @@ public partial class XmlIndexer
                     parameters["TargetComp"] = callDb.Attribute("comp")?.Value ?? "";
                     parameters["TargetPrg"] = callDb.Attribute("obj")?.Value ?? "";
                 }
-
-                // Count arguments
                 var args = operation.Elements("Arg").Count();
                 if (args > 0) parameters["ArgCount"] = args.ToString();
             }
 
-            // Add link table info for LNK operations
             if (opName == "LNK")
             {
                 var linkDb = operation.Element("DB");
@@ -763,24 +673,21 @@ public partial class XmlIndexer
                 }
             }
 
-            // Add verify message for Verify operations
             if (opName == "Verify")
             {
                 var msgAttr = operation.Attribute("Message");
-                if (msgAttr != null)
-                {
-                    parameters["MessageExpr"] = msgAttr.Value;
-                }
+                if (msgAttr != null) parameters["MessageExpr"] = msgAttr.Value;
                 var returnAttr = operation.Attribute("ReturnVariable");
-                if (returnAttr != null)
-                {
-                    parameters["ReturnVar"] = returnAttr.Value;
-                }
+                if (returnAttr != null) parameters["ReturnVar"] = returnAttr.Value;
             }
 
             lines.Add(new MagicLogicLine
             {
-                LineNumber = lineNum++,
+                LineNumber = globalLineNum++,
+                HandlerLineNumber = handlerLineNum++,
+                HandlerType = handlerType,
+                HandlerName = handlerName,
+                IsHandlerHeader = false,
                 Operation = MapOperationName(opName),
                 Condition = condition,
                 IsDisabled = isDisabled,
@@ -788,7 +695,7 @@ public partial class XmlIndexer
             });
         }
 
-        return lineNum;
+        return globalLineNum;
     }
 
     private static string MapOperationName(string xmlName)

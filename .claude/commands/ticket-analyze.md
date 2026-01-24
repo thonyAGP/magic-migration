@@ -10,7 +10,7 @@ arguments:
 
 > **WORKFLOW COMPLET** : Cette commande execute les 6 etapes du protocole `.claude/protocols/ticket-analysis.md`
 
-## Phase 1 : FETCH Jira + Creation structure
+## Phase 1 : FETCH Jira + Extraction automatique
 
 ### 1.1 Recuperer le ticket Jira
 
@@ -18,13 +18,25 @@ arguments:
 powershell -NoProfile -ExecutionPolicy Bypass -File ".claude/scripts/jira-fetch.ps1" -IssueKey "$ARGUMENTS" -WithComments
 ```
 
-### 1.2 Creer le dossier ticket
+### 1.2 Extraire le contexte AUTOMATIQUEMENT (nouveau!)
 
 ```bash
-mkdir -p ".openspec/tickets/$ARGUMENTS"
+powershell -NoProfile -ExecutionPolicy Bypass -File "tools/scripts/ticket-extract-context.ps1" -TicketFile ".openspec/tickets/$ARGUMENTS/jira-raw.json"
 ```
 
-### 1.3 Telecharger les pieces jointes
+Ce script extrait automatiquement :
+- **Symptome** (regex sur patterns: symptom, problem, error, bug)
+- **Donnees entree** (regex sur patterns: input, data, contexte)
+- **Attendu/Obtenu** (regex sur patterns: expected/actual)
+- **Entites** : programmes, tables, villages, dates mentionnes
+
+### 1.3 Generer la structure documentation
+
+```bash
+powershell -NoProfile -ExecutionPolicy Bypass -File "tools/scripts/ticket-doc-generator.ps1" -TicketKey "$ARGUMENTS" -AnalysisFile ".openspec/tickets/$ARGUMENTS/context.json"
+```
+
+### 1.4 Telecharger les pieces jointes
 
 ```bash
 powershell -NoProfile -ExecutionPolicy Bypass -File ".claude/scripts/jira-download-attachments.ps1" -IssueKey "$ARGUMENTS"
@@ -32,12 +44,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ".claude/scripts/jira-downlo
 
 ## Phase 2 : LOCALISATION Programmes
 
-### 2.1 Extraire les indices du ticket
+### 2.1 Utiliser les indices extraits automatiquement
 
-Depuis la description Jira, identifier :
-- **Mots-cles fonctionnels** (purge, transfert, caisse, vente, etc.)
-- **Noms de programmes** mentionnes
-- **Tables suspectes**
+Les entites (programmes, tables) ont ete extraites par `ticket-extract-context.ps1`.
+Pour chaque entite detectee :
 
 ### 2.2 Rechercher les programmes
 
@@ -77,7 +87,15 @@ magic_get_logic(project="{PROJET}", programId={id}, isn2=1)
 
 Pour chaque appel trouve, utiliser `magic_get_position()` pour identifier la cible.
 
-### 3.3 Construire le diagramme ASCII
+### 3.3 Construire le diagramme ASCII (assiste par script)
+
+Utiliser le script d'analyse de flux pour identifier les points suspects :
+
+```bash
+powershell -NoProfile -ExecutionPolicy Bypass -File "tools/scripts/magic-flow-analyzer.ps1" -Project {PROJET} -ProgramId {id}
+```
+
+Le diagramme doit suivre ce format :
 
 ```
 ┌─────────────────┐
@@ -87,7 +105,7 @@ Pour chaque appel trouve, utiliser `magic_get_position()` pour identifier la cib
          │ Type appel
          ▼
 ┌─────────────────┐
-│ PROJET IDE YYY  │ Programme cible
+│ PROJET IDE YYY  │ Programme cible ← SUSPECT
 └─────────────────┘
 ```
 
@@ -112,16 +130,10 @@ magic_get_expression(project="{PROJET}", programId={id}, expressionId={exp})
 ### 4.3 Obtenir les variables
 
 ```
-magic_get_line(project="{PROJET}", taskPosition="{X.Y.Z}", lineNumber={N}, mainOffset={offset})
+magic_get_line(project="{PROJET}", taskPosition="{X.Y.Z}", lineNumber={N})
 ```
 
-**Offsets par projet** :
-- ADH: 117
-- PVE: 143
-- PBG: 91
-- VIL: 52
-- PBP: 88
-- REF: 107
+L'offset est calcule automatiquement via la formule validee.
 
 ## Phase 5 : ROOT CAUSE
 
@@ -149,17 +161,17 @@ Utiliser les outils pour confirmer ou infirmer.
 
 Utiliser le template `.openspec/tickets/TEMPLATE/analysis.md`
 
-### 6.2 Mettre a jour les index
-
-Modifier `.openspec/tickets/index.json` ET `.openspec/index.json`
-
-### 6.3 Commit et push
+### 6.2 Mettre a jour les index + Commit (AUTOMATISE)
 
 ```bash
-git add .openspec/tickets/$ARGUMENTS/ .openspec/tickets/index.json .openspec/index.json
-git commit -m "docs(tickets): add $ARGUMENTS analysis"
-git push origin master
+powershell -NoProfile -ExecutionPolicy Bypass -File "tools/scripts/ticket-doc-generator.ps1" -TicketKey "$ARGUMENTS" -AutoCommit
 ```
+
+Ce script :
+- Met a jour `.openspec/tickets/index.json`
+- Met a jour `.openspec/index.json`
+- Genere le message de commit conventionnel
+- Execute git add + commit automatiquement
 
 ## Resume des outils MCP a utiliser
 

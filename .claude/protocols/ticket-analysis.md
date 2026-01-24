@@ -7,7 +7,20 @@
 
 ## RÈGLES IMPÉRATIVES (MANDATORY)
 
-### 1. HEURE = HEURE SYSTÈME (JAMAIS HARDCODÉ)
+### 1. JAMAIS D'ANALYSE MANUELLE - TOUJOURS MCP
+
+> **RÈGLE ABSOLUE** : Ne JAMAIS décoder ou calculer manuellement. TOUJOURS appeler MCP.
+
+| Action | INTERDIT (manuel) | OBLIGATOIRE (MCP) |
+|--------|-------------------|-------------------|
+| Décoder `{0,21}` | "Variable V = prix" (deviné) | `magic_decode_expression()` |
+| Calculer offset | `143 + 119 + 3 = 265` (à la main) | `magic_calculate_offset()` |
+| Trouver variable ligne N | "Variable C = date" (lu dans XML) | `magic_get_line()` |
+| Convertir index → lettre | "Index 21 = V" (calculé) | MCP retourne la lettre |
+
+**POURQUOI** : Le calcul manuel est source d'erreurs. Seul OffsetCalculator a la formule validée.
+
+### 2. HEURE = HEURE SYSTÈME (JAMAIS HARDCODÉ)
 
 | Champ | Source | Exemple |
 |-------|--------|---------|
@@ -60,8 +73,8 @@ L'analyse DOIT utiliser des onglets pour organiser les sections :
 | Affirmation | Vérification obligatoire |
 |-------------|-------------------------|
 | "Programme PVE IDE 186" | `magic_get_position("PVE", 180)` appelé et documenté |
-| "Variable MK" | `magic_get_line()` avec mainOffset appelé et documenté |
-| "Expression calcule X" | `magic_get_expression()` appelé et formule décodée |
+| "Variable MK" | `magic_get_line()` appelé (offset automatique) |
+| "Expression calcule X" | `magic_decode_expression()` appelé et formule décodée |
 | "Table n°40" | `magic_get_table()` appelé avec structure documentée |
 
 ---
@@ -251,76 +264,58 @@ Tâche : PVE IDE 186 (Main)
 Pour chaque expression suspecte :
 
 ```
-1. magic_decode_expression(project, programId, taskIsn2, expressionId, mainOffset)
-   → Decode automatiquement {N,Y} en variables globales
-   → Retourne formule lisible + tableau de correspondances
-
-OU (methode manuelle si besoin) :
-1. magic_get_expression(project, expressionId)  → Obtenir formule brute
-2. magic_get_line(project, task, line, mainOffset) → Contexte variables
-3. Decoder manuellement les {N,Y} en variables globales
+magic_decode_expression(project, programId, taskIsn2, expressionId)
+→ Decode automatiquement {N,Y} en variables globales
+→ Offset calcule automatiquement via formule validee
+→ Retourne formule lisible + tableau de correspondances
 ```
 
-### Nouvel outil automatise (RECOMMANDE)
+### Outil automatise
 
 ```
-magic_decode_expression(project, programId, taskIsn2, expressionId, mainOffset)
+magic_decode_expression(project, programId, taskIsn2, expressionId)
 
 Parametres :
 - project     : PVE, ADH, VIL, PBG, PBP, REF
 - programId   : ID du programme (ex: 180)
 - taskIsn2    : ISN_2 de la tache (ex: 45)
 - expressionId: ID de l'expression (ex: 30)
-- mainOffset  : Offset Main du projet (voir tableau ci-dessous)
 
 Retourne :
 - Formule originale
 - Formule decodee avec lettres de variables
 - Tableau de correspondances {N,Y} → Variable
+- Offset calcule automatiquement
 ```
 
-### Calcul mainOffset (CRITIQUE)
+### Formule d'offset (reference)
 
+L'offset est calcule automatiquement par OffsetCalculator :
 ```
-mainOffset = Offset Main projet + Σ(colonnes de chaque ancêtre)
-
-Exemple PVE IDE 186.1.5.4 :
-  mainOffset = 143 (Main PVE)
-             + 119 (colonnes de 186)
-             + 3   (colonnes de 186.1)
-             + 165 (colonnes de 186.1.5)
-             = 430
+Offset = Main_VG + Σ(Selects des ancetres, SAUF Access=W)
 ```
+Aucun calcul manuel requis.
 
 ### Documentation verbeuse requise
 
 ```markdown
 ## Analyse Expressions
 
-### Appel MCP : magic_get_expression("PVE", 30)
-Expression 30 :
-```
-Round({0,3}*(1-{0,1}/100), 10, 0)
-```
+### Appel MCP : magic_decode_expression("PVE", 180, 45, 30)
+Expression 30 decodee (offset automatique) :
 
-### Décodage {N,Y} → Variables globales
-
-Contexte : Tâche 186.1.5.4, mainOffset = 430
-
-| Référence | FieldID | Position locale | Index global | Variable |
-|-----------|---------|-----------------|--------------|----------|
-| {0,3} | 3 | 2 | 432 | **QQ** |
-| {0,1} | 1 | 0 | 430 | **QO** |
+| Référence | Position locale | Index global | Variable |
+|-----------|-----------------|--------------|----------|
+| {0,3} | 2 | 432 | **QQ** |
+| {0,1} | 0 | 430 | **QO** |
 
 ### Formule décodée (lisible)
-```
 Round(QQ * (1 - QO/100), 10, 0)
       ↑         ↑
       Prix      % Remise
-```
 
-### Appel MCP : magic_get_line("PVE", "186.1.5.4", 3, 430)
-Résultat :
+### Appel MCP : magic_get_line("PVE", "186.1.5.4", 3)
+Résultat (offset automatique) :
 - Variable QQ = v.Prix (Virtual, Numeric 10.2)
 - Variable QO = v.Remise (Virtual, Numeric 5.2)
 ```
@@ -404,7 +399,7 @@ Round(QR*(1-QO/100), 10, 0)  -- QR = v.Prix (CORRECT)
 Avant de committer l'analyse :
 
 - [ ] Tous les programmes ont un IDE vérifié par `magic_get_position`
-- [ ] Toutes les variables utilisent le mainOffset correct
+- [ ] Toutes les variables sont décodées automatiquement via `magic_get_line`
 - [ ] Au moins une expression est décodée avec formule lisible
 - [ ] La root cause identifie : Programme + Tâche + Ligne + Expression
 - [ ] La solution donne : Avant/Après avec variables nommées
@@ -416,6 +411,6 @@ Avant de committer l'analyse :
 
 1. **JAMAIS** déduire un IDE d'un nom de fichier XML
 2. **TOUJOURS** documenter chaque appel MCP avec son résultat
-3. **TOUJOURS** calculer le mainOffset pour les variables
+3. **TOUJOURS** utiliser `magic_get_line` (offset automatique via OffsetCalculator)
 4. **JAMAIS** citer une expression sans la décoder en variables lisibles
 5. **TOUJOURS** donner la localisation exacte : Programme.Tâche.Ligne

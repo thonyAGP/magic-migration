@@ -2,65 +2,70 @@
 
 > Documentation deterministe pour le calcul des lettres de variables dans Magic Unipaas
 
-## Principe Fondamental
-
-Dans Magic Unipaas, les variables sont numerotees GLOBALEMENT dans le DataView complet, incluant :
-1. Les colonnes des tables (Main Source + Links) de tous les ancetres
-2. Les colonnes locales (virtuelles) de tous les ancetres
-3. Les colonnes des tables de la tache courante
-4. PUIS les colonnes locales de la tache courante
-
-## Formule d'Offset
+## Formule Validee (2026-01-24)
 
 ```
-Offset = Σ(colonnes_ancetres_complets) + colonnes_table_tache_cible
+Offset = Main_VG + Σ(Selects des ancetres, SAUF ceux avec Access=W)
 ```
 
-Ou plus detaille :
+### Composants
 
-```
-Offset pour les variables locales d'une tache T =
-  + Colonnes TOTALES de chaque ancetre (table + locales)
-  + Colonnes de la table Main Source de T (sans les locales)
-```
+| Composant | Description |
+|-----------|-------------|
+| Main_VG | Variables globales du programme principal (Prg_1.xml) |
+| Selects | Operations Select dans TaskLogic de chaque tache |
+| Access | Mode d'acces MainSource: R (Read) ou W (Write) |
 
-### Exemple : VIL Prg_558 Tache Reception (ISN_2=19)
+### Regles de Contribution
 
-Hierarchie : Main → Edition → Reception
+| Configuration | Contribution |
+|---------------|--------------|
+| Pas de MainSource | Compte tous les Selects |
+| MainSource avec Access=R | Compte tous les Selects |
+| MainSource avec Access=W | **SKIP (0 contribution)** |
 
-| Tache | Colonnes Table | Colonnes Locales | Total |
-|-------|----------------|------------------|-------|
-| Main (ISN=1) | 6 (obj=50) | 12 | 18 |
-| Edition (ISN=18) | 56 (obj=594) | 1 | 57 |
-| Reception (ISN=19) | 56 (obj=594) | 23 | N/A |
+## Exemple : VIL IDE 90 Tache BI (ISN_2=32)
 
-**Calcul :**
-- Ancetres complets : 18 + 57 = 75
-- Table Main Source de Reception : 56
-- **Offset = 75 + 56 = 131**
+Hierarchie validee par screenshots IDE :
 
-Donc la premiere variable locale de Reception est a l'index 131 → **EB**
+| Tache | Selects | MainSource | Access | Contribution |
+|-------|---------|------------|--------|--------------|
+| ISN_2=1 | 36 | Non | - | +36 |
+| ISN_2=15 | 31 | comp=2 | **R** | +31 |
+| ISN_2=21 | 5 | comp=2 | **R** | +5 |
+| ISN_2=22 | 4 | comp=2 | **R** | +4 |
+| ISN_2=24 | 7 | comp=2 | **W** | **+0 (SKIP)** |
+| ISN_2=30 | 0 | comp=2 | **W** | **+0 (SKIP)** |
+
+**Calcul : 52 + 36 + 31 + 5 + 4 + 0 + 0 = 128** ✓
+
+La variable FC a l'index 132 (offset 128 + position locale 5 - 1 = 132)
 
 ## Conversion Index → Lettre
 
-| Plage Index | Formule | Exemple |
-|-------------|---------|---------|
-| 0-25 | chr(65 + index) | 0→A, 25→Z |
-| 26-701 | AA-ZZ | 26→AA, 52→BA, 131→EB |
-| 702+ | AAA-ZZZ | 702→AAA |
+| Plage Index | Pattern | Exemples |
+|-------------|---------|----------|
+| 0-25 | A-Z | A=0, Z=25 |
+| 26-51 | BA-BZ | BA=26, BZ=51 |
+| 52-77 | CA-CZ | CA=52 |
+| 78-103 | DA-DZ | - |
+| 104-129 | EA-EZ | EP=119, EU=124 |
+| 130-155 | FA-FZ | FC=132 |
 
-### Formule AA-ZZ (index 26-701)
+**IMPORTANT**: Apres Z (25) vient **BA** (26), PAS AA !
+
+### Formule (index >= 26)
 
 ```
-first = floor((index - 26) / 26)
-second = (index - 26) % 26
+first = index / 26      // Division entiere
+second = index % 26     // Modulo
 letter = chr(65 + first) + chr(65 + second)
 ```
 
-**Exemple : Index 131**
-- first = floor((131-26)/26) = floor(4.04) = 4 → E
-- second = 105 % 26 = 1 → B
-- Resultat : **EB**
+**Exemples valides :**
+- Index 119 → first=4 (E), second=15 (P) → **EP**
+- Index 124 → first=4 (E), second=20 (U) → **EU**
+- Index 132 → first=5 (F), second=2 (C) → **FC**
 
 ## Comptage des Colonnes de Table
 
@@ -77,46 +82,75 @@ Pour trouver le nombre de colonnes :
 
 ```xml
 <Task>
-  <Header ISN_2="19">
-    <Description>Reception</Description>
-  </Header>
+  <Header ISN_2="24" Description="Saisie"/>
   <Resource>
     <DB>
-      <DataObject comp="2" obj="594" />  <!-- Main Source -->
+      <DataObject comp="2" obj="490"/>  <!-- comp=2 = MainSource -->
+      <Access val="W"/>                  <!-- W = Write (SKIP), R = Read (COUNT) -->
     </DB>
-    <Links>
-      <Link>
-        <DB>
-          <DataObject comp="2" obj="123" />  <!-- Table liee -->
-        </DB>
-      </Link>
-    </Links>
     <Columns>
-      <Column id="16" name="v.total Cheques">  <!-- Variables locales -->
-      <Column id="17" name="v.total OD">
+      <Column id="4" name="V titre">     <!-- Variables locales -->
       ...
     </Columns>
   </Resource>
+  <TaskLogic>
+    <LogicUnit>
+      <LogicLines>
+        <LogicLine>
+          <Select/>  <!-- Compter ces elements -->
+        </LogicLine>
+      </LogicLines>
+    </LogicUnit>
+  </TaskLogic>
 </Task>
 ```
 
-## Parser Deterministe
+### Elements cles
 
-Le script `tools/magic-logic-parser-v3.ps1` implemente cette formule :
+| Element | Chemin XPath | Signification |
+|---------|--------------|---------------|
+| MainSource | Resource/DB/DataObject[@comp="2"] | Presence = a une table principale |
+| Access Mode | Resource/DB/Access/@val | "R"=Read, "W"=Write |
+| Selects | TaskLogic/LogicUnit/LogicLines/LogicLine/Select | Operations a compter |
 
-```powershell
-.\magic-logic-parser-v3.ps1 -Project VIL -PrgId 558 -TaskIsn 19
+## Implementation C#
+
+```csharp
+bool ShouldContributeToOffset(XElement task)
+{
+    var db = task.Element("Resource")?.Element("DB");
+    var comp = db?.Element("DataObject")?.Attribute("comp")?.Value;
+    var access = db?.Element("Access")?.Attribute("val")?.Value;
+
+    // Skip if MainSource (comp=2) with Write access
+    return !(comp == "2" && access == "W");
+}
+
+int CountSelects(XElement task)
+{
+    return task.Element("TaskLogic")?
+        .Elements("LogicUnit")
+        .SelectMany(lu => lu.Element("LogicLines")?.Elements("LogicLine") ?? [])
+        .Count(ll => ll.Element("Select") != null) ?? 0;
+}
 ```
 
-Output attendu :
-- Offset = 131
-- Premiere variable = EB (v.total Cheques)
-- EU = v.FDR fermeture de la veille (index 151)
-- EV = v.Session de Fermeture prec exi (index 152)
+## Tests de Controle
+
+Voir `MagicMcp.Tests/VilOffsetControlTests.cs` :
+
+| Test | Attendu | Resultat |
+|------|---------|----------|
+| Task 90.4.4 (ISN_2=21) offset | 119 | ✓ |
+| Task 90.4.4.1 (ISN_2=22) offset | 124 | ✓ |
+| Task BI (ISN_2=32) offset | 128 | ✓ |
+| FC a position 5 = index 132 | FC | ✓ |
+| Access=W non contributif | 0 | ✓ |
+| Access=R contributif | Selects | ✓ |
 
 ## Expressions
 
-Les expressions utilisent `ExpSyntax/@val` pour la formule, pas `Formula`.
+Les expressions utilisent `ExpSyntax/@val` pour la formule.
 
 Les references `{niveau,colId}` signifient :
 - niveau 0 = tache courante
@@ -126,4 +160,5 @@ Les references `{niveau,colId}` signifient :
 
 ---
 
-*Documente le 2026-01-22 apres analyse approfondie*
+*Cree le 2026-01-22 - Prg_558 initial*
+*Mis a jour le 2026-01-24 - Formule validee avec VIL IDE 90 (Access=W exclusion)*

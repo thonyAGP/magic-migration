@@ -1,5 +1,7 @@
 using MagicMcp.Services;
 using MagicMcp.Tools;
+using MagicKnowledgeBase.Database;
+using MagicKnowledgeBase.Indexing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ModelContextProtocol.Server;
@@ -12,7 +14,17 @@ Console.SetError(stderr);
 var projectsBasePath = Environment.GetEnvironmentVariable("MAGIC_PROJECTS_PATH")
     ?? @"D:\Data\Migration\XPA\PMS";
 
-var projectNames = new[] { "ADH", "PBP", "REF", "VIL", "PBG", "PVE" };
+// Dynamically discover all projects with Magic programs
+var projectNames = Directory.GetDirectories(projectsBasePath)
+    .Select(d => Path.GetFileName(d))
+    .Where(name =>
+    {
+        var sourcePath = Path.Combine(projectsBasePath, name, "Source");
+        if (!Directory.Exists(sourcePath)) return false;
+        return Directory.GetFiles(sourcePath, "Prg_*.xml", SearchOption.AllDirectories).Length > 0;
+    })
+    .OrderBy(n => n)
+    .ToArray();
 
 void Log(string msg)
 {
@@ -34,8 +46,11 @@ try
     indexCache.LoadAllProjects();
     Log($"[MagicMcp] Loaded {indexCache.GetTotalProgramCount()} programs from {indexCache.GetProjectNames().Count()} projects");
 
-    // Create query service
-    var queryService = new MagicQueryService(indexCache);
+    // Create offset calculator (validated formula for variable offsets)
+    var offsetCalculator = new OffsetCalculator(projectsBasePath, indexCache);
+
+    // Create query service (uses offset calculator for automatic offset)
+    var queryService = new MagicQueryService(indexCache, offsetCalculator);
 
     // Build global index for cross-project search
     Log("[MagicMcp] Building global index...");
@@ -44,13 +59,38 @@ try
     var stats = globalIndex.GetStats();
     Log($"[MagicMcp] Global index ready: {stats.TotalPrograms} programs, {stats.TotalPublicNames} public names");
 
+    // Initialize Knowledge Base
+    Log("[MagicMcp] Initializing Knowledge Base...");
+    var knowledgeDb = new KnowledgeDb();
+    if (!knowledgeDb.IsInitialized())
+    {
+        Log("[MagicMcp] Knowledge Base not found, will be created on first reindex");
+        knowledgeDb.InitializeSchema();
+    }
+    else
+    {
+        var kbStats = knowledgeDb.GetStats();
+        Log($"[MagicMcp] Knowledge Base ready: {kbStats.ProgramCount} programs, {kbStats.TableCount} tables");
+
+        // Check for incremental updates
+        var incrementalIndexer = new IncrementalIndexer(knowledgeDb, projectsBasePath);
+        if (incrementalIndexer.NeedsUpdate())
+        {
+            Log("[MagicMcp] Knowledge Base needs update, running incremental update...");
+            var updateResult = await incrementalIndexer.UpdateAllAsync();
+            Log($"[MagicMcp] Incremental update complete: {updateResult.FilesUpdated} files updated in {updateResult.ElapsedMs}ms");
+        }
+    }
+
     // Build and run MCP server
     var builder = Host.CreateApplicationBuilder(args);
 
     builder.Services.AddSingleton(tableMappingService);
     builder.Services.AddSingleton(indexCache);
     builder.Services.AddSingleton(queryService);
+    builder.Services.AddSingleton(offsetCalculator);
     builder.Services.AddSingleton(globalIndex);
+    builder.Services.AddSingleton(knowledgeDb);
 
     builder.Services
         .AddMcpServer()

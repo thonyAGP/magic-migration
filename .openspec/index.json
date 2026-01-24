@@ -1,56 +1,5 @@
-{
-    "lastUpdated":  "2026-01-22T22:00:00.000Z",
-    "schemaVersion":  "2.0",
-    "reports":  [
-                    {
-                        "id":  "spec",
-                        "title":  "Specification Principale",
-                        "file":  "spec.md",
-                        "category":  "principal"
-                    },
-                    {
-                        "id":  "coverage-adh",
-                        "title":  "Couverture ADH",
-                        "file":  "ADH_COVERAGE_ANALYSIS.md",
-                        "category":  "principal"
-                    },
-                    {
-                        "id":  "coverage-report",
-                        "title":  "Coverage Report 2025-01-04",
-                        "file":  "reports/COVERAGE_REPORT_2025-01-04.md",
-                        "category":  "reports"
-                    },
-                    {
-                        "id":  "sadt-adh",
-                        "title":  "Documentation SADT ADH",
-                        "file":  "reports/ADH_SADT_DOCUMENTATION.md",
-                        "category":  "reports"
-                    },
-                    {
-                        "id":  "cmds-174321-analysis",
-                        "title":  "CMDS-174321 Analysis",
-                        "file":  "reports/CMDS-174321_ANALYSIS.md",
-                        "category":  "reports"
-                    },
-                    {
-                        "id":  "pve-rental",
-                        "title":  "PVE Rental Dates Analysis",
-                        "file":  "reports/PVE_RENTAL_DATES_ANALYSIS_2026-01-04.md",
-                        "category":  "reports"
-                    },
-                    {
-                        "id":  "vil-fdr",
-                        "title":  "VIL FDR Etoiles Analysis",
-                        "file":  "reports/VIL_FDR_ETOILES_ANALYSIS.md",
-                        "category":  "reports"
-                    },
-                    {
-                        "id":  "xml_learning_log",
-                        "title":  "XML Learning Log",
-                        "file":  "reports/XML_LEARNING_LOG.md",
-                        "category":  "reports"
-                    }
-                ],
+﻿{
+    "project":  "Lecteur_Magic",
     "tickets":  {
                     "active":  [
                                    {
@@ -62,42 +11,10 @@
                                        "lastAnalysis":  "2026-01-19",
                                        "program":  "PBG IDE 121",
                                        "commits":  [
-                                                       {
-                                                           "date":  "2026-01-19T11:40:22+01:00",
-                                                           "message":  "docs(tickets): fix PMS-1407 IDE position - PBG IDE 121, not 59",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1407/analysis.md"
-                                                                     ],
-                                                           "author":  "ThonyAGP",
-                                                           "hash":  "cb3e897f79120c396f80ceee0016335bc5f6e603"
-                                                       },
-                                                       {
-                                                           "date":  "2026-01-19T11:27:08+01:00",
-                                                           "message":  "docs(tickets): complete PMS-1407 analysis - NOT a regression",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1407/analysis.md"
-                                                                     ],
-                                                           "author":  "ThonyAGP",
-                                                           "hash":  "8b4ffd8946a7cfe3013e381e7da9d6a61776e5d1"
-                                                       },
-                                                       {
-                                                           "date":  "2026-01-18T21:22:34+01:00",
-                                                           "message":  "docs(tickets): update PMS-1404 and PMS-1407 analysis",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1407/analysis.md"
-                                                                     ],
-                                                           "author":  "ThonyAGP",
-                                                           "hash":  "63d761d96aaf74b0b05f96a6944fc5d33c6aa3e5"
-                                                       },
-                                                       {
-                                                           "date":  "2026-01-18T21:17:46+01:00",
-                                                           "message":  "docs(openspec): add Git infrastructure documentation",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1407/analysis.md"
-                                                                     ],
-                                                           "author":  "ThonyAGP",
-                                                           "hash":  "26fad0c4a163c347569fd18f3937f3edbeada47f"
-                                                       }
+                                                       "@{date=2026-01-19T11:40:22+01:00; message=docs(tickets): fix PMS-1407 IDE position - PBG IDE 121, not 59; files=System.Object[]; author=ThonyAGP; hash=cb3e897f79120c396f80ceee0016335bc5f6e603}",
+                                                       "@{date=2026-01-19T11:27:08+01:00; message=docs(tickets): complete PMS-1407 analysis - NOT a regression; files=System.Object[]; author=ThonyAGP; hash=8b4ffd8946a7cfe3013e381e7da9d6a61776e5d1}",
+                                                       "@{date=2026-01-18T21:22:34+01:00; message=docs(tickets): update PMS-1404 and PMS-1407 analysis; files=System.Object[]; author=ThonyAGP; hash=63d761d96aaf74b0b05f96a6944fc5d33c6aa3e5}",
+                                                       "@{date=2026-01-18T21:17:46+01:00; message=docs(openspec): add Git infrastructure documentation; files=System.Object[]; author=ThonyAGP; hash=26fad0c4a163c347569fd18f3937f3edbeada47f}"
                                                    ],
                                        "lastAnalysisTime":  "2026-01-19T11:40:22+01:00"
                                    },
@@ -110,24 +27,8 @@
                                        "lastAnalysis":  "2026-01-22",
                                        "program":  "VIL IDE 22",
                                        "commits":  [
-                                                       {
-                                                           "date":  "2026-01-22T14:42:10+01:00",
-                                                           "message":  "docs(tickets): rewrite PMS-1359 analysis with new protocol",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1359/analysis.md"
-                                                                     ],
-                                                           "author":  "ThonyAGP",
-                                                           "hash":  "b2423eef234d42f6310221d6832ead9720d8b2e5"
-                                                       },
-                                                       {
-                                                           "date":  "2026-01-12T20:21:06+01:00",
-                                                           "message":  "docs(tickets): update ticket index and add MCP test infrastructure",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1359/analysis.md"
-                                                                     ],
-                                                           "author":  "ThonyAGP",
-                                                           "hash":  "f7aeafa7a9f06d5f34e6cb994438ca56ad26b6eb"
-                                                       }
+                                                       "@{date=2026-01-22T14:42:10+01:00; message=docs(tickets): rewrite PMS-1359 analysis with new protocol; files=System.Object[]; author=ThonyAGP; hash=b2423eef234d42f6310221d6832ead9720d8b2e5}",
+                                                       "@{date=2026-01-12T20:21:06+01:00; message=docs(tickets): update ticket index and add MCP test infrastructure; files=System.Object[]; author=ThonyAGP; hash=f7aeafa7a9f06d5f34e6cb994438ca56ad26b6eb}"
                                                    ],
                                        "lastAnalysisTime":  "2026-01-22T16:31:00+01:00"
                                    },
@@ -140,33 +41,9 @@
                                        "lastAnalysis":  "2026-01-19",
                                        "program":  "PBG IDE 124",
                                        "commits":  [
-                                                       {
-                                                           "date":  "2026-01-19T13:36:49+01:00",
-                                                           "message":  "docs(tickets): complete PMS-1414 analysis with precise task hierarchy",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1414/analysis.md"
-                                                                     ],
-                                                           "author":  "ThonyAGP",
-                                                           "hash":  "d5fc487ec4ca7d09aa544ae3808757e8e2727640"
-                                                       },
-                                                       {
-                                                           "date":  "2026-01-19T12:38:13+01:00",
-                                                           "message":  "docs(tickets): create PMS-1414 analysis - Validation groupee seminaire",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1414/analysis.md"
-                                                                     ],
-                                                           "author":  "ThonyAGP",
-                                                           "hash":  "435075cf415e72ee4ec27ec7ca20b45fe7272f0d"
-                                                       },
-                                                       {
-                                                           "date":  "2026-01-18T21:17:46+01:00",
-                                                           "message":  "docs(openspec): add Git infrastructure documentation",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1414/analysis.md"
-                                                                     ],
-                                                           "author":  "ThonyAGP",
-                                                           "hash":  "26fad0c4a163c347569fd18f3937f3edbeada47f"
-                                                       }
+                                                       "@{date=2026-01-19T13:36:49+01:00; message=docs(tickets): complete PMS-1414 analysis with precise task hierarchy; files=System.Object[]; author=ThonyAGP; hash=d5fc487ec4ca7d09aa544ae3808757e8e2727640}",
+                                                       "@{date=2026-01-19T12:38:13+01:00; message=docs(tickets): create PMS-1414 analysis - Validation groupee seminaire; files=System.Object[]; author=ThonyAGP; hash=435075cf415e72ee4ec27ec7ca20b45fe7272f0d}",
+                                                       "@{date=2026-01-18T21:17:46+01:00; message=docs(openspec): add Git infrastructure documentation; files=System.Object[]; author=ThonyAGP; hash=26fad0c4a163c347569fd18f3937f3edbeada47f}"
                                                    ],
                                        "lastAnalysisTime":  "2026-01-19T13:36:49+01:00"
                                    },
@@ -179,24 +56,8 @@
                                        "lastAnalysis":  "2026-01-21",
                                        "program":  "PVE IDE 205",
                                        "commits":  [
-                                                       {
-                                                           "date":  "2026-01-22T00:15:23+01:00",
-                                                           "message":  "docs(tickets): fix PMS-1412 analysis - correct IDE positions and variable naming",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1412/analysis.md"
-                                                                     ],
-                                                           "author":  "ThonyAGP",
-                                                           "hash":  "b49f42aaa1c569af61b0b2322d6c1a9091a73a13"
-                                                       },
-                                                       {
-                                                           "date":  "2026-01-21T15:37:32+01:00",
-                                                           "message":  "docs(tickets): add PMS-1412 and PMS-1400 analysis",
-                                                           "files":  [
-                                                                         ".openspec/tickets/PMS-1412/analysis.md"
-                                                                     ],
-                                                           "author":  "Anthony Leberre",
-                                                           "hash":  "b86ed379b0cb3525c77bba4f0aea00d28bdab1eb"
-                                                       }
+                                                       "@{date=2026-01-22T00:15:23+01:00; message=docs(tickets): fix PMS-1412 analysis - correct IDE positions and variable naming; files=System.Object[]; author=ThonyAGP; hash=b49f42aaa1c569af61b0b2322d6c1a9091a73a13}",
+                                                       "@{date=2026-01-21T15:37:32+01:00; message=docs(tickets): add PMS-1412 and PMS-1400 analysis; files=System.Object[]; author=Anthony Leberre; hash=b86ed379b0cb3525c77bba4f0aea00d28bdab1eb}"
                                                    ],
                                        "lastAnalysisTime":  "2026-01-22T00:15:23+01:00"
                                    },
@@ -249,91 +110,12 @@
                                        "lastAnalysis":  "2026-01-22",
                                        "lastAnalysisTime":  "2026-01-22T23:30:00+01:00",
                                        "program":  "REF IDE 621"
-                                   }
+                                   },
+                                   "TEST-001"
                                ],
-                    "archived":  [
-                                     {
-                                         "id":  "CMDS-174321",
-                                         "title":  "Bug date arrivee PB027 - Donnees corrompues",
-                                         "status":  "resolved",
-                                         "file":  "tickets/CMDS-174321/resolution.md",
-                                         "createdDate":  "2026-01-06",
-                                         "lastAnalysis":  "2026-01-08",
-                                         "resolvedDate":  "2026-01-08"
-                                     },
-                                     {
-                                         "id":  "PMS-1373",
-                                         "title":  "Masquer annulations extrait compte",
-                                         "status":  "done",
-                                         "file":  "tickets/PMS-1373/implementation.md",
-                                         "createdDate":  "2026-01-07",
-                                         "lastAnalysis":  "2026-01-09",
-                                         "resolvedDate":  "2026-01-09"
-                                     },
-                                     {
-                                         "id":  "CMDS-176521",
-                                         "title":  "Prix remise POS incorrect - Fix Davide",
-                                         "status":  "resolved",
-                                         "file":  "tickets/CMDS-176521/resolution.md",
-                                         "createdDate":  "2026-01-08",
-                                         "lastAnalysis":  "2026-01-09",
-                                         "resolvedDate":  "2026-01-09"
-                                     },
-                                     {
-                                         "id":  "CMDS-176481",
-                                         "title":  "Double attribution Gift Pass - Bug AFFAUTO",
-                                         "status":  "analysis",
-                                         "file":  "tickets/CMDS-176481/analysis.md",
-                                         "createdDate":  "2026-01-09",
-                                         "lastAnalysis":  "2026-01-12",
-                                         "resolvedDate":  "2026-01-12"
-                                     },
-                                     {
-                                         "id":  "PMS-1437",
-                                         "title":  "Early return SKI - 5 pistes classees (MODEDAYINC prioritaire)",
-                                         "status":  "analysis",
-                                         "file":  "tickets/PMS-1437/analysis.md",
-                                         "createdDate":  "2026-01-09",
-                                         "lastAnalysis":  "2026-01-12",
-                                         "resolvedDate":  "2026-01-12"
-                                     },
-                                     {
-                                         "id":  "PMS-1446",
-                                         "title":  "Location ski courts sejours - Calcul MODEDAYINC",
-                                         "status":  "spec",
-                                         "file":  "tickets/PMS-1446/implementation.md",
-                                         "createdDate":  "2026-01-09",
-                                         "lastAnalysis":  "2026-01-18",
-                                         "resolvedDate":  "2026-01-18"
-                                     },
-                                     {
-                                         "id":  "PMS-1337",
-                                         "title":  "Double lancement Caisse Adherent - Controle session/utilisateur",
-                                         "status":  "analysis",
-                                         "file":  "tickets/PMS-1337/analysis.md",
-                                         "createdDate":  "2025-06-19",
-                                         "lastAnalysis":  "2026-01-22",
-                                         "program":  "ADH IDE 156",
-                                         "resolvedDate":  "2026-01-22"
-                                     },
-                                     {
-                                         "id":  "PMS-1404",
-                                         "title":  "POS Reports M\u0026E - Quantity OK, filtres JAMAIS implementes",
-                                         "status":  "investigation-complete",
-                                         "file":  "tickets/PMS-1404/analysis.md",
-                                         "createdDate":  "2026-01-12",
-                                         "lastAnalysis":  "2026-01-22",
-                                         "resolvedDate":  "2026-01-22"
-                                     },
-                                     {
-                                         "id":  "CMDS-176818",
-                                         "title":  "Tickets Epson police grande - Config imprimante",
-                                         "status":  "analysis",
-                                         "file":  "tickets/CMDS-176818/analysis.md",
-                                         "createdDate":  "2026-01-12",
-                                         "lastAnalysis":  "2026-01-22",
-                                         "resolvedDate":  "2026-01-22"
-                                     }
+                    "resolved":  [
+
                                  ]
-                }
+                },
+    "updated":  "2026-01-24"
 }

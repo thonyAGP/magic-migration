@@ -136,8 +136,9 @@ Ces expressions sont dans une tache differente, utilisees pour la validation ind
 
 **Commande MCP** :
 ```
-magic_get_line(project="PBG", taskPosition="124.3.7.1", lineNumber=*, mainOffset=91)
+magic_get_line(project="PBG", taskPosition="124.3.7.1", lineNumber=*)
 ```
+> Note: L'offset est calculé automatiquement par OffsetCalculator
 
 ### PISTE 2 : Absence d'expressions VV dans Validation Serie (HAUTE PRIORITE)
 

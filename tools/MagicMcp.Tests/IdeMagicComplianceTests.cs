@@ -36,7 +36,8 @@ public class IdeMagicComplianceTests : IDisposable
         _tableMappingService = new TableMappingService(projectsPath);
         _indexCache = new IndexCache(projectsPath, projectNames, _tableMappingService);
         _indexCache.LoadAllProjects();
-        _queryService = new MagicQueryService(_indexCache);
+        var offsetCalculator = new OffsetCalculator(projectsPath, _indexCache);
+        _queryService = new MagicQueryService(_indexCache, offsetCalculator);
         _globalIndex = new GlobalIndex(_indexCache);
         _globalIndex.BuildIndex();
     }
@@ -214,8 +215,8 @@ public class IdeMagicComplianceTests : IDisposable
     [InlineData("ADH", "121", 1)]
     public void GetLine_ReturnsIdeFormat(string project, string taskPosition, int lineNumber)
     {
-        // Act
-        var line = _queryService.GetLine(project, taskPosition, lineNumber, 0);
+        // Act - offset is now calculated automatically
+        var line = _queryService.GetLine(project, taskPosition, lineNumber);
 
         // Assert
         if (!string.IsNullOrEmpty(line) && !line.Contains("ERROR"))
@@ -315,7 +316,7 @@ public class IdeMagicComplianceTests : IDisposable
             () => _queryService.GetExpression("ADH", 69, 1)));
 
         results.Add(TestToolOutput("magic_get_line",
-            () => _queryService.GetLine("ADH", "69", 1, 0)));
+            () => _queryService.GetLine("ADH", "69", 1)));
 
         results.Add(TestToolOutput("magic_find_program",
             () => string.Join("\n", _globalIndex.Search("EXTRAIT", 5)

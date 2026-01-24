@@ -13,18 +13,19 @@ namespace MagicMcp.Tools;
 public static class DecodeExpressionTool
 {
     /// <summary>
-    /// Decode an expression by replacing {N,Y} references with global variable names
+    /// Decode an expression by replacing {N,Y} references with global variable names.
+    /// Offset is calculated automatically using the validated formula.
     /// </summary>
     [McpServerTool(Name = "magic_decode_expression")]
     [Description("Decode {N,Y} references in a Magic expression to global variable names. " +
-                 "Uses mainOffset to calculate correct global variable letters.")]
+                 "Offset is calculated automatically using validated formula: Main_VG + Σ(Selects, excluding Access=W).")]
     public static string DecodeExpression(
         IndexCache cache,
+        OffsetCalculator offsetCalculator,
         [Description("Project name (ADH, PBP, REF, VIL, PBG, PVE)")] string project,
         [Description("Program ID (e.g., 180)")] int programId,
         [Description("Task ISN_2 where the expression is used")] int taskIsn2,
-        [Description("Expression ID to decode")] int expressionId,
-        [Description("Main offset for global variable calculation (ADH=117, PVE=143, PBG=91, VIL=52, PBP=88, REF=107)")] int mainOffset)
+        [Description("Expression ID to decode")] int expressionId)
     {
         // Get expression
         var expression = cache.GetExpression(project, programId, expressionId);
@@ -36,8 +37,9 @@ public static class DecodeExpressionTool
         if (task == null)
             return $"ERROR: Task ISN_2={taskIsn2} not found in program {programId}";
 
-        // Calculate cumulative offset for this task
-        var cumulativeOffset = CalculateCumulativeOffset(cache, project, programId, taskIsn2, mainOffset);
+        // Calculate cumulative offset using validated formula
+        var offsetResult = offsetCalculator.CalculateOffset(project, programId, taskIsn2);
+        var cumulativeOffset = offsetResult.Success ? offsetResult.Offset : 0;
 
         // Decode the expression
         var result = DecodeExpressionContent(expression.Content, task, cumulativeOffset, cache, project, programId);
@@ -71,40 +73,6 @@ public static class DecodeExpressionTool
         }
 
         return sb.ToString();
-    }
-
-    /// <summary>
-    /// Calculate cumulative offset for a nested task
-    /// </summary>
-    private static int CalculateCumulativeOffset(IndexCache cache, string project, int programId, int taskIsn2, int mainOffset)
-    {
-        var program = cache.GetProgram(project, programId);
-        if (program == null) return mainOffset;
-
-        // Build path from root to target task
-        var path = new List<MagicTask>();
-        var currentIsn2 = taskIsn2;
-
-        while (currentIsn2 > 0)
-        {
-            var task = program.Tasks.GetValueOrDefault(currentIsn2);
-            if (task == null) break;
-            path.Insert(0, task);
-            currentIsn2 = task.ParentIsn2 ?? 0;
-        }
-
-        // Sum columns from each ancestor (excluding the target task itself)
-        int offset = mainOffset;
-        for (int i = 0; i < path.Count - 1; i++)
-        {
-            var ancestorTask = path[i];
-            if (ancestorTask.DataView?.Columns != null)
-            {
-                offset += ancestorTask.DataView.Columns.Count;
-            }
-        }
-
-        return offset;
     }
 
     /// <summary>

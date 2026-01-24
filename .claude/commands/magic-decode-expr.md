@@ -2,13 +2,14 @@
 description: Decode {N,Y} en variables globales avec contexte programme/tache
 arguments:
   - name: args
-    description: "project programId taskIsn2 expressionId [mainOffset]"
+    description: "project programId taskIsn2 expressionId"
     required: true
 ---
 
 # Decodage Expression Magic vers Variables Globales
 
 Decode l'expression en utilisant le contexte du programme et de la tache.
+**L'offset est calcule automatiquement** via la formule validee.
 
 **Arguments**: `$ARGUMENTS`
 
@@ -16,7 +17,6 @@ Decode l'expression en utilisant le contexte du programme et de la tache.
 
 ```
 /magic-decode-expr PVE 180 45 30
-/magic-decode-expr PVE 180 45 30 143
 ```
 
 | Argument | Description | Exemple |
@@ -25,18 +25,6 @@ Decode l'expression en utilisant le contexte du programme et de la tache.
 | programId | ID du programme (ISN) | 180 |
 | taskIsn2 | ISN_2 de la tache | 45 |
 | expressionId | ID de l'expression | 30 |
-| mainOffset | (Optionnel) Offset Main | 143 pour PVE |
-
-## Offsets Main par projet
-
-| Projet | Main Offset |
-|--------|-------------|
-| **ADH** | 117 |
-| **PVE** | 143 |
-| **PBG** | 91 |
-| **VIL** | 52 |
-| **PBP** | 88 |
-| **REF** | 107 |
 
 ## Workflow
 
@@ -46,12 +34,11 @@ Decode l'expression en utilisant le contexte du programme et de la tache.
    programId = $2
    taskIsn2 = $3
    expressionId = $4
-   mainOffset = $5 ou valeur par defaut selon projet
    ```
 
-2. **Appeler l'outil MCP**
+2. **Appeler l'outil MCP** (offset calcule automatiquement)
    ```
-   magic_decode_expression(project, programId, taskIsn2, expressionId, mainOffset)
+   magic_decode_expression(project, programId, taskIsn2, expressionId)
    ```
 
 3. **Afficher le resultat**

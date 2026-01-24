@@ -8,10 +8,12 @@ namespace MagicMcp.Services;
 public class MagicQueryService
 {
     private readonly IndexCache _cache;
+    private readonly OffsetCalculator _offsetCalculator;
 
-    public MagicQueryService(IndexCache cache)
+    public MagicQueryService(IndexCache cache, OffsetCalculator offsetCalculator)
     {
         _cache = cache;
+        _offsetCalculator = offsetCalculator;
     }
 
     /// <summary>
@@ -197,8 +199,9 @@ public class MagicQueryService
     /// <summary>
     /// Get both DataView column AND Logic operation for a specific line number.
     /// Line numbers are independent in each tab.
+    /// Offset is calculated automatically using the validated formula.
     /// </summary>
-    public string GetLine(string projectName, string taskPosition, int lineNumber, int mainOffset = 0)
+    public string GetLine(string projectName, string taskPosition, int lineNumber)
     {
         // Parse task position (e.g., "69.3" -> program 69, task with IdePosition "69.3")
         var parts = taskPosition.Split('.');
@@ -232,6 +235,10 @@ public class MagicQueryService
         if (task == null)
             return $"ERROR: Task {taskPosition} not found in program {program.Id}";
 
+        // Calculate offset automatically using validated formula
+        var offsetResult = _offsetCalculator.CalculateOffset(projectName, program.Id, task.Isn2);
+        int calculatedOffset = offsetResult.Success ? offsetResult.Offset : 0;
+
         var sb = new System.Text.StringBuilder();
         sb.AppendLine($"## Tâche {projectName.ToUpper()} IDE {taskPosition} - Ligne {lineNumber}");
         sb.AppendLine();
@@ -259,14 +266,14 @@ public class MagicQueryService
                     _ => column.Definition
                 };
 
-                // Apply mainOffset to variable if provided
+                // Apply calculated offset to variable
                 var displayVar = column.Variable;
-                if (mainOffset > 0 && !string.IsNullOrEmpty(column.Variable))
+                if (calculatedOffset > 0 && !string.IsNullOrEmpty(column.Variable))
                 {
                     var localIndex = MagicColumn.VariableToIndex(column.Variable);
                     if (localIndex >= 0)
                     {
-                        displayVar = MagicColumn.IndexToVariable(localIndex + mainOffset);
+                        displayVar = MagicColumn.IndexToVariable(localIndex + calculatedOffset);
                     }
                 }
                 sb.AppendLine($"| {column.LineNumber} | **{displayVar}** | {column.Name} | {column.DataType} | {defType} | {locateInfo} |");

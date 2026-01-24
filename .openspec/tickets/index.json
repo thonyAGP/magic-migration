@@ -1,147 +1,176 @@
-{
-    "lastSync": "2026-01-21T17:00:00.0000000+01:00",
-    "lastUpdated": "2026-01-21T17:00:00.0000000+01:00",
-    "localTickets": [
-        {
-            "hasLocalData": true,
-            "status": "analyse-initiale",
-            "key": "PMS-1337",
-            "summary": "Double lancement Caisse Adherent - Controle session/utilisateur",
-            "lastAnalysis": "2026-01-21",
-            "program": "ADH IDE 156"
-        },
-        {
-            "hasLocalData": true,
-            "status": "resolu",
-            "key": "CMDS-174321",
-            "summary": "Bug date arrivee PB027 (+1 mois) - Donnees corrompues en base"
-        },
-        {
-            "hasLocalData": true,
-            "status": "implemente",
-            "key": "PMS-1373",
-            "summary": "Masquer annulations dans extrait compte - Branche feature/PMS-1373"
-        },
-        {
-            "hasLocalData": true,
-            "status": "resolu",
-            "key": "CMDS-176521",
-            "summary": "Prix remise affiche incorrect POS - Fix Davide fin janvier"
-        },
-        {
-            "hasLocalData": true,
-            "status": "spec-complete",
-            "key": "PMS-1446",
-            "summary": "Location materiel ski courts sejours - Calcul MODEDAYINC"
-        },
-        {
-            "hasLocalData": true,
-            "status": "investigation-complete",
-            "key": "PMS-1437",
-            "summary": "Early return SKI - 5 pistes classees (MODEDAYINC prioritaire)"
-        },
-        {
-            "hasLocalData": true,
-            "status": "diagnostic",
-            "key": "CMDS-176481",
-            "summary": "Double attribution Gift Pass - Bug AFFAUTO identifie (API externe)"
-        },
-        {
-            "hasLocalData": true,
-            "status": "diagnostic",
-            "key": "CMDS-176818",
-            "summary": "Tickets Epson police grande - Config imprimante Valmorel"
-        },
-        {
-            "hasLocalData": true,
-            "status": "implemente",
-            "key": "PMS-1359",
-            "summary": "Edition Cloture - Indicateur ecart FDR - Commit 9422490b5"
-        },
-        {
-            "hasLocalData": true,
-            "status": "investigation-complete",
-            "key": "PMS-1404",
-            "summary": "POS Reports M&E - Quantity OK, filtres JAMAIS implementes",
-            "lastAnalysis": "2026-01-18",
-            "createdDate": "2026-01-12"
-        },
-        {
-            "hasLocalData": true,
-            "status": "analyse-initiale",
-            "key": "PMS-1402",
-            "summary": "Automatisation Taxe de sejour - Batch nuit + OD automatique"
-        },
-        {
-            "hasLocalData": true,
-            "status": "diagnostic-ok",
-            "key": "PMS-1407",
-            "summary": "Validation auto Back Office - NON REGRESSION (Magic.ini local)",
-            "lastAnalysis": "2026-01-19",
-            "program": "PBG IDE 121"
-        },
-        {
-            "hasLocalData": true,
-            "status": "investigation-en-cours",
-            "key": "PMS-1414",
-            "summary": "Validation groupee seminaire - Vol retour non requis",
-            "lastAnalysis": "2026-01-19",
-            "program": "PBG IDE 124"
-        },
-        {
-            "hasLocalData": true,
-            "status": "analyse-initiale",
-            "key": "PMS-1332",
-            "summary": "Fiche police date fin 00/00/0000 - Sans limite pour GO"
-        },
-        {
-            "hasLocalData": true,
-            "status": "pret-implementation",
-            "key": "PMS-1412",
-            "summary": "POS SKI Japon - Impression facture obligatoire meme si mail",
-            "lastAnalysis": "2026-01-21",
-            "program": "PVE IDE 199"
-        },
-        {
-            "hasLocalData": true,
-            "status": "analyse-initiale",
-            "key": "PMS-1400",
-            "summary": "POS Reports - Evolution REVENUE CANCELATIONS (Gift Pass, Payment Type, Totaux)",
-            "lastAnalysis": "2026-01-21",
-            "program": "PVE IDE 75"
-        },
-        {
-            "hasLocalData": true,
-            "status": "diagnostic-confirme",
-            "key": "PMS-1451",
-            "summary": "PURGE prend uniquement le 1er troncon de sejour - Fix REF IDE 749.1",
-            "lastAnalysis": "2026-01-22",
-            "program": "REF IDE 749.1"
-        },
-        {
-            "hasLocalData": true,
-            "status": "analyse-initiale",
-            "key": "PMS-1453",
-            "summary": "Caisse Adherent - Vente transfert > heure erronee (validation 00:00-23:59)",
-            "lastAnalysis": "2026-01-22",
-            "program": "ADH IDE 244"
-        },
-        {
-            "hasLocalData": true,
-            "status": "diagnostic-ok",
-            "key": "PMS-1381",
-            "summary": "Messages verrouillages PURGE - Comportement normal gestion concurrence",
-            "lastAnalysis": "2026-01-22",
-            "program": "PUG IDE 18"
-        },
-        {
-            "hasLocalData": true,
-            "status": "spec-complete",
-            "key": "PMS-1457",
-            "summary": "Caution forfait ski automatique St Moritz - 25 CHF cloture nuit",
-            "lastAnalysis": "2026-01-22",
-            "program": "REF IDE 621"
-        }
-    ],
-    "tickets": []
+﻿{
+    "lastSync":  "2026-01-21T17:00:00.0000000+01:00",
+    "lastUpdated":  "2026-01-21T17:00:00.0000000+01:00",
+    "localTickets":  [
+                         {
+                             "hasLocalData":  true,
+                             "status":  "analyse-initiale",
+                             "key":  "PMS-1337",
+                             "summary":  "Double lancement Caisse Adherent - Controle session/utilisateur",
+                             "lastAnalysis":  "2026-01-21",
+                             "program":  "ADH IDE 156"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "resolu",
+                             "key":  "CMDS-174321",
+                             "summary":  "Bug date arrivee PB027 (+1 mois) - Donnees corrompues en base"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "implemente",
+                             "key":  "PMS-1373",
+                             "summary":  "Masquer annulations dans extrait compte - Branche feature/PMS-1373"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "resolu",
+                             "key":  "CMDS-176521",
+                             "summary":  "Prix remise affiche incorrect POS - Fix Davide fin janvier"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "spec-complete",
+                             "key":  "PMS-1446",
+                             "summary":  "Location materiel ski courts sejours - Calcul MODEDAYINC"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "investigation-complete",
+                             "key":  "PMS-1437",
+                             "summary":  "Early return SKI - 5 pistes classees (MODEDAYINC prioritaire)"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "diagnostic",
+                             "key":  "CMDS-176481",
+                             "summary":  "Double attribution Gift Pass - Bug AFFAUTO identifie (API externe)"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "diagnostic",
+                             "key":  "CMDS-176818",
+                             "summary":  "Tickets Epson police grande - Config imprimante Valmorel"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "implemente",
+                             "key":  "PMS-1359",
+                             "summary":  "Edition Cloture - Indicateur ecart FDR - Commit 9422490b5"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "investigation-complete",
+                             "key":  "PMS-1404",
+                             "summary":  "POS Reports M\u0026E - Quantity OK, filtres JAMAIS implementes",
+                             "lastAnalysis":  "2026-01-18",
+                             "createdDate":  "2026-01-12"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "analyse-initiale",
+                             "key":  "PMS-1402",
+                             "summary":  "Automatisation Taxe de sejour - Batch nuit + OD automatique"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "diagnostic-ok",
+                             "key":  "PMS-1407",
+                             "summary":  "Validation auto Back Office - NON REGRESSION (Magic.ini local)",
+                             "lastAnalysis":  "2026-01-19",
+                             "program":  "PBG IDE 121"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "investigation-en-cours",
+                             "key":  "PMS-1414",
+                             "summary":  "Validation groupee seminaire - Vol retour non requis",
+                             "lastAnalysis":  "2026-01-19",
+                             "program":  "PBG IDE 124"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "analyse-initiale",
+                             "key":  "PMS-1332",
+                             "summary":  "Fiche police date fin 00/00/0000 - Sans limite pour GO"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "pret-implementation",
+                             "key":  "PMS-1412",
+                             "summary":  "POS SKI Japon - Impression facture obligatoire meme si mail",
+                             "lastAnalysis":  "2026-01-21",
+                             "program":  "PVE IDE 199"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "analyse-initiale",
+                             "key":  "PMS-1400",
+                             "summary":  "POS Reports - Evolution REVENUE CANCELATIONS (Gift Pass, Payment Type, Totaux)",
+                             "lastAnalysis":  "2026-01-21",
+                             "program":  "PVE IDE 75"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "diagnostic-confirme",
+                             "key":  "PMS-1451",
+                             "summary":  "PURGE prend uniquement le 1er troncon de sejour - Fix REF IDE 749.1",
+                             "lastAnalysis":  "2026-01-22",
+                             "program":  "REF IDE 749.1"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "analyse-initiale",
+                             "key":  "PMS-1453",
+                             "summary":  "Caisse Adherent - Vente transfert \u003e heure erronee (validation 00:00-23:59)",
+                             "lastAnalysis":  "2026-01-22",
+                             "program":  "ADH IDE 244"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "diagnostic-ok",
+                             "key":  "PMS-1381",
+                             "summary":  "Messages verrouillages PURGE - Comportement normal gestion concurrence",
+                             "lastAnalysis":  "2026-01-22",
+                             "program":  "PUG IDE 18"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "spec-complete",
+                             "key":  "PMS-1457",
+                             "summary":  "Caution forfait ski automatique St Moritz - 25 CHF cloture nuit",
+                             "lastAnalysis":  "2026-01-22",
+                             "program":  "REF IDE 621"
+                         }
+                     ],
+    "tickets":  [
+                    {
+                        "rootCause":  "",
+                        "title":  "Ã€ complÃ©ter",
+                        "tables":  [
+
+                                   ],
+                        "status":  "ANALYSIS",
+                        "created":  "2026-01-24",
+                        "programs":  [
+
+                                     ],
+                        "key":  "TEST-001",
+                        "updated":  "2026-01-24"
+                    },
+                    {
+                        "rootCause":  "",
+                        "title":  "Ã€ complÃ©ter",
+                        "tables":  [
+
+                                   ],
+                        "status":  "ANALYSIS",
+                        "created":  "2026-01-24",
+                        "programs":  [
+
+                                     ],
+                        "key":  "TEST-001",
+                        "updated":  "2026-01-24"
+                    }
+                ]
 }

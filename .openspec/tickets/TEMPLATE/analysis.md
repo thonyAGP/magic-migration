@@ -81,18 +81,10 @@ Résultat : **{PROJET} IDE {N} - {Nom}**
 
 ## 4. Analyse Expressions
 
-### Calcul mainOffset
+> **Note** : L'offset est calculé automatiquement par OffsetCalculator.
+> Plus besoin de calculer manuellement le mainOffset.
 
-Tâche analysée : {PROJET} IDE {N.X.Y.Z}
-
-| Niveau | Colonnes | Cumul |
-|--------|----------|-------|
-| Main | {offset Main projet} | {offset} |
-| Tâche {N} | {colonnes} | {cumul} |
-| Tâche {N.X} | {colonnes} | {cumul} |
-| **TOTAL** | | **{TOTAL}** |
-
-### magic_get_line("{projet}", "{task}", {ligne}, {mainOffset})
+### magic_get_line("{projet}", "{task}", {ligne})
 
 | Variable | Nom logique | Type | Format |
 |----------|-------------|------|--------|

@@ -114,6 +114,56 @@ AVEC MCP : Claude appelle outil → résultat déterministe → 0% erreur
 **RÈGLE D'OR : Ne JAMAIS calculer manuellement ce qu'un outil MCP peut fournir.**
 </mcp_tools_obligatoire>
 
+<knowledge_base_tools>
+## KNOWLEDGE BASE (KB) - Recherche Avancée
+
+**La Knowledge Base est une base SQLite (~210 MB) indexant tous les programmes Magic (5,843 fichiers) avec recherche FTS5.**
+
+### Outils KB Disponibles
+
+| Outil | Description | Exemple |
+|-------|-------------|---------|
+| `magic_kb_search` | Recherche full-text (programmes, expressions, colonnes) | `magic_kb_search(query="ouverture caisse")` |
+| `magic_kb_callers` | Qui appelle ce programme ? | `magic_kb_callers(project="ADH", idePosition=122)` |
+| `magic_kb_callees` | Quels programmes sont appelés ? | `magic_kb_callees(project="ADH", idePosition=122)` |
+| `magic_kb_callgraph` | Graphe d'appels complet (callers + callees) | `magic_kb_callgraph(project="ADH", idePosition=122)` |
+| `magic_kb_table_usage` | Où est utilisée cette table ? | `magic_kb_table_usage(tableName="caisse_session")` |
+| `magic_kb_field_usage` | Où est utilisé ce champ ? | `magic_kb_field_usage(fieldName="SOCIETE")` |
+| `magic_kb_table_info` | Info sur une table (stats R/W/M/D/L) | `magic_kb_table_info(idePosition=123)` |
+| `magic_kb_search_tables` | Chercher des tables par nom | `magic_kb_search_tables(query="caisse")` |
+| `magic_kb_stats` | Statistiques KB | `magic_kb_stats()` |
+| `magic_kb_update` | Mise à jour incrémentale (<5s) | `magic_kb_update()` |
+| `magic_kb_reindex` | Réindexation complète | `magic_kb_reindex()` |
+
+### Quand utiliser la KB ?
+
+| Situation | Outil |
+|-----------|-------|
+| "Trouve tous les programmes qui appellent X" | → `magic_kb_callers` |
+| "Que fait ce programme ? Qui l'appelle ?" | → `magic_kb_callgraph` |
+| "Où est modifiée la table Y ?" | → `magic_kb_table_usage` |
+| "Cherche 'GetParam SOCIETE' dans le code" | → `magic_kb_search(scope="expressions")` |
+| "Statistiques du projet" | → `magic_kb_stats` |
+
+### Exemple d'investigation bug
+
+```
+# 1. Chercher le programme
+magic_kb_search(query="ouverture caisse")
+→ ADH IDE 122 - Ouverture_Session_Caisse (score: 95)
+
+# 2. Voir qui appelle ce programme
+magic_kb_callers(project="ADH", idePosition=122)
+→ ADH IDE 121 (ligne 45) - Menu_Caisse_GM
+→ ADH IDE 162 (ligne 12) - Main_Caisse
+
+# 3. Voir les tables impactées
+magic_kb_table_usage(tableName="caisse_session")
+→ [WRITE] ADH IDE 122.3 - Création session
+→ [READ] ADH IDE 131.5 - Lecture pour fermeture
+```
+</knowledge_base_tools>
+
 <critical_rule_xml_to_ide>
 ## RÈGLE CRITIQUE : Identification Programme IDE
 

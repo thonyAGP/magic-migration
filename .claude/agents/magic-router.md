@@ -109,10 +109,11 @@ UTILISATEUR → Magic Router
 ### Pour une ligne precise
 
 ```
-magic_get_line(project, task, line, mainOffset)
+magic_get_line(project, taskPosition, lineNumber)
 ```
 
 Retourne DataView ET Logic pour la ligne demandee.
+L'offset est calcule automatiquement via OffsetCalculator.
 
 ### Pour chercher
 
