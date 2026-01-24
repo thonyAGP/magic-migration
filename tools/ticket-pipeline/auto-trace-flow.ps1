@@ -140,6 +140,106 @@ function Get-Expressions {
     return $Expressions
 }
 
+function Get-TaskForms {
+    param([xml]$Xml)
+
+    $Forms = @()
+    $AllTasks = $Xml.ProgramContent.TaskTable.Task
+
+    foreach ($Task in $AllTasks) {
+        $ISN_2 = [int]$Task.ISN_2
+        $TaskName = $Task.Name.InnerText
+
+        # Check for Form elements in the task
+        $FormElements = $Task.SelectNodes(".//Form")
+        if ($FormElements) {
+            foreach ($FormEl in $FormElements) {
+                $FormName = $FormEl.Name
+                $WindowType = $FormEl.WindowType
+                $Width = $FormEl.Width
+                $Height = $FormEl.Height
+
+                $Forms += @{
+                    TaskISN2 = $ISN_2
+                    TaskName = $TaskName
+                    FormName = $FormName
+                    WindowType = $WindowType
+                    Width = $Width
+                    Height = $Height
+                }
+            }
+        }
+
+        # Check FormEntries in Resource/Forms
+        $FormsResource = $Task.Resource.Forms
+        if ($FormsResource) {
+            foreach ($FormEntry in $FormsResource.FormEntry) {
+                $EntryId = $FormEntry.id
+                $FormRef = $FormEntry.FormRef
+
+                $Forms += @{
+                    TaskISN2 = $ISN_2
+                    TaskName = $TaskName
+                    FormEntryId = $EntryId
+                    FormRef = $FormRef
+                }
+            }
+        }
+    }
+
+    return $Forms
+}
+
+function Get-FormControls {
+    param([xml]$Xml, [int]$TaskISN = 0)
+
+    $Controls = @()
+    $AllTasks = $Xml.ProgramContent.TaskTable.Task
+
+    foreach ($Task in $AllTasks) {
+        $ISN_2 = [int]$Task.ISN_2
+        if ($TaskISN -ne 0 -and $ISN_2 -ne $TaskISN) { continue }
+
+        # Look for Controls in Forms
+        $FormElements = $Task.SelectNodes(".//Form")
+        if ($FormElements) {
+            foreach ($FormEl in $FormElements) {
+                $FormName = $FormEl.Name
+
+                # Extract controls from ControlsTable
+                $ControlsTable = $FormEl.ControlsTable
+                if ($ControlsTable) {
+                    foreach ($Control in $ControlsTable.Control) {
+                        $ControlType = $Control.ControlType
+                        $FieldRef = $Control.FieldRef
+                        $Label = $Control.LabelText
+                        $X = $Control.X
+                        $Y = $Control.Y
+                        $Width = $Control.Width
+                        $Height = $Control.Height
+                        $RaiseEvent = $Control.RaiseEvent
+
+                        $Controls += @{
+                            TaskISN2 = $ISN_2
+                            FormName = $FormName
+                            ControlType = $ControlType
+                            FieldRef = $FieldRef
+                            Label = $Label
+                            X = $X
+                            Y = $Y
+                            Width = $Width
+                            Height = $Height
+                            RaiseEvent = $RaiseEvent
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return $Controls
+}
+
 # ============================================================================
 # GENERATION DIAGRAMME ASCII
 # ============================================================================
@@ -209,6 +309,7 @@ $Result = @{
     Flow = @()
     CallTasks = @()
     Expressions = @()
+    UI = @()
 }
 
 Write-Host "[FlowTrace] Tracing $($Programs.Count) programs..." -ForegroundColor Cyan
@@ -261,6 +362,10 @@ foreach ($Prog in $VerifiedProgs) {
     # Collecter les expressions avec {N,Y}
     $NYExpressions = $Expressions | Where-Object { $_.HasNY }
 
+    # Collecter les forms et controls UI
+    $Forms = Get-TaskForms -Xml $Xml
+    $Controls = Get-FormControls -Xml $Xml
+
     $FlowEntry = @{
         Project = $Prog.Project
         ProgramId = $Prog.ProgramId
@@ -271,9 +376,37 @@ foreach ($Prog in $VerifiedProgs) {
         CallTasks = $Calls
         ExpressionCount = $Expressions.Count
         NYExpressionCount = $NYExpressions.Count
+        FormCount = $Forms.Count
+        ControlCount = $Controls.Count
     }
 
     $Result.Flow += $FlowEntry
+
+    # Ajouter les infos UI au resultat
+    foreach ($Form in $Forms) {
+        $FormControls = $Controls | Where-Object { $_.TaskISN2 -eq $Form.TaskISN2 }
+        $Result.UI += @{
+            Program = "$($Prog.Project) IDE $($Prog.IDE)"
+            TaskISN2 = $Form.TaskISN2
+            TaskName = $Form.TaskName
+            FormName = $Form.FormName
+            WindowType = $Form.WindowType
+            Width = $Form.Width
+            Height = $Form.Height
+            Controls = @($FormControls | ForEach-Object {
+                @{
+                    Type = $_.ControlType
+                    Label = $_.Label
+                    FieldRef = $_.FieldRef
+                    X = $_.X
+                    Y = $_.Y
+                    Width = $_.Width
+                    Height = $_.Height
+                    RaiseEvent = $_.RaiseEvent
+                }
+            })
+        }
+    }
     $Result.CallTasks += $Calls | ForEach-Object {
         $_ | Add-Member -NotePropertyName "SourceProgram" -NotePropertyValue "$($Prog.Project)-$($Prog.ProgramId)" -PassThru
     }
@@ -295,11 +428,15 @@ $Diagram = Generate-AsciiDiagram -Flow $Result.Flow -Programs $VerifiedProgs
 # Statistiques
 $TotalCalls = $Result.CallTasks.Count
 $TotalExpr = $Result.Expressions.Count
+$TotalForms = $Result.UI.Count
+$TotalControls = ($Result.UI | ForEach-Object { $_.Controls.Count } | Measure-Object -Sum).Sum
 
 Write-Host "[FlowTrace] Results:" -ForegroundColor Green
 Write-Host "  - Programs traced: $($Result.Flow.Count)" -ForegroundColor Gray
 Write-Host "  - CallTask/CallProgram: $TotalCalls" -ForegroundColor Gray
 Write-Host "  - Expressions {N,Y}: $TotalExpr" -ForegroundColor Gray
+Write-Host "  - UI Forms: $TotalForms" -ForegroundColor Gray
+Write-Host "  - UI Controls: $TotalControls" -ForegroundColor Gray
 
 # Sauvegarder
 $Result | ConvertTo-Json -Depth 10 | Set-Content $OutputFile -Encoding UTF8

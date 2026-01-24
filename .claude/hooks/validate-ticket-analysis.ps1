@@ -36,6 +36,30 @@ $phases = @{
 }
 
 # ============================================================================
+# SECTIONS OBLIGATOIRES (Verification structure)
+# ============================================================================
+
+$requiredSections = @(
+    @{ Pattern = "## 1\. Contexte|## Contexte|## Context"; Name = "Contexte"; Phase = 1 },
+    @{ Pattern = "## 2\. Programme|## Programmes|## Programs"; Name = "Programmes"; Phase = 2 },
+    @{ Pattern = "## 3\. Flux|## Flux|## Flow"; Name = "Flux"; Phase = 3 },
+    @{ Pattern = "## 4\. Expression|## Expressions|## Variables"; Name = "Expressions"; Phase = 4 },
+    @{ Pattern = "## 5\. Root Cause|## Cause|## Root Cause"; Name = "Root Cause"; Phase = 5 },
+    @{ Pattern = "## 6\. Solution|## Solution"; Name = "Solution"; Phase = 6 }
+)
+
+$missingSections = @()
+foreach ($section in $requiredSections) {
+    if ($content -notmatch $section.Pattern) {
+        $missingSections += $section.Name
+    }
+}
+
+if ($missingSections.Count -gt 0) {
+    $warnings += "[Structure] Sections manquantes: $($missingSections -join ', ')"
+}
+
+# ============================================================================
 # PHASE 1: CONTEXTE JIRA (OBLIGATOIRE)
 # ============================================================================
 

@@ -304,5 +304,86 @@ CREATE TABLE IF NOT EXISTS kb_metadata (
     value TEXT NOT NULL
 );
 
-INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('schema_version', '1');
+INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('schema_version', '2');
 INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('created_at', datetime('now'));
+
+-- ============================================================================
+-- TICKET ANALYSIS TABLES (Schema v2)
+-- ============================================================================
+
+-- Cache for decoded expressions (avoids recalculating offsets)
+CREATE TABLE IF NOT EXISTS decoded_expressions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project TEXT NOT NULL,
+    program_id INTEGER NOT NULL,
+    expression_id INTEGER NOT NULL,
+    raw_expression TEXT,
+    decoded_text TEXT NOT NULL,
+    variables_json TEXT,  -- JSON array of variables used
+    offset_used INTEGER,
+    cached_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(project, program_id, expression_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_decoded_expr_lookup
+ON decoded_expressions(project, program_id, expression_id);
+
+-- Ticket metrics for tracking analysis efficiency
+CREATE TABLE IF NOT EXISTS ticket_metrics (
+    ticket_key TEXT PRIMARY KEY,
+    project TEXT,  -- CMDS, PMS
+    started_at TEXT,
+    completed_at TEXT,
+    phases_completed INTEGER DEFAULT 0,  -- 0-6
+    pattern_matched TEXT,  -- NULL or pattern name
+    programs_analyzed INTEGER DEFAULT 0,
+    expressions_decoded INTEGER DEFAULT 0,
+    resolution_time_minutes INTEGER,
+    success INTEGER DEFAULT 0  -- 1 if resolved
+);
+
+CREATE INDEX IF NOT EXISTS idx_ticket_metrics_project ON ticket_metrics(project);
+CREATE INDEX IF NOT EXISTS idx_ticket_metrics_success ON ticket_metrics(success);
+
+-- Resolution patterns for knowledge capitalization
+CREATE TABLE IF NOT EXISTS resolution_patterns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pattern_name TEXT NOT NULL UNIQUE,
+    symptom_keywords TEXT,  -- JSON array
+    root_cause_type TEXT,   -- date-format, table-link, expression-error, etc.
+    solution_template TEXT,
+    source_ticket TEXT,     -- Ex: "PMS-1457"
+    usage_count INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_used_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_patterns_name ON resolution_patterns(pattern_name);
+CREATE INDEX IF NOT EXISTS idx_patterns_cause ON resolution_patterns(root_cause_type);
+
+-- FTS for pattern search
+CREATE VIRTUAL TABLE IF NOT EXISTS patterns_fts USING fts5(
+    pattern_name,
+    symptom_keywords,
+    solution_template,
+    content='resolution_patterns',
+    content_rowid='id'
+);
+
+-- Triggers for patterns FTS sync
+CREATE TRIGGER IF NOT EXISTS patterns_ai AFTER INSERT ON resolution_patterns BEGIN
+    INSERT INTO patterns_fts(rowid, pattern_name, symptom_keywords, solution_template)
+    VALUES (new.id, new.pattern_name, new.symptom_keywords, new.solution_template);
+END;
+
+CREATE TRIGGER IF NOT EXISTS patterns_ad AFTER DELETE ON resolution_patterns BEGIN
+    INSERT INTO patterns_fts(patterns_fts, rowid, pattern_name, symptom_keywords, solution_template)
+    VALUES('delete', old.id, old.pattern_name, old.symptom_keywords, old.solution_template);
+END;
+
+CREATE TRIGGER IF NOT EXISTS patterns_au AFTER UPDATE ON resolution_patterns BEGIN
+    INSERT INTO patterns_fts(patterns_fts, rowid, pattern_name, symptom_keywords, solution_template)
+    VALUES('delete', old.id, old.pattern_name, old.symptom_keywords, old.solution_template);
+    INSERT INTO patterns_fts(rowid, pattern_name, symptom_keywords, solution_template)
+    VALUES (new.id, new.pattern_name, new.symptom_keywords, new.solution_template);
+END;

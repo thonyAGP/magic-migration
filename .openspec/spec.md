@@ -306,11 +306,12 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 | MCP Server | **24 outils** | **100%** | 100% | **+magic_get_form_controls (UI controls)** |
 | Agents specialises | 5 agents | 100% | 100% | Maintenir |
 | Commandes Slash | 15 commandes | 100% | 100% | Maintenir |
-| Scripts PowerShell | **28 scripts** | 100% | 100% | **+7 scripts ticket-pipeline/** |
+| Scripts PowerShell | **31 scripts** | 100% | 100% | **+auto-capitalize, track-metrics, Generate-MigrationSpec** |
 | Parser TypeScript | 3 generateurs | **100%** | 100% | **COMPLET** |
 | Skill/References | **24 fichiers** | 100% | 100% | **+skill ticket-analyze** |
 | **Fonctions Magic** | **200/200** | **100%** | **100%** | **COMPLET** |
-| **Workflow Tickets** | **Orchestre v2.0** | **100%** | 100% | **NOUVEAU - 6 phases, 5 patterns KB** |
+| **Workflow Tickets** | **Orchestre v2.0** | **100%** | 100% | **6 phases, patterns KB, metrics** |
+| **Migration Specs** | **MigrationExtractor** | **100%** | 100% | **NOUVEAU - Cahier des charges auto** |
 
 ### Nouveaux outils MCP (2026-01-24)
 
@@ -496,6 +497,7 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 - [x] **P1.1** Reparer connexion MCP magic-interpreter (en cours: 2026-01-10)
 
 ### Terminees
+- [x] **Amelioration Systeme Analyse Tickets + Migration Specs** (terminee: 2026-01-24) - Schema v2 (3 tables), ExpressionCacheService, auto-capitalize, track-metrics, MigrationExtractor, Generate-MigrationSpec
 - [x] **Form Controls + Discovery + Validation** (terminee: 2026-01-24) - magic_get_form_controls outil MCP, ProjectDiscoveryService, KbIndexRunner validate mode
 - [x] **Forms MCP + Offsets dynamiques** (terminee: 2026-01-24) - magic_get_forms outil MCP, calcul automatique Main offset, MagicTaskForm model
 - [x] **Skill ticket-analyze v2.0** (terminee: 2026-01-24) - Orchestrateur 6 phases, 5 patterns KB, hook validation, templates questions
@@ -647,6 +649,14 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-01-24: **Schema KB v2** - 3 nouvelles tables (decoded_expressions, ticket_metrics, resolution_patterns)
+- 2026-01-24: **ExpressionCacheService** - Cache expressions decodees pour eviter recalcul offsets
+- 2026-01-24: **auto-capitalize-pattern.ps1** - Extraction et capitalisation patterns KB depuis analysis.md
+- 2026-01-24: **track-metrics.ps1** - Suivi metriques analyse tickets (temps, succes, patterns)
+- 2026-01-24: **MigrationExtractor.cs** - Requetes KB pour extraction cahier des charges migration
+- 2026-01-24: **Generate-MigrationSpec.ps1** - Generation automatique specs migration par projet
+- 2026-01-24: **auto-trace-flow.ps1** - Ajout extraction Forms et Controls UI
+- 2026-01-24: **validate-ticket-analysis.ps1** - Verification sections obligatoires
 - 2026-01-24: **magic_get_form_controls** - nouvel outil MCP pour parser les Controls UI (boutons, champs, tables)
 - 2026-01-24: **ProjectDiscoveryService** - service centralise pour decouverte dynamique des projets
 - 2026-01-24: **KbIndexRunner validate** - mode validation integrite KB (9 checks)

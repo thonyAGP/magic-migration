@@ -266,3 +266,69 @@ public record KbStats
     public long DatabaseSizeBytes { get; init; }
     public DateTime? LastIndexedAt { get; init; }
 }
+
+// ============================================================================
+// TICKET ANALYSIS MODELS (Schema v2)
+// ============================================================================
+
+/// <summary>
+/// Cached decoded expression to avoid recalculating offsets
+/// </summary>
+public record DbDecodedExpression
+{
+    public long Id { get; init; }
+    public required string Project { get; init; }
+    public int ProgramId { get; init; }
+    public int ExpressionId { get; init; }
+    public string? RawExpression { get; init; }
+    public required string DecodedText { get; init; }
+    public string? VariablesJson { get; init; }
+    public int? OffsetUsed { get; init; }
+    public DateTime CachedAt { get; init; }
+}
+
+/// <summary>
+/// Ticket analysis metrics for tracking efficiency
+/// </summary>
+public record DbTicketMetrics
+{
+    public required string TicketKey { get; init; }
+    public string? Project { get; init; }
+    public DateTime? StartedAt { get; init; }
+    public DateTime? CompletedAt { get; init; }
+    public int PhasesCompleted { get; init; }
+    public string? PatternMatched { get; init; }
+    public int ProgramsAnalyzed { get; init; }
+    public int ExpressionsDecoded { get; init; }
+    public int? ResolutionTimeMinutes { get; init; }
+    public bool Success { get; init; }
+}
+
+/// <summary>
+/// Resolution pattern for knowledge capitalization
+/// </summary>
+public record DbResolutionPattern
+{
+    public long Id { get; init; }
+    public required string PatternName { get; init; }
+    public string? SymptomKeywords { get; init; }
+    public string? RootCauseType { get; init; }
+    public string? SolutionTemplate { get; init; }
+    public string? SourceTicket { get; init; }
+    public int UsageCount { get; init; }
+    public DateTime CreatedAt { get; init; }
+    public DateTime? LastUsedAt { get; init; }
+}
+
+/// <summary>
+/// Pattern search result
+/// </summary>
+public record PatternSearchResult
+{
+    public long PatternId { get; init; }
+    public required string PatternName { get; init; }
+    public string? RootCauseType { get; init; }
+    public string? SourceTicket { get; init; }
+    public int UsageCount { get; init; }
+    public double Score { get; init; }
+}

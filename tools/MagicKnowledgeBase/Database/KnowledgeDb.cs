@@ -635,6 +635,257 @@ public class KnowledgeDb : IDisposable
     }
 
     // =========================================================================
+    // DECODED EXPRESSIONS CACHE (Schema v2)
+    // =========================================================================
+
+    public DbDecodedExpression? GetCachedExpression(string project, int programId, int expressionId)
+    {
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT id, project, program_id, expression_id, raw_expression, decoded_text,
+                   variables_json, offset_used, cached_at
+            FROM decoded_expressions
+            WHERE project = @project AND program_id = @pid AND expression_id = @eid";
+        cmd.Parameters.AddWithValue("@project", project);
+        cmd.Parameters.AddWithValue("@pid", programId);
+        cmd.Parameters.AddWithValue("@eid", expressionId);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read()) return null;
+
+        return new DbDecodedExpression
+        {
+            Id = reader.GetInt64(0),
+            Project = reader.GetString(1),
+            ProgramId = reader.GetInt32(2),
+            ExpressionId = reader.GetInt32(3),
+            RawExpression = reader.IsDBNull(4) ? null : reader.GetString(4),
+            DecodedText = reader.GetString(5),
+            VariablesJson = reader.IsDBNull(6) ? null : reader.GetString(6),
+            OffsetUsed = reader.IsDBNull(7) ? null : reader.GetInt32(7),
+            CachedAt = DateTime.Parse(reader.GetString(8))
+        };
+    }
+
+    public void UpsertCachedExpression(DbDecodedExpression expr, SqliteTransaction? tx = null)
+    {
+        ExecuteNonQuery(@"
+            INSERT INTO decoded_expressions (project, program_id, expression_id, raw_expression,
+                                            decoded_text, variables_json, offset_used)
+            VALUES (@project, @pid, @eid, @raw, @decoded, @vars, @offset)
+            ON CONFLICT(project, program_id, expression_id) DO UPDATE SET
+                decoded_text = excluded.decoded_text,
+                variables_json = excluded.variables_json,
+                offset_used = excluded.offset_used,
+                cached_at = datetime('now')",
+            new Dictionary<string, object?>
+            {
+                ["@project"] = expr.Project,
+                ["@pid"] = expr.ProgramId,
+                ["@eid"] = expr.ExpressionId,
+                ["@raw"] = expr.RawExpression,
+                ["@decoded"] = expr.DecodedText,
+                ["@vars"] = expr.VariablesJson,
+                ["@offset"] = expr.OffsetUsed
+            }, tx);
+    }
+
+    public int GetCachedExpressionCount()
+    {
+        return ExecuteScalar<int>("SELECT COUNT(*) FROM decoded_expressions");
+    }
+
+    // =========================================================================
+    // TICKET METRICS (Schema v2)
+    // =========================================================================
+
+    public void UpsertTicketMetrics(DbTicketMetrics metrics, SqliteTransaction? tx = null)
+    {
+        ExecuteNonQuery(@"
+            INSERT INTO ticket_metrics (ticket_key, project, started_at, completed_at, phases_completed,
+                                       pattern_matched, programs_analyzed, expressions_decoded,
+                                       resolution_time_minutes, success)
+            VALUES (@key, @project, @started, @completed, @phases, @pattern, @progs, @exprs, @time, @success)
+            ON CONFLICT(ticket_key) DO UPDATE SET
+                completed_at = COALESCE(excluded.completed_at, ticket_metrics.completed_at),
+                phases_completed = excluded.phases_completed,
+                pattern_matched = COALESCE(excluded.pattern_matched, ticket_metrics.pattern_matched),
+                programs_analyzed = excluded.programs_analyzed,
+                expressions_decoded = excluded.expressions_decoded,
+                resolution_time_minutes = excluded.resolution_time_minutes,
+                success = excluded.success",
+            new Dictionary<string, object?>
+            {
+                ["@key"] = metrics.TicketKey,
+                ["@project"] = metrics.Project,
+                ["@started"] = metrics.StartedAt?.ToString("o"),
+                ["@completed"] = metrics.CompletedAt?.ToString("o"),
+                ["@phases"] = metrics.PhasesCompleted,
+                ["@pattern"] = metrics.PatternMatched,
+                ["@progs"] = metrics.ProgramsAnalyzed,
+                ["@exprs"] = metrics.ExpressionsDecoded,
+                ["@time"] = metrics.ResolutionTimeMinutes,
+                ["@success"] = metrics.Success ? 1 : 0
+            }, tx);
+    }
+
+    public DbTicketMetrics? GetTicketMetrics(string ticketKey)
+    {
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM ticket_metrics WHERE ticket_key = @key";
+        cmd.Parameters.AddWithValue("@key", ticketKey);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read()) return null;
+
+        return ReadTicketMetrics(reader);
+    }
+
+    public IEnumerable<DbTicketMetrics> GetRecentTicketMetrics(int limit = 20)
+    {
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT * FROM ticket_metrics
+            ORDER BY COALESCE(completed_at, started_at) DESC
+            LIMIT @limit";
+        cmd.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            yield return ReadTicketMetrics(reader);
+        }
+    }
+
+    private static DbTicketMetrics ReadTicketMetrics(SqliteDataReader reader)
+    {
+        return new DbTicketMetrics
+        {
+            TicketKey = reader.GetString(0),
+            Project = reader.IsDBNull(1) ? null : reader.GetString(1),
+            StartedAt = reader.IsDBNull(2) ? null : DateTime.Parse(reader.GetString(2)),
+            CompletedAt = reader.IsDBNull(3) ? null : DateTime.Parse(reader.GetString(3)),
+            PhasesCompleted = reader.GetInt32(4),
+            PatternMatched = reader.IsDBNull(5) ? null : reader.GetString(5),
+            ProgramsAnalyzed = reader.GetInt32(6),
+            ExpressionsDecoded = reader.GetInt32(7),
+            ResolutionTimeMinutes = reader.IsDBNull(8) ? null : reader.GetInt32(8),
+            Success = reader.GetInt32(9) == 1
+        };
+    }
+
+    // =========================================================================
+    // RESOLUTION PATTERNS (Schema v2)
+    // =========================================================================
+
+    public long InsertPattern(DbResolutionPattern pattern, SqliteTransaction? tx = null)
+    {
+        ExecuteNonQuery(@"
+            INSERT INTO resolution_patterns (pattern_name, symptom_keywords, root_cause_type,
+                                            solution_template, source_ticket)
+            VALUES (@name, @keywords, @cause, @solution, @ticket)",
+            new Dictionary<string, object?>
+            {
+                ["@name"] = pattern.PatternName,
+                ["@keywords"] = pattern.SymptomKeywords,
+                ["@cause"] = pattern.RootCauseType,
+                ["@solution"] = pattern.SolutionTemplate,
+                ["@ticket"] = pattern.SourceTicket
+            }, tx);
+        return LastInsertRowId();
+    }
+
+    public DbResolutionPattern? GetPattern(string patternName)
+    {
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM resolution_patterns WHERE pattern_name = @name";
+        cmd.Parameters.AddWithValue("@name", patternName);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read()) return null;
+
+        return ReadPattern(reader);
+    }
+
+    public DbResolutionPattern? GetPatternById(long id)
+    {
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM resolution_patterns WHERE id = @id";
+        cmd.Parameters.AddWithValue("@id", id);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read()) return null;
+
+        return ReadPattern(reader);
+    }
+
+    public IEnumerable<DbResolutionPattern> GetAllPatterns()
+    {
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM resolution_patterns ORDER BY usage_count DESC, pattern_name";
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            yield return ReadPattern(reader);
+        }
+    }
+
+    public IEnumerable<PatternSearchResult> SearchPatterns(string query, int limit = 10)
+    {
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT p.id, p.pattern_name, p.root_cause_type, p.source_ticket, p.usage_count,
+                   bm25(patterns_fts) as score
+            FROM patterns_fts
+            JOIN resolution_patterns p ON patterns_fts.rowid = p.id
+            WHERE patterns_fts MATCH @query
+            ORDER BY score
+            LIMIT @limit";
+        cmd.Parameters.AddWithValue("@query", query);
+        cmd.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            yield return new PatternSearchResult
+            {
+                PatternId = reader.GetInt64(0),
+                PatternName = reader.GetString(1),
+                RootCauseType = reader.IsDBNull(2) ? null : reader.GetString(2),
+                SourceTicket = reader.IsDBNull(3) ? null : reader.GetString(3),
+                UsageCount = reader.GetInt32(4),
+                Score = reader.GetDouble(5)
+            };
+        }
+    }
+
+    public void IncrementPatternUsage(long patternId, SqliteTransaction? tx = null)
+    {
+        ExecuteNonQuery(@"
+            UPDATE resolution_patterns
+            SET usage_count = usage_count + 1, last_used_at = datetime('now')
+            WHERE id = @id",
+            new Dictionary<string, object?> { ["@id"] = patternId }, tx);
+    }
+
+    private static DbResolutionPattern ReadPattern(SqliteDataReader reader)
+    {
+        return new DbResolutionPattern
+        {
+            Id = reader.GetInt64(0),
+            PatternName = reader.GetString(1),
+            SymptomKeywords = reader.IsDBNull(2) ? null : reader.GetString(2),
+            RootCauseType = reader.IsDBNull(3) ? null : reader.GetString(3),
+            SolutionTemplate = reader.IsDBNull(4) ? null : reader.GetString(4),
+            SourceTicket = reader.IsDBNull(5) ? null : reader.GetString(5),
+            UsageCount = reader.GetInt32(6),
+            CreatedAt = DateTime.Parse(reader.GetString(7)),
+            LastUsedAt = reader.IsDBNull(8) ? null : DateTime.Parse(reader.GetString(8))
+        };
+    }
+
+    // =========================================================================
     // CLEANUP
     // =========================================================================
 
