@@ -303,7 +303,7 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 
 | Categorie | Outils | Etat | Cible | Action |
 |-----------|--------|------|-------|--------|
-| MCP Server | 13 outils | **100%** | 100% | **COMPLET** |
+| MCP Server | 19 outils | **100%** | 100% | **+6 outils orphan/dead code** |
 | Agents specialises | 5 agents | 100% | 100% | Maintenir |
 | Commandes Slash | 15 commandes | 100% | 100% | Maintenir |
 | Scripts PowerShell | 20 scripts | 100% | 100% | Maintenir |
@@ -551,10 +551,11 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-01-24: +6 outils MCP (orphan detection, dead code, project health)
+- 2026-01-24: Nouvelle regle magic-analysis.md pour workflow tickets
+- 2026-01-24: Script magic-task-analyzer.ps1 enrichi avec dead code stats
 - 2026-01-24: Optimisation contexte (separation changelog, prompt Lanceur_Claude)
 - 2026-01-22: Parser Magic V3 deterministe 100%
-- 2026-01-18: Infrastructure Git documentee
-- 2026-01-12: MCP Server + Parser TypeScript 100% complet
 
 ---
 *Derniere mise a jour: 2026-01-24*
