@@ -97,7 +97,7 @@ $existingPatterns = @{}
 if (Test-Path $patternsDir) {
     Get-ChildItem $patternsDir -Filter "*.md" | Where-Object { $_.Name -ne "README.md" } | ForEach-Object {
         $content = Get-Content $_.FullName -Raw
-        if ($content -match "Source[:\s]+([A-Z]+-\d+)") {
+        if ($content -match "\*{0,2}Source\*{0,2}[:\s]+([A-Z]+-\d+)") {
             $existingPatterns[$matches[1]] = $_.BaseName
         }
     }
