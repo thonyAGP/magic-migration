@@ -412,3 +412,25 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 CREATE INDEX IF NOT EXISTS idx_var_mod_project ON variable_modifications(project);
 CREATE INDEX IF NOT EXISTS idx_var_mod_program ON variable_modifications(project, program_id);
 CREATE INDEX IF NOT EXISTS idx_var_mod_variable ON variable_modifications(variable_name);
+
+-- =========================================================================
+-- SHARED COMPONENTS REGISTRY (Schema v4 - ECF Dependencies)
+-- =========================================================================
+
+-- Track which programs belong to ECF shared components
+CREATE TABLE IF NOT EXISTS shared_components (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ecf_name TEXT NOT NULL,           -- "ADH.ecf", "REF.ecf", "UTILS.ecf"
+    program_ide_position INTEGER NOT NULL,
+    program_public_name TEXT,
+    program_internal_name TEXT,
+    owner_project TEXT NOT NULL,      -- Project that owns this program
+    used_by_projects TEXT,            -- JSON array ["PBP", "PVE"]
+    component_group TEXT,             -- "Sessions_Reprises", "Tables", etc.
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(ecf_name, program_ide_position)
+);
+
+CREATE INDEX IF NOT EXISTS idx_shared_ecf ON shared_components(ecf_name);
+CREATE INDEX IF NOT EXISTS idx_shared_owner ON shared_components(owner_project);
+CREATE INDEX IF NOT EXISTS idx_shared_public_name ON shared_components(program_public_name);

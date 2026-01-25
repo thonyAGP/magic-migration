@@ -585,6 +585,206 @@ if (args.Length > 0 && args[0] == "migration")
     return 0;
 }
 
+// Populate ECF shared components registry
+if (args.Length > 0 && args[0] == "populate-ecf")
+{
+    var ecfDb = new KnowledgeDb();
+    if (!ecfDb.IsInitialized())
+    {
+        Console.WriteLine("ERROR: Knowledge Base not initialized");
+        return 1;
+    }
+
+    Console.WriteLine("=== Populate ECF Shared Components Registry ===");
+    Console.WriteLine();
+
+    // Ensure schema v4 tables exist
+    ecfDb.InitializeSchema();
+
+    using var conn = ecfDb.Connection;
+
+    // Clear existing data for fresh population
+    using (var clearCmd = conn.CreateCommand())
+    {
+        clearCmd.CommandText = "DELETE FROM shared_components";
+        var deleted = clearCmd.ExecuteNonQuery();
+        Console.WriteLine($"Cleared {deleted} existing entries");
+    }
+
+    int inserted = 0;
+
+    // =====================================================================
+    // ADH.ecf - Sessions_Reprises component (30 programs)
+    // Used by: PBP, PVE
+    // =====================================================================
+    Console.WriteLine();
+    Console.WriteLine("## ADH.ecf - Sessions_Reprises");
+
+    var adhEcfPrograms = new (int ide, string publicName, string? internalName)[]
+    {
+        (27, "Separation", "Separation"),
+        (28, "Fusion", "Fusion"),
+        (53, "EXTRAIT_EASY_CHECKOUT", "EXTRAIT_EASY_CHECKOUT"),
+        (54, "FACTURES_CHECK_OUT", "FACTURES_CHECK_OUT"),
+        (64, "SOLDE_EASY_CHECK_OUT", "SOLDE_EASY_CHECK_OUT"),
+        (65, "EDITION_EASY_CHECK_OUT", "EDITION_EASY_CHECK_OUT"),
+        (69, "EXTRAIT_COMPTE", "EXTRAIT_COMPTE"),
+        (70, "EXTRAIT_NOM", "EXTRAIT_NOM"),
+        (71, "EXTRAIT_DATE", "EXTRAIT_DATE"),
+        (72, "EXTRAIT_CUM", "EXTRAIT_CUM"),
+        (73, "EXTRAIT_IMP", "EXTRAIT_IMP"),
+        (76, "EXTRAIT_SERVICE", "EXTRAIT_SERVICE"),
+        (84, "CARACT_INTERDIT", "CARACT_INTERDIT"),
+        (97, "Saisie_facture_tva", "Saisie_facture_tva"),
+        (111, "GARANTIE", "GARANTIE"),
+        (121, "Gestion_Caisse_142", "Gestion_Caisse_142"),
+        (149, "CALC_STOCK_PRODUIT", "CALC_STOCK_PRODUIT"),
+        (152, "RECUP_CLASSE_MOP", "RECUP_CLASSE_MOP"),
+        (178, "GET_PRINTER", "GET_PRINTER"),
+        (180, "SET_LIST_NUMBER", "SET_LIST_NUMBER"),
+        (181, "RAZ_PRINTER", "RAZ_PRINTER"),
+        (185, "CHAINED_LIST_DEFAULT", "CHAINED_LIST_DEFAULT"),
+        (192, "SOLDE_COMPTE", "SOLDE_COMPTE"),
+        (208, "OPEN_PHONE_LINE", "OPEN_PHONE_LINE"),
+        (210, "CLOSE_PHONE_LINE", "CLOSE_PHONE_LINE"),
+        (229, "PRINT_TICKET", "PRINT_TICKET"),
+        (243, "DEVERSEMENT", "DEVERSEMENT"),
+    };
+
+    foreach (var prog in adhEcfPrograms)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            INSERT INTO shared_components
+            (ecf_name, program_ide_position, program_public_name, program_internal_name, owner_project, used_by_projects, component_group)
+            VALUES (@ecf, @ide, @public, @internal, @owner, @usedBy, @group)";
+        cmd.Parameters.AddWithValue("@ecf", "ADH.ecf");
+        cmd.Parameters.AddWithValue("@ide", prog.ide);
+        cmd.Parameters.AddWithValue("@public", prog.publicName);
+        cmd.Parameters.AddWithValue("@internal", (object?)prog.internalName ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@owner", "ADH");
+        cmd.Parameters.AddWithValue("@usedBy", "[\"PBP\",\"PVE\"]");
+        cmd.Parameters.AddWithValue("@group", "Sessions_Reprises");
+        cmd.ExecuteNonQuery();
+        inserted++;
+    }
+    Console.WriteLine($"  Inserted {adhEcfPrograms.Length} programs");
+
+    // =====================================================================
+    // REF.ecf - Reference tables and shared programs
+    // Used by: ADH, PBP, PVE, PBG
+    // =====================================================================
+    Console.WriteLine();
+    Console.WriteLine("## REF.ecf - Tables & Shared Programs");
+
+    // Query REF programs from KB that have public names (likely shared)
+    using (var queryCmd = conn.CreateCommand())
+    {
+        queryCmd.CommandText = @"
+            SELECT p.ide_position, p.public_name, p.name
+            FROM programs p
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE pr.name = 'REF'
+              AND p.public_name IS NOT NULL
+              AND p.public_name != ''
+            ORDER BY p.ide_position";
+
+        using var reader = queryCmd.ExecuteReader();
+        var refPrograms = new List<(int ide, string publicName, string internalName)>();
+        while (reader.Read())
+        {
+            refPrograms.Add((
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetString(2)
+            ));
+        }
+        reader.Close();
+
+        foreach (var prog in refPrograms)
+        {
+            using var insertCmd = conn.CreateCommand();
+            insertCmd.CommandText = @"
+                INSERT INTO shared_components
+                (ecf_name, program_ide_position, program_public_name, program_internal_name, owner_project, used_by_projects, component_group)
+                VALUES (@ecf, @ide, @public, @internal, @owner, @usedBy, @group)";
+            insertCmd.Parameters.AddWithValue("@ecf", "REF.ecf");
+            insertCmd.Parameters.AddWithValue("@ide", prog.ide);
+            insertCmd.Parameters.AddWithValue("@public", prog.publicName);
+            insertCmd.Parameters.AddWithValue("@internal", prog.internalName);
+            insertCmd.Parameters.AddWithValue("@owner", "REF");
+            insertCmd.Parameters.AddWithValue("@usedBy", "[\"ADH\",\"PBP\",\"PVE\",\"PBG\"]");
+            insertCmd.Parameters.AddWithValue("@group", "Tables");
+            insertCmd.ExecuteNonQuery();
+            inserted++;
+        }
+        Console.WriteLine($"  Inserted {refPrograms.Count} programs from KB");
+    }
+
+    // =====================================================================
+    // UTILS.ecf - Utility components
+    // Used by: ADH
+    // =====================================================================
+    Console.WriteLine();
+    Console.WriteLine("## UTILS.ecf - Utilities");
+
+    // UTILS.ecf contains 1 program: Calendrier .NET
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            INSERT INTO shared_components
+            (ecf_name, program_ide_position, program_public_name, program_internal_name, owner_project, used_by_projects, component_group)
+            VALUES (@ecf, @ide, @public, @internal, @owner, @usedBy, @group)";
+        cmd.Parameters.AddWithValue("@ecf", "UTILS.ecf");
+        cmd.Parameters.AddWithValue("@ide", 1);
+        cmd.Parameters.AddWithValue("@public", "Calendrier_NET");
+        cmd.Parameters.AddWithValue("@internal", "Calendrier .NET");
+        cmd.Parameters.AddWithValue("@owner", "UTILS");
+        cmd.Parameters.AddWithValue("@usedBy", "[\"ADH\"]");
+        cmd.Parameters.AddWithValue("@group", "DotNet");
+        cmd.ExecuteNonQuery();
+        inserted++;
+    }
+    Console.WriteLine($"  Inserted 1 program");
+
+    // =====================================================================
+    // Summary
+    // =====================================================================
+    Console.WriteLine();
+    Console.WriteLine("=== ECF Registry Summary ===");
+
+    using (var statsCmd = conn.CreateCommand())
+    {
+        statsCmd.CommandText = @"
+            SELECT ecf_name, COUNT(*) as cnt, owner_project
+            FROM shared_components
+            GROUP BY ecf_name
+            ORDER BY cnt DESC";
+
+        Console.WriteLine("ECF File     | Programs | Owner");
+        Console.WriteLine("-------------|----------|------");
+        using var reader = statsCmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var ecf = reader.GetString(0).PadRight(12);
+            var cnt = reader.GetInt32(1);
+            var owner = reader.GetString(2);
+            Console.WriteLine($"{ecf} | {cnt,8} | {owner}");
+        }
+    }
+
+    Console.WriteLine();
+    Console.WriteLine($"Total: {inserted} shared components registered");
+    Console.WriteLine();
+    Console.WriteLine("Use MCP tools to query:");
+    Console.WriteLine("  - magic_ecf_list: List all ECF files");
+    Console.WriteLine("  - magic_ecf_programs <ecf>: List programs in ECF");
+    Console.WriteLine("  - magic_ecf_usedby <name>: Find who uses a program");
+    Console.WriteLine("  - magic_ecf_dependencies <project>: Show project dependencies");
+
+    return 0;
+}
+
 var projectsBasePath = args.Length > 0 ? args[0] : @"D:\Data\Migration\XPA\PMS";
 
 Console.WriteLine("=== Magic Knowledge Base Indexer ===");
