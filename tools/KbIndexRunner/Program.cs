@@ -401,6 +401,86 @@ if (args.Length > 0 && args[0] == "search-patterns")
     return 0;
 }
 
+// Variable lineage test
+if (args.Length > 0 && args[0] == "variable-lineage")
+{
+    var project = args.Length > 1 ? args[1] : "ADH";
+    var ide = args.Length > 2 ? int.Parse(args[2]) : 121;
+    var varName = args.Length > 3 ? args[3] : "*";
+
+    var lineageDb = new KnowledgeDb();
+    if (!lineageDb.IsInitialized())
+    {
+        Console.WriteLine("ERROR: Knowledge Base not initialized");
+        return 1;
+    }
+
+    Console.WriteLine($"=== Variable Lineage: {varName} in {project} IDE {ide} ===");
+    Console.WriteLine();
+
+    // Get program DB ID
+    using var progCmd = lineageDb.Connection.CreateCommand();
+    progCmd.CommandText = @"
+        SELECT p.id, p.name FROM programs p
+        JOIN projects pr ON p.project_id = pr.id
+        WHERE pr.name = @project AND p.ide_position = @ide";
+    progCmd.Parameters.AddWithValue("@project", project);
+    progCmd.Parameters.AddWithValue("@ide", ide);
+
+    long dbProgramId = 0;
+    string? programName = null;
+    using (var reader = progCmd.ExecuteReader())
+    {
+        if (!reader.Read())
+        {
+            Console.WriteLine($"ERROR: Program {project} IDE {ide} not found");
+            return 1;
+        }
+        dbProgramId = reader.GetInt64(0);
+        programName = reader.GetString(1);
+    }
+
+    Console.WriteLine($"Program: {programName}");
+    Console.WriteLine();
+
+    // Find Update/VarSet operations
+    using var cmd = lineageDb.Connection.CreateCommand();
+    cmd.CommandText = @"
+        SELECT t.isn2, ll.line_number, ll.handler, ll.operation, ll.parameters
+        FROM logic_lines ll
+        JOIN tasks t ON ll.task_id = t.id
+        WHERE t.program_id = @prog_id
+          AND ll.operation IN ('Update', 'VarSet', 'VarReset')
+          AND ll.is_disabled = 0
+        ORDER BY t.isn2, ll.line_number
+        LIMIT 50";
+    cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+    Console.WriteLine("Task  | Line | Handler      | Operation | Parameters (truncated)");
+    Console.WriteLine("------|------|--------------|-----------|------------------------");
+
+    int count = 0;
+    using (var reader = cmd.ExecuteReader())
+    {
+        while (reader.Read())
+        {
+            var taskIsn2 = reader.GetInt32(0);
+            var lineNum = reader.GetInt32(1);
+            var handler = reader.GetString(2);
+            var operation = reader.GetString(3);
+            var paramsJson = reader.IsDBNull(4) ? "-" : reader.GetString(4);
+            if (paramsJson.Length > 40) paramsJson = paramsJson[..37] + "...";
+
+            Console.WriteLine($"{ide}.{taskIsn2,-3} | {lineNum,4} | {handler,-12} | {operation,-9} | {paramsJson}");
+            count++;
+        }
+    }
+
+    Console.WriteLine();
+    Console.WriteLine($"Found {count} variable modification lines");
+    return 0;
+}
+
 // Migration mode: test MigrationExtractor
 if (args.Length > 0 && args[0] == "migration")
 {

@@ -387,3 +387,28 @@ CREATE TRIGGER IF NOT EXISTS patterns_au AFTER UPDATE ON resolution_patterns BEG
     INSERT INTO patterns_fts(rowid, pattern_name, symptom_keywords, solution_template)
     VALUES (new.id, new.pattern_name, new.symptom_keywords, new.solution_template);
 END;
+
+-- =========================================================================
+-- VARIABLE MODIFICATIONS (Schema v3 - Variable Lineage)
+-- =========================================================================
+
+CREATE TABLE IF NOT EXISTS variable_modifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project TEXT NOT NULL,
+    program_id INTEGER NOT NULL,
+    task_isn2 INTEGER NOT NULL,
+    line_number INTEGER NOT NULL,
+    variable_name TEXT NOT NULL,
+    operation TEXT,  -- Update, VarSet, Action, etc.
+    source_type TEXT,  -- expression, table_column, parameter, constant
+    source_expression_id INTEGER,
+    source_table_id INTEGER,
+    source_column_name TEXT,
+    source_description TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(project, program_id, task_isn2, line_number, variable_name)
+);
+
+CREATE INDEX IF NOT EXISTS idx_var_mod_project ON variable_modifications(project);
+CREATE INDEX IF NOT EXISTS idx_var_mod_program ON variable_modifications(project, program_id);
+CREATE INDEX IF NOT EXISTS idx_var_mod_variable ON variable_modifications(variable_name);
