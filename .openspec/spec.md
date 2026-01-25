@@ -749,14 +749,32 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 4. **Resolution** documentee dans `resolution.md`
 5. **Capitalisation** via `/ticket-learn` → KB SQLite
 
-### Tickets actifs
+### Tickets actifs (sync Jira 2026-01-25)
 
-| Ticket | Statut | Domaine | Description |
-|--------|--------|---------|-------------|
-| PMS-1446 | **SPEC COMPLETE** | POS/Location | Location ski courts sejours - Calcul auto MODEDAYINC selon duree sejour |
-| PMS-1373 | **SPEC COMPLETE** | Extrait | Masquer annulations (+/-) dans extrait compte - Branche feature/PMS-1373 |
-| CMDS-174321 | **RÉSOLU** | dates | Bug date arrivee PB027 (+1 mois) - Cause: données corrompues en base |
-| CMDS-176521 | **DIAGNOSTIC OK** | POS/PVE | Prix remise affiche 41,857 au lieu de 5,400 - PVE IDE 186/201 analyses, bug Picture Format |
+| Ticket | Statut Jira | Résolu | Pattern KB |
+|--------|-------------|--------|------------|
+| PMS-1373 | **Recette OK** | 2026-01-13 | add-filter-parameter |
+| PMS-1337 | **Recette OK** | 2026-01-22 | - |
+| PMS-1404 | **Recette OK** | 2026-01-19 | - |
+| PMS-1407 | **Recette OK** | 2026-01-19 | local-config-regression |
+| PMS-1414 | **Recette OK** | 2026-01-20 | - |
+| PMS-1437 | **Recette OK** | 2026-01-12 | modedayinc-date-display |
+| PMS-1446 | **Recette OK** | 2026-01-19 | ski-rental-duration-calc |
+| CMDS-176481 | **Fermé** | 2026-01-12 | - |
+| CMDS-176521 | **Fermé** | 2026-01-08 | picture-format-mismatch |
+| CMDS-176818 | **Fermé** | 2026-01-13 | - |
+
+### Patterns KB (7 patterns)
+
+| Pattern | Source | Type | Description |
+|---------|--------|------|-------------|
+| add-filter-parameter | PMS-1373 | Enhancement | Ajouter paramètre pour filtrer Range/Locate |
+| date-format-inversion | CMDS-174321 | Bug logique | Inversion MM/DD dans parsing dates |
+| local-config-regression | PMS-1407 | Non-bug | Fausse régression (Magic.ini local) |
+| modedayinc-date-display | PMS-1437 | Bug affichage | Décalage date avec MODEDAYINC |
+| picture-format-mismatch | CMDS-176521 | Bug format | Mauvaise variable dans expression affichage |
+| ski-rental-duration-calc | PMS-1446 | Nouvelle fonction | Calcul conditionnel durée séjour |
+| table-link-missing | PMS-1451 | Bug données | Jointure table manquante |
 
 ## Bases de donnees
 
@@ -774,6 +792,7 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-01-25: **Analyse Jira automatisée** - Extraction 10 tickets résolus, sync dates Jira, +2 patterns KB (local-config-regression, modedayinc-date-display), fix script test-jira-auth.ps1
 - 2026-01-25: **ChangeImpactTool.cs** - 4 outils MCP Tier 5 (magic_impact_program, magic_impact_table, magic_impact_expression, magic_impact_crossproject) + Schema v5 + analyze-impact CLI
 - 2026-01-25: **EcfRegistryTool.cs** - 4 outils MCP Tier 4 (magic_ecf_list, magic_ecf_programs, magic_ecf_usedby, magic_ecf_dependencies) + Schema v4 + 762 composants
 - 2026-01-25: **VariableLineageTool.cs** - 2 outils MCP Tier 3 (magic_variable_lineage, magic_variable_sources) + Schema v3 (variable_modifications)

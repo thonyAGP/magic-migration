@@ -1,5 +1,5 @@
 # Test Jira authentication
-$envFile = "D:\Projects\Lecteur Magic\.env"
+$envFile = "$PSScriptRoot\..\..\.env"
 
 Get-Content $envFile | ForEach-Object {
     if ($_ -match "^\s*([^#][^=]+)=(.*)$") {
