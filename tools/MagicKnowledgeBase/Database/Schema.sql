@@ -434,3 +434,28 @@ CREATE TABLE IF NOT EXISTS shared_components (
 CREATE INDEX IF NOT EXISTS idx_shared_ecf ON shared_components(ecf_name);
 CREATE INDEX IF NOT EXISTS idx_shared_owner ON shared_components(owner_project);
 CREATE INDEX IF NOT EXISTS idx_shared_public_name ON shared_components(program_public_name);
+
+-- =========================================================================
+-- CHANGE IMPACT ANALYSIS (Schema v5 - Impact Tracking)
+-- =========================================================================
+
+-- Track what could break if something is modified
+CREATE TABLE IF NOT EXISTS change_impacts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    source_project TEXT NOT NULL,
+    source_program_id INTEGER NOT NULL,
+    source_element_type TEXT NOT NULL,  -- 'program', 'expression', 'variable', 'table'
+    source_element_id TEXT,             -- IDE position, expression ID, variable name, table ID
+    affected_project TEXT NOT NULL,
+    affected_program_id INTEGER NOT NULL,
+    impact_type TEXT NOT NULL,          -- 'calls', 'called_by', 'reads', 'writes', 'uses_table', 'uses_ecf'
+    severity TEXT NOT NULL DEFAULT 'medium',  -- 'critical', 'high', 'medium', 'low'
+    description TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(source_project, source_program_id, source_element_type, source_element_id, affected_project, affected_program_id, impact_type)
+);
+
+CREATE INDEX IF NOT EXISTS idx_impact_source ON change_impacts(source_project, source_program_id);
+CREATE INDEX IF NOT EXISTS idx_impact_affected ON change_impacts(affected_project, affected_program_id);
+CREATE INDEX IF NOT EXISTS idx_impact_type ON change_impacts(impact_type);
+CREATE INDEX IF NOT EXISTS idx_impact_severity ON change_impacts(severity);

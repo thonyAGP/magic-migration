@@ -785,6 +785,206 @@ if (args.Length > 0 && args[0] == "populate-ecf")
     return 0;
 }
 
+// Analyze change impact
+if (args.Length > 0 && args[0] == "analyze-impact")
+{
+    var impactDb = new KnowledgeDb();
+    if (!impactDb.IsInitialized())
+    {
+        Console.WriteLine("ERROR: Knowledge Base not initialized");
+        return 1;
+    }
+
+    // Ensure schema v5 tables exist
+    impactDb.InitializeSchema();
+
+    var project = args.Length > 1 ? args[1] : "ADH";
+    var ide = args.Length > 2 ? int.Parse(args[2]) : 121;
+
+    Console.WriteLine($"=== Change Impact Analysis: {project} IDE {ide} ===");
+    Console.WriteLine();
+
+    // Get program info
+    using var progCmd = impactDb.Connection.CreateCommand();
+    progCmd.CommandText = @"
+        SELECT p.id, p.name, p.public_name, p.task_count, p.expression_count
+        FROM programs p
+        JOIN projects pr ON p.project_id = pr.id
+        WHERE pr.name = @project AND p.ide_position = @ide";
+    progCmd.Parameters.AddWithValue("@project", project);
+    progCmd.Parameters.AddWithValue("@ide", ide);
+
+    long dbProgramId = 0;
+    string? programName = null;
+    string? publicName = null;
+
+    using (var reader = progCmd.ExecuteReader())
+    {
+        if (!reader.Read())
+        {
+            Console.WriteLine($"ERROR: Program {project} IDE {ide} not found");
+            return 1;
+        }
+        dbProgramId = reader.GetInt64(0);
+        programName = reader.GetString(1);
+        publicName = reader.IsDBNull(2) ? null : reader.GetString(2);
+    }
+
+    Console.WriteLine($"Program: {programName}");
+    if (!string.IsNullOrEmpty(publicName))
+        Console.WriteLine($"Public Name: {publicName}");
+    Console.WriteLine();
+
+    // 1. Callers
+    Console.WriteLine("## CALLERS (programs that call this)");
+    using var callersCmd = impactDb.Connection.CreateCommand();
+    callersCmd.CommandText = @"
+        SELECT pr.name, p.ide_position, p.name
+        FROM program_calls pc
+        JOIN tasks t ON pc.caller_task_id = t.id
+        JOIN programs p ON t.program_id = p.id
+        JOIN projects pr ON p.project_id = pr.id
+        WHERE pc.callee_program_id = @prog_id
+        ORDER BY pr.name, p.ide_position
+        LIMIT 20";
+    callersCmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+    int callerCount = 0;
+    int crossProjectCallers = 0;
+    using (var reader = callersCmd.ExecuteReader())
+    {
+        while (reader.Read())
+        {
+            var callerProject = reader.GetString(0);
+            var callerIde = reader.GetInt32(1);
+            var callerName = reader.GetString(2);
+            var severity = callerProject == project ? "HIGH" : "CRITICAL";
+            Console.WriteLine($"  [{severity}] {callerProject} IDE {callerIde} - {callerName}");
+            callerCount++;
+            if (callerProject != project) crossProjectCallers++;
+        }
+    }
+    if (callerCount == 0)
+        Console.WriteLine("  (no callers - entry point or leaf)");
+    Console.WriteLine();
+
+    // 2. Callees
+    Console.WriteLine("## CALLEES (programs this calls)");
+    using var calleesCmd = impactDb.Connection.CreateCommand();
+    calleesCmd.CommandText = @"
+        SELECT pr.name, p.ide_position, p.name
+        FROM program_calls pc
+        JOIN tasks t ON pc.caller_task_id = t.id
+        JOIN programs p ON pc.callee_program_id = p.id
+        JOIN projects pr ON p.project_id = pr.id
+        WHERE t.program_id = @prog_id
+        ORDER BY pr.name, p.ide_position
+        LIMIT 20";
+    calleesCmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+    int calleeCount = 0;
+    using (var reader = calleesCmd.ExecuteReader())
+    {
+        while (reader.Read())
+        {
+            var calleeProject = reader.GetString(0);
+            var calleeIde = reader.GetInt32(1);
+            var calleeName = reader.GetString(2);
+            var impact = calleeProject != project ? "cross-project" : "internal";
+            Console.WriteLine($"  [{impact}] {calleeProject} IDE {calleeIde} - {calleeName}");
+            calleeCount++;
+        }
+    }
+    if (calleeCount == 0)
+        Console.WriteLine("  (no callees)");
+    Console.WriteLine();
+
+    // 3. Tables
+    Console.WriteLine("## TABLE DEPENDENCIES");
+    using var tablesCmd = impactDb.Connection.CreateCommand();
+    tablesCmd.CommandText = @"
+        SELECT DISTINCT tu.table_id, tu.table_name, tu.usage_type
+        FROM table_usage tu
+        JOIN tasks t ON tu.task_id = t.id
+        WHERE t.program_id = @prog_id
+        ORDER BY tu.usage_type, tu.table_name";
+    tablesCmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+    int tableCount = 0;
+    using (var reader = tablesCmd.ExecuteReader())
+    {
+        while (reader.Read())
+        {
+            var tableId = reader.GetInt32(0);
+            var tableName = reader.IsDBNull(1) ? $"(ID {tableId})" : reader.GetString(1);
+            var usage = reader.GetString(2) switch { "R" => "Read", "W" => "Write", "L" => "Link", var u => u };
+            Console.WriteLine($"  [{usage}] {tableName}");
+            tableCount++;
+        }
+    }
+    if (tableCount == 0)
+        Console.WriteLine("  (no tables)");
+    Console.WriteLine();
+
+    // 4. ECF membership
+    Console.WriteLine("## ECF MEMBERSHIP");
+    using var ecfCmd = impactDb.Connection.CreateCommand();
+    ecfCmd.CommandText = @"
+        SELECT ecf_name, component_group, used_by_projects
+        FROM shared_components
+        WHERE owner_project = @project AND program_ide_position = @ide";
+    ecfCmd.Parameters.AddWithValue("@project", project);
+    ecfCmd.Parameters.AddWithValue("@ide", ide);
+
+    bool isShared = false;
+    using (var reader = ecfCmd.ExecuteReader())
+    {
+        if (reader.Read())
+        {
+            isShared = true;
+            var ecfName = reader.GetString(0);
+            var group = reader.IsDBNull(1) ? "-" : reader.GetString(1);
+            var usedBy = reader.IsDBNull(2) ? "[]" : reader.GetString(2);
+            Console.WriteLine($"  SHARED via {ecfName} ({group})");
+            Console.WriteLine($"  Used by: {usedBy}");
+            Console.WriteLine($"  WARNING: Changes affect ALL projects using this ECF!");
+        }
+        else
+        {
+            Console.WriteLine("  (not part of shared ECF)");
+        }
+    }
+    Console.WriteLine();
+
+    // Summary
+    Console.WriteLine("=== IMPACT SUMMARY ===");
+    Console.WriteLine($"  Callers: {callerCount} ({crossProjectCallers} cross-project)");
+    Console.WriteLine($"  Callees: {calleeCount}");
+    Console.WriteLine($"  Tables: {tableCount}");
+    Console.WriteLine($"  Shared ECF: {(isShared ? "YES" : "no")}");
+    Console.WriteLine();
+
+    string risk;
+    if (crossProjectCallers > 0 || isShared)
+        risk = "CRITICAL";
+    else if (callerCount > 5)
+        risk = "HIGH";
+    else if (callerCount > 0)
+        risk = "MEDIUM";
+    else
+        risk = "LOW";
+
+    Console.WriteLine($"  RISK LEVEL: {risk}");
+    Console.WriteLine();
+    Console.WriteLine("Use MCP tools for detailed analysis:");
+    Console.WriteLine("  - magic_impact_program: Full program impact");
+    Console.WriteLine("  - magic_impact_table: Table impact");
+    Console.WriteLine("  - magic_impact_expression: Expression impact");
+    Console.WriteLine("  - magic_impact_crossproject: Cross-project analysis");
+
+    return 0;
+}
+
 var projectsBasePath = args.Length > 0 ? args[0] : @"D:\Data\Migration\XPA\PMS";
 
 Console.WriteLine("=== Magic Knowledge Base Indexer ===");
