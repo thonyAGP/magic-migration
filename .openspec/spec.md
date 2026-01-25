@@ -299,19 +299,20 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 - Resolution de bugs
 - Amelioration continue
 
-**Inventaire des outils** (2026-01-24) :
+**Inventaire des outils** (2026-01-25) :
 
 | Categorie | Outils | Etat | Cible | Action |
 |-----------|--------|------|-------|--------|
-| MCP Server | **28 outils** | **100%** | 100% | **+4 outils migration_spec** |
+| MCP Server | **34 outils** | **100%** | 100% | **+6 outils Synergie (Tiers 1-3)** |
 | Agents specialises | 5 agents | 100% | 100% | Maintenir |
 | Commandes Slash | 15 commandes | 100% | 100% | Maintenir |
-| Scripts PowerShell | **31 scripts** | 100% | 100% | **+auto-capitalize, track-metrics, Generate-MigrationSpec** |
+| Scripts PowerShell | **32 scripts** | 100% | 100% | **+sync-patterns-to-kb.ps1** |
 | Parser TypeScript | 3 generateurs | **100%** | 100% | **COMPLET** |
 | Skill/References | **24 fichiers** | 100% | 100% | **+skill ticket-analyze** |
 | **Fonctions Magic** | **200/200** | **100%** | **100%** | **COMPLET** |
 | **Workflow Tickets** | **Orchestre v2.0** | **100%** | 100% | **6 phases, patterns KB, metrics** |
-| **Migration Specs** | **MigrationExtractor** | **100%** | 100% | **NOUVEAU - Cahier des charges auto** |
+| **Migration Specs** | **MigrationExtractor** | **100%** | 100% | **Cahier des charges auto** |
+| **Synergie Ecosysteme** | **Tiers 1-3** | **100%** | 100% | **NOUVEAU - 40%→75% synergie** |
 
 ### Nouveaux outils MCP (2026-01-24)
 
@@ -326,6 +327,57 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 | `magic_migration_dependencies` | Appels cross-projet (entrants/sortants) | **NOUVEAU** |
 | `magic_migration_stats` | Statistiques projet (tables, forms, effort) | **NOUVEAU** |
 | `magic_migration_projects` | Liste projets KB avec stats | **NOUVEAU** |
+
+### Outils MCP Synergie (2026-01-25) - NOUVEAU
+
+**Tier 1: Feedback Loop** (ticket ↔ patterns)
+
+| Outil | Description | Statut |
+|-------|-------------|--------|
+| `magic_pattern_search` | Recherche FTS5 patterns par mots-cles | **NOUVEAU** |
+| `magic_pattern_stats` | Statistiques usage patterns (top used, coverage) | **NOUVEAU** |
+| `magic_pattern_link` | Liens ticket-pattern (qui a utilise quoi) | **NOUVEAU** |
+| `magic_pattern_feedback` | Score sante feedback loop (0-100) | **NOUVEAU** |
+
+**Tier 2: Pattern Sync** (Markdown → KB)
+
+| Commande KbIndexRunner | Description | Statut |
+|------------------------|-------------|--------|
+| `sync-patterns` | Import `.openspec/patterns/*.md` vers resolution_patterns | **NOUVEAU** |
+| `search-patterns <query>` | Recherche FTS5 dans patterns KB | **NOUVEAU** |
+
+**Tier 3: Variable Lineage** (tracage valeurs)
+
+| Outil | Description | Statut |
+|-------|-------------|--------|
+| `magic_variable_lineage` | Trace modifications d'une variable dans un programme | **NOUVEAU** |
+| `magic_variable_sources` | Trouve origines possibles (colonnes, expressions, params) | **NOUVEAU** |
+
+| Commande KbIndexRunner | Description | Statut |
+|------------------------|-------------|--------|
+| `variable-lineage <project> <ide> <var>` | Test lineage depuis CLI | **NOUVEAU** |
+
+### Schema Knowledge Base v3 (2026-01-25) - NOUVEAU
+
+```sql
+-- Table Tier 3: Variable Lineage
+CREATE TABLE IF NOT EXISTS variable_modifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project TEXT NOT NULL,
+    program_id INTEGER NOT NULL,
+    task_isn2 INTEGER NOT NULL,
+    line_number INTEGER NOT NULL,
+    variable_name TEXT NOT NULL,
+    operation TEXT,           -- Update, VarSet, Action, etc.
+    source_type TEXT,         -- expression, table_column, parameter, constant
+    source_expression_id INTEGER,
+    source_table_id INTEGER,
+    source_column_name TEXT,
+    source_description TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(project, program_id, task_isn2, line_number, variable_name)
+);
+```
 
 ### Offsets dynamiques (2026-01-24) - NOUVEAU
 
@@ -501,6 +553,7 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 - [x] **P1.1** Reparer connexion MCP magic-interpreter (en cours: 2026-01-10)
 
 ### Terminees
+- [x] **Synergie Ecosysteme Tiers 1-3** (terminee: 2026-01-25) - Feedback loop, Pattern sync FTS5, Variable lineage. 6 outils MCP, 3 commandes KbIndexRunner, Schema v3. Synergie 40%→75%
 - [x] **Amelioration Systeme Analyse Tickets + Migration Specs** (terminee: 2026-01-24) - Schema v2 (3 tables), ExpressionCacheService, auto-capitalize, track-metrics, MigrationExtractor, Generate-MigrationSpec
 - [x] **Form Controls + Discovery + Validation** (terminee: 2026-01-24) - magic_get_form_controls outil MCP, ProjectDiscoveryService, KbIndexRunner validate mode
 - [x] **Forms MCP + Offsets dynamiques** (terminee: 2026-01-24) - magic_get_forms outil MCP, calcul automatique Main offset, MagicTaskForm model
@@ -653,6 +706,10 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-01-25: **VariableLineageTool.cs** - 2 outils MCP Tier 3 (magic_variable_lineage, magic_variable_sources) + Schema v3 (variable_modifications)
+- 2026-01-25: **sync-patterns-to-kb.ps1** - Tier 2: Import patterns Markdown vers KB SQLite avec FTS5
+- 2026-01-25: **PatternFeedbackTool.cs** - 4 outils MCP Tier 1 (search, stats, link, feedback) pour boucle retour tickets/patterns
+- 2026-01-25: **track-metrics.ps1 RecordPatternUsage** - Tier 1: Lie tickets aux patterns, incremente usage_count
 - 2026-01-24: **MigrationSpecTool.cs** - 4 outils MCP pour extraction specs migration (inventory, dependencies, stats, projects)
 - 2026-01-24: **DecodeExpressionTool cache** - Integration ExpressionCacheService pour cache persistant expressions
 - 2026-01-24: **Schema KB v2** - 3 nouvelles tables (decoded_expressions, ticket_metrics, resolution_patterns)
@@ -673,4 +730,4 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 - 2026-01-22: Parser Magic V3 deterministe 100%
 
 ---
-*Derniere mise a jour: 2026-01-24*
+*Derniere mise a jour: 2026-01-25*
