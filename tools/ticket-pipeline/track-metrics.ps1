@@ -11,7 +11,7 @@ param(
     [string]$TicketKey,
 
     [Parameter(Mandatory=$true)]
-    [ValidateSet("Start", "Update", "Complete", "Report")]
+    [ValidateSet("Start", "Update", "Complete", "Report", "RecordPatternUsage")]
     [string]$Action,
 
     [int]$Phases = 0,
@@ -227,6 +227,48 @@ LIMIT 10;
     Write-Host ""
 }
 
+function Record-PatternUsage {
+    param(
+        [string]$TicketKey,
+        [string]$KbPath,
+        [string]$Pattern
+    )
+
+    if (-not $Pattern) {
+        Write-Warning "[PatternUsage] No pattern specified"
+        return
+    }
+
+    # 1. Update ticket_metrics with the matched pattern
+    $Sql1 = @"
+UPDATE ticket_metrics SET
+    pattern_matched = '$Pattern'
+WHERE ticket_key = '$TicketKey';
+"@
+    Execute-Sql -KbPath $KbPath -Sql $Sql1
+
+    # 2. Increment usage_count in resolution_patterns and update last_used_at
+    $Now = (Get-Date).ToString("o")
+    $Sql2 = @"
+UPDATE resolution_patterns SET
+    usage_count = usage_count + 1,
+    last_used_at = '$Now'
+WHERE pattern_name = '$Pattern';
+"@
+    Execute-Sql -KbPath $KbPath -Sql $Sql2
+
+    # 3. Check if pattern exists in KB
+    $CheckQuery = "SELECT usage_count FROM resolution_patterns WHERE pattern_name = '$Pattern';"
+    $CheckResult = Query-Sql -KbPath $KbPath -Sql $CheckQuery
+
+    if ($CheckResult) {
+        Write-Host "[OK] Pattern '$Pattern' linked to $TicketKey (usage: $CheckResult)" -ForegroundColor Cyan
+    } else {
+        Write-Host "[WARN] Pattern '$Pattern' not found in KB - ticket linked but no pattern incremented" -ForegroundColor Yellow
+        Write-Host "       Consider running: /ticket-learn $TicketKey to capitalize this pattern" -ForegroundColor Gray
+    }
+}
+
 # ============================================================================
 # MAIN
 # ============================================================================
@@ -261,5 +303,16 @@ switch ($Action) {
     }
     "Report" {
         Show-Report -KbPath $KbPath
+    }
+    "RecordPatternUsage" {
+        if (-not $TicketKey) {
+            Write-Error "TicketKey is required for RecordPatternUsage action"
+            exit 1
+        }
+        if (-not $Pattern) {
+            Write-Error "Pattern is required for RecordPatternUsage action"
+            exit 1
+        }
+        Record-PatternUsage -TicketKey $TicketKey -KbPath $KbPath -Pattern $Pattern
     }
 }

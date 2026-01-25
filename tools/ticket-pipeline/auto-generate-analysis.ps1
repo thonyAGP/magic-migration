@@ -342,3 +342,51 @@ $Content | Set-Content $OutputFile -Encoding UTF8
 
 Write-Host "[Generate] Analysis report generated: $OutputFile" -ForegroundColor Green
 Write-Host "[Generate] Size: $($Content.Length) characters" -ForegroundColor Gray
+
+# ============================================================================
+# FEEDBACK LOOP: Record pattern usage in Knowledge Base
+# ============================================================================
+
+$TrackMetricsScript = Join-Path $ScriptDir "track-metrics.ps1"
+
+if (Test-Path $TrackMetricsScript) {
+    # Calculate stats
+    $ProgramsAnalyzed = if ($Programs -and $Programs.Programs) {
+        ($Programs.Programs | Where-Object { $_.Verified }).Count
+    } else { 0 }
+
+    $ExpressionsDecoded = if ($Expressions -and $Expressions.Stats) {
+        $Expressions.Stats.Decoded
+    } else { 0 }
+
+    $PhasesCompleted = 0
+    if ($Context) { $PhasesCompleted++ }
+    if ($Programs -and ($Programs.Programs | Where-Object { $_.Verified }).Count -gt 0) { $PhasesCompleted++ }
+    if ($Flow -and $Flow.Flow.Count -gt 0) { $PhasesCompleted++ }
+    if ($Expressions -and $Expressions.Stats.Decoded -gt 0) { $PhasesCompleted++ }
+    if ($Patterns -and $Patterns.Patterns.Count -gt 0) { $PhasesCompleted++ }
+    # Phase 6 (Root Cause) always incomplete at generation time
+
+    # Update metrics with phases and stats
+    try {
+        & $TrackMetricsScript -TicketKey $State.TicketKey -Action Update `
+            -Phases $PhasesCompleted -Programs $ProgramsAnalyzed -Expressions $ExpressionsDecoded
+        Write-Host "[Generate] Updated ticket metrics: $PhasesCompleted phases, $ProgramsAnalyzed programs, $ExpressionsDecoded expressions" -ForegroundColor Gray
+    } catch {
+        Write-Host "[Generate] Warning: Could not update ticket metrics: $_" -ForegroundColor Yellow
+    }
+
+    # If pattern was matched, record it for feedback loop
+    if ($Patterns -and $Patterns.Patterns.Count -gt 0) {
+        $TopPattern = $Patterns.Patterns[0]
+        if ($TopPattern.Score -ge 2) {
+            try {
+                & $TrackMetricsScript -TicketKey $State.TicketKey -Action RecordPatternUsage `
+                    -Pattern $TopPattern.Id
+                Write-Host "[Generate] Recorded pattern usage: $($TopPattern.Id) (score: $($TopPattern.Score))" -ForegroundColor Cyan
+            } catch {
+                Write-Host "[Generate] Warning: Could not record pattern usage: $_" -ForegroundColor Yellow
+            }
+        }
+    }
+}
