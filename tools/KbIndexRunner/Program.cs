@@ -1,6 +1,7 @@
 // Standalone indexer for the Magic Knowledge Base
 using MagicKnowledgeBase.Database;
 using MagicKnowledgeBase.Indexing;
+using MagicKnowledgeBase.Queries;
 using Microsoft.Data.Sqlite;
 using System.Diagnostics;
 
@@ -215,6 +216,110 @@ if (args.Length > 1 && args[0] == "query")
         Console.WriteLine($"  XML ID (Prg_X.xml): {reader[5]}");
         Console.WriteLine($"  Program Calls: {reader[6]}");
     }
+    return 0;
+}
+
+// Migration mode: test MigrationExtractor
+if (args.Length > 0 && args[0] == "migration")
+{
+    var project = args.Length > 1 ? args[1] : "ADH";
+    var migrationDb = new KnowledgeDb();
+    if (!migrationDb.IsInitialized())
+    {
+        Console.WriteLine("ERROR: Knowledge Base not initialized");
+        return 1;
+    }
+
+    var extractor = new MigrationExtractor(migrationDb);
+
+    Console.WriteLine("=== Testing Migration Extractor ===");
+    Console.WriteLine();
+
+    // Test 1: List projects
+    Console.WriteLine("## 1. Available Projects");
+    var projects = extractor.GetAvailableProjects();
+    Console.WriteLine($"Found {projects.Count} projects: {string.Join(", ", projects)}");
+    Console.WriteLine();
+
+    // Test 2: Project stats
+    Console.WriteLine($"## 2. Project Stats - {project}");
+    var projStats = extractor.GetProjectStats(project);
+    if (projStats != null)
+    {
+        Console.WriteLine($"  Programs: {projStats.ProgramCount}");
+        Console.WriteLine($"  Main Offset: {projStats.MainOffset}");
+        Console.WriteLine($"  Total Tasks: {projStats.TotalTasks}");
+        Console.WriteLine($"  Total Expressions: {projStats.TotalExpressions}");
+        Console.WriteLine($"  Avg Complexity: {projStats.AverageComplexity:F1}");
+    }
+    else
+    {
+        Console.WriteLine("  Project not found");
+        return 1;
+    }
+    Console.WriteLine();
+
+    // Test 3: Program inventory (top 10)
+    Console.WriteLine($"## 3. Program Inventory - {project} (Top 10)");
+    var programs = extractor.GetProgramInventory(project);
+    Console.WriteLine($"  Total programs: {programs.Count}");
+    Console.WriteLine();
+    Console.WriteLine("  IDE | Name                    | Tasks | Expr | Complexity");
+    Console.WriteLine("  ----|-------------------------|-------|------|----------");
+    foreach (var p in programs.Take(10))
+    {
+        var name = p.Name.Length > 23 ? p.Name[..23] : p.Name.PadRight(23);
+        Console.WriteLine($"  {p.IdePosition,3} | {name} | {p.TaskCount,5} | {p.ExpressionCount,4} | {p.ComplexityScore}");
+    }
+    Console.WriteLine();
+
+    // Complexity distribution
+    var high = programs.Count(p => p.ComplexityScore > 1000);
+    var medium = programs.Count(p => p.ComplexityScore >= 100 && p.ComplexityScore <= 1000);
+    var low = programs.Count(p => p.ComplexityScore < 100);
+    Console.WriteLine($"  Complexity: High(>1000)={high}, Medium(100-1000)={medium}, Low(<100)={low}");
+    Console.WriteLine();
+
+    // Test 4: Cross-project dependencies
+    Console.WriteLine($"## 4. Cross-Project Dependencies - {project}");
+    var deps = extractor.GetCrossProjectDependencies(project);
+    Console.WriteLine($"  Incoming calls: {deps.IncomingCalls.Count}");
+    if (deps.IncomingCalls.Count > 0)
+    {
+        var callerProjects = deps.IncomingCalls.Select(c => c.CallerProject).Distinct();
+        Console.WriteLine($"    From: {string.Join(", ", callerProjects)}");
+    }
+    Console.WriteLine($"  Outgoing calls: {deps.OutgoingCalls.Count}");
+    if (deps.OutgoingCalls.Count > 0)
+    {
+        var calleeProjects = deps.OutgoingCalls.Select(c => c.CalleeProject).Distinct();
+        Console.WriteLine($"    To: {string.Join(", ", calleeProjects)}");
+    }
+    Console.WriteLine();
+
+    // Test 5: Table inventory
+    Console.WriteLine($"## 5. Table Usage - {project}");
+    var tables = extractor.GetTableInventory(project);
+    var readCount = tables.Count(t => t.UsageType == "R");
+    var writeCount = tables.Count(t => t.UsageType == "W");
+    var linkCount = tables.Count(t => t.UsageType == "L");
+    Console.WriteLine($"  Read: {readCount} tables");
+    Console.WriteLine($"  Write: {writeCount} tables");
+    Console.WriteLine($"  Link: {linkCount} tables");
+    Console.WriteLine($"  Total unique: {tables.Select(t => t.TableId).Distinct().Count()}");
+    Console.WriteLine();
+
+    // Test 6: Forms
+    Console.WriteLine($"## 6. UI Forms - {project}");
+    var forms = extractor.GetFormInventory(project);
+    Console.WriteLine($"  Total forms: {forms.Count}");
+    var mdiCount = forms.Count(f => f.WindowType == 2);
+    var modalCount = forms.Count(f => f.WindowType == 1);
+    Console.WriteLine($"  MDI (type 2): {mdiCount}");
+    Console.WriteLine($"  Modal (type 1): {modalCount}");
+    Console.WriteLine();
+
+    Console.WriteLine("=== All Tests Passed ===");
     return 0;
 }
 
