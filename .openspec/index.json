@@ -1,121 +1,252 @@
-﻿{
-    "project":  "Lecteur_Magic",
-    "tickets":  {
-                    "active":  [
-                                   {
-                                       "id":  "PMS-1407",
-                                       "title":  "Validation auto Back Office - NON REGRESSION (Magic.ini)",
-                                       "status":  "diagnostic-ok",
-                                       "file":  "tickets/PMS-1407/analysis.md",
-                                       "createdDate":  "2025-11-13",
-                                       "lastAnalysis":  "2026-01-19",
-                                       "program":  "PBG IDE 121",
-                                       "commits":  [
-                                                       "@{date=2026-01-19T11:40:22+01:00; message=docs(tickets): fix PMS-1407 IDE position - PBG IDE 121, not 59; files=System.Object[]; author=ThonyAGP; hash=cb3e897f79120c396f80ceee0016335bc5f6e603}",
-                                                       "@{date=2026-01-19T11:27:08+01:00; message=docs(tickets): complete PMS-1407 analysis - NOT a regression; files=System.Object[]; author=ThonyAGP; hash=8b4ffd8946a7cfe3013e381e7da9d6a61776e5d1}",
-                                                       "@{date=2026-01-18T21:22:34+01:00; message=docs(tickets): update PMS-1404 and PMS-1407 analysis; files=System.Object[]; author=ThonyAGP; hash=63d761d96aaf74b0b05f96a6944fc5d33c6aa3e5}",
-                                                       "@{date=2026-01-18T21:17:46+01:00; message=docs(openspec): add Git infrastructure documentation; files=System.Object[]; author=ThonyAGP; hash=26fad0c4a163c347569fd18f3937f3edbeada47f}"
-                                                   ],
-                                       "lastAnalysisTime":  "2026-01-19T11:40:22+01:00"
-                                   },
-                                   {
-                                       "id":  "PMS-1359",
-                                       "title":  "Edition Cloture - Indicateur ecart FDR",
-                                       "status":  "done",
-                                       "file":  "tickets/PMS-1359/analysis.md",
-                                       "createdDate":  "2026-01-12",
-                                       "lastAnalysis":  "2026-01-22",
-                                       "program":  "VIL IDE 22",
-                                       "commits":  [
-                                                       "@{date=2026-01-22T14:42:10+01:00; message=docs(tickets): rewrite PMS-1359 analysis with new protocol; files=System.Object[]; author=ThonyAGP; hash=b2423eef234d42f6310221d6832ead9720d8b2e5}",
-                                                       "@{date=2026-01-12T20:21:06+01:00; message=docs(tickets): update ticket index and add MCP test infrastructure; files=System.Object[]; author=ThonyAGP; hash=f7aeafa7a9f06d5f34e6cb994438ca56ad26b6eb}"
-                                                   ],
-                                       "lastAnalysisTime":  "2026-01-22T16:31:00+01:00"
-                                   },
-                                   {
-                                       "id":  "PMS-1414",
-                                       "title":  "Validation groupee seminaire - Vol retour non requis",
-                                       "status":  "investigation-en-cours",
-                                       "file":  "tickets/PMS-1414/analysis.md",
-                                       "createdDate":  "2025-11-18",
-                                       "lastAnalysis":  "2026-01-19",
-                                       "program":  "PBG IDE 124",
-                                       "commits":  [
-                                                       "@{date=2026-01-19T13:36:49+01:00; message=docs(tickets): complete PMS-1414 analysis with precise task hierarchy; files=System.Object[]; author=ThonyAGP; hash=d5fc487ec4ca7d09aa544ae3808757e8e2727640}",
-                                                       "@{date=2026-01-19T12:38:13+01:00; message=docs(tickets): create PMS-1414 analysis - Validation groupee seminaire; files=System.Object[]; author=ThonyAGP; hash=435075cf415e72ee4ec27ec7ca20b45fe7272f0d}",
-                                                       "@{date=2026-01-18T21:17:46+01:00; message=docs(openspec): add Git infrastructure documentation; files=System.Object[]; author=ThonyAGP; hash=26fad0c4a163c347569fd18f3937f3edbeada47f}"
-                                                   ],
-                                       "lastAnalysisTime":  "2026-01-19T13:36:49+01:00"
-                                   },
-                                   {
-                                       "id":  "PMS-1412",
-                                       "title":  "POS SKI Japon - Impression facture obligatoire meme si mail",
-                                       "status":  "pret-implementation",
-                                       "file":  "tickets/PMS-1412/analysis.md",
-                                       "createdDate":  "2025-11-17",
-                                       "lastAnalysis":  "2026-01-21",
-                                       "program":  "PVE IDE 205",
-                                       "commits":  [
-                                                       "@{date=2026-01-22T00:15:23+01:00; message=docs(tickets): fix PMS-1412 analysis - correct IDE positions and variable naming; files=System.Object[]; author=ThonyAGP; hash=b49f42aaa1c569af61b0b2322d6c1a9091a73a13}",
-                                                       "@{date=2026-01-21T15:37:32+01:00; message=docs(tickets): add PMS-1412 and PMS-1400 analysis; files=System.Object[]; author=Anthony Leberre; hash=b86ed379b0cb3525c77bba4f0aea00d28bdab1eb}"
-                                                   ],
-                                       "lastAnalysisTime":  "2026-01-22T00:15:23+01:00"
-                                   },
-                                   {
-                                       "id":  "PMS-1400",
-                                       "title":  "POS Reports - Evolution REVENUE CANCELATIONS",
-                                       "status":  "analysis",
-                                       "file":  "tickets/PMS-1400/analysis.md",
-                                       "createdDate":  "2025-11-06",
-                                       "lastAnalysis":  "2026-01-21",
-                                       "lastAnalysisTime":  "2026-01-21T22:30:00+01:00",
-                                       "program":  "PVE IDE 75"
-                                   },
-                                   {
-                                       "id":  "PMS-1451",
-                                       "title":  "PURGE prend uniquement le 1er troncon de sejour",
-                                       "status":  "diagnostic-confirme",
-                                       "file":  "tickets/PMS-1451/analysis.md",
-                                       "createdDate":  "2026-01-06",
-                                       "lastAnalysis":  "2026-01-22",
-                                       "lastAnalysisTime":  "2026-01-22T22:00:00+01:00",
-                                       "program":  "REF IDE 749.1"
-                                   },
-                                   {
-                                       "id":  "PMS-1453",
-                                       "title":  "Caisse Adherent - Vente transfert heure erronee",
-                                       "status":  "analysis",
-                                       "file":  "tickets/PMS-1453/analysis.md",
-                                       "createdDate":  "2026-01-06",
-                                       "lastAnalysis":  "2026-01-22",
-                                       "lastAnalysisTime":  "2026-01-22T18:14:00+01:00",
-                                       "program":  "ADH IDE 244"
-                                   },
-                                   {
-                                       "id":  "PMS-1381",
-                                       "title":  "Messages verrouillages pendant PURGE",
-                                       "status":  "diagnostic-ok",
-                                       "file":  "tickets/PMS-1381/analysis.md",
-                                       "createdDate":  "2025-09-24",
-                                       "lastAnalysis":  "2026-01-22",
-                                       "lastAnalysisTime":  "2026-01-22T21:00:00+01:00",
-                                       "program":  "PUG IDE 18"
-                                   },
-                                   {
-                                       "id":  "PMS-1457",
-                                       "title":  "Caution forfait ski automatique St Moritz",
-                                       "status":  "spec-complete",
-                                       "file":  "tickets/PMS-1457/analysis.md",
-                                       "createdDate":  "2026-01-22",
-                                       "lastAnalysis":  "2026-01-22",
-                                       "lastAnalysisTime":  "2026-01-22T23:30:00+01:00",
-                                       "program":  "REF IDE 621"
-                                   },
-                                   "TEST-001"
-                               ],
-                    "resolved":  [
-
-                                 ]
-                },
-    "updated":  "2026-01-24"
+{
+  "project": "Lecteur_Magic",
+  "lastUpdated": "2026-01-26T12:00:00+01:00",
+  "reports": [
+    {
+      "category": "principal",
+      "title": "OpenSpec - Vue d'ensemble",
+      "file": "spec.md"
+    },
+    {
+      "category": "principal",
+      "title": "Deploiement",
+      "file": "DEPLOY.md"
+    },
+    {
+      "category": "principal",
+      "title": "Couverture ADH",
+      "file": "ADH_COVERAGE_ANALYSIS.md"
+    },
+    {
+      "category": "reports",
+      "title": "ADH SADT Documentation",
+      "file": "reports/ADH_SADT_DOCUMENTATION.md"
+    },
+    {
+      "category": "reports",
+      "title": "Coverage Report 2025-01-04",
+      "file": "reports/COVERAGE_REPORT_2025-01-04.md"
+    },
+    {
+      "category": "reports",
+      "title": "PVE Rental Dates Analysis",
+      "file": "reports/PVE_RENTAL_DATES_ANALYSIS_2026-01-04.md"
+    },
+    {
+      "category": "reports",
+      "title": "VIL FDR Etoiles Analysis",
+      "file": "reports/VIL_FDR_ETOILES_ANALYSIS.md"
+    },
+    {
+      "category": "reports",
+      "title": "XML Learning Log",
+      "file": "reports/XML_LEARNING_LOG.md"
+    },
+    {
+      "category": "reports",
+      "title": "Ticket Automation Analysis",
+      "file": "reports/TICKET_AUTOMATION_ANALYSIS.md"
+    },
+    {
+      "category": "reports",
+      "title": "Changelog",
+      "file": "history/changelog.md"
+    }
+  ],
+  "tickets": {
+    "active": [
+      {
+        "id": "PMS-1453",
+        "title": "Caisse Adherent - Vente transfert heure erronee",
+        "status": "analyse-complete",
+        "file": "tickets/PMS-1453/analysis.md",
+        "createdDate": "2026-01-06",
+        "lastAnalysis": "2026-01-26",
+        "lastAnalysisTime": "2026-01-26T12:00:00+01:00",
+        "program": "ADH IDE 307",
+        "rootCause": "Missing Picture validation on FIELD_TIME columns"
+      },
+      {
+        "id": "PMS-1407",
+        "title": "Validation auto Back Office - NON REGRESSION (Magic.ini)",
+        "status": "diagnostic-ok",
+        "file": "tickets/PMS-1407/analysis.md",
+        "createdDate": "2025-11-13",
+        "lastAnalysis": "2026-01-19",
+        "lastAnalysisTime": "2026-01-19T11:40:22+01:00",
+        "program": "PBG IDE 121"
+      },
+      {
+        "id": "PMS-1359",
+        "title": "Edition Cloture - Indicateur ecart FDR",
+        "status": "done",
+        "file": "tickets/PMS-1359/analysis.md",
+        "createdDate": "2026-01-12",
+        "lastAnalysis": "2026-01-22",
+        "lastAnalysisTime": "2026-01-22T16:31:00+01:00",
+        "program": "VIL IDE 22"
+      },
+      {
+        "id": "PMS-1414",
+        "title": "Validation groupee seminaire - Vol retour non requis",
+        "status": "investigation-en-cours",
+        "file": "tickets/PMS-1414/analysis.md",
+        "createdDate": "2025-11-18",
+        "lastAnalysis": "2026-01-19",
+        "lastAnalysisTime": "2026-01-19T13:36:49+01:00",
+        "program": "PBG IDE 124"
+      },
+      {
+        "id": "PMS-1412",
+        "title": "POS SKI Japon - Impression facture obligatoire meme si mail",
+        "status": "pret-implementation",
+        "file": "tickets/PMS-1412/analysis.md",
+        "createdDate": "2025-11-17",
+        "lastAnalysis": "2026-01-21",
+        "lastAnalysisTime": "2026-01-22T00:15:23+01:00",
+        "program": "PVE IDE 205"
+      },
+      {
+        "id": "PMS-1400",
+        "title": "POS Reports - Evolution REVENUE CANCELATIONS",
+        "status": "analysis",
+        "file": "tickets/PMS-1400/analysis.md",
+        "createdDate": "2025-11-06",
+        "lastAnalysis": "2026-01-21",
+        "lastAnalysisTime": "2026-01-21T22:30:00+01:00",
+        "program": "PVE IDE 75"
+      },
+      {
+        "id": "PMS-1451",
+        "title": "PURGE prend uniquement le 1er troncon de sejour",
+        "status": "diagnostic-confirme",
+        "file": "tickets/PMS-1451/analysis.md",
+        "createdDate": "2026-01-06",
+        "lastAnalysis": "2026-01-22",
+        "lastAnalysisTime": "2026-01-22T22:00:00+01:00",
+        "program": "REF IDE 749.1"
+      },
+      {
+        "id": "PMS-1381",
+        "title": "Messages verrouillages pendant PURGE",
+        "status": "diagnostic-ok",
+        "file": "tickets/PMS-1381/analysis.md",
+        "createdDate": "2025-09-24",
+        "lastAnalysis": "2026-01-22",
+        "lastAnalysisTime": "2026-01-22T21:00:00+01:00",
+        "program": "PUG IDE 18"
+      },
+      {
+        "id": "PMS-1457",
+        "title": "Caution forfait ski automatique St Moritz",
+        "status": "spec-complete",
+        "file": "tickets/PMS-1457/analysis.md",
+        "createdDate": "2026-01-22",
+        "lastAnalysis": "2026-01-22",
+        "lastAnalysisTime": "2026-01-22T23:30:00+01:00",
+        "program": "REF IDE 621"
+      },
+      {
+        "id": "PMS-1402",
+        "title": "Automatisation Taxe de sejour",
+        "status": "blocage",
+        "file": "tickets/PMS-1402/analysis.md",
+        "createdDate": "2025-11-06",
+        "lastAnalysis": "2026-01-18"
+      }
+    ],
+    "archived": [
+      {
+        "id": "CMDS-176521",
+        "title": "Prix remise affiche incorrect POS",
+        "status": "ferme",
+        "file": "tickets/CMDS-176521/analysis.md",
+        "createdDate": "2026-01-08",
+        "lastAnalysis": "2026-01-08",
+        "program": "PVE",
+        "rootCause": "Picture format mismatch"
+      },
+      {
+        "id": "CMDS-176481",
+        "title": "Double attribution Gift Pass",
+        "status": "ferme",
+        "file": "tickets/CMDS-176481/analysis.md",
+        "createdDate": "2026-01-12",
+        "lastAnalysis": "2026-01-12",
+        "rootCause": "Bug AFFAUTO (API externe)"
+      },
+      {
+        "id": "CMDS-176818",
+        "title": "Tickets Epson police grande",
+        "status": "ferme",
+        "file": "tickets/CMDS-176818/analysis.md",
+        "createdDate": "2026-01-13",
+        "lastAnalysis": "2026-01-13",
+        "rootCause": "Config imprimante Valmorel"
+      },
+      {
+        "id": "CMDS-174321",
+        "title": "Bug date arrivee PB027 (+1 mois)",
+        "status": "ferme",
+        "file": "tickets/CMDS-174321/analysis.md",
+        "createdDate": "2025-12-01",
+        "lastAnalysis": "2026-01-08",
+        "rootCause": "Date format inversion"
+      },
+      {
+        "id": "PMS-1337",
+        "title": "Double lancement Caisse Adherent",
+        "status": "recette-ok",
+        "file": "tickets/PMS-1337/analysis.md",
+        "createdDate": "2025-08-01",
+        "lastAnalysis": "2026-01-21",
+        "program": "ADH IDE 156",
+        "rootCause": "Session concurrency check"
+      },
+      {
+        "id": "PMS-1373",
+        "title": "Masquer annulations dans extrait compte",
+        "status": "recette-ok",
+        "file": "tickets/PMS-1373/analysis.md",
+        "createdDate": "2025-09-01",
+        "lastAnalysis": "2026-01-13",
+        "rootCause": "Add filter parameter"
+      },
+      {
+        "id": "PMS-1437",
+        "title": "Early return SKI - 5 pistes classees",
+        "status": "recette-ok",
+        "file": "tickets/PMS-1437/analysis.md",
+        "createdDate": "2025-12-01",
+        "lastAnalysis": "2026-01-12",
+        "rootCause": "MODEDAYINC date display"
+      },
+      {
+        "id": "PMS-1446",
+        "title": "Location materiel ski courts sejours",
+        "status": "recette-ok",
+        "file": "tickets/PMS-1446/analysis.md",
+        "createdDate": "2025-12-15",
+        "lastAnalysis": "2026-01-19",
+        "rootCause": "Ski rental duration calc"
+      },
+      {
+        "id": "PMS-1404",
+        "title": "POS Reports M&E - Quantity OK",
+        "status": "recette-ok",
+        "file": "tickets/PMS-1404/analysis.md",
+        "createdDate": "2026-01-12",
+        "lastAnalysis": "2026-01-18",
+        "program": "PVE"
+      },
+      {
+        "id": "PMS-1332",
+        "title": "Fiche police date fin 00/00/0000",
+        "status": "recette-ok",
+        "file": "tickets/PMS-1332/analysis.md",
+        "createdDate": "2025-07-01",
+        "lastAnalysis": "2026-01-10"
+      }
+    ]
+  }
 }
