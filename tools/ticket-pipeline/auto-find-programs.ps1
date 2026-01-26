@@ -110,6 +110,94 @@ LIMIT 20
 }
 
 # ============================================================================
+# SPEC CONTEXT LOADING (P1-A: Spec Context Injection)
+# ============================================================================
+
+function Get-SpecContext {
+    param(
+        [string]$Project,
+        [int]$IDE
+    )
+
+    # Check if spec file exists
+    $SpecFile = Join-Path $ProjectRoot ".openspec\specs\$Project-IDE-$IDE.md"
+    if (-not (Test-Path $SpecFile)) {
+        return $null
+    }
+
+    try {
+        $Content = Get-Content $SpecFile -Raw -Encoding UTF8
+
+        $Context = @{
+            SpecFile = $SpecFile
+            SpecVersion = "2.0"
+            Tables = @()
+            WriteTables = @()
+            ReadTables = @()
+            Variables = @()
+            ParameterCount = 0
+            ExpressionCount = 0
+            DecodedExpressionCount = 0
+        }
+
+        # Extract table count from ## 2. TABLES section header
+        if ($Content -match '##\s*2\.\s*TABLES\s*\((\d+)\s*tables\s*-\s*(\d+)\s*en\s*ecriture\)') {
+            $Context.TableCount = [int]$Matches[1]
+            $Context.WriteTableCount = [int]$Matches[2]
+            $Context.ReadTableCount = $Context.TableCount - $Context.WriteTableCount
+        }
+
+        # Extract tables from table section (| #NNN | ... | W/R |)
+        $TableMatches = [regex]::Matches($Content, '\|\s*#(\d+)\s*\|\s*`([^`]+)`\s*\|\s*([^|]+)\s*\|\s*\*?\*?([WR])\*?\*?\s*\|\s*(\d+)x')
+        foreach ($Match in $TableMatches) {
+            $Table = @{
+                Id = [int]$Match.Groups[1].Value
+                PhysicalName = $Match.Groups[2].Value.Trim()
+                LogicalName = $Match.Groups[3].Value.Trim()
+                Access = $Match.Groups[4].Value
+                UsageCount = [int]$Match.Groups[5].Value
+            }
+            $Context.Tables += $Table
+            if ($Table.Access -eq 'W') {
+                $Context.WriteTables += $Table
+            } else {
+                $Context.ReadTables += $Table
+            }
+        }
+
+        # Extract parameter count from ## 3. PARAMETRES section
+        if ($Content -match '##\s*3\.\s*PARAMETRES[^\(]*\((\d+)\)') {
+            $Context.ParameterCount = [int]$Matches[1]
+        }
+
+        # Extract expression count from ## 5. EXPRESSIONS section
+        if ($Content -match '##\s*5\.\s*EXPRESSIONS\s*\((\d+)\s*total,\s*(\d+)\s*decodees\)') {
+            $Context.ExpressionCount = [int]$Matches[1]
+            $Context.DecodedExpressionCount = [int]$Matches[2]
+        }
+
+        # Extract key variables from ## 4. VARIABLES section (first 20)
+        $VarMatches = [regex]::Matches($Content, '\|\s*`\{([^}]+)\}`\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|')
+        $VarCount = 0
+        foreach ($Match in $VarMatches) {
+            if ($VarCount -ge 20) { break }
+            $Context.Variables += @{
+                Ref = "{$($Match.Groups[1].Value)}"
+                Name = $Match.Groups[2].Value.Trim()
+                Type = $Match.Groups[3].Value.Trim()
+            }
+            $VarCount++
+        }
+
+        return $Context
+    }
+    catch {
+        Write-Warning "Failed to parse spec for $Project IDE $IDE : $_"
+        return $null
+    }
+}
+
+# ============================================================================
 # EXECUTION PRINCIPALE
 # ============================================================================
 
@@ -117,6 +205,7 @@ $Result = @{
     LocalizedAt = (Get-Date).ToString("o")
     Programs = @()
     Tables = @()
+    SpecContextLoaded = 0
 }
 
 Write-Host "[Localization] Processing $($Programs.Count) program candidates..." -ForegroundColor Cyan
@@ -262,6 +351,23 @@ foreach ($Table in $Tables) {
 $Result.Programs = @($Result.Programs | Group-Object { "$($_.Project)-$($_.ProgramId)" } | ForEach-Object { $_.Group[0] })
 $Result.Tables = @($Result.Tables | Group-Object { $_.TableId } | ForEach-Object { $_.Group[0] })
 
+# ============================================================================
+# SPEC CONTEXT INJECTION (P1-A)
+# ============================================================================
+
+Write-Host "[Spec Context] Loading spec context for verified programs..." -ForegroundColor Cyan
+
+foreach ($Prog in $Result.Programs) {
+    if ($Prog.Verified -and $Prog.Project -and $Prog.IDE) {
+        $SpecContext = Get-SpecContext -Project $Prog.Project -IDE $Prog.IDE
+        if ($SpecContext) {
+            $Prog.SpecContext = $SpecContext
+            $Result.SpecContextLoaded++
+            Write-Host "  [SPEC] $($Prog.Project) IDE $($Prog.IDE): $($SpecContext.TableCount) tables, $($SpecContext.ExpressionCount) expressions" -ForegroundColor Green
+        }
+    }
+}
+
 # Statistiques
 $VerifiedProgs = ($Result.Programs | Where-Object { $_.Verified }).Count
 $VerifiedTables = ($Result.Tables | Where-Object { $_.Verified }).Count
@@ -269,8 +375,9 @@ $VerifiedTables = ($Result.Tables | Where-Object { $_.Verified }).Count
 Write-Host "[Localization] Results:" -ForegroundColor Green
 Write-Host "  - Programs: $VerifiedProgs verified / $($Result.Programs.Count) total" -ForegroundColor Gray
 Write-Host "  - Tables: $VerifiedTables verified / $($Result.Tables.Count) total" -ForegroundColor Gray
+Write-Host "  - Spec Context: $($Result.SpecContextLoaded) loaded" -ForegroundColor $(if ($Result.SpecContextLoaded -gt 0) { "Green" } else { "Yellow" })
 
-# Sauvegarder
-$Result | ConvertTo-Json -Depth 5 | Set-Content $OutputFile -Encoding UTF8
+# Sauvegarder (Depth 7 pour supporter SpecContext imbriqué)
+$Result | ConvertTo-Json -Depth 7 | Set-Content $OutputFile -Encoding UTF8
 
 Write-Host "[Localization] Output: $OutputFile" -ForegroundColor Green

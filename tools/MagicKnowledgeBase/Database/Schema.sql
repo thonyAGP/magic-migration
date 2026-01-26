@@ -355,7 +355,10 @@ CREATE TABLE IF NOT EXISTS resolution_patterns (
     source_ticket TEXT,     -- Ex: "PMS-1457"
     usage_count INTEGER DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    last_used_at TEXT
+    last_used_at TEXT,
+    -- Schema v6: Spec integration
+    spec_references_json TEXT,  -- JSON array ["ADH-IDE-69", "ADH-IDE-232"]
+    affected_tables_json TEXT   -- JSON array of table IDs commonly affected
 );
 
 CREATE INDEX IF NOT EXISTS idx_patterns_name ON resolution_patterns(pattern_name);
@@ -459,3 +462,106 @@ CREATE INDEX IF NOT EXISTS idx_impact_source ON change_impacts(source_project, s
 CREATE INDEX IF NOT EXISTS idx_impact_affected ON change_impacts(affected_project, affected_program_id);
 CREATE INDEX IF NOT EXISTS idx_impact_type ON change_impacts(impact_type);
 CREATE INDEX IF NOT EXISTS idx_impact_severity ON change_impacts(severity);
+
+-- =========================================================================
+-- PROGRAM SPECIFICATIONS (Schema v6 - Spec Indexing)
+-- =========================================================================
+
+-- Indexed specs from .openspec/specs/*.md files
+CREATE TABLE IF NOT EXISTS program_specs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    project TEXT NOT NULL,
+    ide_position INTEGER NOT NULL,
+    title TEXT,
+    description TEXT,
+    spec_version TEXT,
+    xml_file TEXT,
+    program_type TEXT,           -- 'Online', 'Batch'
+    folder TEXT,                 -- IDE folder name (Ventes, Telephone, etc.)
+
+    -- Table statistics
+    tables_json TEXT,            -- JSON array of {id, name, access, usageCount}
+    table_count INTEGER DEFAULT 0,
+    write_table_count INTEGER DEFAULT 0,
+    read_table_count INTEGER DEFAULT 0,
+
+    -- Variable statistics
+    variables_json TEXT,         -- JSON array of {ref, name, type}
+    variable_count INTEGER DEFAULT 0,
+
+    -- Parameter statistics
+    parameters_json TEXT,        -- JSON array of {index, name, type}
+    parameter_count INTEGER DEFAULT 0,
+
+    -- Expression statistics
+    expression_count INTEGER DEFAULT 0,
+
+    -- File info
+    spec_file_path TEXT,
+    spec_file_hash TEXT,         -- MD5 for change detection
+    indexed_at TEXT NOT NULL DEFAULT (datetime('now')),
+
+    -- Pattern integration (P1-D: Bidirectional links)
+    known_patterns_json TEXT,    -- JSON array of pattern names affecting this spec
+
+    UNIQUE(project, ide_position)
+);
+
+CREATE INDEX IF NOT EXISTS idx_specs_project ON program_specs(project);
+CREATE INDEX IF NOT EXISTS idx_specs_ide ON program_specs(project, ide_position);
+CREATE INDEX IF NOT EXISTS idx_specs_type ON program_specs(program_type);
+CREATE INDEX IF NOT EXISTS idx_specs_folder ON program_specs(folder);
+CREATE INDEX IF NOT EXISTS idx_specs_write_count ON program_specs(write_table_count);
+
+-- Spec tables (normalized - for table impact queries)
+CREATE TABLE IF NOT EXISTS spec_tables (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    spec_id INTEGER NOT NULL REFERENCES program_specs(id) ON DELETE CASCADE,
+    table_id INTEGER NOT NULL,
+    table_physical_name TEXT,
+    table_logical_name TEXT,
+    access_mode TEXT NOT NULL,   -- 'R' or 'W'
+    usage_count INTEGER DEFAULT 1,
+    UNIQUE(spec_id, table_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_spec_tables_spec ON spec_tables(spec_id);
+CREATE INDEX IF NOT EXISTS idx_spec_tables_table ON spec_tables(table_id);
+CREATE INDEX IF NOT EXISTS idx_spec_tables_access ON spec_tables(access_mode);
+
+-- FTS for spec search
+CREATE VIRTUAL TABLE IF NOT EXISTS specs_fts USING fts5(
+    project,
+    title,
+    description,
+    folder,
+    tables_content,  -- All table names concatenated
+    content='program_specs',
+    content_rowid='id'
+);
+
+-- Triggers for specs FTS sync
+CREATE TRIGGER IF NOT EXISTS specs_ai AFTER INSERT ON program_specs BEGIN
+    INSERT INTO specs_fts(rowid, project, title, description, folder, tables_content)
+    VALUES (new.id, new.project, new.title, new.description, new.folder,
+        (SELECT group_concat(json_extract(value, '$.name'), ' ')
+         FROM json_each(new.tables_json) WHERE new.tables_json IS NOT NULL));
+END;
+
+CREATE TRIGGER IF NOT EXISTS specs_ad AFTER DELETE ON program_specs BEGIN
+    INSERT INTO specs_fts(specs_fts, rowid, project, title, description, folder, tables_content)
+    VALUES('delete', old.id, old.project, old.title, old.description, old.folder,
+        (SELECT group_concat(json_extract(value, '$.name'), ' ')
+         FROM json_each(old.tables_json) WHERE old.tables_json IS NOT NULL));
+END;
+
+CREATE TRIGGER IF NOT EXISTS specs_au AFTER UPDATE ON program_specs BEGIN
+    INSERT INTO specs_fts(specs_fts, rowid, project, title, description, folder, tables_content)
+    VALUES('delete', old.id, old.project, old.title, old.description, old.folder,
+        (SELECT group_concat(json_extract(value, '$.name'), ' ')
+         FROM json_each(old.tables_json) WHERE old.tables_json IS NOT NULL));
+    INSERT INTO specs_fts(rowid, project, title, description, folder, tables_content)
+    VALUES (new.id, new.project, new.title, new.description, new.folder,
+        (SELECT group_concat(json_extract(value, '$.name'), ' ')
+         FROM json_each(new.tables_json) WHERE new.tables_json IS NOT NULL));
+END;
