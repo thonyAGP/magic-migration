@@ -234,6 +234,70 @@
     .archives-section .nav-item { padding: 8px 16px; }
     .archives-section .nav-item .title { font-size: 12px; }
 
+    /* Spec badges */
+    .spec-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .spec-badge.online { background: var(--success); color: #000; }
+    .spec-badge.batch { background: var(--warning); color: #000; }
+    .spec-badge.template { background: var(--purple); color: #fff; }
+
+    .spec-meta {
+      display: flex;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .spec-meta span {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .spec-meta .icon { opacity: 0.7; }
+
+    .complexity-badge {
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .complexity-badge.faible { background: var(--success); color: #000; }
+    .complexity-badge.moyen { background: var(--warning); color: #000; }
+    .complexity-badge.eleve { background: var(--danger); color: #fff; }
+
+    /* Spec header */
+    .spec-header {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .spec-header .spec-id {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--purple);
+    }
+
+    .spec-header .spec-title {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
     /* Status dropdown */
     .status-dropdown {
       display: none;
@@ -660,6 +724,11 @@
       const principal = indexData.reports.filter(r => r.category === 'principal');
       html += buildSection('Principal', principal.map(r => ({ title: r.title, file: r.file })), principal.length);
 
+      // Specs section
+      if (indexData.specs && indexData.specs.length > 0) {
+        html += buildSpecsSection('Specifications Programmes', indexData.specs);
+      }
+
       const reports = indexData.reports.filter(r => r.category === 'reports');
       html += buildSection('Rapports', reports.map(r => ({ title: r.title, file: r.file })), reports.length);
 
@@ -708,6 +777,46 @@
           <div class="row"><span class="title">${item.title}</span></div>
         </a>`;
       });
+      html += '</div></nav>';
+      return html;
+    }
+
+    function buildSpecsSection(title, specs) {
+      const count = specs.filter(s => s.id !== 'TEMPLATE').length;
+      let html = `<nav class="nav-section">
+        <div class="nav-section-title">
+          <span class="collapse-icon">▼</span>
+          ${title}
+          <span class="count">${count}</span>
+        </div>
+        <div class="nav-items">`;
+
+      // Sort specs: templates last, then by project+IDE
+      const sorted = [...specs].sort((a, b) => {
+        if (a.type === 'Template') return 1;
+        if (b.type === 'Template') return -1;
+        if (a.project !== b.project) return a.project.localeCompare(b.project);
+        return a.ide - b.ide;
+      });
+
+      sorted.forEach(spec => {
+        const typeClass = spec.type.toLowerCase();
+        const complexityClass = spec.complexity ? spec.complexity.toLowerCase().replace('é', 'e') : '';
+
+        html += `<a class="nav-item" data-file="${spec.file}" data-spec-id="${spec.id}">
+          <div class="row">
+            <span class="title">${spec.project} IDE ${spec.ide}</span>
+            <span class="spec-badge ${typeClass}">${spec.type}</span>
+          </div>
+          <div class="subtitle">${spec.title}</div>
+          <div class="spec-meta">
+            <span><span class="icon">📊</span> ${spec.tables} tables</span>
+            <span><span class="icon">📋</span> ${spec.tasks} taches</span>
+            ${spec.complexity && spec.complexity !== '-' ? `<span class="complexity-badge ${complexityClass}">${spec.complexity}</span>` : ''}
+          </div>
+        </a>`;
+      });
+
       html += '</div></nav>';
       return html;
     }
@@ -899,10 +1008,46 @@
       content.innerHTML = '<div class="loading">Chargement...</div>';
 
       const isTicket = path.includes('tickets/');
+      const isSpec = path.includes('specs/');
       let headerHtml = '';
       let tabsHtml = '';
       let ticketId = null;
       let ticketData = null;
+
+      // Handle Specs
+      if (isSpec && indexData.specs) {
+        const specData = indexData.specs.find(s => s.file === path);
+        if (specData && specData.id !== 'TEMPLATE') {
+          const typeClass = specData.type.toLowerCase();
+          const complexityClass = specData.complexity ? specData.complexity.toLowerCase().replace('é', 'e') : '';
+
+          headerHtml = `
+            <div class="spec-header">
+              <div>
+                <span class="spec-id">${specData.project} IDE ${specData.ide}</span>
+                <div class="spec-title">${specData.title}</div>
+              </div>
+              <div class="ticket-meta">
+                <div class="meta-item">
+                  <span class="meta-label">Type</span>
+                  <span class="meta-value"><span class="spec-badge ${typeClass}">${specData.type}</span></span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Tables</span>
+                  <span class="meta-value">${specData.tables}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Taches</span>
+                  <span class="meta-value">${specData.tasks}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Complexite</span>
+                  <span class="meta-value"><span class="complexity-badge ${complexityClass}">${specData.complexity}</span></span>
+                </div>
+              </div>
+            </div>`;
+        }
+      }
 
       if (isTicket) {
         const ticketDir = path.substring(0, path.lastIndexOf('/') + 1);

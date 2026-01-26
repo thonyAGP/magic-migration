@@ -1,6 +1,30 @@
 {
   "project": "Lecteur_Magic",
-  "lastUpdated": "2026-01-26T12:00:00+01:00",
+  "lastUpdated": "2026-01-26T18:00:00+01:00",
+  "specs": [
+    {
+      "id": "ADH-IDE-238",
+      "title": "Menu Choix Saisie/Annul vente",
+      "project": "ADH",
+      "ide": 238,
+      "type": "Online",
+      "file": "specs/ADH-IDE-238.md",
+      "tables": 4,
+      "tasks": 3,
+      "complexity": "Moyen"
+    },
+    {
+      "id": "TEMPLATE",
+      "title": "Template Specification Programme",
+      "project": "-",
+      "ide": 0,
+      "type": "Template",
+      "file": "specs/TEMPLATE-PROGRAM-SPEC.md",
+      "tables": 0,
+      "tasks": 0,
+      "complexity": "-"
+    }
+  ],
   "reports": [
     {
       "category": "principal",
