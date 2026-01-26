@@ -1,0 +1,115 @@
+# Program Specification Annotation Template
+# Copy this file as {PROJECT}-IDE-{IDE}.yaml and fill in the human-edited sections
+#
+# These annotations are merged with KB data during spec rendering
+# KB data (tables, expressions, variables) comes from the database
+# Annotations (objective, user_flow, notes) are human-maintained
+
+# ============================================================================
+# PROGRAM IDENTIFICATION
+# ============================================================================
+program:
+  project: "PROJECT"     # ADH, PBP, PVE, VIL, PBG, REF
+  ide: 0                 # IDE position number
+
+# ============================================================================
+# PART I: FUNCTIONAL SPECIFICATION (Human-maintained)
+# ============================================================================
+functional:
+  # Business objective (WHO/WHAT/WHY)
+  objective:
+    who: ""              # Target user role (Operateur caisse, Gestionnaire, etc.)
+    what: ""             # Main action/purpose
+    why: ""              # Business reason
+
+  # User flow (step-by-step actions)
+  user_flow: []
+  # Example:
+  # - Selection du menu "Ventes"
+  # - Saisie du montant
+  # - Validation paiement
+  # - Impression ticket
+
+  # Error cases handled
+  error_cases: []
+  # Example:
+  # - condition: Stock insuffisant
+  #   message: "Stock epuise pour cet article"
+  #   severity: HIGH
+  # - condition: Montant negatif
+  #   message: "Montant invalide"
+  #   severity: MEDIUM
+
+# ============================================================================
+# BUSINESS RULES (Validated by humans, linked to expressions)
+# ============================================================================
+business_rules: []
+# Example:
+# - code: RM-001
+#   description: Montant minimum 10 EUR
+#   expression_id: 45           # Links to KB expression
+#   validated: true
+#   validated_by: ALB
+#   validated_date: 2026-01-26
+# - code: RM-002
+#   description: Stock disponible avant vente
+#   expression_id: 67
+#   validated: false            # Not yet validated
+
+# ============================================================================
+# MIGRATION NOTES
+# ============================================================================
+migration:
+  # Override auto-calculated complexity (null = use auto)
+  complexity_override: null    # null, LOW, MEDIUM, HIGH, CRITICAL
+
+  # Target architecture for migration
+  target_architecture: CQRS    # CQRS, MVC, CRUD
+
+  # Special considerations for migration
+  notes: []
+  # Example:
+  # - Uses global variables extensively
+  # - Complex date calculations
+  # - Cross-project dependencies with PVE
+
+  # Required test coverage
+  test_coverage:
+    unit_tests: 80             # % required
+    integration_tests: true
+    regression_patterns: true
+
+# ============================================================================
+# DEPENDENCIES (Human-identified cross-project relationships)
+# ============================================================================
+dependencies:
+  # External systems or APIs
+  external: []
+  # Example:
+  # - name: Payment Gateway
+  #   type: API
+  #   notes: Calls TPE for card payments
+
+  # Critical ECF dependencies
+  ecf_notes: ""
+  # Example: "Uses ADH.ecf for shared caisse functions"
+
+# ============================================================================
+# CHANGE HISTORY (Human-maintained changelog)
+# ============================================================================
+history: []
+# Example:
+# - date: 2026-01-26
+#   author: ALB
+#   change: Added validation for negative amounts
+#   ticket: PMS-1234
+
+# ============================================================================
+# METADATA
+# ============================================================================
+metadata:
+  author: ""                   # Initial author
+  created_at: ""               # Creation date
+  last_updated: ""             # Last modification date
+  reviewers: []                # List of people who reviewed
+  tags: []                     # Custom tags for categorization

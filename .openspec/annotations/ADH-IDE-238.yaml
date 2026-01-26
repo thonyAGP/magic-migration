@@ -1,0 +1,79 @@
+# ADH IDE 238 - Vente Gift Pass
+# Human annotations for spec rendering
+
+program:
+  project: "ADH"
+  ide: 238
+
+functional:
+  objective:
+    who: "Operateur caisse"
+    what: "Enregistrer vente de Gift Pass"
+    why: "Permettre achat de cartes cadeaux a valeur predeterminee"
+
+  user_flow:
+    - Selection "Vente Gift Pass" depuis menu caisse
+    - Saisie du montant ou selection valeur predeterminee
+    - Saisie quantite si multiple
+    - Validation paiement (especes, CB, autre)
+    - Impression ticket cadeau
+
+  error_cases:
+    - condition: Stock insuffisant
+      message: "Stock de Gift Pass epuise"
+      severity: HIGH
+    - condition: Montant inferieur au minimum
+      message: "Montant minimum 10 EUR requis"
+      severity: MEDIUM
+    - condition: Session caisse fermee
+      message: "Ouvrir une session avant vente"
+      severity: CRITICAL
+
+business_rules:
+  - code: RM-001
+    description: Montant minimum de vente fixe a 10 EUR
+    expression_id: null
+    validated: false
+  - code: RM-002
+    description: Verification du stock avant validation
+    expression_id: null
+    validated: false
+  - code: RM-003
+    description: Ticket obligatoire apres vente reussie
+    expression_id: null
+    validated: false
+
+migration:
+  complexity_override: null
+  target_architecture: CQRS
+  notes:
+    - "Utilise table cc_ventes pour enregistrement"
+    - "Appel PrintTicket pour impression"
+    - "Lie a la session caisse courante"
+  test_coverage:
+    unit_tests: 80
+    integration_tests: true
+    regression_patterns: true
+
+dependencies:
+  external:
+    - name: Imprimante tickets
+      type: Hardware
+      notes: "Impression via PrintTicket"
+  ecf_notes: "Utilise potentiellement des fonctions partagees de ADH.ecf"
+
+history:
+  - date: "2026-01-26"
+    author: "Claude"
+    change: "Creation annotation initiale"
+    ticket: null
+
+metadata:
+  author: "Claude"
+  created_at: "2026-01-26"
+  last_updated: "2026-01-26"
+  reviewers: []
+  tags:
+    - ventes
+    - gift-pass
+    - caisse

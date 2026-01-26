@@ -304,7 +304,7 @@ CREATE TABLE IF NOT EXISTS kb_metadata (
     value TEXT NOT NULL
 );
 
-INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('schema_version', '2');
+INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('schema_version', '7');
 INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('created_at', datetime('now'));
 
 -- ============================================================================
@@ -539,6 +539,121 @@ CREATE VIRTUAL TABLE IF NOT EXISTS specs_fts USING fts5(
     content='program_specs',
     content_rowid='id'
 );
+
+-- =========================================================================
+-- BUSINESS RULES (Schema v7 - Extracted from Expressions)
+-- =========================================================================
+
+-- Rules extracted from expressions for functional documentation
+CREATE TABLE IF NOT EXISTS business_rules (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    spec_id INTEGER REFERENCES program_specs(id) ON DELETE CASCADE,
+    expression_id INTEGER,
+    rule_code TEXT NOT NULL,              -- "RM-001", "RM-002"
+    rule_description TEXT,
+    condition_decoded TEXT,               -- Decoded IF condition
+    action_decoded TEXT,                  -- What happens if true
+    severity TEXT DEFAULT 'MEDIUM',       -- LOW, MEDIUM, HIGH, CRITICAL
+    is_validated INTEGER DEFAULT 0,       -- Human validated flag
+    validation_date TEXT,
+    validation_author TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(spec_id, rule_code)
+);
+
+CREATE INDEX IF NOT EXISTS idx_rules_spec ON business_rules(spec_id);
+CREATE INDEX IF NOT EXISTS idx_rules_code ON business_rules(rule_code);
+CREATE INDEX IF NOT EXISTS idx_rules_severity ON business_rules(severity);
+CREATE INDEX IF NOT EXISTS idx_rules_validated ON business_rules(is_validated);
+
+-- =========================================================================
+-- TASK DETAILS (Schema v7 - Extended Task Structure)
+-- =========================================================================
+
+-- Extended task information for hierarchical spec views
+CREATE TABLE IF NOT EXISTS task_details (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    spec_id INTEGER REFERENCES program_specs(id) ON DELETE CASCADE,
+    task_isn2 INTEGER NOT NULL,
+    task_name TEXT,
+    parent_isn2 INTEGER,
+    is_disabled INTEGER DEFAULT 0,        -- [D] marker
+    task_level INTEGER DEFAULT 0,
+    task_type TEXT,                        -- B=Batch, O=Online
+    form_name TEXT,
+    window_type INTEGER,
+    main_table_id INTEGER,
+    main_table_access TEXT,
+    column_count INTEGER DEFAULT 0,
+    logic_line_count INTEGER DEFAULT 0,
+    handler_count INTEGER DEFAULT 0,
+    disabled_line_count INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(spec_id, task_isn2)
+);
+
+CREATE INDEX IF NOT EXISTS idx_taskdetails_spec ON task_details(spec_id);
+CREATE INDEX IF NOT EXISTS idx_taskdetails_isn2 ON task_details(task_isn2);
+CREATE INDEX IF NOT EXISTS idx_taskdetails_disabled ON task_details(is_disabled);
+CREATE INDEX IF NOT EXISTS idx_taskdetails_form ON task_details(form_name);
+
+-- =========================================================================
+-- SPEC ANNOTATIONS (Schema v7 - Human Annotations Store)
+-- =========================================================================
+
+-- Store for human annotations (synced from YAML files)
+CREATE TABLE IF NOT EXISTS spec_annotations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    spec_id INTEGER REFERENCES program_specs(id) ON DELETE CASCADE,
+    annotation_type TEXT NOT NULL,        -- 'objective', 'user_flow', 'error_case', 'note', 'migration'
+    content_json TEXT NOT NULL,           -- JSON content
+    author TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_annotations_spec ON spec_annotations(spec_id);
+CREATE INDEX IF NOT EXISTS idx_annotations_type ON spec_annotations(annotation_type);
+
+-- =========================================================================
+-- SPEC CALL GRAPH (Schema v7 - Cached Call Graph Data)
+-- =========================================================================
+
+-- Cached call graph for fast cartography rendering
+CREATE TABLE IF NOT EXISTS spec_call_graph (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    spec_id INTEGER REFERENCES program_specs(id) ON DELETE CASCADE,
+    direction TEXT NOT NULL,              -- 'caller', 'callee'
+    related_project TEXT NOT NULL,
+    related_ide INTEGER NOT NULL,
+    related_name TEXT,
+    call_count INTEGER DEFAULT 1,
+    is_cross_project INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(spec_id, direction, related_project, related_ide)
+);
+
+CREATE INDEX IF NOT EXISTS idx_callgraph_spec ON spec_call_graph(spec_id);
+CREATE INDEX IF NOT EXISTS idx_callgraph_related ON spec_call_graph(related_project, related_ide);
+CREATE INDEX IF NOT EXISTS idx_callgraph_cross ON spec_call_graph(is_cross_project);
+
+-- =========================================================================
+-- SPEC BASELINES (Schema v7 - Anti-Regression Metrics)
+-- =========================================================================
+
+-- Store baseline metrics for regression detection
+CREATE TABLE IF NOT EXISTS spec_baselines (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    spec_id INTEGER REFERENCES program_specs(id) ON DELETE CASCADE,
+    metric_name TEXT NOT NULL,            -- 'expression_count', 'table_count', 'write_table_count', etc.
+    metric_value INTEGER NOT NULL,
+    threshold_alert INTEGER,              -- Deviation threshold for alerts
+    recorded_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(spec_id, metric_name)
+);
+
+CREATE INDEX IF NOT EXISTS idx_baselines_spec ON spec_baselines(spec_id);
+CREATE INDEX IF NOT EXISTS idx_baselines_metric ON spec_baselines(metric_name);
 
 -- Triggers for specs FTS sync
 CREATE TRIGGER IF NOT EXISTS specs_ai AFTER INSERT ON program_specs BEGIN

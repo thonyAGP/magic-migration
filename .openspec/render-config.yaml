@@ -1,0 +1,167 @@
+# Spec Rendering Configuration
+# Controls how KB data and annotations are merged into final specs
+
+version: "3.0"
+
+# ============================================================================
+# OUTPUT SETTINGS
+# ============================================================================
+output:
+  directory: ".openspec/renders"
+  filename_pattern: "{project}-IDE-{ide}.md"
+  date_format: "yyyy-MM-dd"
+
+# ============================================================================
+# SECTIONS CONFIGURATION
+# ============================================================================
+sections:
+  # Part I: Functional Specification
+  - name: identification
+    source: kb
+    required: true
+
+  - name: objective
+    source: annotation
+    fallback_message: "A completer dans .openspec/annotations/{project}-IDE-{ide}.yaml"
+
+  - name: user_flow
+    source: annotation
+    fallback_message: null
+
+  - name: error_cases
+    source: annotation
+    fallback_message: null
+
+  # Part II: Technical Specification
+  - name: tables
+    source: kb
+    required: true
+    options:
+      sort_by: access_then_id   # W first, then by ID
+      show_usage_count: true
+
+  - name: variables
+    source: kb
+    required: true
+    options:
+      include_vg: true
+      max_display: 30
+
+  - name: expressions
+    source: kb
+    required: true
+    options:
+      decode_level: full       # full, partial, raw
+      include_disabled: false
+      max_display: 50
+
+  - name: task_structure
+    source: kb
+    required: true
+    options:
+      show_disabled_marker: true
+      max_depth: 5
+
+  # Part III: Cartography
+  - name: call_graph
+    source: kb
+    required: true
+    options:
+      format: mermaid          # mermaid, ascii
+      max_depth: 2
+
+  - name: cross_project_deps
+    source: kb
+    options:
+      include_ecf: true
+
+  - name: impact_zones
+    source: kb
+
+  # Part IV: Anti-Regression
+  - name: known_patterns
+    source: merged             # KB patterns + annotation links
+
+  - name: baseline_metrics
+    source: kb
+    options:
+      metrics:
+        - expression_count
+        - table_count
+        - write_table_count
+      default_threshold: 10    # % deviation threshold
+
+  - name: change_history
+    source: annotation
+
+  # Part V: Migration Notes
+  - name: complexity_score
+    source: kb
+    options:
+      override_from_annotation: true
+
+  - name: target_architecture
+    source: annotation
+    default: CQRS
+
+  - name: test_requirements
+    source: annotation
+
+# ============================================================================
+# BUSINESS RULES EXTRACTION
+# ============================================================================
+business_rules:
+  # Auto-extract rules from expressions matching these patterns
+  auto_extract_patterns:
+    - pattern: "IF\\("
+      rule_type: conditional
+    - pattern: "CASE\\("
+      rule_type: switch
+    - pattern: ">|<|>=|<="
+      rule_type: validation
+
+  # Merge strategy: annotation rules override auto-extracted
+  merge_strategy: annotation_priority
+
+  # Minimum severity to include
+  min_severity: LOW
+
+# ============================================================================
+# ANTI-REGRESSION SETTINGS
+# ============================================================================
+anti_regression:
+  # Enable baseline tracking
+  enable_baselines: true
+
+  # Threshold for CRITICAL drift alert (% deviation)
+  critical_threshold: 20
+
+  # Threshold for MAJOR drift alert
+  major_threshold: 10
+
+  # Threshold for MINOR drift (informational)
+  minor_threshold: 5
+
+  # Metrics to track
+  tracked_metrics:
+    - name: expression_count
+      threshold: 10
+    - name: table_count
+      threshold: 3
+    - name: write_table_count
+      threshold: 1
+    - name: parameter_count
+      threshold: 2
+
+# ============================================================================
+# PATTERN INTEGRATION
+# ============================================================================
+patterns:
+  # Enable bidirectional links between specs and patterns
+  bidirectional_links: true
+
+  # Path to patterns directory
+  patterns_directory: ".openspec/patterns"
+
+  # Auto-match patterns by symptom keywords
+  auto_match: true

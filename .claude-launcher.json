@@ -1,0 +1,15 @@
+{
+  "profile": "magic-analysis",
+  "mcpServers": [
+    "context7"
+  ],
+  "rules": [
+    "dotnet",
+    "sql-server",
+    "magic-analysis"
+  ],
+  "openSpec": "full",
+  "skipTickets": false,
+  "dangerousMode": true,
+  "lastOpened": "2026-01-25T22:05:16.1830657+01:00"
+}

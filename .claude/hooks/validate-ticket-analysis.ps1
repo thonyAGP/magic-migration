@@ -1,7 +1,7 @@
 # validate-ticket-analysis.ps1
 # Hook de validation pour les analyses de tickets Magic
 # Verifie que le protocole ticket-analysis.md est respecte
-# Version 3.0 - Validation SEMANTIQUE (MCP Evidence, Variable Mapping, FieldID bloque)
+# Version 3.1 - Validation SEMANTIQUE + SPEC VALIDATION (MCP Evidence, Variable Mapping, FieldID bloque, Spec coherence)
 
 param(
     [Parameter(Mandatory=$true)]
@@ -15,7 +15,7 @@ if ($FilePath -notmatch '\.openspec[\\/]tickets[\\/][A-Z]+-\d+[\\/]analysis\.md$
     exit 0
 }
 
-Write-Host "=== Validation Protocole Ticket Analysis v3.0 ===" -ForegroundColor Cyan
+Write-Host "=== Validation Protocole Ticket Analysis v3.1 ===" -ForegroundColor Cyan
 Write-Host "Fichier: $FilePath" -ForegroundColor Gray
 
 $content = Get-Content $FilePath -Raw -ErrorAction SilentlyContinue
@@ -289,6 +289,98 @@ if ($content -match '## 6\. Solution|## Solution') {
     }
 } elseif ($phases["Phase5_RootCause"]) {
     $warnings += "[Phase 6] Section Solution absente (recommandee)"
+}
+
+# ============================================================================
+# VALIDATION V3.1: SPEC VALIDATION (Phase 3A - Capitalisation Plan)
+# ============================================================================
+
+Write-Host "`n--- Validation Specs ---" -ForegroundColor Cyan
+
+$validateSpecScript = Join-Path $PSScriptRoot "..\scripts\validate-change-against-spec.ps1"
+$specsDir = Join-Path $PSScriptRoot "..\..\..\.openspec\specs"
+
+if (Test-Path $validateSpecScript) {
+    # Extract ticket key from path
+    $ticketKey = ""
+    if ($FilePath -match '[\\/]([A-Z]+-\d+)[\\/]analysis\.md$') {
+        $ticketKey = $Matches[1]
+    }
+
+    # Extract all program references (ADH IDE 69, etc.)
+    $programRefs = @()
+    $progMatches = [regex]::Matches($content, '(ADH|PVE|PBP|PBG|VIL|REF)\s+IDE\s+(\d+)')
+    foreach ($m in $progMatches) {
+        $ref = "$($m.Groups[1].Value):$($m.Groups[2].Value)"
+        if ($ref -notin $programRefs) {
+            $programRefs += $ref
+        }
+    }
+
+    # Extract table references (Table n23, #849, etc.)
+    $tableRefs = @()
+    $tableMatches = [regex]::Matches($content, '(?:Table\s*n|#)(\d+)|table_id\s*[=:]\s*(\d+)')
+    foreach ($m in $tableMatches) {
+        $tableId = if ($m.Groups[1].Value) { $m.Groups[1].Value } else { $m.Groups[2].Value }
+        if ($tableId -and $tableId -notin $tableRefs) {
+            $tableRefs += $tableId
+        }
+    }
+
+    if ($programRefs.Count -gt 0 -and $ticketKey) {
+        Write-Host "[INFO] Validating $($programRefs.Count) programs against specs..." -ForegroundColor Gray
+
+        try {
+            $specValidation = & $validateSpecScript `
+                -TicketKey $ticketKey `
+                -ModifiedPrograms $programRefs `
+                -ChangedTables $tableRefs `
+                -OpenspecPath (Join-Path $PSScriptRoot "..\..\..\.openspec") 2>&1
+
+            # Parse JSON result
+            $validationResult = $specValidation | ConvertFrom-Json -ErrorAction SilentlyContinue
+
+            if ($validationResult) {
+                # Report specs found
+                if ($validationResult.SpecsFound.Count -gt 0) {
+                    Write-Host "[OK] $($validationResult.SpecsFound.Count) spec(s) validated" -ForegroundColor Green
+                    foreach ($spec in $validationResult.SpecsFound) {
+                        Write-Host "     - $($spec.Program): $($spec.Title)" -ForegroundColor Gray
+                    }
+                }
+
+                # Report specs not found (warnings)
+                foreach ($notFound in $validationResult.SpecsNotFound) {
+                    $warnings += "[Spec] No spec found for $notFound - Generate spec before major changes"
+                }
+
+                # Report spec validation warnings
+                foreach ($w in $validationResult.Warnings) {
+                    $warnings += "[Spec] $($w.Message)"
+                }
+
+                # Report spec validation errors
+                foreach ($e in $validationResult.Errors) {
+                    if ($e.Severity -eq "High") {
+                        $errors += "[Spec] $($e.Message)"
+                    } else {
+                        $warnings += "[Spec] $($e.Message)"
+                    }
+                }
+
+                # Report recommendations
+                foreach ($rec in $validationResult.Recommendations) {
+                    Write-Host "[REC] $($rec.Message)" -ForegroundColor Cyan
+                }
+            }
+        } catch {
+            Write-Host "[WARN] Spec validation skipped: $_" -ForegroundColor Yellow
+        }
+    } elseif ($programRefs.Count -eq 0) {
+        Write-Host "[SKIP] No program references found for spec validation" -ForegroundColor Gray
+    }
+} else {
+    Write-Host "[SKIP] Spec validation script not found" -ForegroundColor Gray
 }
 
 # ============================================================================

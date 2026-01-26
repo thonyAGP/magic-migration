@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpenSpec Viewer - Lecteur Magic</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
   <style>
     :root {
       --bg-primary: #0d1117;
@@ -74,6 +75,148 @@
       font-size: 10px;
       color: var(--text-secondary);
       margin-top: 4px;
+    }
+
+    /* Search */
+    .search-container {
+      margin-top: 12px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 12px 8px 32px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-top: 4px;
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .search-results.show { display: block; }
+
+    .search-result-item {
+      padding: 10px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--bg-secondary); }
+
+    .search-result-item .result-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-result-item .result-meta {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .search-result-item .result-highlight {
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    .search-filters {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .search-filter {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .search-filter:hover {
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+
+    .search-filter.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
+
+    .search-stats {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .no-results {
+      padding: 20px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .search-help {
+      padding: 12px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+    }
+
+    .search-help code {
+      background: var(--bg-primary);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: 'SF Mono', 'Consolas', monospace;
     }
 
     .nav-section {
@@ -619,6 +762,16 @@
     <div class="sidebar-header">
       <h1>OpenSpec Viewer</h1>
       <div class="updated" id="lastUpdated"></div>
+      <div class="search-container">
+        <span class="search-icon">&#x1F50D;</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Rechercher (table:849, access:W, vente...)" autocomplete="off">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+      <div class="search-filters">
+        <span class="search-filter" data-filter="write" onclick="toggleSearchFilter('write')">Write Only</span>
+        <span class="search-filter" data-filter="online" onclick="toggleSearchFilter('online')">Online</span>
+        <span class="search-filter" data-filter="batch" onclick="toggleSearchFilter('batch')">Batch</span>
+      </div>
     </div>
     <div id="navigation"></div>
   </aside>
@@ -654,6 +807,221 @@
       { id: 'resolved', label: 'Resolu' },
       { id: 'rejected', label: 'Rejete/KO' }
     ];
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    let searchIndex = null;
+    let specsData = [];
+    let activeFilters = new Set();
+    let debounceTimer = null;
+
+    function buildSearchIndex() {
+      if (!indexData || !indexData.specs) return;
+
+      specsData = indexData.specs.filter(s => !s.id.startsWith('TEMPLATE'));
+
+      searchIndex = lunr(function() {
+        this.ref('id');
+        this.field('title', { boost: 10 });
+        this.field('project', { boost: 5 });
+        this.field('type');
+        this.field('tables');
+        this.field('folder');
+
+        specsData.forEach(spec => {
+          this.add({
+            id: spec.id,
+            title: spec.title || '',
+            project: spec.project || '',
+            type: spec.type || '',
+            tables: spec.tables ? spec.tables.toString() : '0',
+            folder: spec.folder || ''
+          });
+        });
+      });
+    }
+
+    function performSearch(query) {
+      if (!searchIndex || !query.trim()) {
+        searchResults.classList.remove('show');
+        return;
+      }
+
+      const filters = parseSearchQuery(query);
+      let results = [];
+
+      // Use Lunr for text search if there's text beyond filters
+      if (filters.text) {
+        try {
+          const lunrResults = searchIndex.search(filters.text + '*');
+          results = lunrResults.map(r => specsData.find(s => s.id === r.ref)).filter(Boolean);
+        } catch (e) {
+          // If Lunr fails, do simple text match
+          const lowerText = filters.text.toLowerCase();
+          results = specsData.filter(s =>
+            (s.title && s.title.toLowerCase().includes(lowerText)) ||
+            (s.project && s.project.toLowerCase().includes(lowerText)) ||
+            (s.folder && s.folder.toLowerCase().includes(lowerText))
+          );
+        }
+      } else {
+        results = [...specsData];
+      }
+
+      // Apply filters
+      if (filters.table) {
+        const tableNum = parseInt(filters.table);
+        if (!isNaN(tableNum)) {
+          // Filter specs that have this table (we'd need table data in index)
+          // For now, just show all - enhancement: add tables array to index.json
+        }
+      }
+
+      if (filters.access === 'w' || activeFilters.has('write')) {
+        // Filter for write access - would need table access info in index
+        // For now, use heuristic: programs with >0 write tables
+      }
+
+      if (filters.type || activeFilters.has('online') || activeFilters.has('batch')) {
+        const targetType = filters.type || (activeFilters.has('online') ? 'online' : 'batch');
+        results = results.filter(s =>
+          s.type && s.type.toLowerCase() === targetType.toLowerCase()
+        );
+      }
+
+      displaySearchResults(results, query);
+    }
+
+    function parseSearchQuery(query) {
+      const filters = { text: query };
+
+      // Extract table: filter
+      const tableMatch = query.match(/table:(\S+)/i);
+      if (tableMatch) {
+        filters.table = tableMatch[1];
+        filters.text = filters.text.replace(tableMatch[0], '').trim();
+      }
+
+      // Extract access: filter
+      const accessMatch = query.match(/access:([rw])/i);
+      if (accessMatch) {
+        filters.access = accessMatch[1].toLowerCase();
+        filters.text = filters.text.replace(accessMatch[0], '').trim();
+      }
+
+      // Extract type: filter
+      const typeMatch = query.match(/type:(\S+)/i);
+      if (typeMatch) {
+        filters.type = typeMatch[1];
+        filters.text = filters.text.replace(typeMatch[0], '').trim();
+      }
+
+      return filters;
+    }
+
+    function displaySearchResults(results, query) {
+      if (results.length === 0) {
+        searchResults.innerHTML = `
+          <div class="no-results">
+            Aucun resultat pour "${query}"
+          </div>
+          <div class="search-help">
+            <strong>Syntaxe de recherche:</strong><br>
+            <code>table:849</code> - Recherche par table<br>
+            <code>access:W</code> - Tables en ecriture<br>
+            <code>type:Online</code> - Type de programme<br>
+            Ou simplement du texte libre
+          </div>
+        `;
+        searchResults.classList.add('show');
+        return;
+      }
+
+      let html = results.slice(0, 15).map(spec => {
+        const typeClass = spec.type ? spec.type.toLowerCase() : '';
+        return `
+          <div class="search-result-item" onclick="selectSearchResult('${spec.file}')">
+            <div class="result-title">
+              <span>${spec.project} IDE ${spec.ide}</span>
+              <span class="spec-badge ${typeClass}">${spec.type || '-'}</span>
+            </div>
+            <div class="result-meta">
+              <span>${spec.title}</span>
+            </div>
+            <div class="result-meta">
+              <span>Tables: ${spec.tables || 0}</span>
+              <span>Expr: ${spec.expressions || 0}</span>
+              ${spec.folder ? `<span>Dossier: ${spec.folder}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (results.length > 15) {
+        html += `<div class="search-help">Et ${results.length - 15} autres resultats...</div>`;
+      }
+
+      searchResults.innerHTML = html;
+      searchResults.classList.add('show');
+    }
+
+    function selectSearchResult(file) {
+      searchResults.classList.remove('show');
+      searchInput.value = '';
+      loadFile(file);
+      setActiveNav(file);
+      window.location.hash = encodeURIComponent(file);
+    }
+
+    function toggleSearchFilter(filter) {
+      const filterEl = document.querySelector(`[data-filter="${filter}"]`);
+      if (activeFilters.has(filter)) {
+        activeFilters.delete(filter);
+        filterEl.classList.remove('active');
+      } else {
+        activeFilters.add(filter);
+        filterEl.classList.add('active');
+      }
+
+      // Re-run search if there's a query
+      if (searchInput.value.trim()) {
+        performSearch(searchInput.value);
+      }
+    }
+
+    // Search event listeners
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => performSearch(e.target.value), 150);
+    });
+
+    searchInput.addEventListener('focus', () => {
+      if (searchInput.value.trim()) {
+        performSearch(searchInput.value);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-container')) {
+        searchResults.classList.remove('show');
+      }
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchResults.classList.remove('show');
+        searchInput.blur();
+      }
+    });
+
+    // Keyboard shortcut: Ctrl+K or / to focus search
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey && e.key === 'k') || (e.key === '/' && document.activeElement !== searchInput)) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
 
     function getDaysAgo(dateStr) {
       if (!dateStr) return null;
@@ -701,6 +1069,7 @@
         const response = await fetch('index.json?t=' + Date.now());
         indexData = await response.json();
         buildNavigation();
+        buildSearchIndex();
         updateLastUpdated();
 
         if (window.location.hash) {
@@ -1210,6 +1579,8 @@
     window.unarchiveTicket = unarchiveTicket;
     window.changeStatus = changeStatus;
     window.toggleStatusDropdown = toggleStatusDropdown;
+    window.selectSearchResult = selectSearchResult;
+    window.toggleSearchFilter = toggleSearchFilter;
 
     init();
   </script>

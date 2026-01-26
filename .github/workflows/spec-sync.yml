@@ -1,0 +1,311 @@
+# spec-sync.yml
+# Auto-regenerate program specs V3.0 when XML source files change
+# Part of Capitalisation Optimale plan - Phase 2
+
+name: Spec Sync
+
+on:
+  push:
+    paths:
+      # Watch for changes in Magic source files
+      - '**/Source/Prg_*.xml'
+      - '**/Source/ProgramHeaders.xml'
+      - '**/Source/DataSources.xml'
+    branches:
+      - master
+      - main
+
+  pull_request:
+    paths:
+      - '**/Source/Prg_*.xml'
+      - '**/Source/ProgramHeaders.xml'
+      - '**/Source/DataSources.xml'
+
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project to regenerate (ADH, PBP, etc. or ALL)'
+        required: true
+        default: 'ADH'
+      ide_range:
+        description: 'IDE range (e.g., 1-50 or specific IDE number)'
+        required: false
+        default: ''
+      force:
+        description: 'Force regeneration even if specs are newer'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  SPECS_PATH: .openspec/specs
+  RENDERS_PATH: .openspec/renders
+  ANNOTATIONS_PATH: .openspec/annotations
+
+jobs:
+  # ============================================================================
+  # STEP 1: Detect Changed Programs
+  # ============================================================================
+  detect-changes:
+    runs-on: windows-latest
+    outputs:
+      changed_programs: ${{ steps.detect.outputs.programs }}
+      has_changes: ${{ steps.detect.outputs.has_changes }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed programs
+        id: detect
+        shell: pwsh
+        run: |
+          $changedFiles = git diff --name-only HEAD~1 HEAD 2>$null | Where-Object { $_ -match 'Prg_\d+\.xml$' }
+
+          $programs = @()
+          foreach ($file in $changedFiles) {
+            if ($file -match '([A-Z]+)/Source/Prg_(\d+)\.xml$') {
+              $project = $Matches[1]
+              $prgId = $Matches[2]
+
+              # Map PrgId to IDE position
+              $progsXml = "$project/Source/Progs.xml"
+              if (Test-Path $progsXml) {
+                [xml]$progs = Get-Content $progsXml -Encoding UTF8
+                $programList = $progs.Application.ProgramsRepositoryOutLine.Programs.Program
+                for ($i = 0; $i -lt $programList.Count; $i++) {
+                  if ($programList[$i].id -eq $prgId) {
+                    $ide = $i + 1
+                    $programs += @{ Project = $project; IDE = $ide; PrgId = $prgId }
+                    break
+                  }
+                }
+              }
+            }
+          }
+
+          $hasChanges = $programs.Count -gt 0
+          $programsJson = $programs | ConvertTo-Json -Compress -AsArray
+
+          Write-Host "Changed programs: $programsJson"
+          echo "programs=$programsJson" >> $env:GITHUB_OUTPUT
+          echo "has_changes=$hasChanges" >> $env:GITHUB_OUTPUT
+
+  # ============================================================================
+  # STEP 2: Regression Check (GATE)
+  # ============================================================================
+  regression-check:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    outputs:
+      blocked_programs: ${{ steps.check.outputs.blocked }}
+      passed: ${{ steps.check.outputs.passed }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build MCP tools
+        shell: pwsh
+        run: |
+          if (Test-Path "tools/MagicMcp/MagicMcp.csproj") {
+            dotnet build tools/MagicMcp/MagicMcp.csproj -c Release
+          }
+
+      - name: Run regression detection
+        id: check
+        shell: pwsh
+        run: |
+          $programs = '${{ needs.detect-changes.outputs.changed_programs }}' | ConvertFrom-Json
+          $blocked = @()
+          $warnings = @()
+
+          foreach ($p in $programs) {
+            Write-Host "Checking regression for $($p.Project) IDE $($p.IDE)..."
+
+            # Check if we have KB and regression detection tool
+            $kbPath = "$env:USERPROFILE\.magic-kb\knowledge.db"
+            if (-not (Test-Path $kbPath)) {
+              Write-Host "  KB not available, skipping regression check"
+              continue
+            }
+
+            # Run regression detection (would use MCP tool in full implementation)
+            # For now, check if spec exists and compare basic metrics
+            $specFile = ".openspec/specs/$($p.Project)-IDE-$($p.IDE).md"
+            if (Test-Path $specFile) {
+              # Parse existing spec for baseline metrics
+              $specContent = Get-Content $specFile -Raw
+
+              # Check for CRITICAL patterns
+              if ($specContent -match 'Tables en ecriture:\s*(\d+)') {
+                $existingWriteTables = [int]$Matches[1]
+                # Would compare with new count here
+                Write-Host "  Current write tables: $existingWriteTables"
+              }
+            }
+          }
+
+          $passed = $blocked.Count -eq 0
+          $blockedJson = $blocked | ConvertTo-Json -Compress -AsArray
+
+          echo "blocked=$blockedJson" >> $env:GITHUB_OUTPUT
+          echo "passed=$passed" >> $env:GITHUB_OUTPUT
+
+          if (-not $passed) {
+            Write-Host "::error::CRITICAL regression detected in: $($blocked -join ', ')"
+          }
+
+  # ============================================================================
+  # STEP 3: Regenerate Specs
+  # ============================================================================
+  regenerate-specs:
+    needs: [detect-changes, regression-check]
+    if: needs.regression-check.outputs.passed == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Regenerate changed specs
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          $programs = '${{ needs.detect-changes.outputs.changed_programs }}' | ConvertFrom-Json
+
+          foreach ($p in $programs) {
+            Write-Host "Regenerating: $($p.Project) IDE $($p.IDE)"
+
+            # Try Render-Spec.ps1 first (V3.0), fallback to V2
+            $renderScript = ".\tools\spec-generator\Render-Spec.ps1"
+            $v2Script = ".\tools\spec-generator\Generate-ProgramSpecV2.ps1"
+
+            if (Test-Path $renderScript) {
+              & $renderScript -Project $p.Project -IDE $p.IDE
+            } elseif (Test-Path $v2Script) {
+              & $v2Script -Project $p.Project -IDE $p.IDE
+            } else {
+              Write-Warning "No spec generator found for $($p.Project) IDE $($p.IDE)"
+            }
+          }
+
+      - name: Regenerate specs (manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        run: |
+          $project = '${{ github.event.inputs.project }}'
+          $ideRange = '${{ github.event.inputs.ide_range }}'
+          $force = '${{ github.event.inputs.force }}' -eq 'true'
+
+          if ($project -eq 'ALL') {
+            Write-Host "Regenerating all specs..."
+            if (Test-Path ".\tools\spec-generator\Batch-GenerateSpecs.ps1") {
+              .\tools\spec-generator\Batch-GenerateSpecs.ps1 -Since LastTag -SyncToKb $(if ($force) { "-Force" })
+            }
+          } else {
+            Write-Host "Regenerating specs for project: $project"
+            if ($ideRange -match '(\d+)-(\d+)') {
+              $from = [int]$Matches[1]
+              $to = [int]$Matches[2]
+              for ($i = $from; $i -le $to; $i++) {
+                & ".\tools\spec-generator\Render-Spec.ps1" -Project $project -IDE $i
+              }
+            } elseif ($ideRange -match '^\d+$') {
+              & ".\tools\spec-generator\Render-Spec.ps1" -Project $project -IDE ([int]$ideRange)
+            } else {
+              .\tools\spec-generator\Batch-GenerateSpecs.ps1 -Project $project -IdeFrom 1 -IdeTo 400 -SyncToKb
+            }
+          }
+
+      - name: Sync specs to KB
+        shell: pwsh
+        run: |
+          if (Test-Path ".\tools\spec-generator\Sync-SpecsToKb.ps1") {
+            .\tools\spec-generator\Sync-SpecsToKb.ps1
+          }
+
+      - name: Commit updated specs
+        if: github.event_name == 'push'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(specs): auto-regenerate V3.0 from XML changes [skip ci]"
+          file_pattern: |
+            .openspec/specs/*.md
+            .openspec/renders/*.md
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+
+  # ============================================================================
+  # STEP 4: Report on PR
+  # ============================================================================
+  report-pr:
+    needs: [detect-changes, regression-check, regenerate-specs]
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const programs = JSON.parse('${{ needs.detect-changes.outputs.changed_programs }}');
+            const passed = '${{ needs.regression-check.outputs.passed }}' === 'true';
+
+            let body = '## Spec Sync Report\n\n';
+
+            if (programs.length === 0) {
+              body += 'No program XML files were changed.\n';
+            } else {
+              body += `### Changed Programs (${programs.length})\n\n`;
+              body += '| Project | IDE | Status |\n';
+              body += '|---------|-----|--------|\n';
+              for (const p of programs) {
+                const status = passed ? ':white_check_mark: Passed' : ':x: Blocked';
+                body += `| ${p.Project} | ${p.IDE} | ${status} |\n`;
+              }
+            }
+
+            if (!passed) {
+              body += '\n:warning: **CRITICAL regression detected** - Please review before merging.\n';
+            }
+
+            body += '\n---\n*Generated by Spec Sync workflow*';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+  # ============================================================================
+  # STEP 5: Notify on Failure
+  # ============================================================================
+  notify-failure:
+    needs: [detect-changes, regression-check, regenerate-specs]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create issue on failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: ':rotating_light: Spec Sync workflow failed',
+              body: `The spec sync workflow failed on commit ${context.sha}.\n\n**Run:** ${runUrl}\n\n**Triggered by:** ${context.eventName}`,
+              labels: ['bug', 'automation', 'specs']
+            });

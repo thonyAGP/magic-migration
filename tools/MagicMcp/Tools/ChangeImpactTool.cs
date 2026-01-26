@@ -702,5 +702,396 @@ public static class ChangeImpactTool
         return sb.ToString();
     }
 
+    [McpServerTool(Name = "magic_precheck_change")]
+    [Description(@"Pre-flight check before making changes. Returns PASS/WARN/BLOCK with recommendations.
+Use BEFORE modifying any program, table, or expression to prevent regressions.
+
+Examples:
+- magic_precheck_change('table', '849') - Check impact of modifying table 849
+- magic_precheck_change('program', 'ADH:238') - Check impact of modifying ADH IDE 238
+- magic_precheck_change('expression', 'ProgIdx') - Check programs using ProgIdx()")]
+    public static string PrecheckChange(
+        KnowledgeDb db,
+        [Description("Change type: 'table', 'program', or 'expression'")] string changeType,
+        [Description("Target: table ID, program (PROJECT:IDE), or expression pattern")] string target)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("# Pre-Change Check Report");
+        sb.AppendLine();
+
+        var warnings = new List<string>();
+        var blockers = new List<string>();
+        var recommendations = new List<string>();
+
+        switch (changeType.ToLower())
+        {
+            case "table":
+                PrecheckTableChange(db, target, sb, warnings, blockers, recommendations);
+                break;
+
+            case "program":
+                PrecheckProgramChange(db, target, sb, warnings, blockers, recommendations);
+                break;
+
+            case "expression":
+                PrecheckExpressionChange(db, target, sb, warnings, blockers, recommendations);
+                break;
+
+            default:
+                return $"ERROR: Unknown change type '{changeType}'. Use 'table', 'program', or 'expression'.";
+        }
+
+        // Verdict
+        sb.AppendLine();
+        sb.AppendLine("## Verdict");
+        sb.AppendLine();
+
+        if (blockers.Count > 0)
+        {
+            sb.AppendLine("### **BLOCKED** - Do NOT proceed without review");
+            sb.AppendLine();
+            foreach (var b in blockers)
+                sb.AppendLine($"- {b}");
+            sb.AppendLine();
+            sb.AppendLine("> Contact tech lead before making this change.");
+        }
+        else if (warnings.Count >= 3)
+        {
+            sb.AppendLine("### **CAUTION** - High-impact change");
+            sb.AppendLine();
+            foreach (var w in warnings)
+                sb.AppendLine($"- {w}");
+        }
+        else if (warnings.Count > 0)
+        {
+            sb.AppendLine("### **PASS WITH WARNINGS**");
+            sb.AppendLine();
+            foreach (var w in warnings)
+                sb.AppendLine($"- {w}");
+        }
+        else
+        {
+            sb.AppendLine("### **PASS** - Low-risk change");
+            sb.AppendLine();
+            sb.AppendLine("No significant impact detected.");
+        }
+
+        if (recommendations.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine("## Recommendations");
+            sb.AppendLine();
+            for (int i = 0; i < recommendations.Count; i++)
+            {
+                sb.AppendLine($"{i + 1}. {recommendations[i]}");
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private static void PrecheckTableChange(
+        KnowledgeDb db, string tableIdOrName,
+        StringBuilder sb, List<string> warnings, List<string> blockers, List<string> recommendations)
+    {
+        sb.AppendLine($"## Checking Table: {tableIdOrName}");
+        sb.AppendLine();
+
+        // Find table
+        using var tableCmd = db.Connection.CreateCommand();
+        if (int.TryParse(tableIdOrName, out var tableId))
+        {
+            tableCmd.CommandText = @"SELECT xml_id, logical_name FROM tables WHERE xml_id = @id OR ide_position = @id";
+            tableCmd.Parameters.AddWithValue("@id", tableId);
+        }
+        else
+        {
+            tableCmd.CommandText = @"SELECT xml_id, logical_name FROM tables WHERE logical_name LIKE @name OR physical_name LIKE @name LIMIT 1";
+            tableCmd.Parameters.AddWithValue("@name", $"%{tableIdOrName}%");
+        }
+
+        int foundTableId;
+        string? tableName = null;
+        using (var reader = tableCmd.ExecuteReader())
+        {
+            if (!reader.Read())
+            {
+                sb.AppendLine($"*Table '{tableIdOrName}' not found in KB*");
+                warnings.Add("Table not indexed - manual verification required");
+                return;
+            }
+            foundTableId = reader.GetInt32(0);
+            tableName = reader.GetString(1);
+        }
+
+        sb.AppendLine($"**Table**: {tableName} (#{foundTableId})");
+        sb.AppendLine();
+
+        // Count writers
+        using var writerCmd = db.Connection.CreateCommand();
+        writerCmd.CommandText = @"
+            SELECT COUNT(DISTINCT p.id)
+            FROM table_usage tu
+            JOIN tasks t ON tu.task_id = t.id
+            JOIN programs p ON t.program_id = p.id
+            WHERE tu.table_id = @table_id AND tu.usage_type = 'W'";
+        writerCmd.Parameters.AddWithValue("@table_id", foundTableId);
+        var writerCount = Convert.ToInt32(writerCmd.ExecuteScalar() ?? 0);
+
+        // Count readers
+        using var readerCmd = db.Connection.CreateCommand();
+        readerCmd.CommandText = @"
+            SELECT COUNT(DISTINCT p.id)
+            FROM table_usage tu
+            JOIN tasks t ON tu.task_id = t.id
+            JOIN programs p ON t.program_id = p.id
+            WHERE tu.table_id = @table_id AND tu.usage_type = 'R'";
+        readerCmd.Parameters.AddWithValue("@table_id", foundTableId);
+        var readerCount = Convert.ToInt32(readerCmd.ExecuteScalar() ?? 0);
+
+        // Count projects
+        using var projCmd = db.Connection.CreateCommand();
+        projCmd.CommandText = @"
+            SELECT COUNT(DISTINCT pr.id)
+            FROM table_usage tu
+            JOIN tasks t ON tu.task_id = t.id
+            JOIN programs p ON t.program_id = p.id
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE tu.table_id = @table_id";
+        projCmd.Parameters.AddWithValue("@table_id", foundTableId);
+        var projectCount = Convert.ToInt32(projCmd.ExecuteScalar() ?? 0);
+
+        sb.AppendLine($"| Metric | Value |");
+        sb.AppendLine($"|--------|-------|");
+        sb.AppendLine($"| Writers | {writerCount} |");
+        sb.AppendLine($"| Readers | {readerCount} |");
+        sb.AppendLine($"| Projects | {projectCount} |");
+        sb.AppendLine();
+
+        // Apply rules
+        if (projectCount > 2)
+        {
+            blockers.Add($"Table #{foundTableId} is used by {projectCount} projects - cross-project impact");
+        }
+        else if (writerCount > 5)
+        {
+            blockers.Add($"Table #{foundTableId} has {writerCount} writers - schema change is HIGH RISK");
+        }
+
+        if (writerCount > 3)
+        {
+            warnings.Add($"{writerCount} programs write to this table");
+        }
+
+        if (readerCount > 10)
+        {
+            warnings.Add($"{readerCount} programs read from this table");
+        }
+
+        // Get top writers for recommendations
+        using var topWritersCmd = db.Connection.CreateCommand();
+        topWritersCmd.CommandText = @"
+            SELECT pr.name, p.ide_position, p.name
+            FROM table_usage tu
+            JOIN tasks t ON tu.task_id = t.id
+            JOIN programs p ON t.program_id = p.id
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE tu.table_id = @table_id AND tu.usage_type = 'W'
+            GROUP BY p.id
+            ORDER BY COUNT(*) DESC
+            LIMIT 5";
+        topWritersCmd.Parameters.AddWithValue("@table_id", foundTableId);
+
+        var priority = new List<string>();
+        using (var reader = topWritersCmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                priority.Add($"{reader.GetString(0)} IDE {reader.GetInt32(1)}");
+            }
+        }
+
+        if (priority.Count > 0)
+        {
+            recommendations.Add($"Test writers first: {string.Join(", ", priority)}");
+        }
+        recommendations.Add($"Run `magic_impact_table {foundTableId}` for full analysis");
+    }
+
+    private static void PrecheckProgramChange(
+        KnowledgeDb db, string programRef,
+        StringBuilder sb, List<string> warnings, List<string> blockers, List<string> recommendations)
+    {
+        sb.AppendLine($"## Checking Program: {programRef}");
+        sb.AppendLine();
+
+        // Parse PROJECT:IDE format
+        if (!System.Text.RegularExpressions.Regex.IsMatch(programRef, @"^([A-Z]+):(\d+)$"))
+        {
+            sb.AppendLine($"*Invalid format '{programRef}'. Use PROJECT:IDE (e.g., ADH:238)*");
+            return;
+        }
+
+        var parts = programRef.Split(':');
+        var project = parts[0];
+        var ide = int.Parse(parts[1]);
+
+        // Find program
+        using var progCmd = db.Connection.CreateCommand();
+        progCmd.CommandText = @"
+            SELECT p.id, p.name, p.public_name
+            FROM programs p
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE pr.name = @project AND p.ide_position = @ide";
+        progCmd.Parameters.AddWithValue("@project", project);
+        progCmd.Parameters.AddWithValue("@ide", ide);
+
+        long dbProgId;
+        string? progName = null;
+        string? publicName = null;
+        using (var reader = progCmd.ExecuteReader())
+        {
+            if (!reader.Read())
+            {
+                sb.AppendLine($"*Program {project} IDE {ide} not found in KB*");
+                warnings.Add("Program not indexed - manual verification required");
+                return;
+            }
+            dbProgId = reader.GetInt64(0);
+            progName = reader.GetString(1);
+            publicName = reader.IsDBNull(2) ? null : reader.GetString(2);
+        }
+
+        sb.AppendLine($"**Program**: {progName}");
+        if (!string.IsNullOrEmpty(publicName))
+            sb.AppendLine($"**Public Name**: {publicName}");
+        sb.AppendLine();
+
+        // Count callers
+        using var callerCmd = db.Connection.CreateCommand();
+        callerCmd.CommandText = @"
+            SELECT COUNT(DISTINCT t.program_id)
+            FROM program_calls pc
+            JOIN tasks t ON pc.caller_task_id = t.id
+            WHERE pc.callee_program_id = @prog_id";
+        callerCmd.Parameters.AddWithValue("@prog_id", dbProgId);
+        var callerCount = Convert.ToInt32(callerCmd.ExecuteScalar() ?? 0);
+
+        // Check cross-project callers
+        using var crossCallerCmd = db.Connection.CreateCommand();
+        crossCallerCmd.CommandText = @"
+            SELECT COUNT(DISTINCT t.program_id)
+            FROM program_calls pc
+            JOIN tasks t ON pc.caller_task_id = t.id
+            JOIN programs p ON t.program_id = p.id
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE pc.callee_program_id = @prog_id AND pr.name != @project";
+        crossCallerCmd.Parameters.AddWithValue("@prog_id", dbProgId);
+        crossCallerCmd.Parameters.AddWithValue("@project", project);
+        var crossCallerCount = Convert.ToInt32(crossCallerCmd.ExecuteScalar() ?? 0);
+
+        // Check ECF membership
+        using var ecfCmd = db.Connection.CreateCommand();
+        ecfCmd.CommandText = @"SELECT ecf_name FROM shared_components WHERE owner_project = @project AND program_ide_position = @ide";
+        ecfCmd.Parameters.AddWithValue("@project", project);
+        ecfCmd.Parameters.AddWithValue("@ide", ide);
+        var ecfName = ecfCmd.ExecuteScalar() as string;
+
+        sb.AppendLine($"| Metric | Value |");
+        sb.AppendLine($"|--------|-------|");
+        sb.AppendLine($"| Callers | {callerCount} |");
+        sb.AppendLine($"| Cross-project callers | {crossCallerCount} |");
+        sb.AppendLine($"| ECF | {ecfName ?? "-"} |");
+        sb.AppendLine();
+
+        // Apply rules
+        if (!string.IsNullOrEmpty(ecfName))
+        {
+            blockers.Add($"Program is shared via {ecfName} - affects multiple projects");
+        }
+
+        if (crossCallerCount > 0)
+        {
+            blockers.Add($"{crossCallerCount} cross-project caller(s) - breaking change affects other projects");
+        }
+
+        if (callerCount > 10)
+        {
+            warnings.Add($"{callerCount} programs call this one - interface changes are high-risk");
+        }
+        else if (callerCount > 3)
+        {
+            warnings.Add($"{callerCount} programs call this one");
+        }
+
+        recommendations.Add($"Run `magic_impact_program {project} {ide}` for full analysis");
+        if (callerCount > 0)
+        {
+            recommendations.Add($"Test all callers after changes");
+        }
+    }
+
+    private static void PrecheckExpressionChange(
+        KnowledgeDb db, string pattern,
+        StringBuilder sb, List<string> warnings, List<string> blockers, List<string> recommendations)
+    {
+        sb.AppendLine($"## Checking Expression Pattern: {pattern}");
+        sb.AppendLine();
+
+        // Count occurrences
+        using var countCmd = db.Connection.CreateCommand();
+        countCmd.CommandText = @"SELECT COUNT(*) FROM expressions WHERE content LIKE @pattern";
+        countCmd.Parameters.AddWithValue("@pattern", $"%{pattern}%");
+        var count = Convert.ToInt32(countCmd.ExecuteScalar() ?? 0);
+
+        // Count affected programs
+        using var progCountCmd = db.Connection.CreateCommand();
+        progCountCmd.CommandText = @"
+            SELECT COUNT(DISTINCT e.program_id)
+            FROM expressions e
+            WHERE e.content LIKE @pattern";
+        progCountCmd.Parameters.AddWithValue("@pattern", $"%{pattern}%");
+        var programCount = Convert.ToInt32(progCountCmd.ExecuteScalar() ?? 0);
+
+        // Count affected projects
+        using var projCountCmd = db.Connection.CreateCommand();
+        projCountCmd.CommandText = @"
+            SELECT COUNT(DISTINCT pr.id)
+            FROM expressions e
+            JOIN programs p ON e.program_id = p.id
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE e.content LIKE @pattern";
+        projCountCmd.Parameters.AddWithValue("@pattern", $"%{pattern}%");
+        var projectCount = Convert.ToInt32(projCountCmd.ExecuteScalar() ?? 0);
+
+        sb.AppendLine($"| Metric | Value |");
+        sb.AppendLine($"|--------|-------|");
+        sb.AppendLine($"| Expressions matching | {count} |");
+        sb.AppendLine($"| Programs affected | {programCount} |");
+        sb.AppendLine($"| Projects affected | {projectCount} |");
+        sb.AppendLine();
+
+        // Apply rules
+        if (projectCount > 2)
+        {
+            blockers.Add($"Pattern found in {projectCount} projects - cross-project change");
+        }
+
+        if (count > 50)
+        {
+            warnings.Add($"{count} expressions match this pattern - mass change required");
+        }
+        else if (count > 10)
+        {
+            warnings.Add($"{count} expressions match this pattern");
+        }
+
+        if (count > 0)
+        {
+            recommendations.Add($"Run `magic_impact_expression '{pattern}'` for full analysis");
+            recommendations.Add($"Test {Math.Min(count, 5)} representative programs after changes");
+        }
+    }
+
     private record ImpactRecord(string Type, string Project, int Ide, string Severity);
 }

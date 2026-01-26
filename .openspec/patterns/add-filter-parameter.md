@@ -155,5 +155,21 @@ IF({2,25}<>'', {0,29}={2,25}, 'TRUE'LOG)
 
 ---
 
+## Specs concernees
+
+Ces specs documentent les programmes utilisant ce pattern:
+
+| Spec | Programme | Role |
+|------|-----------|------|
+| [ADH-IDE-69](../specs/ADH-IDE-69.md) | EXTRAIT_COMPTE | Programme appelant avec Range filtre |
+| [ADH-IDE-72](../specs/ADH-IDE-72.md) | EXTRAIT_CUM | Sous-programme avec parametre filter |
+| [ADH-IDE-73](../specs/ADH-IDE-73.md) | EXTRAIT_IMP | Sous-programme avec parametre filter |
+
+### Tables impactees
+- `#50` cafil028_dat - moyens_reglement_mor
+- `#89` cafil067_dat - moyen_paiement___mop
+
+---
+
 *Pattern documente: 2026-01-12*
 *Ticket source: PMS-1373*

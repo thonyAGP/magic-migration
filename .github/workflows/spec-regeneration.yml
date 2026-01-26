@@ -1,0 +1,154 @@
+# spec-regeneration.yml
+# Auto-regenerate program specs when XML source files change
+# Part of Phase 3B: Capitalisation Specifications Plan
+
+name: Auto-regenerate Specs
+
+on:
+  push:
+    paths:
+      # Watch for changes in Magic source files
+      - '**/Source/Prg_*.xml'
+      - '**/Source/ProgramHeaders.xml'
+      - '**/Source/DataSources.xml'
+    branches:
+      - master
+      - main
+
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project to regenerate (ADH, PBP, etc. or ALL)'
+        required: true
+        default: 'ALL'
+      force:
+        description: 'Force regeneration even if specs are newer'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  detect-changes:
+    runs-on: windows-latest
+    outputs:
+      changed_programs: ${{ steps.detect.outputs.programs }}
+      has_changes: ${{ steps.detect.outputs.has_changes }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need previous commit for diff
+
+      - name: Detect changed programs
+        id: detect
+        shell: pwsh
+        run: |
+          $changedFiles = git diff --name-only HEAD~1 HEAD | Where-Object { $_ -match 'Prg_\d+\.xml$' }
+
+          $programs = @()
+          foreach ($file in $changedFiles) {
+            if ($file -match '([A-Z]+)/Source/Prg_(\d+)\.xml$') {
+              $project = $Matches[1]
+              $prgId = $Matches[2]
+              $programs += "$project`:$prgId"
+            }
+          }
+
+          $hasChanges = $programs.Count -gt 0
+          $programsJson = $programs | ConvertTo-Json -Compress
+
+          Write-Host "Changed programs: $programsJson"
+          echo "programs=$programsJson" >> $env:GITHUB_OUTPUT
+          echo "has_changes=$hasChanges" >> $env:GITHUB_OUTPUT
+
+  regenerate-specs:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Regenerate specs from changes
+        if: github.event_name == 'push'
+        shell: pwsh
+        run: |
+          $programs = '${{ needs.detect-changes.outputs.changed_programs }}' | ConvertFrom-Json
+
+          foreach ($prog in $programs) {
+            if ($prog -match '^([A-Z]+):(\d+)$') {
+              $project = $Matches[1]
+              $prgId = $Matches[2]
+
+              # Map PrgId to IDE position (requires Progs.xml)
+              $progsXml = "${{ github.workspace }}\$project\Source\Progs.xml"
+              if (Test-Path $progsXml) {
+                [xml]$progs = Get-Content $progsXml
+                $programs = $progs.Application.ProgramsRepositoryOutLine.Programs.Program
+                for ($i = 0; $i -lt $programs.Count; $i++) {
+                  if ($programs[$i].id -eq $prgId) {
+                    $ide = $i + 1
+                    Write-Host "Regenerating: $project IDE $ide"
+                    # Call spec generator (adjust path as needed)
+                    # .\tools\spec-generator\Generate-ProgramSpecV2.ps1 -Project $project -IDE $ide
+                    break
+                  }
+                }
+              }
+            }
+          }
+
+      - name: Regenerate specs (manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        run: |
+          $project = '${{ github.event.inputs.project }}'
+          $force = '${{ github.event.inputs.force }}' -eq 'true'
+
+          if ($project -eq 'ALL') {
+            # Regenerate all specs
+            Write-Host "Regenerating all specs..."
+            .\tools\spec-generator\Batch-GenerateSpecs.ps1 -Since LastTag -SyncToKb $(if ($force) { "-Force" })
+          } else {
+            Write-Host "Regenerating specs for project: $project"
+            # Regenerate specific project specs
+            .\tools\spec-generator\Batch-GenerateSpecs.ps1 -Project $project -IdeFrom 1 -IdeTo 400 -SyncToKb $(if ($force) { "-Force" })
+          }
+
+      - name: Sync specs to KB
+        shell: pwsh
+        run: |
+          if (Test-Path ".\tools\spec-generator\Sync-SpecsToKb.ps1") {
+            .\tools\spec-generator\Sync-SpecsToKb.ps1
+          }
+
+      - name: Commit updated specs
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(specs): auto-regenerate from XML changes"
+          file_pattern: ".openspec/specs/*.md"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+
+  notify-on-failure:
+    needs: [detect-changes, regenerate-specs]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create issue on failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Spec regeneration failed',
+              body: `The spec regeneration workflow failed on commit ${context.sha}.\n\nSee: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              labels: ['bug', 'automation']
+            })

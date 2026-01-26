@@ -79,7 +79,16 @@
       "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" commit -m \"$\\(cat <<''EOF''\nchore\\(tools\\): add debug and analysis PowerShell scripts\n\n- Add VIL offset validation scripts \\(validate-vil-*.ps1\\)\n- Add XML debug scripts \\(debug-xml-32.ps1, get-header-32.ps1\\)\n- Add project analysis scripts \\(count-all-projects.ps1, list-*.ps1\\)\n- Add offset calculation scripts \\(complete-offset-*.ps1\\)\n- Add table/column analysis scripts\n- Add trace-hierarchy-32.ps1 for task nesting analysis\n- Add scripts/extract-ecf-candidates.ps1\n\nDevelopment and debugging utilities for Magic XML analysis\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" add .claude/hooks/hooks.json .claude/settings.local.json .mcp.json CLAUDE.md)",
       "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" commit -m \"$\\(cat <<''EOF''\nchore: clean up obsolete config files\n\n- Remove .claude/hooks/hooks.json \\(migrated to settings\\)\n- Remove .mcp.json \\(MCP config now in settings.local.json\\)\n- Remove CLAUDE.md \\(instructions now in global ~/.claude/CLAUDE.md\\)\n- Update .claude/settings.local.json with current configuration\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" log --oneline --all --grep=\"PMS-\")",
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" log --oneline --all --grep=\"CMDS-\")",
+      "Bash($r.issues)",
+      "Bash(git -C D:/Projects/Lecteur_Magic status --porcelain)",
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" add .openspec/tickets/PMS-1453/ .openspec/index.json .openspec/tickets/index.json)",
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" diff --cached --stat)",
+      "Bash(Remove-Item \"D:\\\\Projects\\\\Lecteur_Magic\\\\.git\\\\index.lock\" -Force -ErrorAction SilentlyContinue)",
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" commit -m \"$\\(cat <<''EOF''\ndocs\\(tickets\\): complete PMS-1453 analysis + fix OpenSpec viewer\n\nPMS-1453 Analysis:\n- Root cause: Missing Picture validation on FIELD_TIME columns\n- Location: ADH IDE 307 Task 307.37 \\(Saisie transaction Nouv vente\\)\n- Solution: Add <Picture id=\"157\" valUnicode=\"HH:MM\"/> to columns 5 and 13\n\nOpenSpec Viewer fix:\n- Update index.json format to match viewer.html expectations\n- Add lastUpdated, reports array, tickets.archived structure\n- Add 10 principal/technical reports\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" push origin master)"
     ]
   }
 }

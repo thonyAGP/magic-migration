@@ -6,6 +6,7 @@
 
 ### Janvier 2026
 
+- 2026-01-26: **CAPITALISATION OPTIMALE V3.0** - Implementation plan hybride G+D+B. Phase 1: Schema KB v7 (business_rules, task_details, spec_annotations, spec_call_graph, spec_baselines). Phase 2: GitHub Actions (spec-sync.yml, spec-drift-alert.yml). Phase 3: Render-Spec.ps1 (merge KB+YAML), Extract-BusinessRules.ps1, Generate-CallGraph.ps1. Template Spec V3.0, annotations YAML, render-config.yaml
 - 2026-01-24: **OPTIMISATION CONTEXTE** - Separation changelog, deplacement business rules vers rules/business.md, prompt Lanceur_Claude cree
 - 2026-01-22: **PARSER MAGIC V3 DETERMINISTE 100%** - Nouveau script `magic-logic-parser-v3.ps1` avec formule d'offset automatique et correcte. Formule: Offset = colonnes_ancetres_complets + colonnes_table_tache_cible. Teste sur VIL Prg_558 tache 19: Offset=131 EB, EU=v.FDR fermeture, EV=v.Session prec. Parsing ExpSyntax pour expressions. Documentation: `skills/magic-unipaas/references/dataview-offset-formula.md`
 - 2026-01-18: **INFRASTRUCTURE GIT DOCUMENTEE** - Architecture 4 repos (S: origin, C: dev, D: analyse, GitHub backup). Commandes sync, gestion conflits .opt/ProgramHeaders, schema ASCII complet
