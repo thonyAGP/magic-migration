@@ -1,16 +1,38 @@
 # PMS-1453 - Résolution
 
 > **Jira** : [PMS-1453](https://clubmed.atlassian.net/browse/PMS-1453)
+> **Pattern KB** : `missing-time-validation`
 
 ## Diagnostic
 
-Les champs de saisie d'heure de transfert dans le formulaire de vente (ADH IDE 244/245) n'ont pas de validation de plage. L'utilisateur peut saisir des heures comme "70:00" qui sont acceptées et stockées.
+Les champs de saisie d'heure de transfert dans **ADH IDE 307** (Tache 307.37) n'ont pas de Picture de validation. L'utilisateur peut saisir des heures invalides comme "70:00" qui sont acceptées et stockées dans la table `transfertn`.
 
-## Solution proposée
+**Cause racine** : Les colonnes FIELD_TIME sans Picture acceptent n'importe quelle valeur numerique.
 
-### Approche 1 : Validation Control Verify (recommandée)
+## Solution recommandée : Ajouter Picture HH:MM
 
-Ajouter un handler Control Verify sur les champs heure :
+### Modification XML (Prg_304.xml)
+
+**Colonne id=5** "W1 Heure transfert Aller" (ligne ~31823) :
+```xml
+<Picture id="157" valUnicode="HH:MM"/>
+```
+
+**Colonne id=13** "W1 Heure transfert Retour" (ligne ~31880) :
+```xml
+<Picture id="157" valUnicode="HH:MM"/>
+```
+
+### Programmes à modifier
+
+| Programme | Fichier | Tache | Colonnes |
+|-----------|---------|-------|----------|
+| ADH IDE 307 | Prg_304.xml | 307.37 | id=5, id=13 |
+| ADH IDE 313 | Prg_313.xml | A verifier | Meme structure |
+
+## Alternative : Validation Control Verify
+
+Si modification Picture impossible, ajouter handler Control Verify :
 
 ```
 IF heure > 86399 OR heure < 0 THEN
@@ -19,33 +41,25 @@ IF heure > 86399 OR heure < 0 THEN
 END IF
 ```
 
-### Approche 2 : Expression Range
-
-Utiliser la fonction `Range()` de Magic :
-
-```
-Range(heure, 0, 86399)
-```
-
-Retourne TRUE si la valeur est dans la plage, FALSE sinon.
-
-### Champs à modifier
-
-| Champ | FieldID | Table |
-|-------|---------|-------|
-| sod_trf_heure_transfert_aller | 54, 71 | saisie_od_par_service |
-| sod_trf_heure_transfert_retour | 61, 78 | saisie_od_par_service |
-
 ## Statut
 
 | Étape | Statut | Date |
 |-------|--------|------|
 | Analyse | Terminée | 2026-01-22T18:55 |
+| Pattern KB créé | Terminé | 2026-01-26 |
 | Validation solution | En attente | |
 | Implémentation | En attente | |
 | Tests | En attente | |
 | Déploiement | En attente | |
 
+## Tests de validation
+
+- [ ] Saisie 00:00 → Acceptée
+- [ ] Saisie 12:30 → Acceptée
+- [ ] Saisie 23:59 → Acceptée
+- [ ] Saisie 24:00 → Rejetée
+- [ ] Saisie 70:00 → Rejetée
+
 ---
 
-*Dernière mise à jour : 2026-01-22T18:55*
+*Dernière mise à jour : 2026-01-26*

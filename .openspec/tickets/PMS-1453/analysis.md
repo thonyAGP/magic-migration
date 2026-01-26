@@ -208,5 +208,6 @@ Sans Picture, Magic accepte n'importe quelle valeur numerique.
 
 ---
 
-*Analyse : 2026-01-26T15:00*
-*Pattern KB : missing-picture-validation (nouveau)*
+*Analyse : 2026-01-26*
+*Pattern KB : [missing-time-validation](../../patterns/missing-time-validation.md)*
+*Spec generee : [ADH-IDE-307](../../specs/ADH-IDE-307.md)*
