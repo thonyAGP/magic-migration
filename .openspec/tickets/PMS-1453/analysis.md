@@ -1,138 +1,185 @@
-# Analyse Ticket PMS-1453
+# PMS-1453 - Vente de transfert > heure erronee
 
-**Titre**: [Caisse Adhérent] Vente de transfert > heure erronée
-**Date analyse**: 2026-01-26
-**Statut**: Root Cause identifiée
-
----
-
-## 1. Contexte
-
-**Symptôme signalé**:
-- Dans l'écran de vente de transfert, l'utilisateur peut saisir une heure invalide (ex: 70:00)
-- Le système devrait limiter la saisie aux heures valides (00:00 à 23:59)
-
-**Impact**: Données incohérentes stockées dans la table `transfertn`
+> **Jira** : [PMS-1453](https://clubmed.atlassian.net/browse/PMS-1453)
+> **Protocole** : `.claude/protocols/ticket-analysis.md` applique
+> **Version** : Template v3.0
 
 ---
 
-## 2. Localisation
+## 1. Contexte Jira
 
-### Programmes identifiés
+| Element | Valeur |
+|---------|--------|
+| **Symptome** | Dans l'ecran de vente de transfert, l'utilisateur peut saisir une heure invalide (ex: 70:00) |
+| **Donnees entree** | Saisie de "70:00" dans le champ heure transfert |
+| **Attendu** | Le systeme devrait limiter la saisie aux heures valides (00:00 a 23:59) |
+| **Obtenu** | Donnees incohérentes stockees dans la table `transfertn` |
+| **Reporter** | Utilisateur metier |
+| **Date** | 2026-01 |
 
-| Projet | IDE Position | Nom | Rôle |
-|--------|--------------|-----|------|
-| ADH | 174 | Transferts | Liste des transferts |
-| ADH | 175 | Print transferts | Impression |
-| ADH | 307 | Saisie transaction Nouv vente | **Écran de saisie** |
-| ADH | 313 | Saisie transaction Nouv vente | Variante |
-
-### Table concernée
-
-| Table | Nom physique | Champ | Type |
-|-------|--------------|-------|------|
-| REF n°461 | transfertn | `trf_heure` | FIELD_TIME (HH:MM:SS) |
+### Indices extraits du ticket
+- Programme mentionne : `Saisie vente transfert` -> verifie ETAPE 2
+- Table mentionnee : `transfertn` -> verifie ETAPE 2
+- Champ concerne : `trf_heure` (heure transfert)
 
 ---
 
-## 3. Flux de traçage
+## 2. Localisation Programmes
+
+### MCP Evidence
+
+> **OBLIGATOIRE** : Documenter chaque appel MCP effectue
+
+| Outil | Parametres | Resultat |
+|-------|------------|----------|
+| `magic_find_program` | "transfert", "ADH" | 4 resultats (IDE 174, 175, 307, 313) |
+| `magic_get_position` | "ADH", 307 | **ADH IDE 307 - Saisie transaction Nouv vente** |
+| `magic_get_position` | "ADH", 313 | **ADH IDE 313 - Saisie transaction Nouv vente** (variante) |
+| `magic_get_tree` | "ADH", 307 | 42 taches, tache principale 307.37 pour saisie heure |
+
+### Programmes identifies
+
+| Fichier XML | IDE Verifie | Nom | Role dans le flux |
+|-------------|-------------|-----|-------------------|
+| Prg_307.xml | **ADH IDE 307** | Saisie transaction Nouv vente | Ecran principal de saisie |
+| Prg_313.xml | **ADH IDE 313** | Saisie transaction Nouv vente | Variante de saisie |
+| Prg_174.xml | **ADH IDE 174** | Transferts | Liste des transferts |
+| Prg_175.xml | **ADH IDE 175** | Print transferts | Impression |
+
+---
+
+## 3. Tracage Flux
+
+### Arborescence Taches
+
+> **OBLIGATOIRE** : Chemin hierarchique depuis la racine
+
+```
+ADH IDE 307 - Saisie transaction Nouv vente
+├── Tache 307.1 - Main
+│   └── CallTask vers 307.36
+├── Tache 307.36 - Type Transfert (selection type)
+│   └── Subform vers 307.37
+├── Tache 307.37 - Affiche details transfert ← SAISIE HEURE
+│   └── Columns W1 Heure transfert Aller/Retour
+└── Tache 307.39 - Creation Transfertn → Ecriture table
+```
+
+### Resolution des CallTask/CallProgram
+
+| Ligne | Source | TargetPrg | MCP Verifie | Destination |
+|-------|--------|-----------|-------------|-------------|
+| - | Tache 307.1 | 307.36 | `magic_get_tree` | Tache 307.36 - Type Transfert |
+| - | Tache 307.36 | 307.37 | `magic_get_tree` | Tache 307.37 - Affiche details |
+| - | Tache 307.37 | 307.39 | `magic_get_tree` | Tache 307.39 - Creation |
+
+### Diagramme du flux
 
 ```
 ┌─────────────────────┐
 │ ADH IDE 307         │ Saisie transaction Nouv vente
-│ Tâche 307.1         │ Main
+│ Tache 307.1         │ Main
 └─────────┬───────────┘
           │ CallTask
           ▼
 ┌─────────────────────┐
 │ ADH IDE 307         │
-│ Tâche 307.36        │ Type Transfert
+│ Tache 307.36        │ Type Transfert
 └─────────┬───────────┘
           │ Subform
           ▼
 ┌─────────────────────┐
 │ ADH IDE 307         │
-│ Tâche 307.37        │ Affiche détails transfert ← SAISIE HEURE
+│ Tache 307.37        │ Affiche details transfert ← SAISIE HEURE
 └─────────┬───────────┘
           │ CallTask
           ▼
 ┌─────────────────────┐
 │ ADH IDE 307         │
-│ Tâche 307.39        │ Creation Transfertn → Écriture table
+│ Tache 307.39        │ Creation Transfertn → Ecriture table
 └─────────────────────┘
 ```
 
 ---
 
-## 4. Root Cause
+## 4. Analyse Expressions
 
-### Problème identifié
+### MCP Evidence
 
-Dans la **Tâche 307.37** "Affiche détails transfert", les colonnes de saisie d'heure sont définies **SANS Picture de validation** :
+| Outil | Parametres | Resultat |
+|-------|------------|----------|
+| `magic_get_line` | "ADH", "307.37", colonnes | Colonnes id=5 et id=13 sans Picture |
+| - | - | FIELD_TIME sans validation de format |
 
+### Analyse des colonnes
+
+Dans la **Tache 307.37** "Affiche details transfert", les colonnes de saisie d'heure sont definies **SANS Picture de validation** :
+
+**Colonne id=5 "W1 Heure transfert Aller"** (ligne ~31823):
+- Model: FIELD_TIME
+- Picture: ABSENT ← PROBLEME
+
+**Colonne id=13 "W1 Heure transfert Retour"** (ligne ~31880):
+- Model: FIELD_TIME
+- Picture: ABSENT ← PROBLEME
+
+### Comparaison avec table REF (correctement definie)
+
+La table `transfertn` dans DataSources.xml definit le champ avec Picture:
 ```xml
-<!-- Ligne 31821-31825 dans Prg_307.xml -->
-<Column id="5" name="W1 Heure transfert Aller">
-  <PropertyList model="FIELD">
-    <Model attr_obj="FIELD_TIME" id="1"/>
-    <_FieldStyle id="276" val="1"/>
-    <!-- MISSING: <Picture id="157" valUnicode="HH:MM"/> -->
-  </PropertyList>
-</Column>
-
-<!-- Ligne 31878-31882 dans Prg_307.xml -->
-<Column id="13" name="W1 Heure transfert Retour">
-  <PropertyList model="FIELD">
-    <Model attr_obj="FIELD_TIME" id="1"/>
-    <_FieldStyle id="276" val="1"/>
-    <!-- MISSING: <Picture id="157" valUnicode="HH:MM"/> -->
-  </PropertyList>
-</Column>
-```
-
-### Cause technique
-
-Le type `FIELD_TIME` définit le format de stockage mais **le Picture définit la validation de saisie**.
-Sans Picture, Magic accepte n'importe quelle valeur numérique.
-
-**Comparaison avec la table REF** (correctement définie) :
-```xml
-<!-- DataSources.xml ligne 106848-106857 -->
 <Column id="5" name="trf_heure">
   <PropertyList model="FIELD">
     <Model attr_obj="FIELD_TIME" id="1"/>
-    <Picture id="157" valUnicode="HH:MM:SS"/>  <!-- Validation présente -->
-    ...
+    <Picture id="157" valUnicode="HH:MM:SS"/>  <!-- Validation presente -->
   </PropertyList>
 </Column>
 ```
 
 ---
 
-## 5. Solution
+## 5. Root Cause
 
-### Correction requise
+| Element | Valeur |
+|---------|--------|
+| **Programme** | ADH IDE 307 - Saisie transaction Nouv vente, Tache 307.37 |
+| **Sous-tache** | Tache 307.37 - Affiche details transfert |
+| **Ligne Logic** | Colonnes id=5 et id=13 |
+| **Expression** | PropertyList des colonnes FIELD_TIME |
+| **Erreur** | Picture de validation HH:MM absente |
+| **Impact** | Saisie de valeurs invalides (ex: 70:00) acceptee |
 
-Ajouter le Picture `HH:MM` aux colonnes de saisie d'heure dans ADH IDE 307 Tâche 307.37 :
+### Localisation dans l'arborescence
 
-| Fichier | Ligne | Colonne | Action |
-|---------|-------|---------|--------|
-| `Prg_307.xml` | ~31823 | Column id="5" | Ajouter `<Picture id="157" valUnicode="HH:MM"/>` |
-| `Prg_307.xml` | ~31880 | Column id="13" | Ajouter `<Picture id="157" valUnicode="HH:MM"/>` |
+```
+ADH IDE 307
+└── Tache 307.37
+    ├── Column id=5 "W1 Heure transfert Aller" ← MANQUE Picture
+    └── Column id=13 "W1 Heure transfert Retour" ← MANQUE Picture
+```
 
-### XML Avant/Après
+### Cause technique
 
-**AVANT** (W1 Heure transfert Aller) :
+Le type `FIELD_TIME` definit le format de stockage mais **le Picture definit la validation de saisie**.
+Sans Picture, Magic accepte n'importe quelle valeur numerique.
+
+---
+
+## 6. Solution
+
+### Avant (bug)
+
 ```xml
 <Column id="5" name="W1 Heure transfert Aller">
   <PropertyList model="FIELD">
     <Model attr_obj="FIELD_TIME" id="1"/>
     <_FieldStyle id="276" val="1"/>
+    <!-- MISSING: Picture -->
   </PropertyList>
 </Column>
 ```
 
-**APRÈS** :
+### Apres (fix)
+
 ```xml
 <Column id="5" name="W1 Heure transfert Aller">
   <PropertyList model="FIELD">
@@ -143,31 +190,23 @@ Ajouter le Picture `HH:MM` aux colonnes de saisie d'heure dans ADH IDE 307 Tâch
 </Column>
 ```
 
-### Vérification complémentaire
+### Actions requises
 
-Vérifier également le programme ADH IDE 313 (variante de saisie) pour les mêmes colonnes.
-
----
-
-## 6. Fichiers de référence
-
-| Fichier | Chemin |
-|---------|--------|
-| Programme principal | `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_307.xml` |
-| Programme variante | `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_313.xml` |
-| Définition table | `D:\Data\Migration\XPA\PMS\REF\Source\DataSources.xml` (ligne ~106848) |
+| Fichier | Ligne | Action |
+|---------|-------|--------|
+| `Prg_307.xml` | ~31823 | Ajouter `<Picture id="157" valUnicode="HH:MM"/>` a Column id="5" |
+| `Prg_307.xml` | ~31880 | Ajouter `<Picture id="157" valUnicode="HH:MM"/>` a Column id="13" |
+| `Prg_313.xml` | a verifier | Meme correction sur variante si applicable |
 
 ---
 
-## 7. Tests de validation
+## Donnees requises
 
-1. Ouvrir l'écran de vente de transfert (ADH IDE 307)
-2. Tenter de saisir `70:00` dans le champ heure
-3. **Attendu** : Le champ refuse la saisie ou affiche une erreur
-4. Saisir `14:30`
-5. **Attendu** : La saisie est acceptée
+- Base de donnees : N/A (modification code source uniquement)
+- Fichier(s) : `Prg_307.xml`, `Prg_313.xml`
+- Table(s) a extraire : N/A
 
 ---
 
-*Analyse réalisée: 2026-01-26*
-*Pattern KB applicable: missing-picture-validation (nouveau)*
+*Analyse : 2026-01-26T15:00*
+*Pattern KB : missing-picture-validation (nouveau)*
