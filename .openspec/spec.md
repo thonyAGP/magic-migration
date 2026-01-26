@@ -341,6 +341,11 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 
 **Tier 2: Pattern Sync** (Markdown → KB)
 
+| Outil MCP | Description | Statut |
+|-----------|-------------|--------|
+| `magic_pattern_sync` | Synchronise patterns Markdown vers KB | **NOUVEAU 2026-01-26** |
+| `magic_pattern_status` | Vérifie statut synchronisation fichiers vs KB | **NOUVEAU 2026-01-26** |
+
 | Commande KbIndexRunner | Description | Statut |
 |------------------------|-------------|--------|
 | `sync-patterns` | Import `.openspec/patterns/*.md` vers resolution_patterns | **NOUVEAU** |
@@ -792,6 +797,7 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-01-26: **Phase 0 Ecosystem Optimization** - PatternSyncService.cs (sync Markdown→KB), 2 outils MCP (magic_pattern_sync, magic_pattern_status), 5 tests unitaires, diagnostic ADH XML (360 fichiers valides)
 - 2026-01-25: **Analyse Jira automatisée** - Extraction 10 tickets résolus, sync dates Jira, +2 patterns KB (local-config-regression, modedayinc-date-display), fix script test-jira-auth.ps1
 - 2026-01-25: **ChangeImpactTool.cs** - 4 outils MCP Tier 5 (magic_impact_program, magic_impact_table, magic_impact_expression, magic_impact_crossproject) + Schema v5 + analyze-impact CLI
 - 2026-01-25: **EcfRegistryTool.cs** - 4 outils MCP Tier 4 (magic_ecf_list, magic_ecf_programs, magic_ecf_usedby, magic_ecf_dependencies) + Schema v4 + 762 composants
@@ -819,4 +825,4 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 - 2026-01-22: Parser Magic V3 deterministe 100%
 
 ---
-*Derniere mise a jour: 2026-01-25*
+*Derniere mise a jour: 2026-01-26*

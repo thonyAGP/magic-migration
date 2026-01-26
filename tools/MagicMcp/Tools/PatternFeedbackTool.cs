@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Text;
 using MagicKnowledgeBase.Database;
 using MagicKnowledgeBase.Models;
+using MagicKnowledgeBase.Queries;
 using ModelContextProtocol.Server;
 
 namespace MagicMcp.Tools;
@@ -375,6 +376,176 @@ public static class PatternFeedbackTool
         if (healthScore >= 70)
         {
             sb.AppendLine("- ✅ Keep capitalizing resolutions to maintain the feedback loop");
+        }
+
+        return sb.ToString();
+    }
+
+    [McpServerTool(Name = "magic_pattern_sync")]
+    [Description("Synchronize resolution patterns from Markdown files (.openspec/patterns/) to the Knowledge Base. Run this after adding or modifying pattern files.")]
+    public static string SyncPatterns(
+        KnowledgeDb db,
+        [Description("Path to patterns directory (default: .openspec/patterns/)")] string? patternsPath = null)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("## Pattern Synchronization");
+        sb.AppendLine();
+
+        // Determine patterns directory
+        var workingDir = Environment.CurrentDirectory;
+        var defaultPath = Path.Combine(workingDir, ".openspec", "patterns");
+        var actualPath = patternsPath ?? defaultPath;
+
+        sb.AppendLine($"**Source:** `{actualPath}`");
+        sb.AppendLine();
+
+        if (!Directory.Exists(actualPath))
+        {
+            sb.AppendLine($"❌ **ERROR:** Directory not found: `{actualPath}`");
+            sb.AppendLine();
+            sb.AppendLine("Make sure the patterns directory exists and contains .md files.");
+            return sb.ToString();
+        }
+
+        // Get status before sync
+        var syncService = new PatternSyncService(db);
+        var statusBefore = syncService.GetSyncStatus(actualPath);
+
+        sb.AppendLine("### Before Sync");
+        sb.AppendLine($"- Files on disk: {statusBefore.FilesOnDisk}");
+        sb.AppendLine($"- Patterns in KB: {statusBefore.PatternsInKb}");
+
+        if (statusBefore.MissingInKb.Count > 0)
+        {
+            sb.AppendLine($"- Missing in KB: {string.Join(", ", statusBefore.MissingInKb)}");
+        }
+
+        sb.AppendLine();
+
+        // Perform sync
+        try
+        {
+            var result = syncService.SyncFromDirectory(actualPath);
+
+            sb.AppendLine("### Sync Result");
+            sb.AppendLine();
+
+            if (result.Success)
+            {
+                sb.AppendLine($"✅ **Synced {result.Synced} pattern(s) successfully**");
+            }
+            else
+            {
+                sb.AppendLine($"⚠️ Synced {result.Synced} pattern(s) with {result.Errors.Count} error(s)");
+            }
+
+            sb.AppendLine();
+            sb.AppendLine($"- Total files: {result.TotalFiles}");
+            sb.AppendLine($"- Synced: {result.Synced}");
+            sb.AppendLine($"- Skipped: {result.Skipped}");
+
+            if (result.SyncedPatterns.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine("**Synced patterns:**");
+                foreach (var pattern in result.SyncedPatterns)
+                {
+                    sb.AppendLine($"- {pattern}");
+                }
+            }
+
+            if (result.Errors.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine("**Errors:**");
+                foreach (var error in result.Errors)
+                {
+                    sb.AppendLine($"- ⚠️ {error}");
+                }
+            }
+
+            // Get status after sync
+            var statusAfter = syncService.GetSyncStatus(actualPath);
+
+            sb.AppendLine();
+            sb.AppendLine("### After Sync");
+            sb.AppendLine($"- Files on disk: {statusAfter.FilesOnDisk}");
+            sb.AppendLine($"- Patterns in KB: {statusAfter.PatternsInKb}");
+            sb.AppendLine($"- Synchronized: {(statusAfter.IsSynced ? "✅ Yes" : "❌ No")}");
+
+            // FTS index info
+            sb.AppendLine();
+            sb.AppendLine("> **Note:** FTS5 index is updated automatically via triggers.");
+            sb.AppendLine("> Use `magic_pattern_search` to search patterns by keywords.");
+        }
+        catch (Exception ex)
+        {
+            sb.AppendLine($"❌ **ERROR:** {ex.Message}");
+        }
+
+        return sb.ToString();
+    }
+
+    [McpServerTool(Name = "magic_pattern_status")]
+    [Description("Check synchronization status between pattern Markdown files and Knowledge Base.")]
+    public static string GetSyncStatus(
+        KnowledgeDb db,
+        [Description("Path to patterns directory (default: .openspec/patterns/)")] string? patternsPath = null)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("## Pattern Sync Status");
+        sb.AppendLine();
+
+        var workingDir = Environment.CurrentDirectory;
+        var defaultPath = Path.Combine(workingDir, ".openspec", "patterns");
+        var actualPath = patternsPath ?? defaultPath;
+
+        sb.AppendLine($"**Source:** `{actualPath}`");
+        sb.AppendLine();
+
+        if (!Directory.Exists(actualPath))
+        {
+            sb.AppendLine($"❌ Directory not found: `{actualPath}`");
+            return sb.ToString();
+        }
+
+        var syncService = new PatternSyncService(db);
+        var status = syncService.GetSyncStatus(actualPath);
+
+        sb.AppendLine("| Metric | Value |");
+        sb.AppendLine("|--------|-------|");
+        sb.AppendLine($"| Files on disk | {status.FilesOnDisk} |");
+        sb.AppendLine($"| Patterns in KB | {status.PatternsInKb} |");
+        sb.AppendLine($"| Synchronized | {(status.IsSynced ? "✅ Yes" : "❌ No")} |");
+
+        if (status.MissingInKb.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine($"### Missing in KB ({status.MissingInKb.Count})");
+            sb.AppendLine("These patterns exist as files but are not in the Knowledge Base:");
+            foreach (var p in status.MissingInKb)
+            {
+                sb.AppendLine($"- `{p}.md`");
+            }
+            sb.AppendLine();
+            sb.AppendLine("> Run `magic_pattern_sync` to import these patterns.");
+        }
+
+        if (status.ExtraInKb.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine($"### Extra in KB ({status.ExtraInKb.Count})");
+            sb.AppendLine("These patterns exist in KB but have no corresponding file:");
+            foreach (var p in status.ExtraInKb)
+            {
+                sb.AppendLine($"- `{p}`");
+            }
+        }
+
+        if (status.IsSynced)
+        {
+            sb.AppendLine();
+            sb.AppendLine("✅ **All patterns are synchronized.**");
         }
 
         return sb.ToString();
