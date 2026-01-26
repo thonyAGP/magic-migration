@@ -1,21 +1,26 @@
 {
   "project": "Lecteur_Magic",
-  "lastUpdated": "2026-01-26T18:00:00+01:00",
+  "lastUpdated": "2026-01-26T22:30:00+01:00",
   "specs": [
     {
       "id": "ADH-IDE-238",
-      "title": "Menu Choix Saisie/Annul vente",
+      "title": "Transaction Nouv vente PMS-584",
       "project": "ADH",
       "ide": 238,
+      "xmlFile": "Prg_234.xml",
       "type": "Online",
       "file": "specs/ADH-IDE-238.md",
-      "tables": 4,
-      "tasks": 3,
-      "complexity": "Moyen"
+      "tables": 12,
+      "tasks": 1,
+      "expressions": 1052,
+      "complexity": "Moyen-Eleve",
+      "callers": [],
+      "callees": ["ADH IDE 152", "ADH IDE 149"],
+      "specVersion": "2.0"
     },
     {
-      "id": "TEMPLATE",
-      "title": "Template Specification Programme",
+      "id": "TEMPLATE-V1",
+      "title": "Template Specification Programme v1",
       "project": "-",
       "ide": 0,
       "type": "Template",
@@ -23,6 +28,18 @@
       "tables": 0,
       "tasks": 0,
       "complexity": "-"
+    },
+    {
+      "id": "TEMPLATE-V2",
+      "title": "Template Specification Programme v2",
+      "project": "-",
+      "ide": 0,
+      "type": "Template",
+      "file": "specs/TEMPLATE-PROGRAM-SPEC-V2.md",
+      "tables": 0,
+      "tasks": 0,
+      "complexity": "-",
+      "specVersion": "2.0"
     }
   ],
   "reports": [
