@@ -782,7 +782,7 @@
     }
 
     function buildSpecsSection(title, specs) {
-      const count = specs.filter(s => s.id !== 'TEMPLATE').length;
+      const count = specs.filter(s => !s.id.startsWith('TEMPLATE')).length;
       let html = `<nav class="nav-section">
         <div class="nav-section-title">
           <span class="collapse-icon">▼</span>
@@ -801,19 +801,24 @@
 
       sorted.forEach(spec => {
         const typeClass = spec.type.toLowerCase();
-        const complexityClass = spec.complexity ? spec.complexity.toLowerCase().replace('é', 'e') : '';
+        const complexityClass = spec.complexity ? spec.complexity.toLowerCase().replace('é', 'e').replace('-', '') : '';
+        const versionBadge = spec.specVersion ? `<span class="spec-badge" style="background:var(--purple)">v${spec.specVersion}</span>` : '';
+        const xmlInfo = spec.xmlFile ? `<span style="color:var(--text-secondary);font-size:10px;">${spec.xmlFile}</span>` : '';
 
         html += `<a class="nav-item" data-file="${spec.file}" data-spec-id="${spec.id}">
           <div class="row">
             <span class="title">${spec.project} IDE ${spec.ide}</span>
+            ${versionBadge}
             <span class="spec-badge ${typeClass}">${spec.type}</span>
           </div>
           <div class="subtitle">${spec.title}</div>
           <div class="spec-meta">
             <span><span class="icon">📊</span> ${spec.tables} tables</span>
             <span><span class="icon">📋</span> ${spec.tasks} taches</span>
+            ${spec.expressions ? `<span><span class="icon">⚡</span> ${spec.expressions} expr</span>` : ''}
             ${spec.complexity && spec.complexity !== '-' ? `<span class="complexity-badge ${complexityClass}">${spec.complexity}</span>` : ''}
           </div>
+          ${xmlInfo ? `<div style="margin-top:2px;">${xmlInfo}</div>` : ''}
         </a>`;
       });
 
@@ -1017,17 +1022,22 @@
       // Handle Specs
       if (isSpec && indexData.specs) {
         const specData = indexData.specs.find(s => s.file === path);
-        if (specData && specData.id !== 'TEMPLATE') {
+        if (specData && !specData.id.startsWith('TEMPLATE')) {
           const typeClass = specData.type.toLowerCase();
-          const complexityClass = specData.complexity ? specData.complexity.toLowerCase().replace('é', 'e') : '';
+          const complexityClass = specData.complexity ? specData.complexity.toLowerCase().replace('é', 'e').replace('-', '') : '';
+          const versionBadge = specData.specVersion ? `<span class="spec-badge" style="background:var(--purple)">v${specData.specVersion}</span>` : '';
+          const xmlInfo = specData.xmlFile ? `<div class="meta-item"><span class="meta-label">Fichier XML</span><span class="meta-value" style="font-family:monospace;color:var(--accent);">${specData.xmlFile}</span></div>` : '';
+          const exprInfo = specData.expressions ? `<div class="meta-item"><span class="meta-label">Expressions</span><span class="meta-value">${specData.expressions}</span></div>` : '';
+          const calleesInfo = specData.callees && specData.callees.length > 0 ? `<div class="meta-item"><span class="meta-label">Appelle</span><span class="meta-value" style="font-size:11px;">${specData.callees.join(', ')}</span></div>` : '';
 
           headerHtml = `
             <div class="spec-header">
               <div>
-                <span class="spec-id">${specData.project} IDE ${specData.ide}</span>
+                <span class="spec-id">${specData.project} IDE ${specData.ide} ${versionBadge}</span>
                 <div class="spec-title">${specData.title}</div>
               </div>
               <div class="ticket-meta">
+                ${xmlInfo}
                 <div class="meta-item">
                   <span class="meta-label">Type</span>
                   <span class="meta-value"><span class="spec-badge ${typeClass}">${specData.type}</span></span>
@@ -1040,10 +1050,12 @@
                   <span class="meta-label">Taches</span>
                   <span class="meta-value">${specData.tasks}</span>
                 </div>
+                ${exprInfo}
                 <div class="meta-item">
                   <span class="meta-label">Complexite</span>
                   <span class="meta-value"><span class="complexity-badge ${complexityClass}">${specData.complexity}</span></span>
                 </div>
+                ${calleesInfo}
               </div>
             </div>`;
         }

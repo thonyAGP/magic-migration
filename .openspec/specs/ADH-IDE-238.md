@@ -1,275 +1,230 @@
-# ADH IDE 238 - Menu Choix Saisie/Annul vente
+# ADH IDE 238 - Transaction Nouv vente PMS-584
 
+> **Version spec** : 2.0
 > **Genere le** : 2026-01-26
-> **Source** : `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_238.xml`
-> **Modele** : Specification Programme Magic v1.0
+> **Source** : `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_234.xml`
 
 ---
 
-## 1. SPECIFICATION FONCTIONNELLE
-
-### 1.1 Identification
+## 1. IDENTIFICATION
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 238 |
-| **Nom Public** | - |
-| **Description** | Menu Choix Saisie/Annul vente |
-| **Type** | Online (O) - Menu interactif |
+| **Format IDE** | ADH IDE 238 |
+| **Fichier XML** | Prg_234.xml |
+| **Description** | Transaction Nouv vente PMS-584 |
+| **Type** | O (Online) |
+| **Parametres** | 22 |
 | **Module** | ADH (Adherents/Caisse) |
+| **Dossier IDE** | Ventes (IDE 232-255) |
 
-### 1.2 Objectif Metier
-
-**Quoi ?** Programme de menu permettant a l'utilisateur de choisir entre plusieurs actions liees aux ventes :
-- Saisie d'une nouvelle vente
-- Annulation d'une vente existante
-- Annulation d'un solde
-- Annulation de gratuites
-
-**Pour qui ?** Operateurs de caisse (cashiers) du Club Med
-
-**Pourquoi ?** Point d'entree unique pour toutes les operations de vente/annulation, avec controle des droits et de l'etat de la session.
-
-### 1.3 Regles Metier
-
-| Regle | Description | Expression |
-|-------|-------------|------------|
-| **RM-001** | Session obligatoire | L'utilisateur doit avoir une session ouverte (`{32768,3} OR {32768,47}`) |
-| **RM-002** | Systeme disponible | Le systeme ne doit pas etre verrouille (`{32768,89} AND NOT {32768,93}`) |
-| **RM-003** | Droits action | Chaque action (1-4) necessite des droits specifiques |
-| **RM-004** | Gratuites hors Gift Pass | Les annulations de gratuites excluent les Gift Pass |
-
-### 1.4 Actions Disponibles
-
-| Code | Action | Condition | Programme appele |
-|------|--------|-----------|------------------|
-| **1** | Saisie vente | Session ouverte | Vers ecran saisie |
-| **2** | Annulation vente | Session ouverte + Droits | `DbDel('{933,4}'DSOURCE)` |
-| **3** | Annulation solde | Session ouverte + Droits | Historique IGR |
-| **4** | Annulation gratuites | Session ouverte + Droits | Historique Gratuites |
-
-### 1.5 Messages Utilisateur
-
-| Contexte | Message |
-|----------|---------|
-| Session fermee | "Votre session est fermee" |
-| Menu Vente | "[Contexte]\|VENTE" |
-| Historique Ventes | "[Contexte]\|HISTORIQUE DES VENTES" |
-| Historique IGR | "[Contexte]\|HISTORIQUE DES IGR" |
-| Historique Gratuites | "[Contexte]\|HISTORIQUE DES GRATUITES" |
+> **IMPORTANT**: Ce programme est Prg_234.xml, PAS Prg_238.xml. L'ID XML (234) differe de la position IDE (238).
 
 ---
 
-## 2. SPECIFICATION TECHNIQUE
+## 2. OBJECTIF METIER
 
-### 2.1 Parametres d'Entree (16)
+**Quoi ?** Programme de transaction pour la saisie d'une nouvelle vente dans le systeme PMS (Point Management System).
+
+**Pour qui ?** Operateurs de caisse et personnel de vente du Club Med.
+
+**Pourquoi ?** Permet d'enregistrer une vente avec tous les details (article, quantite, prix, mode de paiement) et de mettre a jour le compte du client.
+
+---
+
+## 3. TABLES (100% decodees)
+
+| IDE# | Nom Physique | Nom Logique | Access | Role |
+|------|--------------|-------------|--------|------|
+| #103 | `cafil081_dat` | logement_client__loc | R | Logement client |
+| #70 | `cafil048_dat` | date_comptable___dat | R | Date comptable |
+| #26 | `cafil004_dat` | comptes_speciaux_spc | R | Comptes speciaux |
+| #30 | `cafil008_dat` | gm-recherche_____gmr | R | Recherche GM |
+| #34 | `cafil012_dat` | hebergement______heb | R | Hebergement |
+| #77 | `cafil055_dat` | articles_________art | R | Articles (catalogue) |
+| #197 | `caisse_artstock` | articles_en_stock | R | Stock articles |
+| #372 | `pv_budget_dat` | pv_budget | R | Budget PV |
+| #697 | `droits` | droits_applications | R | Droits utilisateur |
+| #801 | `moyens_reglement_complem` | moyens_reglement_complem | R | Moyens de reglement |
+| #818 | `zcircafil146` | Circuit supprime | R | Circuit (obsolete) |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | R | Stats lieu/date vente |
+
+---
+
+## 4. PARAMETRES D'ENTREE (22)
 
 | # | Nom | Type | Description |
 |---|-----|------|-------------|
-| 1 | P.Societe | Alpha(1) | Code societe |
-| 2 | P.Devise locale | Alpha(3) | Code devise (EUR, USD...) |
-| 3 | P.Masque montant | Alpha(16) | Format d'affichage montant |
-| 4 | P.Solde compte | Num(11,3) | Solde actuel du compte |
-| 5 | P.Code GM | Num(4) | Code adherent GM |
-| 6 | P.Filiation | Alpha | Filiation adherent |
-| 7 | P.Date fin sejour | Date | Date de depart |
-| 8 | P.Etat compte | Alpha | Etat du compte (actif/ferme) |
-| 9 | P.Date solde | Date | Date du dernier solde |
-| 10 | P.Garanti O/N | Bool | Compte garanti |
-| 11 | P.Nom & prenom | Alpha | Identite adherent |
-| 12 | P.UNI/BI | Alpha | Mode de change |
-| 13 | P.Date debut sejour | Date | Date d'arrivee |
-| 14 | P.Valide ? | Bool | Compte valide |
-| 15 | P.Nb decimales | Num | Nombre de decimales devise |
-| 16 | P.Mode consultation | Alpha | Mode lecture seule |
+| P1 | P0 societe | Alpha(1) | Code societe |
+| P2 | P0 devise locale | Alpha(3) | Code devise (EUR, USD...) |
+| P3 | P0 masque montant | Alpha(16) | Format affichage montant |
+| P4 | P0 solde compte | Num(11,3) | Solde actuel du compte |
+| P5 | P0 code GM | Num(8) | Code adherent GM |
+| P6 | P0 filiation | Num(3) | Filiation adherent |
+| P7 | P0 date fin sejour | Date | Date de depart |
+| P8 | P0 etat compte | Alpha(1) | Etat du compte |
+| P9 | P0 date solde | Date | Date du dernier solde |
+| P10 | P0 garanti O/N | Alpha(1) | Compte garanti (O/N) |
+| P11 | P0 Nom & prenom | Alpha(60) | Identite adherent |
+| P12 | P0 UNI/BI | Alpha(1) | Mode de change |
+| P13 | P0 Date debut sejour | Date | Date d'arrivee |
+| P14 | P0 Valide ? | Bool | Compte valide |
+| P15 | P0 Nb decimales | Num | Nombre de decimales devise |
+| P16-22 | ... | ... | Variables de travail (boutons, flags) |
 
-### 2.2 Tables Utilisees
+---
 
-| ID | Nom Physique | Nom Logique | Access | Role |
-|----|--------------|-------------|--------|------|
-| **38** | `cafil016_dat` | comptable_gratuite | **R/W** | Enregistrement transactions gratuites |
-| **264** | `caisse_vente_gratuite` | vente_gratuite | R | Verification ventes gratuites existantes |
-| **400** | `pv_rentals_dat` | pv_cust_rentals | R | Verification packages locations |
-| **804** | `valeur_credit_bar_defaut` | valeur_credit_bar_defaut | R | Parametres credit bar |
+## 5. VARIABLES PRINCIPALES
 
-### 2.3 Structure des Taches
+### 5.1 Variables de travail (W0)
 
-```
-ADH IDE 238 - Menu Choix Saisie/Annul vente
-|
-+-- Tache 238.1 (ISN_2=1) - Main Menu
-|   +-- Type: Online (O)
-|   +-- Tables: Aucune (parametres uniquement)
-|   +-- Variables: 21 colonnes DataView
-|   +-- Logic: Controle actions 1-4, verif session
-|
-+-- Tache 238.2 (ISN_2=2) - Existe vente gratuite ou IGR ?
-|   +-- Type: Batch (B)
-|   +-- Tables: 38(R), 264(R), 804(R)
-|   +-- Logic: Verification existence gratuites/IGR
-|
-+-- Tache 238.3 (ISN_2=3) - Existe gratuite hors gift pass ?
-    +-- Type: Batch (B)
-    +-- Tables: 38(W), 400(R)
-    +-- Logic: Exclusion Gift Pass des gratuites
-```
+| Ref | Nom | Type | Role |
+|-----|-----|------|------|
+| `{0,1}` | W0 Code Devise | Num | Code devise pour la transaction |
+| `{0,5}` | W0 Retour Lecture TPE | Bool | Retour lecture terminal |
+| `{0,6}` | W0 Fin Transaction TPE | Bool | Fin transaction terminal |
+| `{0,7}` | v. titre | Alpha | Titre affiche |
+| `{0,8}` | W0 Total_Vente | Num | Total de la vente |
+| `{0,9}` | W0 Annulation OD active | Bool | Flag annulation active |
+| `{0,10}` | W0 Compte garanti | Bool | Compte garanti |
+| `{0,11}` | W0 confirmation si non garanti | Alpha | Message confirmation |
+| `{0,23}` | W0 Pourcentage reduction | Alpha | Code reduction (VRL, VSL) |
+| `{0,50}` | W0 Titre | Num | ID article |
+| `{0,54}` | W0 Nom de la rue | Alpha | Sens trajet (ALLER/RETOUR) |
 
-### 2.4 Variables Principales
+### 5.2 Variables globales (VG)
 
-| Variable | Type | Role |
-|----------|------|------|
-| `W0 choix action` | Alpha | Stocke le choix utilisateur (1-4) |
-| `v.fin` | Bool | Flag de sortie du menu |
-| `V.Existe IGR ?` | Bool | Resultat verif IGR |
-| `V.Existe Gratuite ?` | Bool | Resultat verif gratuites |
-| `V.Session ouverte ?` | Bool | Etat session |
+| Ref | Decode | Role |
+|-----|--------|------|
+| `{32768,0}` | VG.LOGIN | Login utilisateur |
+| `{32768,1}` | VG.USER | Nom utilisateur |
+| `{32768,2}` | VG.Retour Chariot | Caractere retour chariot |
+| `{32768,3}` | VG.DROIT ACCES IT ? | Droit acces informatique |
+| `{32768,4}` | VG.DROIT ACCES CAISSE ? | Droit acces caisse |
+| `{32768,38}` | VG.GIFT PASS_V2.00 | Flag Gift Pass actif |
 
-### 2.5 Expressions Cles
+---
 
-| ID | Expression | Signification |
-|----|------------|---------------|
-| **4** | `{0,17}='1'` | Action = Saisie vente |
-| **7** | `{0,17}='2'` | Action = Annulation vente |
-| **9** | `{0,17}='3'` | Action = Annulation solde |
-| **10** | `{0,17}='4'` | Action = Annulation gratuites |
-| **11** | `{32768,3} OR {32768,47}` | Session ouverte (2 flags) |
-| **8** | `DbDel('{933,4}'DSOURCE,'')` | Suppression enregistrement vente |
-| **23** | `CallProg('{323,-1}'PROG)` | Appel programme Caisse ouverte |
+## 6. EXPRESSIONS CLES (decodees)
 
-### 2.6 Flux de Decision
+| # | Expression brute | Decode | Signification |
+|---|------------------|--------|---------------|
+| 1 | `DStr({0,7},'DD/MM/YYYY')` | `DStr(v.titre,'DD/MM/YYYY')` | Format date titre |
+| 2 | `IF(Trim({0,54})='1','ALLER',...)` | Sens trajet | Determine ALLER/RETOUR/ALLER-RETOUR |
+| 3 | `MlsTrans('Verifier...')&Trim({0,11})` | Message confirmation | Verification transaction |
+| 5 | `IF({0,184}=0,IF({0,23}='VSL',...))` | Date achat | Calcul date selon type |
+| 6 | `NOT {32768,38}` | `NOT VG.GIFT PASS` | Verifier si pas Gift Pass |
+| 10 | `{0,1}` | `W0 Code Devise` | Code devise transaction |
+| 22 | `{0,50}>0 AND {0,49}=0` | Validation article | Article selectionne, quantite nulle |
+| 26 | `{0,23}='VRL' OR {0,23}='VSL'` | Type reduction | VRL=Village, VSL=Soldes |
+
+> Total: 1052 expressions dans ce programme
+
+---
+
+## 7. FLUX DE DECISION
 
 ```
-+-------------------------------------------------------------+
-|                    ENTREE MENU (238)                        |
-+---------------------+---------------------------------------+
-                      |
-                      v
-              +---------------+
-              | Session       | {32768,3} OR {32768,47}
-              | ouverte ?     |
-              +-------+-------+
-                 NON  |  OUI
-          +----------+----------+
-          v                     v
-    +----------+         +--------------+
-    | ERREUR   |         | Afficher     |
-    | "Session |         | Menu Actions |
-    | fermee"  |         +------+-------+
-    +----------+                |
-                                v
-                    +-----------------------+
-                    |  Choix Action (1-4)   |
-                    +-----------+-----------+
-          +---------+-----------+-----------+---------+
-          v         v           v           v         |
-       Action=1  Action=2   Action=3    Action=4      |
-       SAISIE    ANNUL      ANNUL       ANNUL         |
-       VENTE     VENTE      SOLDE       GRATUIT       |
-          |         |           |           |         |
-          v         v           v           v         |
-    +---------+ +---------+ +---------+ +---------+   |
-    |CallTask | | DbDel   | | Histo   | | Histo   |   |
-    |  233    | | 933,4   | |  IGR    | | Gratuit |   |
-    +---------+ +---------+ +---------+ +---------+   |
-                                                      |
-                      +-------------------------------+
-                      v
-               +------------+
-               |   SORTIE   | v.fin = TRUE
-               +------------+
++-----------------------------------------------+
+|     ENTREE TRANSACTION (ADH IDE 238)          |
+|     Prg_234.xml                               |
++----------------------+------------------------+
+                       |
+                       v
+            +--------------------+
+            | Verifier session   |
+            | VG.DROIT ACCES     |
+            +----------+---------+
+                       |
+                       v
+            +--------------------+
+            | Charger infos      |
+            | - Article (#77)    |
+            | - Stock (#197)     |
+            | - Client (#30,#103)|
+            +----------+---------+
+                       |
+                       v
+            +--------------------+
+            | Saisie vente       |
+            | - Code article     |
+            | - Quantite         |
+            | - Mode paiement    |
+            +----------+---------+
+                       |
+                       v
+            +--------------------+
+            | Validation TPE ?   |
+            | W0 Retour TPE      |
+            +----------+---------+
+                       |
+              +--------+--------+
+              |                 |
+        OUI   v           NON   v
+     +-------------+    +-------------+
+     | Transaction |    | Annuler     |
+     | enregistree |    | transaction |
+     +-------------+    +-------------+
 ```
 
 ---
 
-## 3. CARTOGRAPHIE APPLICATIVE
+## 8. CALL GRAPH
 
-### 3.1 Programmes Appelants (Callers)
+### 8.1 Programmes appelants (Callers)
 
-| Caller | IDE | Nom | Type Appel | Condition |
-|--------|-----|-----|------------|-----------|
-| **Prg_1** | 1 | Main Program | CallTask(238) | Event 238 (Popup) |
-| **Prg_28** | 28 | Fusion | CallTask(238) | Expression 81 |
+Ce programme est appele depuis le menu Ventes (ADH IDE 232+).
 
-### 3.2 Programmes Appeles (Callees)
+### 8.2 Programmes appeles (Callees)
 
-| Callee | IDE | Nom | Type Appel | Contexte |
-|--------|-----|-----|------------|----------|
-| **Prg_323** | 323 | Caisse ouverte | CallProg() | Verification caisse |
-| **Prg_233** | 233 | (Saisie) | CallTask() | Action=1 |
-
-### 3.3 Diagramme de Dependances
-
-```
-                    +-----------------+
-                    |   ADH IDE 1     |
-                    |  Main Program   |
-                    +--------+--------+
-                             | CallTask(238)
-                             v
-+-----------------+    +-----------------+    +-----------------+
-|   ADH IDE 28    |--->|   ADH IDE 238   |--->|   ADH IDE 323   |
-|     Fusion      |    | Menu Saisie/    |    | Caisse ouverte  |
-+-----------------+    |  Annul vente    |    +-----------------+
-                       +--------+--------+
-                                | CallTask(233)
-                                v
-                       +-----------------+
-                       |   ADH IDE 233   |
-                       |   (Saisie)      |
-                       +-----------------+
-```
-
-### 3.4 Tables Partagees (Cross-Reference)
-
-| Table | Programmes utilisant | Access |
-|-------|---------------------|--------|
-| cafil016_dat (38) | 238, 243, ... | R/W |
-| caisse_vente_gratuite (264) | 238, 243, ... | R |
-| pv_rentals_dat (400) | 238, 241, 389, ... | R |
+| Callee | IDE | Nom probable | Type Appel |
+|--------|-----|--------------|------------|
+| ADH IDE 152 | 152 | RECUP_CLASSE_MOP | CallProg() |
+| ADH IDE 149 | 149 | CALC_STOCK_PRODUIT | CallProg() |
 
 ---
 
-## 4. NOTES DE MIGRATION
+## 9. NOTES DE MIGRATION
 
-### 4.1 Complexite
+### 9.1 Complexite
 
 | Critere | Score | Justification |
 |---------|-------|---------------|
-| Nombre de taches | 3 | Faible |
-| Tables en ecriture | 1 | Faible |
-| Expressions complexes | 22+ | Moyen |
-| Appels externes | 2 | Faible |
-| **Total** | **Moyen** | |
+| Nombre de taches | 1 | Simple |
+| Tables en lecture | 12 | Moyen |
+| Expressions complexes | 1052 | Eleve |
+| Appels externes | 2+ | Faible |
+| **Total** | **Moyen-Eleve** | Nombreuses expressions |
 
-### 4.2 Points d'Attention
+### 9.2 Points d'attention
 
-1. **Gestion Session** : 3 variables systeme pour etat session - mapper vers AuthService
-2. **Appel Dynamique** : `DbDel()` et `CallProg()` - creer endpoints REST
-3. **Labels Conditionnels** : Construction dynamique via IF/Trim - i18n service
-4. **Droits Actions** : 4 actions avec controles differents - middleware authorization
+1. **TPE Integration** : Variables W0 pour terminal de paiement - necessitent adapter l'interface
+2. **Gift Pass** : Logique speciale via VG.GIFT_PASS_V2.00
+3. **Reduction VRL/VSL** : Codes speciaux pour reductions Village/Soldes
+4. **Stock temps reel** : Verification stock via table #197
 
-### 4.3 Suggestion Architecture Cible
+### 9.3 Architecture cible suggere
 
 ```
-API Endpoint: POST /api/ventes/menu
-+-- Request: { societe, codeGM, filiation, action }
-+-- Middleware: AuthService.checkSession()
-+-- Controller: VentesController.handleMenuAction()
-|   +-- action=1 -> VentesService.initSaisie()
-|   +-- action=2 -> VentesService.annulerVente()
-|   +-- action=3 -> VentesService.annulerSolde()
-|   +-- action=4 -> VentesService.annulerGratuite()
-+-- Response: { success, redirect, message }
+API Endpoint: POST /api/ventes/transaction
++-- Request: { societe, codeGM, filiation, article, quantite, modePaiement }
++-- Middleware: AuthService.checkDroitCaisse()
++-- Controller: VentesController.createTransaction()
+|   +-- ArticleService.checkStock(articleId)
+|   +-- PaymentService.processTPE(montant)
+|   +-- VenteService.enregistrerVente(...)
++-- Response: { success, transactionId, total }
 ```
 
 ---
 
-## 5. HISTORIQUE
+## 10. HISTORIQUE
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-26 | Creation specification | Claude |
+| 2026-01-26 | Creation specification v2.0 - Correction programme source | Claude |
+| 2026-01-26 | v1.0 (OBSOLETE) analysait Prg_238.xml au lieu de Prg_234.xml | - |
 
 ---
 
-*Modele de specification v1.0 - Applicable a tout programme Magic ADH*
+*Specification v2.0 - Programme Prg_234.xml correctement identifie*
