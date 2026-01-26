@@ -1,6 +1,6 @@
 {
   "project": "Lecteur_Magic",
-  "lastUpdated": "2026-01-26T22:30:00+01:00",
+  "lastUpdated": "2026-01-26T16:08:27.183Z",
   "specs": [
     {
       "id": "ADH-IDE-238",
@@ -15,7 +15,10 @@
       "expressions": 1052,
       "complexity": "Moyen-Eleve",
       "callers": [],
-      "callees": ["ADH IDE 152", "ADH IDE 149"],
+      "callees": [
+        "ADH IDE 152",
+        "ADH IDE 149"
+      ],
       "specVersion": "2.0"
     },
     {
@@ -158,16 +161,6 @@
         "program": "PVE IDE 75"
       },
       {
-        "id": "PMS-1451",
-        "title": "PURGE prend uniquement le 1er troncon de sejour",
-        "status": "diagnostic-confirme",
-        "file": "tickets/PMS-1451/analysis.md",
-        "createdDate": "2026-01-06",
-        "lastAnalysis": "2026-01-22",
-        "lastAnalysisTime": "2026-01-22T22:00:00+01:00",
-        "program": "REF IDE 749.1"
-      },
-      {
         "id": "PMS-1381",
         "title": "Messages verrouillages pendant PURGE",
         "status": "diagnostic-ok",
@@ -287,6 +280,17 @@
         "file": "tickets/PMS-1332/analysis.md",
         "createdDate": "2025-07-01",
         "lastAnalysis": "2026-01-10"
+      },
+      {
+        "id": "PMS-1451",
+        "title": "PURGE prend uniquement le 1er troncon de sejour",
+        "status": "diagnostic-confirme",
+        "file": "tickets/PMS-1451/analysis.md",
+        "createdDate": "2026-01-06",
+        "lastAnalysis": "2026-01-26",
+        "lastAnalysisTime": "2026-01-22T22:00:00+01:00",
+        "program": "REF IDE 749.1",
+        "resolvedDate": "2026-01-26"
       }
     ]
   }
