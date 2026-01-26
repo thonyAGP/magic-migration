@@ -162,11 +162,36 @@ IF (GetParam ...` |
 
 ---
 
-## 7. HISTORIQUE
+## 7. DEPENDANCES ET CALLERS
+
+### 7.1 Callers (programmes appelants)
+
+| Programme | Fichier | Nb appels | Dossier |
+|-----------|---------|-----------|---------|
+| ADH IDE 243 | Prg_239.xml | 2 | Ventes |
+| ADH IDE 238 | Prg_234.xml | 4 | Ventes |
+| ADH IDE 244 | Prg_240.xml | 2 | Ventes |
+| ADH IDE 245 | Prg_241.xml | 2 | Ventes |
+
+> **STATUT: NON ORPHELIN** - 10 appels depuis 4 programmes actifs
+
+### 7.2 Verification orphelin
+
+| Critere | Resultat |
+|---------|----------|
+| Callers (TaskID obj="232") | 4 programmes |
+| PublicName | Non |
+| Dossier | Ventes (actif) |
+| **Conclusion** | **Programme ACTIF** |
+
+---
+
+## 8. HISTORIQUE
 
 | Date | Action | Auteur |
 |------|--------|--------|
 | 2026-01-26 | Creation specification v2.0 | Claude |
+| 2026-01-26 | Ajout section callers et verification orphelin | Claude |
 
 ---
 

@@ -188,11 +188,40 @@
 
 ---
 
-## 7. HISTORIQUE
+## 7. DEPENDANCES ET CALLERS
+
+### 7.1 Callers (programmes appelants)
+
+| Programme | Fichier | Nb appels | Dossier |
+|-----------|---------|-----------|---------|
+| ADH IDE 166 | Prg_162.xml | 1 | Menus |
+| ADH IDE 242 | Prg_238.xml | 1 | Ventes |
+| ADH IDE 317 | Prg_313.xml | 1 | **Suppr** |
+
+> **STATUT: NON ORPHELIN** - 3 appels depuis 3 programmes (2 actifs + 1 dans Suppr)
+
+### 7.2 Verification orphelin
+
+| Critere | Resultat |
+|---------|----------|
+| Callers (TaskID obj="233") | 3 programmes |
+| Callers actifs | 2 (Prg_162, Prg_238) |
+| PublicName | Non |
+| Dossier | Ventes (actif) |
+| **Conclusion** | **Programme ACTIF** |
+
+### 7.3 Note sur Prg_313
+
+Le programme Prg_313 est dans le dossier **Suppr** (orphelin). Son appel vers ADH IDE 237 ne compte pas comme utilisation active.
+
+---
+
+## 8. HISTORIQUE
 
 | Date | Action | Auteur |
 |------|--------|--------|
 | 2026-01-26 | Creation specification v2.0 | Claude |
+| 2026-01-26 | Ajout section callers et verification orphelin | Claude |
 
 ---
 
