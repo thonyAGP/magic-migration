@@ -22,13 +22,23 @@
 
 ---
 
-## 2. TABLES (3 tables)
+## 2. TABLES (13 tables - 6 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #70 | `cafil048_dat` | date_comptable___dat | R |
-| #804 | `valeur_credit_bar_defaut` | valeur_credit_bar_defaut | W |
-| #933 | `taxe_add_vente` | taxe_add_vente | W |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #23 | `cafil001_dat` | reseau_cloture___rec | **W** | 5x |
+| #47 | `cafil025_dat` | compte_gm________cgm | **W** | 1x |
+| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | **W** | 2x |
+| #804 | `valeur_credit_bar_defaut` | valeur_credit_bar_defaut | **W** | 4x |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | **W** | 2x |
+| #933 | `taxe_add_vente` | taxe_add_vente | **W** | 5x |
+| #34 | `cafil012_dat` | hebergement______heb | R | 2x |
+| #40 | `cafil018_dat` | comptable________cte | R | 1x |
+| #67 | `cafil045_dat` | tables___________tab | R | 1x |
+| #70 | `cafil048_dat` | date_comptable___dat | R | 1x |
+| #197 | `caisse_artstock` | articles_en_stock | R | 1x |
+| #263 | `caisse_vente` | vente | R | 1x |
+| #728 | `arc_cctotal` | arc_cc_total | R | 1x |
 
 ---
 
@@ -153,7 +163,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 3 |
+| Tables | 13 (6 W / 7 R) |
 | Parametres | 14 |
 | Variables locales | 39 |
 | Expressions | 209 |

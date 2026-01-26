@@ -22,14 +22,27 @@
 
 ---
 
-## 2. TABLES (4 tables)
+## 2. TABLES (17 tables - 0 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #69 | `cafil047_dat` | initialisation___ini | R |
-| #372 | `pv_budget_dat` | pv_budget | R |
-| #728 | `arc_cctotal` | arc_cc_total | R |
-| #818 | `zcircafil146` | Circuit supprime | R |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #31 | `cafil009_dat` | gm-complet_______gmc | R | 4x |
+| #34 | `cafil012_dat` | hebergement______heb | R | 4x |
+| #40 | `cafil018_dat` | comptable________cte | R | 4x |
+| #67 | `cafil045_dat` | tables___________tab | R | 3x |
+| #69 | `cafil047_dat` | initialisation___ini | R | 1x |
+| #77 | `cafil055_dat` | articles_________art | R | 5x |
+| #263 | `caisse_vente` | vente | R | 4x |
+| #372 | `pv_budget_dat` | pv_budget | R | 1x |
+| #417 | `pv_weight` | pv_weight | R | 2x |
+| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | R | 14x |
+| #728 | `arc_cctotal` | arc_cc_total | R | 1x |
+| #818 | `zcircafil146` | Circuit supprime | R | 3x |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | R | 15x |
+| #867 | `log_maj_tpe` | log_maj_tpe | R | 5x |
+| #878 | `categorie_operation_mw` | categorie_operation_mw | R | 2x |
+| #904 | `Boo_AvailibleEmployees` | Boo_AvailibleEmployees | R | 3x |
+| #1037 | `Table_1037` | Unknown | R | 2x |
 
 ---
 
@@ -154,7 +167,7 @@ Str(P0 UNI/BI,'...` |
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 4 |
+| Tables | 17 (0 W / 17 R) |
 | Parametres | 29 |
 | Variables locales | 53 |
 | Expressions | 844 |

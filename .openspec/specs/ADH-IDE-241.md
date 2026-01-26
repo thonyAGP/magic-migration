@@ -22,11 +22,11 @@
 
 ---
 
-## 2. TABLES (1 tables)
+## 2. TABLES (1 tables - 0 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #268 | `ccpartyp` | cc_total_par_type | R |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #268 | `ccpartyp` | cc_total_par_type | R | 1x |
 
 ---
 
@@ -87,7 +87,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 1 |
+| Tables | 1 (0 W /  R) |
 | Parametres | 4 |
 | Variables locales | 4 |
 | Expressions | 5 |

@@ -22,14 +22,29 @@
 
 ---
 
-## 2. TABLES (4 tables)
+## 2. TABLES (19 tables - 6 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #70 | `cafil048_dat` | date_comptable___dat | R |
-| #77 | `cafil055_dat` | articles_________art | R |
-| #933 | `taxe_add_vente` | taxe_add_vente | W |
-| #945 | `Table_945` | Unknown | R |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #23 | `cafil001_dat` | reseau_cloture___rec | **W** | 5x |
+| #47 | `cafil025_dat` | compte_gm________cgm | **W** | 1x |
+| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | **W** | 2x |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | **W** | 2x |
+| #933 | `taxe_add_vente` | taxe_add_vente | **W** | 6x |
+| #945 | `Table_945` | Unknown | **W** | 2x |
+| #30 | `cafil008_dat` | gm-recherche_____gmr | R | 1x |
+| #34 | `cafil012_dat` | hebergement______heb | R | 2x |
+| #38 | `cafil016_dat` | comptable_gratuite | R | 1x |
+| #40 | `cafil018_dat` | comptable________cte | R | 1x |
+| #70 | `cafil048_dat` | date_comptable___dat | R | 1x |
+| #77 | `cafil055_dat` | articles_________art | R | 1x |
+| #79 | `cafil057_dat` | gratuites________gra | R | 1x |
+| #89 | `cafil067_dat` | moyen_paiement___mop | R | 2x |
+| #197 | `caisse_artstock` | articles_en_stock | R | 2x |
+| #263 | `caisse_vente` | vente | R | 1x |
+| #264 | `caisse_vente_gratuite` | vente_gratuite | R | 1x |
+| #728 | `arc_cctotal` | arc_cc_total | R | 1x |
+| #804 | `valeur_credit_bar_defaut` | valeur_credit_bar_defaut | R | 2x |
 
 ---
 
@@ -154,7 +169,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 4 |
+| Tables | 19 (6 W / 13 R) |
 | Parametres | 6 |
 | Variables locales | 50 |
 | Expressions | 257 |

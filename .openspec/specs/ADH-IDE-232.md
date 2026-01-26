@@ -22,10 +22,11 @@
 
 ---
 
-## 2. TABLES (0 tables)
+## 2. TABLES (1 tables - 0 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #246 | `caisse_session` | histo_sessions_caisse | R | 1x |
 
 ---
 
@@ -87,7 +88,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 0 |
+| Tables | 1 (0 W /  R) |
 | Parametres | 0 |
 | Variables locales | 2 |
 | Expressions | 7 |

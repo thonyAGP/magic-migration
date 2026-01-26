@@ -22,11 +22,11 @@
 
 ---
 
-## 2. TABLES (1 tables)
+## 2. TABLES (1 tables - 0 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #980 | `Table_980` | Unknown | R |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #980 | `Table_980` | Unknown | R | 1x |
 
 ---
 
@@ -89,7 +89,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 1 |
+| Tables | 1 (0 W /  R) |
 | Parametres | 5 |
 | Variables locales | 5 |
 | Expressions | 7 |

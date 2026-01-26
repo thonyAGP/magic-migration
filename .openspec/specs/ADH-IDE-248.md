@@ -22,10 +22,13 @@
 
 ---
 
-## 2. TABLES (0 tables)
+## 2. TABLES (3 tables -  en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #34 | `cafil012_dat` | hebergement______heb | **W** | 2x |
+| #30 | `cafil008_dat` | gm-recherche_____gmr | R | 1x |
+| #36 | `cafil014_dat` | client_gm | R | 1x |
 
 ---
 
@@ -129,7 +132,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 0 |
+| Tables | 3 ( W / 2 R) |
 | Parametres | 4 |
 | Variables locales | 16 |
 | Expressions | 45 |

@@ -22,10 +22,10 @@
 
 ---
 
-## 2. TABLES (0 tables)
+## 2. TABLES (0 tables - 0 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
 
 ---
 
@@ -97,7 +97,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 0 |
+| Tables | 0 (0 W / 0 R) |
 | Parametres | 29 |
 | Variables locales | 29 |
 | Expressions | 2 |

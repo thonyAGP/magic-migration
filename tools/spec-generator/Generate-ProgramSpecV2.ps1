@@ -128,24 +128,52 @@ if (Test-Path $refDsPath) {
 }
 
 # ============================================================================
-# STEP 4: Extract tables used by this program
+# STEP 4: Extract tables used by this program (ALL subtasks)
 # ============================================================================
-Write-Host "`n[4/7] Extracting tables..." -ForegroundColor Yellow
+Write-Host "`n[4/7] Extracting tables from ALL subtasks..." -ForegroundColor Yellow
 
-$tables = @()
-$dbs = $task.Resource.DB
-foreach ($db in $dbs) {
+# Extract from ALL tasks (main + subtasks), not just main task
+$allDbs = $prg.SelectNodes("//Task/Resource/DB")
+Write-Host "  Found $($allDbs.Count) DB entries across all subtasks"
+
+# Track unique tables with highest access level (W > R)
+$tableAccess = @{}
+$tableUsage = @{}
+
+foreach ($db in $allDbs) {
     $tableId = $db.DataObject.obj
+    if (-not $tableId) { continue }
+
     $access = $db.Access.val
+
+    # Track usage count
+    if (-not $tableUsage[$tableId]) { $tableUsage[$tableId] = 0 }
+    $tableUsage[$tableId]++
+
+    # Keep Write access if found (W takes priority over R)
+    if (-not $tableAccess[$tableId] -or $access -eq "W") {
+        $tableAccess[$tableId] = $access
+    }
+}
+
+# Build tables list with resolved names
+$tables = @()
+foreach ($tableId in $tableAccess.Keys | Sort-Object { [int]$_ }) {
+    $access = $tableAccess[$tableId]
+    $usage = $tableUsage[$tableId]
     $tableInfo = $tableMapping[$tableId]
     $tables += [PSCustomObject]@{
         ID = $tableId
         Physical = if ($tableInfo) { $tableInfo.Physical } else { "Table_$tableId" }
         Logical = if ($tableInfo) { $tableInfo.Name } else { "Unknown" }
         Access = $access
+        Usage = $usage
     }
 }
-Write-Host "  Found $($tables.Count) tables"
+
+$writeCount = ($tables | Where-Object { $_.Access -eq "W" }).Count
+$readCount = ($tables | Where-Object { $_.Access -eq "R" }).Count
+Write-Host "  Unique tables: $($tables.Count) (Read: $readCount, Write: $writeCount)"
 
 # ============================================================================
 # STEP 5: Build variable mapping (local + VG)
@@ -246,10 +274,15 @@ Write-Host "`n[7/7] Generating specification..." -ForegroundColor Yellow
 $date = Get-Date -Format "yyyy-MM-dd"
 $outputFile = "$OutputPath\$Project-IDE-$IDE.md"
 
-# Build tables section
+# Build tables section (Write tables first, then Read)
 $tablesSection = ""
-foreach ($t in $tables) {
-    $tablesSection += "| #$($t.ID) | ``$($t.Physical)`` | $($t.Logical) | $($t.Access) |`n"
+$writeTables = $tables | Where-Object { $_.Access -eq "W" } | Sort-Object { [int]$_.ID }
+$readTables = $tables | Where-Object { $_.Access -eq "R" } | Sort-Object { [int]$_.ID }
+foreach ($t in $writeTables) {
+    $tablesSection += "| #$($t.ID) | ``$($t.Physical)`` | $($t.Logical) | **W** | $($t.Usage)x |`n"
+}
+foreach ($t in $readTables) {
+    $tablesSection += "| #$($t.ID) | ``$($t.Physical)`` | $($t.Logical) | R | $($t.Usage)x |`n"
 }
 
 # Build parameters section (Definition = Parameter)
@@ -312,10 +345,10 @@ $md = @"
 
 ---
 
-## 2. TABLES ($($tables.Count) tables)
+## 2. TABLES ($($tables.Count) tables - $writeCount en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
 $tablesSection
 ---
 
@@ -353,7 +386,7 @@ $exprSection
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | $($tables.Count) |
+| Tables | $($tables.Count) ($writeCount W / $readCount R) |
 | Parametres | $paramCount |
 | Variables locales | $($localVars.Count) |
 | Expressions | $($expressions.Count) |

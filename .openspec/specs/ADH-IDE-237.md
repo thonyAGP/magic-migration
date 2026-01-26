@@ -22,22 +22,40 @@
 
 ---
 
-## 2. TABLES (12 tables)
+## 2. TABLES (30 tables - 9 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #103 | `cafil081_dat` | logement_client__loc | R |
-| #70 | `cafil048_dat` | date_comptable___dat | R |
-| #26 | `cafil004_dat` | comptes_speciaux_spc | R |
-| #30 | `cafil008_dat` | gm-recherche_____gmr | R |
-| #34 | `cafil012_dat` | hebergement______heb | R |
-| #77 | `cafil055_dat` | articles_________art | R |
-| #197 | `caisse_artstock` | articles_en_stock | R |
-| #372 | `pv_budget_dat` | pv_budget | R |
-| #697 | `droits` | droits_applications | R |
-| #801 | `moyens_reglement_complem` | moyens_reglement_complem | R |
-| #818 | `zcircafil146` | Circuit supprime | R |
-| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | R |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #23 | `cafil001_dat` | reseau_cloture___rec | **W** | 5x |
+| #32 | `cafil010_dat` | prestations | **W** | 3x |
+| #46 | `cafil024_dat` | mvt_prestation___mpr | **W** | 2x |
+| #47 | `cafil025_dat` | compte_gm________cgm | **W** | 2x |
+| #68 | `cafil046_dat` | compteurs________cpt | **W** | 1x |
+| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | **W** | 7x |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | **W** | 13x |
+| #899 | `Boo_ResultsRechercheHoraire` | Boo_ResultsRechercheHoraire | **W** | 8x |
+| #1037 | `Table_1037` | Unknown | **W** | 3x |
+| #26 | `cafil004_dat` | comptes_speciaux_spc | R | 1x |
+| #30 | `cafil008_dat` | gm-recherche_____gmr | R | 3x |
+| #34 | `cafil012_dat` | hebergement______heb | R | 1x |
+| #39 | `cafil017_dat` | depot_garantie___dga | R | 1x |
+| #50 | `cafil028_dat` | moyens_reglement_mor | R | 3x |
+| #67 | `cafil045_dat` | tables___________tab | R | 1x |
+| #70 | `cafil048_dat` | date_comptable___dat | R | 1x |
+| #77 | `cafil055_dat` | articles_________art | R | 4x |
+| #79 | `cafil057_dat` | gratuites________gra | R | 1x |
+| #89 | `cafil067_dat` | moyen_paiement___mop | R | 8x |
+| #96 | `cafil074_dat` | table_prestation_pre | R | 1x |
+| #103 | `cafil081_dat` | logement_client__loc | R | 1x |
+| #109 | `cafil087_dat` | table_utilisateurs | R | 1x |
+| #139 | `cafil117_dat` | moyens_reglement_mor | R | 1x |
+| #140 | `cafil118_dat` | moyen_paiement___mop | R | 1x |
+| #197 | `caisse_artstock` | articles_en_stock | R | 1x |
+| #372 | `pv_budget_dat` | pv_budget | R | 1x |
+| #697 | `droits` | droits_applications | R | 1x |
+| #728 | `arc_cctotal` | arc_cc_total | R | 1x |
+| #801 | `moyens_reglement_complem` | moyens_reglement_complem | R | 1x |
+| #818 | `zcircafil146` | Circuit supprime | R | 1x |
 
 ---
 
@@ -162,7 +180,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 12 |
+| Tables | 30 (9 W / 21 R) |
 | Parametres | 20 |
 | Variables locales | 171 |
 | Expressions | 849 |

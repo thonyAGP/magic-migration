@@ -22,10 +22,14 @@
 
 ---
 
-## 2. TABLES (0 tables)
+## 2. TABLES (4 tables -  en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #38 | `cafil016_dat` | comptable_gratuite | **W** | 2x |
+| #264 | `caisse_vente_gratuite` | vente_gratuite | R | 1x |
+| #400 | `pv_rentals_dat` | pv_cust_rentals | R | 1x |
+| #804 | `valeur_credit_bar_defaut` | valeur_credit_bar_defaut | R | 1x |
 
 ---
 
@@ -120,7 +124,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 0 |
+| Tables | 4 ( W / 3 R) |
 | Parametres | 16 |
 | Variables locales | 21 |
 | Expressions | 40 |

@@ -22,13 +22,18 @@
 
 ---
 
-## 2. TABLES (3 tables)
+## 2. TABLES (8 tables - 0 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #69 | `cafil047_dat` | initialisation___ini | R |
-| #728 | `arc_cctotal` | arc_cc_total | R |
-| #818 | `zcircafil146` | Circuit supprime | R |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #67 | `cafil045_dat` | tables___________tab | R | 2x |
+| #69 | `cafil047_dat` | initialisation___ini | R | 1x |
+| #77 | `cafil055_dat` | articles_________art | R | 5x |
+| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | R | 12x |
+| #728 | `arc_cctotal` | arc_cc_total | R | 1x |
+| #818 | `zcircafil146` | Circuit supprime | R | 1x |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | R | 15x |
+| #867 | `log_maj_tpe` | log_maj_tpe | R | 5x |
 
 ---
 
@@ -137,7 +142,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 3 |
+| Tables | 8 (0 W / 8 R) |
 | Parametres | 27 |
 | Variables locales | 33 |
 | Expressions | 552 |

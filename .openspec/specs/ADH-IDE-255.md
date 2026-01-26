@@ -22,15 +22,23 @@
 
 ---
 
-## 2. TABLES (5 tables)
+## 2. TABLES (13 tables - 4 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #40 | `cafil018_dat` | comptable________cte | R |
-| #69 | `cafil047_dat` | initialisation___ini | R |
-| #122 | `cafil100_dat` | unilateral_bilateral | R |
-| #519 | `%club_user%_pv_rentals_dat` | pv_cust_rentals | W |
-| #945 | `Table_945` | Unknown | R |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #519 | `%club_user%_pv_rentals_dat` | pv_cust_rentals | **W** | 1x |
+| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | **W** | 2x |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | **W** | 1x |
+| #945 | `Table_945` | Unknown | **W** | 3x |
+| #31 | `cafil009_dat` | gm-complet_______gmc | R | 1x |
+| #34 | `cafil012_dat` | hebergement______heb | R | 2x |
+| #40 | `cafil018_dat` | comptable________cte | R | 2x |
+| #69 | `cafil047_dat` | initialisation___ini | R | 2x |
+| #122 | `cafil100_dat` | unilateral_bilateral | R | 2x |
+| #197 | `caisse_artstock` | articles_en_stock | R | 2x |
+| #263 | `caisse_vente` | vente | R | 2x |
+| #382 | `pv_discountlist_dat` | pv_discount_reasons | R | 1x |
+| #804 | `valeur_credit_bar_defaut` | valeur_credit_bar_defaut | R | 2x |
 
 ---
 
@@ -119,7 +127,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 5 |
+| Tables | 13 (4 W / 9 R) |
 | Parametres | 1 |
 | Variables locales | 7 |
 | Expressions | 157 |

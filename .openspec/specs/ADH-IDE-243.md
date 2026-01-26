@@ -22,14 +22,35 @@
 
 ---
 
-## 2. TABLES (4 tables)
+## 2. TABLES (25 tables - 8 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #70 | `cafil048_dat` | date_comptable___dat | R |
-| #77 | `cafil055_dat` | articles_________art | R |
-| #933 | `taxe_add_vente` | taxe_add_vente | W |
-| #945 | `Table_945` | Unknown | R |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #23 | `cafil001_dat` | reseau_cloture___rec | **W** | 5x |
+| #47 | `cafil025_dat` | compte_gm________cgm | **W** | 2x |
+| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | **W** | 3x |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | **W** | 3x |
+| #899 | `Boo_ResultsRechercheHoraire` | Boo_ResultsRechercheHoraire | **W** | 2x |
+| #911 | `log_booker` | log_booker | **W** | 1x |
+| #933 | `taxe_add_vente` | taxe_add_vente | **W** | 6x |
+| #945 | `Table_945` | Unknown | **W** | 4x |
+| #30 | `cafil008_dat` | gm-recherche_____gmr | R | 1x |
+| #34 | `cafil012_dat` | hebergement______heb | R | 3x |
+| #40 | `cafil018_dat` | comptable________cte | R | 3x |
+| #67 | `cafil045_dat` | tables___________tab | R | 1x |
+| #70 | `cafil048_dat` | date_comptable___dat | R | 1x |
+| #77 | `cafil055_dat` | articles_________art | R | 1x |
+| #79 | `cafil057_dat` | gratuites________gra | R | 1x |
+| #89 | `cafil067_dat` | moyen_paiement___mop | R | 3x |
+| #197 | `caisse_artstock` | articles_en_stock | R | 3x |
+| #263 | `caisse_vente` | vente | R | 3x |
+| #285 | `email` | email | R | 1x |
+| #400 | `pv_rentals_dat` | pv_cust_rentals | R | 2x |
+| #473 | `%club_user%_caisse_compcais` | comptage_caisse | R | 3x |
+| #728 | `arc_cctotal` | arc_cc_total | R | 1x |
+| #804 | `valeur_credit_bar_defaut` | valeur_credit_bar_defaut | R | 3x |
+| #910 | `classification_memory` | classification_memory | R | 1x |
+| #1069 | `Table_1069` | Unknown | R | 1x |
 
 ---
 
@@ -154,7 +175,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 4 |
+| Tables | 25 (8 W / 17 R) |
 | Parametres | 14 |
 | Variables locales | 77 |
 | Expressions | 585 |

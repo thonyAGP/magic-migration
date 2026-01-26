@@ -22,11 +22,11 @@
 
 ---
 
-## 2. TABLES (1 tables)
+## 2. TABLES (1 tables -  en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #34 | `cafil012_dat` | hebergement______heb | W |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #34 | `cafil012_dat` | hebergement______heb | **W** | 1x |
 
 ---
 
@@ -84,7 +84,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 1 |
+| Tables | 1 ( W / 0 R) |
 | Parametres | 3 |
 | Variables locales | 3 |
 | Expressions | 5 |

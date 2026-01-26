@@ -22,28 +22,40 @@
 
 ---
 
-## 2. TABLES (18 tables)
+## 2. TABLES (30 tables - 18 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #26 | `cafil004_dat` | comptes_speciaux_spc | R |
-| #30 | `cafil008_dat` | gm-recherche_____gmr | R |
-| #31 | `cafil009_dat` | gm-complet_______gmc | R |
-| #34 | `cafil012_dat` | hebergement______heb | R |
-| #38 | `cafil016_dat` | comptable_gratuite | W |
-| #40 | `cafil018_dat` | comptable________cte | W |
-| #77 | `cafil055_dat` | articles_________art | R |
-| #89 | `cafil067_dat` | moyen_paiement___mop | R |
-| #263 | `caisse_vente` | vente | W |
-| #264 | `caisse_vente_gratuite` | vente_gratuite | W |
-| #268 | `ccpartyp` | cc_total_par_type | W |
-| #271 | `cctotal` | cc_total | W |
-| #382 | `pv_discountlist_dat` | pv_discount_reasons | R |
-| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | W |
-| #839 | `##%club_user%_%term%_pv_account` | ##_pv_compta_dat | R |
-| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | R |
-| #933 | `taxe_add_vente` | taxe_add_vente | R |
-| #980 | `Table_980` | Unknown | W |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #34 | `cafil012_dat` | hebergement______heb | **W** | 3x |
+| #38 | `cafil016_dat` | comptable_gratuite | **W** | 3x |
+| #40 | `cafil018_dat` | comptable________cte | **W** | 3x |
+| #47 | `cafil025_dat` | compte_gm________cgm | **W** | 2x |
+| #68 | `cafil046_dat` | compteurs________cpt | **W** | 1x |
+| #263 | `caisse_vente` | vente | **W** | 5x |
+| #264 | `caisse_vente_gratuite` | vente_gratuite | **W** | 4x |
+| #268 | `ccpartyp` | cc_total_par_type | **W** | 1x |
+| #271 | `cctotal` | cc_total | **W** | 1x |
+| #473 | `%club_user%_caisse_compcais` | comptage_caisse | **W** | 1x |
+| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | **W** | 2x |
+| #804 | `valeur_credit_bar_defaut` | valeur_credit_bar_defaut | **W** | 1x |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | **W** | 7x |
+| #899 | `Boo_ResultsRechercheHoraire` | Boo_ResultsRechercheHoraire | **W** | 2x |
+| #945 | `Table_945` | Unknown | **W** | 2x |
+| #980 | `Table_980` | Unknown | **W** | 1x |
+| #1033 | `Table_1033` | Unknown | **W** | 2x |
+| #1069 | `Table_1069` | Unknown | **W** | 1x |
+| #26 | `cafil004_dat` | comptes_speciaux_spc | R | 1x |
+| #30 | `cafil008_dat` | gm-recherche_____gmr | R | 1x |
+| #31 | `cafil009_dat` | gm-complet_______gmc | R | 1x |
+| #65 | `cafil043_dat` | comptes_recette__cre | R | 7x |
+| #67 | `cafil045_dat` | tables___________tab | R | 2x |
+| #77 | `cafil055_dat` | articles_________art | R | 4x |
+| #89 | `cafil067_dat` | moyen_paiement___mop | R | 3x |
+| #113 | `cafil091_dat` | tables_village | R | 1x |
+| #382 | `pv_discountlist_dat` | pv_discount_reasons | R | 1x |
+| #839 | `##%club_user%_%term%_pv_account` | ##_pv_compta_dat | R | 1x |
+| #933 | `taxe_add_vente` | taxe_add_vente | R | 1x |
+| #1037 | `Table_1037` | Unknown | R | 1x |
 
 ---
 
@@ -147,7 +159,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 18 |
+| Tables | 30 (18 W / 12 R) |
 | Parametres | 15 |
 | Variables locales | 33 |
 | Expressions | 546 |

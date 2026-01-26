@@ -22,11 +22,11 @@
 
 ---
 
-## 2. TABLES (1 tables)
+## 2. TABLES (1 tables -  en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #867 | `log_maj_tpe` | log_maj_tpe | W |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #867 | `log_maj_tpe` | log_maj_tpe | **W** | 1x |
 
 ---
 
@@ -92,7 +92,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 1 |
+| Tables | 1 ( W / 0 R) |
 | Parametres | 7 |
 | Variables locales | 7 |
 | Expressions | 13 |

@@ -22,13 +22,25 @@
 
 ---
 
-## 2. TABLES (3 tables)
+## 2. TABLES (15 tables -  en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
-| #69 | `cafil047_dat` | initialisation___ini | R |
-| #728 | `arc_cctotal` | arc_cc_total | R |
-| #818 | `zcircafil146` | Circuit supprime | R |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | **W** | 14x |
+| #31 | `cafil009_dat` | gm-complet_______gmc | R | 2x |
+| #34 | `cafil012_dat` | hebergement______heb | R | 4x |
+| #40 | `cafil018_dat` | comptable________cte | R | 4x |
+| #67 | `cafil045_dat` | tables___________tab | R | 3x |
+| #69 | `cafil047_dat` | initialisation___ini | R | 1x |
+| #77 | `cafil055_dat` | articles_________art | R | 3x |
+| #263 | `caisse_vente` | vente | R | 4x |
+| #728 | `arc_cctotal` | arc_cc_total | R | 1x |
+| #818 | `zcircafil146` | Circuit supprime | R | 1x |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | R | 15x |
+| #867 | `log_maj_tpe` | log_maj_tpe | R | 5x |
+| #878 | `categorie_operation_mw` | categorie_operation_mw | R | 2x |
+| #904 | `Boo_AvailibleEmployees` | Boo_AvailibleEmployees | R | 3x |
+| #1037 | `Table_1037` | Unknown | R | 2x |
 
 ---
 
@@ -142,7 +154,7 @@ IF (GetParam ...` |
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 3 |
+| Tables | 15 ( W / 14 R) |
 | Parametres | 30 |
 | Variables locales | 39 |
 | Expressions | 705 |

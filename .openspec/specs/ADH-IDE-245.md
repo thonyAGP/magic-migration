@@ -22,10 +22,36 @@
 
 ---
 
-## 2. TABLES (0 tables)
+## 2. TABLES (26 tables - 10 en ecriture)
 
-| IDE# | Nom Physique | Nom Logique | Access |
-|------|--------------|-------------|--------|
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #23 | `cafil001_dat` | reseau_cloture___rec | **W** | 5x |
+| #47 | `cafil025_dat` | compte_gm________cgm | **W** | 2x |
+| #519 | `%club_user%_pv_rentals_dat` | pv_cust_rentals | **W** | 2x |
+| #596 | `%club_user%tmp_ecrpolice_dat` | tempo_ecran_police | **W** | 6x |
+| #804 | `valeur_credit_bar_defaut` | valeur_credit_bar_defaut | **W** | 6x |
+| #847 | `%club_user%_stat_lieu_vente_date` | stat_lieu_vente_date | **W** | 5x |
+| #899 | `Boo_ResultsRechercheHoraire` | Boo_ResultsRechercheHoraire | **W** | 2x |
+| #911 | `log_booker` | log_booker | **W** | 1x |
+| #933 | `taxe_add_vente` | taxe_add_vente | **W** | 9x |
+| #945 | `Table_945` | Unknown | **W** | 5x |
+| #34 | `cafil012_dat` | hebergement______heb | R | 5x |
+| #38 | `cafil016_dat` | comptable_gratuite | R | 1x |
+| #40 | `cafil018_dat` | comptable________cte | R | 4x |
+| #67 | `cafil045_dat` | tables___________tab | R | 1x |
+| #70 | `cafil048_dat` | date_comptable___dat | R | 2x |
+| #77 | `cafil055_dat` | articles_________art | R | 1x |
+| #89 | `cafil067_dat` | moyen_paiement___mop | R | 4x |
+| #197 | `caisse_artstock` | articles_en_stock | R | 4x |
+| #263 | `caisse_vente` | vente | R | 4x |
+| #264 | `caisse_vente_gratuite` | vente_gratuite | R | 1x |
+| #285 | `email` | email | R | 1x |
+| #400 | `pv_rentals_dat` | pv_cust_rentals | R | 2x |
+| #473 | `%club_user%_caisse_compcais` | comptage_caisse | R | 3x |
+| #728 | `arc_cctotal` | arc_cc_total | R | 1x |
+| #910 | `classification_memory` | classification_memory | R | 1x |
+| #1069 | `Table_1069` | Unknown | R | 1x |
 
 ---
 
@@ -117,7 +143,7 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Tables | 0 |
+| Tables | 26 (10 W / 16 R) |
 | Parametres | 16 |
 | Variables locales | 25 |
 | Expressions | 794 |
