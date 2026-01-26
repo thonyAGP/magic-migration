@@ -50,6 +50,8 @@ function Parse-PatternFile {
         RootCauseType = $null
         SymptomKeywords = @()
         SolutionTemplate = ""
+        SpecReferences = @()
+        AffectedTables = @()
     }
 
     # Extract header metadata
@@ -66,7 +68,8 @@ function Parse-PatternFile {
     # Extract symptoms (bullet list after ## Symptomes typiques)
     if ($Content -match '##\s*Symptomes?\s*typiques?\s*\r?\n([\s\S]*?)(?=\r?\n---|\r?\n##)') {
         $SymptomsSection = $Matches[1]
-        $Symptoms = [regex]::Matches($SymptomsSection, '-\s*["\']?([^"\'\r\n]+)["\']?')
+        $SymptomRegex = '-\s*["'']?([^"''\r\n]+)["'']?'
+        $Symptoms = [regex]::Matches($SymptomsSection, $SymptomRegex)
         foreach ($Match in $Symptoms) {
             $Symptom = $Match.Groups[1].Value.Trim(' "''')
             if ($Symptom -and $Symptom.Length -gt 2) {
@@ -78,7 +81,8 @@ function Parse-PatternFile {
     # Extract keywords (bullet list after ### Mots-cles)
     if ($Content -match '###\s*Mots-cles[^\r\n]*\r?\n([\s\S]*?)(?=\r?\n###|\r?\n##|\r?\n---)') {
         $KeywordsSection = $Matches[1]
-        $Keywords = [regex]::Matches($KeywordsSection, '-\s*["\']?([^"\'\r\n]+)["\']?')
+        $KeywordRegex = '-\s*["'']?([^"''\r\n]+)["'']?'
+        $Keywords = [regex]::Matches($KeywordsSection, $KeywordRegex)
         foreach ($Match in $Keywords) {
             $Keyword = $Match.Groups[1].Value.Trim(' "''')
             if ($Keyword -and $Keyword.Length -gt 2 -and $Keyword -notin $Pattern.SymptomKeywords) {
@@ -90,6 +94,32 @@ function Parse-PatternFile {
     # Extract solution template (section after ## Solution type)
     if ($Content -match '##\s*Solution\s*type\s*\r?\n([\s\S]*?)(?=\r?\n##\s*[A-Z]|\r?\n---\s*\r?\n\*Pattern)') {
         $Pattern.SolutionTemplate = $Matches[1].Trim()
+    }
+
+    # Extract spec references (## Specs concernees section)
+    # Look for links like [ADH-IDE-69](../specs/ADH-IDE-69.md)
+    if ($Content -match '##\s*Specs?\s*concern[e\xe9]+es?([\s\S]*?)(?=\r?\n##|\r?\n---\s*\r?\n\*Pattern|\z)') {
+        $SpecsSection = $Matches[1]
+        $SpecLinks = [regex]::Matches($SpecsSection, '\[([A-Z]+-IDE-\d+)\]')
+        foreach ($Match in $SpecLinks) {
+            $SpecId = $Match.Groups[1].Value
+            if ($SpecId -notin $Pattern.SpecReferences) {
+                $Pattern.SpecReferences += $SpecId
+            }
+        }
+    }
+
+    # Extract affected tables (### Tables impactees section)
+    # Look for patterns like `#849` or #849
+    if ($Content -match '###?\s*Tables?\s*impact[e\xe9]+es?([\s\S]*?)(?=\r?\n##|\r?\n###|\r?\n---\s*\r?\n|\z)') {
+        $TablesSection = $Matches[1]
+        $TableIds = [regex]::Matches($TablesSection, '#(\d+)')
+        foreach ($Match in $TableIds) {
+            $TableId = [int]$Match.Groups[1].Value
+            if ($TableId -notin $Pattern.AffectedTables) {
+                $Pattern.AffectedTables += $TableId
+            }
+        }
     }
 
     return $Pattern
@@ -131,21 +161,43 @@ foreach ($File in $PatternFiles) {
         $KeywordsJson = "[`"$($Pattern.SymptomKeywords[0])`"]"
     }
 
+    # Spec references JSON
+    $SpecsJson = ($Pattern.SpecReferences | ConvertTo-Json -Compress)
+    if ($Pattern.SpecReferences.Count -eq 0) {
+        $SpecsJson = "[]"
+    }
+    if ($Pattern.SpecReferences.Count -eq 1) {
+        $SpecsJson = "[`"$($Pattern.SpecReferences[0])`"]"
+    }
+
+    # Affected tables JSON
+    $TablesJson = ($Pattern.AffectedTables | ConvertTo-Json -Compress)
+    if ($Pattern.AffectedTables.Count -eq 0) {
+        $TablesJson = "[]"
+    }
+    if ($Pattern.AffectedTables.Count -eq 1) {
+        $TablesJson = "[$($Pattern.AffectedTables[0])]"
+    }
+
     $Sql = @"
-INSERT INTO resolution_patterns (pattern_name, symptom_keywords, root_cause_type, solution_template, source_ticket, usage_count)
+INSERT INTO resolution_patterns (pattern_name, symptom_keywords, root_cause_type, solution_template, source_ticket, usage_count, spec_references_json, affected_tables_json)
 VALUES (
     $(Escape-SqlString $Pattern.PatternName),
     $(Escape-SqlString $KeywordsJson),
     $(Escape-SqlString $Pattern.RootCauseType),
     $(Escape-SqlString $Pattern.SolutionTemplate),
     $(Escape-SqlString $Pattern.SourceTicket),
-    0
+    0,
+    $(Escape-SqlString $SpecsJson),
+    $(Escape-SqlString $TablesJson)
 )
 ON CONFLICT(pattern_name) DO UPDATE SET
     symptom_keywords = excluded.symptom_keywords,
     root_cause_type = excluded.root_cause_type,
     solution_template = excluded.solution_template,
-    source_ticket = excluded.source_ticket;
+    source_ticket = excluded.source_ticket,
+    spec_references_json = excluded.spec_references_json,
+    affected_tables_json = excluded.affected_tables_json;
 "@
     $SqlStatements += $Sql
 
@@ -154,6 +206,8 @@ ON CONFLICT(pattern_name) DO UPDATE SET
     Write-Host "  Source: $($Pattern.SourceTicket)" -ForegroundColor White
     Write-Host "  Type: $($Pattern.RootCauseType)" -ForegroundColor White
     Write-Host "  Keywords: $($Pattern.SymptomKeywords.Count)" -ForegroundColor White
+    Write-Host "  Specs: $($Pattern.SpecReferences -join ', ')" -ForegroundColor Cyan
+    Write-Host "  Tables: $($Pattern.AffectedTables -join ', ')" -ForegroundColor Cyan
     Write-Host ""
 }
 
@@ -210,5 +264,72 @@ foreach ($Line in $ListResult) {
     Write-Host $Line
 }
 
+# ============================================================================
+# P1-D: BIDIRECTIONAL LINKS - Update specs with known patterns
+# ============================================================================
+
 Write-Host ""
-Write-Host "[DONE] Pattern sync complete" -ForegroundColor Green
+Write-Host "=== Bidirectional Links ===" -ForegroundColor Cyan
+Write-Host "Updating program_specs with known patterns..." -ForegroundColor Yellow
+
+# Build reverse mapping: spec -> patterns
+$SpecPatternMap = @{}
+foreach ($Pattern in $Patterns) {
+    foreach ($SpecRef in $Pattern.SpecReferences) {
+        # Parse spec reference (e.g., "ADH-IDE-69")
+        if ($SpecRef -match '([A-Z]+)-IDE-(\d+)') {
+            $Key = "$($Matches[1])|$($Matches[2])"
+            if (-not $SpecPatternMap.ContainsKey($Key)) {
+                $SpecPatternMap[$Key] = @()
+            }
+            if ($Pattern.PatternName -notin $SpecPatternMap[$Key]) {
+                $SpecPatternMap[$Key] += $Pattern.PatternName
+            }
+        }
+    }
+}
+
+# Generate SQL updates for each spec
+$UpdateStatements = @()
+foreach ($Key in $SpecPatternMap.Keys) {
+    $Parts = $Key -split '\|'
+    $Project = $Parts[0]
+    $IDE = [int]$Parts[1]
+    $PatternNames = $SpecPatternMap[$Key]
+
+    $PatternsJson = ($PatternNames | ForEach-Object { "`"$_`"" }) -join ','
+    $PatternsJson = "[$PatternsJson]"
+
+    $UpdateSql = @"
+UPDATE program_specs
+SET known_patterns_json = '$PatternsJson'
+WHERE project = '$Project' AND ide_position = $IDE;
+"@
+    $UpdateStatements += $UpdateSql
+    Write-Host "  $Project IDE $IDE <- $($PatternNames -join ', ')" -ForegroundColor Gray
+}
+
+if ($UpdateStatements.Count -gt 0) {
+    if (-not $DryRun) {
+        $TempFile2 = [System.IO.Path]::GetTempFileName()
+        $UpdateStatements -join "`n" | Set-Content $TempFile2 -Encoding UTF8
+
+        try {
+            $Result = & sqlite3 $KbPath ".read '$TempFile2'" 2>&1
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning "SQLite error updating specs: $Result"
+            } else {
+                Write-Host "[OK] Updated $($UpdateStatements.Count) specs with pattern links" -ForegroundColor Green
+            }
+        } finally {
+            Remove-Item $TempFile2 -ErrorAction SilentlyContinue
+        }
+    } else {
+        Write-Host "[DRY RUN] Would update $($UpdateStatements.Count) specs" -ForegroundColor Magenta
+    }
+} else {
+    Write-Host "  No spec references found in patterns" -ForegroundColor Yellow
+}
+
+Write-Host ""
+Write-Host "[DONE] Pattern sync complete with bidirectional links" -ForegroundColor Green

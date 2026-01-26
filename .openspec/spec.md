@@ -299,20 +299,34 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 - Resolution de bugs
 - Amelioration continue
 
-**Inventaire des outils** (2026-01-25) :
+**Inventaire des outils** (2026-01-26) :
 
 | Categorie | Outils | Etat | Cible | Action |
 |-----------|--------|------|-------|--------|
-| MCP Server | **42 outils** | **100%** | 100% | **+14 outils Synergie (Tiers 1-5)** |
+| MCP Server | **44 outils** | **100%** | 100% | **+2 outils Regression Detection** |
 | Agents specialises | 5 agents | 100% | 100% | Maintenir |
 | Commandes Slash | 15 commandes | 100% | 100% | Maintenir |
-| Scripts PowerShell | **32 scripts** | 100% | 100% | **+sync-patterns-to-kb.ps1** |
+| Scripts PowerShell | **34 scripts** | 100% | 100% | **+Generate-MigrationBlueprint, Generate-TestsFromSpec** |
 | Parser TypeScript | 3 generateurs | **100%** | 100% | **COMPLET** |
 | Skill/References | **24 fichiers** | 100% | 100% | **+skill ticket-analyze** |
 | **Fonctions Magic** | **200/200** | **100%** | **100%** | **COMPLET** |
 | **Workflow Tickets** | **Orchestre v2.0** | **100%** | 100% | **6 phases, patterns KB, metrics** |
 | **Migration Specs** | **MigrationExtractor** | **100%** | 100% | **Cahier des charges auto** |
 | **Synergie Ecosysteme** | **Tiers 1-5** | **100%** | 100% | **40%→80% synergie, 762 ECF, Impact Analysis** |
+
+### Nouveaux outils MCP (2026-01-26) - Regression Detection
+
+| Outil | Description | Statut |
+|-------|-------------|--------|
+| `magic_detect_regression` | Compare etat actuel KB vs spec sauvegardee. Detecte expressions, tables, access mode changes | **NOUVEAU** |
+| `magic_spec_drift_report` | Rapport drift pour tous les specs d'un projet (IN_SYNC, MINOR_DRIFT, MAJOR_DRIFT) | **NOUVEAU** |
+
+### Scripts Migration (2026-01-26)
+
+| Script | Description | Statut |
+|--------|-------------|--------|
+| `Generate-MigrationBlueprint.ps1` | Genere squelette C# (Entities, Handlers, DTOs) depuis spec | **NOUVEAU** |
+| `Generate-TestsFromSpec.ps1` | Genere tests xUnit/Vitest depuis spec (scenarios, validation) | **NOUVEAU** |
 
 ### Nouveaux outils MCP (2026-01-24)
 
@@ -797,6 +811,8 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-01-26: **Spec Capitalization Implementation P1-P3** - (P1-A) auto-find-programs.ps1 spec context injection, (P1-D) sync-patterns-to-kb.ps1 bidirectional links + known_patterns_json, (P2-C) RegressionDetectionTool.cs (magic_detect_regression, magic_spec_drift_report), (P3-B) Generate-MigrationBlueprint.ps1 C# code skeleton, (P3-E) Generate-TestsFromSpec.ps1 xUnit/Vitest scaffolds
+- 2026-01-26: **Spec Capitalization Plan Complete** - 4 phases implementees: (1) SpecReaderTool + viewer search, (2) KB indexing + pattern-spec integration, (3) validation hook v3.1 + auto-regeneration pipeline, (4) magic_precheck_change + impact matrices. 6 nouveaux scripts, 3 MCP tools, CI/CD workflow
 - 2026-01-26: **Phase 0 Ecosystem Optimization** - PatternSyncService.cs (sync Markdown→KB), 2 outils MCP (magic_pattern_sync, magic_pattern_status), 5 tests unitaires, diagnostic ADH XML (360 fichiers valides)
 - 2026-01-25: **Analyse Jira automatisée** - Extraction 10 tickets résolus, sync dates Jira, +2 patterns KB (local-config-regression, modedayinc-date-display), fix script test-jira-auth.ps1
 - 2026-01-25: **ChangeImpactTool.cs** - 4 outils MCP Tier 5 (magic_impact_program, magic_impact_table, magic_impact_expression, magic_impact_crossproject) + Schema v5 + analyze-impact CLI
