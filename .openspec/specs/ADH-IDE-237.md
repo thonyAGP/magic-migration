@@ -105,37 +105,27 @@
 
 ```mermaid
 flowchart TD
-    START([START Transaction GP])
-    INIT[Initialisation et chargement defaults]
-    DEPOSIT{Depot requis}
-    EDIT{Edition necessaire}
-    PRINT{Imprimer recu}
-    T229[Task 229 Edition]
-    GTYPE{Type service}
-    VRL[VRL Round Trip]
-    VSL[VSL Sejour]
-    TRF[TRF Transfert]
-    QTY[Valider Quantite]
-    GPCHECK{Gift Pass disponible}
-    GPMSG[Proposer Gift Pass]
-    GPACCEPT{Client accepte}
-    GPDEDUCT[Deduire GP du montant]
-    DISCOUNT[Valider Remise]
-    CAPACITY[Verifier Capacite]
-    PAYMENT[Valider Paiement]
-    FINAL{Validation finale}
-    UPDATE[UPDATE Tables]
-    ERROR[Erreur Flag 149]
-    COMPLETE{Transaction complete}
-    ENDOK([END Transaction])
+    START([START])
+    INIT[Init]
+    DEPOSIT{Depot}
+    GTYPE{Service}
+    VRL[VRL]
+    VSL[VSL]
+    TRF[TRF]
+    QTY[Quantite]
+    GPCHECK{GP dispo}
+    GPMSG[Proposer GP]
+    GPACCEPT{Accepte}
+    GPDEDUCT[Deduire GP]
+    DISCOUNT[Remise]
+    PAYMENT[Paiement]
+    FINAL{Valid}
+    UPDATE[Update]
+    ENDOK([END])
 
     START --> INIT --> DEPOSIT
-    DEPOSIT -->|OUI| EDIT
+    DEPOSIT -->|OUI| GTYPE
     DEPOSIT -->|NON| GTYPE
-    EDIT -->|OUI| PRINT
-    EDIT -->|NON| GTYPE
-    PRINT -->|OUI| T229 --> GTYPE
-    PRINT -->|NON| GTYPE
     GTYPE -->|VRL| VRL --> QTY
     GTYPE -->|VSL| VSL --> QTY
     GTYPE -->|TRF| TRF --> QTY
@@ -144,11 +134,9 @@ flowchart TD
     GPCHECK -->|NON| DISCOUNT
     GPACCEPT -->|OUI| GPDEDUCT --> DISCOUNT
     GPACCEPT -->|NON| DISCOUNT
-    DISCOUNT --> CAPACITY --> PAYMENT --> FINAL
-    FINAL -->|OK| UPDATE --> COMPLETE
-    FINAL -->|KO| ERROR --> COMPLETE
-    COMPLETE -->|OUI| ENDOK
-    COMPLETE -->|NON| FINAL
+    DISCOUNT --> PAYMENT --> FINAL
+    FINAL -->|OK| UPDATE --> ENDOK
+    FINAL -->|KO| ENDOK
 
     style START fill:#3fb950
     style ENDOK fill:#f85149
@@ -200,18 +188,10 @@ flowchart TD
 
 ```mermaid
 graph LR
-    subgraph Main
-        M[IDE 1 Main Program]
-    end
-    subgraph Menu
-        M166[IDE 166 Menu caisse GM]
-    end
-    subgraph Ventes
-        M242[IDE 242 Menu Saisie Annul]
-    end
-    subgraph Cible
-        T[IDE 237 Transaction Nouv vente GP]
-    end
+    M[1 Main]
+    M166[166 Menu caisse]
+    M242[242 Menu Saisie]
+    T[237 Vente GP]
 
     M --> M166
     M166 --> T

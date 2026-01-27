@@ -113,47 +113,42 @@
 
 ```mermaid
 flowchart TD
-    START([START Print Ticket])
-    LOAD[Charger DataView vente]
-    SELECT[Selectionner 50 champs]
-    PRINTER{CURRENTPRINTERNUM}
-    P1[Printer 1 - A4]
-    P4[Printer 4 - A5]
-    P5[Printer 5 - SLIP]
-    P8[Printer 8]
-    P9[Printer 9]
-    T2[Tache 2 Print A4]
-    T11[Tache 11 Print A5]
-    T17[Tache 17 Print SLIP]
-    T22[Tache 22 Print 8]
-    T28[Tache 28 Print 9]
-    PDF{PDF requis}
-    T41[Tache 41 PDF Handler]
-    PDFOK{PDF genere}
-    T37[Tache 37 Update Status]
-    COUNTER{Copies terminees}
-    END([END Ticket imprime])
+    START([START])
+    LOAD[Charger DataView]
+    SELECT[Selectionner champs]
+    PRINTER{Imprimante}
+    P1[Format A4]
+    P4[Format A5]
+    P5[Format SLIP]
+    P8[Format 8]
+    P9[Format 9]
+    PDF{PDF}
+    T41[PDF Handler]
+    PDFOK{OK}
+    T37[Update Status]
+    COUNTER{Termine}
+    ENDOK([END])
 
     START --> LOAD --> SELECT --> PRINTER
-    PRINTER -->|1| P1 --> T2
-    PRINTER -->|4| P4 --> T11
-    PRINTER -->|5| P5 --> T17
-    PRINTER -->|8| P8 --> T22
-    PRINTER -->|9| P9 --> T28
-    T2 --> PDF
-    T11 --> PDF
-    T17 --> PDF
-    T22 --> PDF
-    T28 --> PDF
+    PRINTER -->|1| P1
+    PRINTER -->|4| P4
+    PRINTER -->|5| P5
+    PRINTER -->|8| P8
+    PRINTER -->|9| P9
+    P1 --> PDF
+    P4 --> PDF
+    P5 --> PDF
+    P8 --> PDF
+    P9 --> PDF
     PDF -->|OUI| T41 --> PDFOK
     PDF -->|NON| COUNTER
     PDFOK -->|OUI| T37 --> COUNTER
     PDFOK -->|NON| COUNTER
     COUNTER -->|NON| START
-    COUNTER -->|OUI| END
+    COUNTER -->|OUI| ENDOK
 
     style START fill:#3fb950
-    style END fill:#f85149
+    style ENDOK fill:#f85149
     style PDF fill:#58a6ff
     style PDFOK fill:#58a6ff
 ```
@@ -188,22 +183,14 @@ flowchart TD
 
 ```mermaid
 graph LR
-    subgraph Main
-        M[IDE 1 Main Program]
-    end
-    subgraph Menu
-        M166[IDE 166 Menu caisse GM]
-    end
-    subgraph Ventes
-        M238[IDE 238 Transaction Nouv vente]
-        M242[IDE 242 Menu Saisie Annul]
-        M243[IDE 243 Histo ventes payantes]
-        M244[IDE 244 Histo ventes PMS-605]
-        M245[IDE 245 Histo ventes PMS-623]
-    end
-    subgraph Cible
-        T[IDE 236 Print ticket vente]
-    end
+    M[1 Main]
+    M166[166 Menu caisse]
+    M238[238 Transaction vente]
+    M242[242 Menu Saisie]
+    M243[243 Histo ventes]
+    M244[244 Histo PMS605]
+    M245[245 Histo PMS623]
+    T[236 Print ticket]
 
     M --> M166
     M166 --> M238
