@@ -1,0 +1,108 @@
+# ADH IDE 28 - Fusion
+# Programme partage via ADH.ecf - CROSS-PROJECT CALLER
+# Utilise par: PBP, PVE
+
+program:
+  project: "ADH"
+  ide: 28
+
+functional:
+  objective:
+    who: "Operateur caisse / Receptionniste"
+    what: "Fusionner plusieurs comptes adherents en un seul"
+    why: "Permettre le regroupement de comptes (mariage, famille recomposee, facturation groupee)"
+
+  user_flow:
+    - Selection du compte cible (destinataire)
+    - Selection du ou des comptes sources a fusionner
+    - Affichage des membres et operations de chaque compte
+    - Verification des soldes et depots
+    - Confirmation de la fusion
+    - Transfert des operations vers compte cible
+    - Cloture des comptes sources
+
+  error_cases:
+    - condition: Comptes avec devises differentes
+      message: "Impossible de fusionner des comptes en devises differentes"
+      severity: HIGH
+    - condition: Compte source avec solde negatif
+      message: "Le compte source a un solde negatif"
+      severity: MEDIUM
+    - condition: Garantie non transferable
+      message: "Une garantie existe et doit etre validee"
+      severity: MEDIUM
+
+business_rules:
+  - code: RM-001
+    description: "Validation du statut de fusion (RETRY/DONE/PASSED)"
+    expression_id: 57
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-002
+    description: "Calcul expression 71 si condition remplie"
+    expression_id: 62
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-003
+    description: "Verification compte source different du compte cible"
+    expression_id: 77
+    rule_type: VALIDATION
+    severity: HIGH
+    validated: false
+  - code: RM-004
+    description: "Validation ECI actif et compte source non vide"
+    expression_id: 35
+    rule_type: VALIDATION
+    severity: MEDIUM
+    validated: false
+  - code: RM-005
+    description: "Calcul age en annees (affichage)"
+    expression_id: 11
+    rule_type: VALIDATION
+    severity: LOW
+    validated: false
+  - code: RM-006
+    description: "Calcul age en mois (affichage)"
+    expression_id: 12
+    rule_type: VALIDATION
+    severity: LOW
+    validated: false
+
+migration:
+  complexity_override: HIGH
+  target_architecture: CQRS
+  notes:
+    - "Programme ECF partage - appele depuis PBP et PVE"
+    - "Manipulation transactionnelle de plusieurs tables"
+    - "Transfert operations entre comptes"
+    - "1526 expressions - logique complexe"
+    - "Gestion coherence referentielle post-fusion"
+
+  test_coverage:
+    unit_tests: 90
+    integration_tests: true
+    regression_patterns: true
+
+dependencies:
+  external: []
+  ecf_notes: "PARTAGE via ADH.ecf (Sessions_Reprises) - Appele depuis PBP et PVE"
+
+history:
+  - date: "2026-01-27"
+    author: "Claude"
+    change: "Creation annotation initiale - Programme ECF"
+    ticket: null
+
+metadata:
+  author: "Claude"
+  created_at: "2026-01-27"
+  last_updated: "2026-01-27"
+  reviewers: []
+  tags:
+    - compte
+    - fusion
+    - ecf-shared
+    - cross-project
+    - critical

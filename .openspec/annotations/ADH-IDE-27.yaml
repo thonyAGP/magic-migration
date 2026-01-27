@@ -1,0 +1,201 @@
+﻿# ADH IDE 27 - Separation
+# Programme partage via ADH.ecf - CROSS-PROJECT CALLER
+# Utilise par: PBP, PVE
+
+program:
+  project: "ADH"
+  ide: 27
+
+functional:
+  objective:
+    who: "Operateur caisse / Receptionniste"
+    what: "Separer un compte adherent en plusieurs comptes"
+    why: "Permettre la division d'un compte famille en comptes individuels (depart anticipe, facturation separee)"
+
+  user_flow:
+    - Selection du compte source a separer
+    - Affichage des membres du compte et leurs operations
+    - Selection des membres a transferer vers nouveau compte
+    - Verification des depots et garanties a transferer
+    - Confirmation de la separation
+    - Creation du nouveau compte avec operations selectionnees
+    - Mise a jour des soldes des deux comptes
+
+  error_cases:
+    - condition: Compte avec operations en cours
+      message: "Operations non cloturees sur le compte"
+      severity: HIGH
+    - condition: Depots non transferables
+      message: "Les depots restent sur le compte source"
+      severity: MEDIUM
+    - condition: Garantie active
+      message: "Une garantie existe - transfert requis"
+      severity: MEDIUM
+
+# ============================================================================
+# BUSINESS RULES (Validated by humans, linked to expressions)
+# ============================================================================
+business_rules:
+  - code: RM-001
+    description: "SI {0 ALORS 36} ALORS SI {0 ALORS 34} ALORS 'RETRY' ALORS 'DONE') ALORS 'PASSED')"
+    expression_id: 71
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-002
+    description: "SI {0 ALORS 34} ALORS ExpCalc('29'EXP) ALORS 'TRUE'LOG)"
+    expression_id: 76
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-003
+    description: "SI {0 ALORS 31} ALORS 'NNN' ALORS 'ONE')"
+    expression_id: 78
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-004
+    description: "SI {0 ALORS 8} ALORS '>>' ALORS '')"
+    expression_id: 5
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-005
+    description: "SI {0 ALORS 20}>0 ALORS Str ({0 ALORS 20} ALORS '###') ALORS SI {0 ALORS 21}=0 ALORS '' ALORS Str..."
+    expression_id: 7
+    rule_type: VALIDATION
+    severity: MEDIUM
+    validated: false
+  - code: RM-006
+    description: "SI {0 ALORS 20}>0 ALORS 'ans' ALORS SI {0 ALORS 21}=0 ALORS '' ALORS 'mois'))"
+    expression_id: 8
+    rule_type: VALIDATION
+    severity: MEDIUM
+    validated: false
+  - code: RM-007
+    description: "SI {0 ALORS 10}>0 ALORS '-' ALORS '')"
+    expression_id: 9
+    rule_type: VALIDATION
+    severity: MEDIUM
+    validated: false
+  - code: RM-008
+    description: "{0 ALORS 1}>1 AND {2 ALORS 16}"
+    expression_id: 17
+    rule_type: VALIDATION
+    severity: MEDIUM
+    validated: false
+  - code: RM-009
+    description: "SI NOT ({0 ALORS 8}) ALORS 6 ALORS 146)"
+    expression_id: 21
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-010
+    description: "MlsTrans ('Attention')&' ! '&{32768 ALORS 102}&SI {0 ALORS 17}='' ALORS 'Les depôts restent sur l..."
+    expression_id: 1
+    rule_type: UNKNOWN
+    severity: MEDIUM
+    validated: false
+  - code: RM-011
+    description: "SI Trim({0 ALORS 17})='' ALORS '' ALORS Trim({0 ALORS 17})&{32768 ALORS 102})&MlsTrans ('Une gara..."
+    expression_id: 19
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-012
+    description: "{0 ALORS 18}<>0 AND {0 ALORS 19}<>0"
+    expression_id: 14
+    rule_type: VALIDATION
+    severity: MEDIUM
+    validated: false
+  - code: RM-013
+    description: "NOT ISNULL({1 ALORS 42})"
+    expression_id: 22
+    rule_type: PRESENCE
+    severity: MEDIUM
+    validated: false
+  - code: RM-014
+    description: "SI ISNULL({2 ALORS 42}) ALORS 0 ALORS VecSize({2 ALORS 42}))"
+    expression_id: 18
+    rule_type: PRESENCE
+    severity: MEDIUM
+    validated: false
+  - code: RM-015
+    description: "SI {0 ALORS 3}='S' ALORS 'S' ALORS 'O')"
+    expression_id: 3
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-016
+    description: "SI {0 ALORS 3}='S' ALORS 'S' ALORS 'O')"
+    expression_id: 3
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-017
+    description: "SI {0 ALORS 3}='S' ALORS 'S' ALORS 'O')"
+    expression_id: 3
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-018
+    description: "SI {0 ALORS 3}='S' ALORS {0 ALORS 7} ALORS {0 ALORS 6})"
+    expression_id: 6
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+  - code: RM-019
+    description: "SI {0 ALORS 4} ALORS 'TRUE'LOG ALORS 'FALSE'LOG)"
+    expression_id: 8
+    rule_type: CONDITIONAL
+    severity: MEDIUM
+    validated: false
+# Example:
+# - code: RM-001
+#   description: Montant minimum 10 EUR
+#   expression_id: 45           # Links to KB expression
+#   validated: true
+#   validated_by: ALB
+#   validated_date: 2026-01-26
+# - code: RM-002
+#   description: Stock disponible avant vente
+#   expression_id: 67
+#   validated: false            # Not yet validated
+
+migration:
+  complexity_override: HIGH
+  target_architecture: CQRS
+  notes:
+    - "Programme ECF partage - appele depuis PBP et PVE"
+    - "Manipulation transactionnelle de plusieurs tables"
+    - "Gestion des depots et garanties"
+    - "1458 expressions - logique complexe"
+    - "Validation integrite compte avant/apres"
+
+  test_coverage:
+    unit_tests: 90
+    integration_tests: true
+    regression_patterns: true
+
+dependencies:
+  external: []
+  ecf_notes: "PARTAGE via ADH.ecf (Sessions_Reprises) - Appele depuis PBP et PVE"
+
+history:
+  - date: "2026-01-27"
+    author: "Claude"
+    change: "Creation annotation initiale - Programme ECF"
+    ticket: null
+
+metadata:
+  author: "Claude"
+  created_at: "2026-01-27"
+  last_updated: "2026-01-27"
+  reviewers: []
+  tags:
+    - compte
+    - separation
+    - ecf-shared
+    - cross-project
+    - critical
+

@@ -124,8 +124,8 @@ Ces programmes sont partages via ADH.ecf et necessitent des annotations complete
 | 69 | EXTRAIT_COMPTE | Extrait de compte | FAIT |
 | 192 | SOLDE_COMPTE | Calcul solde | FAIT |
 | 238 | - | Vente Gift Pass | FAIT |
-| 27 | Separation | Separation compte | A FAIRE |
-| 28 | Fusion | Fusion compte | A FAIRE |
+| 27 | Separation | Separation compte | FAIT |
+| 28 | Fusion | Fusion compte | FAIT |
 
 ## Limitations actuelles
 
