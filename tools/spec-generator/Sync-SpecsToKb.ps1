@@ -23,8 +23,30 @@ if (-not (Test-Path $specsDir)) {
     exit 1
 }
 
-# Load SQLite assembly
-Add-Type -Path "$PSScriptRoot\..\MagicKnowledgeBase\bin\Release\net8.0\System.Data.SQLite.dll" -ErrorAction SilentlyContinue
+# Load SQLite assembly (Microsoft.Data.Sqlite from MagicMcp)
+$sqliteDllPath = "$PSScriptRoot\..\MagicMcp\bin\Release\net8.0\Microsoft.Data.Sqlite.dll"
+$sqlitePclPath = "$PSScriptRoot\..\MagicMcp\bin\Release\net8.0\SQLitePCLRaw.core.dll"
+$sqliteBatteriesPath = "$PSScriptRoot\..\MagicMcp\bin\Release\net8.0\SQLitePCLRaw.batteries_v2.dll"
+$sqliteProviderPath = "$PSScriptRoot\..\MagicMcp\bin\Release\net8.0\SQLitePCLRaw.provider.e_sqlite3.dll"
+
+# Try to load from Debug if Release not found
+if (-not (Test-Path $sqliteDllPath)) {
+    $sqliteDllPath = "$PSScriptRoot\..\MagicMcp\bin\Debug\net8.0\Microsoft.Data.Sqlite.dll"
+    $sqlitePclPath = "$PSScriptRoot\..\MagicMcp\bin\Debug\net8.0\SQLitePCLRaw.core.dll"
+    $sqliteBatteriesPath = "$PSScriptRoot\..\MagicMcp\bin\Debug\net8.0\SQLitePCLRaw.batteries_v2.dll"
+    $sqliteProviderPath = "$PSScriptRoot\..\MagicMcp\bin\Debug\net8.0\SQLitePCLRaw.provider.e_sqlite3.dll"
+}
+
+if (Test-Path $sqliteDllPath) {
+    Add-Type -Path $sqlitePclPath -ErrorAction SilentlyContinue
+    Add-Type -Path $sqliteProviderPath -ErrorAction SilentlyContinue
+    Add-Type -Path $sqliteBatteriesPath -ErrorAction SilentlyContinue
+    Add-Type -Path $sqliteDllPath -ErrorAction SilentlyContinue
+    Write-Host "Loaded Microsoft.Data.Sqlite from MagicMcp" -ForegroundColor DarkGray
+} else {
+    Write-Error "SQLite DLL not found. Build MagicMcp first: dotnet build tools/MagicMcp"
+    exit 1
+}
 
 function Get-FileHash-MD5 {
     param([string]$Path)
@@ -134,7 +156,7 @@ function Invoke-SqliteCommand {
         [hashtable]$Parameters = @{}
     )
 
-    $connection = New-Object System.Data.SQLite.SQLiteConnection($ConnectionString)
+    $connection = New-Object Microsoft.Data.Sqlite.SqliteConnection($ConnectionString)
     $connection.Open()
 
     try {
@@ -162,7 +184,7 @@ function Get-SqliteScalar {
         [hashtable]$Parameters = @{}
     )
 
-    $connection = New-Object System.Data.SQLite.SQLiteConnection($ConnectionString)
+    $connection = New-Object Microsoft.Data.Sqlite.SqliteConnection($ConnectionString)
     $connection.Open()
 
     try {
@@ -184,7 +206,7 @@ function Get-SqliteScalar {
 }
 
 # Main sync logic
-$connectionString = "Data Source=$KbPath;Version=3;"
+$connectionString = "Data Source=$KbPath"
 $specFiles = Get-ChildItem -Path $specsDir -Filter "*-IDE-*.md" | Where-Object { $_.Name -notmatch '^TEMPLATE' }
 
 Write-Host "Syncing $($specFiles.Count) specs to KB..."

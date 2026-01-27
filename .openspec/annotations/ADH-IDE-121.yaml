@@ -1,0 +1,93 @@
+# ADH IDE 121 - Gestion caisse (Gestion_Caisse_142)
+# Programme partage via ADH.ecf - CROSS-PROJECT CALLER
+# Utilise par: PBP, PVE
+
+program:
+  project: "ADH"
+  ide: 121
+
+functional:
+  objective:
+    who: "Operateur caisse"
+    what: "Gerer les sessions et operations de caisse"
+    why: "Point d'entree principal pour toutes les operations de caisse du village"
+
+  user_flow:
+    - Selection depuis menu principal caisse (ADH IDE 1)
+    - Verification session existante ou ouverture nouvelle session
+    - Affichage tableau de bord caisse avec soldes
+    - Acces aux sous-menus (ventes, change, depot, etc.)
+    - Gestion des coupures et devises
+    - Fermeture session avec validation ecarts
+
+  error_cases:
+    - condition: Session deja ouverte par autre utilisateur
+      message: "Le coffre 2 est deja ouvert par [USER]"
+      severity: HIGH
+    - condition: Droits insuffisants
+      message: "Acces refuse - droits caisse requis"
+      severity: CRITICAL
+    - condition: Date comptable non definie
+      message: "Date comptable requise pour operations"
+      severity: HIGH
+
+business_rules:
+  - code: RM-001
+    description: Une seule session active par terminal
+    expression_id: null
+    validated: false
+  - code: RM-002
+    description: Verification droits VG.DROIT ACCES CAISSE avant acces
+    expression_id: null
+    validated: false
+  - code: RM-003
+    description: Consultation possible meme si session fermee (mode consultation)
+    expression_id: null
+    validated: false
+  - code: RM-004
+    description: Gestion bi-devise (UNI/BI) selon configuration village
+    expression_id: null
+    validated: false
+
+migration:
+  complexity_override: CRITICAL
+  target_architecture: CQRS
+  notes:
+    - "Programme central - point d'entree caisse"
+    - "17 parametres d'entree a mapper"
+    - "12 tables dont 5 en ecriture"
+    - "Gere concurrence sessions (table caisse_concurrences)"
+    - "Interface avec coffre (caisse_session_coffre2)"
+    - "Integration Galaxy Grece via VG.Interface Galaxy"
+  test_coverage:
+    unit_tests: 90
+    integration_tests: true
+    regression_patterns: true
+
+dependencies:
+  external:
+    - name: Imprimante tickets
+      type: Hardware
+      notes: "Via PRINT_TICKET (ADH IDE 229)"
+    - name: Interface Galaxy
+      type: API
+      notes: "Conditionnelle selon VG.111"
+  ecf_notes: "PARTAGE via ADH.ecf (Sessions_Reprises) - Appele depuis PBP et PVE"
+
+history:
+  - date: "2026-01-27"
+    author: "Claude"
+    change: "Creation annotation initiale - Programme ECF critique"
+    ticket: null
+
+metadata:
+  author: "Claude"
+  created_at: "2026-01-27"
+  last_updated: "2026-01-27"
+  reviewers: []
+  tags:
+    - caisse
+    - ecf-shared
+    - cross-project
+    - critical
+    - session-management

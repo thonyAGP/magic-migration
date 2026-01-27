@@ -60,6 +60,13 @@ Write-Host "Project: $Project | IDE: $IDE" -ForegroundColor Cyan
 function Get-KbData {
     param([string]$Query, [string]$DbPath)
 
+    # Check if sqlite3 CLI is available
+    $sqlite3Path = Get-Command sqlite3 -ErrorAction SilentlyContinue
+    if (-not $sqlite3Path) {
+        # sqlite3 not available - return null to trigger V2 fallback
+        return $null
+    }
+
     $result = sqlite3 $DbPath $Query 2>&1
     if ($LASTEXITCODE -ne 0) {
         Write-Warning "KB query failed: $result"
@@ -143,7 +150,15 @@ FROM program_specs
 WHERE project = '$Project' AND ide_position = $IDE;
 "@
 
-$specData = Get-KbData -Query $specQuery -DbPath $kbPath | ConvertFrom-Csv -Header id,title,description,xml_file,program_type,folder,table_count,write_table_count,read_table_count,variable_count,parameter_count,expression_count,tables_json,variables_json,parameters_json,known_patterns_json
+$kbResult = Get-KbData -Query $specQuery -DbPath $kbPath
+if (-not $kbResult) {
+    Write-Warning "KB query failed or sqlite3 not available"
+    Write-Warning "Falling back to XML-based generation"
+    & "$scriptRoot\Generate-ProgramSpecV2.ps1" -Project $Project -IDE $IDE -OutputPath $OutputPath
+    exit 0
+}
+
+$specData = $kbResult | ConvertFrom-Csv -Header id,title,description,xml_file,program_type,folder,table_count,write_table_count,read_table_count,variable_count,parameter_count,expression_count,tables_json,variables_json,parameters_json,known_patterns_json
 
 if (-not $specData) {
     Write-Warning "No spec found in KB for $Project IDE $IDE"

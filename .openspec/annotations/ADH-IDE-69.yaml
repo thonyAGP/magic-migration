@@ -1,0 +1,78 @@
+# ADH IDE 69 - EXTRAIT_COMPTE
+# Programme partage via ADH.ecf - CROSS-PROJECT CALLER
+# Utilise par: PBP, PVE
+
+program:
+  project: "ADH"
+  ide: 69
+
+functional:
+  objective:
+    who: "Operateur caisse / Reception"
+    what: "Generer un extrait de compte pour un adherent"
+    why: "Permettre consultation et impression des mouvements financiers du compte"
+
+  user_flow:
+    - Saisie ou selection du compte adherent (societe + code + filiation)
+    - Selection des criteres de filtre (dates, services)
+    - Affichage liste des mouvements avec cumul progressif
+    - Option impression extrait
+    - Retour au menu ou nouveau extrait
+
+  error_cases:
+    - condition: Compte introuvable
+      message: "Compte non trouve"
+      severity: MEDIUM
+    - condition: Aucun mouvement dans la periode
+      message: "Aucune operation pour ces criteres"
+      severity: LOW
+    - condition: Parametres incomplets
+      message: "Code adherent requis"
+      severity: HIGH
+
+business_rules:
+  - code: RM-001
+    description: Calcul solde cumule chronologique
+    expression_id: null
+    validated: false
+  - code: RM-002
+    description: Tri des mouvements par date operation
+    expression_id: null
+    validated: false
+  - code: RM-003
+    description: Filtre par service optionnel
+    expression_id: null
+    validated: false
+
+migration:
+  complexity_override: MEDIUM
+  target_architecture: CQRS
+  notes:
+    - "Query simple - lecture seule sur operations"
+    - "Calcul cumul progressif cote application"
+    - "Integration avec EXTRAIT_IMP (IDE 73) pour impression"
+  test_coverage:
+    unit_tests: 80
+    integration_tests: true
+    regression_patterns: true
+
+dependencies:
+  external: []
+  ecf_notes: "PARTAGE via ADH.ecf (Sessions_Reprises) - Appele depuis PBP et PVE"
+
+history:
+  - date: "2026-01-27"
+    author: "Claude"
+    change: "Creation annotation initiale - Programme ECF"
+    ticket: null
+
+metadata:
+  author: "Claude"
+  created_at: "2026-01-27"
+  last_updated: "2026-01-27"
+  reviewers: []
+  tags:
+    - extrait
+    - ecf-shared
+    - cross-project
+    - compte-adherent
