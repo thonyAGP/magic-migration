@@ -292,22 +292,3 @@ graph LR
 
 *Specification v3.4 - Format avec Callees Diagram (impact downstream)*
 
----
-
-## PARTIE I: SPECIFICATION FONCTIONNELLE (Annotations)
-
-### 1.1 Objectif Metier
-> A completer dans `.openspec/annotations/ADH-IDE-237.yaml`
-### 1.2 Flux Utilisateur
-> A completer dans annotations YAML
-
-### 1.3 Notes Migration
-> A completer dans annotations YAML
-
-### 1.4 Dependances ECF
-
-
-
-### 1.5 Tags
-> Aucun tag defini
-
