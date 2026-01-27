@@ -6,6 +6,49 @@
   <title>OpenSpec Viewer - Lecteur Magic</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    // Initialize Mermaid with dark theme
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'dark',
+        themeVariables: {
+          primaryColor: '#58a6ff',
+          primaryTextColor: '#e6edf3',
+          primaryBorderColor: '#30363d',
+          lineColor: '#8b949e',
+          secondaryColor: '#21262d',
+          tertiaryColor: '#161b22',
+          background: '#0d1117',
+          mainBkg: '#21262d',
+          nodeBorder: '#30363d',
+          clusterBkg: '#161b22',
+          clusterBorder: '#30363d',
+          titleColor: '#e6edf3',
+          edgeLabelBackground: '#21262d'
+        },
+        flowchart: {
+          curve: 'basis',
+          padding: 15
+        }
+      });
+    });
+
+    // Function to render Mermaid diagrams after content is loaded
+    function renderMermaidDiagrams() {
+      const mermaidBlocks = document.querySelectorAll('pre code.language-mermaid');
+      mermaidBlocks.forEach((block, index) => {
+        const pre = block.parentElement;
+        const container = document.createElement('div');
+        container.className = 'mermaid';
+        container.textContent = block.textContent;
+        pre.replaceWith(container);
+      });
+      // Re-run mermaid on new elements
+      mermaid.run();
+    }
+  </script>
   <style>
     :root {
       --bg-primary: #0d1117;
@@ -573,6 +616,19 @@
     .analysis-timing .timing-label { color: var(--text-secondary); }
     .analysis-timing .timing-value { color: var(--text-primary); font-weight: 600; font-family: monospace; }
     .analysis-timing .timing-duration { color: var(--success); font-weight: 700; }
+
+    /* Mermaid diagrams */
+    .mermaid {
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
 
     /* Ticket header with date/time */
     .ticket-header {
@@ -1549,6 +1605,8 @@
         } else {
           content.innerHTML = headerHtml + tabsHtml + marked.parse(text);
         }
+        // Render Mermaid diagrams
+        renderMermaidDiagrams();
         // Attach click handlers to spec links
         attachSpecLinks(content);
       } catch (err) {
