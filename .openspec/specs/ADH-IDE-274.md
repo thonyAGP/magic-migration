@@ -53,8 +53,11 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #34 | `Table_34` | R | 1x |
+| #103 | `Table_103` | LINK | 1x |
+| #105 | `Table_105` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +107,15 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 248 | Choix PYR (plusieurs chambres) | 2 |
+| 0 | Transaction Nouv vente PMS-584 | 1 |
+| 0 | Transaction Nouv vente PMS-710 | 1 |
+| 0 | Transaction Nouv vente PMS-721 | 1 |
+| 237 | Transaction Nouv vente avec GP | 1 |
+| 238 | Transaction Nouv vente PMS-584 | 1 |
+| 239 | Transaction Nouv vente PMS-721 | 1 |
+| 240 | Transaction Nouv vente PMS-710 | 1 |
+| 316 | Saisie transaction Nouv vente | 1 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +127,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +143,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (38 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

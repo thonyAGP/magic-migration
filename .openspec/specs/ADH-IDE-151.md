@@ -53,8 +53,10 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #246 | `Table_246` | R | 1x |
+| #249 | `Table_249` | R | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +106,30 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 121 | Gestion caisse | 1 |
+| 298 | Gestion caisse 142 | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[151 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C154[154 Tableau recap f]
+    T --> C154
+    C138[138 Ticket fermetur]
+    T --> C138
+    C139[139 Ticket appro re]
+    T --> C139
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C154 fill:#3fb950
+    style C138 fill:#3fb950
+    style C139 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 154 | Tableau recap fermeture | 2 |
+| 1 | 138 | Ticket fermeture session | 1 |
+| 1 | 139 | Ticket appro remise | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +143,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (6 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

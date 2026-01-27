@@ -53,8 +53,14 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #30 | `Table_30` | R | 1x |
+| #47 | `Table_47` | LINK | 1x |
+| #312 | `Table_312` | LINK | 1x |
+| #312 | `Table_312` | **W** | 1x |
+| #612 | `Table_612` | LINK | 1x |
+| #844 | `Table_844` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +110,8 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 0 | Garantie sur compte PMS-584 | 2 |
+| 0 | VAD validés à imprimer | 1 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +123,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +139,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (26 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

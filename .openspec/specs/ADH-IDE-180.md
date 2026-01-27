@@ -53,8 +53,13 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #367 | `Table_367` | R | 2x |
+| #369 | `Table_369` | LINK | 2x |
+| #370 | `Table_370` | R | 1x |
+| #371 | `Table_371` | LINK | 1x |
+| #584 | `Table_584` | LINK | 2x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +109,40 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 173 | Gestion forfait TAI LOCAL | 2 |
+| 217 | Menu telephone | 2 |
+| 25 | Change GM | 1 |
+| 27 | Separation | 1 |
+| 28 | Fusion | 1 |
+| 40 | Comptes de depôt | 1 |
+| 69 | Extrait de compte | 1 |
+| 77 | Club Med Pass menu | 1 |
+| 86 | Bar Limit | 1 |
+| 154 | Tableau recap fermeture | 1 |
+| 175 | Transferts | 1 |
+| 183 | Other Listing | 1 |
+| 185 | Chained Listing Printer Choice | 1 |
+| 214 | Menu impression des appels | 1 |
+| 237 | Transaction Nouv vente avec GP | 1 |
+| 238 | Transaction Nouv vente PMS-584 | 1 |
+| 239 | Transaction Nouv vente PMS-721 | 1 |
+| 240 | Transaction Nouv vente PMS-710 | 1 |
+| 293 | Bi  Change GM Achat | 1 |
+| 294 | Bi  Change GM Vente | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[180 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C179[179 Get Printer]
+    T --> C179
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C179 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 179 | Get Printer | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +156,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (4 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

@@ -53,8 +53,15 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #30 | `Table_30` | R | 1x |
+| #31 | `Table_31` | LINK | 1x |
+| #34 | `Table_34` | LINK | 1x |
+| #39 | `Table_39` | R | 7x |
+| #91 | `Table_91` | LINK | 7x |
+| #368 | `Table_368` | R | 1x |
+| #818 | `Table_818` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +111,24 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 111 | Garantie sur compte | 2 |
+| 112 | Garantie sur compte PMS-584 | 2 |
+| 288 | Garantie sur compte | 2 |
+| 0 | Garantie sur compte PMS-584 | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[107 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C182[182 Raz Current Pri]
+    T --> C182
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C182 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 182 | Raz Current Printer | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +142,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:46 | **DATA POPULATED** - Tables, Callgraph (12 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

@@ -53,8 +53,12 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #69 | `Table_69` | R | 1x |
+| #491 | `Table_491` | R | 4x |
+| #492 | `Table_492` | R | 2x |
+| #493 | `Table_493` | R | 2x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +108,29 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 120 | Saisie contenu caisse | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[150 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C179[179 Get Printer]
+    T --> C179
+    C181[181 Set Listing Num]
+    T --> C181
+    C182[182 Raz Current Pri]
+    T --> C182
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C179 fill:#3fb950
+    style C181 fill:#3fb950
+    style C182 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 179 | Get Printer | 1 |
+| 1 | 181 | Set Listing Number | 1 |
+| 1 | 182 | Raz Current Printer | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +144,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (6 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

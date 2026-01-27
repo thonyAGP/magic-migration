@@ -53,8 +53,11 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #67 | `Table_67` | R | 1x |
+| #69 | `Table_69` | R | 2x |
+| #372 | `Table_372` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +107,37 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| - | **Aucun caller** (point d'entree ou orphelin) | - |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[1 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C232[232 Verif session c]
+    T --> C232
+    C45[45 Recuperation la]
+    T --> C45
+    C51[51 Recherche Droit]
+    T --> C51
+    C163[163 Menu caisse GM ]
+    T --> C163
+    C166[166 Start]
+    T --> C166
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C232 fill:#3fb950
+    style C45 fill:#3fb950
+    style C51 fill:#3fb950
+    style C163 fill:#3fb950
+    style C166 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 232 | Verif session caisse ouverte | 2 |
+| 1 | 45 | Recuperation langue | 1 |
+| 1 | 51 | Recherche Droit Solde Free Ext | 1 |
+| 1 | 163 | Menu caisse GM - scroll | 1 |
+| 1 | 166 | Start | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +151,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:43 | **DATA POPULATED** - Tables, Callgraph (87 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

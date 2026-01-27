@@ -53,8 +53,16 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #36 | `Table_36` | R | 1x |
+| #47 | `Table_47` | **W** | 2x |
+| #80 | `Table_80` | R | 1x |
+| #88 | `Table_88` | **W** | 2x |
+| #123 | `Table_123` | LINK | 3x |
+| #123 | `Table_123` | R | 1x |
+| #131 | `Table_131` | **W** | 1x |
+| #136 | `Table_136` | **W** | 2x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +112,37 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 0 |  Print ticket vente LEX | 1 |
+| 0 | Garantie sur compte PMS-584 | 1 |
+| 0 | Histo ventes Gratuités | 1 |
+| 0 | Histo ventes IGR | 1 |
+| 0 | Histo ventes payantes /PMS-605 | 1 |
+| 0 | Histo ventes payantes /PMS-623 | 1 |
+| 0 | Print creation garanti PMS-584 | 1 |
+| 0 | Print extrait compte /Service | 1 |
+| 0 | Print transferts | 1 |
+| 0 | Transaction Nouv vente PMS-584 | 1 |
+| 0 | Transaction Nouv vente PMS-710 | 1 |
+| 0 | Transaction Nouv vente PMS-721 | 1 |
+| 163 | Menu caisse GM - scroll | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[169 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C43[43 Recuperation du]
+    T --> C43
+    C170[170 Messagerie]
+    T --> C170
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C43 fill:#3fb950
+    style C170 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 43 | Recuperation du titre | 1 |
+| 1 | 170 | Messagerie | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +156,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (6 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

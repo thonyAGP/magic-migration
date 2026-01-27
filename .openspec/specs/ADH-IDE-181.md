@@ -53,8 +53,9 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| - | Aucune table | - | - |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +105,26 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 69 | Extrait de compte | 7 |
+| 193 | Solde compte fin sejour | 5 |
+| 217 | Menu telephone | 5 |
+| 111 | Garantie sur compte | 4 |
+| 112 | Garantie sur compte PMS-584 | 4 |
+| 174 | Versement/Retrait | 4 |
+| 288 | Garantie sur compte | 4 |
+| 40 | Comptes de depôt | 3 |
+| 255 | VAD validés à imprimer | 3 |
+| 79 | Balance Credit de conso | 2 |
+| 173 | Gestion forfait TAI LOCAL | 2 |
+| 25 | Change GM | 1 |
+| 27 | Separation | 1 |
+| 28 | Fusion | 1 |
+| 64 | Solde Easy Check Out | 1 |
+| 70 | Print extrait compte /Nom | 1 |
+| 71 | Print extrait compte /Date | 1 |
+| 72 | Print extrait compte /Cum | 1 |
+| 73 | Print extrait compte /Imp | 1 |
+| 76 | Print extrait compte /Service | 1 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +136,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +152,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (5 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

@@ -53,8 +53,19 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #67 | `Table_67` | R | 2x |
+| #69 | `Table_69` | R | 1x |
+| #77 | `Table_77` | LINK | 2x |
+| #77 | `Table_77` | R | 3x |
+| #596 | `Table_596` | LINK | 5x |
+| #596 | `Table_596` | R | 7x |
+| #728 | `Table_728` | LINK | 1x |
+| #818 | `Table_818` | LINK | 1x |
+| #847 | `Table_847` | LINK | 10x |
+| #847 | `Table_847` | R | 5x |
+| #867 | `Table_867` | R | 5x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +115,33 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 318 | Historique des ventes P247 | 4 |
+| 307 | Saisie transaction 154  N.U | 2 |
+| 310 | Saisie transaction Nouv vente | 2 |
+| 316 | Saisie transaction Nouv vente | 2 |
+| 233 | Appel Print ticket vente PMS28 | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[234 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C152[152 Recup Classe et]
+    T --> C152
+    C251[251 Creation pied T]
+    T --> C251
+    C182[182 Raz Current Pri]
+    T --> C182
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C152 fill:#3fb950
+    style C251 fill:#3fb950
+    style C182 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 152 | Recup Classe et Lib du MOP | 5 |
+| 1 | 251 | Creation pied Ticket | 5 |
+| 1 | 182 | Raz Current Printer | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +155,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (16 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

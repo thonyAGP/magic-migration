@@ -53,8 +53,9 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #867 | `Table_867` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +105,12 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 73 | Print extrait compte /Imp | 6 |
+| 74 | Print extrait DateImp /O | 6 |
+| 71 | Print extrait compte /Date | 5 |
+| 72 | Print extrait compte /Cum | 5 |
+| 70 | Print extrait compte /Nom | 4 |
+| 76 | Print extrait compte /Service | 4 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +122,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +138,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (12 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

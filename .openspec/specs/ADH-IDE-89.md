@@ -53,8 +53,36 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #30 | `Table_30` | LINK | 2x |
+| #31 | `Table_31` | LINK | 1x |
+| #40 | `Table_40` | LINK | 1x |
+| #40 | `Table_40` | **W** | 1x |
+| #68 | `Table_68` | **W** | 1x |
+| #263 | `Table_263` | LINK | 2x |
+| #372 | `Table_372` | LINK | 1x |
+| #382 | `Table_382` | LINK | 2x |
+| #400 | `Table_400` | LINK | 2x |
+| #744 | `Table_744` | LINK | 2x |
+| #746 | `Table_746` | LINK | 1x |
+| #746 | `Table_746` | **W** | 1x |
+| #755 | `Table_755` | LINK | 2x |
+| #756 | `Table_756` | LINK | 2x |
+| #866 | `Table_866` | LINK | 3x |
+| #866 | `Table_866` | R | 6x |
+| #866 | `Table_866` | **W** | 7x |
+| #867 | `Table_867` | LINK | 1x |
+| #867 | `Table_867` | R | 2x |
+| #868 | `Table_868` | LINK | 1x |
+| #868 | `Table_868` | R | 3x |
+| #868 | `Table_868` | **W** | 6x |
+| #870 | `Table_870` | LINK | 7x |
+| #870 | `Table_870` | R | 1x |
+| #870 | `Table_870` | **W** | 4x |
+| #871 | `Table_871` | LINK | 2x |
+| #932 | `Table_932` | LINK | 1x |
+| #932 | `Table_932` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +132,53 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| - | **Aucun caller** (point d'entree ou orphelin) | - |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[89 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C60[60 Creation entete]
+    T --> C60
+    C61[61 Maj des lignes ]
+    T --> C61
+    C90[90 Edition Facture]
+    T --> C90
+    C93[93 Creation Pied F]
+    T --> C93
+    C94[94 Maj des lignes ]
+    T --> C94
+    C58[58 Incremente N de]
+    T --> C58
+    C91[91 Verif boutique]
+    T --> C91
+    C92[92 flag ligne bout]
+    T --> C92
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C60 fill:#3fb950
+    style C61 fill:#3fb950
+    style C90 fill:#3fb950
+    style C93 fill:#3fb950
+    style C94 fill:#3fb950
+    style C58 fill:#3fb950
+    style C91 fill:#3fb950
+    style C92 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 60 | Creation entete facture | 3 |
+| 1 | 61 | Maj des lignes saisies | 3 |
+| 1 | 90 | Edition Facture Tva(Compta&Ve) | 3 |
+| 1 | 93 | Creation Pied Facture | 3 |
+| 1 | 94 | Maj des lignes saisies archive | 3 |
+| 1 | 58 | Incremente N° de Facture | 2 |
+| 1 | 91 | Verif boutique | 2 |
+| 1 | 92 | flag ligne boutique | 2 |
+| 1 | 57 | Factures_Sejour | 1 |
+| 1 | 59 | Facture - chargement boutique | 1 |
+| 1 | 62 | Maj Hebergement Tempo | 1 |
+| 1 | 95 | Facture - Sejour archive | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +192,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (45 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

@@ -53,8 +53,24 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #31 | `Table_31` | R | 1x |
+| #34 | `Table_34` | LINK | 1x |
+| #34 | `Table_34` | R | 1x |
+| #40 | `Table_40` | LINK | 1x |
+| #40 | `Table_40` | R | 1x |
+| #69 | `Table_69` | LINK | 2x |
+| #122 | `Table_122` | LINK | 2x |
+| #197 | `Table_197` | LINK | 1x |
+| #197 | `Table_197` | R | 1x |
+| #263 | `Table_263` | LINK | 2x |
+| #382 | `Table_382` | LINK | 1x |
+| #519 | `Table_519` | LINK | 1x |
+| #596 | `Table_596` | LINK | 2x |
+| #804 | `Table_804` | LINK | 2x |
+| #847 | `Table_847` | LINK | 1x |
+| #945 | `Table_945` | LINK | 3x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +120,37 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 0 | Transaction Nouv vente PMS-584 | 2 |
+| 0 | Transaction Nouv vente PMS-710 | 2 |
+| 0 | Transaction Nouv vente PMS-721 | 2 |
+| 244 | Histo ventes payantes /PMS-605 | 1 |
+| 245 | Histo ventes payantes /PMS-623 | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[255 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C181[181 Set Listing Num]
+    T --> C181
+    C179[179 Get Printer]
+    T --> C179
+    C171[171 Print versement]
+    T --> C171
+    C233[233 Appel Print tic]
+    T --> C233
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C181 fill:#3fb950
+    style C179 fill:#3fb950
+    style C171 fill:#3fb950
+    style C233 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 181 | Set Listing Number | 3 |
+| 1 | 179 | Get Printer | 2 |
+| 1 | 171 | Print versement retrait | 1 |
+| 1 | 233 | Appel Print ticket vente PMS28 | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +164,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (19 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

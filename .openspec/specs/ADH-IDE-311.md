@@ -53,8 +53,36 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #30 | `Table_30` | LINK | 2x |
+| #31 | `Table_31` | LINK | 1x |
+| #40 | `Table_40` | LINK | 1x |
+| #40 | `Table_40` | **W** | 1x |
+| #68 | `Table_68` | **W** | 1x |
+| #263 | `Table_263` | LINK | 2x |
+| #372 | `Table_372` | LINK | 1x |
+| #382 | `Table_382` | LINK | 2x |
+| #400 | `Table_400` | LINK | 2x |
+| #744 | `Table_744` | LINK | 2x |
+| #746 | `Table_746` | LINK | 1x |
+| #746 | `Table_746` | **W** | 1x |
+| #755 | `Table_755` | LINK | 2x |
+| #756 | `Table_756` | LINK | 2x |
+| #866 | `Table_866` | LINK | 3x |
+| #866 | `Table_866` | R | 6x |
+| #866 | `Table_866` | **W** | 7x |
+| #867 | `Table_867` | LINK | 1x |
+| #867 | `Table_867` | R | 2x |
+| #868 | `Table_868` | LINK | 1x |
+| #868 | `Table_868` | R | 3x |
+| #868 | `Table_868` | **W** | 6x |
+| #870 | `Table_870` | LINK | 7x |
+| #870 | `Table_870` | R | 1x |
+| #870 | `Table_870` | **W** | 4x |
+| #871 | `Table_871` | LINK | 2x |
+| #932 | `Table_932` | LINK | 1x |
+| #932 | `Table_932` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +132,25 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| - | **Aucun caller** (point d'entree ou orphelin) | - |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[311 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C91[91 Verif boutique]
+    T --> C91
+    C312[312 Historique des ]
+    T --> C312
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C91 fill:#3fb950
+    style C312 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 91 | Verif boutique | 2 |
+| 1 | 312 | Historique des ventes - Gratui | 2 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +164,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:52 | **DATA POPULATED** - Tables, Callgraph (42 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

@@ -53,8 +53,12 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #30 | `Table_30` | R | 1x |
+| #34 | `Table_34` | R | 1x |
+| #34 | `Table_34` | **W** | 1x |
+| #36 | `Table_36` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +108,31 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 0 | Appel Print ticket vente PMS28 | 1 |
+| 237 | Transaction Nouv vente avec GP | 1 |
+| 238 | Transaction Nouv vente PMS-584 | 1 |
+| 239 | Transaction Nouv vente PMS-721 | 1 |
+| 240 | Transaction Nouv vente PMS-710 | 1 |
+| 250 | Lancement Choix Chambre | 1 |
+| 316 | Saisie transaction Nouv vente | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[248 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C249[249 Reinit Aff PYR]
+    T --> C249
+    C274[274 Zoom Logements]
+    T --> C274
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C249 fill:#3fb950
+    style C274 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 249 | Reinit Aff PYR | 2 |
+| 1 | 274 | Zoom Logements | 2 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +146,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (19 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

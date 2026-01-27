@@ -53,8 +53,28 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #31 | `Table_31` | R | 2x |
+| #34 | `Table_34` | LINK | 2x |
+| #34 | `Table_34` | R | 2x |
+| #40 | `Table_40` | R | 4x |
+| #67 | `Table_67` | LINK | 2x |
+| #67 | `Table_67` | R | 1x |
+| #69 | `Table_69` | R | 1x |
+| #77 | `Table_77` | LINK | 1x |
+| #77 | `Table_77` | R | 2x |
+| #263 | `Table_263` | LINK | 4x |
+| #596 | `Table_596` | LINK | 7x |
+| #596 | `Table_596` | R | 7x |
+| #728 | `Table_728` | LINK | 1x |
+| #818 | `Table_818` | LINK | 1x |
+| #847 | `Table_847` | LINK | 10x |
+| #847 | `Table_847` | R | 5x |
+| #867 | `Table_867` | R | 5x |
+| #878 | `Table_878` | R | 2x |
+| #904 | `Table_904` | LINK | 3x |
+| #1037 | `Table_1037` | R | 2x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +124,28 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 238 | Transaction Nouv vente PMS-584 | 4 |
+| 243 | Histo ventes payantes | 2 |
+| 244 | Histo ventes payantes /PMS-605 | 2 |
+| 245 | Histo ventes payantes /PMS-623 | 2 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[236 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C152[152 Recup Classe et]
+    T --> C152
+    C251[251 Creation pied T]
+    T --> C251
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C152 fill:#3fb950
+    style C251 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 152 | Recup Classe et Lib du MOP | 5 |
+| 1 | 251 | Creation pied Ticket | 5 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +159,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (19 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

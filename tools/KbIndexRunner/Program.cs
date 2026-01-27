@@ -985,6 +985,131 @@ if (args.Length > 0 && args[0] == "analyze-impact")
     return 0;
 }
 
+// Export spec data as JSON for PowerShell script
+if (args.Length > 1 && args[0] == "spec-data")
+{
+    var specDb = new KnowledgeDb();
+    if (!specDb.IsInitialized())
+    {
+        Console.WriteLine("ERROR: Knowledge Base not initialized");
+        return 1;
+    }
+
+    var parts = args[1].Split(' ');
+    var project = parts[0];
+    var ide = parts.Length > 1 ? int.Parse(parts[1]) : 1;
+
+    using var conn = new SqliteConnection($"Data Source={specDb.DbPath}");
+    conn.Open();
+
+    // Get program DB ID and info
+    long dbProgramId = 0;
+    string? programName = null;
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT p.id, p.name FROM programs p
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE pr.name = @project AND p.ide_position = @ide";
+        cmd.Parameters.AddWithValue("@project", project);
+        cmd.Parameters.AddWithValue("@ide", ide);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+        {
+            Console.WriteLine($"{{\"error\": \"Program {project} IDE {ide} not found\"}}");
+            return 1;
+        }
+        dbProgramId = reader.GetInt64(0);
+        programName = reader.GetString(1);
+    }
+
+    // Get tables
+    var tables = new List<object>();
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT DISTINCT tu.table_id, COALESCE(tu.table_name, 'Table_' || tu.table_id), tu.usage_type, COUNT(*)
+            FROM table_usage tu
+            JOIN tasks t ON tu.task_id = t.id
+            WHERE t.program_id = @prog_id
+            GROUP BY tu.table_id, tu.table_name, tu.usage_type
+            ORDER BY tu.table_id";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            tables.Add(new { id = reader.GetInt32(0), name = reader.GetString(1), access = reader.GetString(2), count = reader.GetInt32(3) });
+        }
+    }
+
+    // Get callers
+    var callers = new List<object>();
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT p.ide_position, p.name, COUNT(*)
+            FROM program_calls pc
+            JOIN tasks t ON pc.caller_task_id = t.id
+            JOIN programs p ON t.program_id = p.id
+            WHERE pc.callee_program_id = @prog_id
+            GROUP BY p.ide_position, p.name
+            ORDER BY COUNT(*) DESC LIMIT 20";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            callers.Add(new { ide = reader.GetInt32(0), name = reader.GetString(1), count = reader.GetInt32(2) });
+        }
+    }
+
+    // Get callees
+    var callees = new List<object>();
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT p.ide_position, p.name, COUNT(*)
+            FROM program_calls pc
+            JOIN tasks t ON pc.caller_task_id = t.id
+            JOIN programs p ON pc.callee_program_id = p.id
+            WHERE t.program_id = @prog_id
+            GROUP BY p.ide_position, p.name
+            ORDER BY COUNT(*) DESC LIMIT 20";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            callees.Add(new { ide = reader.GetInt32(0), name = reader.GetString(1), count = reader.GetInt32(2) });
+        }
+    }
+
+    // Get expression count
+    int exprCount = 0;
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"SELECT COUNT(*) FROM expressions WHERE program_id = @prog_id";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+        exprCount = Convert.ToInt32(cmd.ExecuteScalar());
+    }
+
+    // Output as JSON
+    var specData = new
+    {
+        program = programName,
+        ide = ide,
+        tables = tables,
+        callers = callers,
+        callees = callees,
+        expressionCount = exprCount
+    };
+
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(specData));
+    return 0;
+}
+
 var projectsBasePath = args.Length > 0 ? args[0] : @"D:\Data\Migration\XPA\PMS";
 
 Console.WriteLine("=== Magic Knowledge Base Indexer ===");

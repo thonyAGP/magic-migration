@@ -53,8 +53,11 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #50 | `Table_50` | R | 1x |
+| #89 | `Table_89` | LINK | 1x |
+| #140 | `Table_140` | R | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +107,21 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 234 |  Print ticket vente | 5 |
+| 235 |  Print ticket vente LEX | 5 |
+| 236 |  Print ticket vente PMS-584 | 5 |
+| 285 |  Print ticket vente LEX | 5 |
+| 323 |  Print ticket vente | 5 |
+| 237 | Transaction Nouv vente avec GP | 4 |
+| 238 | Transaction Nouv vente PMS-584 | 4 |
+| 239 | Transaction Nouv vente PMS-721 | 4 |
+| 240 | Transaction Nouv vente PMS-710 | 4 |
+| 307 | Saisie transaction 154  N.U | 4 |
+| 310 | Saisie transaction Nouv vente | 4 |
+| 316 | Saisie transaction Nouv vente | 4 |
+| 155 | Controle fermeture caisse WS | 3 |
+| 300 | Saisie transaction 154 N.U | 2 |
+| 306 | Print ticket vente/OD N.U | 2 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +133,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +149,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (2 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

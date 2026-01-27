@@ -53,8 +53,30 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #23 | `Table_23` | R | 1x |
+| #50 | `Table_50` | R | 1x |
+| #70 | `Table_70` | R | 1x |
+| #197 | `Table_197` | LINK | 1x |
+| #198 | `Table_198` | R | 1x |
+| #219 | `Table_219` | R | 2x |
+| #227 | `Table_227` | **W** | 1x |
+| #232 | `Table_232` | R | 2x |
+| #244 | `Table_244` | LINK | 1x |
+| #244 | `Table_244` | **W** | 1x |
+| #246 | `Table_246` | LINK | 1x |
+| #246 | `Table_246` | R | 1x |
+| #246 | `Table_246` | **W** | 5x |
+| #248 | `Table_248` | LINK | 1x |
+| #248 | `Table_248` | **W** | 3x |
+| #249 | `Table_249` | R | 4x |
+| #249 | `Table_249` | **W** | 3x |
+| #497 | `Table_497` | LINK | 1x |
+| #497 | `Table_497` | R | 1x |
+| #497 | `Table_497` | **W** | 1x |
+| #697 | `Table_697` | R | 2x |
+| #740 | `Table_740` | R | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +126,58 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| - | **Aucun caller** (point d'entree ou orphelin) | - |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[298 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C116[116 Calcul concurre]
+    T --> C116
+    C142[142 Devise update s]
+    T --> C142
+    C134[134 Mise  jour deta]
+    T --> C134
+    C139[139 Ticket appro re]
+    T --> C139
+    C155[155 Controle fermet]
+    T --> C155
+    C48[48 Contrles   Inte]
+    T --> C48
+    C122[122 Ouverture caiss]
+    T --> C122
+    C131[131 Fermeture caiss]
+    T --> C131
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C116 fill:#3fb950
+    style C142 fill:#3fb950
+    style C134 fill:#3fb950
+    style C139 fill:#3fb950
+    style C155 fill:#3fb950
+    style C48 fill:#3fb950
+    style C122 fill:#3fb950
+    style C131 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 116 | Calcul concurrence sessions | 12 |
+| 1 | 142 | Devise update session WS | 4 |
+| 1 | 134 | Mise à jour detail session WS | 3 |
+| 1 | 139 | Ticket appro remise | 3 |
+| 1 | 155 | Controle fermeture caisse WS | 3 |
+| 1 | 48 | Contrôles - Integrite dates | 2 |
+| 1 | 122 | Ouverture caisse | 2 |
+| 1 | 131 | Fermeture caisse | 2 |
+| 1 | 140 | Init apport article session WS | 2 |
+| 1 | 141 | Init devise session WS | 2 |
+| 1 | 43 | Recuperation du titre | 1 |
+| 1 | 119 | Affichage sessions | 1 |
+| 1 | 123 | Apport coffre | 1 |
+| 1 | 124 | Apport articles | 1 |
+| 1 | 125 | Remise en caisse | 1 |
+| 1 | 132 | Historique session | 1 |
+| 1 | 151 | Reimpression tickets fermeture | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +191,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (3 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

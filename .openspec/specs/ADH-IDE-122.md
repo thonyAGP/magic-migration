@@ -53,8 +53,12 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #67 | `Table_67` | R | 1x |
+| #232 | `Table_232` | LINK | 1x |
+| #232 | `Table_232` | R | 1x |
+| #693 | `Table_693` | R | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +108,59 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 121 | Gestion caisse | 2 |
+| 298 | Gestion caisse 142 | 2 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[122 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C134[134 Mise  jour deta]
+    T --> C134
+    C136[136 Generation tick]
+    T --> C136
+    C148[148 Devises RAZ WS]
+    T --> C148
+    C142[142 Devise update s]
+    T --> C142
+    C43[43 Recuperation du]
+    T --> C43
+    C120[120 Saisie contenu ]
+    T --> C120
+    C123[123 Apport coffre]
+    T --> C123
+    C124[124 Apport articles]
+    T --> C124
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C134 fill:#3fb950
+    style C136 fill:#3fb950
+    style C148 fill:#3fb950
+    style C142 fill:#3fb950
+    style C43 fill:#3fb950
+    style C120 fill:#3fb950
+    style C123 fill:#3fb950
+    style C124 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 134 | Mise à jour detail session WS | 7 |
+| 1 | 136 | Generation ticket WS | 7 |
+| 1 | 148 | Devises RAZ WS | 3 |
+| 1 | 142 | Devise update session WS | 2 |
+| 1 | 43 | Recuperation du titre | 1 |
+| 1 | 120 | Saisie contenu caisse | 1 |
+| 1 | 123 | Apport coffre | 1 |
+| 1 | 124 | Apport articles | 1 |
+| 1 | 126 | Calcul solde initial WS | 1 |
+| 1 | 128 | Controle ouverture caisse WS | 1 |
+| 1 | 129 | Ecart ouverture caisse | 1 |
+| 1 | 133 | Mise a jour comptage caisse WS | 1 |
+| 1 | 137 | Ticket ouverture session | 1 |
+| 1 | 139 | Ticket appro remise | 1 |
+| 1 | 143 | Devises calcul ecart WS | 1 |
+| 1 | 147 | Devises des tickets WS | 1 |
+| 1 | 156 | Verif session caisse ouverte2 | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +174,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:46 | **DATA POPULATED** - Tables, Callgraph (8 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

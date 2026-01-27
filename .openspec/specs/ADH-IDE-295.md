@@ -53,8 +53,9 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| - | Aucune table | - | - |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +105,33 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| - | **Aucun caller** (point d'entree ou orphelin) | - |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[295 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C43[43 Recuperation du]
+    T --> C43
+    C44[44 Appel programme]
+    T --> C44
+    C293[293 Bi  Change GM A]
+    T --> C293
+    C294[294 Bi  Change GM V]
+    T --> C294
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C43 fill:#3fb950
+    style C44 fill:#3fb950
+    style C293 fill:#3fb950
+    style C294 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 43 | Recuperation du titre | 1 |
+| 1 | 44 | Appel programme | 1 |
+| 1 | 293 | Bi  Change GM Achat | 1 |
+| 1 | 294 | Bi  Change GM Vente | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +145,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (7 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---
