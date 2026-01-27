@@ -53,15 +53,16 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #67 | `Table_67` | R | 1x |
-| #69 | `Table_69` | R | 2x |
-| #372 | `Table_372` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 67 | tables___________tab | `cafil045_dat` | R | 1x |
+| 69 | initialisation___ini | `cafil047_dat` | R | 2x |
+| 372 | pv_budget | `pv_budget_dat` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -76,16 +77,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `MnuShow ('Express Check-Out',{0,43})` | - |
+| 2 | `RunMode ()<=2` | - |
+| 3 | `RunMode ()<=2 OR IsComponent()` | - |
+| 4 | `NOT(IsComponent())` | - |
+| 5 | `CallProg(ProgIdx('hasRight','TRUE'LOG),{0,1},'C...` | - |
+| 6 | `CallProg(ProgIdx('hasRight','TRUE'LOG),{0,1},'A...` | - |
+| 7 | `'1.00'` | - |
+| 8 | `'2.00'` | - |
+| 9 | `'3.00'` | - |
+| 10 | `'CALC.EXE'` | - |
+| 11 | `'CA'` | - |
+| 12 | `'TAX'` | - |
+| 13 | `'4.11'` | - |
+| 14 | `'08/01/2026'` | - |
+| 15 | `ASCIIChr(13)&ASCIIChr(10)` | - |
+| 16 | `'Caisse Adhérent -V '&Trim(ExpCalc('17'EXP))&' ...` | - |
+| 17 | `'EFF'` | - |
+| 18 | `'LEX'` | - |
+| 19 | `'FTV'` | - |
+| 20 | `'TPE'` | - |
 
-
+> **Total**: 87 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 4 |
+| **Lignes logique** | 319 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,12 +123,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[1 Programme]
+    T[1 Main Program]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -113,13 +138,13 @@ graph LR
 ```mermaid
 graph LR
     T[1 Programme]
-    C232[232 Verif session c]
+    C232[232 Verif sessio]
     T --> C232
-    C45[45 Recuperation la]
+    C45[45 Recuperation]
     T --> C45
-    C51[51 Recherche Droit]
+    C51[51 Recherche Dr]
     T --> C51
-    C163[163 Menu caisse GM ]
+    C163[163 Menu caisse ]
     T --> C163
     C166[166 Start]
     T --> C166
@@ -151,6 +176,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:17 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:43 | **DATA POPULATED** - Tables, Callgraph (87 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

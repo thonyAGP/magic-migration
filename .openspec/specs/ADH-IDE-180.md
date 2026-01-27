@@ -53,17 +53,18 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #367 | `Table_367` | R | 2x |
-| #369 | `Table_369` | LINK | 2x |
-| #370 | `Table_370` | R | 1x |
-| #371 | `Table_371` | LINK | 1x |
-| #584 | `Table_584` | LINK | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 367 | pms_print_param_default | `pmsprintparamdefault` | R | 2x |
+| 369 | presents_par_nationalite | `presparn` | L | 2x |
+| 370 | pv_accounting_date | `pv_accountdate_dat` | R | 1x |
+| 371 | pv_binding_settings | `pv_bindingset_dat` | L | 1x |
+| 584 | tempo_type_millesia | `%club_user%tmillesia_dat` | L | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -78,16 +79,25 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}` | - |
+| 2 | `'FALSE'LOG` | - |
+| 3 | `NOT {32768,78}` | - |
+| 4 | `{32768,78}` | - |
 
-
+> **Total**: 4 expressions (affichees: 4)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 5 |
+| **Lignes logique** | 97 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -98,13 +108,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[180 Programme]
-    M --> T
+    N25[25 Change GM]
+    N69[69 Extrait de c]
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    N37[37 Menu changem]
+    T[180 Printer choi]
+    N25 --> N69
+    N69 --> N163
+    N163 --> N1
+    N1 --> N37
+    N37 --> T
     style M fill:#8b5cf6,color:#fff
+    style N25 fill:#f59e0b
+    style N69 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N37 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -156,6 +178,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (4 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

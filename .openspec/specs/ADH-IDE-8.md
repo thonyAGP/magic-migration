@@ -53,14 +53,15 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #372 | `Table_372` | LINK | 1x |
-| #904 | `Table_904` | R | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 372 | pv_budget | `pv_budget_dat` | L | 1x |
+| 904 | Boo_AvailibleEmployees | `Boo_AvailibleEmployees` | R | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -75,16 +76,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetParam ('VI_CLUB',MID ({0,31},1,128))` | - |
+| 2 | `SetParam ('VI_CLUB',Trim({0,20}))` | - |
+| 3 | `SetParam ('VI_NAME',MID ({0,31},130,128))` | - |
+| 4 | `SetParam ('VI_NAME',Trim({0,21}))` | - |
+| 5 | `SetParam ('VI_ADR1',MID ({0,31},259,128))` | - |
+| 6 | `SetParam ('VI_ADR1',Trim({0,22}))` | - |
+| 7 | `SetParam ('VI_ADR2',MID ({0,31},388,128))` | - |
+| 8 | `SetParam ('VI_ADR2',Trim({0,23}))` | - |
+| 9 | `SetParam ('VI_ZIPC',MID ({0,31},517,128))` | - |
+| 10 | `SetParam ('VI_ZIPC',Trim({0,25}))` | - |
+| 11 | `SetParam ('VI_PHON',MID ({0,31},646,128))` | - |
+| 12 | `SetParam ('VI_PHON','Tel  '&Trim({0,26}))` | - |
+| 13 | `SetParam ('VI_FAXN',MID ({0,31},775,128))` | - |
+| 14 | `SetParam ('VI_FAXN','Fax  '&Trim({0,27}))` | - |
+| 15 | `SetParam ('VI_MAIL',MID ({0,31},904,128))` | - |
+| 16 | `SetParam ('VI_MAIL',Trim({0,30}))` | - |
+| 17 | `SetParam ('VI_SIRE',MID ({0,31},1033,128))` | - |
+| 18 | `SetParam ('VI_SIRE',Trim({0,28}))` | - |
+| 19 | `SetParam ('VI_VATN',MID ({0,31},1162,128))` | - |
+| 20 | `SetParam ('VI_VATN',Trim({0,29}))` | - |
 
-
+> **Total**: 22 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 2 |
+| **Lignes logique** | 76 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -96,12 +122,16 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[8 Programme]
-    M --> T
+    N7[7 Menu Data Ca]
+    T[8      Set Vil]
+    M --> N
+    N --> N
+    N --> N
+    N --> T
     style M fill:#8b5cf6,color:#fff
+    style N7 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -134,6 +164,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:17 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:43 | **DATA POPULATED** - Tables, Callgraph (22 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

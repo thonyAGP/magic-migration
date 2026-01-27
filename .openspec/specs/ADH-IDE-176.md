@@ -53,16 +53,17 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | R | 3x |
-| #31 | `Table_31` | LINK | 1x |
-| #34 | `Table_34` | LINK | 3x |
-| #473 | `Table_473` | LINK | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 3x |
+| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
+| 34 | hebergement______heb | `cafil012_dat` | L | 3x |
+| 473 | comptage_caisse | `%club_user%_caisse_compcais` | L | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -77,16 +78,26 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetCrsr (2)` | - |
+| 2 | `SetCrsr (1)` | - |
+| 3 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| 4 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
+| 5 | `'TRUE'LOG` | - |
 
-
+> **Total**: 5 expressions (affichees: 5)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 6 |
+| **Lignes logique** | 155 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,13 +108,19 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[176 Programme]
-    M --> T
+    N175[175 Transferts]
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    T[176 Print transf]
+    N175 --> N163
+    N163 --> N1
+    N1 --> T
     style M fill:#8b5cf6,color:#fff
+    style N175 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -114,7 +131,7 @@ graph LR
 ```mermaid
 graph LR
     T[176 Programme]
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C182 fill:#3fb950
@@ -136,6 +153,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (5 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

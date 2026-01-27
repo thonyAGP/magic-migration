@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| - | Aucune table | - | - |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| - | Aucune table | - | - | - |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,26 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetParam ('CURRENTPRINTERNUM',0)` | - |
+| 2 | `SetParam ('CURRENTPRINTERNAME','VOID')` | - |
+| 3 | `SetParam ('SPECIFICPRINT','VOID')` | - |
+| 4 | `SetParam ('NUMBERCOPIES',0)` | - |
+| 5 | `SetParam ('LISTINGNUMPRINTERCHOICE',0)` | - |
 
-
+> **Total**: 5 expressions (affichees: 5)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 12 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -94,13 +105,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[182 Programme]
-    M --> T
+    N37[37 Menu changem]
+    N24[24 Print reu ch]
+    N174[174 VersementRet]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[182 Raz Current ]
+    N37 --> N24
+    N24 --> N174
+    N174 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N37 fill:#f59e0b
+    style N24 fill:#f59e0b
+    style N174 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -152,6 +175,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (5 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

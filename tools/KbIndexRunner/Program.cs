@@ -1024,23 +1024,35 @@ if (args.Length > 1 && args[0] == "spec-data")
         programName = reader.GetString(1);
     }
 
-    // Get tables
+    // Get tables WITH REAL NAMES from REF tables
     var tables = new List<object>();
     using (var cmd = conn.CreateCommand())
     {
         cmd.CommandText = @"
-            SELECT DISTINCT tu.table_id, COALESCE(tu.table_name, 'Table_' || tu.table_id), tu.usage_type, COUNT(*)
+            SELECT DISTINCT
+                tu.table_id,
+                COALESCE(tbl.logical_name, tu.table_name, 'Table_' || tu.table_id) as logical_name,
+                COALESCE(tbl.physical_name, '') as physical_name,
+                tu.usage_type,
+                COUNT(*)
             FROM table_usage tu
             JOIN tasks t ON tu.task_id = t.id
+            LEFT JOIN tables tbl ON tbl.xml_id = tu.table_id
             WHERE t.program_id = @prog_id
-            GROUP BY tu.table_id, tu.table_name, tu.usage_type
+            GROUP BY tu.table_id, logical_name, physical_name, tu.usage_type
             ORDER BY tu.table_id";
         cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
 
         using var reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            tables.Add(new { id = reader.GetInt32(0), name = reader.GetString(1), access = reader.GetString(2), count = reader.GetInt32(3) });
+            tables.Add(new {
+                id = reader.GetInt32(0),
+                logical = reader.GetString(1),
+                physical = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                access = reader.GetString(3),
+                count = reader.GetInt32(4)
+            });
         }
     }
 
@@ -1086,6 +1098,29 @@ if (args.Length > 1 && args[0] == "spec-data")
         }
     }
 
+    // Get TOP 20 expressions with content
+    var expressions = new List<object>();
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT e.ide_position, e.content, COALESCE(e.comment, '')
+            FROM expressions e
+            WHERE e.program_id = @prog_id
+            ORDER BY e.ide_position
+            LIMIT 20";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            expressions.Add(new {
+                ide = reader.GetInt32(0),
+                content = reader.GetString(1),
+                comment = reader.GetString(2)
+            });
+        }
+    }
+
     // Get expression count
     int exprCount = 0;
     using (var cmd = conn.CreateCommand())
@@ -1093,6 +1128,98 @@ if (args.Length > 1 && args[0] == "spec-data")
         cmd.CommandText = @"SELECT COUNT(*) FROM expressions WHERE program_id = @prog_id";
         cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
         exprCount = Convert.ToInt32(cmd.ExecuteScalar());
+    }
+
+    // Get input parameters (DataView columns with Parameter source)
+    var parameters = new List<object>();
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT DISTINCT dc.variable, dc.name, dc.data_type, dc.picture
+            FROM dataview_columns dc
+            JOIN tasks t ON dc.task_id = t.id
+            WHERE t.program_id = @prog_id
+              AND t.isn2 = 1
+              AND dc.source LIKE '%Parameter%'
+            ORDER BY dc.line_number
+            LIMIT 30";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            parameters.Add(new {
+                variable = reader.GetString(0),
+                name = reader.GetString(1),
+                type = reader.GetString(2),
+                picture = reader.IsDBNull(3) ? "" : reader.GetString(3)
+            });
+        }
+    }
+
+    // Get statistics
+    int taskCount = 0;
+    int logicLineCount = 0;
+    int disabledLineCount = 0;
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT
+                COUNT(DISTINCT t.id),
+                COALESCE(SUM(t.logic_line_count), 0),
+                (SELECT COUNT(*) FROM logic_lines ll JOIN tasks t2 ON ll.task_id = t2.id WHERE t2.program_id = @prog_id AND ll.is_disabled = 1)
+            FROM tasks t
+            WHERE t.program_id = @prog_id";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+        using var reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            taskCount = reader.GetInt32(0);
+            logicLineCount = reader.GetInt32(1);
+            disabledLineCount = reader.GetInt32(2);
+        }
+    }
+
+    // Get call chain from Main (recursive callers up to Main)
+    var callChain = new List<object>();
+    var visited = new HashSet<long>();
+    var queue = new Queue<(long progId, int level)>();
+    queue.Enqueue((dbProgramId, 0));
+    visited.Add(dbProgramId);
+
+    while (queue.Count > 0 && callChain.Count < 10)
+    {
+        var (currentProgId, level) = queue.Dequeue();
+
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT DISTINCT p.id, p.ide_position, p.name
+            FROM program_calls pc
+            JOIN tasks t ON pc.caller_task_id = t.id
+            JOIN programs p ON t.program_id = p.id
+            WHERE pc.callee_program_id = @prog_id
+            ORDER BY p.ide_position
+            LIMIT 5";
+        cmd.Parameters.AddWithValue("@prog_id", currentProgId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var callerId = reader.GetInt64(0);
+            var callerIde = reader.GetInt32(1);
+            var callerName = reader.GetString(2);
+
+            if (!visited.Contains(callerId))
+            {
+                callChain.Add(new { ide = callerIde, name = callerName, level = level + 1 });
+                visited.Add(callerId);
+                if (callerIde != 1) // Stop at Main
+                {
+                    queue.Enqueue((callerId, level + 1));
+                }
+            }
+        }
     }
 
     // Output as JSON
@@ -1103,7 +1230,15 @@ if (args.Length > 1 && args[0] == "spec-data")
         tables = tables,
         callers = callers,
         callees = callees,
-        expressionCount = exprCount
+        expressions = expressions,
+        expressionCount = exprCount,
+        parameters = parameters,
+        statistics = new {
+            taskCount = taskCount,
+            logicLineCount = logicLineCount,
+            disabledLineCount = disabledLineCount
+        },
+        callChain = callChain
     };
 
     Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(specData));

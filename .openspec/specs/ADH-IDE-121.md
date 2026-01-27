@@ -53,29 +53,30 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #23 | `Table_23` | R | 1x |
-| #70 | `Table_70` | R | 1x |
-| #197 | `Table_197` | LINK | 1x |
-| #198 | `Table_198` | R | 1x |
-| #227 | `Table_227` | **W** | 1x |
-| #232 | `Table_232` | R | 1x |
-| #244 | `Table_244` | LINK | 1x |
-| #244 | `Table_244` | **W** | 1x |
-| #246 | `Table_246` | LINK | 1x |
-| #246 | `Table_246` | R | 1x |
-| #246 | `Table_246` | **W** | 4x |
-| #248 | `Table_248` | LINK | 1x |
-| #248 | `Table_248` | **W** | 2x |
-| #249 | `Table_249` | LINK | 1x |
-| #249 | `Table_249` | R | 3x |
-| #697 | `Table_697` | R | 2x |
-| #740 | `Table_740` | R | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 23 | reseau_cloture___rec | `cafil001_dat` | R | 1x |
+| 70 | date_comptable___dat | `cafil048_dat` | R | 1x |
+| 197 | articles_en_stock | `caisse_artstock` | L | 1x |
+| 198 | coupures_monnaie_locale | `caisse_banknote` | R | 1x |
+| 227 | concurrence_sessions | `caisse_concurrences` | **W** | 1x |
+| 232 | gestion_devise_session | `caisse_devise` | R | 1x |
+| 244 | saisie_approvisionnement | `caisse_saisie_appro_dev` | L | 1x |
+| 244 | saisie_approvisionnement | `caisse_saisie_appro_dev` | **W** | 1x |
+| 246 | histo_sessions_caisse | `caisse_session` | L | 1x |
+| 246 | histo_sessions_caisse | `caisse_session` | R | 1x |
+| 246 | histo_sessions_caisse | `caisse_session` | **W** | 4x |
+| 248 | sessions_coffre2 | `caisse_session_coffre2` | L | 1x |
+| 248 | sessions_coffre2 | `caisse_session_coffre2` | **W** | 2x |
+| 249 | histo_sessions_caisse_detail | `caisse_session_detail` | L | 1x |
+| 249 | histo_sessions_caisse_detail | `caisse_session_detail` | R | 3x |
+| 697 | droits_applications | `droits` | R | 2x |
+| 740 | pv_stock_movements | `pv_stockmvt_dat` | R | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -90,16 +91,28 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,14}='O'` | - |
+| 2 | `'FALSE'LOG` | - |
+| 3 | `'D'` | - |
+| 4 | `{0,31}` | - |
+| 5 | `'TRUE'LOG` | - |
+| 6 | `NOT({0,31})` | - |
+| 7 | `{32768,111}` | - |
 
-
+> **Total**: 7 expressions (affichees: 7)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 32 |
+| **Lignes logique** | 678 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -110,13 +123,19 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[121 Programme]
-    M --> T
+    N281[281 Fermeture Se]
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    T[121 Gestion cais]
+    N281 --> N163
+    N163 --> N1
+    N1 --> T
     style M fill:#8b5cf6,color:#fff
+    style N281 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -128,21 +147,21 @@ graph LR
 ```mermaid
 graph LR
     T[121 Programme]
-    C116[116 Calcul concurre]
+    C116[116 Calcul concu]
     T --> C116
-    C134[134 Mise  jour deta]
+    C134[134 Mise  jour d]
     T --> C134
-    C139[139 Ticket appro re]
+    C139[139 Ticket appro]
     T --> C139
-    C48[48 Contrles   Inte]
+    C48[48 Contrles   I]
     T --> C48
-    C122[122 Ouverture caiss]
+    C122[122 Ouverture ca]
     T --> C122
-    C131[131 Fermeture caiss]
+    C131[131 Fermeture ca]
     T --> C131
-    C155[155 Controle fermet]
+    C155[155 Controle fer]
     T --> C155
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
     style T fill:#58a6ff,color:#000
     style C116 fill:#3fb950
@@ -188,6 +207,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:43 | **DATA POPULATED** - Tables, Callgraph (7 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

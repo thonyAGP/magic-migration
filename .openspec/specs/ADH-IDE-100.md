@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #866 | `Table_866` | **W** | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 866 | maj_appli_tpe | `maj_appli_tpe` | **W** | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,25 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `'TRUE'LOG` | - |
+| 2 | `'R'` | - |
+| 3 | `{0,1}` | - |
+| 4 | `{0,2}` | - |
 
-
+> **Total**: 4 expressions (affichees: 4)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 2 |
+| **Lignes logique** | 16 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,12 +105,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[100 Programme]
+    T[100 flag ligne boutique V3]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -133,6 +142,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:46 | **DATA POPULATED** - Tables, Callgraph (4 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

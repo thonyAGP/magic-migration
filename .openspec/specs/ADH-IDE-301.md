@@ -53,17 +53,18 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | LINK | 7x |
-| #30 | `Table_30` | R | 1x |
-| #31 | `Table_31` | LINK | 7x |
-| #34 | `Table_34` | LINK | 1x |
-| #40 | `Table_40` | R | 7x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 7x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
+| 31 | gm-complet_______gmc | `cafil009_dat` | L | 7x |
+| 34 | hebergement______heb | `cafil012_dat` | L | 1x |
+| 40 | comptable________cte | `cafil018_dat` | R | 7x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -78,16 +79,29 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetCrsr (1)` | - |
+| 2 | `SetCrsr (2)` | - |
+| 3 | `Left ({0,4},Len (RTrim ({0,4}))-1)` | - |
+| 4 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| 5 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
+| 6 | `GetParam ('CURRENTPRINTERNUM')=6` | - |
+| 7 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
+| 8 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
 
-
+> **Total**: 8 expressions (affichees: 8)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 14 |
+| **Lignes logique** | 423 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -99,12 +113,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[301 Programme]
+    T[301 Extrait Compte]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -115,9 +128,9 @@ graph LR
 ```mermaid
 graph LR
     T[301 Programme]
-    C21[21 Recupere devise]
+    C21[21 Recupere dev]
     T --> C21
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C21 fill:#3fb950
@@ -141,6 +154,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:26 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (8 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

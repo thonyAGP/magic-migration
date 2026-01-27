@@ -53,14 +53,15 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #510 | `Table_510` | LINK | 1x |
-| #693 | `Table_693` | R | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 510 | pv_discounts | `%club_user%_pv_disctmp_dat` | L | 1x |
+| 693 | devise_in | `devisein_par` | R | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -75,16 +76,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,27}+1` | - |
+| 2 | `{32768,1}` | - |
+| 3 | `'FRA'` | - |
+| 4 | `'T'` | - |
+| 5 | `{0,1}` | - |
+| 6 | `{0,2}` | - |
+| 7 | `{0,3}` | - |
+| 8 | `{0,59}` | - |
+| 9 | `{0,4}` | - |
+| 10 | `{0,5}` | - |
+| 11 | `{0,6}` | - |
+| 12 | `{0,7}` | - |
+| 13 | `{0,8}` | - |
+| 14 | `{0,9}` | - |
+| 15 | `{0,10}` | - |
+| 16 | `{0,11}` | - |
+| 17 | `{0,12}` | - |
+| 18 | `{0,13}` | - |
+| 19 | `{0,14}` | - |
+| 20 | `{0,15}` | - |
 
-
+> **Total**: 30 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 98 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,13 +121,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[135 Programme]
-    M --> T
+    N298[298 Gestion cais]
+    N121[121 Gestion cais]
+    N281[281 Fermeture Se]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[135 Generation t]
+    N298 --> N121
+    N121 --> N281
+    N281 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N298 fill:#f59e0b
+    style N121 fill:#f59e0b
+    style N281 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -136,6 +174,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:21 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (30 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

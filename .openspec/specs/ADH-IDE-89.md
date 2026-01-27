@@ -53,40 +53,41 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | LINK | 2x |
-| #31 | `Table_31` | LINK | 1x |
-| #40 | `Table_40` | LINK | 1x |
-| #40 | `Table_40` | **W** | 1x |
-| #68 | `Table_68` | **W** | 1x |
-| #263 | `Table_263` | LINK | 2x |
-| #372 | `Table_372` | LINK | 1x |
-| #382 | `Table_382` | LINK | 2x |
-| #400 | `Table_400` | LINK | 2x |
-| #744 | `Table_744` | LINK | 2x |
-| #746 | `Table_746` | LINK | 1x |
-| #746 | `Table_746` | **W** | 1x |
-| #755 | `Table_755` | LINK | 2x |
-| #756 | `Table_756` | LINK | 2x |
-| #866 | `Table_866` | LINK | 3x |
-| #866 | `Table_866` | R | 6x |
-| #866 | `Table_866` | **W** | 7x |
-| #867 | `Table_867` | LINK | 1x |
-| #867 | `Table_867` | R | 2x |
-| #868 | `Table_868` | LINK | 1x |
-| #868 | `Table_868` | R | 3x |
-| #868 | `Table_868` | **W** | 6x |
-| #870 | `Table_870` | LINK | 7x |
-| #870 | `Table_870` | R | 1x |
-| #870 | `Table_870` | **W** | 4x |
-| #871 | `Table_871` | LINK | 2x |
-| #932 | `Table_932` | LINK | 1x |
-| #932 | `Table_932` | **W** | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 2x |
+| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
+| 40 | comptable________cte | `cafil018_dat` | L | 1x |
+| 40 | comptable________cte | `cafil018_dat` | **W** | 1x |
+| 68 | compteurs________cpt | `cafil046_dat` | **W** | 1x |
+| 263 | vente | `caisse_vente` | L | 2x |
+| 372 | pv_budget | `pv_budget_dat` | L | 1x |
+| 382 | pv_discount_reasons | `pv_discountlist_dat` | L | 2x |
+| 400 | pv_cust_rentals | `pv_rentals_dat` | L | 2x |
+| 744 | pv_lieux_vente | `pv_lieux_vente` | L | 2x |
+| 746 | projet | `version` | L | 1x |
+| 746 | projet | `version` | **W** | 1x |
+| 755 | cafil_address_tmp | `cafil_address_tmp` | L | 2x |
+| 756 | Country_ISO | `cafil_country_iso` | L | 2x |
+| 866 | maj_appli_tpe | `maj_appli_tpe` | L | 3x |
+| 866 | maj_appli_tpe | `maj_appli_tpe` | R | 6x |
+| 866 | maj_appli_tpe | `maj_appli_tpe` | **W** | 7x |
+| 867 | log_maj_tpe | `log_maj_tpe` | L | 1x |
+| 867 | log_maj_tpe | `log_maj_tpe` | R | 2x |
+| 868 | Affectation_Gift_Pass | `affectation_gift_pass` | L | 1x |
+| 868 | Affectation_Gift_Pass | `affectation_gift_pass` | R | 3x |
+| 868 | Affectation_Gift_Pass | `affectation_gift_pass` | **W** | 6x |
+| 870 | Rayons_Boutique | `rayons_boutique` | L | 7x |
+| 870 | Rayons_Boutique | `rayons_boutique` | R | 1x |
+| 870 | Rayons_Boutique | `rayons_boutique` | **W** | 4x |
+| 871 | Activite | `activite` | L | 2x |
+| 932 | taxe_add_param | `taxe_add_param` | L | 1x |
+| 932 | taxe_add_param | `taxe_add_param` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -101,16 +102,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `'Hébergement'` | - |
+| 2 | `{0,1}` | - |
+| 3 | `{0,2}` | - |
+| 4 | `{0,3}` | - |
+| 5 | `{0,7}` | - |
+| 6 | `{0,8}` | - |
+| 7 | `IF({0,58},Trim({0,53}),IF({0,5},Trim({0,20})&' ...` | - |
+| 8 | `IF({0,58},Trim({0,52}),IF({0,5},Trim({0,19})&' ...` | - |
+| 9 | `IF({0,58},Trim({0,54}),IF({0,5},Trim({0,22}),Tr...` | - |
+| 10 | `IF({0,58},Trim({0,55}),IF({0,5},Trim({0,23}),Tr...` | - |
+| 11 | `'Numéro d''adhérent'&' '&IF({0,5},Trim(Str({0,1...` | - |
+| 12 | `'Quitter'` | - |
+| 13 | `'Imprimer'` | - |
+| 14 | `'R.à.z'` | - |
+| 15 | `MlsTrans('Confirmez vous l''édition de cette fa...` | - |
+| 16 | `{0,66}=6` | - |
+| 17 | `Trim({0,42})&Trim(Str(Year(Date()),'4'))&Trim(S...` | - |
+| 18 | `Trim({0,42})&Trim(Str(Year(Date()),'4'))&Trim(S...` | - |
+| 19 | `NOT({0,71})` | - |
+| 20 | `{0,71}` | - |
 
-
+> **Total**: 45 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 35 |
+| **Lignes logique** | 1383 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -122,12 +148,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[89 Programme]
+    T[89 Factures (Tble Compta&Vent]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -138,21 +163,21 @@ graph LR
 ```mermaid
 graph LR
     T[89 Programme]
-    C60[60 Creation entete]
+    C60[60 Creation ent]
     T --> C60
-    C61[61 Maj des lignes ]
+    C61[61 Maj des lign]
     T --> C61
-    C90[90 Edition Facture]
+    C90[90 Edition Fact]
     T --> C90
-    C93[93 Creation Pied F]
+    C93[93 Creation Pie]
     T --> C93
-    C94[94 Maj des lignes ]
+    C94[94 Maj des lign]
     T --> C94
-    C58[58 Incremente N de]
+    C58[58 Incremente N]
     T --> C58
-    C91[91 Verif boutique]
+    C91[91 Verif boutiq]
     T --> C91
-    C92[92 flag ligne bout]
+    C92[92 flag ligne b]
     T --> C92
     style T fill:#58a6ff,color:#000
     style C60 fill:#3fb950
@@ -192,6 +217,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (45 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

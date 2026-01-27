@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| - | Aucune table | - | - |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| - | Aucune table | - | - | - |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,25 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `'C'` | - |
+| 2 | `186707` | - |
+| 3 | `3` | - |
+| 4 | `IF({0,1},'Retour Ok !','Retour Non Ok !')` | - |
 
-
+> **Total**: 4 expressions (affichees: 4)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 5 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,12 +105,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[250 Programme]
-    M --> T
+    N0[0 Transaction ]
+    N0[0 Transaction ]
+    N0[0 Garantie sur]
+    N295[295 Menu change ]
+    N293[293 Bi  Change G]
+    T[250 Lancement Ch]
+    M --> N0
+    N0 --> N0
+    N0 --> N0
+    N0 --> N295
+    N295 --> N293
+    N293 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N295 fill:#f59e0b
+    style N293 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -114,7 +138,7 @@ graph LR
 ```mermaid
 graph LR
     T[250 Programme]
-    C248[248 Choix PYR plusi]
+    C248[248 Choix PYR pl]
     T --> C248
     style T fill:#58a6ff,color:#000
     style C248 fill:#3fb950
@@ -136,6 +160,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:24 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (4 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

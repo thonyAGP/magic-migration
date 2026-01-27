@@ -53,16 +53,17 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #40 | `Table_40` | R | 1x |
-| #263 | `Table_263` | LINK | 1x |
-| #746 | `Table_746` | LINK | 1x |
-| #871 | `Table_871` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 40 | comptable________cte | `cafil018_dat` | R | 1x |
+| 263 | vente | `caisse_vente` | L | 1x |
+| 746 | projet | `version` | L | 1x |
+| 871 | Activite | `activite` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -77,16 +78,29 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}` | - |
+| 2 | `{0,2}` | - |
+| 3 | `{0,3}` | - |
+| 4 | `{0,4}` | - |
+| 5 | `{0,5}` | - |
+| 6 | `'FALSE'LOG` | - |
+| 7 | `'TRUE'LOG` | - |
+| 8 | `({0,6} AND {0,10} > 0) OR ({0,11} AND {0,15} > ...` | - |
 
-
+> **Total**: 8 expressions (affichees: 8)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 45 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -98,12 +112,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[96 Programme]
+    T[96 ExistFactureVente 2]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -136,6 +149,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:46 | **DATA POPULATED** - Tables, Callgraph (8 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

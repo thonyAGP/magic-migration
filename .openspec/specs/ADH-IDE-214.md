@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| - | Aucune table | - | - |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| - | Aucune table | - | - | - |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,29 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `Trim ({0,14})` | - |
+| 2 | `78` | - |
+| 3 | `Date ()` | - |
+| 4 | `{32768,2}` | - |
+| 5 | `''` | - |
+| 6 | `{0,13}='1'` | - |
+| 7 | `{0,13}='2'` | - |
+| 8 | `34` | - |
 
-
+> **Total**: 8 expressions (affichees: 8)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 32 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -94,13 +108,19 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[214 Programme]
-    M --> T
+    N217[217 Menu telepho]
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    T[214 Menu impress]
+    N217 --> N163
+    N163 --> N1
+    N1 --> T
     style M fill:#8b5cf6,color:#fff
+    style N217 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -111,21 +131,21 @@ graph LR
 ```mermaid
 graph LR
     T[214 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
-    C44[44 Appel programme]
+    C44[44 Appel progra]
     T --> C44
     C179[179 Get Printer]
     T --> C179
-    C180[180 Printer choice]
+    C180[180 Printer choi]
     T --> C180
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
-    C212[212 Detail appels a]
+    C212[212 Detail appel]
     T --> C212
-    C213[213 Reu fiscal grec]
+    C213[213 Reu fiscal g]
     T --> C213
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -161,6 +181,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:23 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (8 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

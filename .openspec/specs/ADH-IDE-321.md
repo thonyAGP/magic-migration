@@ -53,20 +53,21 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #27 | `Table_27` | R | 1x |
-| #31 | `Table_31` | LINK | 1x |
-| #372 | `Table_372` | LINK | 1x |
-| #744 | `Table_744` | R | 1x |
-| #866 | `Table_866` | LINK | 1x |
-| #867 | `Table_867` | R | 2x |
-| #869 | `Table_869` | LINK | 1x |
-| #932 | `Table_932` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 27 | donnees_village__dvi | `cafil005_dat` | R | 1x |
+| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
+| 372 | pv_budget | `pv_budget_dat` | L | 1x |
+| 744 | pv_lieux_vente | `pv_lieux_vente` | R | 1x |
+| 866 | maj_appli_tpe | `maj_appli_tpe` | L | 1x |
+| 867 | log_maj_tpe | `log_maj_tpe` | R | 2x |
+| 869 | Detail_Import_Boutique | `detail_import_boutique` | L | 1x |
+| 932 | taxe_add_param | `taxe_add_param` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -81,16 +82,25 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,5}` | - |
+| 2 | `IF(Trim({32768,22})='','N12.2Z',{32768,22})` | - |
+| 3 | `INIPut('EmbedFonts=N','FALSE'LOG)` | - |
+| 4 | `INIPut('CompressPDF =Y','FALSE'LOG)` | - |
 
-
+> **Total**: 4 expressions (affichees: 4)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 4 |
+| **Lignes logique** | 137 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -102,12 +112,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[321 Programme]
+    T[321 Edition Facture Tva(Facture)]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -140,6 +149,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:26 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:52 | **DATA POPULATED** - Tables, Callgraph (4 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

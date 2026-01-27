@@ -53,16 +53,17 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #69 | `Table_69` | R | 1x |
-| #77 | `Table_77` | R | 5x |
-| #596 | `Table_596` | LINK | 5x |
-| #596 | `Table_596` | R | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 69 | initialisation___ini | `cafil047_dat` | R | 1x |
+| 77 | articles_________art | `cafil055_dat` | R | 5x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | L | 5x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | R | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -77,16 +78,28 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetCrsr (2)` | - |
+| 2 | `SetCrsr (1)` | - |
+| 3 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| 4 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
+| 5 | `GetParam ('CURRENTPRINTERNUM')=5` | - |
+| 6 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
+| 7 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
 
-
+> **Total**: 7 expressions (affichees: 7)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 13 |
+| **Lignes logique** | 210 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -98,12 +111,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[308 Programme]
+    T[308 Print od unique old]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -114,7 +126,7 @@ graph LR
 ```mermaid
 graph LR
     T[308 Programme]
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C182 fill:#3fb950
@@ -136,6 +148,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:26 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:52 | **DATA POPULATED** - Tables, Callgraph (7 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

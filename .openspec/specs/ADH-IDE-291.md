@@ -53,15 +53,16 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | R | 7x |
-| #147 | `Table_147` | LINK | 7x |
-| #368 | `Table_368` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 7x |
+| 147 | change_vente_____chg | `cafil125_dat` | L | 7x |
+| 368 | pms_village | `pmsvillage` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -76,16 +77,28 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetCrsr (2)` | - |
+| 2 | `SetCrsr (1)` | - |
+| 3 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| 4 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
+| 5 | `GetParam ('CURRENTPRINTERNUM')=5` | - |
+| 6 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
+| 7 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
 
-
+> **Total**: 7 expressions (affichees: 7)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 13 |
+| **Lignes logique** | 311 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,12 +110,17 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[291 Programme]
-    M --> T
+    N294[294 Bi  Change G]
+    N295[295 Menu change ]
+    T[291 Print reu ch]
+    M --> N294
+    N294 --> N295
+    N295 --> T
     style M fill:#8b5cf6,color:#fff
+    style N294 fill:#f59e0b
+    style N295 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -113,9 +131,9 @@ graph LR
 ```mermaid
 graph LR
     T[291 Programme]
-    C289[289 Calcul equivale]
+    C289[289 Calcul equiv]
     T --> C289
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C289 fill:#3fb950
@@ -139,6 +157,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:25 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (7 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

@@ -53,23 +53,24 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #31 | `Table_31` | LINK | 1x |
-| #47 | `Table_47` | **W** | 2x |
-| #80 | `Table_80` | R | 2x |
-| #87 | `Table_87` | LINK | 1x |
-| #88 | `Table_88` | R | 1x |
-| #104 | `Table_104` | LINK | 1x |
-| #169 | `Table_169` | LINK | 1x |
-| #188 | `Table_188` | LINK | 1x |
-| #367 | `Table_367` | **W** | 1x |
-| #454 | `Table_454` | LINK | 1x |
-| #786 | `Table_786` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
+| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
+| 80 | codes_autocom____aut | `cafil058_dat` | R | 2x |
+| 87 | sda_telephone____sda | `cafil065_dat` | L | 1x |
+| 88 | historik_station | `cafil066_dat` | R | 1x |
+| 104 | fichier_menage | `cafil082_dat` | L | 1x |
+| 169 | salle_seminaire__sse | `cafil147_dat` | L | 1x |
+| 188 | correspondance_sda | `cafil216_dat` | L | 1x |
+| 367 | pms_print_param_default | `pmsprintparamdefault` | **W** | 1x |
+| 454 | tai_gm | `taigm` | L | 1x |
+| 786 | qualite_avant_reprise | `qualite_avant_reprise` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -84,16 +85,30 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}=''` | - |
+| 2 | `'C'` | - |
+| 3 | `Trim ({0,25})` | - |
+| 4 | `36` | - |
+| 5 | `{0,22}='O'` | - |
+| 6 | `{0,24}='F'` | - |
+| 7 | `{0,23}<>'R'` | - |
+| 8 | `{0,22}=''` | - |
+| 9 | `'F'` | - |
 
-
+> **Total**: 9 expressions (affichees: 9)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 10 |
+| **Lignes logique** | 261 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -104,13 +119,16 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[217 Programme]
-    M --> T
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    T[217 Menu telepho]
+    N163 --> N1
+    N1 --> T
     style M fill:#8b5cf6,color:#fff
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -123,19 +141,19 @@ graph LR
     T[217 Programme]
     C179[179 Get Printer]
     T --> C179
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C183[183 Other Listing]
+    C183[183 Other Listin]
     T --> C183
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
-    C44[44 Appel programme]
+    C44[44 Appel progra]
     T --> C44
-    C180[180 Printer choice]
+    C180[180 Printer choi]
     T --> C180
-    C209[209 Affectation cod]
+    C209[209 Affectation ]
     T --> C209
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C179 fill:#3fb950
@@ -177,6 +195,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:23 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (9 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

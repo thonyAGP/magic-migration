@@ -53,28 +53,29 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #23 | `Table_23` | R | 1x |
-| #23 | `Table_23` | **W** | 2x |
-| #30 | `Table_30` | LINK | 1x |
-| #44 | `Table_44` | R | 2x |
-| #44 | `Table_44` | **W** | 2x |
-| #47 | `Table_47` | **W** | 2x |
-| #68 | `Table_68` | **W** | 1x |
-| #70 | `Table_70` | R | 1x |
-| #124 | `Table_124` | LINK | 1x |
-| #124 | `Table_124` | R | 1x |
-| #139 | `Table_139` | LINK | 2x |
-| #139 | `Table_139` | R | 1x |
-| #139 | `Table_139` | **W** | 1x |
-| #141 | `Table_141` | R | 1x |
-| #474 | `Table_474` | LINK | 1x |
-| #474 | `Table_474` | **W** | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 23 | reseau_cloture___rec | `cafil001_dat` | R | 1x |
+| 23 | reseau_cloture___rec | `cafil001_dat` | **W** | 2x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 1x |
+| 44 | change___________chg | `cafil022_dat` | R | 2x |
+| 44 | change___________chg | `cafil022_dat` | **W** | 2x |
+| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
+| 68 | compteurs________cpt | `cafil046_dat` | **W** | 1x |
+| 70 | date_comptable___dat | `cafil048_dat` | R | 1x |
+| 124 | type_taux_change | `cafil102_dat` | L | 1x |
+| 124 | type_taux_change | `cafil102_dat` | R | 1x |
+| 139 | moyens_reglement_mor | `cafil117_dat` | L | 2x |
+| 139 | moyens_reglement_mor | `cafil117_dat` | R | 1x |
+| 139 | moyens_reglement_mor | `cafil117_dat` | **W** | 1x |
+| 141 | devises__________dev | `cafil119_dat` | R | 1x |
+| 474 | comptage_caisse_devise | `%club_user%_caisse_compcais_devise` | L | 1x |
+| 474 | comptage_caisse_devise | `%club_user%_caisse_compcais_devise` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -89,16 +90,30 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `'C'` | - |
+| 2 | `Trim ({0,27})` | - |
+| 3 | `81` | - |
+| 4 | `{0,1}` | - |
+| 5 | `{0,16}<>'F'` | - |
+| 6 | `{0,16}='F'` | - |
+| 7 | `{0,25}` | - |
+| 8 | `{32768,1}` | - |
+| 9 | `{0,23}<>'R'` | - |
 
-
+> **Total**: 9 expressions (affichees: 9)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 17 |
+| **Lignes logique** | 377 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -110,12 +125,16 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[293 Programme]
-    M --> T
+    N295[295 Menu change ]
+    T[293 Bi  Change G]
+    M --> N
+    N --> N
+    N --> N
+    N --> T
     style M fill:#8b5cf6,color:#fff
+    style N295 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -126,21 +145,21 @@ graph LR
 ```mermaid
 graph LR
     T[293 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
-    C44[44 Appel programme]
+    C44[44 Appel progra]
     T --> C44
-    C47[47 DateHeure sessi]
+    C47[47 DateHeure se]
     T --> C47
     C179[179 Get Printer]
     T --> C179
-    C180[180 Printer choice]
+    C180[180 Printer choi]
     T --> C180
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
-    C290[290 Print reu chang]
+    C290[290 Print reu ch]
     T --> C290
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -176,6 +195,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:25 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (9 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

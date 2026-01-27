@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #223 | `Table_223` | **W** | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 223 | comptage_caisse_montant_histo | `caisse_compcais_montant_histo` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,32 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}` | - |
+| 2 | `{0,2}` | - |
+| 3 | `{0,3}` | - |
+| 4 | `10` | - |
+| 5 | `9` | - |
+| 6 | `6` | - |
+| 7 | `'UNIO'` | - |
+| 8 | `{0,4}` | - |
+| 9 | `8` | - |
+| 10 | `'WECH'` | - |
+| 11 | `'ALIP'` | - |
 
-
+> **Total**: 11 expressions (affichees: 11)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 36 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,12 +112,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[284 Programme]
+    T[284 Ajoute Paiement]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -133,6 +149,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:25 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (11 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

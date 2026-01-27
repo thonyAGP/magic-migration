@@ -53,15 +53,16 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #22 | `Table_22` | **W** | 1x |
-| #31 | `Table_31` | LINK | 1x |
-| #36 | `Table_36` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 22 | address_data_catching | `cafil_address_ec` | **W** | 1x |
+| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
+| 36 | client_gm | `cafil014_dat` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -76,16 +77,32 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,2}` | - |
+| 2 | `{0,8}` | - |
+| 3 | `{0,9}` | - |
+| 4 | `{0,10}` | - |
+| 5 | `'FALSE'LOG` | - |
+| 6 | `'TRUE'LOG` | - |
+| 7 | `ASCIIChr (33)` | - |
+| 8 | `'TRUE'LOG` | - |
+| 9 | `INIGet ('[MAGIC_LOGICAL_NAMES]club_email_export...` | - |
+| 10 | `IF ({0,51}<>'','0',IF ({0,56}=0,'1','2'))` | - |
+| 11 | `'TRUE'LOG` | - |
 
-
+> **Total**: 11 expressions (affichees: 11)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 68 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,12 +114,17 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[11 Programme]
-    M --> T
+    N10[10 Print list C]
+    N7[7 Menu Data Ca]
+    T[11 Export   add]
+    M --> N10
+    N10 --> N7
+    N7 --> T
     style M fill:#8b5cf6,color:#fff
+    style N10 fill:#f59e0b
+    style N7 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -135,6 +157,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:17 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:43 | **DATA POPULATED** - Tables, Callgraph (11 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

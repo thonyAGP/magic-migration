@@ -53,16 +53,17 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #50 | `Table_50` | R | 1x |
-| #67 | `Table_67` | R | 1x |
-| #139 | `Table_139` | LINK | 1x |
-| #232 | `Table_232` | LINK | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 50 | moyens_reglement_mor | `cafil028_dat` | R | 1x |
+| 67 | tables___________tab | `cafil045_dat` | R | 1x |
+| 139 | moyens_reglement_mor | `cafil117_dat` | L | 1x |
+| 232 | gestion_devise_session | `caisse_devise` | L | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -77,16 +78,24 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,4}<>'B'` | - |
+| 2 | `{0,4}='B'` | - |
+| 3 | `{0,7}` | - |
 
-
+> **Total**: 3 expressions (affichees: 3)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 3 |
+| **Lignes logique** | 131 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -98,12 +107,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[144 Programme]
-    M --> T
+    N0[0 Appel Print ]
+    N0[0 Histo ventes]
+    N0[0 Histo ventes]
+    N0[0 Histo ventes]
+    N0[0 Histo ventes]
+    T[144 Devises fina]
+    M --> N0
+    N0 --> N0
+    N0 --> N0
+    N0 --> N0
+    N0 --> N0
+    N0 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -142,6 +165,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:21 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (3 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

@@ -53,20 +53,21 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #220 | `Table_220` | LINK | 1x |
-| #220 | `Table_220` | **W** | 1x |
-| #222 | `Table_222` | LINK | 1x |
-| #222 | `Table_222` | **W** | 1x |
-| #223 | `Table_223` | LINK | 1x |
-| #491 | `Table_491` | R | 1x |
-| #492 | `Table_492` | R | 1x |
-| #493 | `Table_493` | R | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 220 | comptage_caisse_devise_histo | `caisse_compcais_devise_histo` | L | 1x |
+| 220 | comptage_caisse_devise_histo | `caisse_compcais_devise_histo` | **W** | 1x |
+| 222 | comptage_caisse_histo | `caisse_compcais_histo2` | L | 1x |
+| 222 | comptage_caisse_histo | `caisse_compcais_histo2` | **W** | 1x |
+| 223 | comptage_caisse_montant_histo | `caisse_compcais_montant_histo` | L | 1x |
+| 491 | soldes_par_mop | `%club_user%_caisse_solde_par_mop` | R | 1x |
+| 492 | edition_tableau_recap | `caisse_tabrecap` | R | 1x |
+| 493 | edition_ticket | `%club_user%_caisse_ticket` | R | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -81,16 +82,35 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{32768,1}` | - |
+| 2 | `{1,1}` | - |
+| 3 | `{1,2}` | - |
+| 4 | `{0,1}` | - |
+| 5 | `{0,2}` | - |
+| 6 | `{0,3}` | - |
+| 7 | `{0,4}` | - |
+| 8 | `{0,5}` | - |
+| 9 | `{0,6}` | - |
+| 10 | `{1,3}` | - |
+| 11 | `{1,4}` | - |
+| 12 | `{1,5}` | - |
+| 13 | `{0,7}` | - |
+| 14 | `{0,8}` | - |
 
-
+> **Total**: 14 expressions (affichees: 14)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 6 |
+| **Lignes logique** | 105 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -101,13 +121,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[133 Programme]
-    M --> T
+    N121[121 Gestion cais]
+    N298[298 Gestion cais]
+    N281[281 Fermeture Se]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[133 Mise a jour ]
+    N121 --> N298
+    N298 --> N281
+    N281 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N121 fill:#f59e0b
+    style N298 fill:#f59e0b
+    style N281 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -144,6 +176,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:21 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (14 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

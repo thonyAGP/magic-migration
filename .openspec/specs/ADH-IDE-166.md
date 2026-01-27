@@ -53,21 +53,22 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #67 | `Table_67` | R | 1x |
-| #69 | `Table_69` | LINK | 1x |
-| #81 | `Table_81` | R | 1x |
-| #118 | `Table_118` | LINK | 1x |
-| #219 | `Table_219` | R | 1x |
-| #728 | `Table_728` | LINK | 1x |
-| #740 | `Table_740` | R | 1x |
-| #878 | `Table_878` | R | 1x |
-| #878 | `Table_878` | **W** | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 67 | tables___________tab | `cafil045_dat` | R | 1x |
+| 69 | initialisation___ini | `cafil047_dat` | L | 1x |
+| 81 | societe__________soc | `cafil059_dat` | R | 1x |
+| 118 | tables_imports | `cafil096_dat` | L | 1x |
+| 219 | communication_ims | `caisse_com_ims` | R | 1x |
+| 728 | arc_cc_total | `arc_cctotal` | L | 1x |
+| 740 | pv_stock_movements | `pv_stockmvt_dat` | R | 1x |
+| 878 | categorie_operation_mw | `categorie_operation_mw` | R | 1x |
+| 878 | categorie_operation_mw | `categorie_operation_mw` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -82,16 +83,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetParam ('VERIF_USERB','O')` | - |
+| 2 | `{0,1}` | - |
+| 3 | `IF({0,8}<>0,'N11.'&Trim(Str({0,8},'#'))&'CZ','N...` | - |
+| 4 | `NOT ({0,1}) AND NOT(IsComponent())` | - |
+| 5 | `SetParam ('SPECIFICPRINT','VOID')` | - |
+| 6 | `SetParam ('CURRENTPRINTERNUM',0)` | - |
+| 7 | `SetParam ('CURRENTPRINTERNAME','VOID')` | - |
+| 8 | `SetParam ('NUMBERCOPIES',0)` | - |
+| 9 | `SetParam ('LISTINGNUMPRINTERCHOICE',0)` | - |
+| 10 | `SetParam ('CHAINEDLISTING','NO')` | - |
+| 11 | `NOT ({32768,4} OR IsComponent() OR INIGet ('[MA...` | - |
+| 12 | `Trim(INIGet('[MAGIC_LOGICAL_NAMES]RunMode'))<>'B'` | - |
+| 13 | `'CA'` | - |
+| 14 | `{32768,17}` | - |
+| 15 | `{32768,23}` | - |
+| 16 | `{0,4}` | - |
+| 17 | `Trim({0,5})` | - |
+| 18 | `{32768,8}` | - |
+| 19 | `NOT(IsComponent())` | - |
+| 20 | `NOT(IsComponent()) AND {32768,111} AND Range(Te...` | - |
 
-
+> **Total**: 30 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 7 |
+| **Lignes logique** | 123 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -103,12 +129,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[166 Programme]
-    M --> T
+    N0[0 Histo ventes]
+    N0[0 Histo ventes]
+    N0[0 Print extrai]
+    N0[0 Transaction ]
+    N0[0 Histo ventes]
+    T[166 Start]
+    M --> N0
+    N0 --> N0
+    N0 --> N0
+    N0 --> N0
+    N0 --> N0
+    N0 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -129,17 +169,17 @@ graph LR
 ```mermaid
 graph LR
     T[166 Programme]
-    C45[45 Recuperation la]
+    C45[45 Recuperation]
     T --> C45
-    C50[50   Initialistaio]
+    C50[50   Initialist]
     T --> C50
-    C52[52 Creation adress]
+    C52[52 Creation adr]
     T --> C52
-    C200[200 Verification si]
+    C200[200 Verification]
     T --> C200
-    C224[224 Alimentation Co]
+    C224[224 Alimentation]
     T --> C224
-    C231[231 Raisons utilisa]
+    C231[231 Raisons util]
     T --> C231
     style T fill:#58a6ff,color:#000
     style C45 fill:#3fb950
@@ -171,6 +211,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (30 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

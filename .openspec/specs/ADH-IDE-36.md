@@ -53,16 +53,17 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #31 | `Table_31` | R | 1x |
-| #40 | `Table_40` | R | 10x |
-| #70 | `Table_70` | LINK | 1x |
-| #343 | `Table_343` | R | 11x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 31 | gm-complet_______gmc | `cafil009_dat` | R | 1x |
+| 40 | comptable________cte | `cafil018_dat` | R | 10x |
+| 70 | date_comptable___dat | `cafil048_dat` | L | 1x |
+| 343 | histo_fusionseparation_saisie | `histo_fus_sep_saisie` | R | 11x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -77,16 +78,36 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}=''` | - |
+| 2 | `'C'` | - |
+| 3 | `{0,1}` | - |
+| 4 | `Date ()` | - |
+| 5 | `Time ()` | - |
+| 6 | `{0,2}` | - |
+| 7 | `{0,3}` | - |
+| 8 | `SetCrsr (2)` | - |
+| 9 | `SetCrsr (1)` | - |
+| 10 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| 11 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
+| 12 | `GetParam ('CURRENTPRINTERNUM')=6` | - |
+| 13 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
+| 14 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
+| 15 | `'TRUE'LOG` | - |
 
-
+> **Total**: 15 expressions (affichees: 15)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 27 |
+| **Lignes logique** | 426 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,13 +118,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[36 Programme]
-    M --> T
+    N27[27 Separation]
+    N28[28 Fusion]
+    N37[37 Menu changem]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[36 Print Separa]
+    N27 --> N28
+    N28 --> N37
+    N37 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N27 fill:#f59e0b
+    style N28 fill:#f59e0b
+    style N37 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -115,7 +148,7 @@ graph LR
 ```mermaid
 graph LR
     T[36 Programme]
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C182 fill:#3fb950
@@ -137,6 +170,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:18 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (15 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #68 | `Table_68` | **W** | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 68 | compteurs________cpt | `cafil046_dat` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,27 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,6}+1` | - |
+| 2 | `'C'` | - |
+| 3 | `IF({0,2}='','F'&DStr(Date(),'YYMM'),{0,2})` | - |
+| 4 | `Val( IF ({0,2}='', DStr(Date(),'YYMM'),Trim({0,...` | - |
+| 5 | `1` | - |
+| 6 | `{0,6}=9999 AND {0,2}<>''` | - |
 
-
+> **Total**: 6 expressions (affichees: 6)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 13 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,12 +107,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[58 Programme]
-    M --> T
+    N190[190 Menu solde d]
+    N163[163 Menu caisse ]
+    N313[313 Easy Check O]
+    N287[287 Solde Easy C]
+    N193[193 Solde compte]
+    T[58 Incremente N]
+    M --> N190
+    N190 --> N163
+    N163 --> N313
+    N313 --> N287
+    N287 --> N193
+    N193 --> T
     style M fill:#8b5cf6,color:#fff
+    style N190 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N313 fill:#f59e0b
+    style N287 fill:#f59e0b
+    style N193 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -135,6 +161,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:19 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (6 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

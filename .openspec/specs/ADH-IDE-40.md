@@ -53,21 +53,22 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #41 | `Table_41` | **W** | 5x |
-| #42 | `Table_42` | **W** | 2x |
-| #43 | `Table_43` | **W** | 4x |
-| #47 | `Table_47` | **W** | 2x |
-| #50 | `Table_50` | R | 1x |
-| #67 | `Table_67` | LINK | 1x |
-| #367 | `Table_367` | **W** | 1x |
-| #456 | `Table_456` | R | 1x |
-| #456 | `Table_456` | **W** | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 41 | depot_objets_____doa | `cafil019_dat` | **W** | 5x |
+| 42 | depot_devises____dda | `cafil020_dat` | **W** | 2x |
+| 43 | solde_devises____sda | `cafil021_dat` | **W** | 4x |
+| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
+| 50 | moyens_reglement_mor | `cafil028_dat` | R | 1x |
+| 67 | tables___________tab | `cafil045_dat` | L | 1x |
+| 367 | pms_print_param_default | `pmsprintparamdefault` | **W** | 1x |
+| 456 | tai_demarrage | `taistart` | R | 1x |
+| 456 | tai_demarrage | `taistart` | **W** | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -82,16 +83,26 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,9}<>'R'` | - |
+| 2 | `'F'` | - |
+| 3 | `{0,10}='F'` | - |
+| 4 | `'C'` | - |
+| 5 | `{0,1}=''` | - |
 
-
+> **Total**: 5 expressions (affichees: 5)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 25 |
+| **Lignes logique** | 480 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -102,13 +113,16 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[40 Programme]
-    M --> T
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    T[40 Comptes de d]
+    N163 --> N1
+    N1 --> T
     style M fill:#8b5cf6,color:#fff
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -119,21 +133,21 @@ graph LR
 ```mermaid
 graph LR
     T[40 Programme]
-    C44[44 Appel programme]
+    C44[44 Appel progra]
     T --> C44
     C179[179 Get Printer]
     T --> C179
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
-    C183[183 Other Listing]
+    C183[183 Other Listin]
     T --> C183
-    C263[263 Zoom modes de p]
+    C263[263 Zoom modes d]
     T --> C263
-    C39[39 Print extrait O]
+    C39[39 Print extrai]
     T --> C39
-    C172[172 Print Depot Obj]
+    C172[172 Print Depot ]
     T --> C172
     style T fill:#58a6ff,color:#000
     style C44 fill:#3fb950
@@ -173,6 +187,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:18 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (5 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #246 | `Table_246` | R | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 246 | histo_sessions_caisse | `caisse_session` | R | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,24 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `MlsTrans('Vous avez encore @1@ sessions de cais...` | - |
+| 2 | `Trim({0,2})<>''` | - |
+| 3 | `StrBuild(Trim({0,1}),Str(StrTokenCnt({0,2},'-')...` | - |
 
-
+> **Total**: 3 expressions (affichees: 3)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 2 |
+| **Lignes logique** | 11 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -94,13 +103,15 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[232 Programme]
-    M --> T
+    N1[1 Main Program]
+    T[232 Verif sessio]
+    N --> N
+    N --> N
+    N --> T
     style M fill:#8b5cf6,color:#fff
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -133,6 +144,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:24 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (3 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

@@ -53,27 +53,28 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #23 | `Table_23` | R | 2x |
-| #23 | `Table_23` | **W** | 6x |
-| #30 | `Table_30` | R | 3x |
-| #34 | `Table_34` | R | 1x |
-| #39 | `Table_39` | R | 1x |
-| #40 | `Table_40` | LINK | 2x |
-| #47 | `Table_47` | **W** | 4x |
-| #70 | `Table_70` | LINK | 1x |
-| #70 | `Table_70` | R | 1x |
-| #77 | `Table_77` | LINK | 3x |
-| #173 | `Table_173` | **W** | 2x |
-| #463 | `Table_463` | LINK | 4x |
-| #463 | `Table_463` | R | 2x |
-| #463 | `Table_463` | **W** | 1x |
-| #596 | `Table_596` | **W** | 4x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 23 | reseau_cloture___rec | `cafil001_dat` | R | 2x |
+| 23 | reseau_cloture___rec | `cafil001_dat` | **W** | 6x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 3x |
+| 34 | hebergement______heb | `cafil012_dat` | R | 1x |
+| 39 | depot_garantie___dga | `cafil017_dat` | R | 1x |
+| 40 | comptable________cte | `cafil018_dat` | L | 2x |
+| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 4x |
+| 70 | date_comptable___dat | `cafil048_dat` | L | 1x |
+| 70 | date_comptable___dat | `cafil048_dat` | R | 1x |
+| 77 | articles_________art | `cafil055_dat` | L | 3x |
+| 173 | intermed_compta__ite | `cafil181_dat` | **W** | 2x |
+| 463 | heure_de_passage | `verifpool_dat` | L | 4x |
+| 463 | heure_de_passage | `verifpool_dat` | R | 2x |
+| 463 | heure_de_passage | `verifpool_dat` | **W** | 1x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | **W** | 4x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -88,16 +89,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{32768,2}` | - |
+| 2 | `Date ()` | - |
+| 3 | `{0,23}='A'` | - |
+| 4 | `InStr ('BC',{0,23})<>0` | - |
+| 5 | `{0,24}` | - |
+| 6 | `{0,23}='B'` | - |
+| 7 | `{0,23}='C'` | - |
+| 8 | `NOT ({0,24}) AND NOT ({0,20})` | - |
+| 9 | `''` | - |
+| 10 | `136` | - |
+| 11 | `Trim ({0,22})` | - |
+| 12 | `'AUTO'` | - |
+| 13 | `'MANU'` | - |
+| 14 | `{0,25}` | - |
+| 15 | `{0,26}` | - |
+| 16 | `{0,8}<Date () AND NOT ({0,20})` | - |
+| 17 | `{0,8}>=Date ()` | - |
+| 18 | `'TRUE'LOG` | - |
+| 19 | `{0,15}='1'` | - |
+| 20 | `{0,1}` | - |
 
-
+> **Total**: 25 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 27 |
+| **Lignes logique** | 918 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -108,13 +134,22 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[173 Programme]
-    M --> T
+    N0[0 Garantie sur]
+    N77[77 Club Med Pas]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[173 Gestion forf]
+    N0 --> N77
+    N77 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N77 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -126,21 +161,21 @@ graph LR
 ```mermaid
 graph LR
     T[173 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
     C179[179 Get Printer]
     T --> C179
-    C180[180 Printer choice]
+    C180[180 Printer choi]
     T --> C180
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C269[269 Zoom services v]
+    C269[269 Zoom service]
     T --> C269
-    C273[273 Zoom articles T]
+    C273[273 Zoom article]
     T --> C273
-    C306[306 Print ticket ve]
+    C306[306 Print ticket]
     T --> C306
-    C44[44 Appel programme]
+    C44[44 Appel progra]
     T --> C44
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -177,6 +212,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (25 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

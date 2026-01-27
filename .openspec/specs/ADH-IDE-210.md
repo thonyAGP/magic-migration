@@ -53,28 +53,29 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | LINK | 1x |
-| #30 | `Table_30` | R | 2x |
-| #34 | `Table_34` | LINK | 2x |
-| #53 | `Table_53` | **W** | 1x |
-| #68 | `Table_68` | **W** | 1x |
-| #75 | `Table_75` | **W** | 3x |
-| #80 | `Table_80` | R | 1x |
-| #80 | `Table_80` | **W** | 2x |
-| #87 | `Table_87` | LINK | 1x |
-| #104 | `Table_104` | R | 1x |
-| #130 | `Table_130` | LINK | 1x |
-| #131 | `Table_131` | LINK | 1x |
-| #136 | `Table_136` | **W** | 6x |
-| #151 | `Table_151` | **W** | 3x |
-| #152 | `Table_152` | LINK | 1x |
-| #152 | `Table_152` | R | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 1x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 2x |
+| 34 | hebergement______heb | `cafil012_dat` | L | 2x |
+| 53 | ligne_telephone__lgn | `cafil031_dat` | **W** | 1x |
+| 68 | compteurs________cpt | `cafil046_dat` | **W** | 1x |
+| 75 | commande_autocom_cot | `cafil053_dat` | **W** | 3x |
+| 80 | codes_autocom____aut | `cafil058_dat` | R | 1x |
+| 80 | codes_autocom____aut | `cafil058_dat` | **W** | 2x |
+| 87 | sda_telephone____sda | `cafil065_dat` | L | 1x |
+| 104 | fichier_menage | `cafil082_dat` | R | 1x |
+| 130 | fichier_langue | `cafil108_dat` | L | 1x |
+| 131 | fichier_validation | `cafil109_dat` | L | 1x |
+| 136 | fichier_echanges | `cafil114_dat` | **W** | 6x |
+| 151 | nb_code__poste | `cafil129_dat` | **W** | 3x |
+| 152 | parametres_pour_pabx | `cafil130_dat` | L | 1x |
+| 152 | parametres_pour_pabx | `cafil130_dat` | R | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -89,16 +90,25 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,7}='1' OR {0,7}='3'` | - |
+| 2 | `'F'` | - |
+| 3 | `{0,15}='F'` | - |
+| 4 | `{0,15}<>'F'` | - |
 
-
+> **Total**: 4 expressions (affichees: 4)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 26 |
+| **Lignes logique** | 507 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -109,13 +119,19 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[210 Programme]
-    M --> T
+    N217[217 Menu telepho]
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    T[210 Changement d]
+    N217 --> N163
+    N163 --> N1
+    N1 --> T
     style M fill:#8b5cf6,color:#fff
+    style N217 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -148,6 +164,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:23 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (4 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

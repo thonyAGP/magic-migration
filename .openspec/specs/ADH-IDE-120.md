@@ -53,51 +53,52 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #40 | `Table_40` | R | 3x |
-| #50 | `Table_50` | R | 1x |
-| #67 | `Table_67` | R | 1x |
-| #70 | `Table_70` | R | 1x |
-| #77 | `Table_77` | R | 2x |
-| #89 | `Table_89` | LINK | 1x |
-| #89 | `Table_89` | R | 7x |
-| #90 | `Table_90` | LINK | 1x |
-| #139 | `Table_139` | R | 1x |
-| #140 | `Table_140` | R | 2x |
-| #141 | `Table_141` | LINK | 1x |
-| #197 | `Table_197` | LINK | 1x |
-| #198 | `Table_198` | LINK | 1x |
-| #199 | `Table_199` | LINK | 1x |
-| #200 | `Table_200` | LINK | 1x |
-| #200 | `Table_200` | R | 1x |
-| #219 | `Table_219` | R | 1x |
-| #220 | `Table_220` | LINK | 1x |
-| #222 | `Table_222` | LINK | 5x |
-| #222 | `Table_222` | R | 5x |
-| #223 | `Table_223` | LINK | 1x |
-| #232 | `Table_232` | LINK | 1x |
-| #232 | `Table_232` | **W** | 1x |
-| #246 | `Table_246` | LINK | 1x |
-| #246 | `Table_246` | R | 1x |
-| #249 | `Table_249` | R | 2x |
-| #263 | `Table_263` | R | 3x |
-| #372 | `Table_372` | R | 1x |
-| #491 | `Table_491` | LINK | 3x |
-| #491 | `Table_491` | R | 6x |
-| #491 | `Table_491` | **W** | 13x |
-| #492 | `Table_492` | LINK | 5x |
-| #492 | `Table_492` | R | 2x |
-| #492 | `Table_492` | **W** | 9x |
-| #493 | `Table_493` | LINK | 7x |
-| #493 | `Table_493` | R | 5x |
-| #493 | `Table_493` | **W** | 11x |
-| #501 | `Table_501` | LINK | 2x |
-| #501 | `Table_501` | **W** | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 40 | comptable________cte | `cafil018_dat` | R | 3x |
+| 50 | moyens_reglement_mor | `cafil028_dat` | R | 1x |
+| 67 | tables___________tab | `cafil045_dat` | R | 1x |
+| 70 | date_comptable___dat | `cafil048_dat` | R | 1x |
+| 77 | articles_________art | `cafil055_dat` | R | 2x |
+| 89 | moyen_paiement___mop | `cafil067_dat` | L | 1x |
+| 89 | moyen_paiement___mop | `cafil067_dat` | R | 7x |
+| 90 | devises__________dev | `cafil068_dat` | L | 1x |
+| 139 | moyens_reglement_mor | `cafil117_dat` | R | 1x |
+| 140 | moyen_paiement___mop | `cafil118_dat` | R | 2x |
+| 141 | devises__________dev | `cafil119_dat` | L | 1x |
+| 197 | articles_en_stock | `caisse_artstock` | L | 1x |
+| 198 | coupures_monnaie_locale | `caisse_banknote` | L | 1x |
+| 199 | fond_de_caisse_std_montant | `caisse_caissstd_montant` | L | 1x |
+| 200 | fond_de_caisse_std | `caisse_caisstd` | L | 1x |
+| 200 | fond_de_caisse_std | `caisse_caisstd` | R | 1x |
+| 219 | communication_ims | `caisse_com_ims` | R | 1x |
+| 220 | comptage_caisse_devise_histo | `caisse_compcais_devise_histo` | L | 1x |
+| 222 | comptage_caisse_histo | `caisse_compcais_histo2` | L | 5x |
+| 222 | comptage_caisse_histo | `caisse_compcais_histo2` | R | 5x |
+| 223 | comptage_caisse_montant_histo | `caisse_compcais_montant_histo` | L | 1x |
+| 232 | gestion_devise_session | `caisse_devise` | L | 1x |
+| 232 | gestion_devise_session | `caisse_devise` | **W** | 1x |
+| 246 | histo_sessions_caisse | `caisse_session` | L | 1x |
+| 246 | histo_sessions_caisse | `caisse_session` | R | 1x |
+| 249 | histo_sessions_caisse_detail | `caisse_session_detail` | R | 2x |
+| 263 | vente | `caisse_vente` | R | 3x |
+| 372 | pv_budget | `pv_budget_dat` | R | 1x |
+| 491 | soldes_par_mop | `%club_user%_caisse_solde_par_mop` | L | 3x |
+| 491 | soldes_par_mop | `%club_user%_caisse_solde_par_mop` | R | 6x |
+| 491 | soldes_par_mop | `%club_user%_caisse_solde_par_mop` | **W** | 13x |
+| 492 | edition_tableau_recap | `caisse_tabrecap` | L | 5x |
+| 492 | edition_tableau_recap | `caisse_tabrecap` | R | 2x |
+| 492 | edition_tableau_recap | `caisse_tabrecap` | **W** | 9x |
+| 493 | edition_ticket | `%club_user%_caisse_ticket` | L | 7x |
+| 493 | edition_ticket | `%club_user%_caisse_ticket` | R | 5x |
+| 493 | edition_ticket | `%club_user%_caisse_ticket` | **W** | 11x |
+| 501 | email_reprise | `%club_user%_email_reprise` | L | 2x |
+| 501 | email_reprise | `%club_user%_email_reprise` | **W** | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -112,16 +113,32 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,18}` | - |
+| 2 | `{0,21}` | - |
+| 3 | `{0,22}` | - |
+| 4 | `{0,19}` | - |
+| 5 | `{0,19}<>0 OR {0,15}<>0 OR {0,31}='O'` | - |
+| 6 | `{0,29}` | - |
+| 7 | `'TRUE'LOG` | - |
+| 8 | `{0,30}` | - |
+| 9 | `{0,23}` | - |
+| 10 | `0` | - |
+| 11 | `'FALSE'LOG` | - |
 
-
+> **Total**: 11 expressions (affichees: 11)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 105 |
+| **Lignes logique** | 1378 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -132,13 +149,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[120 Programme]
-    M --> T
+    N298[298 Gestion cais]
+    N121[121 Gestion cais]
+    N281[281 Fermeture Se]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[120 Saisie conte]
+    N298 --> N121
+    N121 --> N281
+    N281 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N298 fill:#f59e0b
+    style N121 fill:#f59e0b
+    style N281 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -152,13 +181,13 @@ graph LR
 ```mermaid
 graph LR
     T[120 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
-    C142[142 Devise update s]
+    C142[142 Devise updat]
     T --> C142
-    C133[133 Mise a jour com]
+    C133[133 Mise a jour ]
     T --> C133
-    C150[150 Print comptage ]
+    C150[150 Print compta]
     T --> C150
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -186,6 +215,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:46 | **DATA POPULATED** - Tables, Callgraph (11 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

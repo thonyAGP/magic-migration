@@ -53,18 +53,19 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #23 | `Table_23` | R | 4x |
-| #47 | `Table_47` | **W** | 2x |
-| #340 | `Table_340` | R | 1x |
-| #341 | `Table_341` | R | 1x |
-| #343 | `Table_343` | LINK | 1x |
-| #343 | `Table_343` | **W** | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 23 | reseau_cloture___rec | `cafil001_dat` | R | 4x |
+| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
+| 340 | histo_fusionseparation | `histo_fus_sep` | R | 1x |
+| 341 | histo_fusionseparation_detail | `histo_fus_sep_detail` | R | 1x |
+| 343 | histo_fusionseparation_saisie | `histo_fus_sep_saisie` | L | 1x |
+| 343 | histo_fusionseparation_saisie | `histo_fus_sep_saisie` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -79,16 +80,35 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `'TRUE'LOG` | - |
+| 2 | `{0,3}` | - |
+| 3 | `{0,4}` | - |
+| 4 | `{0,5}` | - |
+| 5 | `'FALSE'LOG` | - |
+| 6 | `{0,9}` | - |
+| 7 | `{0,7}` | - |
+| 8 | `{0,4}='1F' AND {0,5}=10` | - |
+| 9 | `{0,4}='1F' AND {0,5}=20` | - |
+| 10 | `{0,4}='1F' AND {0,5}=30` | - |
+| 11 | `{0,4}='3E' AND {0,5}=50` | - |
+| 12 | `{0,4}='3E' AND {0,5}=60` | - |
+| 13 | `NOT {32768,78}` | - |
+| 14 | `{32768,78}` | - |
 
-
+> **Total**: 14 expressions (affichees: 14)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 11 |
+| **Lignes logique** | 116 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -99,13 +119,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[30 Programme]
-    M --> T
+    N27[27 Separation]
+    N28[28 Fusion]
+    N37[37 Menu changem]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[30 Read histo F]
+    N27 --> N28
+    N28 --> N37
+    N37 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N27 fill:#f59e0b
+    style N28 fill:#f59e0b
+    style N37 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -139,6 +171,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:18 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (14 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

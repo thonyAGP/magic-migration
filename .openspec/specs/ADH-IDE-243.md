@@ -53,40 +53,41 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #23 | `Table_23` | R | 1x |
-| #23 | `Table_23` | **W** | 4x |
-| #30 | `Table_30` | R | 1x |
-| #34 | `Table_34` | R | 3x |
-| #40 | `Table_40` | LINK | 3x |
-| #47 | `Table_47` | **W** | 2x |
-| #67 | `Table_67` | LINK | 1x |
-| #70 | `Table_70` | R | 1x |
-| #77 | `Table_77` | LINK | 1x |
-| #79 | `Table_79` | R | 1x |
-| #89 | `Table_89` | LINK | 3x |
-| #197 | `Table_197` | LINK | 3x |
-| #263 | `Table_263` | LINK | 3x |
-| #285 | `Table_285` | R | 1x |
-| #400 | `Table_400` | LINK | 2x |
-| #473 | `Table_473` | LINK | 3x |
-| #596 | `Table_596` | LINK | 3x |
-| #728 | `Table_728` | LINK | 1x |
-| #804 | `Table_804` | LINK | 3x |
-| #847 | `Table_847` | LINK | 3x |
-| #899 | `Table_899` | **W** | 2x |
-| #910 | `Table_910` | LINK | 1x |
-| #911 | `Table_911` | **W** | 1x |
-| #933 | `Table_933` | LINK | 3x |
-| #933 | `Table_933` | R | 3x |
-| #945 | `Table_945` | LINK | 3x |
-| #945 | `Table_945` | R | 1x |
-| #1069 | `Table_1069` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 23 | reseau_cloture___rec | `cafil001_dat` | R | 1x |
+| 23 | reseau_cloture___rec | `cafil001_dat` | **W** | 4x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
+| 34 | hebergement______heb | `cafil012_dat` | R | 3x |
+| 40 | comptable________cte | `cafil018_dat` | L | 3x |
+| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
+| 67 | tables___________tab | `cafil045_dat` | L | 1x |
+| 70 | date_comptable___dat | `cafil048_dat` | R | 1x |
+| 77 | articles_________art | `cafil055_dat` | L | 1x |
+| 79 | gratuites________gra | `cafil057_dat` | R | 1x |
+| 89 | moyen_paiement___mop | `cafil067_dat` | L | 3x |
+| 197 | articles_en_stock | `caisse_artstock` | L | 3x |
+| 263 | vente | `caisse_vente` | L | 3x |
+| 285 | email | `email` | R | 1x |
+| 400 | pv_cust_rentals | `pv_rentals_dat` | L | 2x |
+| 473 | comptage_caisse | `%club_user%_caisse_compcais` | L | 3x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | L | 3x |
+| 728 | arc_cc_total | `arc_cctotal` | L | 1x |
+| 804 | valeur_credit_bar_defaut | `valeur_credit_bar_defaut` | L | 3x |
+| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | L | 3x |
+| 899 | Boo_ResultsRechercheHoraire | `Boo_ResultsRechercheHoraire` | **W** | 2x |
+| 910 | classification_memory | `classification_memory` | L | 1x |
+| 911 | log_booker | `log_booker` | **W** | 1x |
+| 933 | taxe_add_vente | `taxe_add_vente` | L | 3x |
+| 933 | taxe_add_vente | `taxe_add_vente` | R | 3x |
+| 945 | Table_945 | - | L | 3x |
+| 945 | Table_945 | - | R | 1x |
+| 1069 | Table_1069 | - | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -101,16 +102,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `MlsTrans('Liste des ventes du compte')` | - |
+| 2 | `{32768,2}` | - |
+| 3 | `Date()` | - |
+| 4 | `DVal({0,16},'YYYYMMDD')` | - |
+| 5 | `TVal({0,17},'HHMMSS')` | - |
+| 6 | `Trim({0,29})&' '&Trim({0,28})` | - |
+| 7 | `IF ({0,3}='','N15.2Z',{0,3})` | - |
+| 8 | `{0,30}` | - |
+| 9 | `{0,33}=0 AND {0,34}<>'A'` | - |
+| 10 | `IF({0,33}<>0 OR {0,34}='A',36,110)` | - |
+| 11 | `IF({0,34}='A',MlsTrans ('Annulation'),IF({0,33}...` | - |
+| 12 | `{0,54}<>0 OR {0,61}<>0` | - |
+| 13 | `Trim({0,40})<>''` | - |
+| 14 | `{0,41}=6` | - |
+| 15 | `Trim({0,40})=''` | - |
+| 16 | `IF({0,21}='OD','OD','')` | - |
+| 17 | `{0,15}` | - |
+| 18 | `{0,21}` | - |
+| 19 | `{0,43}` | - |
+| 20 | `{0,65}>1` | - |
 
-
+> **Total**: 72 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 22 |
+| **Lignes logique** | 1528 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -121,13 +147,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[243 Programme]
-    M --> T
+    N242[242 Menu Choix S]
+    N0[0 Transaction ]
+    N0[0 Transaction ]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[243 Histo ventes]
+    N242 --> N0
+    N0 --> N0
+    N0 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N242 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -141,19 +179,19 @@ graph LR
 ```mermaid
 graph LR
     T[243 Programme]
-    C233[233 Appel Print tic]
+    C233[233 Appel Print ]
     T --> C233
-    C235[235  Print ticket v]
+    C235[235  Print ticke]
     T --> C235
-    C236[236  Print ticket v]
+    C236[236  Print ticke]
     T --> C236
     C179[179 Get Printer]
     T --> C179
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
-    C247[247 Deversement Tra]
+    C247[247 Deversement ]
     T --> C247
     style T fill:#58a6ff,color:#000
     style C233 fill:#3fb950
@@ -187,6 +225,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:24 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (72 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

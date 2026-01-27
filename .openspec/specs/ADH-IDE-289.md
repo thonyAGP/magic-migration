@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #139 | `Table_139` | R | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 139 | moyens_reglement_mor | `cafil117_dat` | R | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,29 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}` | - |
+| 2 | `{0,4}` | - |
+| 3 | `{0,6}` | - |
+| 4 | `{0,7}` | - |
+| 5 | `'O'` | - |
+| 6 | `{0,8}` | - |
+| 7 | `Fix ({0,9}/{0,17},11,{0,3})` | - |
+| 8 | `'FALSE'LOG` | - |
 
-
+> **Total**: 8 expressions (affichees: 8)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 24 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,12 +109,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[289 Programme]
-    M --> T
+    N0[0 Garantie sur]
+    N290[290 Print reu ch]
+    N294[294 Bi  Change G]
+    N295[295 Menu change ]
+    N293[293 Bi  Change G]
+    T[289 Calcul equiv]
+    M --> N0
+    N0 --> N290
+    N290 --> N294
+    N294 --> N295
+    N295 --> N293
+    N293 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N290 fill:#f59e0b
+    style N294 fill:#f59e0b
+    style N295 fill:#f59e0b
+    style N293 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -134,6 +162,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:25 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (8 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

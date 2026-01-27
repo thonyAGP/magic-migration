@@ -53,28 +53,29 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #31 | `Table_31` | R | 1x |
-| #34 | `Table_34` | LINK | 1x |
-| #34 | `Table_34` | R | 1x |
-| #40 | `Table_40` | LINK | 1x |
-| #40 | `Table_40` | R | 1x |
-| #69 | `Table_69` | LINK | 2x |
-| #122 | `Table_122` | LINK | 2x |
-| #197 | `Table_197` | LINK | 1x |
-| #197 | `Table_197` | R | 1x |
-| #263 | `Table_263` | LINK | 2x |
-| #382 | `Table_382` | LINK | 1x |
-| #519 | `Table_519` | LINK | 1x |
-| #596 | `Table_596` | LINK | 2x |
-| #804 | `Table_804` | LINK | 2x |
-| #847 | `Table_847` | LINK | 1x |
-| #945 | `Table_945` | LINK | 3x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 31 | gm-complet_______gmc | `cafil009_dat` | R | 1x |
+| 34 | hebergement______heb | `cafil012_dat` | L | 1x |
+| 34 | hebergement______heb | `cafil012_dat` | R | 1x |
+| 40 | comptable________cte | `cafil018_dat` | L | 1x |
+| 40 | comptable________cte | `cafil018_dat` | R | 1x |
+| 69 | initialisation___ini | `cafil047_dat` | L | 2x |
+| 122 | unilateral_bilateral | `cafil100_dat` | L | 2x |
+| 197 | articles_en_stock | `caisse_artstock` | L | 1x |
+| 197 | articles_en_stock | `caisse_artstock` | R | 1x |
+| 263 | vente | `caisse_vente` | L | 2x |
+| 382 | pv_discount_reasons | `pv_discountlist_dat` | L | 1x |
+| 519 | pv_cust_rentals | `%club_user%_pv_rentals_dat` | L | 1x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | L | 2x |
+| 804 | valeur_credit_bar_defaut | `valeur_credit_bar_defaut` | L | 2x |
+| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | L | 1x |
+| 945 | Table_945 | - | L | 3x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -89,16 +90,40 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}` | - |
+| 2 | `{0,2}` | - |
+| 3 | `'VAD'` | - |
+| 4 | `{0,9}` | - |
+| 5 | `Trim({0,45})` | - |
+| 6 | `Date()` | - |
+| 7 | `{0,39}` | - |
+| 8 | `IF({0,40}<>0,'N11.'&Trim(Str({0,40},'#'))&'CZ',...` | - |
+| 9 | `{0,42}` | - |
+| 10 | `{0,2}` | - |
+| 11 | `'TRUE'LOG` | - |
+| 12 | `DbDel('{596,4}'DSOURCE,'')` | - |
+| 13 | `{0,11}='VER'` | - |
+| 14 | `{0,42}<>'B'` | - |
+| 15 | `3` | - |
+| 16 | `4` | - |
+| 17 | `'C'` | - |
+| 18 | `Trim({0,1})=''` | - |
+| 19 | `30` | - |
 
-
+> **Total**: 19 expressions (affichees: 19)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 4 |
+| **Lignes logique** | 451 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -109,13 +134,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[255 Programme]
-    M --> T
+    N0[0 Transaction ]
+    N245[245 Histo ventes]
+    N242[242 Menu Choix S]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[255 VAD valids  ]
+    N0 --> N245
+    N245 --> N242
+    N242 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N245 fill:#f59e0b
+    style N242 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -130,13 +167,13 @@ graph LR
 ```mermaid
 graph LR
     T[255 Programme]
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
     C179[179 Get Printer]
     T --> C179
-    C171[171 Print versement]
+    C171[171 Print versem]
     T --> C171
-    C233[233 Appel Print tic]
+    C233[233 Appel Print ]
     T --> C233
     style T fill:#58a6ff,color:#000
     style C181 fill:#3fb950
@@ -164,6 +201,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:24 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (19 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

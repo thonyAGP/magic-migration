@@ -53,23 +53,24 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #67 | `Table_67` | R | 2x |
-| #69 | `Table_69` | R | 1x |
-| #77 | `Table_77` | LINK | 2x |
-| #77 | `Table_77` | R | 3x |
-| #596 | `Table_596` | LINK | 5x |
-| #596 | `Table_596` | R | 7x |
-| #728 | `Table_728` | LINK | 1x |
-| #818 | `Table_818` | LINK | 1x |
-| #847 | `Table_847` | LINK | 10x |
-| #847 | `Table_847` | R | 5x |
-| #867 | `Table_867` | R | 5x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 67 | tables___________tab | `cafil045_dat` | R | 2x |
+| 69 | initialisation___ini | `cafil047_dat` | R | 1x |
+| 77 | articles_________art | `cafil055_dat` | L | 2x |
+| 77 | articles_________art | `cafil055_dat` | R | 3x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | L | 5x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | R | 7x |
+| 728 | arc_cc_total | `arc_cctotal` | L | 1x |
+| 818 | Circuit supprime | `zcircafil146` | L | 1x |
+| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | L | 10x |
+| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | R | 5x |
+| 867 | log_maj_tpe | `log_maj_tpe` | R | 5x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -84,16 +85,37 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetCrsr (2)` | - |
+| 2 | `SetCrsr (1)` | - |
+| 3 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| 4 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
+| 5 | `GetParam ('CURRENTPRINTERNUM')=5` | - |
+| 6 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
+| 7 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
+| 8 | `'VRL'` | - |
+| 9 | `'VSL'` | - |
+| 10 | `{0,22}` | - |
+| 11 | `INIPut('EmbedFonts=N','FALSE'LOG)` | - |
+| 12 | `INIPut('CompressPDF =Y','FALSE'LOG)` | - |
+| 13 | `'TRUE'LOG` | - |
+| 14 | `GetParam ('NUMBERCOPIES')` | - |
+| 15 | `1` | - |
+| 16 | `{0,25}` | - |
 
-
+> **Total**: 16 expressions (affichees: 16)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 28 |
+| **Lignes logique** | 819 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -105,12 +127,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[234 Programme]
-    M --> T
+    N244[244 Histo ventes]
+    N243[243 Histo ventes]
+    N237[237 Transaction ]
+    N240[240 Transaction ]
+    N239[239 Transaction ]
+    T[234  Print ticke]
+    M --> N244
+    N244 --> N243
+    N243 --> N237
+    N237 --> N240
+    N240 --> N239
+    N239 --> T
     style M fill:#8b5cf6,color:#fff
+    style N244 fill:#f59e0b
+    style N243 fill:#f59e0b
+    style N237 fill:#f59e0b
+    style N240 fill:#f59e0b
+    style N239 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -125,11 +161,11 @@ graph LR
 ```mermaid
 graph LR
     T[234 Programme]
-    C152[152 Recup Classe et]
+    C152[152 Recup Classe]
     T --> C152
-    C251[251 Creation pied T]
+    C251[251 Creation pie]
     T --> C251
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C152 fill:#3fb950
@@ -155,6 +191,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:24 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (16 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

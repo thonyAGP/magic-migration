@@ -53,35 +53,36 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #31 | `Table_31` | R | 4x |
-| #34 | `Table_34` | LINK | 2x |
-| #34 | `Table_34` | R | 2x |
-| #40 | `Table_40` | LINK | 2x |
-| #40 | `Table_40` | R | 2x |
-| #67 | `Table_67` | LINK | 2x |
-| #67 | `Table_67` | R | 1x |
-| #69 | `Table_69` | R | 1x |
-| #77 | `Table_77` | LINK | 3x |
-| #77 | `Table_77` | R | 2x |
-| #263 | `Table_263` | LINK | 4x |
-| #372 | `Table_372` | LINK | 1x |
-| #417 | `Table_417` | LINK | 2x |
-| #596 | `Table_596` | LINK | 7x |
-| #596 | `Table_596` | R | 7x |
-| #728 | `Table_728` | LINK | 1x |
-| #818 | `Table_818` | LINK | 3x |
-| #847 | `Table_847` | LINK | 10x |
-| #847 | `Table_847` | R | 5x |
-| #867 | `Table_867` | R | 5x |
-| #878 | `Table_878` | R | 2x |
-| #904 | `Table_904` | LINK | 3x |
-| #1037 | `Table_1037` | R | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 31 | gm-complet_______gmc | `cafil009_dat` | R | 4x |
+| 34 | hebergement______heb | `cafil012_dat` | L | 2x |
+| 34 | hebergement______heb | `cafil012_dat` | R | 2x |
+| 40 | comptable________cte | `cafil018_dat` | L | 2x |
+| 40 | comptable________cte | `cafil018_dat` | R | 2x |
+| 67 | tables___________tab | `cafil045_dat` | L | 2x |
+| 67 | tables___________tab | `cafil045_dat` | R | 1x |
+| 69 | initialisation___ini | `cafil047_dat` | R | 1x |
+| 77 | articles_________art | `cafil055_dat` | L | 3x |
+| 77 | articles_________art | `cafil055_dat` | R | 2x |
+| 263 | vente | `caisse_vente` | L | 4x |
+| 372 | pv_budget | `pv_budget_dat` | L | 1x |
+| 417 | pv_weight | `pv_weight` | L | 2x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | L | 7x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | R | 7x |
+| 728 | arc_cc_total | `arc_cctotal` | L | 1x |
+| 818 | Circuit supprime | `zcircafil146` | L | 3x |
+| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | L | 10x |
+| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | R | 5x |
+| 867 | log_maj_tpe | `log_maj_tpe` | R | 5x |
+| 878 | categorie_operation_mw | `categorie_operation_mw` | R | 2x |
+| 904 | Boo_AvailibleEmployees | `Boo_AvailibleEmployees` | L | 3x |
+| 1037 | Table_1037 | - | R | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -96,16 +97,42 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetCrsr (2)` | - |
+| 2 | `SetCrsr (1)` | - |
+| 3 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| 4 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
+| 5 | `GetParam ('CURRENTPRINTERNUM')=5` | - |
+| 6 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
+| 7 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
+| 8 | `'VRL'` | - |
+| 9 | `'VSL'` | - |
+| 10 | `INIPut('EmbedFonts=N','FALSE'LOG)` | - |
+| 11 | `INIPut('CompressPDF =Y','FALSE'LOG)` | - |
+| 12 | `'TRUE'LOG` | - |
+| 13 | `{32768,78}` | - |
+| 14 | `NOT {32768,78}` | - |
+| 15 | `Translate ('%TempDir%')&'ticket_vente_'&
+Str({...` | - |
+| 16 | `{0,32}` | - |
+| 17 | `ExpCalc('3'EXP) OR ExpCalc('7'EXP)` | - |
+| 18 | `{0,51}>0` | - |
+| 19 | `StrTokenCnt({0,52},',')` | - |
+| 20 | `StrToken({0,52},{0,55},',')` | - |
 
-
+> **Total**: 28 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 38 |
+| **Lignes logique** | 1503 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -117,12 +144,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[285 Programme]
+    T[285  Print ticket vente LEX]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -133,11 +159,11 @@ graph LR
 ```mermaid
 graph LR
     T[285 Programme]
-    C152[152 Recup Classe et]
+    C152[152 Recup Classe]
     T --> C152
-    C251[251 Creation pied T]
+    C251[251 Creation pie]
     T --> C251
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C152 fill:#3fb950
@@ -163,6 +189,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:25 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (28 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

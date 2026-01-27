@@ -53,44 +53,45 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #23 | `Table_23` | LINK | 1x |
-| #23 | `Table_23` | **W** | 8x |
-| #30 | `Table_30` | R | 1x |
-| #31 | `Table_31` | LINK | 1x |
-| #39 | `Table_39` | LINK | 1x |
-| #39 | `Table_39` | **W** | 1x |
-| #40 | `Table_40` | R | 3x |
-| #40 | `Table_40` | **W** | 4x |
-| #44 | `Table_44` | LINK | 1x |
-| #44 | `Table_44` | **W** | 3x |
-| #47 | `Table_47` | LINK | 6x |
-| #47 | `Table_47` | **W** | 3x |
-| #50 | `Table_50` | R | 1x |
-| #66 | `Table_66` | LINK | 2x |
-| #66 | `Table_66` | R | 1x |
-| #68 | `Table_68` | LINK | 1x |
-| #68 | `Table_68` | **W** | 5x |
-| #70 | `Table_70` | R | 1x |
-| #88 | `Table_88` | LINK | 1x |
-| #89 | `Table_89` | LINK | 1x |
-| #124 | `Table_124` | LINK | 1x |
-| #139 | `Table_139` | LINK | 1x |
-| #147 | `Table_147` | LINK | 1x |
-| #147 | `Table_147` | **W** | 1x |
-| #173 | `Table_173` | LINK | 1x |
-| #372 | `Table_372` | LINK | 1x |
-| #474 | `Table_474` | LINK | 2x |
-| #474 | `Table_474` | **W** | 1x |
-| #728 | `Table_728` | LINK | 1x |
-| #786 | `Table_786` | R | 1x |
-| #934 | `Table_934` | LINK | 1x |
-| #945 | `Table_945` | **W** | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 23 | reseau_cloture___rec | `cafil001_dat` | L | 1x |
+| 23 | reseau_cloture___rec | `cafil001_dat` | **W** | 8x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
+| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
+| 39 | depot_garantie___dga | `cafil017_dat` | L | 1x |
+| 39 | depot_garantie___dga | `cafil017_dat` | **W** | 1x |
+| 40 | comptable________cte | `cafil018_dat` | R | 3x |
+| 40 | comptable________cte | `cafil018_dat` | **W** | 4x |
+| 44 | change___________chg | `cafil022_dat` | L | 1x |
+| 44 | change___________chg | `cafil022_dat` | **W** | 3x |
+| 47 | compte_gm________cgm | `cafil025_dat` | L | 6x |
+| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 3x |
+| 50 | moyens_reglement_mor | `cafil028_dat` | R | 1x |
+| 66 | imputations______imp | `cafil044_dat` | L | 2x |
+| 66 | imputations______imp | `cafil044_dat` | R | 1x |
+| 68 | compteurs________cpt | `cafil046_dat` | L | 1x |
+| 68 | compteurs________cpt | `cafil046_dat` | **W** | 5x |
+| 70 | date_comptable___dat | `cafil048_dat` | R | 1x |
+| 88 | historik_station | `cafil066_dat` | L | 1x |
+| 89 | moyen_paiement___mop | `cafil067_dat` | L | 1x |
+| 124 | type_taux_change | `cafil102_dat` | L | 1x |
+| 139 | moyens_reglement_mor | `cafil117_dat` | L | 1x |
+| 147 | change_vente_____chg | `cafil125_dat` | L | 1x |
+| 147 | change_vente_____chg | `cafil125_dat` | **W** | 1x |
+| 173 | intermed_compta__ite | `cafil181_dat` | L | 1x |
+| 372 | pv_budget | `pv_budget_dat` | L | 1x |
+| 474 | comptage_caisse_devise | `%club_user%_caisse_compcais_devise` | L | 2x |
+| 474 | comptage_caisse_devise | `%club_user%_caisse_compcais_devise` | **W** | 1x |
+| 728 | arc_cc_total | `arc_cctotal` | L | 1x |
+| 786 | qualite_avant_reprise | `qualite_avant_reprise` | R | 1x |
+| 934 | selection enregistrement diver | `selection_enregistrement_div` | L | 1x |
+| 945 | Table_945 | - | **W** | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -105,16 +106,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetCrsr (1)` | - |
+| 2 | `{0,1}=''` | - |
+| 3 | `'C'` | - |
+| 4 | `Trim ({0,32})` | - |
+| 5 | `{0,1}` | - |
+| 6 | `'C'` | - |
+| 7 | `{0,24}=0` | - |
+| 8 | `{0,24}<>0 OR Trim (GetParam ('OPERATION_CLOTURE...` | - |
+| 9 | `'F'` | - |
+| 10 | `{0,16}<>'F'` | - |
+| 11 | `{0,18}='O'` | - |
+| 12 | `{0,16}='F'` | - |
+| 13 | `{0,27}` | - |
+| 14 | `{0,22}<>''` | - |
+| 15 | `{0,23}<>'R'` | - |
+| 16 | `'##########.##Z'` | - |
+| 17 | `{0,6}=''` | - |
+| 18 | `Trim (GetParam ('OPERATION_CLOTURE'))<>'O' OR T...` | - |
+| 19 | `NOT {32768,78}` | - |
+| 20 | `{32768,78}` | - |
 
-
+> **Total**: 20 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 37 |
+| **Lignes logique** | 1195 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -125,13 +151,16 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[174 Programme]
-    M --> T
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    T[174 VersementRet]
+    N163 --> N1
+    N1 --> T
     style M fill:#8b5cf6,color:#fff
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -142,21 +171,21 @@ graph LR
 ```mermaid
 graph LR
     T[174 Programme]
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C184[184 Get Printer for]
+    C184[184 Get Printer ]
     T --> C184
-    C186[186 Chained Listing]
+    C186[186 Chained List]
     T --> C186
-    C44[44 Appel programme]
+    C44[44 Appel progra]
     T --> C44
-    C193[193 Solde compte fi]
+    C193[193 Solde compte]
     T --> C193
-    C23[23 Print reu chang]
+    C23[23 Print reu ch]
     T --> C23
-    C24[24 Print reu chang]
+    C24[24 Print reu ch]
     T --> C24
-    C171[171 Print versement]
+    C171[171 Print versem]
     T --> C171
     style T fill:#58a6ff,color:#000
     style C181 fill:#3fb950
@@ -197,6 +226,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (20 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

@@ -53,14 +53,15 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #124 | `Table_124` | R | 1x |
-| #139 | `Table_139` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 124 | type_taux_change | `cafil102_dat` | R | 1x |
+| 139 | moyens_reglement_mor | `cafil117_dat` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -75,16 +76,31 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `Trim ({0,17})` | - |
+| 2 | `8` | - |
+| 3 | `'&Quitter'` | - |
+| 4 | `'&Selectionner'` | - |
+| 5 | `{0,1}` | - |
+| 6 | `'O'` | - |
+| 7 | `{0,2}` | - |
+| 8 | `{0,3}` | - |
+| 9 | `{0,4}` | - |
+| 10 | `{0,8}` | - |
 
-
+> **Total**: 10 expressions (affichees: 10)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 28 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,13 +111,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[261 Programme]
-    M --> T
+    N25[25 Change GM]
+    N174[174 VersementRet]
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    N190[190 Menu solde d]
+    T[261 Zoom des typ]
+    N25 --> N174
+    N174 --> N163
+    N163 --> N1
+    N1 --> N190
+    N190 --> T
     style M fill:#8b5cf6,color:#fff
+    style N25 fill:#f59e0b
+    style N174 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N190 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -114,7 +142,7 @@ graph LR
 ```mermaid
 graph LR
     T[261 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -136,6 +164,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:24 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (10 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

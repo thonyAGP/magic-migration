@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #364 | `Table_364` | R | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 364 | pms_footer_comment | `pmslistingfooter` | R | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,23 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `Trim ({0,1})&Trim (IF (Counter (0)=1,'',',')&{0...` | - |
+| 2 | `SetParam ('NATIONALITEP',{0,1})` | - |
 
-
+> **Total**: 2 expressions (affichees: 2)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 10 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,12 +103,16 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[5 Programme]
-    M --> T
+    N7[7 Menu Data Ca]
+    T[5 Alimentation]
+    M --> N
+    N --> N
+    N --> N
+    N --> T
     style M fill:#8b5cf6,color:#fff
+    style N7 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -111,7 +123,7 @@ graph LR
 ```mermaid
 graph LR
     T[5 Programme]
-    C6[6     Suppression]
+    C6[6     Suppress]
     T --> C6
     style T fill:#58a6ff,color:#000
     style C6 fill:#3fb950
@@ -133,6 +145,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:17 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:43 | **DATA POPULATED** - Tables, Callgraph (2 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

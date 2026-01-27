@@ -53,61 +53,62 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #23 | `Table_23` | R | 1x |
-| #23 | `Table_23` | **W** | 4x |
-| #30 | `Table_30` | LINK | 1x |
-| #31 | `Table_31` | R | 2x |
-| #34 | `Table_34` | **W** | 1x |
-| #39 | `Table_39` | LINK | 4x |
-| #40 | `Table_40` | R | 5x |
-| #40 | `Table_40` | **W** | 14x |
-| #44 | `Table_44` | **W** | 4x |
-| #47 | `Table_47` | LINK | 1x |
-| #47 | `Table_47` | **W** | 6x |
-| #48 | `Table_48` | R | 1x |
-| #48 | `Table_48` | **W** | 2x |
-| #50 | `Table_50` | LINK | 1x |
-| #53 | `Table_53` | **W** | 1x |
-| #66 | `Table_66` | LINK | 1x |
-| #66 | `Table_66` | R | 1x |
-| #68 | `Table_68` | **W** | 12x |
-| #70 | `Table_70` | LINK | 1x |
-| #70 | `Table_70` | R | 3x |
-| #75 | `Table_75` | **W** | 1x |
-| #77 | `Table_77` | LINK | 1x |
-| #80 | `Table_80` | R | 2x |
-| #80 | `Table_80` | **W** | 2x |
-| #87 | `Table_87` | LINK | 2x |
-| #87 | `Table_87` | **W** | 2x |
-| #89 | `Table_89` | LINK | 3x |
-| #124 | `Table_124` | LINK | 1x |
-| #136 | `Table_136` | **W** | 2x |
-| #139 | `Table_139` | LINK | 1x |
-| #141 | `Table_141` | R | 1x |
-| #148 | `Table_148` | LINK | 1x |
-| #148 | `Table_148` | **W** | 1x |
-| #151 | `Table_151` | **W** | 2x |
-| #268 | `Table_268` | R | 1x |
-| #268 | `Table_268` | **W** | 1x |
-| #312 | `Table_312` | R | 1x |
-| #382 | `Table_382` | LINK | 1x |
-| #382 | `Table_382` | R | 1x |
-| #400 | `Table_400` | LINK | 1x |
-| #403 | `Table_403` | LINK | 1x |
-| #404 | `Table_404` | LINK | 1x |
-| #474 | `Table_474` | LINK | 1x |
-| #474 | `Table_474` | **W** | 2x |
-| #728 | `Table_728` | LINK | 1x |
-| #945 | `Table_945` | **W** | 4x |
-| #979 | `Table_979` | LINK | 1x |
-| #979 | `Table_979` | R | 1x |
-| #979 | `Table_979` | **W** | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 23 | reseau_cloture___rec | `cafil001_dat` | R | 1x |
+| 23 | reseau_cloture___rec | `cafil001_dat` | **W** | 4x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 1x |
+| 31 | gm-complet_______gmc | `cafil009_dat` | R | 2x |
+| 34 | hebergement______heb | `cafil012_dat` | **W** | 1x |
+| 39 | depot_garantie___dga | `cafil017_dat` | L | 4x |
+| 40 | comptable________cte | `cafil018_dat` | R | 5x |
+| 40 | comptable________cte | `cafil018_dat` | **W** | 14x |
+| 44 | change___________chg | `cafil022_dat` | **W** | 4x |
+| 47 | compte_gm________cgm | `cafil025_dat` | L | 1x |
+| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 6x |
+| 48 | lignes_de_solde__sld | `cafil026_dat` | R | 1x |
+| 48 | lignes_de_solde__sld | `cafil026_dat` | **W** | 2x |
+| 50 | moyens_reglement_mor | `cafil028_dat` | L | 1x |
+| 53 | ligne_telephone__lgn | `cafil031_dat` | **W** | 1x |
+| 66 | imputations______imp | `cafil044_dat` | L | 1x |
+| 66 | imputations______imp | `cafil044_dat` | R | 1x |
+| 68 | compteurs________cpt | `cafil046_dat` | **W** | 12x |
+| 70 | date_comptable___dat | `cafil048_dat` | L | 1x |
+| 70 | date_comptable___dat | `cafil048_dat` | R | 3x |
+| 75 | commande_autocom_cot | `cafil053_dat` | **W** | 1x |
+| 77 | articles_________art | `cafil055_dat` | L | 1x |
+| 80 | codes_autocom____aut | `cafil058_dat` | R | 2x |
+| 80 | codes_autocom____aut | `cafil058_dat` | **W** | 2x |
+| 87 | sda_telephone____sda | `cafil065_dat` | L | 2x |
+| 87 | sda_telephone____sda | `cafil065_dat` | **W** | 2x |
+| 89 | moyen_paiement___mop | `cafil067_dat` | L | 3x |
+| 124 | type_taux_change | `cafil102_dat` | L | 1x |
+| 136 | fichier_echanges | `cafil114_dat` | **W** | 2x |
+| 139 | moyens_reglement_mor | `cafil117_dat` | L | 1x |
+| 141 | devises__________dev | `cafil119_dat` | R | 1x |
+| 148 | lignes_de_solde__sld | `cafil126_dat` | L | 1x |
+| 148 | lignes_de_solde__sld | `cafil126_dat` | **W** | 1x |
+| 151 | nb_code__poste | `cafil129_dat` | **W** | 2x |
+| 268 | cc_total_par_type | `ccpartyp` | R | 1x |
+| 268 | cc_total_par_type | `ccpartyp` | **W** | 1x |
+| 312 | ez_card | `ezcard` | R | 1x |
+| 382 | pv_discount_reasons | `pv_discountlist_dat` | L | 1x |
+| 382 | pv_discount_reasons | `pv_discountlist_dat` | R | 1x |
+| 400 | pv_cust_rentals | `pv_rentals_dat` | L | 1x |
+| 403 | pv_sellers | `pv_sellers_dat` | L | 1x |
+| 404 | pv_sellers_by_week | `pv_sellersweek_dat` | L | 1x |
+| 474 | comptage_caisse_devise | `%club_user%_caisse_compcais_devise` | L | 1x |
+| 474 | comptage_caisse_devise | `%club_user%_caisse_compcais_devise` | **W** | 2x |
+| 728 | arc_cc_total | `arc_cctotal` | L | 1x |
+| 945 | Table_945 | - | **W** | 4x |
+| 979 | Table_979 | - | L | 1x |
+| 979 | Table_979 | - | R | 1x |
+| 979 | Table_979 | - | **W** | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -122,16 +123,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetCrsr (1)` | - |
+| 2 | `DbDel ('{979,4}'DSOURCE,'')` | - |
+| 3 | `{0,49} > 0 AND {32768,60} AND NOT({0,23})` | - |
+| 4 | `'FALSE'LOG` | - |
+| 5 | `SetCrsr (2)` | - |
+| 6 | `{0,26}<>'F'` | - |
+| 7 | `{0,26}='S'` | - |
+| 8 | `{0,26}='S' AND {0,7}='O'` | - |
+| 9 | `{0,26}='S' AND {0,14}='O' AND {0,15}='N'` | - |
+| 10 | `{0,26}='S' AND {0,14}='O' AND {0,15}='O'` | - |
+| 11 | `{0,26}='T'` | - |
+| 12 | `{0,26}='U'` | - |
+| 13 | `{0,26}='U' AND {0,27}='O'` | - |
+| 14 | `{0,26}='U' AND {0,29}='O' AND {0,18}<>'CLUB'` | - |
+| 15 | `{0,26}='U' AND {0,29}='O' AND {0,18}='CLUB'` | - |
+| 16 | `{0,26}='U' AND {0,31}='O'` | - |
+| 17 | `{0,26}='A'` | - |
+| 18 | `{0,7}='O'` | - |
+| 19 | `{0,14}='O'` | - |
+| 20 | `{0,7}='O' AND {0,14}='O'` | - |
 
-
+> **Total**: 53 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 89 |
+| **Lignes logique** | 2272 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -142,13 +168,22 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[193 Programme]
-    M --> T
+    N174[174 VersementRet]
+    N190[190 Menu solde d]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[193 Solde compte]
+    N174 --> N190
+    N190 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N174 fill:#f59e0b
+    style N190 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -160,21 +195,21 @@ graph LR
 ```mermaid
 graph LR
     T[193 Programme]
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C184[184 Get Printer for]
+    C184[184 Get Printer ]
     T --> C184
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
-    C23[23 Print reu chang]
+    C23[23 Print reu ch]
     T --> C23
     C179[179 Get Printer]
     T --> C179
-    C185[185 Chained Listing]
+    C185[185 Chained List]
     T --> C185
-    C186[186 Chained Listing]
+    C186[186 Chained List]
     T --> C186
-    C189[189 Print solde com]
+    C189[189 Print solde ]
     T --> C189
     style T fill:#58a6ff,color:#000
     style C181 fill:#3fb950
@@ -222,6 +257,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (53 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

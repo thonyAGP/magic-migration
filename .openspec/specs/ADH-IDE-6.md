@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| - | Aucune table | - | - |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| - | Aucune table | - | - | - |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,24 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `InStr ({0,1},'-')=0` | - |
+| 2 | `InStr ({0,1},'-')<>0` | - |
+| 3 | `Left ({0,1},InStr ({0,1},'-')-1)&'_'&Right ({0,...` | - |
 
-
+> **Total**: 3 expressions (affichees: 3)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 3 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,12 +104,17 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[6 Programme]
-    M --> T
+    N5[5 Alimentation]
+    N7[7 Menu Data Ca]
+    T[6     Suppress]
+    M --> N5
+    N5 --> N7
+    N7 --> T
     style M fill:#8b5cf6,color:#fff
+    style N5 fill:#f59e0b
+    style N7 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -133,6 +147,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:17 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:43 | **DATA POPULATED** - Tables, Callgraph (3 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| - | Aucune table | - | - |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| - | Aucune table | - | - | - |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,26 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetParam ('CURRENTLISTINGNUM',{0,1})` | - |
+| 2 | `SetParam ('CURRENTPRINTERNUM',0)` | - |
+| 3 | `SetParam ('CURRENTPRINTERNAME','VOID')` | - |
+| 4 | `SetParam ('NUMBERCOPIES',0)` | - |
+| 5 | `GetParam ('SPECIFICPRINT')='VOID'` | - |
 
-
+> **Total**: 5 expressions (affichees: 5)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 11 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,12 +106,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[181 Programme]
-    M --> T
+    N283[283 Easy Check O]
+    N66[66 Lancement So]
+    N163[163 Menu caisse ]
+    N55[55 Easy Check O]
+    N37[37 Menu changem]
+    T[181 Set Listing ]
+    M --> N283
+    N283 --> N66
+    N66 --> N163
+    N163 --> N55
+    N55 --> N37
+    N37 --> T
     style M fill:#8b5cf6,color:#fff
+    style N283 fill:#f59e0b
+    style N66 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N55 fill:#f59e0b
+    style N37 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -152,6 +177,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (5 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

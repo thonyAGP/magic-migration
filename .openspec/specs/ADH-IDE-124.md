@@ -53,17 +53,18 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #196 | `Table_196` | **W** | 2x |
-| #217 | `Table_217` | LINK | 1x |
-| #222 | `Table_222` | LINK | 1x |
-| #246 | `Table_246` | LINK | 1x |
-| #248 | `Table_248` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 196 | gestion_article_session | `caisse_article` | **W** | 2x |
+| 217 | comptage_coffre_histo | `caisse_coffre_compcais_histo2` | L | 1x |
+| 222 | comptage_caisse_histo | `caisse_compcais_histo2` | L | 1x |
+| 246 | histo_sessions_caisse | `caisse_session` | L | 1x |
+| 248 | sessions_coffre2 | `caisse_session_coffre2` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -78,16 +79,25 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,7}` | - |
+| 2 | `NOT ({0,5}) AND NOT {0,6}` | - |
+| 3 | `'TRUE'LOG` | - |
+| 4 | `NOT(ExpCalc('2'EXP))` | - |
 
-
+> **Total**: 4 expressions (affichees: 4)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 5 |
+| **Lignes logique** | 123 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -98,13 +108,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[124 Programme]
-    M --> T
+    N121[121 Gestion cais]
+    N298[298 Gestion cais]
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    N281[281 Fermeture Se]
+    T[124 Apport artic]
+    N121 --> N298
+    N298 --> N163
+    N163 --> N1
+    N1 --> N281
+    N281 --> T
     style M fill:#8b5cf6,color:#fff
+    style N121 fill:#f59e0b
+    style N298 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N281 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -120,7 +142,7 @@ graph LR
 ```mermaid
 graph LR
     T[124 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -142,6 +164,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:46 | **DATA POPULATED** - Tables, Callgraph (4 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

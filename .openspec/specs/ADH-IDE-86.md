@@ -53,17 +53,18 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #19 | `Table_19` | LINK | 2x |
-| #19 | `Table_19` | R | 5x |
-| #30 | `Table_30` | R | 1x |
-| #312 | `Table_312` | R | 2x |
-| #312 | `Table_312` | **W** | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 19 | bl_detail | `bldetail` | L | 2x |
+| 19 | bl_detail | `bldetail` | R | 5x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
+| 312 | ez_card | `ezcard` | R | 2x |
+| 312 | ez_card | `ezcard` | **W** | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -78,16 +79,32 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `''` | - |
+| 2 | `Date ()` | - |
+| 3 | `{32768,1}` | - |
+| 4 | `{0,1}` | - |
+| 5 | `{0,2}` | - |
+| 6 | `{0,3}` | - |
+| 7 | `40` | - |
+| 8 | `'LISTEOPE'` | - |
+| 9 | `{0,14}='A'` | - |
+| 10 | `{0,14}='B'` | - |
+| 11 | `{0,14}='C'` | - |
 
-
+> **Total**: 11 expressions (affichees: 11)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 14 |
+| **Lignes logique** | 177 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -98,13 +115,19 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[86 Programme]
-    M --> T
+    N77[77 Club Med Pas]
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    T[86 Bar Limit]
+    N77 --> N163
+    N163 --> N1
+    N1 --> T
     style M fill:#8b5cf6,color:#fff
+    style N77 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -115,17 +138,17 @@ graph LR
 ```mermaid
 graph LR
     T[86 Programme]
-    C44[44 Appel programme]
+    C44[44 Appel progra]
     T --> C44
-    C87[87     Print Plafo]
+    C87[87     Print Pl]
     T --> C87
     C179[179 Get Printer]
     T --> C179
-    C180[180 Printer choice]
+    C180[180 Printer choi]
     T --> C180
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C44 fill:#3fb950
@@ -157,6 +180,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:19 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (11 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

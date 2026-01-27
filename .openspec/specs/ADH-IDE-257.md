@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #77 | `Table_77` | R | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 77 | articles_________art | `cafil055_dat` | R | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,38 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `'TRUE'LOG` | - |
+| 2 | `Trim ({0,18})` | - |
+| 3 | `'&Quitter'` | - |
+| 4 | `41` | - |
+| 5 | `'&Selectionner'` | - |
+| 6 | `IF ({0,1}>'',{0,1},'')` | - |
+| 7 | `{0,1}` | - |
+| 8 | `{0,2}` | - |
+| 9 | `{0,9}` | - |
+| 10 | `{0,11}` | - |
+| 11 | `{0,10}` | - |
+| 12 | `{0,12}` | - |
+| 13 | `{0,13}` | - |
+| 14 | `{0,14}` | - |
+| 15 | `' '` | - |
+| 16 | `NOT ({0,8})` | - |
+| 17 | `(({0,17}='VRL' OR {0,17}='VSL') AND {0,16}<>'X'...` | - |
 
-
+> **Total**: 17 expressions (affichees: 17)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 35 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,12 +118,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[257 Programme]
-    M --> T
+    N242[242 Menu Choix S]
+    N163[163 Menu caisse ]
+    N0[0 Histo ventes]
+    N0[0 Histo ventes]
+    N0[0 Transaction ]
+    T[257 Zoom article]
+    M --> N242
+    N242 --> N163
+    N163 --> N0
+    N0 --> N0
+    N0 --> N0
+    N0 --> T
     style M fill:#8b5cf6,color:#fff
+    style N242 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -120,7 +157,7 @@ graph LR
 ```mermaid
 graph LR
     T[257 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -142,6 +179,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:24 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (17 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

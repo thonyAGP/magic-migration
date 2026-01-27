@@ -53,13 +53,14 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| - | Aucune table | - | - |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| - | Aucune table | - | - | - |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -74,16 +75,26 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `'C'` | - |
+| 2 | `221613` | - |
+| 3 | `0` | - |
+| 4 | `'I'` | - |
+| 5 | `'TRUE'LOG` | - |
 
-
+> **Total**: 5 expressions (affichees: 5)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 3 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -95,12 +106,20 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[280 Programme]
-    M --> T
+    N0[0 Transaction ]
+    N0[0 Transaction ]
+    N0[0 Transaction ]
+    T[280 Lanceur Fact]
+    M --> N0
+    N0 --> N0
+    N0 --> N0
+    N0 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -113,9 +132,9 @@ graph LR
 ```mermaid
 graph LR
     T[280 Programme]
-    C54[54 FacturesCheckOu]
+    C54[54 FacturesChec]
     T --> C54
-    C57[57 FacturesSejour]
+    C57[57 FacturesSejo]
     T --> C57
     style T fill:#58a6ff,color:#000
     style C54 fill:#3fb950
@@ -139,6 +158,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:25 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (5 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

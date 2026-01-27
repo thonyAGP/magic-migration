@@ -53,51 +53,52 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #23 | `Table_23` | R | 1x |
-| #23 | `Table_23` | **W** | 2x |
-| #26 | `Table_26` | LINK | 1x |
-| #30 | `Table_30` | LINK | 2x |
-| #30 | `Table_30` | R | 1x |
-| #32 | `Table_32` | R | 1x |
-| #32 | `Table_32` | **W** | 2x |
-| #34 | `Table_34` | LINK | 1x |
-| #39 | `Table_39` | R | 1x |
-| #46 | `Table_46` | LINK | 1x |
-| #46 | `Table_46` | **W** | 1x |
-| #47 | `Table_47` | **W** | 2x |
-| #50 | `Table_50` | R | 3x |
-| #67 | `Table_67` | LINK | 1x |
-| #68 | `Table_68` | **W** | 1x |
-| #70 | `Table_70` | LINK | 1x |
-| #77 | `Table_77` | LINK | 2x |
-| #77 | `Table_77` | R | 2x |
-| #79 | `Table_79` | R | 1x |
-| #89 | `Table_89` | LINK | 4x |
-| #89 | `Table_89` | R | 4x |
-| #96 | `Table_96` | LINK | 1x |
-| #103 | `Table_103` | R | 1x |
-| #109 | `Table_109` | R | 1x |
-| #139 | `Table_139` | R | 1x |
-| #140 | `Table_140` | LINK | 1x |
-| #197 | `Table_197` | LINK | 1x |
-| #473 | `Table_473` | **W** | 1x |
-| #596 | `Table_596` | LINK | 4x |
-| #596 | `Table_596` | R | 1x |
-| #596 | `Table_596` | **W** | 2x |
-| #697 | `Table_697` | LINK | 1x |
-| #728 | `Table_728` | LINK | 1x |
-| #737 | `Table_737` | LINK | 1x |
-| #801 | `Table_801` | LINK | 1x |
-| #847 | `Table_847` | LINK | 10x |
-| #847 | `Table_847` | **W** | 2x |
-| #899 | `Table_899` | R | 3x |
-| #899 | `Table_899` | **W** | 5x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 23 | reseau_cloture___rec | `cafil001_dat` | R | 1x |
+| 23 | reseau_cloture___rec | `cafil001_dat` | **W** | 2x |
+| 26 | comptes_speciaux_spc | `cafil004_dat` | L | 1x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 2x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
+| 32 | prestations | `cafil010_dat` | R | 1x |
+| 32 | prestations | `cafil010_dat` | **W** | 2x |
+| 34 | hebergement______heb | `cafil012_dat` | L | 1x |
+| 39 | depot_garantie___dga | `cafil017_dat` | R | 1x |
+| 46 | mvt_prestation___mpr | `cafil024_dat` | L | 1x |
+| 46 | mvt_prestation___mpr | `cafil024_dat` | **W** | 1x |
+| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
+| 50 | moyens_reglement_mor | `cafil028_dat` | R | 3x |
+| 67 | tables___________tab | `cafil045_dat` | L | 1x |
+| 68 | compteurs________cpt | `cafil046_dat` | **W** | 1x |
+| 70 | date_comptable___dat | `cafil048_dat` | L | 1x |
+| 77 | articles_________art | `cafil055_dat` | L | 2x |
+| 77 | articles_________art | `cafil055_dat` | R | 2x |
+| 79 | gratuites________gra | `cafil057_dat` | R | 1x |
+| 89 | moyen_paiement___mop | `cafil067_dat` | L | 4x |
+| 89 | moyen_paiement___mop | `cafil067_dat` | R | 4x |
+| 96 | table_prestation_pre | `cafil074_dat` | L | 1x |
+| 103 | logement_client__loc | `cafil081_dat` | R | 1x |
+| 109 | table_utilisateurs | `cafil087_dat` | R | 1x |
+| 139 | moyens_reglement_mor | `cafil117_dat` | R | 1x |
+| 140 | moyen_paiement___mop | `cafil118_dat` | L | 1x |
+| 197 | articles_en_stock | `caisse_artstock` | L | 1x |
+| 473 | comptage_caisse | `%club_user%_caisse_compcais` | **W** | 1x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | L | 4x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | R | 1x |
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | **W** | 2x |
+| 697 | droits_applications | `droits` | L | 1x |
+| 728 | arc_cc_total | `arc_cctotal` | L | 1x |
+| 737 | pv_package_detail | `pv_packdetail_dat` | L | 1x |
+| 801 | moyens_reglement_complem | `moyens_reglement_complem` | L | 1x |
+| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | L | 10x |
+| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | **W** | 2x |
+| 899 | Boo_ResultsRechercheHoraire | `Boo_ResultsRechercheHoraire` | R | 3x |
+| 899 | Boo_ResultsRechercheHoraire | `Boo_ResultsRechercheHoraire` | **W** | 5x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -112,16 +113,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `IF(Trim({0,49})='1','ALLER',IF(Trim({0,49})='2'...` | - |
+| 2 | `MlsTrans ('Verifier que la transaction est bien...` | - |
+| 3 | `Date ()` | - |
+| 4 | `IF({0,169}=0,IF({0,23}='VSL',{0,13},Date()),{0,...` | - |
+| 5 | `{32768,2}` | - |
+| 6 | `Trim ({0,130})` | - |
+| 7 | `154` | - |
+| 8 | `{0,1}` | - |
+| 9 | `{0,5}` | - |
+| 10 | `{0,6}` | - |
+| 11 | `'F'` | - |
+| 12 | `Date ()` | - |
+| 13 | `{0,45}*{0,44}` | - |
+| 14 | `({0,45}*{0,44})-{0,82}` | - |
+| 15 | `'FALSE'LOG` | - |
+| 16 | `'N'` | - |
+| 17 | `1` | - |
+| 18 | `'CAISSE'` | - |
+| 19 | `{0,21}` | - |
+| 20 | `{0,45}>0 AND {0,44}=0` | - |
 
-
+> **Total**: 258 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 43 |
+| **Lignes logique** | 1536 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -133,12 +159,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[316 Programme]
+    T[316 Saisie transaction Nouv vente]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -149,21 +174,21 @@ graph LR
 ```mermaid
 graph LR
     T[316 Programme]
-    C152[152 Recup Classe et]
+    C152[152 Recup Classe]
     T --> C152
-    C84[84     SP Caractre]
+    C84[84     SP Carac]
     T --> C84
-    C234[234  Print ticket v]
+    C234[234  Print ticke]
     T --> C234
-    C249[249 Reinit Aff PYR]
+    C249[249 Reinit Aff P]
     T --> C249
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
-    C149[149 Calcul stock pr]
+    C149[149 Calcul stock]
     T --> C149
     C179[179 Get Printer]
     T --> C179
-    C180[180 Printer choice]
+    C180[180 Printer choi]
     T --> C180
     style T fill:#58a6ff,color:#000
     style C152 fill:#3fb950
@@ -209,6 +234,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:26 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:52 | **DATA POPULATED** - Tables, Callgraph (258 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

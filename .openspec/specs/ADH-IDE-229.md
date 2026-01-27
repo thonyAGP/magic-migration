@@ -53,15 +53,16 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #596 | `Table_596` | LINK | 1x |
-| #847 | `Table_847` | LINK | 1x |
-| #864 | `Table_864` | **W** | 6x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | L | 1x |
+| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | L | 1x |
+| 864 | type_mail_a_traiter | `type_mail_a_traiter` | **W** | 6x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -76,16 +77,23 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `DbDel('{864,4}'DSOURCE,'')` | - |
+| 2 | `'N'` | - |
 
-
+> **Total**: 2 expressions (affichees: 2)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 7 |
+| **Lignes logique** | 161 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,12 +105,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[229 Programme]
+    T[229 Ventilation Lignes Ventes]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -135,6 +142,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:23 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (2 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

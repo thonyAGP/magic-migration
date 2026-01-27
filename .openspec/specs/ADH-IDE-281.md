@@ -53,14 +53,15 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #69 | `Table_69` | R | 1x |
-| #122 | `Table_122` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 69 | initialisation___ini | `cafil047_dat` | R | 1x |
+| 122 | unilateral_bilateral | `cafil100_dat` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -75,16 +76,25 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `'C'` | - |
+| 2 | `'N15'&IF({0,4}>0,'.'&Trim(Str({0,4},'1')),'')&'CZ'` | - |
+| 3 | `'O'` | - |
+| 4 | `90` | - |
 
-
+> **Total**: 4 expressions (affichees: 4)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 13 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -96,12 +106,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[281 Programme]
+    T[281 Fermeture Sessions]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -112,7 +121,7 @@ graph LR
 ```mermaid
 graph LR
     T[281 Programme]
-    C121[121 Gestion caisse]
+    C121[121 Gestion cais]
     T --> C121
     style T fill:#58a6ff,color:#000
     style C121 fill:#3fb950
@@ -134,6 +143,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:25 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (4 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

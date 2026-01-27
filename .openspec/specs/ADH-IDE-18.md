@@ -53,15 +53,16 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | R | 4x |
-| #31 | `Table_31` | LINK | 3x |
-| #40 | `Table_40` | LINK | 3x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 4x |
+| 31 | gm-complet_______gmc | `cafil009_dat` | L | 3x |
+| 40 | comptable________cte | `cafil018_dat` | L | 3x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -76,16 +77,24 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetCrsr (1)` | - |
+| 2 | `SetCrsr (2)` | - |
+| 3 | `Left ({0,4},Len (RTrim ({0,4}))-1)` | - |
 
-
+> **Total**: 3 expressions (affichees: 3)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 6 |
+| **Lignes logique** | 193 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,12 +106,16 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[18 Programme]
-    M --> T
+    N7[7 Menu Data Ca]
+    T[18 Print extrai]
+    M --> N
+    N --> N
+    N --> N
+    N --> T
     style M fill:#8b5cf6,color:#fff
+    style N7 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -113,7 +126,7 @@ graph LR
 ```mermaid
 graph LR
     T[18 Programme]
-    C21[21 Recupere devise]
+    C21[21 Recupere dev]
     T --> C21
     style T fill:#58a6ff,color:#000
     style C21 fill:#3fb950
@@ -135,6 +148,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:18 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:43 | **DATA POPULATED** - Tables, Callgraph (3 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

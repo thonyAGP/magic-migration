@@ -53,14 +53,15 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #358 | `Table_358` | R | 1x |
-| #903 | `Table_903` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 358 | import_mod | `moddossier_dat` | R | 1x |
+| 903 | Boo_AvailibleRooms | `Boo_AvailibleRooms` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -75,16 +76,28 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}` | - |
+| 2 | `{0,2}` | - |
+| 3 | `{0,3}` | - |
+| 4 | `{0,4}` | - |
+| 5 | `{0,5}` | - |
+| 6 | `{0,11}` | - |
+| 7 | `{0,15}` | - |
 
-
+> **Total**: 7 expressions (affichees: 7)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 24 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -96,12 +109,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[225 Programme]
-    M --> T
+    N0[0 Transaction ]
+    N0[0 Transaction ]
+    N163[163 Menu caisse ]
+    N0[0 Transaction ]
+    N242[242 Menu Choix S]
+    T[225 Get Fidelisa]
+    M --> N0
+    N0 --> N0
+    N0 --> N163
+    N163 --> N0
+    N0 --> N242
+    N242 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N242 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -138,6 +165,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:23 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (7 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

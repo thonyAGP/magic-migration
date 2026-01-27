@@ -53,15 +53,16 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #63 | `Table_63` | R | 1x |
-| #476 | `Table_476` | R | 2x |
-| #476 | `Table_476` | **W** | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 63 | parametres___par | `cafil041_dat` | R | 1x |
+| 476 | comptes_pour_changer_activite | `%club_user%_caisse_cpte_chgt_act` | R | 2x |
+| 476 | comptes_pour_changer_activite | `%club_user%_caisse_cpte_chgt_act` | **W** | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -76,16 +77,29 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `'C'` | - |
+| 2 | `1` | - |
+| 3 | `2` | - |
+| 4 | `{0,3}='O'` | - |
+| 5 | `{0,3}='O' OR {0,6}='O'` | - |
+| 6 | `{0,3}='N' AND {0,6}='N'` | - |
+| 7 | `NOT {32768,78}` | - |
+| 8 | `{32768,78}` | - |
 
-
+> **Total**: 8 expressions (affichees: 8)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 6 |
+| **Lignes logique** | 67 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,12 +111,11 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[205 Programme]
+    T[205 Verification pooling]
     M --> T
     style M fill:#8b5cf6,color:#fff
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -113,9 +126,9 @@ graph LR
 ```mermaid
 graph LR
     T[205 Programme]
-    C207[207 Suppression dem]
+    C207[207 Suppression ]
     T --> C207
-    C206[206 Visualisation p]
+    C206[206 Visualisatio]
     T --> C206
     style T fill:#58a6ff,color:#000
     style C207 fill:#3fb950
@@ -139,6 +152,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:23 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (8 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

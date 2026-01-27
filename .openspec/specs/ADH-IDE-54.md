@@ -53,25 +53,26 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | LINK | 1x |
-| #31 | `Table_31` | LINK | 1x |
-| #372 | `Table_372` | LINK | 1x |
-| #866 | `Table_866` | LINK | 1x |
-| #866 | `Table_866` | R | 4x |
-| #866 | `Table_866` | **W** | 3x |
-| #867 | `Table_867` | R | 1x |
-| #868 | `Table_868` | R | 1x |
-| #870 | `Table_870` | LINK | 3x |
-| #870 | `Table_870` | R | 1x |
-| #870 | `Table_870` | **W** | 1x |
-| #932 | `Table_932` | LINK | 1x |
-| #932 | `Table_932` | **W** | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 1x |
+| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
+| 372 | pv_budget | `pv_budget_dat` | L | 1x |
+| 866 | maj_appli_tpe | `maj_appli_tpe` | L | 1x |
+| 866 | maj_appli_tpe | `maj_appli_tpe` | R | 4x |
+| 866 | maj_appli_tpe | `maj_appli_tpe` | **W** | 3x |
+| 867 | log_maj_tpe | `log_maj_tpe` | R | 1x |
+| 868 | Affectation_Gift_Pass | `affectation_gift_pass` | R | 1x |
+| 870 | Rayons_Boutique | `rayons_boutique` | L | 3x |
+| 870 | Rayons_Boutique | `rayons_boutique` | R | 1x |
+| 870 | Rayons_Boutique | `rayons_boutique` | **W** | 1x |
+| 932 | taxe_add_param | `taxe_add_param` | L | 1x |
+| 932 | taxe_add_param | `taxe_add_param` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -86,16 +87,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}` | - |
+| 2 | `{0,2}` | - |
+| 3 | `{0,3}` | - |
+| 4 | `{0,10}` | - |
+| 5 | `{0,11}` | - |
+| 6 | `IF({0,42},Trim({0,45}),Trim({0,23})&' '&Trim({0...` | - |
+| 7 | `IF({0,42},Trim({0,44}),Trim({0,19})&' '&Trim({0...` | - |
+| 8 | `IF({0,42},Trim({0,46}),Trim({0,25}))` | - |
+| 9 | `IF({0,42},Trim({0,47}),Trim({0,27}))` | - |
+| 10 | `IF({0,42},Trim({0,49}),Trim({0,29}))` | - |
+| 11 | `'Numéro d''adhérent'&' '&Trim(Str({0,22},'10Z'))` | - |
+| 12 | `Trim({0,31})&Trim(Str(Year(Date()),'4'))&Trim(S...` | - |
+| 13 | `Trim({0,31})&Trim(Str(Year(Date()),'4'))&Trim(S...` | - |
+| 14 | `NOT({0,62})` | - |
+| 15 | `{0,62}` | - |
+| 16 | `MID(GetParam('SERVICE'),4,{0,60}-4)` | - |
+| 17 | `InStr(GetParam('SERVICE'),',')` | - |
+| 18 | `{32768,2}` | - |
+| 19 | `Date()` | - |
+| 20 | `{0,58}` | - |
 
-
+> **Total**: 40 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 13 |
+| **Lignes logique** | 460 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -107,12 +133,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[54 Programme]
-    M --> T
+    N0[0 Transaction ]
+    N0[0 Transaction ]
+    N55[55 Easy Check O]
+    N0[0 Transaction ]
+    N66[66 Lancement So]
+    T[54 FacturesChec]
+    M --> N0
+    N0 --> N0
+    N0 --> N55
+    N55 --> N0
+    N0 --> N66
+    N66 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N55 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N66 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -127,21 +167,21 @@ graph LR
 ```mermaid
 graph LR
     T[54 Programme]
-    C58[58 Incremente N de]
+    C58[58 Incremente N]
     T --> C58
-    C60[60 Creation entete]
+    C60[60 Creation ent]
     T --> C60
-    C61[61 Maj des lignes ]
+    C61[61 Maj des lign]
     T --> C61
-    C90[90 Edition Facture]
+    C90[90 Edition Fact]
     T --> C90
-    C93[93 Creation Pied F]
+    C93[93 Creation Pie]
     T --> C93
-    C98[98 EditFactureTvaC]
+    C98[98 EditFactureT]
     T --> C98
-    C105[105 Maj des lignes ]
+    C105[105 Maj des lign]
     T --> C105
-    C57[57 FacturesSejour]
+    C57[57 FacturesSejo]
     T --> C57
     style T fill:#58a6ff,color:#000
     style C58 fill:#3fb950
@@ -181,6 +221,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:19 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (40 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

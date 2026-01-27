@@ -53,15 +53,16 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #367 | `Table_367` | R | 1x |
-| #369 | `Table_369` | LINK | 1x |
-| #370 | `Table_370` | R | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 367 | pms_print_param_default | `pmsprintparamdefault` | R | 1x |
+| 369 | presents_par_nationalite | `presparn` | L | 1x |
+| 370 | pv_accounting_date | `pv_accountdate_dat` | R | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -76,16 +77,34 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `GetParam ('CURRENTLISTINGNUM')` | - |
+| 2 | `{0,1}` | - |
+| 3 | `SetParam ('CURRENTLISTINGNAME',IF (GetParam ('C...` | - |
+| 4 | `SetParam ('DEFAULTPRINTERNUM',{0,1})` | - |
+| 5 | `SetParam ('DEFAULTPRINTERNAME',{0,7})` | - |
+| 6 | `SetParam ('CURRENTPRINTERNUM',{0,1})` | - |
+| 7 | `SetParam ('CURRENTPRINTERNAME',{0,7})` | - |
+| 8 | `GetParam ('CURRENTPRINTERNUM')=0` | - |
+| 9 | `GetParam ('CURRENTPRINTERNAME')='VOID'` | - |
+| 10 | `SetParam ('NUMBERCOPIES',{0,2})` | - |
+| 11 | `GetParam ('NUMBERCOPIES')=0` | - |
+| 12 | `NOT {32768,78}` | - |
+| 13 | `{32768,78}` | - |
 
-
+> **Total**: 13 expressions (affichees: 13)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 3 |
+| **Lignes logique** | 44 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,12 +116,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[179 Programme]
-    M --> T
+    N283[283 Easy Check O]
+    N66[66 Lancement So]
+    N163[163 Menu caisse ]
+    N55[55 Easy Check O]
+    N37[37 Menu changem]
+    T[179 Get Printer]
+    M --> N283
+    N283 --> N66
+    N66 --> N163
+    N163 --> N55
+    N55 --> N37
+    N37 --> T
     style M fill:#8b5cf6,color:#fff
+    style N283 fill:#f59e0b
+    style N66 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N55 fill:#f59e0b
+    style N37 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -132,7 +165,7 @@ graph LR
 ```mermaid
 graph LR
     T[179 Programme]
-    C178[178 Set Village Add]
+    C178[178 Set Village ]
     T --> C178
     style T fill:#58a6ff,color:#000
     style C178 fill:#3fb950
@@ -154,6 +187,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (13 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

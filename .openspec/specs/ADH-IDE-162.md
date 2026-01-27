@@ -53,15 +53,16 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | R | 1x |
-| #1047 | `Table_1047` | LINK | 1x |
-| #1047 | `Table_1047` | **W** | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
+| 1047 | Table_1047 | - | L | 1x |
+| 1047 | Table_1047 | - | **W** | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -76,16 +77,37 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}` | - |
+| 2 | `{0,2}` | - |
+| 3 | `Trim ({0,9})&' '&{0,10}` | - |
+| 4 | `IF ({0,13}>0,Str ({0,13},'###')&' ans',IF ({0,1...` | - |
+| 5 | `'Sélection filiations pour le compte '&Str({0,2...` | - |
+| 6 | `Str({0,2},'8P0')&' / '&Str({0,8},'3L')` | - |
+| 7 | `'FILIATION'` | - |
+| 8 | `Str({0,8},'3P0')` | - |
+| 9 | `IF({0,4}<>'',{0,4},'Veuillez sélectionner les f...` | - |
+| 10 | `0` | - |
+| 11 | `{0,5}+1` | - |
+| 12 | `{0,5}-1` | - |
+| 13 | `{0,17}` | - |
+| 14 | `NOT {0,17}` | - |
+| 15 | `{0,5}` | - |
+| 16 | `{0,5}<>{0,18}` | - |
 
-
+> **Total**: 16 expressions (affichees: 16)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 2 |
+| **Lignes logique** | 44 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -96,13 +118,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[162 Programme]
-    M --> T
+    N0[0 Transaction ]
+    N0[0 Transaction ]
+    N242[242 Menu Choix S]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[162 Selection fi]
+    N0 --> N0
+    N0 --> N242
+    N242 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N242 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -135,6 +169,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (16 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

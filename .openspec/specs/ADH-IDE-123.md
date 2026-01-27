@@ -53,19 +53,20 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #67 | `Table_67` | R | 2x |
-| #141 | `Table_141` | R | 2x |
-| #215 | `Table_215` | LINK | 1x |
-| #232 | `Table_232` | **W** | 1x |
-| #244 | `Table_244` | LINK | 1x |
-| #244 | `Table_244` | R | 2x |
-| #244 | `Table_244` | **W** | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 67 | tables___________tab | `cafil045_dat` | R | 2x |
+| 141 | devises__________dev | `cafil119_dat` | R | 2x |
+| 215 | comptage_coffre_devise_histo | `caisse_coffre_compcais_devise_histo` | L | 1x |
+| 232 | gestion_devise_session | `caisse_devise` | **W** | 1x |
+| 244 | saisie_approvisionnement | `caisse_saisie_appro_dev` | L | 1x |
+| 244 | saisie_approvisionnement | `caisse_saisie_appro_dev` | R | 2x |
+| 244 | saisie_approvisionnement | `caisse_saisie_appro_dev` | **W** | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -80,16 +81,29 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,11}` | - |
+| 2 | `{0,6}<>'B'` | - |
+| 3 | `{0,6}='B'` | - |
+| 4 | `NOT ({0,10})` | - |
+| 5 | `{0,10}` | - |
+| 6 | `NOT ({0,8}) AND NOT {0,9}` | - |
+| 7 | `'TRUE'LOG` | - |
+| 8 | `NOT(ExpCalc('6'EXP))` | - |
 
-
+> **Total**: 8 expressions (affichees: 8)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 15 |
+| **Lignes logique** | 166 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -100,13 +114,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[123 Programme]
-    M --> T
+    N121[121 Gestion cais]
+    N298[298 Gestion cais]
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    N281[281 Fermeture Se]
+    T[123 Apport coffr]
+    N121 --> N298
+    N298 --> N163
+    N163 --> N1
+    N1 --> N281
+    N281 --> T
     style M fill:#8b5cf6,color:#fff
+    style N121 fill:#f59e0b
+    style N298 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N281 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -122,7 +148,7 @@ graph LR
 ```mermaid
 graph LR
     T[123 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -144,6 +170,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:46 | **DATA POPULATED** - Tables, Callgraph (8 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

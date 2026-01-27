@@ -53,20 +53,21 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | R | 1x |
-| #31 | `Table_31` | LINK | 1x |
-| #34 | `Table_34` | LINK | 1x |
-| #39 | `Table_39` | R | 7x |
-| #91 | `Table_91` | LINK | 7x |
-| #368 | `Table_368` | R | 1x |
-| #818 | `Table_818` | LINK | 1x |
-| #878 | `Table_878` | R | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
+| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
+| 34 | hebergement______heb | `cafil012_dat` | L | 1x |
+| 39 | depot_garantie___dga | `cafil017_dat` | R | 7x |
+| 91 | garantie_________gar | `cafil069_dat` | L | 7x |
+| 368 | pms_village | `pmsvillage` | R | 1x |
+| 818 | Circuit supprime | `zcircafil146` | L | 1x |
+| 878 | categorie_operation_mw | `categorie_operation_mw` | R | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -81,16 +82,37 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `SetCrsr (2)` | - |
+| 2 | `GetParam ('CURRENTLISTINGNUM')` | - |
+| 3 | `Trim ({0,20})&' '&Trim ({0,21})&' '&Trim ({0,22})` | - |
+| 4 | `SetCrsr (1)` | - |
+| 5 | `GetParam ('CURRENTPRINTERNUM')=1 OR {32768,82}=...` | - |
+| 6 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
+| 7 | `GetParam ('CURRENTPRINTERNUM')=5` | - |
+| 8 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
+| 9 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
+| 10 | `'GL1'` | - |
+| 11 | `'GL2'` | - |
+| 12 | `'TRUE'LOG` | - |
+| 13 | `Translate ('%TempDir%ticket_garant_'&Str({0,2},...` | - |
+| 14 | `{0,8}=''` | - |
+| 15 | `{32768,78}` | - |
+| 16 | `NOT {32768,78}` | - |
 
-
+> **Total**: 16 expressions (affichees: 16)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 16 |
+| **Lignes logique** | 305 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -101,13 +123,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[110 Programme]
-    M --> T
+    N112[112 Garantie sur]
+    N288[288 Garantie sur]
+    N111[111 Garantie sur]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[110 Print creati]
+    N112 --> N288
+    N288 --> N111
+    N111 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N112 fill:#f59e0b
+    style N288 fill:#f59e0b
+    style N111 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -120,7 +154,7 @@ graph LR
 ```mermaid
 graph LR
     T[110 Programme]
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C182 fill:#3fb950
@@ -142,6 +176,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:46 | **DATA POPULATED** - Tables, Callgraph (16 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

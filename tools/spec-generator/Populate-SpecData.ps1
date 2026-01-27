@@ -1,6 +1,5 @@
 # Populate-SpecData.ps1
-# P4-ACT: Populate empty V3.5 specs with REAL data from KB via KbIndexRunner
-# Fixes CRITICAL gap: 322/323 specs are empty stubs
+# V2: Populate specs with COMPLETE data from KB (tables, expressions, params, stats, callchain)
 #
 # PREREQUIS: La Knowledge Base doit etre indexee!
 #   cd D:\Projects\Lecteur_Magic\tools\KbIndexRunner
@@ -28,8 +27,7 @@ param(
     [string]$SpecsPath = "D:\Projects\Lecteur_Magic\.openspec\specs",
     [string]$KbRunnerPath = "D:\Projects\Lecteur_Magic\tools\KbIndexRunner",
     [switch]$DryRun,
-    [switch]$Force,
-    [switch]$InitKb
+    [switch]$Force
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,60 +38,24 @@ $ErrorActionPreference = "Stop"
 
 function Test-KnowledgeBase {
     $kbPath = "$env:USERPROFILE\.magic-kb\knowledge.db"
-    if (-not (Test-Path $kbPath)) {
-        return $false
-    }
-
-    # Check file size > 1MB (indicates populated)
+    if (-not (Test-Path $kbPath)) { return $false }
     $fileInfo = Get-Item $kbPath
     return ($fileInfo.Length -gt 1MB)
 }
 
-function Initialize-KnowledgeBase {
-    Write-Host "=== Initializing Knowledge Base ===" -ForegroundColor Cyan
-    Write-Host "Running KbIndexRunner..." -ForegroundColor Yellow
-
-    Push-Location $KbRunnerPath
-    try {
-        $result = & dotnet run 2>&1
-        $result | ForEach-Object { Write-Host "  $_" -ForegroundColor Gray }
-    }
-    finally {
-        Pop-Location
-    }
-
-    Write-Host ""
-}
-
 function Get-SpecData {
-    param(
-        [string]$Project,
-        [int]$IDE
-    )
+    param([string]$Project, [int]$IDE)
 
     Push-Location $KbRunnerPath
     try {
         $output = & dotnet run -- spec-data "$Project $IDE" 2>&1
-
-        # Check for errors
-        if ($LASTEXITCODE -ne 0) {
-            return $null
-        }
-
-        # Parse JSON output
+        if ($LASTEXITCODE -ne 0) { return $null }
         $json = $output | Where-Object { $_ -match '^\{' } | Select-Object -First 1
-        if (-not $json) {
-            return $null
-        }
-
+        if (-not $json) { return $null }
         return $json | ConvertFrom-Json
     }
-    catch {
-        return $null
-    }
-    finally {
-        Pop-Location
-    }
+    catch { return $null }
+    finally { Pop-Location }
 }
 
 # ============================================================================
@@ -104,17 +66,76 @@ function Format-TablesSection {
     param($Tables)
 
     if (-not $Tables -or $Tables.Count -eq 0) {
-        return "| # | Nom physique | Acces | Usage |`n|---|--------------|-------|-------|`n| - | Aucune table | - | - |"
+        return "| # | Nom logique | Nom physique | Acces | Usage |`n|---|-------------|--------------|-------|-------|`n| - | Aucune table | - | - | - |"
     }
 
-    $header = "| # | Nom physique | Acces | Usage |`n|---|--------------|-------|-------|"
+    $header = "| # | Nom logique | Nom physique | Acces | Usage |`n|---|-------------|--------------|-------|-------|"
     $rows = $Tables | ForEach-Object {
-        $access = if ($_.access -eq 'WRITE') { '**W**' } elseif ($_.access -eq 'LINK') { 'LINK' } else { 'R' }
-        $name = if ($_.name) { "``$($_.name)``" } else { "Table_$($_.id)" }
-        "| #$($_.id) | $name | $access | $($_.count)x |"
+        $access = switch ($_.access) {
+            'WRITE' { '**W**' }
+            'LINK'  { 'L' }
+            default { 'R' }
+        }
+        $logical = if ($_.logical) { $_.logical } else { "Table_$($_.id)" }
+        $physical = if ($_.physical) { "``$($_.physical)``" } else { "-" }
+        "| $($_.id) | $logical | $physical | $access | $($_.count)x |"
     }
 
     return "$header`n$($rows -join "`n")"
+}
+
+function Format-ParametersSection {
+    param($Parameters)
+
+    if (-not $Parameters -or $Parameters.Count -eq 0) {
+        return "| Variable | Nom | Type | Picture |`n|----------|-----|------|---------|`n| - | Aucun parametre | - | - |"
+    }
+
+    $header = "| Variable | Nom | Type | Picture |`n|----------|-----|------|---------|"
+    $rows = $Parameters | ForEach-Object {
+        $pic = if ($_.picture) { "``$($_.picture)``" } else { "-" }
+        "| $($_.variable) | $($_.name) | $($_.type) | $pic |"
+    }
+
+    return "$header`n$($rows -join "`n")"
+}
+
+function Format-ExpressionsSection {
+    param($Expressions, $ExpressionCount)
+
+    if (-not $Expressions -or $Expressions.Count -eq 0) {
+        return "| IDE | Expression | Commentaire |`n|-----|------------|-------------|`n| - | Aucune expression | - |`n`n> **Total**: 0 expressions"
+    }
+
+    $header = "| IDE | Expression | Commentaire |`n|-----|------------|-------------|"
+    $rows = $Expressions | ForEach-Object {
+        $expr = $_.content -replace '\|', '\|' -replace '`', "'"
+        if ($expr.Length -gt 50) { $expr = $expr.Substring(0, 47) + "..." }
+        $comment = if ($_.comment) { $_.comment } else { "-" }
+        if ($comment.Length -gt 30) { $comment = $comment.Substring(0, 27) + "..." }
+        "| $($_.ide) | ``$expr`` | $comment |"
+    }
+
+    $shown = $Expressions.Count
+    $total = if ($ExpressionCount) { $ExpressionCount } else { $shown }
+
+    return "$header`n$($rows -join "`n")`n`n> **Total**: $total expressions (affichees: $shown)"
+}
+
+function Format-StatisticsSection {
+    param($Stats)
+
+    if (-not $Stats) {
+        return "| Metrique | Valeur |`n|----------|--------|`n| Taches | 0 |`n| Lignes logique | 0 |`n| Lignes desactivees | 0 |"
+    }
+
+    return @"
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | $($Stats.taskCount) |
+| **Lignes logique** | $($Stats.logicLineCount) |
+| **Lignes desactivees** | $($Stats.disabledLineCount) |
+"@
 }
 
 function Format-CallersSection {
@@ -153,12 +174,12 @@ graph LR
 "@
     }
 
-    # Build Mermaid diagram
+    # Build Mermaid diagram (max 8 nodes)
     $mermaid = "``````mermaid`ngraph LR`n    T[$IDE Programme]"
     foreach ($c in $Callees | Select-Object -First 8) {
         $safeName = ($c.name -replace '-',' ' -replace '[^a-zA-Z0-9 ]','')
         if (-not $safeName) { $safeName = "Prog$($c.ide)" }
-        if ($safeName.Length -gt 15) { $safeName = $safeName.Substring(0, 15) }
+        if ($safeName.Length -gt 12) { $safeName = $safeName.Substring(0, 12) }
         $mermaid += "`n    C$($c.ide)[$($c.ide) $safeName]"
         $mermaid += "`n    T --> C$($c.ide)"
     }
@@ -178,28 +199,100 @@ graph LR
     return "$mermaid`n`n$header`n$($rows -join "`n")"
 }
 
+function Format-CallChainSection {
+    param($CallChain, $IDE, $ProgramName)
+
+    if (-not $CallChain -or $CallChain.Count -eq 0) {
+        return @"
+``````mermaid
+graph LR
+    M[1 Main]
+    T[$IDE $ProgramName]
+    M --> T
+    style M fill:#8b5cf6,color:#fff
+    style T fill:#58a6ff,color:#000
+``````
+"@
+    }
+
+    # Build proper call chain from Main
+    $mermaid = "``````mermaid`ngraph LR"
+
+    # Find Main in chain or add it
+    $hasMain = $CallChain | Where-Object { $_.ide -eq 1 }
+
+    # Build chain nodes
+    $nodes = @()
+    foreach ($c in $CallChain | Sort-Object -Property level -Descending | Select-Object -First 5) {
+        $safeName = ($c.name -replace '-',' ' -replace '[^a-zA-Z0-9 ]','')
+        if (-not $safeName) { $safeName = "Prog$($c.ide)" }
+        if ($safeName.Length -gt 12) { $safeName = $safeName.Substring(0, 12) }
+        $nodes += @{ ide = $c.ide; name = $safeName; level = $c.level }
+    }
+
+    # Add Main if not present
+    if (-not $hasMain -and $nodes.Count -gt 0) {
+        $mermaid += "`n    M[1 Main]"
+    }
+
+    # Add nodes in order (highest level = closest to Main)
+    $sortedNodes = $nodes | Sort-Object -Property level -Descending
+    foreach ($n in $sortedNodes) {
+        $mermaid += "`n    N$($n.ide)[$($n.ide) $($n.name)]"
+    }
+
+    # Add target program
+    $targetSafeName = ($ProgramName -replace '-',' ' -replace '[^a-zA-Z0-9 ]','')
+    if ($targetSafeName.Length -gt 12) { $targetSafeName = $targetSafeName.Substring(0, 12) }
+    $mermaid += "`n    T[$IDE $targetSafeName]"
+
+    # Add connections
+    if (-not $hasMain -and $sortedNodes.Count -gt 0) {
+        $first = $sortedNodes[0]
+        $mermaid += "`n    M --> N$($first.ide)"
+    }
+
+    for ($i = 0; $i -lt $sortedNodes.Count - 1; $i++) {
+        $from = $sortedNodes[$i]
+        $to = $sortedNodes[$i + 1]
+        $mermaid += "`n    N$($from.ide) --> N$($to.ide)"
+    }
+
+    if ($sortedNodes.Count -gt 0) {
+        $last = $sortedNodes[$sortedNodes.Count - 1]
+        $mermaid += "`n    N$($last.ide) --> T"
+    } elseif (-not $hasMain) {
+        $mermaid += "`n    M --> T"
+    }
+
+    # Styles
+    $mermaid += "`n    style M fill:#8b5cf6,color:#fff"
+    foreach ($n in $sortedNodes) {
+        $mermaid += "`n    style N$($n.ide) fill:#f59e0b"
+    }
+    $mermaid += "`n    style T fill:#58a6ff,color:#000"
+    $mermaid += "`n``````"
+
+    return $mermaid
+}
+
 # ============================================================================
 # SPEC POPULATION
 # ============================================================================
 
 function Populate-Spec {
-    param(
-        [int]$IDE,
-        [string]$SpecPath,
-        [switch]$DryRun
-    )
+    param([int]$IDE, [string]$SpecPath, [switch]$DryRun)
 
     $specFile = Join-Path $SpecPath "ADH-IDE-$IDE.md"
-
     if (-not (Test-Path $specFile)) {
         return @{ Status = "SKIP"; Reason = "File not found" }
     }
 
     $content = Get-Content $specFile -Raw -Encoding UTF8
 
-    # Check if already populated (has real table data)
-    if ($content -match "\| #\d+ \| ``[a-z]" -and -not $Force) {
-        return @{ Status = "SKIP"; Reason = "Already has data" }
+    # Check if already has REAL table data (not Table_XX)
+    if ($content -match "\| \d+ \| [a-z_]+.*cafil" -and -not $Force) {
+        return @{ Status = "SKIP"; Reason = "Already has real data" }
     }
 
     # Get data from KbIndexRunner
@@ -208,15 +301,18 @@ function Populate-Spec {
         return @{ Status = "SKIP"; Reason = "Not in KB" }
     }
 
-    # Format sections
+    # Format all sections
     $tablesSection = Format-TablesSection $data.tables
+    $paramsSection = Format-ParametersSection $data.parameters
+    $expressionsSection = Format-ExpressionsSection $data.expressions $data.expressionCount
+    $statsSection = Format-StatisticsSection $data.statistics
     $callersSection = Format-CallersSection $data.callers
     $calleesSection = Format-CalleesSection $data.callees $IDE
+    $callChainSection = Format-CallChainSection $data.callChain $IDE $data.program
 
-    # Update spec content
     $date = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-    # Replace tables section
+    # Replace tables section (2.2)
     if ($content -match "### 2\.2 Tables[\s\S]*?(?=### 2\.3)") {
         $content = $content -replace "### 2\.2 Tables[\s\S]*?(?=### 2\.3)", @"
 ### 2.2 Tables
@@ -226,7 +322,47 @@ $tablesSection
 "@
     }
 
-    # Replace callers section
+    # Replace parameters section (2.3)
+    if ($content -match "### 2\.3 Parametres d'entree[\s\S]*?(?=### 2\.4)") {
+        $content = $content -replace "### 2\.3 Parametres d'entree[\s\S]*?(?=### 2\.4)", @"
+### 2.3 Parametres d'entree
+
+$paramsSection
+
+"@
+    }
+
+    # Replace expressions section (2.5)
+    if ($content -match "### 2\.5 Expressions cles[\s\S]*?(?=### 2\.6)") {
+        $content = $content -replace "### 2\.5 Expressions cles[\s\S]*?(?=### 2\.6)", @"
+### 2.5 Expressions cles
+
+$expressionsSection
+
+"@
+    }
+
+    # Replace statistics section (2.7)
+    if ($content -match "### 2\.7 Statistiques[\s\S]*?(?=---)") {
+        $content = $content -replace "### 2\.7 Statistiques[\s\S]*?(?=---)", @"
+### 2.7 Statistiques
+
+$statsSection
+
+"@
+    }
+
+    # Replace call chain section (3.1)
+    if ($content -match "### 3\.1 Chaine d'appels depuis Main[\s\S]*?(?=### 3\.2)") {
+        $content = $content -replace "### 3\.1 Chaine d'appels depuis Main[\s\S]*?(?=### 3\.2)", @"
+### 3.1 Chaine d'appels depuis Main
+
+$callChainSection
+
+"@
+    }
+
+    # Replace callers section (3.2)
     if ($content -match "### 3\.2 Callers directs[\s\S]*?(?=### 3\.3)") {
         $content = $content -replace "### 3\.2 Callers directs[\s\S]*?(?=### 3\.3)", @"
 ### 3.2 Callers directs
@@ -236,7 +372,7 @@ $callersSection
 "@
     }
 
-    # Replace callees section
+    # Replace callees section (3.3)
     if ($content -match "### 3\.3 Callees[\s\S]*?(?=### 3\.4)") {
         $content = $content -replace "### 3\.3 Callees[\s\S]*?(?=### 3\.4)", @"
 ### 3.3 Callees
@@ -246,8 +382,8 @@ $calleesSection
 "@
     }
 
-    # Add history entry
-    $historyEntry = "| $date | **DATA POPULATED** - Tables, Callgraph ($($data.expressionCount) expr) | Script |"
+    # Update history
+    $historyEntry = "| $date | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |"
     if ($content -match "(\| Date \| Action \| Auteur \|[\s\S]*?\|[^\n]+\|)") {
         $content = $content -replace "(\| Date \| Action \| Auteur \|[\s\S]*?\|[^\n]+\|)", "`$1`n$historyEntry"
     }
@@ -258,7 +394,11 @@ $calleesSection
 
     $stats = @{
         Tables = @($data.tables).Count
-        ExpressionCount = $data.expressionCount
+        Expressions = @($data.expressions).Count
+        ExpressionTotal = $data.expressionCount
+        Parameters = @($data.parameters).Count
+        Tasks = $data.statistics.taskCount
+        LogicLines = $data.statistics.logicLineCount
         Callers = @($data.callers).Count
         Callees = @($data.callees).Count
     }
@@ -270,28 +410,14 @@ $calleesSection
 # MAIN EXECUTION
 # ============================================================================
 
-Write-Host "=== Populate Spec Data ===" -ForegroundColor Cyan
+Write-Host "=== Populate Spec Data V2 ===" -ForegroundColor Cyan
 Write-Host "Project: $Project" -ForegroundColor Cyan
-Write-Host "KbIndexRunner: $KbRunnerPath" -ForegroundColor Cyan
 Write-Host ""
 
-# Check/Initialize KB
-if ($InitKb -or -not (Test-KnowledgeBase)) {
-    Write-Host "[!] Knowledge Base not found or empty" -ForegroundColor Yellow
-    Write-Host ""
-
-    if ($InitKb) {
-        Initialize-KnowledgeBase
-    }
-    else {
-        Write-Host "Pour indexer la Knowledge Base, executez:" -ForegroundColor Yellow
-        Write-Host ""
-        Write-Host "  cd D:\Projects\Lecteur_Magic\tools\KbIndexRunner" -ForegroundColor White
-        Write-Host "  dotnet run" -ForegroundColor White
-        Write-Host ""
-        Write-Host "Ou relancez ce script avec -InitKb" -ForegroundColor Yellow
-        exit 1
-    }
+if (-not (Test-KnowledgeBase)) {
+    Write-Host "[!] Knowledge Base not found" -ForegroundColor Red
+    Write-Host "Run: cd $KbRunnerPath && dotnet run" -ForegroundColor Yellow
+    exit 1
 }
 
 Write-Host "[OK] Knowledge Base found" -ForegroundColor Green
@@ -312,19 +438,11 @@ Write-Host ""
 $populated = 0
 $skipped = 0
 $errors = 0
-$totalStats = @{
-    Tables = 0
-    ExpressionCount = 0
-    Callers = 0
-    Callees = 0
-}
+$totalStats = @{ Tables = 0; Expressions = 0; Tasks = 0; LogicLines = 0 }
 
 for ($i = $StartIDE; $i -le $EndIDE; $i++) {
     $specFile = Join-Path $SpecsPath "ADH-IDE-$i.md"
-
-    if (-not (Test-Path $specFile)) {
-        continue
-    }
+    if (-not (Test-Path $specFile)) { continue }
 
     try {
         $result = Populate-Spec -IDE $i -SpecPath $SpecsPath -DryRun:$DryRun
@@ -332,14 +450,15 @@ for ($i = $StartIDE; $i -le $EndIDE; $i++) {
         switch ($result.Status) {
             "OK" {
                 $populated++
-                $stats = $result.Stats
-                $totalStats.Tables += $stats.Tables
-                $totalStats.ExpressionCount += $stats.ExpressionCount
-                $totalStats.Callers += $stats.Callers
-                $totalStats.Callees += $stats.Callees
+                $s = $result.Stats
+                $totalStats.Tables += $s.Tables
+                $totalStats.Expressions += $s.ExpressionTotal
+                $totalStats.Tasks += $s.Tasks
+                $totalStats.LogicLines += $s.LogicLines
 
                 $name = if ($result.Name) { " - $($result.Name)" } else { "" }
-                Write-Host "  [OK] ADH-IDE-$i$name - T:$($stats.Tables) E:$($stats.ExpressionCount) C:$($stats.Callers)/$($stats.Callees)" -ForegroundColor Green
+                Write-Host "  [OK] ADH-IDE-$i$name" -ForegroundColor Green
+                Write-Host "       T:$($s.Tables) E:$($s.ExpressionTotal) P:$($s.Parameters) Tasks:$($s.Tasks) Lines:$($s.LogicLines)" -ForegroundColor DarkGray
             }
             "SKIP" {
                 $skipped++
@@ -360,13 +479,13 @@ Write-Host "Populated: $populated specs" -ForegroundColor Green
 Write-Host "Skipped:   $skipped specs" -ForegroundColor Yellow
 Write-Host "Errors:    $errors specs" -ForegroundColor $(if ($errors -gt 0) { "Red" } else { "Green" })
 Write-Host ""
-Write-Host "=== Data Extracted ===" -ForegroundColor Cyan
+Write-Host "=== Total Data ===" -ForegroundColor Cyan
 Write-Host "Tables:      $($totalStats.Tables)" -ForegroundColor White
-Write-Host "Expressions: $($totalStats.ExpressionCount)" -ForegroundColor White
-Write-Host "Callers:     $($totalStats.Callers)" -ForegroundColor White
-Write-Host "Callees:     $($totalStats.Callees)" -ForegroundColor White
+Write-Host "Expressions: $($totalStats.Expressions)" -ForegroundColor White
+Write-Host "Tasks:       $($totalStats.Tasks)" -ForegroundColor White
+Write-Host "Logic Lines: $($totalStats.LogicLines)" -ForegroundColor White
 
 if ($DryRun) {
     Write-Host ""
-    Write-Host "[DRY RUN] No files were modified" -ForegroundColor Magenta
+    Write-Host "[DRY RUN] No files modified" -ForegroundColor Magenta
 }

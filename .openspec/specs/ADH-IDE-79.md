@@ -53,20 +53,21 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #31 | `Table_31` | R | 15x |
-| #69 | `Table_69` | R | 1x |
-| #268 | `Table_268` | LINK | 15x |
-| #268 | `Table_268` | **W** | 1x |
-| #271 | `Table_271` | LINK | 15x |
-| #272 | `Table_272` | LINK | 7x |
-| #272 | `Table_272` | R | 1x |
-| #273 | `Table_273` | LINK | 16x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 31 | gm-complet_______gmc | `cafil009_dat` | R | 15x |
+| 69 | initialisation___ini | `cafil047_dat` | R | 1x |
+| 268 | cc_total_par_type | `ccpartyp` | L | 15x |
+| 268 | cc_total_par_type | `ccpartyp` | **W** | 1x |
+| 271 | cc_total | `cctotal` | L | 15x |
+| 272 | cc_type_detail | `cctypdet` | L | 7x |
+| 272 | cc_type_detail | `cctypdet` | R | 1x |
+| 273 | cc_type | `cctype` | L | 16x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -81,16 +82,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `LastClicked ()='PRINT'` | - |
+| 2 | `LastClicked ()='PRINTDETAIL'` | - |
+| 3 | `MlsTrans ('Balance des credits de consommation ...` | - |
+| 4 | `{0,8}` | - |
+| 5 | `{0,5}` | - |
+| 6 | `{0,6}` | - |
+| 7 | `{0,7}` | - |
+| 8 | `{32768,1}` | - |
+| 9 | `Date ()` | - |
+| 10 | `Trim ({0,16})&' '&Trim ({0,15})` | - |
+| 11 | `{0,1}` | - |
+| 12 | `{0,2}` | - |
+| 13 | `{0,3}` | - |
+| 14 | `IF ({0,24},'Quit Detail','Detail')` | - |
+| 15 | `NOT ({0,24})` | - |
+| 16 | `'FALSE'LOG` | - |
+| 17 | `'N'&Left (Right ({0,4},13),12)` | - |
+| 18 | `2` | - |
+| 19 | `38` | - |
+| 20 | `39` | - |
 
-
+> **Total**: 23 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 30 |
+| **Lignes logique** | 674 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -101,13 +127,22 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[79 Programme]
-    M --> T
+    N0[0 Garantie sur]
+    N77[77 Club Med Pas]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[79 Balance Cred]
+    N0 --> N77
+    N77 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N77 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -119,15 +154,15 @@ graph LR
 ```mermaid
 graph LR
     T[79 Programme]
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C184[184 Get Printer for]
+    C184[184 Get Printer ]
     T --> C184
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
-    C185[185 Chained Listing]
+    C185[185 Chained List]
     T --> C185
-    C186[186 Chained Listing]
+    C186[186 Chained List]
     T --> C186
     style T fill:#58a6ff,color:#000
     style C181 fill:#3fb950
@@ -157,6 +192,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:19 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (23 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

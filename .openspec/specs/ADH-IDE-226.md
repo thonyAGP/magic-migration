@@ -53,18 +53,19 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | **W** | 1x |
-| #130 | `Table_130` | LINK | 1x |
-| #285 | `Table_285` | LINK | 1x |
-| #285 | `Table_285` | R | 1x |
-| #285 | `Table_285` | **W** | 2x |
-| #720 | `Table_720` | LINK | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | **W** | 1x |
+| 130 | fichier_langue | `cafil108_dat` | L | 1x |
+| 285 | email | `email` | L | 1x |
+| 285 | email | `email` | R | 1x |
+| 285 | email | `email` | **W** | 2x |
+| 720 | arc_transac_entete_bar | `arc_bartransacent` | L | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -79,16 +80,37 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}` | - |
+| 2 | `{0,2}` | - |
+| 3 | `{0,8}` | - |
+| 4 | `{0,9}` | - |
+| 5 | `{0,10}` | - |
+| 6 | `NOT({0,17})` | - |
+| 7 | `{0,3}` | - |
+| 8 | `{0,17}` | - |
+| 9 | `{0,21}` | - |
+| 10 | `{0,21}<>''` | - |
+| 11 | `'Email adress is empty ! Confirm '` | - |
+| 12 | `{0,21}=''` | - |
+| 13 | `{0,22}=6 OR {0,21}<>''` | - |
+| 14 | `{0,13}` | - |
+| 15 | `IF({0,16}='FR','FRA','ENG')` | - |
+| 16 | `'TRUE'LOG` | - |
 
-
+> **Total**: 16 expressions (affichees: 16)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 5 |
+| **Lignes logique** | 315 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -99,13 +121,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[226 Programme]
-    M --> T
+    N190[190 Menu solde d]
+    N163[163 Menu caisse ]
+    N193[193 Solde compte]
+    N1[1 Main Program]
+    N174[174 VersementRet]
+    T[226 Recherche Ad]
+    N190 --> N163
+    N163 --> N193
+    N193 --> N1
+    N1 --> N174
+    N174 --> T
     style M fill:#8b5cf6,color:#fff
+    style N190 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N193 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N174 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -139,6 +173,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:23 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (16 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

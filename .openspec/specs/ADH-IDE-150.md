@@ -53,16 +53,17 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #69 | `Table_69` | R | 1x |
-| #491 | `Table_491` | R | 4x |
-| #492 | `Table_492` | R | 2x |
-| #493 | `Table_493` | R | 2x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 69 | initialisation___ini | `cafil047_dat` | R | 1x |
+| 491 | soldes_par_mop | `%club_user%_caisse_solde_par_mop` | R | 4x |
+| 492 | edition_tableau_recap | `caisse_tabrecap` | R | 2x |
+| 493 | edition_ticket | `%club_user%_caisse_ticket` | R | 2x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -77,16 +78,27 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `35` | - |
+| 2 | `SetCrsr (2)` | - |
+| 3 | `SetCrsr (1)` | - |
+| 4 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| 5 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
+| 6 | `'TRUE'LOG` | - |
 
-
+> **Total**: 6 expressions (affichees: 6)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 11 |
+| **Lignes logique** | 103 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,13 +109,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[150 Programme]
-    M --> T
+    N121[121 Gestion cais]
+    N298[298 Gestion cais]
+    N281[281 Fermeture Se]
+    N1[1 Main Program]
+    N163[163 Menu caisse ]
+    T[150 Print compta]
+    N121 --> N298
+    N298 --> N281
+    N281 --> N1
+    N1 --> N163
+    N163 --> T
     style M fill:#8b5cf6,color:#fff
+    style N121 fill:#f59e0b
+    style N298 fill:#f59e0b
+    style N281 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N163 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -116,9 +140,9 @@ graph LR
     T[150 Programme]
     C179[179 Get Printer]
     T --> C179
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C179 fill:#3fb950
@@ -144,6 +168,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:21 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (6 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

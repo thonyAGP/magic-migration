@@ -53,28 +53,29 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #30 | `Table_30` | R | 2x |
-| #44 | `Table_44` | R | 2x |
-| #70 | `Table_70` | R | 1x |
-| #147 | `Table_147` | LINK | 2x |
-| #196 | `Table_196` | R | 8x |
-| #232 | `Table_232` | R | 6x |
-| #244 | `Table_244` | R | 6x |
-| #249 | `Table_249` | R | 15x |
-| #250 | `Table_250` | R | 2x |
-| #251 | `Table_251` | R | 6x |
-| #266 | `Table_266` | R | 3x |
-| #463 | `Table_463` | LINK | 2x |
-| #463 | `Table_463` | R | 1x |
-| #505 | `Table_505` | R | 4x |
-| #513 | `Table_513` | LINK | 4x |
-| #693 | `Table_693` | R | 4x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 2x |
+| 44 | change___________chg | `cafil022_dat` | R | 2x |
+| 70 | date_comptable___dat | `cafil048_dat` | R | 1x |
+| 147 | change_vente_____chg | `cafil125_dat` | L | 2x |
+| 196 | gestion_article_session | `caisse_article` | R | 8x |
+| 232 | gestion_devise_session | `caisse_devise` | R | 6x |
+| 244 | saisie_approvisionnement | `caisse_saisie_appro_dev` | R | 6x |
+| 249 | histo_sessions_caisse_detail | `caisse_session_detail` | R | 15x |
+| 250 | histo_sessions_caisse_devise | `caisse_session_devise` | R | 2x |
+| 251 | histo_sessions_caisse_remise | `caisse_session_remise` | R | 6x |
+| 266 | cc_comptable | `cccompta` | R | 3x |
+| 463 | heure_de_passage | `verifpool_dat` | L | 2x |
+| 463 | heure_de_passage | `verifpool_dat` | R | 1x |
+| 505 | pv_comptable | `%club_user%_pv_cafil18_dat` | R | 4x |
+| 513 | pv_invoiceprintfiliationtmp | `%club_user%_pv_filiations` | L | 4x |
+| 693 | devise_in | `devisein_par` | R | 4x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -89,16 +90,31 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `Date ()` | - |
+| 2 | `{32768,2}` | - |
+| 3 | `155` | - |
+| 4 | `Trim ({0,36})` | - |
+| 5 | `'F'` | - |
+| 6 | `{0,33}='F'` | - |
+| 7 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| 8 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
+| 9 | `35` | - |
+| 10 | `'TRUE'LOG` | - |
 
-
+> **Total**: 10 expressions (affichees: 10)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 71 |
+| **Lignes logique** | 1129 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -109,13 +125,25 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[139 Programme]
-    M --> T
+    N298[298 Gestion cais]
+    N121[121 Gestion cais]
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    N281[281 Fermeture Se]
+    T[139 Ticket appro]
+    N298 --> N121
+    N121 --> N163
+    N163 --> N1
+    N1 --> N281
+    N281 --> T
     style M fill:#8b5cf6,color:#fff
+    style N298 fill:#f59e0b
+    style N121 fill:#f59e0b
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
+    style N281 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -132,13 +160,13 @@ graph LR
 ```mermaid
 graph LR
     T[139 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
     C179[179 Get Printer]
     T --> C179
-    C181[181 Set Listing Num]
+    C181[181 Set Listing ]
     T --> C181
-    C182[182 Raz Current Pri]
+    C182[182 Raz Current ]
     T --> C182
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -166,6 +194,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:21 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (10 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

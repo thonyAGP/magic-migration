@@ -53,33 +53,34 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #23 | `Table_23` | R | 1x |
-| #23 | `Table_23` | **W** | 4x |
-| #30 | `Table_30` | LINK | 1x |
-| #30 | `Table_30` | R | 1x |
-| #35 | `Table_35` | R | 1x |
-| #44 | `Table_44` | LINK | 1x |
-| #44 | `Table_44` | R | 1x |
-| #44 | `Table_44` | **W** | 2x |
-| #47 | `Table_47` | **W** | 2x |
-| #50 | `Table_50` | LINK | 1x |
-| #50 | `Table_50` | R | 1x |
-| #68 | `Table_68` | **W** | 1x |
-| #70 | `Table_70` | LINK | 1x |
-| #124 | `Table_124` | LINK | 1x |
-| #139 | `Table_139` | LINK | 3x |
-| #141 | `Table_141` | R | 1x |
-| #147 | `Table_147` | LINK | 2x |
-| #147 | `Table_147` | **W** | 2x |
-| #474 | `Table_474` | R | 2x |
-| #474 | `Table_474` | **W** | 1x |
-| #945 | `Table_945` | **W** | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 23 | reseau_cloture___rec | `cafil001_dat` | R | 1x |
+| 23 | reseau_cloture___rec | `cafil001_dat` | **W** | 4x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 1x |
+| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
+| 35 | personnel_go______go | `cafil013_dat` | R | 1x |
+| 44 | change___________chg | `cafil022_dat` | L | 1x |
+| 44 | change___________chg | `cafil022_dat` | R | 1x |
+| 44 | change___________chg | `cafil022_dat` | **W** | 2x |
+| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
+| 50 | moyens_reglement_mor | `cafil028_dat` | L | 1x |
+| 50 | moyens_reglement_mor | `cafil028_dat` | R | 1x |
+| 68 | compteurs________cpt | `cafil046_dat` | **W** | 1x |
+| 70 | date_comptable___dat | `cafil048_dat` | L | 1x |
+| 124 | type_taux_change | `cafil102_dat` | L | 1x |
+| 139 | moyens_reglement_mor | `cafil117_dat` | L | 3x |
+| 141 | devises__________dev | `cafil119_dat` | R | 1x |
+| 147 | change_vente_____chg | `cafil125_dat` | L | 2x |
+| 147 | change_vente_____chg | `cafil125_dat` | **W** | 2x |
+| 474 | comptage_caisse_devise | `%club_user%_caisse_compcais_devise` | R | 2x |
+| 474 | comptage_caisse_devise | `%club_user%_caisse_compcais_devise` | **W** | 1x |
+| 945 | Table_945 | - | **W** | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -94,16 +95,41 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}=''` | - |
+| 2 | `'C'` | - |
+| 3 | `Trim ({0,34})` | - |
+| 4 | `55` | - |
+| 5 | `'&Quitter'` | - |
+| 6 | `'&Annuler'` | - |
+| 7 | `'&Creer change'` | - |
+| 8 | `{0,1}` | - |
+| 9 | `{0,17}<>'F'` | - |
+| 10 | `{0,17}='F'` | - |
+| 11 | `{0,26}` | - |
+| 12 | `{32768,1}` | - |
+| 13 | `{0,24}<>'R'` | - |
+| 14 | `{0,15}='B'` | - |
+| 15 | `'A'` | - |
+| 16 | `{0,15}<>'B'` | - |
+| 17 | `'F'` | - |
+| 18 | `{0,36}=''` | - |
+| 19 | `{0,2}` | - |
+| 20 | `{0,3}` | - |
 
-
+> **Total**: 24 expressions (affichees: 20)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 23 |
+| **Lignes logique** | 642 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -114,13 +140,16 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[25 Programme]
-    M --> T
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    T[25 Change GM]
+    N163 --> N1
+    N1 --> T
     style M fill:#8b5cf6,color:#fff
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -131,21 +160,21 @@ graph LR
 ```mermaid
 graph LR
     T[25 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
-    C44[44 Appel programme]
+    C44[44 Appel progra]
     T --> C44
-    C23[23 Print reu chang]
+    C23[23 Print reu ch]
     T --> C23
-    C24[24 Print reu chang]
+    C24[24 Print reu ch]
     T --> C24
-    C47[47 DateHeure sessi]
+    C47[47 DateHeure se]
     T --> C47
-    C153[153 Calcul du stock]
+    C153[153 Calcul du st]
     T --> C153
     C179[179 Get Printer]
     T --> C179
-    C180[180 Printer choice]
+    C180[180 Printer choi]
     T --> C180
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -187,6 +216,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:18 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (24 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

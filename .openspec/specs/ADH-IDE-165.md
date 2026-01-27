@@ -53,18 +53,19 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #423 | `Table_423` | LINK | 2x |
-| #423 | `Table_423` | **W** | 2x |
-| #587 | `Table_587` | LINK | 1x |
-| #587 | `Table_587` | R | 1x |
-| #587 | `Table_587` | **W** | 2x |
-| #735 | `Table_735` | R | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 423 | req_param | `req_param_dat` | L | 2x |
+| 423 | req_param | `req_param_dat` | **W** | 2x |
+| 587 | tempo_anniversaires | `%club_user%tmp_anniv_dat` | L | 1x |
+| 587 | tempo_anniversaires | `%club_user%tmp_anniv_dat` | R | 1x |
+| 587 | tempo_anniversaires | `%club_user%tmp_anniv_dat` | **W** | 2x |
+| 735 | arc_pv_cust_rentals | `arc_pv_rentals_dat` | R | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -79,16 +80,26 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}=''` | - |
+| 2 | `'C'` | - |
+| 3 | `Trim ({0,5})` | - |
+| 4 | `123` | - |
+| 5 | `{0,4}` | - |
 
-
+> **Total**: 5 expressions (affichees: 5)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 7 |
+| **Lignes logique** | 81 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -99,13 +110,16 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[165 Programme]
-    M --> T
+    N163[163 Menu caisse ]
+    N1[1 Main Program]
+    T[165    Saisies c]
+    N163 --> N1
+    N1 --> T
     style M fill:#8b5cf6,color:#fff
+    style N163 fill:#f59e0b
+    style N1 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -116,7 +130,7 @@ graph LR
 ```mermaid
 graph LR
     T[165 Programme]
-    C43[43 Recuperation du]
+    C43[43 Recuperation]
     T --> C43
     style T fill:#58a6ff,color:#000
     style C43 fill:#3fb950
@@ -138,6 +152,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (5 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

@@ -53,14 +53,15 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #866 | `Table_866` | R | 1x |
-| #867 | `Table_867` | LINK | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 866 | maj_appli_tpe | `maj_appli_tpe` | R | 1x |
+| 867 | log_maj_tpe | `log_maj_tpe` | L | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -75,16 +76,37 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,1}` | - |
+| 2 | `{0,4}` | - |
+| 3 | `{0,24}` | - |
+| 4 | `999` | - |
+| 5 | `{0,2}` | - |
+| 6 | `{0,3}` | - |
+| 7 | `0` | - |
+| 8 | `{0,38}+{0,25}` | - |
+| 9 | `{0,47}+{0,25}` | - |
+| 10 | `{0,39}+Round(({0,26}/(1+{0,24}/100)*{0,24}/100)...` | - |
+| 11 | `{0,48}+Round(({0,26}/(1+{0,24}/100)*{0,24}/100)...` | - |
+| 12 | `{0,40}+{0,26}` | - |
+| 13 | `{0,49}+{0,26}` | - |
+| 14 | `IF({32768,77},'TRUE'LOG,{0,30}<>'R')` | - |
+| 15 | `CndRange({32768,53},'O')` | - |
+| 16 | `IsFirstRecordCycle(0)` | - |
 
-
+> **Total**: 16 expressions (affichees: 16)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 1 |
+| **Lignes logique** | 72 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -96,12 +118,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[93 Programme]
-    M --> T
+    N0[0 Transaction ]
+    N0[0 Transaction ]
+    N0[0 Transaction ]
+    N66[66 Lancement So]
+    N55[55 Easy Check O]
+    T[93 Creation Pie]
+    M --> N0
+    N0 --> N0
+    N0 --> N0
+    N0 --> N66
+    N66 --> N55
+    N55 --> T
     style M fill:#8b5cf6,color:#fff
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N0 fill:#f59e0b
+    style N66 fill:#f59e0b
+    style N55 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -135,6 +171,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:46 | **DATA POPULATED** - Tables, Callgraph (16 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 

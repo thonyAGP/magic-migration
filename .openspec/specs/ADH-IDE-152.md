@@ -53,15 +53,16 @@
 
 ### 2.2 Tables
 
-| # | Nom physique | Acces | Usage |
-|---|--------------|-------|-------|
-| #50 | `Table_50` | R | 1x |
-| #89 | `Table_89` | LINK | 1x |
-| #140 | `Table_140` | R | 1x |
+| # | Nom logique | Nom physique | Acces | Usage |
+|---|-------------|--------------|-------|-------|
+| 50 | moyens_reglement_mor | `cafil028_dat` | R | 1x |
+| 89 | moyen_paiement___mop | `cafil067_dat` | L | 1x |
+| 140 | moyen_paiement___mop | `cafil118_dat` | R | 1x |
 ### 2.3 Parametres d'entree
 
-
-
+| Variable | Nom | Type | Picture |
+|----------|-----|------|---------|
+| - | Aucun parametre | - | - |
 ### 2.4 Algorigramme
 
 ```mermaid
@@ -76,16 +77,23 @@ flowchart TD
 
 ### 2.5 Expressions cles
 
+| IDE | Expression | Commentaire |
+|-----|------------|-------------|
+| 1 | `{0,4}<>'B'` | - |
+| 2 | `{0,4}='B'` | - |
 
-
+> **Total**: 2 expressions (affichees: 2)
 ### 2.6 Variables importantes
 
 
 
 ### 2.7 Statistiques
 
-
-
+| Metrique | Valeur |
+|----------|--------|
+| **Taches** | 3 |
+| **Lignes logique** | 29 |
+| **Lignes desactivees** | 0 |
 ---
 
 <!-- TAB:Cartographie -->
@@ -97,12 +105,26 @@ flowchart TD
 ```mermaid
 graph LR
     M[1 Main]
-    T[152 Programme]
-    M --> T
+    N316[316 Saisie trans]
+    N310[310 Saisie trans]
+    N298[298 Gestion cais]
+    N233[233 Appel Print ]
+    N299[299 Fermeture ca]
+    T[152 Recup Classe]
+    M --> N316
+    N316 --> N310
+    N310 --> N298
+    N298 --> N233
+    N233 --> N299
+    N299 --> T
     style M fill:#8b5cf6,color:#fff
+    style N316 fill:#f59e0b
+    style N310 fill:#f59e0b
+    style N298 fill:#f59e0b
+    style N233 fill:#f59e0b
+    style N299 fill:#f59e0b
     style T fill:#58a6ff,color:#000
 ```
-
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
@@ -149,6 +171,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 20:21 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
 | 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (2 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
