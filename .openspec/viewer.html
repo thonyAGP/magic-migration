@@ -36,17 +36,51 @@
     });
 
     // Function to render Mermaid diagrams after content is loaded
-    function renderMermaidDiagrams() {
-      const mermaidBlocks = document.querySelectorAll('pre code.language-mermaid');
+    async function renderMermaidDiagrams() {
+      // Try multiple selectors - marked.js may use different class names
+      const selectors = [
+        'pre code.language-mermaid',
+        'pre code.mermaid',
+        'code.language-mermaid',
+        'code.mermaid'
+      ];
+
+      let mermaidBlocks = [];
+      for (const selector of selectors) {
+        const blocks = document.querySelectorAll(selector);
+        if (blocks.length > 0) {
+          mermaidBlocks = blocks;
+          break;
+        }
+      }
+
+      // Also find by content - look for flowchart or graph keywords
+      if (mermaidBlocks.length === 0) {
+        document.querySelectorAll('pre code').forEach(block => {
+          const text = block.textContent.trim();
+          if (text.startsWith('flowchart') || text.startsWith('graph') || text.startsWith('sequenceDiagram')) {
+            mermaidBlocks.push ? mermaidBlocks.push(block) : (mermaidBlocks = [block]);
+          }
+        });
+      }
+
       mermaidBlocks.forEach((block, index) => {
         const pre = block.parentElement;
         const container = document.createElement('div');
         container.className = 'mermaid';
+        container.id = 'mermaid-' + index;
         container.textContent = block.textContent;
         pre.replaceWith(container);
       });
+
       // Re-run mermaid on new elements
-      mermaid.run();
+      if (mermaidBlocks.length > 0) {
+        try {
+          await mermaid.run();
+        } catch (e) {
+          console.error('Mermaid rendering error:', e);
+        }
+      }
     }
   </script>
   <style>
@@ -1606,7 +1640,7 @@
           content.innerHTML = headerHtml + tabsHtml + marked.parse(text);
         }
         // Render Mermaid diagrams
-        renderMermaidDiagrams();
+        await renderMermaidDiagrams();
         // Attach click handlers to spec links
         attachSpecLinks(content);
       } catch (err) {
@@ -1708,6 +1742,8 @@
       document.querySelectorAll('.spec-section').forEach(section => {
         section.classList.toggle('active', section.dataset.tab === tabName);
       });
+      // Re-render Mermaid diagrams for newly visible tab
+      setTimeout(() => renderMermaidDiagrams(), 100);
     }
 
     function buildCommitsPanel(ticketId) {
