@@ -299,18 +299,20 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 - Resolution de bugs
 - Amelioration continue
 
-**Inventaire des outils** (2026-01-27 - Post AUDIT PDCA) :
+**Inventaire des outils** (2026-01-27 - Post AUDIT PDCA Phase 2) :
 
 | Categorie | Outils | Etat | Cible | Score |
 |-----------|--------|------|-------|-------|
 | MCP Server | **93 outils** | **211%** | 44 | **A+** |
 | Agents specialises | 5 agents | 100% | 5 | **A** |
-| Scripts PowerShell | **127 scripts** | 47% doc | 100% | **B** |
+| Scripts PowerShell | **130 scripts** | 52% doc | 100% | **B** |
 | Parser TypeScript | 3 generateurs | **100%** | 100% | **A** |
 | Fonctions Magic | **200/200** | **100%** | 200 | **A** |
 | Tests MCP | **88/88** | **100%** | 80% | **A+** |
+| Tests spec-generator | **25/25** | **100%** | 25 | **A** |
 | Patterns KB | **16 patterns** | **80%** | 20+ | **B+** |
-| Specs generees | **323** | **92%** | 350 | **B+** |
+| Linking specs-patterns | **235/323** | **73%** | 80% | **B** |
+| Specs V3.5 | **322/323** | **100%** | 100% | **A** |
 | Migration C# | **79 progs** | **22.6%** | 350 | **C** |
 | Orphelins ADH | **88** | N/A | - | Archives |
 
@@ -821,7 +823,8 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
-- 2026-01-27: **AUDIT PDCA Execute** - Phase 1 implementee: (1) Archive magic-logic-parser v1-v4 dans tools/_archive, (2) README tools/scripts (66 scripts documentes), (3) +4 patterns KB (16 total, 80%), (4) Tests MCP valides 88/88. Scorecard: MCP A+, Patterns B+, Migration C (22.6%)
+- 2026-01-27: **AUDIT PDCA Phase 2** - (1) Linking specs-patterns bidirectionnel (235/323, 73%), (2) Tests spec-generator (25/25, 100%), (3) Upgrade 322 specs V2.0→V3.5 (TAB markers + Mermaid), (4) Strategie migration C# documentee (22.6%→40% M+1). Scripts: link-specs-patterns.ps1, Upgrade-SpecsToV35.ps1, test-spec-generator.ps1
+- 2026-01-27: **AUDIT PDCA Phase 1** - Archive magic-logic-parser v1-v4 dans tools/_archive, README tools/scripts (66 scripts), +4 patterns KB (16 total, 80%), Tests MCP valides 88/88. Scorecard: MCP A+, Patterns B+, Migration C (22.6%)
 - 2026-01-26: **Spec Capitalization Implementation P1-P3** - (P1-A) auto-find-programs.ps1 spec context injection, (P1-D) sync-patterns-to-kb.ps1 bidirectional links + known_patterns_json, (P2-C) RegressionDetectionTool.cs (magic_detect_regression, magic_spec_drift_report), (P3-B) Generate-MigrationBlueprint.ps1 C# code skeleton, (P3-E) Generate-TestsFromSpec.ps1 xUnit/Vitest scaffolds
 - 2026-01-26: **Spec Capitalization Plan Complete** - 4 phases implementees: (1) SpecReaderTool + viewer search, (2) KB indexing + pattern-spec integration, (3) validation hook v3.1 + auto-regeneration pipeline, (4) magic_precheck_change + impact matrices. 6 nouveaux scripts, 3 MCP tools, CI/CD workflow
 - 2026-01-26: **Phase 0 Ecosystem Optimization** - PatternSyncService.cs (sync Markdown→KB), 2 outils MCP (magic_pattern_sync, magic_pattern_status), 5 tests unitaires, diagnostic ADH XML (360 fichiers valides)
