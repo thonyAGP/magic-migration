@@ -624,6 +624,39 @@
     .welcome h2 { border: none; color: var(--text-primary); }
     .welcome p { max-width: 400px; margin: 12px auto; }
 
+    /* YAML Display */
+    .yaml-header {
+      background: var(--purple);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px 8px 0 0;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .yaml-header code {
+      background: rgba(255,255,255,0.2);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .yaml-icon { font-size: 18px; }
+    .yaml-content {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      padding: 16px;
+      margin: 0;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .yaml-content code {
+      color: var(--text-primary);
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    }
+
     /* Loading */
     .loading { text-align: center; padding: 48px; color: var(--text-secondary); }
 
@@ -1169,6 +1202,12 @@
       return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
     }
 
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
     function formatDateTime(dateStr) {
       if (!dateStr) return '-';
       const date = new Date(dateStr);
@@ -1656,6 +1695,15 @@
         const response = await fetch(path + '?t=' + Date.now());
         if (!response.ok) throw new Error('Fichier non trouve');
         const text = await response.text();
+
+        // Handle YAML files with syntax highlighting
+        const isYaml = path.endsWith('.yaml') || path.endsWith('.yml');
+        if (isYaml) {
+          const fileName = path.split('/').pop();
+          const yamlHeader = `<div class="yaml-header"><span class="yaml-icon">📋</span> Annotation YAML: <code>${fileName}</code></div>`;
+          content.innerHTML = headerHtml + yamlHeader + `<pre class="yaml-content"><code>${escapeHtml(text)}</code></pre>`;
+          return;
+        }
 
         // Check for spec tabs (<!-- TAB:xxx --> markers)
         if (isSpec && text.includes('<!-- TAB:')) {
