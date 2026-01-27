@@ -53,8 +53,15 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #40 | `Table_40` | R | 1x |
+| #44 | `Table_44` | R | 1x |
+| #70 | `Table_70` | R | 1x |
+| #147 | `Table_147` | R | 1x |
+| #246 | `Table_246` | LINK | 1x |
+| #263 | `Table_263` | R | 1x |
+| #728 | `Table_728` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +111,9 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 121 | Gestion caisse | 2 |
+| 298 | Gestion caisse 142 | 2 |
+| 163 | Menu caisse GM - scroll | 1 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +125,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +141,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (13 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

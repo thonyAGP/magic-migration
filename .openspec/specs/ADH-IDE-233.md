@@ -53,8 +53,9 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| - | Aucune table | - | - |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +105,35 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 312 | Historique des ventes - Gratui | 4 |
+| 319 | Annulation Ventes Gratuites | 4 |
+| 245 | Histo ventes payantes /PMS-623 | 3 |
+| 237 | Transaction Nouv vente avec GP | 2 |
+| 239 | Transaction Nouv vente PMS-721 | 2 |
+| 240 | Transaction Nouv vente PMS-710 | 2 |
+| 243 | Histo ventes payantes | 2 |
+| 244 | Histo ventes payantes /PMS-605 | 2 |
+| 252 | Histo ventes IGR | 2 |
+| 253 | Histo ventes Gratuités | 2 |
+| 255 | VAD validés à imprimer | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[233 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C234[234  Print ticket v]
+    T --> C234
+    C235[235  Print ticket v]
+    T --> C235
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C234 fill:#3fb950
+    style C235 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 234 |  Print ticket vente | 1 |
+| 1 | 235 |  Print ticket vente LEX | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +147,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (2 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

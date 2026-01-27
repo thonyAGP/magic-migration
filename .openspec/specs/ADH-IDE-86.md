@@ -53,8 +53,13 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #19 | `Table_19` | LINK | 2x |
+| #19 | `Table_19` | R | 5x |
+| #30 | `Table_30` | R | 1x |
+| #312 | `Table_312` | R | 2x |
+| #312 | `Table_312` | **W** | 2x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +109,41 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 77 | Club Med Pass menu | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[86 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C44[44 Appel programme]
+    T --> C44
+    C87[87     Print Plafo]
+    T --> C87
+    C179[179 Get Printer]
+    T --> C179
+    C180[180 Printer choice]
+    T --> C180
+    C181[181 Set Listing Num]
+    T --> C181
+    C182[182 Raz Current Pri]
+    T --> C182
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C44 fill:#3fb950
+    style C87 fill:#3fb950
+    style C179 fill:#3fb950
+    style C180 fill:#3fb950
+    style C181 fill:#3fb950
+    style C182 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 44 | Appel programme | 1 |
+| 1 | 87 |     Print Plafonds alloués | 1 |
+| 1 | 179 | Get Printer | 1 |
+| 1 | 180 | Printer choice | 1 |
+| 1 | 181 | Set Listing Number | 1 |
+| 1 | 182 | Raz Current Printer | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +157,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (11 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

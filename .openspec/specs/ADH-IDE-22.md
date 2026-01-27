@@ -53,8 +53,10 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #50 | `Table_50` | R | 1x |
+| #139 | `Table_139` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +106,9 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 23 | Print reçu change achat | 7 |
+| 24 | Print reçu change vente | 7 |
+| 154 | Tableau recap fermeture | 6 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +120,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +136,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (16 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

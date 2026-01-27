@@ -53,8 +53,11 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #30 | `Table_30` | R | 7x |
+| #147 | `Table_147` | LINK | 7x |
+| #368 | `Table_368` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +107,25 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 294 | Bi  Change GM Vente | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[291 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C289[289 Calcul equivale]
+    T --> C289
+    C182[182 Raz Current Pri]
+    T --> C182
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C289 fill:#3fb950
+    style C182 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 289 | Calcul equivalent BI locale | 7 |
+| 1 | 182 | Raz Current Printer | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +139,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (7 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

@@ -53,8 +53,9 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #719 | `Table_719` | R | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +105,26 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 119 | Affichage sessions | 7 |
+| 25 | Change GM | 4 |
+| 173 | Gestion forfait TAI LOCAL | 4 |
+| 293 | Bi  Change GM Achat | 4 |
+| 294 | Bi  Change GM Vente | 4 |
+| 193 | Solde compte fin sejour | 3 |
+| 0 | Garantie sur compte PMS-584 | 2 |
+| 28 | Fusion | 2 |
+| 40 | Comptes de depôt | 2 |
+| 111 | Garantie sur compte | 2 |
+| 112 | Garantie sur compte PMS-584 | 2 |
+| 120 | Saisie contenu caisse | 2 |
+| 123 | Apport coffre | 2 |
+| 163 | Menu caisse GM - scroll | 2 |
+| 170 | Messagerie | 2 |
+| 209 | Affectation code autocom | 2 |
+| 217 | Menu telephone | 2 |
+| 272 | Zoom modes de paiement | 2 |
+| 288 | Garantie sur compte | 2 |
+| 0 | Transaction Nouv vente PMS-584 | 1 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +136,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +152,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (4 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

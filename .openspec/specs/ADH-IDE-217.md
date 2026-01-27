@@ -53,8 +53,19 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #31 | `Table_31` | LINK | 1x |
+| #47 | `Table_47` | **W** | 2x |
+| #80 | `Table_80` | R | 2x |
+| #87 | `Table_87` | LINK | 1x |
+| #88 | `Table_88` | R | 1x |
+| #104 | `Table_104` | LINK | 1x |
+| #169 | `Table_169` | LINK | 1x |
+| #188 | `Table_188` | LINK | 1x |
+| #367 | `Table_367` | **W** | 1x |
+| #454 | `Table_454` | LINK | 1x |
+| #786 | `Table_786` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +115,55 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 163 | Menu caisse GM - scroll | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[217 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C179[179 Get Printer]
+    T --> C179
+    C181[181 Set Listing Num]
+    T --> C181
+    C183[183 Other Listing]
+    T --> C183
+    C43[43 Recuperation du]
+    T --> C43
+    C44[44 Appel programme]
+    T --> C44
+    C180[180 Printer choice]
+    T --> C180
+    C209[209 Affectation cod]
+    T --> C209
+    C182[182 Raz Current Pri]
+    T --> C182
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C179 fill:#3fb950
+    style C181 fill:#3fb950
+    style C183 fill:#3fb950
+    style C43 fill:#3fb950
+    style C44 fill:#3fb950
+    style C180 fill:#3fb950
+    style C209 fill:#3fb950
+    style C182 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 179 | Get Printer | 5 |
+| 1 | 181 | Set Listing Number | 5 |
+| 1 | 183 | Other Listing | 3 |
+| 1 | 43 | Recuperation du titre | 2 |
+| 1 | 44 | Appel programme | 2 |
+| 1 | 180 | Printer choice | 2 |
+| 1 | 209 | Affectation code autocom | 2 |
+| 1 | 182 | Raz Current Printer | 1 |
+| 1 | 208 | Print Reçu code autocom | 1 |
+| 1 | 210 | Changement de chambre | 1 |
+| 1 | 211 | Opposition code autocom | 1 |
+| 1 | 214 | Menu impression des appels | 1 |
+| 1 | 215 | Visu du contenu d'un poste | 1 |
+| 1 | 218 |    Envoi table autocom PABX | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +177,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (9 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

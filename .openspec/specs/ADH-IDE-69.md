@@ -53,8 +53,26 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #30 | `Table_30` | LINK | 1x |
+| #40 | `Table_40` | R | 2x |
+| #40 | `Table_40` | **W** | 1x |
+| #47 | `Table_47` | R | 2x |
+| #47 | `Table_47` | **W** | 1x |
+| #67 | `Table_67` | LINK | 1x |
+| #70 | `Table_70` | LINK | 1x |
+| #285 | `Table_285` | LINK | 1x |
+| #367 | `Table_367` | **W** | 1x |
+| #377 | `Table_377` | R | 1x |
+| #395 | `Table_395` | LINK | 1x |
+| #396 | `Table_396` | LINK | 2x |
+| #473 | `Table_473` | LINK | 1x |
+| #728 | `Table_728` | LINK | 1x |
+| #786 | `Table_786` | LINK | 1x |
+| #911 | `Table_911` | **W** | 1x |
+| #945 | `Table_945` | LINK | 1x |
+| #945 | `Table_945` | R | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +122,55 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 163 | Menu caisse GM - scroll | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[69 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C179[179 Get Printer]
+    T --> C179
+    C181[181 Set Listing Num]
+    T --> C181
+    C183[183 Other Listing]
+    T --> C183
+    C71[71 Print extrait c]
+    T --> C71
+    C43[43 Recuperation du]
+    T --> C43
+    C44[44 Appel programme]
+    T --> C44
+    C70[70 Print extrait c]
+    T --> C70
+    C72[72 Print extrait c]
+    T --> C72
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C179 fill:#3fb950
+    style C181 fill:#3fb950
+    style C183 fill:#3fb950
+    style C71 fill:#3fb950
+    style C43 fill:#3fb950
+    style C44 fill:#3fb950
+    style C70 fill:#3fb950
+    style C72 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 179 | Get Printer | 7 |
+| 1 | 181 | Set Listing Number | 7 |
+| 1 | 183 | Other Listing | 6 |
+| 1 | 71 | Print extrait compte /Date | 2 |
+| 1 | 43 | Recuperation du titre | 1 |
+| 1 | 44 | Appel programme | 1 |
+| 1 | 70 | Print extrait compte /Nom | 1 |
+| 1 | 72 | Print extrait compte /Cum | 1 |
+| 1 | 73 | Print extrait compte /Imp | 1 |
+| 1 | 74 | Print extrait DateImp /O | 1 |
+| 1 | 76 | Print extrait compte /Service | 1 |
+| 1 | 180 | Printer choice | 1 |
+| 1 | 182 | Raz Current Printer | 1 |
+| 1 | 226 | Recherche Adresse Mail | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +184,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (9 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

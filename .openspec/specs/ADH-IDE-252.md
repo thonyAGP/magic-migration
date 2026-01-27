@@ -53,8 +53,25 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #23 | `Table_23` | R | 1x |
+| #23 | `Table_23` | **W** | 4x |
+| #34 | `Table_34` | R | 2x |
+| #40 | `Table_40` | LINK | 1x |
+| #47 | `Table_47` | **W** | 1x |
+| #67 | `Table_67` | LINK | 1x |
+| #70 | `Table_70` | R | 1x |
+| #197 | `Table_197` | LINK | 1x |
+| #263 | `Table_263` | LINK | 1x |
+| #596 | `Table_596` | LINK | 2x |
+| #728 | `Table_728` | LINK | 1x |
+| #804 | `Table_804` | LINK | 2x |
+| #804 | `Table_804` | **W** | 2x |
+| #847 | `Table_847` | LINK | 2x |
+| #933 | `Table_933` | LINK | 3x |
+| #933 | `Table_933` | R | 1x |
+| #933 | `Table_933` | **W** | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +121,33 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 242 | Menu Choix Saisie/Annul vente | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[252 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C233[233 Appel Print tic]
+    T --> C233
+    C179[179 Get Printer]
+    T --> C179
+    C181[181 Set Listing Num]
+    T --> C181
+    C182[182 Raz Current Pri]
+    T --> C182
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C233 fill:#3fb950
+    style C179 fill:#3fb950
+    style C181 fill:#3fb950
+    style C182 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 233 | Appel Print ticket vente PMS28 | 2 |
+| 1 | 179 | Get Printer | 1 |
+| 1 | 181 | Set Listing Number | 1 |
+| 1 | 182 | Raz Current Printer | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +161,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (28 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

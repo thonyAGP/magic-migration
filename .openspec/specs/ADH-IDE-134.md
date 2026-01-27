@@ -53,8 +53,18 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #50 | `Table_50` | R | 1x |
+| #139 | `Table_139` | R | 1x |
+| #196 | `Table_196` | R | 2x |
+| #232 | `Table_232` | R | 2x |
+| #244 | `Table_244` | R | 2x |
+| #247 | `Table_247` | **W** | 2x |
+| #249 | `Table_249` | **W** | 1x |
+| #250 | `Table_250` | **W** | 4x |
+| #251 | `Table_251` | **W** | 1x |
+| #505 | `Table_505` | R | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +114,12 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 131 | Fermeture caisse | 14 |
+| 122 | Ouverture caisse | 7 |
+| 297 | Ouverture caisse 143 | 7 |
+| 299 | Fermeture caisse 144 | 7 |
+| 121 | Gestion caisse | 3 |
+| 298 | Gestion caisse 142 | 3 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +131,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +147,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (25 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

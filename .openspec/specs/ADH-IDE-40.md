@@ -53,8 +53,17 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #41 | `Table_41` | **W** | 5x |
+| #42 | `Table_42` | **W** | 2x |
+| #43 | `Table_43` | **W** | 4x |
+| #47 | `Table_47` | **W** | 2x |
+| #50 | `Table_50` | R | 1x |
+| #67 | `Table_67` | LINK | 1x |
+| #367 | `Table_367` | **W** | 1x |
+| #456 | `Table_456` | R | 1x |
+| #456 | `Table_456` | **W** | 2x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +113,53 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 163 | Menu caisse GM - scroll | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[40 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C44[44 Appel programme]
+    T --> C44
+    C179[179 Get Printer]
+    T --> C179
+    C181[181 Set Listing Num]
+    T --> C181
+    C43[43 Recuperation du]
+    T --> C43
+    C183[183 Other Listing]
+    T --> C183
+    C263[263 Zoom modes de p]
+    T --> C263
+    C39[39 Print extrait O]
+    T --> C39
+    C172[172 Print Depot Obj]
+    T --> C172
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C44 fill:#3fb950
+    style C179 fill:#3fb950
+    style C181 fill:#3fb950
+    style C43 fill:#3fb950
+    style C183 fill:#3fb950
+    style C263 fill:#3fb950
+    style C39 fill:#3fb950
+    style C172 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 44 | Appel programme | 3 |
+| 1 | 179 | Get Printer | 3 |
+| 1 | 181 | Set Listing Number | 3 |
+| 1 | 43 | Recuperation du titre | 2 |
+| 1 | 183 | Other Listing | 2 |
+| 1 | 263 | Zoom modes de paiement | 2 |
+| 1 | 39 | Print extrait ObjDevSce | 1 |
+| 1 | 172 | Print Depot Obj/Dev/Sce | 1 |
+| 1 | 180 | Printer choice | 1 |
+| 1 | 182 | Raz Current Printer | 1 |
+| 1 | 262 | Zoom  des types d'objets | 1 |
+| 1 | 266 | Zoom des all devises | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +173,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (5 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

@@ -53,8 +53,13 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #38 | `Table_38` | R | 1x |
+| #38 | `Table_38` | **W** | 1x |
+| #264 | `Table_264` | LINK | 1x |
+| #400 | `Table_400` | LINK | 1x |
+| #804 | `Table_804` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +109,54 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 163 | Menu caisse GM - scroll | 2 |
+| 0 | Transaction Nouv vente PMS-584 | 1 |
+| 0 | Transaction Nouv vente PMS-710 | 1 |
+| 0 | Transaction Nouv vente PMS-721 | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[242 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C44[44 Appel programme]
+    T --> C44
+    C237[237 Transaction Nou]
+    T --> C237
+    C238[238 Transaction Nou]
+    T --> C238
+    C239[239 Transaction Nou]
+    T --> C239
+    C240[240 Transaction Nou]
+    T --> C240
+    C243[243 Histo ventes pa]
+    T --> C243
+    C244[244 Histo ventes pa]
+    T --> C244
+    C245[245 Histo ventes pa]
+    T --> C245
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C44 fill:#3fb950
+    style C237 fill:#3fb950
+    style C238 fill:#3fb950
+    style C239 fill:#3fb950
+    style C240 fill:#3fb950
+    style C243 fill:#3fb950
+    style C244 fill:#3fb950
+    style C245 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 44 | Appel programme | 1 |
+| 1 | 237 | Transaction Nouv vente avec GP | 1 |
+| 1 | 238 | Transaction Nouv vente PMS-584 | 1 |
+| 1 | 239 | Transaction Nouv vente PMS-721 | 1 |
+| 1 | 240 | Transaction Nouv vente PMS-710 | 1 |
+| 1 | 243 | Histo ventes payantes | 1 |
+| 1 | 244 | Histo ventes payantes /PMS-605 | 1 |
+| 1 | 245 | Histo ventes payantes /PMS-623 | 1 |
+| 1 | 252 | Histo ventes IGR | 1 |
+| 1 | 253 | Histo ventes Gratuités | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +170,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (29 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

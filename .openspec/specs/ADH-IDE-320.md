@@ -53,8 +53,32 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #26 | `Table_26` | R | 1x |
+| #30 | `Table_30` | LINK | 1x |
+| #31 | `Table_31` | LINK | 1x |
+| #34 | `Table_34` | LINK | 1x |
+| #38 | `Table_38` | LINK | 1x |
+| #38 | `Table_38` | **W** | 1x |
+| #40 | `Table_40` | LINK | 2x |
+| #47 | `Table_47` | **W** | 1x |
+| #65 | `Table_65` | LINK | 2x |
+| #65 | `Table_65` | R | 3x |
+| #67 | `Table_67` | LINK | 1x |
+| #68 | `Table_68` | **W** | 1x |
+| #77 | `Table_77` | LINK | 4x |
+| #89 | `Table_89` | LINK | 2x |
+| #263 | `Table_263` | LINK | 2x |
+| #264 | `Table_264` | LINK | 2x |
+| #268 | `Table_268` | LINK | 1x |
+| #271 | `Table_271` | LINK | 1x |
+| #596 | `Table_596` | LINK | 1x |
+| #804 | `Table_804` | LINK | 1x |
+| #847 | `Table_847` | LINK | 3x |
+| #847 | `Table_847` | R | 2x |
+| #933 | `Table_933` | LINK | 1x |
+| #945 | `Table_945` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +128,7 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| - | **Aucun caller** (point d'entree ou orphelin) | - |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +140,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +156,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:52 | **DATA POPULATED** - Tables, Callgraph (31 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

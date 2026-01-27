@@ -53,8 +53,16 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #31 | `Table_31` | R | 15x |
+| #69 | `Table_69` | R | 1x |
+| #268 | `Table_268` | LINK | 15x |
+| #268 | `Table_268` | **W** | 1x |
+| #271 | `Table_271` | LINK | 15x |
+| #272 | `Table_272` | LINK | 7x |
+| #272 | `Table_272` | R | 1x |
+| #273 | `Table_273` | LINK | 16x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +112,38 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 0 | Garantie sur compte PMS-584 | 2 |
+| 77 | Club Med Pass menu | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[79 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C181[181 Set Listing Num]
+    T --> C181
+    C184[184 Get Printer for]
+    T --> C184
+    C182[182 Raz Current Pri]
+    T --> C182
+    C185[185 Chained Listing]
+    T --> C185
+    C186[186 Chained Listing]
+    T --> C186
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C181 fill:#3fb950
+    style C184 fill:#3fb950
+    style C182 fill:#3fb950
+    style C185 fill:#3fb950
+    style C186 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 181 | Set Listing Number | 2 |
+| 1 | 184 | Get Printer for chained list | 2 |
+| 1 | 182 | Raz Current Printer | 1 |
+| 1 | 185 | Chained Listing Printer Choice | 1 |
+| 1 | 186 | Chained Listing Load Default | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +157,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (23 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

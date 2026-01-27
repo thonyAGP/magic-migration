@@ -53,8 +53,13 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #30 | `Table_30` | R | 1x |
+| #69 | `Table_69` | R | 1x |
+| #70 | `Table_70` | LINK | 1x |
+| #372 | `Table_372` | LINK | 1x |
+| #911 | `Table_911` | LINK | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +109,29 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| - | **Aucun caller** (point d'entree ou orphelin) | - |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[53 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C71[71 Print extrait c]
+    T --> C71
+    C76[76 Print extrait c]
+    T --> C76
+    C178[178 Set Village Add]
+    T --> C178
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C71 fill:#3fb950
+    style C76 fill:#3fb950
+    style C178 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 71 | Print extrait compte /Date | 1 |
+| 1 | 76 | Print extrait compte /Service | 1 |
+| 1 | 178 | Set Village Address | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +145,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (2 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

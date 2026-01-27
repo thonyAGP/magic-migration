@@ -53,8 +53,9 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| - | Aucune table | - | - |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +105,40 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 24 | Print reçu change vente | 1 |
+| 25 | Change GM | 1 |
+| 27 | Separation | 1 |
+| 28 | Fusion | 1 |
+| 36 | Print Separation ou fusion | 1 |
+| 39 | Print extrait ObjDevSce | 1 |
+| 40 | Comptes de depôt | 1 |
+| 69 | Extrait de compte | 1 |
+| 70 | Print extrait compte /Nom | 1 |
+| 71 | Print extrait compte /Date | 1 |
+| 72 | Print extrait compte /Cum | 1 |
+| 73 | Print extrait compte /Imp | 1 |
+| 74 | Print extrait DateImp /O | 1 |
+| 76 | Print extrait compte /Service | 1 |
+| 77 | Club Med Pass menu | 1 |
+| 78 | Print Ventes Club Med Pass | 1 |
+| 79 | Balance Credit de conso | 1 |
+| 86 | Bar Limit | 1 |
+| 107 | Print creation garantie | 1 |
+| 108 | Print annulation garantie | 1 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[182 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C179[179 Get Printer]
+    T --> C179
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C179 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 179 | Get Printer | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +152,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (5 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

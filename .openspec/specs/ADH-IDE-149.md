@@ -53,8 +53,14 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #40 | `Table_40` | R | 1x |
+| #222 | `Table_222` | R | 1x |
+| #246 | `Table_246` | R | 1x |
+| #247 | `Table_247` | LINK | 1x |
+| #249 | `Table_249` | R | 1x |
+| #263 | `Table_263` | R | 1x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +110,15 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 125 | Remise en caisse | 1 |
+| 237 | Transaction Nouv vente avec GP | 1 |
+| 238 | Transaction Nouv vente PMS-584 | 1 |
+| 239 | Transaction Nouv vente PMS-721 | 1 |
+| 240 | Transaction Nouv vente PMS-710 | 1 |
+| 300 | Saisie transaction 154 N.U | 1 |
+| 307 | Saisie transaction 154  N.U | 1 |
+| 310 | Saisie transaction Nouv vente | 1 |
+| 316 | Saisie transaction Nouv vente | 1 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +130,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +146,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (1 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

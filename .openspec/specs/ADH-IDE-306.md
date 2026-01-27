@@ -53,8 +53,15 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| #69 | `Table_69` | R | 1x |
+| #77 | `Table_77` | R | 5x |
+| #596 | `Table_596` | LINK | 5x |
+| #596 | `Table_596` | R | 7x |
+| #818 | `Table_818` | LINK | 1x |
+| #847 | `Table_847` | LINK | 2x |
+| #847 | `Table_847` | R | 2x |
 ### 2.3 Parametres d'entree
 
 
@@ -104,19 +111,26 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 173 | Gestion forfait TAI LOCAL | 2 |
+| 300 | Saisie transaction 154 N.U | 2 |
 ### 3.3 Callees
 
 ```mermaid
 graph LR
     T[306 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    C152[152 Recup Classe et]
+    T --> C152
+    C182[182 Raz Current Pri]
+    T --> C182
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    style C152 fill:#3fb950
+    style C182 fill:#3fb950
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| 1 | 152 | Recup Classe et Lib du MOP | 2 |
+| 1 | 182 | Raz Current Printer | 1 |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +144,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:52 | **DATA POPULATED** - Tables, Callgraph (9 expr) | Script |
 | 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---

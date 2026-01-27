@@ -53,8 +53,9 @@
 
 ### 2.2 Tables
 
-
-
+| # | Nom physique | Acces | Usage |
+|---|--------------|-------|-------|
+| - | Aucune table | - | - |
 ### 2.3 Parametres d'entree
 
 
@@ -104,8 +105,26 @@ graph LR
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | A analyser | - |
-
+| 25 | Change GM | 3 |
+| 40 | Comptes de depôt | 3 |
+| 0 | Garantie sur compte PMS-584 | 2 |
+| 111 | Garantie sur compte | 2 |
+| 112 | Garantie sur compte PMS-584 | 2 |
+| 168 | Gratuités | 2 |
+| 174 | Versement/Retrait | 2 |
+| 217 | Menu telephone | 2 |
+| 288 | Garantie sur compte | 2 |
+| 317 | Gratuités P157 | 2 |
+| 37 | Menu changement compte | 1 |
+| 69 | Extrait de compte | 1 |
+| 77 | Club Med Pass menu | 1 |
+| 86 | Bar Limit | 1 |
+| 158 | Menu Great Member | 1 |
+| 163 | Menu caisse GM - scroll | 1 |
+| 173 | Gestion forfait TAI LOCAL | 1 |
+| 190 | Menu solde d'un compte | 1 |
+| 214 | Menu impression des appels | 1 |
+| 242 | Menu Choix Saisie/Annul vente | 1 |
 ### 3.3 Callees
 
 ```mermaid
@@ -117,6 +136,9 @@ graph LR
     style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
+| Niv | IDE | Programme | Nb appels |
+|-----|-----|-----------|-----------|
+| - | - | Programme terminal | - |
 ### 3.4 Verification orphelin
 
 | Critere | Resultat |
@@ -130,6 +152,7 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
+| 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (1 expr) | Script |
 | 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
 
 ---
