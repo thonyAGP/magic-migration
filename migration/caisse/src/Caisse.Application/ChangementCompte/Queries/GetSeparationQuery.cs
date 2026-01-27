@@ -21,7 +21,7 @@ public record GetSeparationQuery(
 
 public record GetSeparationResult(
     bool Found,
-    List<SeparationDetail> Details = null,
+    List<SeparationDetail>? Details = null,
     string Message = "");
 
 public record SeparationDetail(
@@ -58,37 +58,32 @@ public class GetSeparationQueryHandler : IRequestHandler<GetSeparationQuery, Get
         _context = context;
     }
 
-    public async Task<GetSeparationResult> Handle(
+    public Task<GetSeparationResult> Handle(
         GetSeparationQuery request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            // Browse separation records for account and dependent filings
-            // Prg_27 retrieves separation details for a given account
-            var separationDetails = new List<SeparationDetail>();
+        // Browse separation records for account and dependent filings
+        // Prg_27 retrieves separation details for a given account
+        var separationDetails = new List<SeparationDetail>();
 
-            // This would fetch from histo_fus_sep and related tables
-            // For now, returning structure
-            var details = new SeparationDetail(
-                CodeAdherent: request.CodeAdherent,
-                Filiation: request.Filiation,
-                LibelleFiliation: "Filiation principale",
-                SoldeCompte: 0m,
-                DateOuverture: DateTime.Now,
-                Statut: "ACTIVE",
-                ComptesDependants: new List<string>()
-            );
+        // This would fetch from histo_fus_sep and related tables
+        // For now, returning structure
+        var details = new SeparationDetail(
+            CodeAdherent: request.CodeAdherent,
+            Filiation: request.Filiation,
+            LibelleFiliation: "Filiation principale",
+            SoldeCompte: 0m,
+            DateOuverture: DateTime.Now,
+            Statut: "ACTIVE",
+            ComptesDependants: new List<string>()
+        );
 
-            separationDetails.Add(details);
+        separationDetails.Add(details);
 
-            return separationDetails.Any()
-                ? new GetSeparationResult(true, separationDetails, "Détails de séparation récupérés")
-                : new GetSeparationResult(false, Details: new List<SeparationDetail>(), "Aucun détail de séparation trouvé");
-        }
-        catch (Exception ex)
-        {
-            return new GetSeparationResult(false, Details: new List<SeparationDetail>(), $"Erreur: {ex.Message}");
-        }
+        var result = separationDetails.Any()
+            ? new GetSeparationResult(true, separationDetails, "Détails de séparation récupérés")
+            : new GetSeparationResult(false, Details: new List<SeparationDetail>(), "Aucun détail de séparation trouvé");
+
+        return Task.FromResult(result);
     }
 }

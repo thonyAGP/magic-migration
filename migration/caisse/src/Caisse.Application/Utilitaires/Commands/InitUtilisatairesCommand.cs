@@ -66,7 +66,7 @@ public class InitUtilitairesCommandHandler : IRequestHandler<InitUtilitairesComm
                 InitializedComponents = components
             });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return Task.FromResult(new InitUtilitairesResult
             {

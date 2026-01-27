@@ -47,26 +47,19 @@ public class WriteHistoFusSepLogCommandHandler : IRequestHandler<WriteHistoFusSe
         _context = context;
     }
 
-    public async Task<WriteHistoFusSepLogResult> Handle(
+    public Task<WriteHistoFusSepLogResult> Handle(
         WriteHistoFusSepLogCommand request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            // Write to histo_fus_sep_log table
-            // Prg_35 writes log records for fusion/separation operations
-            // Records: Chrono, Message with date/time and user tracking
+        // Write to histo_fus_sep_log table
+        // Prg_35 writes log records for fusion/separation operations
+        // Records: Chrono, Message with date/time and user tracking
 
-            var chromoEnregistre = request.Chrono;
+        var chromoEnregistre = request.Chrono;
 
-            return new WriteHistoFusSepLogResult(
-                true,
-                chromoEnregistre,
-                "Log fusion/séparation enregistré avec succès");
-        }
-        catch (Exception ex)
-        {
-            return new WriteHistoFusSepLogResult(false, 0, $"Erreur: {ex.Message}");
-        }
+        return Task.FromResult(new WriteHistoFusSepLogResult(
+            true,
+            chromoEnregistre,
+            "Log fusion/séparation enregistré avec succès"));
     }
 }

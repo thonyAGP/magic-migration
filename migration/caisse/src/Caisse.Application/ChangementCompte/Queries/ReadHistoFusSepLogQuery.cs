@@ -18,7 +18,7 @@ public record ReadHistoFusSepLogQuery(
 
 public record ReadHistoFusSepLogResult(
     bool Found,
-    List<HistoFusSepLog> Logs = null,
+    List<HistoFusSepLog>? Logs = null,
     string Message = "");
 
 public record HistoFusSepLog(
@@ -52,36 +52,31 @@ public class ReadHistoFusSepLogQueryHandler : IRequestHandler<ReadHistoFusSepLog
         _context = context;
     }
 
-    public async Task<ReadHistoFusSepLogResult> Handle(
+    public Task<ReadHistoFusSepLogResult> Handle(
         ReadHistoFusSepLogQuery request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            // Read from histo_fus_sep_log table
-            // Prg_34 reads log history for fusion/separation operations
-            var logs = new List<HistoFusSepLog>();
+        // Read from histo_fus_sep_log table
+        // Prg_34 reads log history for fusion/separation operations
+        var logs = new List<HistoFusSepLog>();
 
-            var log = new HistoFusSepLog(
-                Chrono: request.Chrono,
-                Societe: request.Societe,
-                DateOperation: DateOnly.FromDateTime(DateTime.Now),
-                HeureOperation: TimeOnly.FromDateTime(DateTime.Now),
-                TypeOperation: request.TypeFusSep ?? "UNKNOWN",
-                Utilisateur: "SYSTEM",
-                Statut: "COMPLETED",
-                Messages: "Operation logged successfully"
-            );
+        var log = new HistoFusSepLog(
+            Chrono: request.Chrono,
+            Societe: request.Societe,
+            DateOperation: DateOnly.FromDateTime(DateTime.Now),
+            HeureOperation: TimeOnly.FromDateTime(DateTime.Now),
+            TypeOperation: request.TypeFusSep ?? "UNKNOWN",
+            Utilisateur: "SYSTEM",
+            Statut: "COMPLETED",
+            Messages: "Operation logged successfully"
+        );
 
-            logs.Add(log);
+        logs.Add(log);
 
-            return logs.Any()
-                ? new ReadHistoFusSepLogResult(true, logs, "Logs récupérés")
-                : new ReadHistoFusSepLogResult(false, new List<HistoFusSepLog>(), "Aucun log trouvé");
-        }
-        catch (Exception ex)
-        {
-            return new ReadHistoFusSepLogResult(false, new List<HistoFusSepLog>(), $"Erreur: {ex.Message}");
-        }
+        var result = logs.Any()
+            ? new ReadHistoFusSepLogResult(true, logs, "Logs récupérés")
+            : new ReadHistoFusSepLogResult(false, new List<HistoFusSepLog>(), "Aucun log trouvé");
+
+        return Task.FromResult(result);
     }
 }

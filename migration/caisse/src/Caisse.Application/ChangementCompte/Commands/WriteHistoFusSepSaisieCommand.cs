@@ -55,26 +55,19 @@ public class WriteHistoFusSepSaisieCommandHandler : IRequestHandler<WriteHistoFu
         _context = context;
     }
 
-    public async Task<WriteHistoFusSepSaisieResult> Handle(
+    public Task<WriteHistoFusSepSaisieResult> Handle(
         WriteHistoFusSepSaisieCommand request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            // Write to histo_fus_sep_saisie table
-            // Prg_32 writes entry details for fusion/separation with amounts
-            // Records: 11 parameters including source/target accounts and amounts
+        // Write to histo_fus_sep_saisie table
+        // Prg_32 writes entry details for fusion/separation with amounts
+        // Records: 11 parameters including source/target accounts and amounts
 
-            var chromoEnregistre = request.Chrono;
+        var chromoEnregistre = request.Chrono;
 
-            return new WriteHistoFusSepSaisieResult(
-                true,
-                chromoEnregistre,
-                "Historique saisie fusion/séparation enregistré avec succès");
-        }
-        catch (Exception ex)
-        {
-            return new WriteHistoFusSepSaisieResult(false, 0, $"Erreur: {ex.Message}");
-        }
+        return Task.FromResult(new WriteHistoFusSepSaisieResult(
+            true,
+            chromoEnregistre,
+            "Historique saisie fusion/séparation enregistré avec succès"));
     }
 }

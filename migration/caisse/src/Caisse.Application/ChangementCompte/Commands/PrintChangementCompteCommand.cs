@@ -58,28 +58,21 @@ public class PrintChangementCompteCommandHandler : IRequestHandler<PrintChangeme
         _context = context;
     }
 
-    public async Task<PrintChangementCompteResult> Handle(
+    public Task<PrintChangementCompteResult> Handle(
         PrintChangementCompteCommand request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            // Print report for account change/separation/fusion
-            // Prg_36 generates comprehensive report with all details
-            var reportNumber = $"RPT-{request.Chrono:D8}-{DateTime.Now:HHmmss}";
+        // Print report for account change/separation/fusion
+        // Prg_36 generates comprehensive report with all details
+        var reportNumber = $"RPT-{request.Chrono:D8}-{DateTime.Now:HHmmss}";
 
-            var reportContent = GeneratePrintContent(request, reportNumber);
+        var reportContent = GeneratePrintContent(request, reportNumber);
 
-            return new PrintChangementCompteResult(
-                true,
-                reportNumber,
-                "Rapport de changement de compte généré avec succès",
-                reportContent);
-        }
-        catch (Exception ex)
-        {
-            return new PrintChangementCompteResult(false, "", $"Erreur: {ex.Message}");
-        }
+        return Task.FromResult(new PrintChangementCompteResult(
+            true,
+            reportNumber,
+            "Rapport de changement de compte généré avec succès",
+            reportContent));
     }
 
     private string GeneratePrintContent(PrintChangementCompteCommand request, string reportNumber)

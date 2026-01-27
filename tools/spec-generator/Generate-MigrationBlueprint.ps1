@@ -221,6 +221,9 @@ function Generate-CSharpHandler {
 
     $UsedEntities = ($Entities | ForEach-Object { $_.ClassName }) -join ', '
 
+    # NOTE: Template updated 2026-01-27 to avoid CS8625/CS1998 warnings
+    # - Result types use nullable (T?) for optional properties
+    # - Handler uses Task.FromResult instead of async (no real DB call in stub)
     $Code = @"
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -233,17 +236,20 @@ namespace Migration.Handlers;
 /// Tables: $($Spec.Tables.Count) ($($Spec.WriteTables.Count) Write / $($Spec.ReadTables.Count) Read)
 /// Expressions: $($Spec.ExpressionCount)
 /// </summary>
-public class ${HandlerName}${HandlerType} : IRequest<${HandlerName}Result>
-{
+public record ${HandlerName}${HandlerType}(
     // TODO: Add request properties from spec parameters
     // Parameters: $($Spec.Parameters.Count)
-}
+    string Placeholder = ""
+) : IRequest<${HandlerName}Result>;
 
-public class ${HandlerName}Result
-{
-    public bool Success { get; set; }
-    // TODO: Add result properties based on business logic
-}
+/// <summary>
+/// Result record - use nullable types (T?) for optional fields
+/// </summary>
+public record ${HandlerName}Result(
+    bool Success,
+    string? Message = null,
+    object? Data = null
+);
 
 public class ${HandlerName}${HandlerType}Handler : IRequestHandler<${HandlerName}${HandlerType}, ${HandlerName}Result>
 {
@@ -254,23 +260,33 @@ public class ${HandlerName}${HandlerType}Handler : IRequestHandler<${HandlerName
         _context = context;
     }
 
-    public async Task<${HandlerName}Result> Handle(${HandlerName}${HandlerType} request, CancellationToken ct)
+    /// <summary>
+    /// Handler implementation - use async only when awaiting DB calls
+    /// For stubs without real DB access, use Task.FromResult to avoid CS1998
+    /// </summary>
+    public Task<${HandlerName}Result> Handle(${HandlerName}${HandlerType} request, CancellationToken ct)
     {
         // TODO: Implement business logic
         // Tables used: $UsedEntities
 $(if ($IsQuery) {
 @"
         // This is a QUERY (read-only) - no writes detected
-        // Use LINQ queries to fetch data
+        // When adding real DB calls, change signature to:
+        // public async Task<...> Handle(...) and use await _context...
 "@
 } else {
 @"
         // This is a COMMAND (write) - $($Spec.WriteTables.Count) table(s) modified
         // Write tables: $($Spec.WriteTables.LogicalName -join ', ')
+        // When adding real DB calls, change signature to:
+        // public async Task<...> Handle(...) and use await _context.SaveChangesAsync(ct)
 "@
 })
 
-        throw new NotImplementedException("Generated from spec - implement me!");
+        // Stub: return placeholder result (no async needed yet)
+        return Task.FromResult(new ${HandlerName}Result(
+            Success: false,
+            Message: "Not implemented - generated from spec"));
     }
 }
 "@

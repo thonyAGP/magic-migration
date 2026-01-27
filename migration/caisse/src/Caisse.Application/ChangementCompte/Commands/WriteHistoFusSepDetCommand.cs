@@ -51,26 +51,19 @@ public class WriteHistoFusSepDetCommandHandler : IRequestHandler<WriteHistoFusSe
         _context = context;
     }
 
-    public async Task<WriteHistoFusSepDetResult> Handle(
+    public Task<WriteHistoFusSepDetResult> Handle(
         WriteHistoFusSepDetCommand request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            // Write to histo_fus_sep_det table
-            // Prg_31 writes detailed history record for fusion/separation operation
-            // Records: Chrono, PositionReprise, NumeroTache, Type
+        // Write to histo_fus_sep_det table
+        // Prg_31 writes detailed history record for fusion/separation operation
+        // Records: Chrono, PositionReprise, NumeroTache, Type
 
-            var chromoEnregistre = request.Chrono;
+        var chromoEnregistre = request.Chrono;
 
-            return new WriteHistoFusSepDetResult(
-                true,
-                chromoEnregistre,
-                "Détails historique enregistrés avec succès");
-        }
-        catch (Exception ex)
-        {
-            return new WriteHistoFusSepDetResult(false, 0, $"Erreur: {ex.Message}");
-        }
+        return Task.FromResult(new WriteHistoFusSepDetResult(
+            true,
+            chromoEnregistre,
+            "Détails historique enregistrés avec succès"));
     }
 }
