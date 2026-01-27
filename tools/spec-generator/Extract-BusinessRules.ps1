@@ -58,6 +58,10 @@ Write-Host "Project: $Project | IDE: $IDE" -ForegroundColor Cyan
 
 function Get-KbData {
     param([string]$Query, [string]$DbPath)
+    # Check if sqlite3 CLI is available
+    $sqlite3Cmd = Get-Command sqlite3 -ErrorAction SilentlyContinue
+    if (-not $sqlite3Cmd) { return $null }
+    if (-not (Test-Path $DbPath)) { return $null }
     $result = sqlite3 $DbPath $Query 2>&1
     if ($LASTEXITCODE -ne 0) { return $null }
     return $result
