@@ -21,7 +21,7 @@ public record GetFusionQuery(
 
 public record GetFusionResult(
     bool Found,
-    FusionDetail Details = null,
+    FusionDetail? Details = null,
     string Message = "");
 
 public record FusionDetail(
@@ -71,33 +71,26 @@ public class GetFusionQueryHandler : IRequestHandler<GetFusionQuery, GetFusionRe
         _context = context;
     }
 
-    public async Task<GetFusionResult> Handle(
+    public Task<GetFusionResult> Handle(
         GetFusionQuery request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            // Browse fusion records between source and target accounts
-            // Prg_28 retrieves fusion details for account consolidation
-            var fusionDetail = new FusionDetail(
-                CodeCompteSource: request.CodeCompteSource,
-                FiliationSource: request.FiliationSource,
-                LibelleCompteSource: $"Compte {request.CodeCompteSource}",
-                SoldeSource: 0m,
-                CodeCompteCible: request.CodeCompteCible,
-                FiliationCible: request.FiliationCible,
-                LibelleCompteCible: $"Compte {request.CodeCompteCible}",
-                SoldeCible: 0m,
-                DateFusion: DateTime.Now,
-                Statut: "PENDING",
-                Transactions: new List<TransactionDetail>()
-            );
+        // Browse fusion records between source and target accounts
+        // Prg_28 retrieves fusion details for account consolidation
+        var fusionDetail = new FusionDetail(
+            CodeCompteSource: request.CodeCompteSource,
+            FiliationSource: request.FiliationSource,
+            LibelleCompteSource: $"Compte {request.CodeCompteSource}",
+            SoldeSource: 0m,
+            CodeCompteCible: request.CodeCompteCible,
+            FiliationCible: request.FiliationCible,
+            LibelleCompteCible: $"Compte {request.CodeCompteCible}",
+            SoldeCible: 0m,
+            DateFusion: DateTime.Now,
+            Statut: "PENDING",
+            Transactions: new List<TransactionDetail>()
+        );
 
-            return new GetFusionResult(true, fusionDetail, "Détails de fusion récupérés");
-        }
-        catch (Exception ex)
-        {
-            return new GetFusionResult(false, Details: null, $"Erreur: {ex.Message}");
-        }
+        return Task.FromResult(new GetFusionResult(true, fusionDetail, "Détails de fusion récupérés"));
     }
 }

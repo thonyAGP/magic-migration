@@ -18,7 +18,7 @@ public record GetZoomComptesCibleQuery(
 
 public record GetZoomComptesCibleResult(
     bool Found,
-    List<CompteZoom> Comptes = null,
+    List<CompteZoom>? Comptes = null,
     string Message = "");
 
 public class GetZoomComptesCibleQueryValidator : AbstractValidator<GetZoomComptesCibleQuery>
@@ -39,34 +39,29 @@ public class GetZoomComptesCibleQueryHandler : IRequestHandler<GetZoomComptesCib
         _context = context;
     }
 
-    public async Task<GetZoomComptesCibleResult> Handle(
+    public Task<GetZoomComptesCibleResult> Handle(
         GetZoomComptesCibleQuery request,
         CancellationToken cancellationToken)
     {
-        try
+        // Browse target accounts for selection/zoom
+        // Prg_37 provides zoom lookup for selecting target accounts for fusion
+        // Excludes source account if provided
+        var comptes = new List<CompteZoom>
         {
-            // Browse target accounts for selection/zoom
-            // Prg_37 provides zoom lookup for selecting target accounts for fusion
-            // Excludes source account if provided
-            var comptes = new List<CompteZoom>
-            {
-                new CompteZoom(
-                    CodeAdherent: 2000,
-                    Filiation: 1,
-                    LibelleCompte: "Compte fusion",
-                    Statut: "ACTIVE",
-                    SoldeActuel: 500m,
-                    DateOuverture: new DateOnly(2023, 6, 1),
-                    RefExterne: "REF002")
-            };
+            new CompteZoom(
+                CodeAdherent: 2000,
+                Filiation: 1,
+                LibelleCompte: "Compte fusion",
+                Statut: "ACTIVE",
+                SoldeActuel: 500m,
+                DateOuverture: new DateOnly(2023, 6, 1),
+                RefExterne: "REF002")
+        };
 
-            return comptes.Any()
-                ? new GetZoomComptesCibleResult(true, comptes, "Comptes cibles disponibles récupérés")
-                : new GetZoomComptesCibleResult(false, new List<CompteZoom>(), "Aucun compte cible trouvé");
-        }
-        catch (Exception ex)
-        {
-            return new GetZoomComptesCibleResult(false, new List<CompteZoom>(), $"Erreur: {ex.Message}");
-        }
+        var result = comptes.Any()
+            ? new GetZoomComptesCibleResult(true, comptes, "Comptes cibles disponibles récupérés")
+            : new GetZoomComptesCibleResult(false, new List<CompteZoom>(), "Aucun compte cible trouvé");
+
+        return Task.FromResult(result);
     }
 }

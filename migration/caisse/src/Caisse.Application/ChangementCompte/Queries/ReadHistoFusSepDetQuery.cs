@@ -22,7 +22,7 @@ public record ReadHistoFusSepDetQuery(
 
 public record ReadHistoFusSepDetResult(
     bool Found,
-    List<HistoFusSepDetail> Details = null,
+    List<HistoFusSepDetail>? Details = null,
     string Message = "");
 
 public record HistoFusSepDetail(
@@ -58,38 +58,33 @@ public class ReadHistoFusSepDetQueryHandler : IRequestHandler<ReadHistoFusSepDet
         _context = context;
     }
 
-    public async Task<ReadHistoFusSepDetResult> Handle(
+    public Task<ReadHistoFusSepDetResult> Handle(
         ReadHistoFusSepDetQuery request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            // Read from histo_fus_sep_det table with detailed history
-            // Prg_30 retrieves detailed history records for fusion/separation operations
-            var details = new List<HistoFusSepDetail>();
+        // Read from histo_fus_sep_det table with detailed history
+        // Prg_30 retrieves detailed history records for fusion/separation operations
+        var details = new List<HistoFusSepDetail>();
 
-            var detail = new HistoFusSepDetail(
-                TypeFusSep: request.TypeFusSep,
-                Societe: request.Societe,
-                ChronoReprise: request.Chrono,
-                PositionReprise: request.PositionReprise,
-                CodeCompteReference: request.CodeCompteReference,
-                FiliationReference: request.FiliationReference,
-                NumeroTache: request.NumeroTache,
-                DateOperation: DateOnly.FromDateTime(DateTime.Now),
-                HeureOperation: TimeOnly.FromDateTime(DateTime.Now),
-                Statut: "ACTIVE"
-            );
+        var detail = new HistoFusSepDetail(
+            TypeFusSep: request.TypeFusSep,
+            Societe: request.Societe,
+            ChronoReprise: request.Chrono,
+            PositionReprise: request.PositionReprise,
+            CodeCompteReference: request.CodeCompteReference,
+            FiliationReference: request.FiliationReference,
+            NumeroTache: request.NumeroTache,
+            DateOperation: DateOnly.FromDateTime(DateTime.Now),
+            HeureOperation: TimeOnly.FromDateTime(DateTime.Now),
+            Statut: "ACTIVE"
+        );
 
-            details.Add(detail);
+        details.Add(detail);
 
-            return details.Any()
-                ? new ReadHistoFusSepDetResult(true, details, "Détails historique récupérés")
-                : new ReadHistoFusSepDetResult(false, new List<HistoFusSepDetail>(), "Aucun détail trouvé");
-        }
-        catch (Exception ex)
-        {
-            return new ReadHistoFusSepDetResult(false, new List<HistoFusSepDetail>(), $"Erreur: {ex.Message}");
-        }
+        var result = details.Any()
+            ? new ReadHistoFusSepDetResult(true, details, "Détails historique récupérés")
+            : new ReadHistoFusSepDetResult(false, new List<HistoFusSepDetail>(), "Aucun détail trouvé");
+
+        return Task.FromResult(result);
     }
 }

@@ -17,7 +17,7 @@ public record GetZoomComptesSourceQuery(
 
 public record GetZoomComptesSourceResult(
     bool Found,
-    List<CompteZoom> Comptes = null,
+    List<CompteZoom>? Comptes = null,
     string Message = "");
 
 public record CompteZoom(
@@ -47,33 +47,28 @@ public class GetZoomComptesSourceQueryHandler : IRequestHandler<GetZoomComptesSo
         _context = context;
     }
 
-    public async Task<GetZoomComptesSourceResult> Handle(
+    public Task<GetZoomComptesSourceResult> Handle(
         GetZoomComptesSourceQuery request,
         CancellationToken cancellationToken)
     {
-        try
+        // Browse source accounts for selection/zoom
+        // Prg_37 provides zoom lookup for selecting source accounts
+        var comptes = new List<CompteZoom>
         {
-            // Browse source accounts for selection/zoom
-            // Prg_37 provides zoom lookup for selecting source accounts
-            var comptes = new List<CompteZoom>
-            {
-                new CompteZoom(
-                    CodeAdherent: 1000,
-                    Filiation: 1,
-                    LibelleCompte: "Compte principal",
-                    Statut: "ACTIVE",
-                    SoldeActuel: 1000m,
-                    DateOuverture: new DateOnly(2023, 1, 1),
-                    RefExterne: "REF001")
-            };
+            new CompteZoom(
+                CodeAdherent: 1000,
+                Filiation: 1,
+                LibelleCompte: "Compte principal",
+                Statut: "ACTIVE",
+                SoldeActuel: 1000m,
+                DateOuverture: new DateOnly(2023, 1, 1),
+                RefExterne: "REF001")
+        };
 
-            return comptes.Any()
-                ? new GetZoomComptesSourceResult(true, comptes, "Comptes disponibles récupérés")
-                : new GetZoomComptesSourceResult(false, new List<CompteZoom>(), "Aucun compte trouvé");
-        }
-        catch (Exception ex)
-        {
-            return new GetZoomComptesSourceResult(false, new List<CompteZoom>(), $"Erreur: {ex.Message}");
-        }
+        var result = comptes.Any()
+            ? new GetZoomComptesSourceResult(true, comptes, "Comptes disponibles récupérés")
+            : new GetZoomComptesSourceResult(false, new List<CompteZoom>(), "Aucun compte trouvé");
+
+        return Task.FromResult(result);
     }
 }

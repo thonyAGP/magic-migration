@@ -18,7 +18,7 @@ public record GetMenuChangementCompteQuery(
 
 public record GetMenuChangementCompteResult(
     bool Found,
-    MenuChangementCompte Menu = null,
+    MenuChangementCompte? Menu = null,
     string Message = "");
 
 public record MenuChangementCompte(
@@ -58,54 +58,47 @@ public class GetMenuChangementCompteQueryHandler : IRequestHandler<GetMenuChange
         _context = context;
     }
 
-    public async Task<GetMenuChangementCompteResult> Handle(
+    public Task<GetMenuChangementCompteResult> Handle(
         GetMenuChangementCompteQuery request,
         CancellationToken cancellationToken)
     {
-        try
+        // Build menu for account change operations
+        // Prg_37 displays online menu with available operations
+        var options = new List<MenuOption>
         {
-            // Build menu for account change operations
-            // Prg_37 displays online menu with available operations
-            var options = new List<MenuOption>
-            {
-                new MenuOption(
-                    Code: "SEP",
-                    Libelle: "Séparation",
-                    Description: "Séparer les comptes associés",
-                    Enabled: true),
-                new MenuOption(
-                    Code: "FUS",
-                    Libelle: "Fusion",
-                    Description: "Fusionner deux comptes",
-                    Enabled: true),
-                new MenuOption(
-                    Code: "HIST",
-                    Libelle: "Historique",
-                    Description: "Consulter l'historique des changements",
-                    Enabled: true),
-                new MenuOption(
-                    Code: "RPT",
-                    Libelle: "Rapport",
-                    Description: "Imprimer le rapport",
-                    Enabled: true)
-            };
+            new MenuOption(
+                Code: "SEP",
+                Libelle: "Séparation",
+                Description: "Séparer les comptes associés",
+                Enabled: true),
+            new MenuOption(
+                Code: "FUS",
+                Libelle: "Fusion",
+                Description: "Fusionner deux comptes",
+                Enabled: true),
+            new MenuOption(
+                Code: "HIST",
+                Libelle: "Historique",
+                Description: "Consulter l'historique des changements",
+                Enabled: true),
+            new MenuOption(
+                Code: "RPT",
+                Libelle: "Rapport",
+                Description: "Imprimer le rapport",
+                Enabled: true)
+        };
 
-            var menu = new MenuChangementCompte(
-                CodeAdherent: request.CodeAdherent,
-                Filiation: request.Filiation,
-                LibelleMenu: $"Menu Changement Compte - {request.CodeAdherent}/{request.Filiation}",
-                Options: options,
-                MessagesInfo: new List<string> { "Bienvenue dans le menu de changement de compte" },
-                CanSeparate: true,
-                CanFuse: true,
-                CanViewHistory: true
-            );
+        var menu = new MenuChangementCompte(
+            CodeAdherent: request.CodeAdherent,
+            Filiation: request.Filiation,
+            LibelleMenu: $"Menu Changement Compte - {request.CodeAdherent}/{request.Filiation}",
+            Options: options,
+            MessagesInfo: new List<string> { "Bienvenue dans le menu de changement de compte" },
+            CanSeparate: true,
+            CanFuse: true,
+            CanViewHistory: true
+        );
 
-            return new GetMenuChangementCompteResult(true, menu, "Menu récupéré avec succès");
-        }
-        catch (Exception ex)
-        {
-            return new GetMenuChangementCompteResult(false, null, $"Erreur: {ex.Message}");
-        }
+        return Task.FromResult(new GetMenuChangementCompteResult(true, menu, "Menu récupéré avec succès"));
     }
 }

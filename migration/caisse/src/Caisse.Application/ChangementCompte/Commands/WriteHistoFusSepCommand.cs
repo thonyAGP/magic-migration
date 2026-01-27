@@ -48,27 +48,20 @@ public class WriteHistoFusSepCommandHandler : IRequestHandler<WriteHistoFusSepCo
         _context = context;
     }
 
-    public async Task<WriteHistoFusSepResult> Handle(
+    public Task<WriteHistoFusSepResult> Handle(
         WriteHistoFusSepCommand request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            // Write to histo_fus_sep table
-            // Prg_29 writes main history record for fusion/separation operation
-            // Updates: TypeMiseAJour, Chrono, DateOperation, HeureOperation, EstValide
+        // Write to histo_fus_sep table
+        // Prg_29 writes main history record for fusion/separation operation
+        // Updates: TypeMiseAJour, Chrono, DateOperation, HeureOperation, EstValide
 
-            // For now, simulating the write operation
-            var chromoGenere = request.Chrono;
+        // For now, simulating the write operation
+        var chromoGenere = request.Chrono;
 
-            return new WriteHistoFusSepResult(
-                true,
-                chromoGenere,
-                "Historique fusion/séparation enregistré avec succès");
-        }
-        catch (Exception ex)
-        {
-            return new WriteHistoFusSepResult(false, 0, $"Erreur: {ex.Message}");
-        }
+        return Task.FromResult(new WriteHistoFusSepResult(
+            true,
+            chromoGenere,
+            "Historique fusion/séparation enregistré avec succès"));
     }
 }

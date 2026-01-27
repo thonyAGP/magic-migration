@@ -47,26 +47,19 @@ public class DeleteHistoFusSepSaisieCommandHandler : IRequestHandler<DeleteHisto
         _context = context;
     }
 
-    public async Task<DeleteHistoFusSepSaisieResult> Handle(
+    public Task<DeleteHistoFusSepSaisieResult> Handle(
         DeleteHistoFusSepSaisieCommand request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            // Delete from histo_fus_sep_saisie table
-            // Prg_33 deletes entry history records matching criteria
-            // Deletes by: Societe, Chrono, CodeCompteReference, etc.
+        // Delete from histo_fus_sep_saisie table
+        // Prg_33 deletes entry history records matching criteria
+        // Deletes by: Societe, Chrono, CodeCompteReference, etc.
 
-            var enregistrementsSupprimes = 0;
+        var enregistrementsSupprimes = 0;
 
-            return new DeleteHistoFusSepSaisieResult(
-                true,
-                enregistrementsSupprimes,
-                $"{enregistrementsSupprimes} enregistrement(s) supprimé(s) avec succès");
-        }
-        catch (Exception ex)
-        {
-            return new DeleteHistoFusSepSaisieResult(false, 0, $"Erreur: {ex.Message}");
-        }
+        return Task.FromResult(new DeleteHistoFusSepSaisieResult(
+            true,
+            enregistrementsSupprimes,
+            $"{enregistrementsSupprimes} enregistrement(s) supprimé(s) avec succès"));
     }
 }
