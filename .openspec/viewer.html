@@ -665,6 +665,28 @@
     /* Loading */
     .loading { text-align: center; padding: 48px; color: var(--text-secondary); }
 
+    /* Back button */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 13px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .back-link:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
     /* Scrollbar */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
@@ -922,7 +944,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <h1>OpenSpec Viewer</h1>
-      <div class="version">v1.3.0</div>
+      <div class="version">v1.4.0</div>
       <div class="updated" id="lastUpdated"></div>
       <div class="search-container">
         <span class="search-icon">&#x1F50D;</span>
@@ -1586,10 +1608,18 @@
 
       const isTicket = path.includes('tickets/');
       const isSpec = path.includes('specs/');
+      const isRender = path.includes('renders/');
+      const isAnnotation = path.includes('annotations/');
       let headerHtml = '';
       let tabsHtml = '';
       let ticketId = null;
       let ticketData = null;
+
+      // Back link for renders and annotations (V2.1 specs)
+      let backLinkHtml = '';
+      if (isRender || isAnnotation) {
+        backLinkHtml = `<a class="back-link" onclick="loadFile('SPECS_ENRICHIES_V21.md'); setActiveNav('SPECS_ENRICHIES_V21.md'); window.location.hash='SPECS_ENRICHIES_V21.md'">← Retour aux Specs Enrichies V2.1</a>`;
+      }
 
       // Handle Specs
       if (isSpec && indexData.specs) {
@@ -1707,14 +1737,17 @@
         if (isYaml) {
           const fileName = path.split('/').pop();
           const yamlHeader = `<div class="yaml-header"><span class="yaml-icon">📋</span> Annotation YAML: <code>${fileName}</code></div>`;
-          content.innerHTML = headerHtml + yamlHeader + `<pre class="yaml-content"><code>${escapeHtml(text)}</code></pre>`;
+          content.innerHTML = backLinkHtml + headerHtml + yamlHeader + `<pre class="yaml-content"><code>${escapeHtml(text)}</code></pre>`;
           return;
         }
 
         // Check for spec tabs (<!-- TAB:xxx --> markers)
         if (isSpec && text.includes('<!-- TAB:')) {
           const renderedContent = renderSpecWithTabs(text, headerHtml);
-          content.innerHTML = renderedContent;
+          content.innerHTML = backLinkHtml + renderedContent;
+        } else if (isRender) {
+          // V2.1 renders
+          content.innerHTML = backLinkHtml + headerHtml + tabsHtml + marked.parse(text);
         } else {
           content.innerHTML = headerHtml + tabsHtml + marked.parse(text);
         }
