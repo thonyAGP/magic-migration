@@ -1,6 +1,6 @@
 # ADH IDE 236 - Print ticket vente PMS-584
 
-> **Version spec**: 3.2
+> **Version spec**: 3.4
 > **Analyse**: 2026-01-27 09:15 → 09:35
 > **Source**: `Prg_232.xml`
 
@@ -208,11 +208,31 @@ graph LR
 
 > **Total**: 10 appels depuis 4 programmes actifs
 
-### 3.3 Callees (programmes appeles par ADH IDE 236)
+### 3.3 Callees - programmes appeles par ADH IDE 236
 
-| IDE | Programme | Description | Contexte |
-|-----|-----------|-------------|----------|
-| - | Aucun | Programme terminal (feuille) | Impression uniquement |
+#### Diagramme d'impact downstream (3 niveaux)
+
+> **Programme terminal** - ADH IDE 236 n'appelle aucun autre programme.
+> C'est une "feuille" dans l'arbre d'appels : modification sans impact downstream.
+
+```mermaid
+graph LR
+    T[236 Print ticket]
+    NONE[Aucun callee]
+
+    T -.-> NONE
+
+    style T fill:#58a6ff,color:#000
+    style NONE fill:#6b7280,color:#fff,stroke-dasharray: 5 5
+```
+
+#### Table des callees
+
+| Niv | IDE | Programme | Description | Contexte |
+|-----|-----|-----------|-------------|----------|
+| - | - | Aucun | Programme terminal | Impression uniquement |
+
+> **Impact**: Modification de ADH IDE 236 n'affecte **aucun programme** downstream
 
 ### 3.4 Verification orphelin
 
@@ -252,8 +272,9 @@ graph LR
 | 2026-01-26 | Ajout section callers | Claude |
 | 2026-01-26 | Upgrade v3.0: 3 onglets, timing, cartographie Mermaid | Claude |
 | 2026-01-27 | Upgrade v3.1: Algorigramme, chaine Main complete | Claude |
-| 2026-01-27 | **v3.2** Correction syntaxe Mermaid, noms programmes dans diagrammes | Claude |
+| 2026-01-27 | v3.2 Correction syntaxe Mermaid, noms programmes dans diagrammes | Claude |
+| 2026-01-27 | **v3.4** Ajout diagramme Callees downstream sur 3 niveaux | Claude |
 
 ---
 
-*Specification v3.2 - Format avec Algorigramme et Chaine Main*
+*Specification v3.4 - Format avec Callees Diagram (impact downstream)*

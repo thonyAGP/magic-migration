@@ -1,6 +1,6 @@
 # ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Version spec**: 3.3
+> **Version spec**: 3.4
 > **Analyse**: 2026-01-27 10:30 → 10:50
 > **Source**: `Prg_233.xml`
 
@@ -217,9 +217,32 @@ graph LR
 
 ### 3.3 Callees - programmes appeles par ADH IDE 237
 
-| IDE | Programme | Description | Contexte |
-|-----|-----------|-------------|----------|
-| 229 | ADH IDE 229 | Edition Impression | Si recu necessaire |
+#### Diagramme d'impact downstream (3 niveaux)
+
+```mermaid
+graph LR
+    T[237 Vente GP]
+    C229[229 Edition Impression]
+    C236[236 Print ticket]
+
+    T --> C229
+    C229 --> C236
+
+    style T fill:#58a6ff,color:#000
+    style C229 fill:#3fb950,color:#000
+    style C236 fill:#22c55e,color:#000
+```
+
+> **Legende**: Bleu = Programme cible | Vert fonce = Niveau 1 | Vert clair = Niveau 2
+
+#### Table des callees
+
+| Niv | IDE | Programme | Description | Contexte |
+|-----|-----|-----------|-------------|----------|
+| 1 | 229 | ADH IDE 229 | Edition Impression | Si recu necessaire |
+| 2 | 236 | ADH IDE 236 | Print ticket vente | Impression physique |
+
+> **Impact**: Si ADH IDE 237 est modifie, **2 programmes** downstream peuvent etre affectes
 
 ### 3.4 Verification orphelin
 
@@ -259,8 +282,9 @@ graph LR
 | 2026-01-26 | Creation specification v2.0 | Claude |
 | 2026-01-27 | Upgrade v3.1 Algorigramme GP chaine Main complete | Claude |
 | 2026-01-27 | v3.2 Correction syntaxe Mermaid retrait orphelin 317 | Claude |
-| 2026-01-27 | **v3.3** Noms programmes dans diagrammes cartographie | Claude |
+| 2026-01-27 | v3.3 Noms programmes dans diagrammes cartographie | Claude |
+| 2026-01-27 | **v3.4** Ajout diagramme Callees downstream sur 3 niveaux | Claude |
 
 ---
 
-*Specification v3.3 - Format avec Algorigramme et Chaine Main*
+*Specification v3.4 - Format avec Callees Diagram (impact downstream)*
