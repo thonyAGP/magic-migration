@@ -1,6 +1,6 @@
 ﻿{
     "project":  "Lecteur_Magic",
-    "lastUpdated":  "2026-01-26T17:06:17+01:00",
+    "lastUpdated":  "2026-01-27T10:30:00+01:00",
     "specs":  [
                   {
                       "id":  "TEMPLATE-V1",
@@ -353,6 +353,11 @@
                         "category":  "principal",
                         "title":  "Couverture ADH",
                         "file":  "ADH_COVERAGE_ANALYSIS.md"
+                    },
+                    {
+                        "category":  "principal",
+                        "title":  "Specs Enrichies V2.1",
+                        "file":  "SPECS_ENRICHIES_V21.md"
                     },
                     {
                         "category":  "reports",

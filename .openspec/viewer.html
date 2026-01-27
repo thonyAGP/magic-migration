@@ -1500,18 +1500,31 @@
       const links = container.querySelectorAll('a[href]');
       links.forEach(link => {
         const href = link.getAttribute('href');
-        // Match patterns like: ADH-IDE-238.md, specs/ADH-IDE-238.md, ../specs/PVE-IDE-10.md
-        const specMatch = href.match(/(?:specs\/)?([A-Z]{2,4}-IDE-\d+)\.md$/i);
+        // Match patterns like: ADH-IDE-238.md, specs/ADH-IDE-238.md, renders/ADH-IDE-238.md
+        const specMatch = href.match(/(?:(specs|renders)\/)?([A-Z]{2,4}-IDE-\d+)\.md$/i);
         if (specMatch) {
-          const specId = specMatch[1].toUpperCase();
+          const folder = specMatch[1] || 'specs'; // Default to specs, but preserve renders if specified
+          const specId = specMatch[2].toUpperCase();
           link.style.cursor = 'pointer';
           link.style.color = 'var(--accent)';
           link.style.textDecoration = 'underline';
           link.addEventListener('click', (e) => {
             e.preventDefault();
-            const specPath = `specs/${specId}.md`;
+            const specPath = `${folder}/${specId}.md`;
             loadFile(specPath);
             setActiveNav(specPath);
+          });
+        }
+        // Handle annotation YAML links
+        const annotationMatch = href.match(/annotations\/([A-Z]{2,4}-IDE-\d+)\.yaml$/i);
+        if (annotationMatch) {
+          const annotId = annotationMatch[1].toUpperCase();
+          link.style.cursor = 'pointer';
+          link.style.color = 'var(--purple)';
+          link.style.textDecoration = 'underline';
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            loadFile(`annotations/${annotId}.yaml`);
           });
         }
       });
