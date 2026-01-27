@@ -1372,8 +1372,8 @@
           </div>
           <div class="subtitle">${spec.title}</div>
           <div class="spec-meta">
-            <span><span class="icon">📊</span> ${spec.tables} tables</span>
-            <span><span class="icon">📋</span> ${spec.tasks} taches</span>
+            <span><span class="icon">📊</span> ${spec.tables || 0} tables</span>
+            <span><span class="icon">📋</span> ${spec.tasks || 0} params</span>
             ${spec.expressions ? `<span><span class="icon">⚡</span> ${spec.expressions} expr</span>` : ''}
             ${spec.complexity && spec.complexity !== '-' ? `<span class="complexity-badge ${complexityClass}">${spec.complexity}</span>` : ''}
           </div>
@@ -1646,11 +1646,11 @@
                 </div>
                 <div class="meta-item">
                   <span class="meta-label">Tables</span>
-                  <span class="meta-value">${specData.tables}</span>
+                  <span class="meta-value">${specData.tables || 0}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-label">Taches</span>
-                  <span class="meta-value">${specData.tasks}</span>
+                  <span class="meta-label">Params</span>
+                  <span class="meta-value">${specData.tasks || 0}</span>
                 </div>
                 ${exprInfo}
                 <div class="meta-item">
