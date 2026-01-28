@@ -80,42 +80,40 @@ function Generate-MermaidCallGraph {
     $lines = @()
     $lines += "graph LR"
 
-    # Main chain (callers going up to Main)
-    $chainNodes = @()
-    foreach ($caller in $Discovery.call_graph.call_chain) {
-        $nodeId = "N$($caller.ide)"
-        $nodeName = "$($caller.ide) $($caller.name -replace '[^a-zA-Z0-9 ]', '')".Substring(0, [math]::Min(20, "$($caller.ide) $($caller.name)".Length))
-        $chainNodes += @{ id = $nodeId; ide = $caller.ide; name = $nodeName; level = $caller.level }
-    }
-
-    # Target node
+    # Target node (center)
     $targetId = "T$IdePosition"
-    $targetName = "$IdePosition Target"
-    $lines += "    $targetId[$targetName]"
+    $lines += "    $targetId[$IdePosition Programme]"
     $lines += "    style $targetId fill:#58a6ff"
 
-    # Add chain nodes
-    $prevNodeId = $targetId
-    foreach ($node in ($chainNodes | Sort-Object -Property level)) {
-        $lines += "    $($node.id)[$($node.name)]"
-        if ($node.level -eq 1) {
-            $lines += "    $($node.id) --> $targetId"
-        }
+    # Callers (left side) - only valid entries (ide > 0)
+    $callerCount = 0
+    foreach ($caller in ($Discovery.call_graph.callers | Where-Object { $_.ide -gt 0 } | Select-Object -First 5)) {
+        $callerId = "CALLER$($caller.ide)"
+        # Truncate name safely
+        $rawName = "$($caller.ide) $($caller.name -replace '[^a-zA-Z0-9 ]', '')"
+        $callerName = if ($rawName.Length -gt 18) { $rawName.Substring(0, 15) + "..." } else { $rawName }
+        $lines += "    $callerId[$callerName]"
+        $lines += "    $callerId --> $targetId"
+        $lines += "    style $callerId fill:#f59e0b"
+        $callerCount++
     }
 
-    # Callees
+    # Callees (right side)
     $calleeCount = 0
-    foreach ($callee in ($Discovery.call_graph.callees | Select-Object -First 5)) {
-        $calleeId = "C$($callee.ide)"
-        $calleeName = "$($callee.ide) $($callee.name -replace '[^a-zA-Z0-9 ]', '')".Substring(0, [math]::Min(15, "$($callee.ide) $($callee.name)".Length))
+    foreach ($callee in ($Discovery.call_graph.callees | Where-Object { $_.ide -gt 0 } | Select-Object -First 5)) {
+        $calleeId = "CALLEE$($callee.ide)"
+        $rawName = "$($callee.ide) $($callee.name -replace '[^a-zA-Z0-9 ]', '')"
+        $calleeName = if ($rawName.Length -gt 18) { $rawName.Substring(0, 15) + "..." } else { $rawName }
         $lines += "    $calleeId[$calleeName]"
         $lines += "    $targetId --> $calleeId"
         $lines += "    style $calleeId fill:#3fb950"
         $calleeCount++
     }
 
+    # Show more indicator
     if ($Discovery.call_graph.callees.Count -gt 5) {
-        $lines += "    MORE[+$($Discovery.call_graph.callees.Count - 5) more]"
+        $remaining = $Discovery.call_graph.callees.Count - 5
+        $lines += "    MORE[+$remaining more]"
         $lines += "    $targetId --> MORE"
         $lines += "    style MORE fill:#6b7280"
     }
