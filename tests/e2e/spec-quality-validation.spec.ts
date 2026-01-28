@@ -97,15 +97,23 @@ test.describe('Validation Qualité Spec ADH IDE 237', () => {
   test('Tables WRITE: Au moins une table modifiée', async ({ page }) => {
     const content = await page.textContent('body');
 
-    // Chercher la section "Operations sur les donnees"
-    const hasWriteTables = content?.includes('modifie') && content?.includes('tables');
+    // Chercher la section "Tables modifiees (WRITE)"
+    const hasWriteTables = content?.includes('WRITE') && content?.includes('tables');
 
     expect(hasWriteTables).toBe(true);
 
-    // Compter les tables dans la liste
-    const tablesWrite = await page.locator(
-      'h3:has-text("Operations sur les donnees") + p + ul li'
-    ).count();
+    // Compter les tables dans la section WRITE (structure: h4 + ul > li)
+    const tablesWrite = await page.evaluate(() => {
+      const h4 = Array.from(document.querySelectorAll('h4'))
+        .find(el => el.textContent?.includes('WRITE'));
+      if (!h4) return 0;
+
+      const ul = h4.nextElementSibling;
+      if (ul?.tagName === 'UL') {
+        return ul.querySelectorAll('li').length;
+      }
+      return 0;
+    });
 
     console.log(`Tables WRITE trouvées: ${tablesWrite}`);
     expect(tablesWrite).toBeGreaterThanOrEqual(QUALITY_CRITERIA.minTablesWrite);
