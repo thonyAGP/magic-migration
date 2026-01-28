@@ -1059,6 +1059,8 @@
 
       searchIndex = lunr(function() {
         this.ref('id');
+        this.field('specId', { boost: 15 });  // ADH-IDE-237
+        this.field('ide', { boost: 15 });      // 237
         this.field('title', { boost: 10 });
         this.field('project', { boost: 5 });
         this.field('type');
@@ -1068,6 +1070,8 @@
         specsData.forEach(spec => {
           this.add({
             id: spec.id,
+            specId: spec.id || '',              // Index the full ID (ADH-IDE-237)
+            ide: spec.ide ? spec.ide.toString() : '',  // Index the IDE number as string
             title: spec.title || '',
             project: spec.project || '',
             type: spec.type || '',
@@ -1096,6 +1100,8 @@
           // If Lunr fails, do simple text match
           const lowerText = filters.text.toLowerCase();
           results = specsData.filter(s =>
+            (s.id && s.id.toLowerCase().includes(lowerText)) ||
+            (s.ide && s.ide.toString().includes(lowerText)) ||
             (s.title && s.title.toLowerCase().includes(lowerText)) ||
             (s.project && s.project.toLowerCase().includes(lowerText)) ||
             (s.folder && s.folder.toLowerCase().includes(lowerText))

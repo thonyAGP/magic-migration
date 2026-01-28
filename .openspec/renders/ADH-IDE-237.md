@@ -1,9 +1,9 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
 > **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:12
+> **Analyse**: 2026-01-28 12:29
 > **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_233.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Methode**: APEX 4-Phase Workflow (Auto-generated)
 
 ---
 
@@ -25,16 +25,14 @@
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (40 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
+| RM-001 | Traitement principal | Conditions initiales validees |
 
 ### 1.3 Flux utilisateur
 
 1. Reception des parametres d'entree (0 params)
 2. Initialisation et verification conditions
 3. Traitement principal (49 taches)
-4. Appels sous-programmes si necessaire
+4. Appels sous-programmes (0 callees)
 5. Retour resultats
 
 ### 1.4 Cas d'erreur
@@ -43,6 +41,11 @@
 |--------|--------------|
 | Conditions non remplies | Abandon avec message |
 | Erreur sous-programme | Propagation erreur |
+| Donnees invalides | Validation et rejet |
+
+### 1.5 Dependances ECF
+
+Programme local ADH - Non partage via ECF
 
 ---
 
@@ -58,53 +61,43 @@
 | **Fichier XML** | `Prg_233.xml` |
 | **Description** | Transaction Nouv vente avec GP |
 | **Module** | ADH |
-| **Public Name** |  |
+| **Public Name** | - |
 | **Nombre taches** | 49 |
 | **Lignes logique** | 1818 |
 | **Expressions** | 0 |
 
-### 2.2 Tables
+### 2.2 Tables - 30 tables dont 9 en ecriture
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 23 | reseau_cloture___rec | cafil001_dat | READ/WRITE | Lecture+Ecriture |
-| 26 | comptes_speciaux_spc | cafil004_dat | LINK | Jointure |
-| 30 | gm-recherche_____gmr | cafil008_dat | LINK/READ | Jointure+Lecture |
-| 32 | prestations | cafil010_dat | READ/WRITE | Lecture+Ecriture |
-| 34 | hebergement______heb | cafil012_dat | LINK | Jointure |
-| 39 | depot_garantie___dga | cafil017_dat | READ | Lecture |
-| 46 | mvt_prestation___mpr | cafil024_dat | LINK/WRITE | Jointure+Ecriture |
-| 47 | compte_gm________cgm | cafil025_dat | WRITE | Ecriture |
-| 50 | moyens_reglement_mor | cafil028_dat | READ | Lecture |
-| 67 | tables___________tab | cafil045_dat | LINK | Jointure |
-| 68 | compteurs________cpt | cafil046_dat | WRITE | Ecriture |
-| 70 | date_comptable___dat | cafil048_dat | LINK | Jointure |
-| 77 | articles_________art | cafil055_dat | LINK/READ | Jointure+Lecture |
-| 79 | gratuites________gra | cafil057_dat | READ | Lecture |
-| 89 | moyen_paiement___mop | cafil067_dat | LINK/READ | Jointure+Lecture |
-| 96 | table_prestation_pre | cafil074_dat | LINK | Jointure |
-| 103 | logement_client__loc | cafil081_dat | READ | Lecture |
-| 109 | table_utilisateurs | cafil087_dat | READ | Lecture |
-| 139 | moyens_reglement_mor | cafil117_dat | READ | Lecture |
-| 140 | moyen_paiement___mop | cafil118_dat | LINK | Jointure |
-| 197 | articles_en_stock | caisse_artstock | LINK | Jointure |
-| 372 | pv_budget | pv_budget_dat | LINK | Jointure |
-| 596 | tempo_ecran_police | %club_user%tmp_ecrpolice_dat | LINK/READ/WRITE | Jointure+R/W |
-| 697 | droits_applications | droits | LINK | Jointure |
-| 728 | arc_cc_total | arc_cctotal | LINK | Jointure |
-| 801 | moyens_reglement_complem | moyens_reglement_complem | LINK | Jointure |
-| 818 | Circuit supprime | zcircafil146 | LINK | Jointure |
-| 847 | stat_lieu_vente_date | %club_user%_stat_lieu_vente_date | LINK/WRITE | Jointure+Ecriture |
-| 899 | Boo_ResultsRechercheHoraire | Boo_ResultsRechercheHoraire | READ/WRITE | Lecture+Ecriture |
-| 1037 | Table_1037 |  | WRITE | Ecriture |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #23 | `cafil001_dat` | reseau_cloture___rec | **READ/WRITE** | 5x |
+| #26 | `cafil004_dat` | comptes_speciaux_spc | **LINK** | 1x |
+| #30 | `cafil008_dat` | gm-recherche_____gmr | **LINK/READ** | 3x |
+| #32 | `cafil010_dat` | prestations | **READ/WRITE** | 3x |
+| #34 | `cafil012_dat` | hebergement______heb | **LINK** | 1x |
+| #39 | `cafil017_dat` | depot_garantie___dga | **READ** | 1x |
+| #46 | `cafil024_dat` | mvt_prestation___mpr | **LINK/WRITE** | 2x |
+| #47 | `cafil025_dat` | compte_gm________cgm | **WRITE** | 2x |
+| #50 | `cafil028_dat` | moyens_reglement_mor | **READ** | 3x |
+| #67 | `cafil045_dat` | tables___________tab | **LINK** | 1x |
+| #68 | `cafil046_dat` | compteurs________cpt | **WRITE** | 1x |
+| #70 | `cafil048_dat` | date_comptable___dat | **LINK** | 1x |
+| #77 | `cafil055_dat` | articles_________art | **LINK/READ** | 4x |
+| #79 | `cafil057_dat` | gratuites________gra | **READ** | 1x |
+| #89 | `cafil067_dat` | moyen_paiement___mop | **LINK/READ** | 8x |
+| #96 | `cafil074_dat` | table_prestation_pre | **LINK** | 1x |
+| #103 | `cafil081_dat` | logement_client__loc | **READ** | 1x |
+| #109 | `cafil087_dat` | table_utilisateurs | **READ** | 1x |
+| #139 | `cafil117_dat` | moyens_reglement_mor | **READ** | 1x |
+| #140 | `cafil118_dat` | moyen_paiement___mop | **LINK** | 1x |
 
-**Resume**: 40 tables accedees dont **9 en ecriture**
+> *Liste limitee aux 20 tables principales*
 
-### 2.3 Parametres d'entree (0 parametres)
+### 2.3 Parametres d'entree - 0 parametres
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+| Var | Nom | Type | Direction | Picture |
+|-----|-----|------|-----------|---------|
+| - | Aucun parametre | - | - | - |
 
 ### 2.4 Algorigramme
 
@@ -123,7 +116,15 @@ flowchart TD
     style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Statistiques
+### 2.5 Expressions cles (selection)
+
+| # | Expression | Commentaire |
+|---|------------|-------------|
+| - | Aucune expression | - |
+
+> *0 expressions au total. Liste limitee aux 10 premieres.*
+
+### 2.6 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
@@ -131,7 +132,7 @@ flowchart TD
 | **Lignes logique** | 1818 |
 | **Expressions** | 0 |
 | **Parametres** | 0 |
-| **Tables accedees** | 40 |
+| **Tables accedees** | 30 |
 | **Tables en ecriture** | 9 |
 | **Callees niveau 1** | 0 |
 
@@ -149,14 +150,13 @@ graph LR
     ORPHAN([ORPHELIN ou Main])
     T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| - | Point d'entree ou orphelin | - |
 
 ### 3.3 Callees (3 niveaux)
 
@@ -171,7 +171,7 @@ graph LR
 
 | Niv | IDE | Programme | Nb appels | Status |
 |-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+| - | - | TERMINAL (aucun appel) | - | - |
 
 ### 3.4 Composants ECF utilises
 
@@ -186,7 +186,7 @@ graph LR
 | Callers actifs | 0 programmes |
 | PublicName | Non defini |
 | ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| **Conclusion** | **ORPHELIN** - No callers, no PublicName, not ECF |
 
 ---
 
@@ -197,9 +197,9 @@ graph LR
 | Critere | Score | Detail |
 |---------|-------|--------|
 | Taches | 49 | Complexe |
-| Tables | 40 | Ecriture |
+| Tables | 30 | Ecriture (9 tables) |
 | Callees | 0 | Faible couplage |
-| **Score global** | **HAUTE** | - |
+| **Score global** | **2458** | **HAUTE** |
 
 ### Points d'attention migration
 
@@ -216,9 +216,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 23:12 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
+| 2026-01-28 12:29 | **V4.0 APEX Workflow** - Generation automatique 4 phases | Script |
 
 ---
 
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+*Specification V4.0 - Generated with APEX 4-Phase Workflow*
 

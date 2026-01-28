@@ -1,9 +1,9 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
 > **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:05
+> **Analyse**: 2026-01-28 12:31
 > **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_117.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Methode**: APEX 4-Phase Workflow (Auto-generated)
 
 ---
 
@@ -25,16 +25,14 @@
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (17 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
+| RM-001 | Traitement principal | Conditions initiales validees |
 
 ### 1.3 Flux utilisateur
 
 1. Reception des parametres d'entree (0 params)
 2. Initialisation et verification conditions
 3. Traitement principal (32 taches)
-4. Appels sous-programmes si necessaire
+4. Appels sous-programmes (0 callees)
 5. Retour resultats
 
 ### 1.4 Cas d'erreur
@@ -43,6 +41,11 @@
 |--------|--------------|
 | Conditions non remplies | Abandon avec message |
 | Erreur sous-programme | Propagation erreur |
+| Donnees invalides | Validation et rejet |
+
+### 1.5 Dependances ECF
+
+Programme partage via **ADH.ecf** - Composant: Gestion_Caisse_142
 
 ---
 
@@ -63,30 +66,30 @@
 | **Lignes logique** | 678 |
 | **Expressions** | 0 |
 
-### 2.2 Tables
+### 2.2 Tables - 12 tables dont 4 en ecriture
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 23 | reseau_cloture___rec | cafil001_dat | READ | Lecture |
-| 70 | date_comptable___dat | cafil048_dat | READ | Lecture |
-| 197 | articles_en_stock | caisse_artstock | LINK | Jointure |
-| 198 | coupures_monnaie_locale | caisse_banknote | READ | Lecture |
-| 227 | concurrence_sessions | caisse_concurrences | WRITE | Ecriture |
-| 232 | gestion_devise_session | caisse_devise | READ | Lecture |
-| 244 | saisie_approvisionnement | caisse_saisie_appro_dev | LINK/WRITE | Jointure+Ecriture |
-| 246 | histo_sessions_caisse | caisse_session | LINK/READ/WRITE | Jointure+R/W |
-| 248 | sessions_coffre2 | caisse_session_coffre2 | LINK/WRITE | Jointure+Ecriture |
-| 249 | histo_sessions_caisse_detail | caisse_session_detail | LINK/READ | Jointure+Lecture |
-| 697 | droits_applications | droits | READ | Lecture |
-| 740 | pv_stock_movements | pv_stockmvt_dat | READ | Lecture |
+| IDE# | Nom Physique | Nom Logique | Access | Usage |
+|------|--------------|-------------|--------|-------|
+| #23 | `cafil001_dat` | reseau_cloture___rec | **READ** | 1x |
+| #70 | `cafil048_dat` | date_comptable___dat | **READ** | 1x |
+| #197 | `caisse_artstock` | articles_en_stock | **LINK** | 1x |
+| #198 | `caisse_banknote` | coupures_monnaie_locale | **READ** | 1x |
+| #227 | `caisse_concurrences` | concurrence_sessions | **WRITE** | 1x |
+| #232 | `caisse_devise` | gestion_devise_session | **READ** | 1x |
+| #244 | `caisse_saisie_appro_dev` | saisie_approvisionnement | **LINK/WRITE** | 2x |
+| #246 | `caisse_session` | histo_sessions_caisse | **LINK/READ/WRITE** | 6x |
+| #248 | `caisse_session_coffre2` | sessions_coffre2 | **LINK/WRITE** | 3x |
+| #249 | `caisse_session_detail` | histo_sessions_caisse_detail | **LINK/READ** | 4x |
+| #697 | `droits` | droits_applications | **READ** | 2x |
+| #740 | `pv_stockmvt_dat` | pv_stock_movements | **READ** | 2x |
 
-**Resume**: 17 tables accedees dont **4 en ecriture**
+> *Liste limitee aux 20 tables principales*
 
-### 2.3 Parametres d'entree (0 parametres)
+### 2.3 Parametres d'entree - 0 parametres
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+| Var | Nom | Type | Direction | Picture |
+|-----|-----|------|-----------|---------|
+| - | Aucun parametre | - | - | - |
 
 ### 2.4 Algorigramme
 
@@ -105,7 +108,15 @@ flowchart TD
     style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Statistiques
+### 2.5 Expressions cles (selection)
+
+| # | Expression | Commentaire |
+|---|------------|-------------|
+| - | Aucune expression | - |
+
+> *0 expressions au total. Liste limitee aux 10 premieres.*
+
+### 2.6 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
@@ -113,7 +124,7 @@ flowchart TD
 | **Lignes logique** | 678 |
 | **Expressions** | 0 |
 | **Parametres** | 0 |
-| **Tables accedees** | 17 |
+| **Tables accedees** | 12 |
 | **Tables en ecriture** | 4 |
 | **Callees niveau 1** | 0 |
 
@@ -131,7 +142,6 @@ graph LR
     ORPHAN([ORPHELIN ou Main])
     T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 3.2 Callers directs
@@ -153,7 +163,7 @@ graph LR
 
 | Niv | IDE | Programme | Nb appels | Status |
 |-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+| - | - | TERMINAL (aucun appel) | - | - |
 
 ### 3.4 Composants ECF utilises
 
@@ -168,7 +178,7 @@ graph LR
 | Callers actifs | 0 programmes |
 | PublicName | Defini: Gestion_Caisse_142 |
 | ECF partage | OUI - ADH.ecf |
-| **Conclusion** | **NON ORPHELIN** - Composant ECF partage |
+| **Conclusion** | **NON ORPHELIN** - ECF shared component (ADH.ecf) |
 
 ---
 
@@ -179,9 +189,9 @@ graph LR
 | Critere | Score | Detail |
 |---------|-------|--------|
 | Taches | 32 | Complexe |
-| Tables | 17 | Ecriture |
+| Tables | 12 | Ecriture (4 tables) |
 | Callees | 0 | Faible couplage |
-| **Score global** | **HAUTE** | - |
+| **Score global** | **1058** | **HAUTE** |
 
 ### Points d'attention migration
 
@@ -198,9 +208,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 23:05 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
+| 2026-01-28 12:31 | **V4.0 APEX Workflow** - Generation automatique 4 phases | Script |
 
 ---
 
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+*Specification V4.0 - Generated with APEX 4-Phase Workflow*
 
