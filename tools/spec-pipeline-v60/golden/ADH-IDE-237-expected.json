@@ -1,0 +1,37 @@
+{
+  "$schema": "Critères de validation pour ADH IDE 237",
+  "version": "6.0",
+  "validated_date": "2026-01-28",
+
+  "identification": {
+    "project": "ADH",
+    "ide_position": 237,
+    "program_name": "Transaction Nouv vente avec GP",
+    "orphan_status": "NON_ORPHELIN",
+    "callers_min": 3
+  },
+
+  "objectif_metier": {
+    "fonctionnalites_min": 5,
+    "tables_write_min": 9,
+    "tables_read_min": 10,
+    "regles_metier_min": 15,
+    "regles_truncated_max": 0
+  },
+
+  "technique": {
+    "expressions_total": 305,
+    "expressions_decoded_min_percent": 95,
+    "variables_mapped_min": 150,
+    "algorigramme_nodes_min": 4
+  },
+
+  "cartographie": {
+    "callers_count": 3,
+    "callees_min": 5,
+    "main_chain_present": true,
+    "mermaid_diagram_present": true
+  },
+
+  "quality_score_min": 80
+}

@@ -169,6 +169,31 @@ if ($phaseResults.Phase5.data.quality_score) {
     Write-Host "Quality Score: $($phaseResults.Phase5.data.quality_score)%" -ForegroundColor Green
 }
 
+# PHASE 6: VALIDATION ANTI-RÉGRESSION (si Golden File existe)
+$goldenFile = Join-Path $ScriptDir "golden\$Project-IDE-$IdePosition-expected.json"
+if (Test-Path $goldenFile) {
+    Write-Host ""
+    Write-Host "-----------------------------------------------------------------" -ForegroundColor Cyan
+    Write-Host " PHASE 6: VALIDATION ANTI-RÉGRESSION                            " -ForegroundColor Cyan
+    Write-Host "-----------------------------------------------------------------" -ForegroundColor Cyan
+
+    $validateScript = Join-Path $ScriptDir "Validate-SpecQuality.ps1"
+    if (Test-Path $validateScript) {
+        try {
+            & $validateScript -Project $Project -IdePosition $IdePosition
+            $phaseResults["Phase6"] = @{ success = $true }
+            Write-Host "[VALIDATION PASSÉE] Aucune régression détectée." -ForegroundColor Green
+        }
+        catch {
+            $phaseResults["Phase6"] = @{ success = $false; error = $_.Exception.Message }
+            Write-Host "[RÉGRESSION DÉTECTÉE] Vérifier les critères de qualité." -ForegroundColor Red
+        }
+    }
+} else {
+    Write-Host ""
+    Write-Host "[INFO] Pas de Golden File pour $Project IDE $IdePosition - validation basique seulement." -ForegroundColor DarkGray
+}
+
 # Save pipeline report
 $report = @{
     project = $Project
