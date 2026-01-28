@@ -79,7 +79,8 @@ function Decode-Expression {
 
     $decoded = $Expression
 
-    # Replace local variables {0,N} -> Variable LETTER
+    # Replace local variables {0,N} -> VariableName [LETTER]
+    # Format: "W0 imputation [W]" instead of "Var_W(W0 imputation)"
     $decoded = [regex]::Replace($decoded, '\{0,(\d+)\}', {
         param($match)
         $fieldId = [int]$match.Groups[1].Value
@@ -90,12 +91,12 @@ function Decode-Expression {
         if ($VariableMapping.ContainsKey($key) -and $VariableMapping[$key].name) {
             $name = $VariableMapping[$key].name
             # Shorten very long names
-            if ($name.Length -gt 20) {
-                $name = $name.Substring(0, 17) + "..."
+            if ($name.Length -gt 25) {
+                $name = $name.Substring(0, 22) + "..."
             }
-            return "Var_$letter($name)"
+            return "$name [$letter]"
         }
-        return "Var_$letter"
+        return "[$letter]"
     })
 
     # Replace global variables {32768,N} -> VGN
@@ -216,14 +217,20 @@ foreach ($expr in $exprData.expressions) {
     if ($exprType -eq "CONDITION") {
         $rule = Extract-BusinessRule -DecodedExpr $decoded
         if ($rule.has_rule) {
-            $rule.id = "RM-{0:D3}" -f $ruleId
-            $rule.expression_ide = $expr.ide
-            $rule.raw_expression = $content
-            $rule.decoded_expression = $decoded
-            $businessRules += $rule
-            $ruleId++
+            # Deduplicate: skip if condition already exists
+            $conditionKey = $rule.condition.Trim()
+            $isDuplicate = $businessRules | Where-Object { $_.condition.Trim() -eq $conditionKey }
 
-            $exprObj.business_rule_id = $rule.id
+            if (-not $isDuplicate) {
+                $rule.id = "RM-{0:D3}" -f $ruleId
+                $rule.expression_ide = $expr.ide
+                $rule.raw_expression = $content
+                $rule.decoded_expression = $decoded
+                $businessRules += $rule
+                $ruleId++
+
+                $exprObj.business_rule_id = $rule.id
+            }
         }
     }
 

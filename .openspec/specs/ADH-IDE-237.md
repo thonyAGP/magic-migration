@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: 2026-01-28 18:31
+> **Analyse**: 2026-01-28 18:33
 > **Pipeline**: V6.0 Deep Analysis
 > **Niveau**: DETAILED (Migration)
 
@@ -148,41 +148,41 @@ Transaction Nouv vente avec GP
 
 | ID | Condition | Resultat | Description |
 |----|-----------|----------|-------------|
-| RM-001 | `Trim(Var_BA(W0 service village))='1'` | 'ALLER' | Si Trim(W0 service village)='1' alors 'ALLER' s... |
-| RM-002 | `Var_GA(V.RC utilisé)=0` | IF(Var_W(W0 imputation)='VSL' | Si V.RC utilisé=0 alors IF(Var_W(W0 imputation)... |
-| RM-003 | `Var_C(P0 masque montant)=''` | '15.2' | Si P0 masque montant='' alors '15.2' sinon Var_... |
-| RM-004 | `VG7 OR VG35 OR VG87` | 'Var_C(P0 masque montant)'FORM | Si VG7 OR VG35 OR VG87 alors 'Var_C(P0 masque m... |
-| RM-005 | `NOT Var_CL(W0 Motif de non e...)` | Var_CK(W0.Date fin sejour) | Si NOT W0 Motif de non e... alors Var_CK(W0.Dat... |
-| RM-006 | `Var_W(W0 imputation)='VRL'` | 'Date consommation' | Si W0 imputation='VRL' alors 'Date consommation... |
-| RM-007 | `Var_CO(W0 Titre)<>0 AND NOT(Var_CL(W0...` | Fix(Var_CN(W0 Motif annulation)*Var_CO(W0 Titre)/100 | Si W0 Titre<>0 AND NOT(W0 Motif de non e...) al... |
-| RM-008 | `Var_GA(V.RC utilisé)=0` | IF(Var_W(W0 imputation)='VSL' | Si V.RC utilisé=0 alors IF(Var_W(W0 imputation)... |
-| RM-009 | `Var_W(W0 imputation)='VRL' OR Var_W(W...` | 'Nb forfait' | Si W0 imputation='VRL' OR W0 imputation='VSL' a... |
-| RM-010 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
-| RM-011 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
-| RM-012 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
-| RM-013 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
-| RM-014 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
-| RM-015 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
+| RM-001 | `Trim(W0 service village [BA])='1'` | 'ALLER' | Si Trim(W0 service village [BA])='1' alors 'ALL... |
+| RM-002 | `V.RC utilisé [GA]=0` | IF(W0 imputation [W]='VSL' | Si V.RC utilisé [GA]=0 alors IF(W0 imputation [... |
+| RM-003 | `P0 masque montant [C]=''` | '15.2' | Si P0 masque montant [C]='' alors '15.2' sinon ... |
+| RM-004 | `VG7 OR VG35 OR VG87` | 'P0 masque montant [C]'FORM | Si VG7 OR VG35 OR VG87 alors 'P0 masque montant... |
+| RM-005 | `NOT W0 Motif de non enreg NA [CL]` | W0.Date fin sejour [CK] | Si NOT W0 Motif de non enreg NA [CL] alors W0.D... |
+| RM-006 | `W0 imputation [W]='VRL'` | 'Date consommation' | Si W0 imputation [W]='VRL' alors 'Date consomma... |
+| RM-007 | `W0 Titre [CO]<>0 AND NOT(W0 Motif de ...` | Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100 | Si W0 Titre [CO]<>0 AND NOT(W0 Motif de non enr... |
+| RM-008 | `W0 imputation [W]='VRL' OR W0 imputat...` | 'Nb forfait' | Si W0 imputation [W]='VRL' OR W0 imputation [W]... |
+| RM-009 | `IN (W0 imputation [W]` | 'VRL' | Si IN (W0 imputation [W] alors 'VRL' sinon 'VSL... |
+| RM-010 | `W0 imputation [W]='TRF'` | 31.750 | Si W0 imputation [W]='TRF' alors 31.750 sinon 4... |
+| RM-011 | `W0 Chambre [CX]<>''` | RTrim (W0 Nb Chambres [CW])&Fill (' ' | Si W0 Chambre [CX]<>'' alors RTrim (W0 Nb Chamb... |
+| RM-012 | `V.Total reglement ligne [FF]` | V.Id transaction PMS [FI] | Si V.Total reglement ligne [FF] alors V.Id tran... |
+| RM-013 | `V.ConfirmeUseGP? [FZ]` | 'V' | Si V.ConfirmeUseGP? [FZ] alors 'V' sinon IF([AP... |
+| RM-014 | `NOT(CHG_PRV_W0 nbre articles [GO])` | 132.875 | Si NOT(CHG_PRV_W0 nbre articles [GO]) alors 132... |
+| RM-015 | `W0 imputation [W]='ANN'` | 'O' | Si W0 imputation [W]='ANN' alors 'O' sinon 'N') |
 #### Top 20 Expressions
 
 | IDE | Type | Expression Decodee |
 |-----|------|-------------------|
-| 1 | DATE | `DStr(Var_G(P0 date fin sejour),'DD/MM/YYYY')` |
-| 2 | CONDITION | `IF(Trim(Var_BA(W0 service village))='1','ALLER',IF(Trim(V...` |
+| 1 | DATE | `DStr(P0 date fin sejour [G],'DD/MM/YYYY')` |
+| 2 | CONDITION | `IF(Trim(W0 service village [BA])='1','ALLER',IF(Trim(W0 s...` |
 | 3 | STRING | `MlsTrans ('Verifier que la transaction est bien pour')&' ...` |
 | 4 | DATE | `Date ()` |
-| 5 | CONDITION | `IF(Var_GA(V.RC utilisé)=0,IF(Var_W(W0 imputation)='VSL',V...` |
+| 5 | CONDITION | `IF(V.RC utilisé [GA]=0,IF(W0 imputation [W]='VSL',P0.Date...` |
 | 6 | OTHER | `NOT VG38` |
 | 7 | OTHER | `VG2` |
-| 8 | STRING | `Trim (Var_EM(W0 choix transac ...))` |
+| 8 | STRING | `Trim (W0 choix transac manuelle [EM])` |
 | 9 | CONSTANT | `154` |
-| 10 | OTHER | `Var_A(P0 societe)` |
-| 11 | OTHER | `Var_E(P0 code GM)` |
-| 12 | OTHER | `Var_F(P0 filiation)` |
+| 10 | OTHER | `P0 societe [A]` |
+| 11 | OTHER | `P0 code GM [E]` |
+| 12 | OTHER | `P0 filiation [F]` |
 | 13 | CONSTANT | `'F'` |
 | 14 | DATE | `Date ()` |
-| 15 | CALCULATION | `Var_AW*Var_AV` |
-| 16 | CALCULATION | `(Var_AW*Var_AV)-Var_CQ(W0 Prenom)` |
+| 15 | CALCULATION | `[AW]*[AV]` |
+| 16 | CALCULATION | `([AW]*[AV])-W0 Prenom [CQ]` |
 | 17 | OTHER | `'FALSE'LOG` |
 | 18 | CONSTANT | `'N'` |
 | 19 | CONSTANT | `1` |
@@ -335,7 +335,7 @@ graph LR
 | Lignes Logic | 1818 |
 | Lignes Desactivees | 0 |
 | Expressions | 305 |
-| Regles Metier | 31 |
+| Regles Metier | 17 |
 | Tables (total) | 30 |
 | Tables WRITE | 9 |
 | Tables READ | 13 |
@@ -357,4 +357,4 @@ graph LR
 - Expressions conditionnelles: 31
 
 ---
-*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 18:31*
+*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 18:33*
