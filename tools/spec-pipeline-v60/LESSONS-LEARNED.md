@@ -110,6 +110,72 @@ Dans PowerShell, toujours caster explicitement les types intermediaires, surtout
 
 ---
 
+## Erreur #4: Cold Start dotnet - Timing trompeur
+
+### Contexte
+Lors de l'analyse de plusieurs programmes en sequence, les temps d'execution semblaient incoherents:
+- ADH IDE 236 (19 expressions): **2m04s** wall-clock
+- ADH IDE 237 (305 expressions): **34s** wall-clock
+
+Comment un programme plus complexe peut-il s'executer 4x plus vite?
+
+### Cause: Cold Start vs Warm Start
+
+Le runtime .NET doit etre compile/charge lors de la **premiere** execution:
+
+| Execution | Programme | Pipeline | Startup dotnet | Wall-Clock |
+|-----------|-----------|----------|----------------|------------|
+| 1ere (cold) | IDE 236 | 23.3s | **101s** | 124s (2m04s) |
+| 2eme (warm) | IDE 237 | 15.8s | **18s** | 34s |
+
+### Decomposition du temps
+
+```
+Wall-Clock = Temps Pipeline + Temps Startup dotnet
+
+Cold start (1ere execution):
+  - Compilation JIT du code .NET
+  - Chargement des assemblies
+  - Initialisation SQLite
+  - ~100s d'overhead
+
+Warm start (executions suivantes):
+  - Runtime deja en memoire
+  - Assemblies deja charges
+  - ~15-20s d'overhead
+```
+
+### Impact sur les mesures
+
+| Metrique | Signification | Utiliser pour |
+|----------|---------------|---------------|
+| **Wall-clock** | Temps reel ecoule | Planning, SLA utilisateur |
+| **Pipeline duration** | Temps de traitement pur | Comparaison entre programmes |
+
+### Solution: Toujours rapporter les DEUX temps
+
+```markdown
+> **Debut**: 2026-01-28 17:45:05
+> **Fin**: 2026-01-28 17:47:09
+> **Duree pipeline**: 23.3s
+```
+
+Le champ `pipeline-report.json` contient `duration_seconds` qui est le temps pipeline pur.
+
+### Lecon
+- Ne JAMAIS comparer des wall-clock times entre programmes
+- La premiere execution d'une session a un overhead de ~100s
+- Utiliser `duration_seconds` du rapport pour les comparaisons
+- Pour des benchmarks fiables, faire un "warm-up run" d'abord
+
+### Comment eviter la confusion
+
+1. **Batch d'analyses**: Lancer un programme "dummy" d'abord pour warmer le runtime
+2. **Documentation**: Toujours indiquer si c'etait un cold/warm start
+3. **Rapports**: Utiliser la duree pipeline, pas le wall-clock
+
+---
+
 ## Resume des Regles
 
 | Regle | Faire | Ne pas faire |
@@ -118,7 +184,9 @@ Dans PowerShell, toujours caster explicitement les types intermediaires, surtout
 | Structure JSON | Verifier avant coder | Supposer la structure |
 | Types PowerShell | Caster explicitement | Laisser l'inference |
 | Nouveaux scripts | Copier patterns valides | Reinventer |
+| Timing comparaisons | `duration_seconds` pipeline | Wall-clock time |
+| Batch analyses | Warm-up run d'abord | Comparer cold vs warm |
 
 ---
 
-*Derniere mise a jour: 2026-01-28 - Post correction Phases 2-4*
+*Derniere mise a jour: 2026-01-28 - Post documentation cold start dotnet*
