@@ -2,7 +2,7 @@
 
 > **Debut**: 2026-01-28 17:47:37
 > **Fin**: 2026-01-28 17:48:11
-> **Duree**: 34s
+> **Duree pipeline**: 15.8s
 > **Pipeline**: V6.0 Deep Analysis
 > **Niveau**: DETAILED (Migration)
 

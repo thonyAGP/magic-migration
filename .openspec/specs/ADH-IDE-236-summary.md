@@ -1,6 +1,6 @@
 ﻿# ADH IDE 236 -  Print ticket vente PMS-584
 
-> **Debut**: 2026-01-28 17:45:05 | **Fin**: 17:47:09 | **Duree**: 2m04s
+> **Debut**: 2026-01-28 17:45:05 | **Fin**: 17:47:09 | **Duree pipeline**: 23.3s
 > **Pipeline**: V6.0 Deep Analysis
 
 ## RESUME EXECUTIF

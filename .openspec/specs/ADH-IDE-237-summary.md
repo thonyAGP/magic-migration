@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Debut**: 2026-01-28 17:47:37 | **Fin**: 17:48:11 | **Duree**: 34s
+> **Debut**: 2026-01-28 17:47:37 | **Fin**: 17:48:11 | **Duree pipeline**: 15.8s
 > **Pipeline**: V6.0 Deep Analysis
 
 ## RESUME EXECUTIF
