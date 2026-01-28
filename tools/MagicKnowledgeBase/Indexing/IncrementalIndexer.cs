@@ -250,7 +250,9 @@ public class IncrementalIndexer
                             Definition = c.Definition,
                             Source = c.Source,
                             SourceColumnNumber = c.SourceColumnNumber,
-                            LocateExpressionId = c.LocateExpressionId
+                            LocateExpressionId = c.LocateExpressionId,
+                            GuiControlType = c.GuiControlType,
+                            GuiTableControlType = c.GuiTableControlType
                         }), tx);
                     }
 

@@ -374,9 +374,11 @@ public class KnowledgeDb : IDisposable
     {
         const string sql = @"
             INSERT INTO dataview_columns (task_id, line_number, xml_id, variable, name, data_type, picture,
-                                         definition, source, source_column_number, locate_expression_id)
+                                         definition, source, source_column_number, locate_expression_id,
+                                         gui_control_type, gui_table_control_type)
             VALUES (@task_id, @line_number, @xml_id, @variable, @name, @data_type, @picture,
-                   @definition, @source, @source_column_number, @locate_expression_id)";
+                   @definition, @source, @source_column_number, @locate_expression_id,
+                   @gui_control_type, @gui_table_control_type)";
 
         using var cmd = Connection.CreateCommand();
         cmd.CommandText = sql;
@@ -393,6 +395,8 @@ public class KnowledgeDb : IDisposable
         var pSource = cmd.Parameters.Add("@source", SqliteType.Text);
         var pSourceColNum = cmd.Parameters.Add("@source_column_number", SqliteType.Integer);
         var pLocateExpr = cmd.Parameters.Add("@locate_expression_id", SqliteType.Integer);
+        var pGuiControl = cmd.Parameters.Add("@gui_control_type", SqliteType.Text);
+        var pGuiTableControl = cmd.Parameters.Add("@gui_table_control_type", SqliteType.Text);
 
         foreach (var col in columns)
         {
@@ -407,6 +411,8 @@ public class KnowledgeDb : IDisposable
             pSource.Value = col.Source ?? (object)DBNull.Value;
             pSourceColNum.Value = col.SourceColumnNumber ?? (object)DBNull.Value;
             pLocateExpr.Value = col.LocateExpressionId ?? (object)DBNull.Value;
+            pGuiControl.Value = col.GuiControlType ?? (object)DBNull.Value;
+            pGuiTableControl.Value = col.GuiTableControlType ?? (object)DBNull.Value;
             cmd.ExecuteNonQuery();
         }
     }

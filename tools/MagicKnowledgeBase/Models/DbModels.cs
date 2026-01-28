@@ -67,6 +67,10 @@ public record DbDataViewColumn
     public string? Source { get; init; }
     public int? SourceColumnNumber { get; init; }
     public int? LocateExpressionId { get; init; }
+    /// <summary>GUI control type for form display (EDIT, COMBO, CHECKBOX, etc.)</summary>
+    public string? GuiControlType { get; init; }
+    /// <summary>GUI control type when displayed in a table/grid</summary>
+    public string? GuiTableControlType { get; init; }
 }
 
 /// <summary>

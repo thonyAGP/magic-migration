@@ -260,6 +260,10 @@ public partial class ProgramParser
             var defElement = propList?.Element("Definition");
             var defVal = defElement?.Attribute("val")?.Value;
 
+            // Extract GUI control types (Schema v8)
+            var guiControlType = ExtractGuiControlType(propList?.Element("GuiDisplay"));
+            var guiTableControlType = ExtractGuiControlType(propList?.Element("GuiDisplayTable"));
+
             var name = nameAttr?.Value ?? $"Col_{xmlId}";
             string definition;
             if (name.StartsWith(">") || name.StartsWith("&gt;") || name.StartsWith("<") || name.StartsWith("&lt;"))
@@ -283,7 +287,9 @@ public partial class ProgramParser
                 Name = name,
                 DataType = dataType,
                 Picture = picture,
-                Definition = definition
+                Definition = definition,
+                GuiControlType = guiControlType,
+                GuiTableControlType = guiTableControlType
             });
 
             int currentPosition = dvLine;
@@ -296,6 +302,47 @@ public partial class ProgramParser
         }
 
         return columns;
+    }
+
+    /// <summary>
+    /// Extract GUI control type from GuiDisplay or GuiDisplayTable element.
+    /// Converts CTRL_GUI0_EDIT -> EDIT, CTRL_GUI0_COMBO -> COMBO, etc.
+    /// </summary>
+    private static string? ExtractGuiControlType(XElement? guiElement)
+    {
+        if (guiElement == null) return null;
+
+        var propList = guiElement.Element("PropertyList");
+        if (propList == null) return null;
+
+        var model = propList.Attribute("model")?.Value;
+        if (string.IsNullOrEmpty(model)) return null;
+
+        // Convert CTRL_GUI0_EDIT -> EDIT, CTRL_GUI0_TABLE -> TABLE, etc.
+        return model switch
+        {
+            "CTRL_GUI0_EDIT" => "EDIT",
+            "CTRL_GUI0_TABLE" => "TABLE",
+            "CTRL_GUI0_COMBO" => "COMBO",
+            "CTRL_GUI0_LISTBOX" => "LISTBOX",
+            "CTRL_GUI0_CHECKBOX" => "CHECKBOX",
+            "CTRL_GUI0_RADIO" => "RADIO",
+            "CTRL_GUI0_BUTTON" => "BUTTON",
+            "CTRL_GUI0_LABEL" => "LABEL",
+            "CTRL_GUI0_IMAGE" => "IMAGE",
+            "CTRL_GUI0_BROWSER" => "BROWSER",
+            "CTRL_GUI0_SUBFORM" => "SUBFORM",
+            "CTRL_GUI0_FRAME" => "FRAME",
+            "CTRL_GUI0_GROUP" => "GROUP",
+            "CTRL_GUI0_TAB" => "TAB",
+            "CTRL_GUI0_TREE" => "TREE",
+            "CTRL_GUI0_RICH_EDIT" => "RICH_EDIT",
+            "CTRL_GUI0_RICH_TEXT" => "RICH_TEXT",
+            "CTRL_GUI0_LINE" => "LINE",
+            "CTRL_GUI0_DOTNET" => "DOTNET",
+            _ when model.StartsWith("CTRL_GUI0_") => model[10..], // Strip prefix for unknown types
+            _ => model // Return as-is if no prefix
+        };
     }
 
     private Dictionary<int, int> ParseRemarksFlowIsn(XElement taskElement)
@@ -700,6 +747,10 @@ public record ParsedColumn
     public string? Source { get; init; }
     public int? SourceColumnNumber { get; init; }
     public int? LocateExpressionId { get; init; }
+    /// <summary>GUI control type for form display (EDIT, COMBO, CHECKBOX, etc.)</summary>
+    public string? GuiControlType { get; init; }
+    /// <summary>GUI control type when displayed in a table/grid</summary>
+    public string? GuiTableControlType { get; init; }
 }
 
 public record ParsedLogicLine

@@ -91,7 +91,10 @@ CREATE TABLE IF NOT EXISTS dataview_columns (
     definition TEXT NOT NULL,
     source TEXT,
     source_column_number INTEGER,
-    locate_expression_id INTEGER
+    locate_expression_id INTEGER,
+    -- GUI Control info (Schema v8)
+    gui_control_type TEXT,       -- EDIT, COMBO, CHECKBOX, RADIO, BUTTON, LABEL, TABLE, BROWSER, SUBFORM
+    gui_table_control_type TEXT  -- Control type when displayed in a table/grid
 );
 
 CREATE INDEX IF NOT EXISTS idx_dv_columns_task ON dataview_columns(task_id);
@@ -304,7 +307,7 @@ CREATE TABLE IF NOT EXISTS kb_metadata (
     value TEXT NOT NULL
 );
 
-INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('schema_version', '7');
+INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('schema_version', '8');
 INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('created_at', datetime('now'));
 
 -- ============================================================================
