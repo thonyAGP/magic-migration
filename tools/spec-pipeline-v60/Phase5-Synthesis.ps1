@@ -132,59 +132,65 @@ function Generate-Algorigramme {
     $lines += "    START([START])"
     $lines += "    style START fill:#3fb950"
 
-    # Get first 5 visible forms (main tasks)
+    # Get visible forms (main tasks)
     $mainForms = @()
     if ($UIForms -and $UIForms.forms) {
         $mainForms = @($UIForms.forms | Where-Object {
-            $_.dimensions.width -gt 0 -and $_.window_type_str -ne "Type0"
-        } | Select-Object -First 5)
+            $_.dimensions.width -gt 0 -and $_.window_type_str -match "Modal|SDI|Type6"
+        } | Select-Object -First 6)
     }
 
-    # Get first 3 business rules for decision points
+    # Get business rules for decision points
     $decisions = @()
     if ($Decoded -and $Decoded.business_rules -and $Decoded.business_rules.all) {
-        $decisions = @($Decoded.business_rules.all | Select-Object -First 3)
+        $decisions = @($Decoded.business_rules.all | Select-Object -First 2)
     }
 
-    if ($mainForms.Count -eq 0 -and $decisions.Count -eq 0) {
+    if ($mainForms.Count -eq 0) {
         # Simple flowchart if no data
         $lines += "    PROCESS[Traitement principal]"
         $lines += "    START --> PROCESS"
         $lines += "    PROCESS --> ENDOK"
     } else {
-        # First form as initial input
-        if ($mainForms.Count -gt 0) {
-            $firstForm = $mainForms[0]
-            $formName = ($firstForm.name -replace '[^a-zA-Z0-9 ]', '').Substring(0, [math]::Min(20, $firstForm.name.Length))
-            $lines += "    F1[$formName]"
-            $lines += "    START --> F1"
-            $prevNode = "F1"
-        } else {
-            $prevNode = "START"
-        }
+        # Build sequential flow with main forms
+        $prevNode = "START"
+        $formIndex = 1
 
-        # Add decision if available
-        if ($decisions.Count -gt 0) {
-            $cond = ($decisions[0].condition -replace '[^a-zA-Z0-9= ]', '').Substring(0, [math]::Min(15, $decisions[0].condition.Length))
-            $lines += "    D1{$cond}"
-            $lines += "    style D1 fill:#58a6ff"
-            $lines += "    $prevNode --> D1"
+        foreach ($form in $mainForms) {
+            $formName = $form.name -replace '[^a-zA-Z0-9 ]', ''
+            if ($formName.Length -gt 18) { $formName = $formName.Substring(0, 15) + "..." }
+            if (-not $formName.Trim()) { continue }
 
-            # Yes branch
-            if ($mainForms.Count -gt 1) {
-                $yesForm = ($mainForms[1].name -replace '[^a-zA-Z0-9 ]', '').Substring(0, [math]::Min(15, $mainForms[1].name.Length))
-                $lines += "    YES1[$yesForm]"
-                $lines += "    D1 -->|Oui| YES1"
-                $lines += "    YES1 --> ENDOK"
+            $nodeId = "F$formIndex"
+            $lines += "    $nodeId[$formName]"
+
+            # Add decision after first form
+            if ($formIndex -eq 1 -and $decisions.Count -gt 0) {
+                $lines += "    $prevNode --> $nodeId"
+                $cond = $decisions[0].condition -replace '[^a-zA-Z0-9= ]', ''
+                if ($cond.Length -gt 12) { $cond = $cond.Substring(0, 10) + "..." }
+                $lines += "    D1{Validation?}"
+                $lines += "    style D1 fill:#58a6ff"
+                $lines += "    $nodeId --> D1"
+                $prevNode = "D1"
+                $lines += "    D1 -->|Erreur| ERR[Erreur saisie]"
+                $lines += "    ERR --> $nodeId"
+                $lines += "    style ERR fill:#f85149"
             } else {
-                $lines += "    D1 -->|Oui| ENDOK"
+                $lines += "    $prevNode --> $nodeId"
             }
 
-            # No branch
-            $lines += "    D1 -->|Non| ENDOK"
-        } else {
-            $lines += "    $prevNode --> ENDOK"
+            $prevNode = $nodeId
+            $formIndex++
+
+            # Limit to 4 forms in the main flow
+            if ($formIndex -gt 4) { break }
         }
+
+        # Connect last form to END
+        $lines += "    D1 -->|OK| SAVE[Enregistrement]"
+        $lines += "    style SAVE fill:#22c55e"
+        $lines += "    SAVE --> ENDOK"
     }
 
     # END node

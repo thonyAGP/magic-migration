@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: 2026-01-28 19:44
+> **Analyse**: 2026-01-28 19:47
 > **Pipeline**: V6.0 Deep Analysis
 > **Niveau**: DETAILED (Migration)
 
@@ -178,13 +178,21 @@ flowchart TD
     style START fill:#3fb950
     F1[Saisie transaction]
     START --> F1
-    D1{TrimW0 service }
+    D1{Validation?}
     style D1 fill:#58a6ff
     F1 --> D1
-    YES1[Reglements suit]
-    D1 -->|Oui| YES1
-    YES1 --> ENDOK
-    D1 -->|Non| ENDOK
+    D1 -->|Erreur| ERR[Erreur saisie]
+    ERR --> F1
+    style ERR fill:#f85149
+    F2[Reglements suit...]
+    F1 --> F2
+    F3[Saisie Bilaterale]
+    F2 --> F3
+    F4[Saisie mode de ...]
+    F3 --> F4
+    D1 -->|OK| SAVE[Enregistrement]
+    style SAVE fill:#22c55e
+    SAVE --> ENDOK
     ENDOK([FIN])
     style ENDOK fill:#f85149
 ```
@@ -416,4 +424,4 @@ graph LR
 - Expressions conditionnelles: 31
 
 ---
-*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 19:44*
+*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 19:47*
