@@ -289,11 +289,12 @@ if ($uiForms -and $uiForms.forms.Count -gt 0) {
     $uiSection = @"
 ### Forms (Ecrans)
 
-| Form ID | Nom | Type | Dimensions |
-|---------|-----|------|------------|
+| Tache | Nom | Type | Dimensions |
+|-------|-----|------|------------|
 "@
     foreach ($form in $uiForms.forms) {
-        $uiSection += "`n| $($form.form_id) | $($form.name) | $($form.window_type_str) | $($form.dimensions.width) x $($form.dimensions.height) |"
+        $dims = if ($form.dimensions.width -gt 0) { "$($form.dimensions.width) x $($form.dimensions.height)" } else { "-" }
+        $uiSection += "`n| $($form.task_isn2) | $($form.name) | $($form.window_type_str) | $dims |"
     }
 
     $uiSection += @"
