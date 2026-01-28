@@ -1245,6 +1245,426 @@ if (args.Length > 1 && args[0] == "spec-data")
     return 0;
 }
 
+// =====================================================================
+// PHASE 2 SUPPORT: Extract variables with letter conversion
+// =====================================================================
+if (args.Length > 1 && args[0] == "variables")
+{
+    var varDb = new KnowledgeDb();
+    if (!varDb.IsInitialized())
+    {
+        Console.WriteLine("{\"error\": \"Knowledge Base not initialized\"}");
+        return 1;
+    }
+
+    var parts = args[1].Split(' ');
+    var project = parts[0];
+    var ide = parts.Length > 1 ? int.Parse(parts[1]) : 1;
+
+    using var conn = new SqliteConnection($"Data Source={varDb.DbPath}");
+    conn.Open();
+
+    // Get program DB ID
+    long dbProgramId = 0;
+    string? programName = null;
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT p.id, p.name FROM programs p
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE pr.name = @project AND p.ide_position = @ide";
+        cmd.Parameters.AddWithValue("@project", project);
+        cmd.Parameters.AddWithValue("@ide", ide);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+        {
+            Console.WriteLine($"{{\"error\": \"Program {project} IDE {ide} not found\"}}");
+            return 1;
+        }
+        dbProgramId = reader.GetInt64(0);
+        programName = reader.GetString(1);
+    }
+
+    // Helper function to convert field ID to letter
+    static string FieldToLetter(int fieldId)
+    {
+        if (fieldId <= 0) return $"Field{fieldId}";
+
+        var letters = new System.Text.StringBuilder();
+        int n = fieldId;
+        while (n > 0)
+        {
+            n--;
+            letters.Insert(0, (char)('A' + (n % 26)));
+            n /= 26;
+        }
+        return letters.ToString();
+    }
+
+    // Extract all variables from DataView columns
+    var localVars = new List<object>();
+    var virtualVars = new List<object>();
+    var globalVars = new List<object>();
+    var paramVars = new List<object>();
+
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT DISTINCT
+                dc.variable,
+                dc.name,
+                dc.data_type,
+                dc.picture,
+                dc.source,
+                t.isn2 as task_isn2
+            FROM dataview_columns dc
+            JOIN tasks t ON dc.task_id = t.id
+            WHERE t.program_id = @prog_id
+            ORDER BY dc.variable";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var variable = reader.GetString(0);
+            var name = reader.GetString(1);
+            var dataType = reader.GetString(2);
+            var picture = reader.IsDBNull(3) ? "" : reader.GetString(3);
+            var source = reader.IsDBNull(4) ? "" : reader.GetString(4);
+            var taskIsn2 = reader.GetInt32(5);
+
+            // Parse variable format {type,id}
+            string letter = variable;
+            int fieldId = 0;
+            bool isGlobal = false;
+            bool isVirtual = false;
+            bool isParameter = false;
+
+            if (variable.StartsWith("{") && variable.Contains(","))
+            {
+                var innerParts = variable.Trim('{', '}').Split(',');
+                if (innerParts.Length >= 2)
+                {
+                    int.TryParse(innerParts[0], out int varType);
+                    int.TryParse(innerParts[1], out fieldId);
+
+                    if (varType == 32768)
+                    {
+                        // Global variable
+                        isGlobal = true;
+                        letter = $"VG{fieldId}";
+                    }
+                    else if (varType == 0)
+                    {
+                        // Local variable
+                        letter = FieldToLetter(fieldId);
+                    }
+                }
+            }
+
+            // Classify by source
+            if (source.Contains("Parameter", StringComparison.OrdinalIgnoreCase))
+            {
+                isParameter = true;
+            }
+            else if (source.Contains("Virtual", StringComparison.OrdinalIgnoreCase) ||
+                     source.Contains("Expression", StringComparison.OrdinalIgnoreCase))
+            {
+                isVirtual = true;
+            }
+
+            var varObj = new {
+                field_id = fieldId,
+                letter = letter,
+                name = name,
+                data_type = dataType,
+                picture = picture,
+                source = source
+            };
+
+            if (isGlobal)
+                globalVars.Add(varObj);
+            else if (isParameter)
+                paramVars.Add(varObj);
+            else if (isVirtual)
+                virtualVars.Add(varObj);
+            else
+                localVars.Add(varObj);
+        }
+    }
+
+    var varResult = new
+    {
+        program = programName,
+        ide = ide,
+        variables = new {
+            local = localVars,
+            @virtual = virtualVars,
+            global = globalVars,
+            parameters = paramVars
+        },
+        statistics = new {
+            total = localVars.Count + virtualVars.Count + globalVars.Count + paramVars.Count,
+            local = localVars.Count,
+            @virtual = virtualVars.Count,
+            global = globalVars.Count,
+            parameters = paramVars.Count
+        }
+    };
+
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(varResult));
+    return 0;
+}
+
+// =====================================================================
+// PHASE 3 SUPPORT: Extract ALL expressions (not just 20)
+// =====================================================================
+if (args.Length > 1 && args[0] == "expressions")
+{
+    var exprDb = new KnowledgeDb();
+    if (!exprDb.IsInitialized())
+    {
+        Console.WriteLine("{\"error\": \"Knowledge Base not initialized\"}");
+        return 1;
+    }
+
+    var parts = args[1].Split(' ');
+    var project = parts[0];
+    var ide = parts.Length > 1 ? int.Parse(parts[1]) : 1;
+
+    // Optional --limit parameter
+    int limit = 500;
+    for (int i = 2; i < args.Length; i++)
+    {
+        if (args[i] == "--limit" && i + 1 < args.Length)
+        {
+            int.TryParse(args[i + 1], out limit);
+            if (limit > 1000) limit = 1000; // Cap at 1000
+        }
+    }
+
+    using var conn = new SqliteConnection($"Data Source={exprDb.DbPath}");
+    conn.Open();
+
+    // Get program DB ID
+    long dbProgramId = 0;
+    string? programName = null;
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT p.id, p.name FROM programs p
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE pr.name = @project AND p.ide_position = @ide";
+        cmd.Parameters.AddWithValue("@project", project);
+        cmd.Parameters.AddWithValue("@ide", ide);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+        {
+            Console.WriteLine($"{{\"error\": \"Program {project} IDE {ide} not found\"}}");
+            return 1;
+        }
+        dbProgramId = reader.GetInt64(0);
+        programName = reader.GetString(1);
+    }
+
+    // Get total count
+    int totalCount = 0;
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"SELECT COUNT(*) FROM expressions WHERE program_id = @prog_id";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+        totalCount = Convert.ToInt32(cmd.ExecuteScalar());
+    }
+
+    // Extract all expressions up to limit
+    var expressions = new List<object>();
+    var byType = new Dictionary<string, int> {
+        { "condition", 0 },
+        { "calculation", 0 },
+        { "date", 0 },
+        { "string", 0 },
+        { "constant", 0 },
+        { "other", 0 }
+    };
+
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT ide_position, content, COALESCE(comment, '') as comment
+            FROM expressions
+            WHERE program_id = @prog_id
+            ORDER BY ide_position
+            LIMIT @limit";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+        cmd.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var idePos = reader.GetInt32(0);
+            var content = reader.GetString(1);
+            var comment = reader.GetString(2);
+
+            expressions.Add(new {
+                ide = idePos,
+                content = content,
+                comment = comment
+            });
+
+            // Classify expression type
+            var contentLower = content.ToLower();
+            if (contentLower.StartsWith("if(") || contentLower.Contains("case("))
+                byType["condition"]++;
+            else if (contentLower.Contains("date") || contentLower.Contains("dstr(") || contentLower.Contains("dval("))
+                byType["date"]++;
+            else if (contentLower.Contains("str(") || contentLower.Contains("trim(") || contentLower.Contains("upper(") || contentLower.Contains("lower("))
+                byType["string"]++;
+            else if (content.All(c => char.IsDigit(c) || c == '.' || c == '-' || c == '\''))
+                byType["constant"]++;
+            else if (contentLower.Contains("+") || contentLower.Contains("-") || contentLower.Contains("*") || contentLower.Contains("/"))
+                byType["calculation"]++;
+            else
+                byType["other"]++;
+        }
+    }
+
+    var exprResult = new
+    {
+        program = programName,
+        ide = ide,
+        expressions = expressions,
+        statistics = new {
+            total = totalCount,
+            returned = expressions.Count,
+            by_type = byType
+        }
+    };
+
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(exprResult));
+    return 0;
+}
+
+// =====================================================================
+// PHASE 4 SUPPORT: Extract forms as JSON
+// =====================================================================
+if (args.Length > 1 && args[0] == "forms-json")
+{
+    var formsDb = new KnowledgeDb();
+    if (!formsDb.IsInitialized())
+    {
+        Console.WriteLine("{\"error\": \"Knowledge Base not initialized\"}");
+        return 1;
+    }
+
+    var parts = args[1].Split(' ');
+    var project = parts[0];
+    var ide = parts.Length > 1 ? int.Parse(parts[1]) : 1;
+
+    using var conn = new SqliteConnection($"Data Source={formsDb.DbPath}");
+    conn.Open();
+
+    // Get program DB ID
+    long dbProgramId = 0;
+    string? programName = null;
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT p.id, p.name FROM programs p
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE pr.name = @project AND p.ide_position = @ide";
+        cmd.Parameters.AddWithValue("@project", project);
+        cmd.Parameters.AddWithValue("@ide", ide);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+        {
+            Console.WriteLine($"{{\"error\": \"Program {project} IDE {ide} not found\"}}");
+            return 1;
+        }
+        dbProgramId = reader.GetInt64(0);
+        programName = reader.GetString(1);
+    }
+
+    // Helper to convert window type to string
+    static string WindowTypeToString(int windowType)
+    {
+        return windowType switch
+        {
+            1 => "MDI",
+            2 => "SDI",
+            3 => "Modal",
+            4 => "Floating",
+            5 => "Tool",
+            _ => $"Type{windowType}"
+        };
+    }
+
+    // Extract forms
+    var forms = new List<object>();
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT
+                tf.form_entry_id,
+                tf.form_name,
+                tf.position_x,
+                tf.position_y,
+                tf.width,
+                tf.height,
+                tf.window_type,
+                tf.font,
+                t.isn2 as task_isn2,
+                t.description as task_name
+            FROM task_forms tf
+            JOIN tasks t ON tf.task_id = t.id
+            WHERE t.program_id = @prog_id
+            ORDER BY t.isn2, tf.form_entry_id";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var windowType = reader.IsDBNull(6) ? 0 : reader.GetInt32(6);
+            forms.Add(new {
+                form_id = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
+                name = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                window_type = windowType,
+                window_type_str = WindowTypeToString(windowType),
+                dimensions = new {
+                    x = reader.IsDBNull(2) ? 0 : reader.GetInt32(2),
+                    y = reader.IsDBNull(3) ? 0 : reader.GetInt32(3),
+                    width = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
+                    height = reader.IsDBNull(5) ? 0 : reader.GetInt32(5)
+                },
+                task_isn2 = reader.GetInt32(8),
+                font = reader.IsDBNull(7) ? "" : reader.GetString(7)
+            });
+        }
+    }
+
+    // Note about controls - would need schema extension
+    var notes = new List<string>();
+    notes.Add("Controls extraction requires KB schema extension");
+
+    var formsResult = new
+    {
+        program = programName,
+        ide = ide,
+        forms = forms,
+        controls = new List<object>(), // Placeholder - needs schema extension
+        statistics = new {
+            form_count = forms.Count,
+            control_count = 0
+        },
+        notes = notes
+    };
+
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(formsResult));
+    return 0;
+}
+
 var projectsBasePath = args.Length > 0 ? args[0] : @"D:\Data\Migration\XPA\PMS";
 
 Console.WriteLine("=== Magic Knowledge Base Indexer ===");

@@ -721,6 +721,7 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 
 | Date | Decision | Contexte | Alternatives rejetees |
 |------|----------|----------|----------------------|
+| 2026-01-28 | **KbIndexRunner CLI > SQLite DLL** | PowerShell ne resout pas les dependances natives de Microsoft.Data.Sqlite. Erreur "Impossible de charger types requis". CLI fiable a 100%. Voir `tools/spec-pipeline-v60/LESSONS-LEARNED.md` | Charger SQLite DLL directement (ECHEC REPETE) |
 | 2026-01-05 | **Facteurs DLU calibres X=0.65, Y=2.0** | Validation visuelle CA0142: 939×178 DLU → 610×356 px. Positions boutons fideles | X=0.5/Y=1.0 (trop petit), X=0.53/Y=1.0 (hauteur insuffisante) |
 | 2026-01-04 | **Correction tracage flux** | ADH IDE 162 n'est PAS l'ecran visible - c'est un menu intermediaire (CallTask vers ADH IDE 121). Ecran visible = CA0142 (ADH IDE 121) avec WindowType=2 (SDI) | Considerer ADH IDE 162 comme ecran principal (ERREUR) |
 | 2026-01-04 | Identifier ecrans par ID public | Format CA0XXX visible dans titre ecran correspond au Public Name dans ProgramHeaders.xml | Identifier par nom programme interne |

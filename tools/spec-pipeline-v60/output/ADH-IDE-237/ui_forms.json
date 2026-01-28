@@ -1,0 +1,729 @@
+﻿{
+    "screen_mockup_ascii":  [
+                                "+--------------------------------------+",
+                                "|          Saisie transaction          |",
+                                "+--------------------------------------+",
+                                "|  [Form content - Modal]              |",
+                                "|                                      |",
+                                "+--------------------------------------+"
+                            ],
+    "statistics":  {
+                       "table_count":  0,
+                       "button_count":  0,
+                       "label_count":  0,
+                       "form_count":  49,
+                       "input_count":  0
+                   },
+    "metadata":  {
+                     "ide_position":  237,
+                     "pipeline_version":  "6.0",
+                     "project":  "ADH",
+                     "program_name":  "Transaction Nouv vente avec GP",
+                     "generated_at":  "2026-01-28 17:32:25"
+                 },
+    "forms":  [
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Saisie transaction",
+                      "window_type":  3,
+                      "window_type_str":  "Modal",
+                      "task_isn2":  1,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Reglements suite a refus TPE",
+                      "window_type":  6,
+                      "window_type_str":  "Type6",
+                      "task_isn2":  2,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "verif reg restant",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  3,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "creation règlement",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  4,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Verif reglement tpe",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  5,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Dé-Affecition",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  6,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Saisie Bilaterale",
+                      "window_type":  6,
+                      "window_type_str":  "Type6",
+                      "task_isn2":  7,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Saisie mode de règlement",
+                      "window_type":  6,
+                      "window_type_str":  "Type6",
+                      "task_isn2":  8,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "RAZ 269",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  9,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Saisie Commentaires",
+                      "window_type":  6,
+                      "window_type_str":  "Type6",
+                      "task_isn2":  10,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "VRL : Saisie identité",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  11,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Test si cloture en cours",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  12,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Blocage cloture v1",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  13,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Blocage cloture v1",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  14,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Reaffichage infos compte",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  15,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Test reseau",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  16,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Forfait",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  17,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "",
+                      "window_type":  3,
+                      "window_type_str":  "Modal",
+                      "task_isn2":  18,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Saisie dates forfait",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  19,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Effacement forfait",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  20,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Effacement mvt forfait",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  21,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Creation prestation",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  22,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Deblocage cloture v1",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  23,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Deblocage cloture",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  24,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Gratuite ?",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  25,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Recherche imputation/ssimput",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  26,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Creation Tempo",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  27,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Creation reglement",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  28,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Creation",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  29,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Affiche saisie",
+                      "window_type":  3,
+                      "window_type_str":  "Modal",
+                      "task_isn2":  30,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "garantie?",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  31,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "RAZ 269",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  32,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Increment Num. Ticket(VRL/VSL)",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  33,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Changement MOP multi paiement",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  34,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "calcul nombre carte",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  35,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Raz Affectation Transfert",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  36,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Compte Enregs affectés",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  37,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Type transfert",
+                      "window_type":  6,
+                      "window_type_str":  "Type6",
+                      "task_isn2":  38,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Affiche Transfert A/R",
+                      "window_type":  6,
+                      "window_type_str":  "Type6",
+                      "task_isn2":  39,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Affectation PAX / Transfert",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  40,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Supprime enregs non affectés",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  41,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Compte Enregs affectés",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  42,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Compte Enregs affectés",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  43,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Affectation Auto",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  44,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "MaJ Num Chèque",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  45,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Libération du logement",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  46,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Creation_heure_liberation",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  47,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "RAZ LCO liberation",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  48,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Récup nb chambre /LCO",
+                      "window_type":  0,
+                      "window_type_str":  "Type0",
+                      "task_isn2":  49,
+                      "form_id":  2,
+                      "font":  ""
+                  }
+              ],
+    "notes":  [
+                  "Controls extraction requires KB schema extension"
+              ],
+    "controls":  {
+                     "tables":  [
+
+                                ],
+                     "inputs":  [
+
+                                ],
+                     "labels":  [
+
+                                ],
+                     "buttons":  [
+
+                                 ]
+                 }
+}

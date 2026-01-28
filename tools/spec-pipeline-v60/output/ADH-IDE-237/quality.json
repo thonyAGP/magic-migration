@@ -1,0 +1,32 @@
+﻿{
+    "metadata":  {
+                     "pipeline_version":  "6.0",
+                     "generated_at":  "2026-01-28 17:32:25",
+                     "ide_position":  237,
+                     "duration_seconds":  0.1,
+                     "program_name":  "Transaction Nouv vente avec GP",
+                     "project":  "ADH"
+                 },
+    "files_generated":  [
+                            "ADH-IDE-237-summary.md",
+                            "ADH-IDE-237.md"
+                        ],
+    "quality_score":  90,
+    "comparison_v35":  {
+                           "improvements":  [
+                                                "Callers extraits depuis program_calls",
+                                                "Callees extraits depuis program_calls",
+                                                "Expressions decodees avec lettres",
+                                                "Call chain depuis Main"
+                                            ],
+                           "note":  "V6.0 inclut callers/callees depuis KB indexee"
+                       },
+    "extraction_coverage":  {
+                                "tables_extracted":  true,
+                                "expressions_decoded":  true,
+                                "callers_extracted":  true,
+                                "callees_extracted":  true,
+                                "variables_mapped":  false,
+                                "forms_extracted":  true
+                            }
+}

@@ -1,0 +1,2400 @@
+﻿{
+    "statistics":  {
+                       "virtual_count":  0,
+                       "table_count":  30,
+                       "parameter_count":  0,
+                       "total_variables":  273,
+                       "global_count":  0,
+                       "mapping_entries":  0,
+                       "local_count":  273
+                   },
+    "tables":  {
+                   "70":  {
+                              "physical":  "cafil048_dat",
+                              "name":  "date_comptable___dat",
+                              "access":  "LINK",
+                              "logical":  "date_comptable___dat"
+                          },
+                   "96":  {
+                              "physical":  "cafil074_dat",
+                              "name":  "table_prestation_pre",
+                              "access":  "LINK",
+                              "logical":  "table_prestation_pre"
+                          },
+                   "32":  {
+                              "physical":  "cafil010_dat",
+                              "name":  "prestations",
+                              "access":  "WRITE",
+                              "logical":  "prestations"
+                          },
+                   "34":  {
+                              "physical":  "cafil012_dat",
+                              "name":  "hebergement______heb",
+                              "access":  "LINK",
+                              "logical":  "hebergement______heb"
+                          },
+                   "77":  {
+                              "physical":  "cafil055_dat",
+                              "name":  "articles_________art",
+                              "access":  "READ",
+                              "logical":  "articles_________art"
+                          },
+                   "30":  {
+                              "physical":  "cafil008_dat",
+                              "name":  "gm-recherche_____gmr",
+                              "access":  "READ",
+                              "logical":  "gm-recherche_____gmr"
+                          },
+                   "68":  {
+                              "physical":  "cafil046_dat",
+                              "name":  "compteurs________cpt",
+                              "access":  "WRITE",
+                              "logical":  "compteurs________cpt"
+                          },
+                   "596":  {
+                               "physical":  "%club_user%tmp_ecrpolice_dat",
+                               "name":  "tempo_ecran_police",
+                               "access":  "WRITE",
+                               "logical":  "tempo_ecran_police"
+                           },
+                   "103":  {
+                               "physical":  "cafil081_dat",
+                               "name":  "logement_client__loc",
+                               "access":  "READ",
+                               "logical":  "logement_client__loc"
+                           },
+                   "899":  {
+                               "physical":  "Boo_ResultsRechercheHoraire",
+                               "name":  "Boo_ResultsRechercheHoraire",
+                               "access":  "WRITE",
+                               "logical":  "Boo_ResultsRechercheHoraire"
+                           },
+                   "697":  {
+                               "physical":  "droits",
+                               "name":  "droits_applications",
+                               "access":  "LINK",
+                               "logical":  "droits_applications"
+                           },
+                   "47":  {
+                              "physical":  "cafil025_dat",
+                              "name":  "compte_gm________cgm",
+                              "access":  "WRITE",
+                              "logical":  "compte_gm________cgm"
+                          },
+                   "197":  {
+                               "physical":  "caisse_artstock",
+                               "name":  "articles_en_stock",
+                               "access":  "LINK",
+                               "logical":  "articles_en_stock"
+                           },
+                   "109":  {
+                               "physical":  "cafil087_dat",
+                               "name":  "table_utilisateurs",
+                               "access":  "READ",
+                               "logical":  "table_utilisateurs"
+                           },
+                   "89":  {
+                              "physical":  "cafil067_dat",
+                              "name":  "moyen_paiement___mop",
+                              "access":  "READ",
+                              "logical":  "moyen_paiement___mop"
+                          },
+                   "23":  {
+                              "physical":  "cafil001_dat",
+                              "name":  "reseau_cloture___rec",
+                              "access":  "WRITE",
+                              "logical":  "reseau_cloture___rec"
+                          },
+                   "26":  {
+                              "physical":  "cafil004_dat",
+                              "name":  "comptes_speciaux_spc",
+                              "access":  "LINK",
+                              "logical":  "comptes_speciaux_spc"
+                          },
+                   "46":  {
+                              "physical":  "cafil024_dat",
+                              "name":  "mvt_prestation___mpr",
+                              "access":  "WRITE",
+                              "logical":  "mvt_prestation___mpr"
+                          },
+                   "372":  {
+                               "physical":  "pv_budget_dat",
+                               "name":  "pv_budget",
+                               "access":  "LINK",
+                               "logical":  "pv_budget"
+                           },
+                   "728":  {
+                               "physical":  "arc_cctotal",
+                               "name":  "arc_cc_total",
+                               "access":  "LINK",
+                               "logical":  "arc_cc_total"
+                           },
+                   "39":  {
+                              "physical":  "cafil017_dat",
+                              "name":  "depot_garantie___dga",
+                              "access":  "READ",
+                              "logical":  "depot_garantie___dga"
+                          },
+                   "801":  {
+                               "physical":  "moyens_reglement_complem",
+                               "name":  "moyens_reglement_complem",
+                               "access":  "LINK",
+                               "logical":  "moyens_reglement_complem"
+                           },
+                   "847":  {
+                               "physical":  "%club_user%_stat_lieu_vente_date",
+                               "name":  "stat_lieu_vente_date",
+                               "access":  "WRITE",
+                               "logical":  "stat_lieu_vente_date"
+                           },
+                   "140":  {
+                               "physical":  "cafil118_dat",
+                               "name":  "moyen_paiement___mop",
+                               "access":  "LINK",
+                               "logical":  "moyen_paiement___mop"
+                           },
+                   "1037":  {
+                                "physical":  "",
+                                "name":  "Table_1037",
+                                "access":  "WRITE",
+                                "logical":  "Table_1037"
+                            },
+                   "79":  {
+                              "physical":  "cafil057_dat",
+                              "name":  "gratuites________gra",
+                              "access":  "READ",
+                              "logical":  "gratuites________gra"
+                          },
+                   "139":  {
+                               "physical":  "cafil117_dat",
+                               "name":  "moyens_reglement_mor",
+                               "access":  "READ",
+                               "logical":  "moyens_reglement_mor"
+                           },
+                   "818":  {
+                               "physical":  "zcircafil146",
+                               "name":  "Circuit supprime",
+                               "access":  "LINK",
+                               "logical":  "Circuit supprime"
+                           },
+                   "50":  {
+                              "physical":  "cafil028_dat",
+                              "name":  "moyens_reglement_mor",
+                              "access":  "READ",
+                              "logical":  "moyens_reglement_mor"
+                          },
+                   "67":  {
+                              "physical":  "cafil045_dat",
+                              "name":  "tables___________tab",
+                              "access":  "LINK",
+                              "logical":  "tables___________tab"
+                          }
+               },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P0 societe",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "V.Existe MOP ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "V.Existe reglement ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "v Concatenation",
+                                        "data_type":  "Alpha",
+                                        "picture":  "11",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "v Montant cumulé saisie",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N12.3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "v Montant cumulé saisie",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N12.3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P.Toute ligne",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "b.Valider",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "W2 Titre",
+                                        "data_type":  "Alpha",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "W1 fin tache",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "W1 ret.lien forfait",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "W1 fin tâche",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "W2 date debut",
+                                        "data_type":  "Date",
+                                        "picture":  "##/##/##Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "W1 ret.lien gratuite",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "W2 ret.lien imput",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Mont-GiftPass",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N12.3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P.Ligne",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "DETAIL",
+                                        "data_type":  "Alpha",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "V garantie trouvee",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "V.Changement effectue ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P Type transfert Global",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P Type transfert Detail",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "v.Sélectionné ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "p.o.Abandon",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "p.o.Nb chambres/LCO",
+                                        "data_type":  "Numeric",
+                                        "picture":  "4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "P0 devise locale",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "V.Existe MOP ligne ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "b.abandonner",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "b.Abandonner",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "W2 Nom",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "W1 cloture en cours",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "W1 ret.lien PRE annu",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "W2 date fin",
+                                        "data_type":  "Date",
+                                        "picture":  "##/##/##Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "V.Confirmation Gift Pass ?",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "p.Mont-GiftPass",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N12.3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "QUITTER",
+                                        "data_type":  "Alpha",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "v Nbre PAX",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "W1 Date transfert Aller",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "W1 V Nom recherche",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "v.Heb_nom_logement",
+                                        "data_type":  "Unicode",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Nb chambres LCO",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BA",
+                                        "name":  "W0 service village",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BB",
+                                        "name":  "W0 libelle article",
+                                        "data_type":  "Alpha",
+                                        "picture":  "15",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BC",
+                                        "name":  "W0 article dernière minute",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BD",
+                                        "name":  "W0 nbre articles",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BE",
+                                        "name":  "W0 prix unitaire",
+                                        "data_type":  "Numeric",
+                                        "picture":  "## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BF",
+                                        "name":  "W0 Categorie de chambre",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BG",
+                                        "name":  "W0 Lieu sejour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BH",
+                                        "name":  "W0 Code reduction",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U15",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BI",
+                                        "name":  "v Sens Transfert Global",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BJ",
+                                        "name":  "v.Date activité VAE",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BK",
+                                        "name":  "v.VAE pendant le séjour ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BL",
+                                        "name":  "v.Matin/Après midi",
+                                        "data_type":  "Unicode",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BM",
+                                        "name":  "W0 Sens du transfert Aller",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BN",
+                                        "name":  "W0 Date du transfert Aller",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BO",
+                                        "name":  "W0 Heure du transfert Aller",
+                                        "data_type":  "Time",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BP",
+                                        "name":  "W0 b.Date du transfert",
+                                        "data_type":  "Alpha",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BQ",
+                                        "name":  "W0 Type d\u0027endroit Aller",
+                                        "data_type":  "Alpha",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BR",
+                                        "name":  "W0 Code Gare/Aéroport Aller",
+                                        "data_type":  "Alpha",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BS",
+                                        "name":  "W0 Numéro du vol Aller",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BT",
+                                        "name":  "W0 Compagnie Aller",
+                                        "data_type":  "Alpha",
+                                        "picture":  "9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BU",
+                                        "name":  "W0 Commentaire Aller",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BV",
+                                        "name":  "W0 Sens du transfert Retour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BW",
+                                        "name":  "W0 Date du transfert Retour",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BX",
+                                        "name":  "W0 Heure du transfert Retour",
+                                        "data_type":  "Time",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BY",
+                                        "name":  "W0 Type d\u0027endroit Retour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BZ",
+                                        "name":  "W0 Code Gare/Aéroport Retour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "P0 masque montant",
+                                        "data_type":  "Alpha",
+                                        "picture":  "16",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "V.Existe new VSL NA ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "b.Valider",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "b.Valider",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "W2 Prenom",
+                                        "data_type":  "Alpha",
+                                        "picture":  "UX9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "W1 ret.lien MPR",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "Bouton Ok",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "V.Existe ligne reglement multi?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "SUPPRIMER",
+                                        "data_type":  "Alpha",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "b.Annuler",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "W1 Heure transfert Aller",
+                                        "data_type":  "Time",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "W1 Afficher cochés",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "v.Nb chambres saisies",
+                                        "data_type":  "Numeric",
+                                        "picture":  "4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CA",
+                                        "name":  "W0 Numéro du vol Retour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CB",
+                                        "name":  "W0 Compagnie Retour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CC",
+                                        "name":  "W0 b.Saisie PAX",
+                                        "data_type":  "Alpha",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CD",
+                                        "name":  "W0 Nbre de PAX enregistré",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CE",
+                                        "name":  "W0 Commentaire Retour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CF",
+                                        "name":  "W0 montant avant reduction",
+                                        "data_type":  "Numeric",
+                                        "picture":  "## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CG",
+                                        "name":  "W0 Pourcentage reduction",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CH",
+                                        "name":  "W0 Remise Obligatoire",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CI",
+                                        "name":  "W0 Montant reduction",
+                                        "data_type":  "Numeric",
+                                        "picture":  "## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CJ",
+                                        "name":  "W0.Date consommation",
+                                        "data_type":  "Date",
+                                        "picture":  "##/##/####Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CK",
+                                        "name":  "W0.Date fin sejour",
+                                        "data_type":  "Date",
+                                        "picture":  "##/##/####Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CL",
+                                        "name":  "W0 Motif de non enreg NA",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CM",
+                                        "name":  "W0 Commentaire",
+                                        "data_type":  "Alpha",
+                                        "picture":  "200",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CN",
+                                        "name":  "W0 Motif annulation",
+                                        "data_type":  "Alpha",
+                                        "picture":  "200",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CO",
+                                        "name":  "W0 Titre",
+                                        "data_type":  "Alpha",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CP",
+                                        "name":  "W0 Nom",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CQ",
+                                        "name":  "W0 Prenom",
+                                        "data_type":  "Alpha",
+                                        "picture":  "UX9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CR",
+                                        "name":  "W0 Num rue",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CS",
+                                        "name":  "W0 Nom de la rue",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CT",
+                                        "name":  "W0 Commune",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U35",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CU",
+                                        "name":  "W0 CP",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CV",
+                                        "name":  "W0 Ville",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CW",
+                                        "name":  "W0 Nb Chambres",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CX",
+                                        "name":  "W0 Chambre",
+                                        "data_type":  "Unicode",
+                                        "picture":  "U6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CY",
+                                        "name":  "W0 PYR Valide",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "CZ",
+                                        "name":  "W0 Lib Bouton Chambre",
+                                        "data_type":  "Unicode",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "P0 solde compte",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "V.Article VSL NA ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "W2 Num rue",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "W1 ret.lien PRE sais",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "b Exit",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "W1 Type Endroit Aller",
+                                        "data_type":  "Alpha",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "W1 Afficher filiation",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "CHG_REASON_Heure_liberation",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DA",
+                                        "name":  "W0 Vendeur",
+                                        "data_type":  "Unicode",
+                                        "picture":  "8",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DB",
+                                        "name":  "W0 libelle supplem",
+                                        "data_type":  "Alpha",
+                                        "picture":  "15",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DC",
+                                        "name":  "W0 libelle supplem pour édition",
+                                        "data_type":  "Alpha",
+                                        "picture":  "15",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DD",
+                                        "name":  "W0 article trouve",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DE",
+                                        "name":  "W0 Stock produit",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DF",
+                                        "name":  "W0 montant",
+                                        "data_type":  "Numeric",
+                                        "picture":  "## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DG",
+                                        "name":  "W0 mode de paiement",
+                                        "data_type":  "Alpha",
+                                        "picture":  "5",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DH",
+                                        "name":  "Existe mode de paiement",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DI",
+                                        "name":  "W0 Libelle MOP",
+                                        "data_type":  "Alpha",
+                                        "picture":  "UX19",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DJ",
+                                        "name":  "WO Classe MOP",
+                                        "data_type":  "Alpha",
+                                        "picture":  "5",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DK",
+                                        "name":  "V0 memo-service",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DL",
+                                        "name":  "V0 memo-nom GM",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U24",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DM",
+                                        "name":  "V0 validation",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DN",
+                                        "name":  "W0 reseau",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DO",
+                                        "name":  "W0 fin tache",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DP",
+                                        "name":  "W0 forfait (O/N)",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DQ",
+                                        "name":  "W0 effacement (O/N)",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DR",
+                                        "name":  "W0 forfait date(O/N)",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DS",
+                                        "name":  "W0 code forfait",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DT",
+                                        "name":  "W0 date debut",
+                                        "data_type":  "Date",
+                                        "picture":  "##/##/##Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DU",
+                                        "name":  "W0 date fin",
+                                        "data_type":  "Date",
+                                        "picture":  "##/##/##Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DV",
+                                        "name":  "W0 gratuite ?",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DW",
+                                        "name":  "W0 ret lien special",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DX",
+                                        "name":  "W0 Code Devise",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DY",
+                                        "name":  "W0 Retour Transmission TPE",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "DZ",
+                                        "name":  "W0 Forcer Transaction Manuelle",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "P0 code GM",
+                                        "data_type":  "Numeric",
+                                        "picture":  "########P0",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "V.Plus de reglement ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "W2 Nom rue",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "v.Controle saisie 1 3",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "W1 Code Aeroport/Gare Aller",
+                                        "data_type":  "Unicode",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "W1 B.Exit",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "CHG_PRV_Heure_liberation",
+                                        "data_type":  "Time",
+                                        "picture":  "HH:MMZ",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EA",
+                                        "name":  "W0 Message TPE",
+                                        "data_type":  "Alpha",
+                                        "picture":  "200",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EB",
+                                        "name":  "W0 Retour Lecture TPE",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EC",
+                                        "name":  "W0 Fin Transaction TPE",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "ED",
+                                        "name":  "v. titre",
+                                        "data_type":  "Alpha",
+                                        "picture":  "35",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EE",
+                                        "name":  "W0 Total_Vente",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EF",
+                                        "name":  "W0 Total_GiftPass",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EG",
+                                        "name":  "W0 Annulation OD active",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EH",
+                                        "name":  "W0 Compte garanti",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EI",
+                                        "name":  "W0 confirmation si non garanti",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EJ",
+                                        "name":  "W0 Abandon",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EK",
+                                        "name":  "W0 validation",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EL",
+                                        "name":  "W0 choix personne absente",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EM",
+                                        "name":  "W0 choix transac manuelle",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EN",
+                                        "name":  "Bouton Ok",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EO",
+                                        "name":  "W0 Lien Logement Lieu Séjour",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EP",
+                                        "name":  "V.VADA ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EQ",
+                                        "name":  "V.VADV ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "ER",
+                                        "name":  "V.VAD ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "ES",
+                                        "name":  "Nbre ecriture",
+                                        "data_type":  "Numeric",
+                                        "picture":  "4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "ET",
+                                        "name":  "V.Reglement premier article",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EU",
+                                        "name":  "V.Type premier article",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EV",
+                                        "name":  "V.Premier article VSL NA ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EW",
+                                        "name":  "V.Article VSL NA ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EX",
+                                        "name":  "v.IncrémentTicket(VRL/VSL) OK",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EY",
+                                        "name":  "v.IncrémentTicket(VTE) OK",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "EZ",
+                                        "name":  "v.NumeroTicket(VRL/VSL)",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "P0 filiation",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3L",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "V.Ecart montant ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "W2 Commune",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U35",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "v.Controle saisie 2",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "W1 Num Vol/Train Aller",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "W1 B.Tout décocher",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FA",
+                                        "name":  "v.NumeroTicket(VTE)",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FB",
+                                        "name":  "v Réponse mode paiement",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FC",
+                                        "name":  "V Nbre de Ligne Saisies",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FD",
+                                        "name":  "v Nbre ligne de reglement Saisi",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FE",
+                                        "name":  "V.Num ligne vente",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FF",
+                                        "name":  "V.Total reglement ligne",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N12.3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FG",
+                                        "name":  "V.Multi reglement ligne",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FH",
+                                        "name":  "V.MOP TPE",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FI",
+                                        "name":  "V.Id transaction PMS",
+                                        "data_type":  "Alpha",
+                                        "picture":  "32",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FJ",
+                                        "name":  "V.Id transaction AXIS",
+                                        "data_type":  "Alpha",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FK",
+                                        "name":  "V.Num Autorisation",
+                                        "data_type":  "Alpha",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FL",
+                                        "name":  "V.Transaction TPE validee",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FM",
+                                        "name":  "V.Message erreur transac TPE",
+                                        "data_type":  "Alpha",
+                                        "picture":  "250",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FN",
+                                        "name":  "V.Total carte",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N12.3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FO",
+                                        "name":  "V.Transaction ok",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FP",
+                                        "name":  "V.Nombre de carte",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FQ",
+                                        "name":  "b.type de transfert",
+                                        "data_type":  "Alpha",
+                                        "picture":  "5",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FR",
+                                        "name":  "v is the First time",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FS",
+                                        "name":  "v.Montant-giftPass",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N12.3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FT",
+                                        "name":  "v.email GM pour VAD",
+                                        "data_type":  "Alpha",
+                                        "picture":  "200",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FU",
+                                        "name":  "V.N°Ticket OD",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FV",
+                                        "name":  "V.N°Ticket Autres Moyen Paie",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FW",
+                                        "name":  "V.Num Cheque",
+                                        "data_type":  "Unicode",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FX",
+                                        "name":  "V.SoldeResortCredit",
+                                        "data_type":  "Numeric",
+                                        "picture":  "12.3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FY",
+                                        "name":  "V.Confirm Use Resort Credit",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "FZ",
+                                        "name":  "V.ConfirmeUseGP?",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "P0 date fin sejour",
+                                        "data_type":  "Date",
+                                        "picture":  "##/##/##Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "V.Ecart num ligne",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "W2 CP",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "v.Fin de tache",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "W1 Compagnie Aller",
+                                        "data_type":  "Alpha",
+                                        "picture":  "9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "W1 Nbre de Pax Enregistrés",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GA",
+                                        "name":  "V.RC utilisé",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GB",
+                                        "name":  "v.Token Id",
+                                        "data_type":  "Unicode",
+                                        "picture":  "32",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GC",
+                                        "name":  "v.Transaction Id",
+                                        "data_type":  "Unicode",
+                                        "picture":  "32",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GD",
+                                        "name":  "v.Nb chambres /LCO",
+                                        "data_type":  "Numeric",
+                                        "picture":  "4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GE",
+                                        "name":  "v.Flag exist Vte LCO",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GF",
+                                        "name":  "v.Flag abandon libération",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GG",
+                                        "name":  "v. pied stype?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GH",
+                                        "name":  "v. pied type?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GI",
+                                        "name":  "v. type a utiliser",
+                                        "data_type":  "Unicode",
+                                        "picture":  "U3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GJ",
+                                        "name":  "v. stype a utiliser",
+                                        "data_type":  "Unicode",
+                                        "picture":  "U3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GK",
+                                        "name":  "CHG_REASON_W0 libelle article",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GL",
+                                        "name":  "CHG_PRV_W0 libelle article",
+                                        "data_type":  "Alpha",
+                                        "picture":  "12",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GM",
+                                        "name":  "P.Toute ligne",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GN",
+                                        "name":  "CHG_REASON_W0 nbre articles",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "GO",
+                                        "name":  "CHG_PRV_W0 nbre articles",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "P0 etat compte",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "W2 Ville",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "W1 Commentaire Aller",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "W1 Names of non filiated ppl",
+                                        "data_type":  "Alpha",
+                                        "picture":  "500",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "P0 date solde",
+                                        "data_type":  "Date",
+                                        "picture":  "##/##/##Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "Bouton Ok",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "W1 Date transfert Retour",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "CHG_REASON_W1 V Nom recherche",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "P0 garanti O/N",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "V.Chaine OK",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "W1 Heure transfert Retour",
+                                        "data_type":  "Time",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "CHG_PRV_W1 V Nom recherche",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "P0 Nom \u0026 prenom",
+                                        "data_type":  "Alpha",
+                                        "picture":  "60",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "W1 Type Endroit Retour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "CHG_REASON_W1 Afficher cochés",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "P0 UNI/BI",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "W1 Code Aeroport/Gare Retour",
+                                        "data_type":  "Unicode",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "CHG_PRV_W1 Afficher cochés",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "M",
+                                        "name":  "P0.Date debut sejour",
+                                        "data_type":  "Date",
+                                        "picture":  "##/##/##Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "M",
+                                        "name":  "W1 Num Vol/Train Retour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "M",
+                                        "name":  "CHG_REASON_W1 Afficher filiati",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "N",
+                                        "name":  "P0.Valide ?",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "N",
+                                        "name":  "W1 Compagnie Retour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "N",
+                                        "name":  "CHG_PRV_W1 Afficher filiation",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "O",
+                                        "name":  "P0.Nb decimales",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "O",
+                                        "name":  "W1 Commentaire Retour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "O",
+                                        "name":  "v. response",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "P",
+                                        "name":  "Bouton IDENTITE",
+                                        "data_type":  "Alpha",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "P",
+                                        "name":  "b.Abandon",
+                                        "data_type":  "Alpha",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "Q",
+                                        "name":  "Bouton ABANDON",
+                                        "data_type":  "Alpha",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "Q",
+                                        "name":  "b Valider",
+                                        "data_type":  "Alpha",
+                                        "picture":  "15",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "R",
+                                        "name":  "W0 FIN SAISIE OD",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "R",
+                                        "name":  "b Affection",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "S",
+                                        "name":  "Bouton FIN SAISIE OD",
+                                        "data_type":  "Alpha",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "S",
+                                        "name":  "v.Controle saisie 1 /  3",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "T",
+                                        "name":  "W0 Cloture en cours",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "T",
+                                        "name":  "v.Controle saisie 2",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "U",
+                                        "name":  "W0 code article",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6P0",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "U",
+                                        "name":  "v Erreur saisie 1 / 3 ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "V",
+                                        "name":  "v.SoldeGiftPass",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N13.2C",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "V",
+                                        "name":  "v Erreur saisie 2 ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "W",
+                                        "name":  "W0 imputation",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "W",
+                                        "name":  "v.Heure aller num",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "X",
+                                        "name":  "W0 sous-imput.",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3P0Z0",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "X",
+                                        "name":  "v.Heure retour num",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "Y",
+                                        "name":  "W0 date d\u0027achat",
+                                        "data_type":  "Date",
+                                        "picture":  "##/##/##Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "Z",
+                                        "name":  "W0 annulation",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  },
+    "variable_mapping":  {
+
+                         },
+    "metadata":  {
+                     "ide_position":  237,
+                     "pipeline_version":  "6.0",
+                     "project":  "ADH",
+                     "program_name":  "Transaction Nouv vente avec GP",
+                     "generated_at":  "2026-01-28 17:32:19"
+                 }
+}
