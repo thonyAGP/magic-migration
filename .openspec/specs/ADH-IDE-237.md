@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: 2026-01-28 18:33
+> **Analyse**: 2026-01-28 18:59
 > **Pipeline**: V6.0 Deep Analysis
 > **Niveau**: DETAILED (Migration)
 
@@ -140,6 +140,25 @@ Transaction Nouv vente avec GP
 
 ## 5. LOGIQUE METIER
 
+### Algorigramme Simplifie
+
+```mermaid
+flowchart TD
+    START([START])
+    style START fill:#3fb950
+    F1[Saisie transaction]
+    START --> F1
+    D1{TrimW0 service }
+    style D1 fill:#58a6ff
+    F1 --> D1
+    YES1[Reglements suit]
+    D1 -->|Oui| YES1
+    YES1 --> ENDOK
+    D1 -->|Non| ENDOK
+    ENDOK([FIN])
+    style ENDOK fill:#f85149
+```
+
 ### Expressions Decodees
 
 **Couverture**: 305 / 305 (100%)
@@ -192,66 +211,75 @@ Transaction Nouv vente avec GP
 
 ### Forms (Ecrans)
 
-| Form ID | Nom | Type | Dimensions |
-|---------|-----|------|------------|
-| 2 | Saisie transaction | Modal | 0 x 0 |
-| 2 | Reglements suite a refus TPE | Type6 | 0 x 0 |
-| 2 | verif reg restant | Type0 | 0 x 0 |
-| 2 | creation règlement | Type0 | 0 x 0 |
-| 2 | Verif reglement tpe | Type0 | 0 x 0 |
-| 2 | Dé-Affecition | Type0 | 0 x 0 |
-| 2 | Saisie Bilaterale | Type6 | 0 x 0 |
-| 2 | Saisie mode de règlement | Type6 | 0 x 0 |
-| 2 | RAZ 269 | MDI | 0 x 0 |
-| 2 | Saisie Commentaires | Type6 | 0 x 0 |
-| 2 | VRL : Saisie identité | MDI | 0 x 0 |
-| 2 | Test si cloture en cours | MDI | 0 x 0 |
-| 2 | Blocage cloture v1 | MDI | 0 x 0 |
-| 2 | Blocage cloture v1 | MDI | 0 x 0 |
-| 2 | Reaffichage infos compte | MDI | 0 x 0 |
-| 2 | Test reseau | MDI | 0 x 0 |
-| 2 | Forfait | MDI | 0 x 0 |
-| 2 |  | Modal | 0 x 0 |
-| 2 | Saisie dates forfait | MDI | 0 x 0 |
-| 2 | Effacement forfait | MDI | 0 x 0 |
-| 2 | Effacement mvt forfait | MDI | 0 x 0 |
-| 2 | Creation prestation | MDI | 0 x 0 |
-| 2 | Deblocage cloture v1 | MDI | 0 x 0 |
-| 2 | Deblocage cloture | MDI | 0 x 0 |
-| 2 | Gratuite ? | MDI | 0 x 0 |
-| 2 | Recherche imputation/ssimput | MDI | 0 x 0 |
-| 2 | Creation Tempo | MDI | 0 x 0 |
-| 2 | Creation reglement | Type0 | 0 x 0 |
-| 2 | Creation | Type0 | 0 x 0 |
-| 2 | Affiche saisie | Modal | 0 x 0 |
-| 2 | garantie? | MDI | 0 x 0 |
-| 2 | RAZ 269 | MDI | 0 x 0 |
-| 2 | Increment Num. Ticket(VRL/VSL) | Type0 | 0 x 0 |
-| 2 | Changement MOP multi paiement | Type0 | 0 x 0 |
-| 2 | calcul nombre carte | Type0 | 0 x 0 |
-| 2 | Raz Affectation Transfert | Type0 | 0 x 0 |
-| 2 | Compte Enregs affectés | Type0 | 0 x 0 |
-| 2 | Type transfert | Type6 | 0 x 0 |
-| 2 | Affiche Transfert A/R | Type6 | 0 x 0 |
-| 2 | Affectation PAX / Transfert | Type0 | 0 x 0 |
-| 2 | Supprime enregs non affectés | Type0 | 0 x 0 |
-| 2 | Compte Enregs affectés | Type0 | 0 x 0 |
-| 2 | Compte Enregs affectés | Type0 | 0 x 0 |
-| 2 | Affectation Auto | Type0 | 0 x 0 |
-| 2 | MaJ Num Chèque | Type0 | 0 x 0 |
-| 2 | Libération du logement | Type0 | 0 x 0 |
-| 2 | Creation_heure_liberation | Type0 | 0 x 0 |
-| 2 | RAZ LCO liberation | Type0 | 0 x 0 |
-| 2 | Récup nb chambre /LCO | Type0 | 0 x 0 |
+| Tache | Nom | Type | Dimensions |
+|-------|-----|------|------------|
+| 1 | Saisie transaction | Modal | 1112 x 279 |
+| 2 | Reglements suite a refus TPE | Type6 | 708 x 256 |
+| 3 | verif reg restant | Type0 | - |
+| 4 | creation règlement | Type0 | - |
+| 5 | Verif reglement tpe | Type0 | - |
+| 6 | Dé-Affecition | Type0 | - |
+| 7 | Saisie Bilaterale | Type6 | 326 x 249 |
+| 8 | Saisie mode de règlement | Type6 | 506 x 250 |
+| 9 | RAZ 269 | MDI | - |
+| 10 | Saisie Commentaires | Type6 | 772 x 169 |
+| 11 | VRL : Saisie identité | MDI | 699 x 157 |
+| 12 | Test si cloture en cours | MDI | - |
+| 13 | Blocage cloture v1 | MDI | - |
+| 14 | Blocage cloture v1 | MDI | - |
+| 15 | Reaffichage infos compte | MDI | - |
+| 16 | Test reseau | MDI | - |
+| 17 | Forfait | MDI | - |
+| 18 |  | Modal | 116 x 32 |
+| 19 | Saisie dates forfait | MDI | 528 x 121 |
+| 20 | Effacement forfait | MDI | - |
+| 21 | Effacement mvt forfait | MDI | - |
+| 22 | Creation prestation | MDI | - |
+| 23 | Deblocage cloture v1 | MDI | - |
+| 24 | Deblocage cloture | MDI | - |
+| 25 | Gratuite ? | MDI | - |
+| 26 | Recherche imputation/ssimput | MDI | - |
+| 27 | Creation Tempo | MDI | - |
+| 28 | Creation reglement | Type0 | - |
+| 29 | Creation | Type0 | - |
+| 30 | Affiche saisie | Modal | 427 x 124 |
+| 31 | garantie? | MDI | - |
+| 32 | RAZ 269 | MDI | - |
+| 33 | Increment Num. Ticket(VRL/VSL) | Type0 | - |
+| 34 | Changement MOP multi paiement | Type0 | - |
+| 35 | calcul nombre carte | Type0 | - |
+| 36 | Raz Affectation Transfert | Type0 | - |
+| 37 | Compte Enregs affectés | Type0 | - |
+| 38 | Type transfert | Type6 | 722 x 292 |
+| 39 | Affiche Transfert A/R | Type6 | 681 x 205 |
+| 40 | Affectation PAX / Transfert | Type0 | 1056 x 281 |
+| 41 | Supprime enregs non affectés | Type0 | - |
+| 42 | Compte Enregs affectés | Type0 | - |
+| 43 | Compte Enregs affectés | Type0 | - |
+| 44 | Affectation Auto | Type0 | - |
+| 45 | MaJ Num Chèque | Type0 | - |
+| 46 | Libération du logement | Type0 | 123 x 149 |
+| 47 | Creation_heure_liberation | Type0 | - |
+| 48 | RAZ LCO liberation | Type0 | - |
+| 49 | Récup nb chambre /LCO | Type0 | 123 x 89 |
 ### Mockup ASCII
 
 ```
-+--------------------------------------+
-|          Saisie transaction          |
-+--------------------------------------+
-|  [Form content - Modal]              |
-|                                      |
-+--------------------------------------+
++--------------------------------------------------------------------+
+|                         Saisie transaction                         |
++--------------------------------------------------------------------+
+|  [Form content - Modal]                                            |
+|  Size: 1112 x 279 DLU                                              |
+|  Task: 1                                                           |
+|                                                                    |
+|                                                                    |
+|                                                                    |
+|                                                                    |
+|                                                                    |
+|                                                                    |
+|                                                                    |
+|                                                                    |
++--------------------------------------------------------------------+
 ```
 
 <!-- TAB:Cartographie -->
@@ -260,35 +288,36 @@ Transaction Nouv vente avec GP
 
 ### 7.1 Chaine depuis Main
 
+**Chemin d'acces**: Main (IDE 1) -> Menu caisse GM - scroll (IDE 163) -> Transaction Nouv vente avec GP (IDE 237)
+
 ```mermaid
 graph LR
-    T237[237 Target]
+    T237[237 Programme]
     style T237 fill:#58a6ff
-    N0[0 Transaction Nouv v]
-    N0[0 Transaction Nouv v]
-    N0[0 Transaction Nouv v]
-    N1[1 Main Program]
-    N163[163 Menu caisse GM  ]
-    N163 --> T237
-    N242[242 Menu Choix Saisi]
-    N242 --> T237
-    N316[316 Saisie transacti]
-    N316 --> T237
-    C152[152 Recup Class]
-    T237 --> C152
-    style C152 fill:#3fb950
-    C84[84     SP Carac]
-    T237 --> C84
-    style C84 fill:#3fb950
-    C233[233 Appel Print]
-    T237 --> C233
-    style C233 fill:#3fb950
-    C249[249 Reinit Aff ]
-    T237 --> C249
-    style C249 fill:#3fb950
-    C277[277 Selection V]
-    T237 --> C277
-    style C277 fill:#3fb950
+    CALLER163[163 Menu caisse...]
+    CALLER163 --> T237
+    style CALLER163 fill:#f59e0b
+    CALLER242[242 Menu Choix ...]
+    CALLER242 --> T237
+    style CALLER242 fill:#f59e0b
+    CALLER316[316 Saisie tran...]
+    CALLER316 --> T237
+    style CALLER316 fill:#f59e0b
+    CALLEE152[152 Recup Class...]
+    T237 --> CALLEE152
+    style CALLEE152 fill:#3fb950
+    CALLEE84[84     SP Carac...]
+    T237 --> CALLEE84
+    style CALLEE84 fill:#3fb950
+    CALLEE233[233 Appel Print...]
+    T237 --> CALLEE233
+    style CALLEE233 fill:#3fb950
+    CALLEE249[249 Reinit Aff PYR]
+    T237 --> CALLEE249
+    style CALLEE249 fill:#3fb950
+    CALLEE277[277 Selection V...]
+    T237 --> CALLEE277
+    style CALLEE277 fill:#3fb950
     MORE[+15 more]
     T237 --> MORE
     style MORE fill:#6b7280
@@ -357,4 +386,4 @@ graph LR
 - Expressions conditionnelles: 31
 
 ---
-*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 18:33*
+*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 18:59*
