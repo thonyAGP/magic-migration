@@ -4,11 +4,13 @@
     Pipeline V5.0 - Generation de specifications Magic de haute qualite
 
 .DESCRIPTION
-    Pipeline 4 phases rigoureux pour produire des specs exploitables:
+    Pipeline 6 phases rigoureux pour produire des specs exploitables:
     - Phase 1: DISCOVERY - Cartographie du programme
     - Phase 2: MAPPING - Documentation des donnees
     - Phase 3: DECODE - Comprehension de la logique
     - Phase 4: SYNTHESIS - Production de la spec finale
+    - Phase 5: DEPLOY - Copie vers renders (optionnel, -Deploy)
+    - Phase 6: VALIDATE - Tests Playwright (optionnel, -Validate)
 
 .PARAMETER Project
     Projet Magic (ADH, PBP, PVE, VIL, PBG, REF)
@@ -47,7 +49,11 @@ param(
 
     [int[]]$SkipPhase = @(),
 
-    [switch]$VerboseOutput
+    [switch]$VerboseOutput,
+
+    [switch]$Deploy,
+
+    [switch]$Validate
 )
 
 $ErrorActionPreference = "Stop"
@@ -296,6 +302,74 @@ if ($SkipPhase -notcontains 4) {
 }
 else {
     Write-Phase -Number 4 -Name "SYNTHESIS" -Status "SKIP"
+}
+
+# ============================================================================
+# PHASE 5: DEPLOY (optional - with -Deploy switch)
+# ============================================================================
+
+if ($Deploy -and $SkipPhase -notcontains 5) {
+    Write-Phase -Number 5 -Name "DEPLOY - Copier vers renders"
+
+    $RendersFolder = Join-Path $ProjectRoot ".openspec\renders"
+    if (-not (Test-Path $RendersFolder)) {
+        New-Item -ItemType Directory -Path $RendersFolder -Force | Out-Null
+    }
+
+    $RenderFile = Join-Path $RendersFolder "$Project-IDE-$IdePosition.md"
+
+    if (Test-Path $SpecFile) {
+        Copy-Item -Path $SpecFile -Destination $RenderFile -Force
+        Write-OK "Spec copiee vers renders: $RenderFile"
+        Write-Phase -Number 5 -Name "DEPLOY" -Status "DONE"
+    }
+    else {
+        Write-Error2 "Spec file not found: $SpecFile"
+        Write-Phase -Number 5 -Name "DEPLOY" -Status "ERROR"
+    }
+}
+elseif ($Deploy) {
+    Write-Phase -Number 5 -Name "DEPLOY" -Status "SKIP"
+}
+
+# ============================================================================
+# PHASE 6: VALIDATE (optional - with -Validate switch)
+# ============================================================================
+
+if ($Validate -and $SkipPhase -notcontains 6) {
+    Write-Phase -Number 6 -Name "VALIDATE - Tests Playwright"
+
+    $TestFile = Join-Path $ProjectRoot "tests\e2e\verify-spec-v50.spec.ts"
+
+    if (Test-Path $TestFile) {
+        Write-OK "Lancement tests Playwright..."
+
+        try {
+            $TestResult = & npx playwright test $TestFile --reporter=list 2>&1
+            $ExitCode = $LASTEXITCODE
+
+            if ($ExitCode -eq 0) {
+                Write-OK "Tous les tests passes"
+                Write-Phase -Number 6 -Name "VALIDATE" -Status "DONE"
+            }
+            else {
+                Write-Error2 "Certains tests ont echoue (exit code: $ExitCode)"
+                $TestResult | Where-Object { $_ -match "failed|passed" } | ForEach-Object { Write-Host "  $_" -ForegroundColor Yellow }
+                Write-Phase -Number 6 -Name "VALIDATE" -Status "WARN"
+            }
+        }
+        catch {
+            Write-Error2 "Erreur execution tests: $_"
+            Write-Phase -Number 6 -Name "VALIDATE" -Status "ERROR"
+        }
+    }
+    else {
+        Write-Error2 "Test file not found: $TestFile"
+        Write-Phase -Number 6 -Name "VALIDATE" -Status "SKIP"
+    }
+}
+elseif ($Validate) {
+    Write-Phase -Number 6 -Name "VALIDATE" -Status "SKIP"
 }
 
 # ============================================================================
