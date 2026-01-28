@@ -412,35 +412,74 @@ if ($uiForms -and $uiForms.forms.Count -gt 0) {
     }
 }
 
-# 2. Operations sur les donnees (tables WRITE)
-$writeTables = @()
-if ($discovery.tables.by_access.WRITE) {
-    $writeTables = @($discovery.tables.by_access.WRITE)
-}
-if ($writeTables.Count -gt 0) {
+# 2. Operations sur les donnees - TOUTES les tables par access mode
+$writeTablesAll = @()
+$readTablesAll = @()
+$linkTablesAll = @()
+
+if ($discovery.tables.by_access.WRITE) { $writeTablesAll = @($discovery.tables.by_access.WRITE) }
+if ($discovery.tables.by_access.READ) { $readTablesAll = @($discovery.tables.by_access.READ) }
+if ($discovery.tables.by_access.LINK) { $linkTablesAll = @($discovery.tables.by_access.LINK) }
+
+if ($writeTablesAll.Count -gt 0 -or $readTablesAll.Count -gt 0) {
     $objectifMetier += "### Operations sur les donnees"
     $objectifMetier += ""
-    $objectifMetier += "Ce programme **modifie** les tables suivantes:"
-    foreach ($tbl in ($writeTables | Select-Object -First 6)) {
-        $objectifMetier += "- ``$($tbl.logical_name)`` ($($tbl.physical_name))"
+
+    # Tables en ecriture (CRITIQUE pour migration)
+    if ($writeTablesAll.Count -gt 0) {
+        $objectifMetier += "#### Tables modifiees (WRITE) - $($writeTablesAll.Count) tables"
+        $objectifMetier += ""
+        foreach ($tbl in $writeTablesAll) {
+            $objectifMetier += "- ``$($tbl.logical_name)`` ($($tbl.physical_name))"
+        }
+        $objectifMetier += ""
     }
-    if ($writeTables.Count -gt 6) {
-        $objectifMetier += "- ... et $($writeTables.Count - 6) autres tables"
+
+    # Tables en lecture
+    if ($readTablesAll.Count -gt 0) {
+        $objectifMetier += "#### Tables lues (READ) - $($readTablesAll.Count) tables"
+        $objectifMetier += ""
+        foreach ($tbl in $readTablesAll) {
+            $objectifMetier += "- ``$($tbl.logical_name)`` ($($tbl.physical_name))"
+        }
+        $objectifMetier += ""
     }
-    $objectifMetier += ""
+
+    # Tables liees
+    if ($linkTablesAll.Count -gt 0) {
+        $objectifMetier += "#### Tables liees (LINK) - $($linkTablesAll.Count) tables"
+        $objectifMetier += ""
+        foreach ($tbl in $linkTablesAll) {
+            $objectifMetier += "- ``$($tbl.logical_name)`` ($($tbl.physical_name))"
+        }
+        $objectifMetier += ""
+    }
 }
 
-# 3. Regles metier principales (si decoded disponible)
+# 3. Regles metier - TOUTES les regles, SANS TRONCATURE
 if ($decoded -and $decoded.business_rules -and $decoded.business_rules.all.Count -gt 0) {
-    $objectifMetier += "### Regles metier cles"
+    $allRules = @($decoded.business_rules.all)
+    $objectifMetier += "### Regles metier ($($allRules.Count) regles)"
     $objectifMetier += ""
-    $topRules = @($decoded.business_rules.all | Select-Object -First 5)
-    foreach ($rule in $topRules) {
-        $ruleDesc = $rule.natural_language
-        if ($ruleDesc.Length -gt 80) { $ruleDesc = $ruleDesc.Substring(0, 77) + "..." }
-        $objectifMetier += "- [$($rule.id)] $ruleDesc"
+
+    # Grouper par type si disponible
+    $rulesByType = $allRules | Group-Object -Property { if ($_.type) { $_.type } else { 'Autre' } }
+
+    foreach ($group in $rulesByType) {
+        $typeName = $group.Name
+        $objectifMetier += "#### $typeName ($($group.Count))"
+        $objectifMetier += ""
+
+        foreach ($rule in $group.Group) {
+            # PAS DE TRONCATURE - afficher la regle complete
+            $ruleDesc = $rule.natural_language
+            if (-not $ruleDesc) { $ruleDesc = if ($rule.decoded) { $rule.decoded } else { $rule.raw } }
+
+            # Format: ID + description complete
+            $objectifMetier += "- **[$($rule.id)]** $ruleDesc"
+        }
+        $objectifMetier += ""
     }
-    $objectifMetier += ""
 }
 
 $objectifMetierText = $objectifMetier -join "`n"

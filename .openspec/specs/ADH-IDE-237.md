@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: 2026-01-28 19:47
+> **Analyse**: 2026-01-28 20:53
 > **Pipeline**: V6.0 Deep Analysis
 > **Niveau**: DETAILED (Migration)
 
@@ -32,22 +32,76 @@
 
 ### Operations sur les donnees
 
-Ce programme **modifie** les tables suivantes:
+#### Tables modifiees (WRITE) - 9 tables
+
 - `reseau_cloture___rec` (cafil001_dat)
 - `prestations` (cafil010_dat)
 - `mvt_prestation___mpr` (cafil024_dat)
 - `compte_gm________cgm` (cafil025_dat)
 - `compteurs________cpt` (cafil046_dat)
 - `tempo_ecran_police` (%club_user%tmp_ecrpolice_dat)
-- ... et 3 autres tables
+- `stat_lieu_vente_date` (%club_user%_stat_lieu_vente_date)
+- `Boo_ResultsRechercheHoraire` (Boo_ResultsRechercheHoraire)
+- `Table_1037` ()
 
-### Regles metier cles
+#### Tables lues (READ) - 13 tables
 
-- [RM-001] Si Trim(W0 service village [BA])='1' alors 'ALLER' sinon IF(Trim(W0 service v...
-- [RM-002] Si V.RC utilisé [GA]=0 alors IF(W0 imputation [W]='VSL' sinon P0.Date debut s...
-- [RM-003] Si P0 masque montant [C]='' alors '15.2' sinon P0 masque montant [C])
-- [RM-004] Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise loc...
-- [RM-005] Si NOT W0 Motif de non enreg NA [CL] alors W0.Date fin sejour [CK] sinon W0 T...
+- `reseau_cloture___rec` (cafil001_dat)
+- `gm-recherche_____gmr` (cafil008_dat)
+- `prestations` (cafil010_dat)
+- `depot_garantie___dga` (cafil017_dat)
+- `moyens_reglement_mor` (cafil028_dat)
+- `articles_________art` (cafil055_dat)
+- `gratuites________gra` (cafil057_dat)
+- `moyen_paiement___mop` (cafil067_dat)
+- `logement_client__loc` (cafil081_dat)
+- `table_utilisateurs` (cafil087_dat)
+- `moyens_reglement_mor` (cafil117_dat)
+- `tempo_ecran_police` (%club_user%tmp_ecrpolice_dat)
+- `Boo_ResultsRechercheHoraire` (Boo_ResultsRechercheHoraire)
+
+#### Tables liees (LINK) - 18 tables
+
+- `comptes_speciaux_spc` (cafil004_dat)
+- `gm-recherche_____gmr` (cafil008_dat)
+- `hebergement______heb` (cafil012_dat)
+- `mvt_prestation___mpr` (cafil024_dat)
+- `tables___________tab` (cafil045_dat)
+- `date_comptable___dat` (cafil048_dat)
+- `articles_________art` (cafil055_dat)
+- `moyen_paiement___mop` (cafil067_dat)
+- `table_prestation_pre` (cafil074_dat)
+- `moyen_paiement___mop` (cafil118_dat)
+- `articles_en_stock` (caisse_artstock)
+- `pv_budget` (pv_budget_dat)
+- `tempo_ecran_police` (%club_user%tmp_ecrpolice_dat)
+- `droits_applications` (droits)
+- `arc_cc_total` (arc_cctotal)
+- `moyens_reglement_complem` (moyens_reglement_complem)
+- `Circuit supprime` (zcircafil146)
+- `stat_lieu_vente_date` (%club_user%_stat_lieu_vente_date)
+
+### Regles metier (17 regles)
+
+#### VALIDATION (17)
+
+- **[RM-001]** Si Trim(W0 service village [BA])='1' alors 'ALLER' sinon IF(Trim(W0 service village [BA])='2','RETOUR',IF(Trim(W0 service village [BA])='3','ALLER/RETOUR','')))
+- **[RM-002]** Si V.RC utilisé [GA]=0 alors IF(W0 imputation [W]='VSL' sinon P0.Date debut sejour [M],Date()),W0 Num rue [CR])
+- **[RM-003]** Si P0 masque montant [C]='' alors '15.2' sinon P0 masque montant [C])
+- **[RM-004]** Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM)
+- **[RM-005]** Si NOT W0 Motif de non enreg NA [CL] alors W0.Date fin sejour [CK] sinon W0 Titre [CO])
+- **[RM-006]** Si W0 imputation [W]='VRL' alors 'Date consommation' sinon 'Date début séjour')
+- **[RM-007]** Si W0 Titre [CO]<>0 AND NOT(W0 Motif de non enreg NA [CL]) alors Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100 sinon 11,P0.Nb decimales [O]),W0 Prenom [CQ])
+- **[RM-008]** Si W0 imputation [W]='VRL' OR W0 imputation [W]='VSL' alors 'Nb forfait' sinon IF(W0 imputation [W]='TRF', 'Nb PAX','Nbre'))
+- **[RM-009]** Si IN (W0 imputation [W] alors 'VRL' sinon 'VSL','TRF','PYR'),31.125,14.875)
+- **[RM-010]** Si W0 imputation [W]='TRF' alors 31.750 sinon 40.125)
+- **[RM-011]** Si W0 Chambre [CX]<>'' alors RTrim (W0 Nb Chambres [CW])&Fill (' ' sinon Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))
+- **[RM-012]** Si V.Total reglement ligne [FF] alors V.Id transaction PMS [FI] sinon VG18)
+- **[RM-013]** Si V.ConfirmeUseGP? [FZ] alors 'V' sinon IF([AP]='O','C','D'))
+- **[RM-014]** Si NOT(CHG_PRV_W0 nbre articles [GO]) alors 132.875 sinon 105.875)
+- **[RM-015]** Si W0 imputation [W]='ANN' alors 'O' sinon 'N')
+- **[RM-016]** Si W0 imputation [W]='PYR' alors NOT(W0 mode de paiement [DG]) sinon 'FALSE'LOG)
+- **[RM-017]** Si VG20>1 alors [AY] sinon 'G')
 
 
 ### Contexte d'utilisation
@@ -424,4 +478,4 @@ graph LR
 - Expressions conditionnelles: 31
 
 ---
-*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 19:47*
+*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 20:53*
