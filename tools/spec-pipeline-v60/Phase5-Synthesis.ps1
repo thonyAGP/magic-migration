@@ -121,6 +121,79 @@ function Generate-MermaidCallGraph {
     return $lines -join "`n"
 }
 
+# Helper: Generate Algorigramme (flowchart) from tasks and business rules
+function Generate-Algorigramme {
+    param($UIForms, $Decoded, $ProgramName)
+
+    $lines = @()
+    $lines += "flowchart TD"
+
+    # START node
+    $lines += "    START([START])"
+    $lines += "    style START fill:#3fb950"
+
+    # Get first 5 visible forms (main tasks)
+    $mainForms = @()
+    if ($UIForms -and $UIForms.forms) {
+        $mainForms = @($UIForms.forms | Where-Object {
+            $_.dimensions.width -gt 0 -and $_.window_type_str -ne "Type0"
+        } | Select-Object -First 5)
+    }
+
+    # Get first 3 business rules for decision points
+    $decisions = @()
+    if ($Decoded -and $Decoded.business_rules -and $Decoded.business_rules.all) {
+        $decisions = @($Decoded.business_rules.all | Select-Object -First 3)
+    }
+
+    if ($mainForms.Count -eq 0 -and $decisions.Count -eq 0) {
+        # Simple flowchart if no data
+        $lines += "    PROCESS[Traitement principal]"
+        $lines += "    START --> PROCESS"
+        $lines += "    PROCESS --> ENDOK"
+    } else {
+        # First form as initial input
+        if ($mainForms.Count -gt 0) {
+            $firstForm = $mainForms[0]
+            $formName = ($firstForm.name -replace '[^a-zA-Z0-9 ]', '').Substring(0, [math]::Min(20, $firstForm.name.Length))
+            $lines += "    F1[$formName]"
+            $lines += "    START --> F1"
+            $prevNode = "F1"
+        } else {
+            $prevNode = "START"
+        }
+
+        # Add decision if available
+        if ($decisions.Count -gt 0) {
+            $cond = ($decisions[0].condition -replace '[^a-zA-Z0-9= ]', '').Substring(0, [math]::Min(15, $decisions[0].condition.Length))
+            $lines += "    D1{$cond}"
+            $lines += "    style D1 fill:#58a6ff"
+            $lines += "    $prevNode --> D1"
+
+            # Yes branch
+            if ($mainForms.Count -gt 1) {
+                $yesForm = ($mainForms[1].name -replace '[^a-zA-Z0-9 ]', '').Substring(0, [math]::Min(15, $mainForms[1].name.Length))
+                $lines += "    YES1[$yesForm]"
+                $lines += "    D1 -->|Oui| YES1"
+                $lines += "    YES1 --> ENDOK"
+            } else {
+                $lines += "    D1 -->|Oui| ENDOK"
+            }
+
+            # No branch
+            $lines += "    D1 -->|Non| ENDOK"
+        } else {
+            $lines += "    $prevNode --> ENDOK"
+        }
+    }
+
+    # END node
+    $lines += "    ENDOK([FIN])"
+    $lines += "    style ENDOK fill:#f85149"
+
+    return $lines -join "`n"
+}
+
 # Generate SUMMARY spec (Niveau 1)
 Write-Host "[2/5] Generating SUMMARY spec..." -ForegroundColor Yellow
 
@@ -308,6 +381,9 @@ $($uiForms.screen_mockup_ascii -join "`n")
 # Build call graph section
 $callGraphMermaid = Generate-MermaidCallGraph -Discovery $discovery -Project $Project -IdePosition $IdePosition
 
+# Build algorigramme (flowchart)
+$algorigrammeMermaid = Generate-Algorigramme -UIForms $uiForms -Decoded $decoded -ProgramName $programName
+
 $detailedSpec = @"
 # $Project IDE $IdePosition - $programName
 
@@ -348,6 +424,12 @@ $variablesSection
 
 ## 5. LOGIQUE METIER
 
+### Algorigramme Simplifie
+
+``````mermaid
+$algorigrammeMermaid
+``````
+
 $expressionsSection
 
 ## 6. INTERFACE UTILISATEUR
@@ -359,6 +441,8 @@ $uiSection
 ## 7. GRAPHE D'APPELS
 
 ### 7.1 Chaine depuis Main
+
+**Chemin d'acces**: Main (IDE 1) $( if ($discovery.call_graph.callers.Count -gt 0) { "-> " + ($discovery.call_graph.callers | Select-Object -First 1 | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) + " -> " } else { "-> " } )$programName (IDE $IdePosition)
 
 ``````mermaid
 $callGraphMermaid
