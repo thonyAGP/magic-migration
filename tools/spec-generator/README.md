@@ -1,110 +1,234 @@
-# Spec Generator
+# Spec Generator - APEX 4-Phase Workflow
 
-> Pipeline de generation et maintenance des specifications ADH
+> Pipeline de generation et maintenance des specifications V4.0 ADH
+
+## Vue d'ensemble du Workflow
+
+```
+================================================================================
+                    WORKFLOW SPECIFICATION PROGRAMME MAGIC
+              Pipeline 4 phases - Approx. 15-30 secondes par programme
+================================================================================
+
+  INPUT                                                                   OUTPUT
+    |                                                                       |
+    |   +==============+   +==============+   +==============+   +=================+
+    |   |   PHASE 1    |   |   PHASE 2    |   |   PHASE 3    |   |    PHASE 4      |
+    v   |  DISCOVERY   |==>|   MAPPING    |==>|   DECODE     |==>|   SYNTHESIS     |
+        |              |   |              |   |              |   |                 |
+ ADH    | Position IDE |   | Tables R/W/L |   | Expressions  |   | Spec finale     |
+ IDE    | Call Graph   |   | Parametres   |   | Regles metier|   | 3 onglets       |
+ XXX    | Orphan check |   | Variables    |   | Algorigramme |   | Mermaid         |
+        |              |   |              |   |              |   |                 |
+        +==============+   +==============+   +==============+   +=================+
+```
 
 ## Scripts Disponibles
 
-| Script | Phase | Description |
-|--------|-------|-------------|
-| `Generate-TechSpec.ps1` | P1 | Generation initiale spec V2.1 |
-| `Upgrade-SpecsToV35.ps1` | P2 | Upgrade structure V2.1 → V3.5 |
-| **`Populate-SpecData.ps1`** | **P4** | **Peuple les specs avec donnees MCP** |
-| `Generate-MigrationBlueprint.ps1` | P3 | Genere squelette C# depuis spec |
-| `Generate-TestsFromSpec.ps1` | P3 | Genere tests xUnit/Vitest |
+| Script | Description | Usage |
+|--------|-------------|-------|
+| **`Generate-SpecV40.ps1`** | **Orchestrateur principal 4 phases** | Generation spec complete |
+| `Batch-GenerateAdhV40.ps1` | Generation batch tous les ADH | Regeneration massive |
+| `Generate-CallGraph.ps1` | Diagramme Mermaid callers/callees | Analyse dependances |
+| `Populate-SpecData.ps1` | Peuple specs avec donnees MCP | Enrichissement |
+| `Generate-MigrationBlueprint.ps1` | Genere squelette C# depuis spec | Migration code |
+| `Generate-TestsFromSpec.ps1` | Genere tests xUnit/Vitest | Tests auto |
 
-## Workflow Recommande
+## Usage Principal
 
-```
-1. Generate-TechSpec.ps1      → Cree spec V2.1 basique
-2. Upgrade-SpecsToV35.ps1     → Ajoute TAB markers + Mermaid
-3. Populate-SpecData.ps1      → Extrait VRAIES donnees via MCP
-4. Generate-MigrationBlueprint → Genere code C# depuis spec
-```
-
-## Usage
-
-### Peupler une spec unique
+### Generer une spec V4.0
 
 ```powershell
-.\Populate-SpecData.ps1 -IDE 237
+# Generation standard
+.\Generate-SpecV40.ps1 -Project ADH -IdePosition 237
+
+# Avec sortie verbose
+.\Generate-SpecV40.ps1 -Project ADH -IdePosition 237 -VerboseOutput
+
+# Forcer regeneration
+.\Generate-SpecV40.ps1 -Project ADH -IdePosition 237 -Force
+
+# Sans phase decode (plus rapide)
+.\Generate-SpecV40.ps1 -Project ADH -IdePosition 237 -SkipDecode
 ```
 
-### Peupler un lot de specs
+### Generer en batch
 
 ```powershell
-.\Populate-SpecData.ps1 -StartIDE 1 -EndIDE 50
+# Tous les programmes ADH
+.\Batch-GenerateAdhV40.ps1
+
+# Range specifique
+.\Batch-GenerateAdhV40.ps1 -StartIDE 1 -EndIDE 50
 ```
 
-### Peupler TOUTES les specs (322 vides)
+## Phases du Workflow
 
-```powershell
-.\Populate-SpecData.ps1 -All
+### PHASE 1: DISCOVERY (Cartographier le terrain)
+
+| Etape | Action | Outil |
+|-------|--------|-------|
+| 1.1 | Identification programme | KbIndexRunner spec-data |
+| 1.2 | Localisation XML | Recherche fichier source |
+| 1.3 | Verification ECF | Liste ADH.ecf |
+| 1.4 | Verification orphelin | 4 criteres |
+
+**Criteres orphelin:**
+1. Callers actifs > 0 → NON ORPHELIN
+2. PublicName defini → NON ORPHELIN
+3. Composant ECF → NON ORPHELIN
+4. Main program (IDE 1) → NON ORPHELIN
+
+### PHASE 2: MAPPING (Documenter les donnees)
+
+| Etape | Action | Donnees extraites |
+|-------|--------|-------------------|
+| 2.1 | Tables | ID, Nom physique/logique, Access (R/W/L), Count |
+| 2.2 | Parametres | Variable, Nom, Type, Direction (IN/OUT) |
+| 2.3 | Variables | Locales (lettres), Globales (VG*) |
+
+### PHASE 3: DECODE (Comprendre la logique)
+
+| Etape | Action | Resultat |
+|-------|--------|----------|
+| 3.1 | Expressions | Liste des 10 premieres |
+| 3.2 | Regles metier | Codes RM-001, RM-002... |
+
+### PHASE 4: SYNTHESIS (Produire la spec)
+
+| Etape | Action | Section spec |
+|-------|--------|--------------|
+| 4.1 | Tables section | TAB:Technique 2.2 |
+| 4.2 | Parametres section | TAB:Technique 2.3 |
+| 4.3 | Diagrammes Mermaid | Call chain + Callees |
+| 4.4 | Assemblage final | Fichier .md 3 onglets |
+
+## Structure Spec V4.0
+
+```
+<!-- TAB:Fonctionnel -->
+## SPECIFICATION FONCTIONNELLE
+- 1.1 Objectif metier
+- 1.2 Regles metier
+- 1.3 Flux utilisateur
+- 1.4 Cas d'erreur
+- 1.5 Dependances ECF
+
+<!-- TAB:Technique -->
+## SPECIFICATION TECHNIQUE
+- 2.1 Identification
+- 2.2 Tables
+- 2.3 Parametres
+- 2.4 Algorigramme
+- 2.5 Expressions cles
+- 2.6 Statistiques
+
+<!-- TAB:Cartographie -->
+## CARTOGRAPHIE APPLICATIVE
+- 3.1 Chaine d'appels depuis Main
+- 3.2 Callers directs
+- 3.3 Callees (3 niveaux)
+- 3.4 Composants ECF utilises
+- 3.5 Verification orphelin
 ```
 
-### Mode dry-run (previsualisation)
+## Score de Complexite
 
-```powershell
-.\Populate-SpecData.ps1 -IDE 237 -DryRun
-```
+| Score | Niveau | Interpretation |
+|-------|--------|----------------|
+| < 300 | FAIBLE | Programme simple, migration directe |
+| 300-1000 | MOYENNE | Programme standard, attention aux dependances |
+| > 1000 | HAUTE | Programme complexe, planification detaillee requise |
+
+**Formule:** `Score = (Tasks * 10) + LogicLines + (Tables * 5) + Expressions`
 
 ## Prerequis
 
-- MCP Server doit etre demarre (`dotnet run` dans tools/MagicMcp)
-- Knowledge Base peuplee (`KbIndexRunner.exe`)
-- Specs V3.5 existantes (via Upgrade-SpecsToV35.ps1)
+- .NET 8 SDK installe
+- Knowledge Base indexee (`~/.magic-kb/knowledge.db`)
+- Sources Magic disponibles (`D:\Data\Migration\XPA\PMS\`)
 
-## Donnees Extraites
+### Verifier la KB
 
-| Section | Source MCP | Contenu |
-|---------|------------|---------|
-| 2.2 Tables | `magic_get_table` | Tables utilisees avec acces R/W |
-| 2.3 Parametres | `magic_get_params` | Parametres d'entree du programme |
-| 2.5 Expressions | `magic_kb_expressions` | Expressions cles decodees |
-| 3.2 Callers | `magic_kb_callers` | Programmes appelants |
-| 3.3 Callees | `magic_kb_callees` | Programmes appeles (3 niveaux) |
+```powershell
+dotnet run --project tools/KbIndexRunner -- validate
+```
 
-## Statistiques PDCA (2026-01-27)
+### Re-indexer si necessaire
 
-| Metrique | Avant | Apres | Gap |
-|----------|-------|-------|-----|
-| Specs V3.5 | 323 | 323 | - |
-| Specs avec DATA | **1** | **323** | **+322** |
-| Tables extraites | 30 | ~3000 | - |
-| Expressions decodees | 547 | ~10000 | - |
+```powershell
+dotnet run --project tools/KbIndexRunner -- "D:\Data\Migration\XPA\PMS"
+```
 
 ## Troubleshooting
 
-### MCP Server non connecte
+### KB non initialisee
 
 ```
-MCP call failed for magic_get_table : Connection refused
+ERROR: Knowledge Base not initialized
 ```
 
-**Solution**: Demarrer le MCP Server
+**Solution:** Executer l'indexation
 ```powershell
-cd D:\Projects\Lecteur_Magic\tools\MagicMcp
-dotnet run
+dotnet run --project tools/KbIndexRunner
 ```
 
-### Spec non trouvee
+### Programme non trouve
 
 ```
-[SKIP] ADH-IDE-999 (File not found)
+{"error": "Program ADH IDE 999 not found"}
 ```
 
-**Solution**: Verifier que le spec existe dans `.openspec/specs/`
-
-### Deja peuplee
-
-```
-[SKIP] ADH-IDE-237 (Already has data)
-```
-
-**Solution**: Utiliser `-Force` pour re-peupler
+**Solution:** Verifier que le programme existe dans la KB
 ```powershell
-.\Populate-SpecData.ps1 -IDE 237 -Force
+dotnet run --project tools/KbIndexRunner -- query "ADH 999"
 ```
+
+### Spec deja existante
+
+```
+SKIP - V4.0 spec already exists. Use -Force to regenerate.
+```
+
+**Solution:** Utiliser le flag `-Force`
+```powershell
+.\Generate-SpecV40.ps1 -Project ADH -IdePosition 237 -Force
+```
+
+## Composants ECF ADH.ecf
+
+Les programmes suivants sont partages via ADH.ecf et ne sont jamais orphelins:
+
+| IDE | Public Name | Description |
+|-----|-------------|-------------|
+| 27 | Separation | Separation compte |
+| 28 | Fusion | Fusion compte |
+| 53 | EXTRAIT_EASY_CHECKOUT | Easy checkout extrait |
+| 54 | FACTURES_CHECK_OUT | Factures checkout |
+| 64 | SOLDE_EASY_CHECK_OUT | Solde easy checkout |
+| 65 | EDITION_EASY_CHECK_OUT | Edition easy checkout |
+| 69 | EXTRAIT_COMPTE | Extrait compte |
+| 70-76 | EXTRAIT_* | Extraits divers |
+| 84 | CARACT_INTERDIT | Caracteres interdits |
+| 97 | Saisie_facture_tva | Facture TVA |
+| 111 | GARANTIE | Garantie |
+| 121 | Gestion_Caisse_142 | Gestion caisse |
+| 149 | CALC_STOCK_PRODUIT | Stock produit |
+| 178-181 | GET_PRINTER / SET_LIST / RAZ | Impression |
+| 192 | SOLDE_COMPTE | Solde compte |
+| 208-210 | OPEN/CLOSE_PHONE_LINE | Telephone |
+| 229 | PRINT_TICKET | Impression ticket |
+| 243 | DEVERSEMENT | Deversement |
+
+## Historique des versions
+
+| Version | Date | Changements |
+|---------|------|-------------|
+| 4.0 | 2026-01-28 | Workflow APEX 4 phases, 3 onglets |
+| 3.5 | 2026-01-27 | TAB markers + Mermaid |
+| 3.0 | 2026-01-26 | Callees 3 niveaux |
+| 2.0 | 2026-01-25 | Structure initiale |
 
 ---
 
-*Dernier audit PDCA: 2026-01-27 - Gap critique corrige: 322 specs vides*
+*Derniere mise a jour: 2026-01-28 - Workflow APEX 4-Phase*

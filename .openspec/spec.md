@@ -823,6 +823,7 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-01-28: **Workflow APEX 4-Phase V4.0** - Implementation complete du workflow de specification en 4 phases: (1) DISCOVERY - identification, ECF, orphan check, (2) MAPPING - tables R/W/L, parametres, (3) DECODE - expressions, regles metier, (4) SYNTHESIS - spec 3 onglets + Mermaid. Script: `Generate-SpecV40.ps1`. README spec-generator/ mis a jour. Teste sur ADH IDE 237 et 121 (complexite HAUTE).
 - 2026-01-27: **AUDIT PDCA Phase 5 (ACT FINAL)** - **GAP CRITIQUE CORRIGE**: 321/322 specs vides maintenant peuples avec donnees reelles. (1) KbIndexRunner `spec-data` command (JSON export), (2) Populate-SpecData.ps1 reecrit pour utiliser CLI au lieu de SQLite direct. **Resultats: 2522 tables, 5830 expressions, 820 callers, 834 callees extraits**
 - 2026-01-27: **AUDIT PDCA Phase 4 (ACT)** - (1) Populate-SpecData.ps1 pour peupler 322 specs vides avec donnees MCP, (2) README spec-generator/, (3) README ticket-pipeline/, (4) Fix 24 warnings C# (CS8625, CS1998, CS0168), (5) TreatWarningsAsErrors dans csproj, (6) Template blueprint corrige (nullable, Task.FromResult). **Gap critique identifie: 322/323 specs sans data**
 - 2026-01-27: **AUDIT PDCA Phase 3** - (1) Dashboard analytics patterns KB (HTML, 16 patterns, coverage 73%), (2) Tests E2E Playwright API Caisse (api-caisse.spec.ts), (3) Documentation API complete (125 endpoints, API_CAISSE_DOCUMENTATION.md), (4) Blueprints generator validé (limitation: specs V3.5 sans tables détaillées). Scripts: generate-patterns-dashboard.ps1
@@ -858,4 +859,4 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 - 2026-01-22: Parser Magic V3 deterministe 100%
 
 ---
-*Derniere mise a jour: 2026-01-27 (Post AUDIT PDCA)*
+*Derniere mise a jour: 2026-01-28 (Post Workflow APEX 4-Phase)*
