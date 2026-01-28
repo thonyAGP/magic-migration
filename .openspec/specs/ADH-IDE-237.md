@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: 2026-01-28 19:42
+> **Analyse**: 2026-01-28 19:44
 > **Pipeline**: V6.0 Deep Analysis
 > **Niveau**: DETAILED (Migration)
 
@@ -29,6 +29,17 @@
 - **Saisie Commentaires** (Tache 10)
 - **Affiche saisie** (Tache 30)
 - **Type transfert** (Tache 38)
+
+### Operations sur les donnees
+
+Ce programme **modifie** les tables suivantes:
+- `reseau_cloture___rec` (cafil001_dat)
+- `prestations` (cafil010_dat)
+- `mvt_prestation___mpr` (cafil024_dat)
+- `compte_gm________cgm` (cafil025_dat)
+- `compteurs________cpt` (cafil046_dat)
+- `tempo_ecran_police` (%club_user%tmp_ecrpolice_dat)
+- ... et 3 autres tables
 
 ### Regles metier cles
 
@@ -405,4 +416,4 @@ graph LR
 - Expressions conditionnelles: 31
 
 ---
-*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 19:42*
+*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 19:44*

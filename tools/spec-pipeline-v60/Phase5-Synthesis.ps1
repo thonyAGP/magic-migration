@@ -408,8 +408,8 @@ if ($uiForms -and $uiForms.forms.Count -gt 0) {
 
 # 2. Operations sur les donnees (tables WRITE)
 $writeTables = @()
-if ($discovery.tables) {
-    $writeTables = @($discovery.tables | Where-Object { $_.access_mode -eq 'W' })
+if ($discovery.tables.by_access.WRITE) {
+    $writeTables = @($discovery.tables.by_access.WRITE)
 }
 if ($writeTables.Count -gt 0) {
     $objectifMetier += "### Operations sur les donnees"
