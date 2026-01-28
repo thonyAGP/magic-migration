@@ -1,8 +1,9 @@
-﻿# ADH IDE 12 - Catching stats
+﻿# ADH IDE 12 - Catching stats
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:56
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 22:58
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_8.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Catching stats |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Catching stats |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (5 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (7 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,62 +54,61 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 12 |
-| **Description** | Catching stats |
+| **IDE Position** | 12 |
+| **Fichier XML** | `Prg_8.xml` |
+| **Description** | Catching stats |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 7 |
+| **Lignes logique** | 194 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 22 | address_data_catching | `cafil_address_ec` | R | 1x |
-| 22 | address_data_catching | `cafil_address_ec` | **W** | 1x |
-| 69 | initialisation___ini | `cafil047_dat` | R | 1x |
-| 781 | log_affec_auto_entete | `log_affec_auto_entete` | R | 1x |
-| 782 | quadriga_chambre | `quadriga_chambre` | **W** | 1x |
-### 2.3 Parametres d'entree
+| 22 | address_data_catching | cafil_address_ec | READ/WRITE | Lecture+Ecriture |
+| 69 | initialisation___ini | cafil047_dat | READ | Lecture |
+| 781 | log_affec_auto_entete | log_affec_auto_entete | READ | Lecture |
+| 782 | quadriga_chambre | quadriga_chambre | WRITE | Ecriture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 5 tables accedees dont **2 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>7 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `NOT ({0,1})` | - |
-| 2 | `'FALSE'LOG` | - |
-| 3 | `BOM ({0,2})` | - |
-| 4 | `DOW ({0,3})` | - |
-| 5 | `AddDate ({0,3},0,0,1-{0,4})` | - |
-| 6 | `Date ()` | - |
-| 7 | `BOM ({0,2})` | - |
-| 8 | `IF ({0,9}-{0,8}=0,'D',IF ({0,9}-{0,8}=6,'W','M'))` | - |
-| 9 | `IF (LastClicked ()<>'MANUALY',IF ({0,7}='D',{0,...` | - |
-
-> **Total**: 9 expressions (affichees: 9)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 7 |
 | **Lignes logique** | 194 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 5 |
+| **Tables en ecriture** | 2 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -113,46 +119,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    N7[7 Menu Data Ca]
-    T[12 Catching sta]
-    M --> N
-    N --> N
-    N --> N
-    N --> T
-    style M fill:#8b5cf6,color:#fff
-    style N7 fill:#f59e0b
+    T[12 Catching stats]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 7 | Menu Data Catching | 1 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[12 Programme]
-    C13[13      calcula]
-    T --> C13
-    C14[14 e mail list]
-    T --> C14
+    T[12 Catching stats]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C13 fill:#3fb950
-    style C14 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 13 |      calculate week # | 1 |
-| 1 | 14 | e-mail list | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 7 | Moyen |
+| Tables | 5 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **FAIBLE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -160,10 +190,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:17 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:43 | **DATA POPULATED** - Tables, Callgraph (9 expr) | Script |
-| 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 22:58 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

@@ -1,8 +1,9 @@
-﻿# ADH IDE 297 - Programme supprime (Prg_294)
+﻿# ADH IDE 297 - Ouverture caisse 143
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:15
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_293.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Programme supprime (Prg_294) |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Ouverture caisse 143 |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (3 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (8 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,59 +54,60 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 297 |
-| **Description** | Programme supprime (Prg_294) |
+| **IDE Position** | 297 |
+| **Fichier XML** | `Prg_293.xml` |
+| **Description** | Ouverture caisse 143 |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 8 |
+| **Lignes logique** | 293 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 67 | tables___________tab | `cafil045_dat` | R | 1x |
-| 232 | gestion_devise_session | `caisse_devise` | L | 1x |
-| 693 | devise_in | `devisein_par` | R | 1x |
-### 2.3 Parametres d'entree
+| 67 | tables___________tab | cafil045_dat | READ | Lecture |
+| 232 | gestion_devise_session | caisse_devise | LINK | Jointure |
+| 693 | devise_in | devisein_par | READ | Lecture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 3 tables accedees dont **0 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>8 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `{0,16}=0` | - |
-| 2 | `{0,15}` | - |
-| 3 | `0` | - |
-| 4 | `'FALSE'LOG` | - |
-| 5 | `{0,55}` | - |
-| 6 | `{0,56}` | - |
-| 7 | `'O'` | - |
-| 8 | `{0,25}<>0 OR {0,26}<>0 OR {0,27}<>0` | - |
-
-> **Total**: 8 expressions (affichees: 8)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 8 |
 | **Lignes logique** | 293 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 3 |
+| **Tables en ecriture** | 0 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -110,72 +118,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[297 Ouverture caisse 143]
-    M --> T
-    style M fill:#8b5cf6,color:#fff
+    T[297 Ouverture caiss]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | **Aucun caller** (point d'entree ou orphelin) | - |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[297 Programme]
-    C134[134 Mise  jour d]
-    T --> C134
-    C136[136 Generation t]
-    T --> C136
-    C148[148 Devises RAZ ]
-    T --> C148
-    C43[43 Recuperation]
-    T --> C43
-    C120[120 Saisie conte]
-    T --> C120
-    C123[123 Apport coffr]
-    T --> C123
-    C124[124 Apport artic]
-    T --> C124
-    C126[126 Calcul solde]
-    T --> C126
+    T[297 Ouverture caiss]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C134 fill:#3fb950
-    style C136 fill:#3fb950
-    style C148 fill:#3fb950
-    style C43 fill:#3fb950
-    style C120 fill:#3fb950
-    style C123 fill:#3fb950
-    style C124 fill:#3fb950
-    style C126 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 134 | Mise à jour detail session WS | 7 |
-| 1 | 136 | Generation ticket WS | 7 |
-| 1 | 148 | Devises RAZ WS | 2 |
-| 1 | 43 | Recuperation du titre | 1 |
-| 1 | 120 | Saisie contenu caisse | 1 |
-| 1 | 123 | Apport coffre | 1 |
-| 1 | 124 | Apport articles | 1 |
-| 1 | 126 | Calcul solde initial WS | 1 |
-| 1 | 128 | Controle ouverture caisse WS | 1 |
-| 1 | 129 | Ecart ouverture caisse | 1 |
-| 1 | 133 | Mise a jour comptage caisse WS | 1 |
-| 1 | 137 | Ticket ouverture session | 1 |
-| 1 | 139 | Ticket appro remise | 1 |
-| 1 | 143 | Devises calcul ecart WS | 1 |
-| 1 | 147 | Devises des tickets WS | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 8 | Moyen |
+| Tables | 3 | Lecture seule |
+| Callees | 0 | Faible couplage |
+| **Score global** | **MOYENNE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -183,10 +189,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:25 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (8 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:15 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

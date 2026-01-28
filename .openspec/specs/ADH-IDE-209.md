@@ -1,8 +1,9 @@
-﻿# ADH IDE 209 - Affectation code autocom
+﻿# ADH IDE 209 - Affectation code autocom
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:10
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_205.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Affectation code autocom |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Affectation code autocom |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (30 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (57 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,87 +54,78 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 209 |
-| **Description** | Affectation code autocom |
+| **IDE Position** | 209 |
+| **Fichier XML** | `Prg_205.xml` |
+| **Description** | Affectation code autocom |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 57 |
+| **Lignes logique** | 1079 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 3x |
-| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
-| 34 | hebergement______heb | `cafil012_dat` | L | 4x |
-| 34 | hebergement______heb | `cafil012_dat` | R | 1x |
-| 34 | hebergement______heb | `cafil012_dat` | **W** | 1x |
-| 52 | serie_ligne______slg | `cafil030_dat` | R | 1x |
-| 52 | serie_ligne______slg | `cafil030_dat` | **W** | 1x |
-| 53 | ligne_telephone__lgn | `cafil031_dat` | **W** | 4x |
-| 68 | compteurs________cpt | `cafil046_dat` | **W** | 4x |
-| 72 | generation_code_gen | `cafil050_dat` | **W** | 1x |
-| 73 | serie_telephone__stl | `cafil051_dat` | R | 1x |
-| 73 | serie_telephone__stl | `cafil051_dat` | **W** | 1x |
-| 75 | commande_autocom_cot | `cafil053_dat` | **W** | 4x |
-| 80 | codes_autocom____aut | `cafil058_dat` | R | 1x |
-| 80 | codes_autocom____aut | `cafil058_dat` | **W** | 4x |
-| 86 | serie_sda________ssd | `cafil064_dat` | R | 1x |
-| 86 | serie_sda________ssd | `cafil064_dat` | **W** | 1x |
-| 87 | sda_telephone____sda | `cafil065_dat` | L | 3x |
-| 87 | sda_telephone____sda | `cafil065_dat` | **W** | 1x |
-| 88 | historik_station | `cafil066_dat` | L | 1x |
-| 104 | fichier_menage | `cafil082_dat` | R | 1x |
-| 130 | fichier_langue | `cafil108_dat` | L | 1x |
-| 131 | fichier_validation | `cafil109_dat` | L | 1x |
-| 136 | fichier_echanges | `cafil114_dat` | **W** | 8x |
-| 151 | nb_code__poste | `cafil129_dat` | **W** | 7x |
-| 152 | parametres_pour_pabx | `cafil130_dat` | L | 1x |
-| 152 | parametres_pour_pabx | `cafil130_dat` | R | 1x |
-| 169 | salle_seminaire__sse | `cafil147_dat` | R | 2x |
-| 188 | correspondance_sda | `cafil216_dat` | L | 1x |
-| 786 | qualite_avant_reprise | `qualite_avant_reprise` | R | 1x |
-### 2.3 Parametres d'entree
+| 30 | gm-recherche_____gmr | cafil008_dat | LINK/READ | Jointure+Lecture |
+| 34 | hebergement______heb | cafil012_dat | LINK/READ/WRITE | Jointure+R/W |
+| 52 | serie_ligne______slg | cafil030_dat | READ/WRITE | Lecture+Ecriture |
+| 53 | ligne_telephone__lgn | cafil031_dat | WRITE | Ecriture |
+| 68 | compteurs________cpt | cafil046_dat | WRITE | Ecriture |
+| 72 | generation_code_gen | cafil050_dat | WRITE | Ecriture |
+| 73 | serie_telephone__stl | cafil051_dat | READ/WRITE | Lecture+Ecriture |
+| 75 | commande_autocom_cot | cafil053_dat | WRITE | Ecriture |
+| 80 | codes_autocom____aut | cafil058_dat | READ/WRITE | Lecture+Ecriture |
+| 86 | serie_sda________ssd | cafil064_dat | READ/WRITE | Lecture+Ecriture |
+| 87 | sda_telephone____sda | cafil065_dat | LINK/WRITE | Jointure+Ecriture |
+| 88 | historik_station | cafil066_dat | LINK | Jointure |
+| 104 | fichier_menage | cafil082_dat | READ | Lecture |
+| 130 | fichier_langue | cafil108_dat | LINK | Jointure |
+| 131 | fichier_validation | cafil109_dat | LINK | Jointure |
+| 136 | fichier_echanges | cafil114_dat | WRITE | Ecriture |
+| 151 | nb_code__poste | cafil129_dat | WRITE | Ecriture |
+| 152 | parametres_pour_pabx | cafil130_dat | LINK/READ | Jointure+Lecture |
+| 169 | salle_seminaire__sse | cafil147_dat | READ | Lecture |
+| 188 | correspondance_sda | cafil216_dat | LINK | Jointure |
+| 786 | qualite_avant_reprise | qualite_avant_reprise | READ | Lecture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 30 tables accedees dont **12 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>57 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `({0,6}='3' OR {0,6}='1') AND {0,18}<>'O'` | - |
-| 2 | `({0,6}='3' OR {0,6}='1') AND {0,18}='O'` | - |
-| 3 | `'F'` | - |
-| 4 | `{0,21}='F'` | - |
-| 5 | `{0,21}<>'F'` | - |
-| 6 | `{0,10}='O' AND ({0,6}='1' OR {0,6}='2')` | - |
-| 7 | `{0,17}<>'O' AND ({0,6}='1' OR {0,6}='2')` | - |
-| 8 | `GetParam ('CURRENTPRINTERNUM')<>0` | - |
-| 9 | `'TRUE'LOG` | - |
-
-> **Total**: 9 expressions (affichees: 9)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 57 |
 | **Lignes logique** | 1079 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 30 |
+| **Tables en ecriture** | 12 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -138,52 +136,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    N217[217 Menu telepho]
-    N163[163 Menu caisse ]
-    N1[1 Main Program]
-    T[209 Affectation ]
-    N217 --> N163
-    N163 --> N1
-    N1 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N217 fill:#f59e0b
-    style N163 fill:#f59e0b
-    style N1 fill:#f59e0b
+    T[209 Affectation cod]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 217 | Menu telephone | 2 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[209 Programme]
-    C43[43 Recuperation]
-    T --> C43
-    C216[216 Suppression ]
-    T --> C216
-    C208[208 Print Reu co]
-    T --> C208
+    T[209 Affectation cod]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C43 fill:#3fb950
-    style C216 fill:#3fb950
-    style C208 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 43 | Recuperation du titre | 2 |
-| 1 | 216 | Suppression ligne blanche f30 | 2 |
-| 1 | 208 | Print Reçu code autocom | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 57 | Complexe |
+| Tables | 30 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **HAUTE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -191,10 +207,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:23 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (9 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:10 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

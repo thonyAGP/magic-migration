@@ -1,8 +1,9 @@
-﻿# ADH IDE 155 - Controle fermeture caisse WS
+﻿# ADH IDE 155 - Controle fermeture caisse WS
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:07
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_151.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Controle fermeture caisse WS |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Controle fermeture caisse WS |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (32 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (147 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,94 +54,78 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 155 |
-| **Description** | Controle fermeture caisse WS |
+| **IDE Position** | 155 |
+| **Fichier XML** | `Prg_151.xml` |
+| **Description** | Controle fermeture caisse WS |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 147 |
+| **Lignes logique** | 3366 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 31 | gm-complet_______gmc | `cafil009_dat` | R | 4x |
-| 40 | comptable________cte | `cafil018_dat` | L | 3x |
-| 44 | change___________chg | `cafil022_dat` | R | 1x |
-| 77 | articles_________art | `cafil055_dat` | L | 2x |
-| 90 | devises__________dev | `cafil068_dat` | R | 4x |
-| 147 | change_vente_____chg | `cafil125_dat` | R | 1x |
-| 197 | articles_en_stock | `caisse_artstock` | L | 2x |
-| 232 | gestion_devise_session | `caisse_devise` | R | 5x |
-| 232 | gestion_devise_session | `caisse_devise` | **W** | 2x |
-| 241 | pointage_appro_remise | `caisse_pointage_apprem` | L | 8x |
-| 241 | pointage_appro_remise | `caisse_pointage_apprem` | R | 2x |
-| 241 | pointage_appro_remise | `caisse_pointage_apprem` | **W** | 8x |
-| 242 | pointage_article | `caisse_pointage_article` | L | 4x |
-| 242 | pointage_article | `caisse_pointage_article` | R | 4x |
-| 242 | pointage_article | `caisse_pointage_article` | **W** | 10x |
-| 243 | pointage_devise | `caisse_pointage_devise` | L | 12x |
-| 243 | pointage_devise | `caisse_pointage_devise` | R | 4x |
-| 243 | pointage_devise | `caisse_pointage_devise` | **W** | 6x |
-| 246 | histo_sessions_caisse | `caisse_session` | R | 18x |
-| 246 | histo_sessions_caisse | `caisse_session` | **W** | 1x |
-| 247 | histo_sessions_caisse_article | `caisse_session_article` | L | 2x |
-| 248 | sessions_coffre2 | `caisse_session_coffre2` | L | 5x |
-| 249 | histo_sessions_caisse_detail | `caisse_session_detail` | L | 2x |
-| 249 | histo_sessions_caisse_detail | `caisse_session_detail` | R | 23x |
-| 250 | histo_sessions_caisse_devise | `caisse_session_devise` | L | 2x |
-| 250 | histo_sessions_caisse_devise | `caisse_session_devise` | R | 9x |
-| 251 | histo_sessions_caisse_remise | `caisse_session_remise` | R | 1x |
-| 263 | vente | `caisse_vente` | L | 1x |
-| 505 | pv_comptable | `%club_user%_pv_cafil18_dat` | L | 1x |
-| 505 | pv_comptable | `%club_user%_pv_cafil18_dat` | **W** | 5x |
-| 510 | pv_discounts | `%club_user%_pv_disctmp_dat` | **W** | 1x |
-| 697 | droits_applications | `droits` | R | 1x |
-### 2.3 Parametres d'entree
+| 31 | gm-complet_______gmc | cafil009_dat | READ | Lecture |
+| 40 | comptable________cte | cafil018_dat | LINK | Jointure |
+| 44 | change___________chg | cafil022_dat | READ | Lecture |
+| 77 | articles_________art | cafil055_dat | LINK | Jointure |
+| 90 | devises__________dev | cafil068_dat | READ | Lecture |
+| 147 | change_vente_____chg | cafil125_dat | READ | Lecture |
+| 197 | articles_en_stock | caisse_artstock | LINK | Jointure |
+| 232 | gestion_devise_session | caisse_devise | READ/WRITE | Lecture+Ecriture |
+| 241 | pointage_appro_remise | caisse_pointage_apprem | LINK/READ/WRITE | Jointure+R/W |
+| 242 | pointage_article | caisse_pointage_article | LINK/READ/WRITE | Jointure+R/W |
+| 243 | pointage_devise | caisse_pointage_devise | LINK/READ/WRITE | Jointure+R/W |
+| 246 | histo_sessions_caisse | caisse_session | READ/WRITE | Lecture+Ecriture |
+| 247 | histo_sessions_caisse_article | caisse_session_article | LINK | Jointure |
+| 248 | sessions_coffre2 | caisse_session_coffre2 | LINK | Jointure |
+| 249 | histo_sessions_caisse_detail | caisse_session_detail | LINK/READ | Jointure+Lecture |
+| 250 | histo_sessions_caisse_devise | caisse_session_devise | LINK/READ | Jointure+Lecture |
+| 251 | histo_sessions_caisse_remise | caisse_session_remise | READ | Lecture |
+| 263 | vente | caisse_vente | LINK | Jointure |
+| 505 | pv_comptable | %club_user%_pv_cafil18_dat | LINK/WRITE | Jointure+Ecriture |
+| 510 | pv_discounts | %club_user%_pv_disctmp_dat | WRITE | Ecriture |
+| 697 | droits_applications | droits | READ | Lecture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 32 tables accedees dont **7 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>147 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `{0,15}='B'` | - |
-| 2 | `{0,22}='O' AND ({0,18} AND NOT {0,19} OR {0,43}...` | - |
-| 3 | `{0,1}='K'` | - |
-| 4 | `{0,1}='T'` | - |
-| 5 | `{0,8}` | - |
-| 6 | `{0,9}` | - |
-| 7 | `{0,10}` | - |
-| 8 | `{32768,1}` | - |
-| 9 | `{0,7}` | - |
-| 10 | `'I'` | - |
-| 11 | `'O'` | - |
-| 12 | `IF({32768,78}, Val({0,41}, '3')={0,16}, {0,42}=...` | - |
-| 13 | `NOT {32768,78}` | - |
-| 14 | `{32768,78}` | - |
-
-> **Total**: 14 expressions (affichees: 14)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 147 |
 | **Lignes logique** | 3366 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 32 |
+| **Tables en ecriture** | 7 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -145,61 +136,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    N121[121 Gestion cais]
-    N131[131 Fermeture ca]
-    N163[163 Menu caisse ]
-    N1[1 Main Program]
-    N281[281 Fermeture Se]
-    T[155 Controle fer]
-    N121 --> N131
-    N131 --> N163
-    N163 --> N1
-    N1 --> N281
-    N281 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N121 fill:#f59e0b
-    style N131 fill:#f59e0b
-    style N163 fill:#f59e0b
-    style N1 fill:#f59e0b
-    style N281 fill:#f59e0b
+    T[155 Controle fermet]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 131 | Fermeture caisse | 3 |
-| 298 | Gestion caisse 142 | 3 |
-| 299 | Fermeture caisse 144 | 3 |
-| 121 | Gestion caisse | 2 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[155 Programme]
-    C135[135 Generation t]
-    T --> C135
-    C142[142 Devise updat]
-    T --> C142
-    C152[152 Recup Classe]
-    T --> C152
+    T[155 Controle fermet]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C135 fill:#3fb950
-    style C142 fill:#3fb950
-    style C152 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 135 | Generation tableau recap WS | 13 |
-| 1 | 142 | Devise update session WS | 11 |
-| 1 | 152 | Recup Classe et Lib du MOP | 3 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 147 | Complexe |
+| Tables | 32 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **HAUTE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -207,10 +207,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:21 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:47 | **DATA POPULATED** - Tables, Callgraph (14 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:07 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

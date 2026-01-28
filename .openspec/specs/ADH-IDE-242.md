@@ -1,8 +1,9 @@
-﻿# ADH IDE 242 - Menu Choix Saisie/Annul vente
+﻿# ADH IDE 242 - Menu Choix Saisie/Annul vente
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:12
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_238.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Menu Choix Saisie/Annul vente |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Menu Choix Saisie/Annul vente |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (5 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (3 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,73 +54,61 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 242 |
-| **Description** | Menu Choix Saisie/Annul vente |
+| **IDE Position** | 242 |
+| **Fichier XML** | `Prg_238.xml` |
+| **Description** | Menu Choix Saisie/Annul vente |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 3 |
+| **Lignes logique** | 133 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 38 | comptable_gratuite | `cafil016_dat` | R | 1x |
-| 38 | comptable_gratuite | `cafil016_dat` | **W** | 1x |
-| 264 | vente_gratuite | `caisse_vente_gratuite` | L | 1x |
-| 400 | pv_cust_rentals | `pv_rentals_dat` | L | 1x |
-| 804 | valeur_credit_bar_defaut | `valeur_credit_bar_defaut` | L | 1x |
-### 2.3 Parametres d'entree
+| 38 | comptable_gratuite | cafil016_dat | READ/WRITE | Lecture+Ecriture |
+| 264 | vente_gratuite | caisse_vente_gratuite | LINK | Jointure |
+| 400 | pv_cust_rentals | pv_rentals_dat | LINK | Jointure |
+| 804 | valeur_credit_bar_defaut | valeur_credit_bar_defaut | LINK | Jointure |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 5 tables accedees dont **1 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>3 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `Date ()` | - |
-| 2 | `{32768,2}` | - |
-| 3 | `''` | - |
-| 4 | `{0,17}='1'` | - |
-| 5 | `{0,18}` | - |
-| 6 | `'TRUE'LOG` | - |
-| 7 | `{0,17}='2'` | - |
-| 8 | `DbDel('{933,4}'DSOURCE,'')` | - |
-| 9 | `{0,17}='3'` | - |
-| 10 | `{0,17}='4'` | - |
-| 11 | `{32768,3} OR {32768,47}` | - |
-| 12 | `{0,17}='3' OR {0,17}='4'` | - |
-| 13 | `({32768,3} OR {32768,47}) AND {0,19}` | - |
-| 14 | `({32768,3} OR {32768,47}) AND {0,20}` | - |
-| 15 | `NOT {0,16}` | - |
-| 16 | `NOT {32768,81}` | - |
-| 17 | `NOT({32768,83}) AND NOT({32768,85})` | - |
-| 18 | `{32768,83} AND NOT {32768,85}` | - |
-| 19 | `NOT {32768,85} OR {32768,3}` | - |
-| 20 | `NOT {32768,89}` | - |
-
-> **Total**: 29 expressions (affichees: 20)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 3 |
 | **Lignes logique** | 133 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 5 |
+| **Tables en ecriture** | 1 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -124,83 +119,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    N0[0 Transaction ]
-    N0[0 Transaction ]
-    N0[0 Transaction ]
-    N1[1 Main Program]
-    N163[163 Menu caisse ]
-    T[242 Menu Choix S]
-    N0 --> N0
-    N0 --> N0
-    N0 --> N1
-    N1 --> N163
-    N163 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N0 fill:#f59e0b
-    style N0 fill:#f59e0b
-    style N0 fill:#f59e0b
-    style N1 fill:#f59e0b
-    style N163 fill:#f59e0b
+    T[242 Menu Choix Sais]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 163 | Menu caisse GM - scroll | 2 |
-| 0 | Transaction Nouv vente PMS-584 | 1 |
-| 0 | Transaction Nouv vente PMS-710 | 1 |
-| 0 | Transaction Nouv vente PMS-721 | 1 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[242 Programme]
-    C44[44 Appel progra]
-    T --> C44
-    C237[237 Transaction ]
-    T --> C237
-    C238[238 Transaction ]
-    T --> C238
-    C239[239 Transaction ]
-    T --> C239
-    C240[240 Transaction ]
-    T --> C240
-    C243[243 Histo ventes]
-    T --> C243
-    C244[244 Histo ventes]
-    T --> C244
-    C245[245 Histo ventes]
-    T --> C245
+    T[242 Menu Choix Sais]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C44 fill:#3fb950
-    style C237 fill:#3fb950
-    style C238 fill:#3fb950
-    style C239 fill:#3fb950
-    style C240 fill:#3fb950
-    style C243 fill:#3fb950
-    style C244 fill:#3fb950
-    style C245 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 44 | Appel programme | 1 |
-| 1 | 237 | Transaction Nouv vente avec GP | 1 |
-| 1 | 238 | Transaction Nouv vente PMS-584 | 1 |
-| 1 | 239 | Transaction Nouv vente PMS-721 | 1 |
-| 1 | 240 | Transaction Nouv vente PMS-710 | 1 |
-| 1 | 243 | Histo ventes payantes | 1 |
-| 1 | 244 | Histo ventes payantes /PMS-605 | 1 |
-| 1 | 245 | Histo ventes payantes /PMS-623 | 1 |
-| 1 | 252 | Histo ventes IGR | 1 |
-| 1 | 253 | Histo ventes Gratuités | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 3 | Simple |
+| Tables | 5 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **FAIBLE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -208,10 +190,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:24 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (29 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:12 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

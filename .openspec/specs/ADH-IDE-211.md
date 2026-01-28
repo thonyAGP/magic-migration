@@ -1,8 +1,9 @@
-﻿# ADH IDE 211 - Programme supprime (Prg_210)
+﻿# ADH IDE 211 - Opposition code autocom
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:10
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_207.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Programme supprime (Prg_210) |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Opposition code autocom |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (10 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (13 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,62 +54,66 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 211 |
-| **Description** | Programme supprime (Prg_210) |
+| **IDE Position** | 211 |
+| **Fichier XML** | `Prg_207.xml` |
+| **Description** | Opposition code autocom |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 13 |
+| **Lignes logique** | 173 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
-| 53 | ligne_telephone__lgn | `cafil031_dat` | **W** | 1x |
-| 68 | compteurs________cpt | `cafil046_dat` | **W** | 1x |
-| 75 | commande_autocom_cot | `cafil053_dat` | **W** | 1x |
-| 80 | codes_autocom____aut | `cafil058_dat` | **W** | 1x |
-| 87 | sda_telephone____sda | `cafil065_dat` | L | 1x |
-| 87 | sda_telephone____sda | `cafil065_dat` | **W** | 1x |
-| 88 | historik_station | `cafil066_dat` | **W** | 1x |
-| 136 | fichier_echanges | `cafil114_dat` | **W** | 2x |
-| 151 | nb_code__poste | `cafil129_dat` | **W** | 1x |
-### 2.3 Parametres d'entree
+| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
+| 53 | ligne_telephone__lgn | cafil031_dat | WRITE | Ecriture |
+| 68 | compteurs________cpt | cafil046_dat | WRITE | Ecriture |
+| 75 | commande_autocom_cot | cafil053_dat | WRITE | Ecriture |
+| 80 | codes_autocom____aut | cafil058_dat | WRITE | Ecriture |
+| 87 | sda_telephone____sda | cafil065_dat | LINK/WRITE | Jointure+Ecriture |
+| 88 | historik_station | cafil066_dat | WRITE | Ecriture |
+| 136 | fichier_echanges | cafil114_dat | WRITE | Ecriture |
+| 151 | nb_code__poste | cafil129_dat | WRITE | Ecriture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 10 tables accedees dont **8 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>13 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `''` | - |
-| 2 | `{0,9}='O'` | - |
-| 3 | `'F'` | - |
-| 4 | `{0,10}='F'` | - |
-
-> **Total**: 4 expressions (affichees: 4)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 13 |
 | **Lignes logique** | 173 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 10 |
+| **Tables en ecriture** | 8 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -113,48 +124,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    N204[204 Mise en oppo]
-    N217[217 Menu telepho]
-    N1[1 Main Program]
-    N163[163 Menu caisse ]
-    T[211 Opposition c]
-    N204 --> N217
-    N217 --> N1
-    N1 --> N163
-    N163 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N204 fill:#f59e0b
-    style N217 fill:#f59e0b
-    style N1 fill:#f59e0b
-    style N163 fill:#f59e0b
+    T[211 Opposition code]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 204 | Mise en opposition autocom | 1 |
-| 217 | Menu telephone | 1 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[211 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    T[211 Opposition code]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| - | - | Programme terminal | - |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 13 | Moyen |
+| Tables | 10 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **MOYENNE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -162,10 +195,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:23 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:49 | **DATA POPULATED** - Tables, Callgraph (4 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:10 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

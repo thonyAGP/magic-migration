@@ -1,8 +1,9 @@
-﻿# ADH IDE 89 - Factures (Tble Compta&Vent
+﻿# ADH IDE 89 - Factures (Tble Compta&Vent
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:03
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_85.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Factures (Tble Compta&Vent |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Factures (Tble Compta&Vent |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (28 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (35 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,96 +54,75 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 89 |
-| **Description** | Factures (Tble Compta&Vent |
+| **IDE Position** | 89 |
+| **Fichier XML** | `Prg_85.xml` |
+| **Description** | Factures (Tble Compta&Vent |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 35 |
+| **Lignes logique** | 1383 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 2x |
-| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
-| 40 | comptable________cte | `cafil018_dat` | L | 1x |
-| 40 | comptable________cte | `cafil018_dat` | **W** | 1x |
-| 68 | compteurs________cpt | `cafil046_dat` | **W** | 1x |
-| 263 | vente | `caisse_vente` | L | 2x |
-| 372 | pv_budget | `pv_budget_dat` | L | 1x |
-| 382 | pv_discount_reasons | `pv_discountlist_dat` | L | 2x |
-| 400 | pv_cust_rentals | `pv_rentals_dat` | L | 2x |
-| 744 | pv_lieux_vente | `pv_lieux_vente` | L | 2x |
-| 746 | projet | `version` | L | 1x |
-| 746 | projet | `version` | **W** | 1x |
-| 755 | cafil_address_tmp | `cafil_address_tmp` | L | 2x |
-| 756 | Country_ISO | `cafil_country_iso` | L | 2x |
-| 866 | maj_appli_tpe | `maj_appli_tpe` | L | 3x |
-| 866 | maj_appli_tpe | `maj_appli_tpe` | R | 6x |
-| 866 | maj_appli_tpe | `maj_appli_tpe` | **W** | 7x |
-| 867 | log_maj_tpe | `log_maj_tpe` | L | 1x |
-| 867 | log_maj_tpe | `log_maj_tpe` | R | 2x |
-| 868 | Affectation_Gift_Pass | `affectation_gift_pass` | L | 1x |
-| 868 | Affectation_Gift_Pass | `affectation_gift_pass` | R | 3x |
-| 868 | Affectation_Gift_Pass | `affectation_gift_pass` | **W** | 6x |
-| 870 | Rayons_Boutique | `rayons_boutique` | L | 7x |
-| 870 | Rayons_Boutique | `rayons_boutique` | R | 1x |
-| 870 | Rayons_Boutique | `rayons_boutique` | **W** | 4x |
-| 871 | Activite | `activite` | L | 2x |
-| 932 | taxe_add_param | `taxe_add_param` | L | 1x |
-| 932 | taxe_add_param | `taxe_add_param` | **W** | 1x |
-### 2.3 Parametres d'entree
+| 30 | gm-recherche_____gmr | cafil008_dat | LINK | Jointure |
+| 31 | gm-complet_______gmc | cafil009_dat | LINK | Jointure |
+| 40 | comptable________cte | cafil018_dat | LINK/WRITE | Jointure+Ecriture |
+| 68 | compteurs________cpt | cafil046_dat | WRITE | Ecriture |
+| 263 | vente | caisse_vente | LINK | Jointure |
+| 372 | pv_budget | pv_budget_dat | LINK | Jointure |
+| 382 | pv_discount_reasons | pv_discountlist_dat | LINK | Jointure |
+| 400 | pv_cust_rentals | pv_rentals_dat | LINK | Jointure |
+| 744 | pv_lieux_vente | pv_lieux_vente | LINK | Jointure |
+| 746 | projet | version | LINK/WRITE | Jointure+Ecriture |
+| 755 | cafil_address_tmp | cafil_address_tmp | LINK | Jointure |
+| 756 | Country_ISO | cafil_country_iso | LINK | Jointure |
+| 866 | maj_appli_tpe | maj_appli_tpe | LINK/READ/WRITE | Jointure+R/W |
+| 867 | log_maj_tpe | log_maj_tpe | LINK/READ | Jointure+Lecture |
+| 868 | Affectation_Gift_Pass | affectation_gift_pass | LINK/READ/WRITE | Jointure+R/W |
+| 870 | Rayons_Boutique | rayons_boutique | LINK/READ/WRITE | Jointure+R/W |
+| 871 | Activite | activite | LINK | Jointure |
+| 932 | taxe_add_param | taxe_add_param | LINK/WRITE | Jointure+Ecriture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 28 tables accedees dont **7 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>35 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `'Hébergement'` | - |
-| 2 | `{0,1}` | - |
-| 3 | `{0,2}` | - |
-| 4 | `{0,3}` | - |
-| 5 | `{0,7}` | - |
-| 6 | `{0,8}` | - |
-| 7 | `IF({0,58},Trim({0,53}),IF({0,5},Trim({0,20})&' ...` | - |
-| 8 | `IF({0,58},Trim({0,52}),IF({0,5},Trim({0,19})&' ...` | - |
-| 9 | `IF({0,58},Trim({0,54}),IF({0,5},Trim({0,22}),Tr...` | - |
-| 10 | `IF({0,58},Trim({0,55}),IF({0,5},Trim({0,23}),Tr...` | - |
-| 11 | `'Numéro d''adhérent'&' '&IF({0,5},Trim(Str({0,1...` | - |
-| 12 | `'Quitter'` | - |
-| 13 | `'Imprimer'` | - |
-| 14 | `'R.à.z'` | - |
-| 15 | `MlsTrans('Confirmez vous l''édition de cette fa...` | - |
-| 16 | `{0,66}=6` | - |
-| 17 | `Trim({0,42})&Trim(Str(Year(Date()),'4'))&Trim(S...` | - |
-| 18 | `Trim({0,42})&Trim(Str(Year(Date()),'4'))&Trim(S...` | - |
-| 19 | `NOT({0,71})` | - |
-| 20 | `{0,71}` | - |
-
-> **Total**: 45 expressions (affichees: 20)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 35 |
 | **Lignes logique** | 1383 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 28 |
+| **Tables en ecriture** | 7 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -147,69 +133,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[89 Factures (Tble Compta&Vent]
-    M --> T
-    style M fill:#8b5cf6,color:#fff
+    T[89 Factures (Tble ]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | **Aucun caller** (point d'entree ou orphelin) | - |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[89 Programme]
-    C60[60 Creation ent]
-    T --> C60
-    C61[61 Maj des lign]
-    T --> C61
-    C90[90 Edition Fact]
-    T --> C90
-    C93[93 Creation Pie]
-    T --> C93
-    C94[94 Maj des lign]
-    T --> C94
-    C58[58 Incremente N]
-    T --> C58
-    C91[91 Verif boutiq]
-    T --> C91
-    C92[92 flag ligne b]
-    T --> C92
+    T[89 Factures (Tble ]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C60 fill:#3fb950
-    style C61 fill:#3fb950
-    style C90 fill:#3fb950
-    style C93 fill:#3fb950
-    style C94 fill:#3fb950
-    style C58 fill:#3fb950
-    style C91 fill:#3fb950
-    style C92 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 60 | Creation entete facture | 3 |
-| 1 | 61 | Maj des lignes saisies | 3 |
-| 1 | 90 | Edition Facture Tva(Compta&Ve) | 3 |
-| 1 | 93 | Creation Pied Facture | 3 |
-| 1 | 94 | Maj des lignes saisies archive | 3 |
-| 1 | 58 | Incremente N° de Facture | 2 |
-| 1 | 91 | Verif boutique | 2 |
-| 1 | 92 | flag ligne boutique | 2 |
-| 1 | 57 | Factures_Sejour | 1 |
-| 1 | 59 | Facture - chargement boutique | 1 |
-| 1 | 62 | Maj Hebergement Tempo | 1 |
-| 1 | 95 | Facture - Sejour archive | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 35 | Complexe |
+| Tables | 28 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **HAUTE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -217,10 +204,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (45 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:03 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

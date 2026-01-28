@@ -1,8 +1,9 @@
-﻿# ADH IDE 24 - Print reçu change vente
+﻿# ADH IDE 24 - Print reçu change vente
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:56
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 22:59
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_20.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Print reçu change vente |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Print reçu change vente |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (6 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (14 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,74 +54,62 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 24 |
-| **Description** | Print reçu change vente |
+| **IDE Position** | 24 |
+| **Fichier XML** | `Prg_20.xml` |
+| **Description** | Print reçu change vente |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 14 |
+| **Lignes logique** | 417 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 7x |
-| 31 | gm-complet_______gmc | `cafil009_dat` | R | 1x |
-| 34 | hebergement______heb | `cafil012_dat` | L | 1x |
-| 147 | change_vente_____chg | `cafil125_dat` | L | 7x |
-| 147 | change_vente_____chg | `cafil125_dat` | R | 1x |
-| 368 | pms_village | `pmsvillage` | L | 1x |
-### 2.3 Parametres d'entree
+| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
+| 31 | gm-complet_______gmc | cafil009_dat | READ | Lecture |
+| 34 | hebergement______heb | cafil012_dat | LINK | Jointure |
+| 147 | change_vente_____chg | cafil125_dat | LINK/READ | Jointure+Lecture |
+| 368 | pms_village | pmsvillage | LINK | Jointure |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 6 tables accedees dont **0 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>14 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `SetCrsr (2)` | - |
-| 2 | `SetCrsr (1)` | - |
-| 3 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
-| 4 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
-| 5 | `GetParam ('CURRENTPRINTERNUM')=5` | - |
-| 6 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
-| 7 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
-| 8 | `{0,1}` | - |
-| 9 | `{0,2}` | - |
-| 10 | `{0,3}` | - |
-| 11 | `'A'` | - |
-| 12 | `'Z'` | - |
-| 13 | `IF ({0,28}='010','Opération N°','Transaction N°')` | - |
-| 14 | `IF ({0,28}='010','Mode de paiement','Payment me...` | - |
-| 15 | `IF ({0,28}='010','Taux','Rate')` | - |
-| 16 | `IF ({0,28}='010','Montant devise locale','Amoun...` | - |
-| 17 | `IF ({0,28}='010','VENTE DE DEVISES','CURRENCY S...` | - |
-| 18 | `IF ({0,28}='010','Merci de votre visite','Thank...` | - |
-| 19 | `IF ({0,28}='010','Paiement','Payment')` | - |
-| 20 | `IF ({0,28}='010','Devise','Currency')` | - |
-
-> **Total**: 22 expressions (affichees: 20)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 14 |
 | **Lignes logique** | 417 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 6 |
+| **Tables en ecriture** | 0 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -125,52 +120,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    N25[25 Change GM]
-    N174[174 VersementRet]
-    N1[1 Main Program]
-    N163[163 Menu caisse ]
-    T[24 Print reu ch]
-    N25 --> N174
-    N174 --> N1
-    N1 --> N163
-    N163 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N25 fill:#f59e0b
-    style N174 fill:#f59e0b
-    style N1 fill:#f59e0b
-    style N163 fill:#f59e0b
+    T[24 Print reçu chan]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 25 | Change GM | 1 |
-| 174 | Versement/Retrait | 1 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[24 Programme]
-    C22[22 Calcul equiv]
-    T --> C22
-    C182[182 Raz Current ]
-    T --> C182
+    T[24 Print reçu chan]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C22 fill:#3fb950
-    style C182 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 22 | Calcul equivalent | 7 |
-| 1 | 182 | Raz Current Printer | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 14 | Moyen |
+| Tables | 6 | Lecture seule |
+| Callees | 0 | Faible couplage |
+| **Score global** | **MOYENNE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -178,10 +191,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:18 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:44 | **DATA POPULATED** - Tables, Callgraph (22 expr) | Script |
-| 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 22:59 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

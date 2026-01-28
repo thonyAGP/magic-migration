@@ -1,8 +1,9 @@
-﻿# ADH IDE 243 - Histo ventes payantes
+﻿# ADH IDE 243 - Histo ventes payantes
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:12
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_239.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Histo ventes payantes |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Histo ventes payantes |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (28 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (22 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,96 +54,82 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 243 |
-| **Description** | Histo ventes payantes |
+| **IDE Position** | 243 |
+| **Fichier XML** | `Prg_239.xml` |
+| **Description** | Histo ventes payantes |
 | **Module** | ADH |
+| **Public Name** | DEVERSEMENT |
+| **Nombre taches** | 22 |
+| **Lignes logique** | 1528 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 23 | reseau_cloture___rec | `cafil001_dat` | R | 1x |
-| 23 | reseau_cloture___rec | `cafil001_dat` | **W** | 4x |
-| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
-| 34 | hebergement______heb | `cafil012_dat` | R | 3x |
-| 40 | comptable________cte | `cafil018_dat` | L | 3x |
-| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
-| 67 | tables___________tab | `cafil045_dat` | L | 1x |
-| 70 | date_comptable___dat | `cafil048_dat` | R | 1x |
-| 77 | articles_________art | `cafil055_dat` | L | 1x |
-| 79 | gratuites________gra | `cafil057_dat` | R | 1x |
-| 89 | moyen_paiement___mop | `cafil067_dat` | L | 3x |
-| 197 | articles_en_stock | `caisse_artstock` | L | 3x |
-| 263 | vente | `caisse_vente` | L | 3x |
-| 285 | email | `email` | R | 1x |
-| 400 | pv_cust_rentals | `pv_rentals_dat` | L | 2x |
-| 473 | comptage_caisse | `%club_user%_caisse_compcais` | L | 3x |
-| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | L | 3x |
-| 728 | arc_cc_total | `arc_cctotal` | L | 1x |
-| 804 | valeur_credit_bar_defaut | `valeur_credit_bar_defaut` | L | 3x |
-| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | L | 3x |
-| 899 | Boo_ResultsRechercheHoraire | `Boo_ResultsRechercheHoraire` | **W** | 2x |
-| 910 | classification_memory | `classification_memory` | L | 1x |
-| 911 | log_booker | `log_booker` | **W** | 1x |
-| 933 | taxe_add_vente | `taxe_add_vente` | L | 3x |
-| 933 | taxe_add_vente | `taxe_add_vente` | R | 3x |
-| 945 | Table_945 | - | L | 3x |
-| 945 | Table_945 | - | R | 1x |
-| 1069 | Table_1069 | - | L | 1x |
-### 2.3 Parametres d'entree
+| 23 | reseau_cloture___rec | cafil001_dat | READ/WRITE | Lecture+Ecriture |
+| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
+| 34 | hebergement______heb | cafil012_dat | READ | Lecture |
+| 40 | comptable________cte | cafil018_dat | LINK | Jointure |
+| 47 | compte_gm________cgm | cafil025_dat | WRITE | Ecriture |
+| 67 | tables___________tab | cafil045_dat | LINK | Jointure |
+| 70 | date_comptable___dat | cafil048_dat | READ | Lecture |
+| 77 | articles_________art | cafil055_dat | LINK | Jointure |
+| 79 | gratuites________gra | cafil057_dat | READ | Lecture |
+| 89 | moyen_paiement___mop | cafil067_dat | LINK | Jointure |
+| 197 | articles_en_stock | caisse_artstock | LINK | Jointure |
+| 263 | vente | caisse_vente | LINK | Jointure |
+| 285 | email | email | READ | Lecture |
+| 400 | pv_cust_rentals | pv_rentals_dat | LINK | Jointure |
+| 473 | comptage_caisse | %club_user%_caisse_compcais | LINK | Jointure |
+| 596 | tempo_ecran_police | %club_user%tmp_ecrpolice_dat | LINK | Jointure |
+| 728 | arc_cc_total | arc_cctotal | LINK | Jointure |
+| 804 | valeur_credit_bar_defaut | valeur_credit_bar_defaut | LINK | Jointure |
+| 847 | stat_lieu_vente_date | %club_user%_stat_lieu_vente_date | LINK | Jointure |
+| 899 | Boo_ResultsRechercheHoraire | Boo_ResultsRechercheHoraire | WRITE | Ecriture |
+| 910 | classification_memory | classification_memory | LINK | Jointure |
+| 911 | log_booker | log_booker | WRITE | Ecriture |
+| 933 | taxe_add_vente | taxe_add_vente | LINK/READ | Jointure+Lecture |
+| 945 | Table_945 |  | LINK/READ | Jointure+Lecture |
+| 1069 | Table_1069 |  | LINK | Jointure |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 28 tables accedees dont **4 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>22 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `MlsTrans('Liste des ventes du compte')` | - |
-| 2 | `{32768,2}` | - |
-| 3 | `Date()` | - |
-| 4 | `DVal({0,16},'YYYYMMDD')` | - |
-| 5 | `TVal({0,17},'HHMMSS')` | - |
-| 6 | `Trim({0,29})&' '&Trim({0,28})` | - |
-| 7 | `IF ({0,3}='','N15.2Z',{0,3})` | - |
-| 8 | `{0,30}` | - |
-| 9 | `{0,33}=0 AND {0,34}<>'A'` | - |
-| 10 | `IF({0,33}<>0 OR {0,34}='A',36,110)` | - |
-| 11 | `IF({0,34}='A',MlsTrans ('Annulation'),IF({0,33}...` | - |
-| 12 | `{0,54}<>0 OR {0,61}<>0` | - |
-| 13 | `Trim({0,40})<>''` | - |
-| 14 | `{0,41}=6` | - |
-| 15 | `Trim({0,40})=''` | - |
-| 16 | `IF({0,21}='OD','OD','')` | - |
-| 17 | `{0,15}` | - |
-| 18 | `{0,21}` | - |
-| 19 | `{0,43}` | - |
-| 20 | `{0,65}>1` | - |
-
-> **Total**: 72 expressions (affichees: 20)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 22 |
 | **Lignes logique** | 1528 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 28 |
+| **Tables en ecriture** | 4 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -147,77 +140,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    N242[242 Menu Choix S]
-    N0[0 Transaction ]
-    N0[0 Transaction ]
-    N1[1 Main Program]
-    N163[163 Menu caisse ]
-    T[243 Histo ventes]
-    N242 --> N0
-    N0 --> N0
-    N0 --> N1
-    N1 --> N163
-    N163 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N242 fill:#f59e0b
-    style N0 fill:#f59e0b
-    style N0 fill:#f59e0b
-    style N1 fill:#f59e0b
-    style N163 fill:#f59e0b
+    T[243 Histo ventes pa]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 0 | Transaction Nouv vente PMS-584 | 1 |
-| 0 | Transaction Nouv vente PMS-710 | 1 |
-| 0 | Transaction Nouv vente PMS-721 | 1 |
-| 242 | Menu Choix Saisie/Annul vente | 1 |
-### 3.3 Callees
+| - | ECF partage - appels cross-projet | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[243 Programme]
-    C233[233 Appel Print ]
-    T --> C233
-    C235[235  Print ticke]
-    T --> C235
-    C236[236  Print ticke]
-    T --> C236
-    C179[179 Get Printer]
-    T --> C179
-    C181[181 Set Listing ]
-    T --> C181
-    C182[182 Raz Current ]
-    T --> C182
-    C247[247 Deversement ]
-    T --> C247
+    T[243 Histo ventes pa]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C233 fill:#3fb950
-    style C235 fill:#3fb950
-    style C236 fill:#3fb950
-    style C179 fill:#3fb950
-    style C181 fill:#3fb950
-    style C182 fill:#3fb950
-    style C247 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 233 | Appel Print ticket vente PMS28 | 2 |
-| 1 | 235 |  Print ticket vente LEX | 2 |
-| 1 | 236 |  Print ticket vente PMS-584 | 2 |
-| 1 | 179 | Get Printer | 1 |
-| 1 | 181 | Set Listing Number | 1 |
-| 1 | 182 | Raz Current Printer | 1 |
-| 1 | 247 | Deversement Transaction | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| ADH.ecf | 243 | DEVERSEMENT | Sessions_Reprises |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Defini: DEVERSEMENT |
+| ECF partage | OUI - ADH.ecf |
+| **Conclusion** | **NON ORPHELIN** - Composant ECF partage |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 22 | Complexe |
+| Tables | 28 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **HAUTE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -225,10 +211,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:24 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:50 | **DATA POPULATED** - Tables, Callgraph (72 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:12 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

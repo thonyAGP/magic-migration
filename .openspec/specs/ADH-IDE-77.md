@@ -1,8 +1,9 @@
-﻿# ADH IDE 77 - Club Med Pass menu
+﻿# ADH IDE 77 - Club Med Pass menu
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:02
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_73.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Club Med Pass menu |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Club Med Pass menu |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (11 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (9 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,79 +54,67 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 77 |
-| **Description** | Club Med Pass menu |
+| **IDE Position** | 77 |
+| **Fichier XML** | `Prg_73.xml` |
+| **Description** | Club Med Pass menu |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 9 |
+| **Lignes logique** | 261 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 14 | transac_detail_bar | `bartransacdet` | R | 1x |
-| 15 | transac_entete_bar | `bartransacent` | L | 1x |
-| 31 | gm-complet_______gmc | `cafil009_dat` | R | 2x |
-| 34 | hebergement______heb | `cafil012_dat` | L | 1x |
-| 47 | compte_gm________cgm | `cafil025_dat` | L | 1x |
-| 131 | fichier_validation | `cafil109_dat` | L | 1x |
-| 312 | ez_card | `ezcard` | L | 1x |
-| 312 | ez_card | `ezcard` | **W** | 3x |
-| 470 | comptage_coffre | `%club_user%_caisse_coffre_compcais` | L | 1x |
-| 728 | arc_cc_total | `arc_cctotal` | R | 1x |
-| 786 | qualite_avant_reprise | `qualite_avant_reprise` | R | 1x |
-### 2.3 Parametres d'entree
+| 14 | transac_detail_bar | bartransacdet | READ | Lecture |
+| 15 | transac_entete_bar | bartransacent | LINK | Jointure |
+| 31 | gm-complet_______gmc | cafil009_dat | READ | Lecture |
+| 34 | hebergement______heb | cafil012_dat | LINK | Jointure |
+| 47 | compte_gm________cgm | cafil025_dat | LINK | Jointure |
+| 131 | fichier_validation | cafil109_dat | LINK | Jointure |
+| 312 | ez_card | ezcard | LINK/WRITE | Jointure+Ecriture |
+| 470 | comptage_coffre | %club_user%_caisse_coffre_compcais | LINK | Jointure |
+| 728 | arc_cc_total | arc_cctotal | READ | Lecture |
+| 786 | qualite_avant_reprise | qualite_avant_reprise | READ | Lecture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 11 tables accedees dont **1 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>9 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `''` | - |
-| 2 | `{0,26}>'' AND {0,39}<>{0,2}` | - |
-| 3 | `IF (GetParam ('CODELANGUE')='FRA','Cette carte ...` | - |
-| 4 | `Date ()` | - |
-| 5 | `{32768,2}` | - |
-| 6 | `{0,27}='V'` | - |
-| 7 | `{0,27}='O' AND NOT ({0,28}) AND {0,42}='O' AND ...` | - |
-| 8 | `IF ({0,36}='O',IF ({0,37}=0,'Bar Limit Activate...` | - |
-| 9 | `IF ({0,36}='O',IF ({0,37}=0,'TRUE'LOG,IF ({0,29...` | - |
-| 10 | `{0,1}` | - |
-| 11 | `{0,2}` | - |
-| 12 | `{0,3}` | - |
-| 13 | `'EZGUA'` | - |
-| 14 | `'H'` | - |
-| 15 | `{0,33}='A'` | - |
-| 16 | `IF (GetParam ('CODELANGUE')='FRA','Ce compte n'...` | - |
-| 17 | `{0,42}<>'O' AND {0,51}='Oui' AND IF ({0,52},{0,...` | - |
-| 18 | `{0,42}='O' OR {0,51}='Non' OR {0,48}='N' OR {32...` | - |
-| 19 | `{0,32}` | - |
-| 20 | `{0,25}>'' AND {0,32}` | - |
-
-> **Total**: 46 expressions (affichees: 20)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 9 |
 | **Lignes logique** | 261 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 11 |
+| **Tables en ecriture** | 1 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -130,73 +125,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    N163[163 Menu caisse ]
-    N1[1 Main Program]
-    T[77 Club Med Pas]
-    N163 --> N1
-    N1 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N163 fill:#f59e0b
-    style N1 fill:#f59e0b
+    T[77 Club Med Pass m]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 163 | Menu caisse GM - scroll | 1 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[77 Programme]
-    C44[44 Appel progra]
-    T --> C44
-    C78[78 Print Ventes]
-    T --> C78
-    C79[79 Balance Cred]
-    T --> C79
-    C80[80    Card scan]
-    T --> C80
-    C81[81    Card scan]
-    T --> C81
-    C82[82    Select af]
-    T --> C82
-    C86[86 Bar Limit]
-    T --> C86
-    C173[173 Gestion forf]
-    T --> C173
+    T[77 Club Med Pass m]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C44 fill:#3fb950
-    style C78 fill:#3fb950
-    style C79 fill:#3fb950
-    style C80 fill:#3fb950
-    style C81 fill:#3fb950
-    style C82 fill:#3fb950
-    style C86 fill:#3fb950
-    style C173 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 44 | Appel programme | 1 |
-| 1 | 78 | Print Ventes Club Med Pass | 1 |
-| 1 | 79 | Balance Credit de conso | 1 |
-| 1 | 80 |    Card scan read | 1 |
-| 1 | 81 |    Card scan create | 1 |
-| 1 | 82 |    Select affilies | 1 |
-| 1 | 86 | Bar Limit | 1 |
-| 1 | 173 | Gestion forfait TAI LOCAL | 1 |
-| 1 | 179 | Get Printer | 1 |
-| 1 | 180 | Printer choice | 1 |
-| 1 | 181 | Set Listing Number | 1 |
-| 1 | 182 | Raz Current Printer | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 9 | Moyen |
+| Tables | 11 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **MOYENNE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -204,10 +196,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:19 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (46 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:02 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

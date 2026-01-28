@@ -1,8 +1,9 @@
-﻿# ADH IDE 71 - Print extrait compte /Date
+﻿# ADH IDE 71 - Print extrait compte /Date
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:02
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_67.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Print extrait compte /Date |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Print extrait compte /Date |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (11 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (24 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,75 +54,65 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 71 |
-| **Description** | Print extrait compte /Date |
+| **IDE Position** | 71 |
+| **Fichier XML** | `Prg_67.xml` |
+| **Description** | Print extrait compte /Date |
 | **Module** | ADH |
+| **Public Name** | EXTRAIT_DATE |
+| **Nombre taches** | 24 |
+| **Lignes logique** | 780 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 7x |
-| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
-| 31 | gm-complet_______gmc | `cafil009_dat` | L | 5x |
-| 31 | gm-complet_______gmc | `cafil009_dat` | R | 5x |
-| 34 | hebergement______heb | `cafil012_dat` | L | 1x |
-| 40 | comptable________cte | `cafil018_dat` | L | 5x |
-| 40 | comptable________cte | `cafil018_dat` | R | 7x |
-| 400 | pv_cust_rentals | `pv_rentals_dat` | L | 1x |
-| 413 | pv_tva | `pv_tva_dat` | L | 1x |
-| 867 | log_maj_tpe | `log_maj_tpe` | **W** | 5x |
-| 928 | type_lit | `type_lit` | L | 2x |
-### 2.3 Parametres d'entree
+| 30 | gm-recherche_____gmr | cafil008_dat | LINK/READ | Jointure+Lecture |
+| 31 | gm-complet_______gmc | cafil009_dat | LINK/READ | Jointure+Lecture |
+| 34 | hebergement______heb | cafil012_dat | LINK | Jointure |
+| 40 | comptable________cte | cafil018_dat | LINK/READ | Jointure+Lecture |
+| 400 | pv_cust_rentals | pv_rentals_dat | LINK | Jointure |
+| 413 | pv_tva | pv_tva_dat | LINK | Jointure |
+| 867 | log_maj_tpe | log_maj_tpe | WRITE | Ecriture |
+| 928 | type_lit | type_lit | LINK | Jointure |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 11 tables accedees dont **1 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>24 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `GetParam ('LISTINGNUMPRINTERCHOICE')` | - |
-| 2 | `IsComponent () AND NOT({0,14})` | - |
-| 3 | `SetCrsr (1)` | - |
-| 4 | `SetCrsr (2)` | - |
-| 5 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
-| 6 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
-| 7 | `GetParam ('CURRENTPRINTERNUM')=6` | - |
-| 8 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
-| 9 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
-| 10 | `Left ({0,4},Len (RTrim ({0,4}))-1)` | - |
-| 11 | `DbDel ('{867,4}'DSOURCE,'')` | - |
-| 12 | `NOT {0,9}` | - |
-| 13 | `INIPut('EmbedFonts=N','FALSE'LOG)` | - |
-| 14 | `'Extrait de compte / Account statement'` | - |
-| 15 | `'Par Date / By Date'` | - |
-| 16 | `'TRUE'LOG` | - |
-
-> **Total**: 16 expressions (affichees: 16)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 24 |
 | **Lignes logique** | 780 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 11 |
+| **Tables en ecriture** | 1 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -126,69 +123,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    N163[163 Menu caisse ]
-    N55[55 Easy Check O]
-    N283[283 Easy Check O]
-    N1[1 Main Program]
-    N66[66 Lancement So]
-    T[71 Print extrai]
-    N163 --> N55
-    N55 --> N283
-    N283 --> N1
-    N1 --> N66
-    N66 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N163 fill:#f59e0b
-    style N55 fill:#f59e0b
-    style N283 fill:#f59e0b
-    style N1 fill:#f59e0b
-    style N66 fill:#f59e0b
+    T[71 Print extrait c]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 69 | Extrait de compte | 2 |
-| 53 | Extrait Easy Check Out à J+1 | 1 |
-| 64 | Solde Easy Check Out | 1 |
-| 287 | Solde Easy Check Out | 1 |
-### 3.3 Callees
+| - | ECF partage - appels cross-projet | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[71 Programme]
-    C75[75 Creation Pie]
-    T --> C75
-    C21[21 Recupere dev]
-    T --> C21
-    C179[179 Get Printer]
-    T --> C179
-    C181[181 Set Listing ]
-    T --> C181
-    C182[182 Raz Current ]
-    T --> C182
+    T[71 Print extrait c]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C75 fill:#3fb950
-    style C21 fill:#3fb950
-    style C179 fill:#3fb950
-    style C181 fill:#3fb950
-    style C182 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 75 | Creation Pied Facture | 5 |
-| 1 | 21 | Recupere devise local | 1 |
-| 1 | 179 | Get Printer | 1 |
-| 1 | 181 | Set Listing Number | 1 |
-| 1 | 182 | Raz Current Printer | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| ADH.ecf | 71 | EXTRAIT_DATE | Sessions_Reprises |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Defini: EXTRAIT_DATE |
+| ECF partage | OUI - ADH.ecf |
+| **Conclusion** | **NON ORPHELIN** - Composant ECF partage |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 24 | Complexe |
+| Tables | 11 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **HAUTE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -196,10 +194,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:19 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (16 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:02 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

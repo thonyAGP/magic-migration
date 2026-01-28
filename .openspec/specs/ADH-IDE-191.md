@@ -1,8 +1,9 @@
-﻿# ADH IDE 191 - Annulation solde
+﻿# ADH IDE 191 - Annulation solde
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:09
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_187.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Annulation solde |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Annulation solde |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (19 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (15 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,87 +54,72 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 191 |
-| **Description** | Annulation solde |
+| **IDE Position** | 191 |
+| **Fichier XML** | `Prg_187.xml` |
+| **Description** | Annulation solde |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 15 |
+| **Lignes logique** | 805 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 1x |
-| 31 | gm-complet_______gmc | `cafil009_dat` | R | 1x |
-| 40 | comptable________cte | `cafil018_dat` | L | 2x |
-| 40 | comptable________cte | `cafil018_dat` | R | 2x |
-| 44 | change___________chg | `cafil022_dat` | L | 1x |
-| 44 | change___________chg | `cafil022_dat` | **W** | 2x |
-| 47 | compte_gm________cgm | `cafil025_dat` | L | 2x |
-| 68 | compteurs________cpt | `cafil046_dat` | L | 4x |
-| 70 | date_comptable___dat | `cafil048_dat` | L | 1x |
-| 89 | moyen_paiement___mop | `cafil067_dat` | L | 5x |
-| 140 | moyen_paiement___mop | `cafil118_dat` | L | 2x |
-| 268 | cc_total_par_type | `ccpartyp` | **W** | 2x |
-| 271 | cc_total | `cctotal` | L | 2x |
-| 272 | cc_type_detail | `cctypdet` | L | 2x |
-| 517 | pv_palmtemp | `%club_user%_pv_palmtmp_dat` | L | 2x |
-| 517 | pv_palmtemp | `%club_user%_pv_palmtmp_dat` | R | 2x |
-| 582 | tempo_comptage_nation | `%club_user%tempocomptagen_dat` | L | 2x |
-| 582 | tempo_comptage_nation | `%club_user%tempocomptagen_dat` | **W** | 2x |
-| 945 | Table_945 | - | **W** | 4x |
-### 2.3 Parametres d'entree
+| 30 | gm-recherche_____gmr | cafil008_dat | LINK | Jointure |
+| 31 | gm-complet_______gmc | cafil009_dat | READ | Lecture |
+| 40 | comptable________cte | cafil018_dat | LINK/READ | Jointure+Lecture |
+| 44 | change___________chg | cafil022_dat | LINK/WRITE | Jointure+Ecriture |
+| 47 | compte_gm________cgm | cafil025_dat | LINK | Jointure |
+| 68 | compteurs________cpt | cafil046_dat | LINK | Jointure |
+| 70 | date_comptable___dat | cafil048_dat | LINK | Jointure |
+| 89 | moyen_paiement___mop | cafil067_dat | LINK | Jointure |
+| 140 | moyen_paiement___mop | cafil118_dat | LINK | Jointure |
+| 268 | cc_total_par_type | ccpartyp | WRITE | Ecriture |
+| 271 | cc_total | cctotal | LINK | Jointure |
+| 272 | cc_type_detail | cctypdet | LINK | Jointure |
+| 517 | pv_palmtemp | %club_user%_pv_palmtmp_dat | LINK/READ | Jointure+Lecture |
+| 582 | tempo_comptage_nation | %club_user%tempocomptagen_dat | LINK/WRITE | Jointure+Ecriture |
+| 945 | Table_945 |  | WRITE | Ecriture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 19 tables accedees dont **4 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>15 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `{0,1}` | - |
-| 2 | `{0,2}` | - |
-| 3 | `{0,4}` | - |
-| 4 | `Date ()` | - |
-| 5 | `Time ()` | - |
-| 6 | `DbDel ('{517,4}'DSOURCE,'')` | - |
-| 7 | `{0,19}` | - |
-| 8 | `{32768,23} AND {32768,24} AND {0,27}<>0 AND {0,...` | - |
-| 9 | `'TRUE'LOG` | - |
-| 10 | `{32768,23} AND {32768,24} AND {0,27}<>0 AND {0,...` | - |
-| 11 | `MlsTrans('Erreur transaction TPE : ')&Trim({0,33})` | - |
-| 12 | `NOT({0,34})` | - |
-| 13 | `NOT ({0,20})` | - |
-| 14 | `41` | - |
-| 15 | `'FIN'` | - |
-| 16 | `'O'` | - |
-| 17 | `IF ({0,10}='U','N','O')` | - |
-| 18 | `DbDel ('{582,4}'DSOURCE,'')` | - |
-| 19 | `NOT({32768,51})` | - |
-| 20 | `{32768,51}` | - |
-
-> **Total**: 25 expressions (affichees: 20)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 15 |
 | **Lignes logique** | 805 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 19 |
+| **Tables en ecriture** | 4 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -138,60 +130,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    N190[190 Menu solde d]
-    N163[163 Menu caisse ]
-    N1[1 Main Program]
-    T[191 Annulation s]
-    N190 --> N163
-    N163 --> N1
-    N1 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N190 fill:#f59e0b
-    style N163 fill:#f59e0b
-    style N1 fill:#f59e0b
+    T[191 Annulation sold]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 190 | Menu solde d'un compte | 1 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[191 Programme]
-    C43[43 Recuperation]
-    T --> C43
-    C179[179 Get Printer]
-    T --> C179
-    C181[181 Set Listing ]
-    T --> C181
-    C189[189 Print solde ]
-    T --> C189
-    C195[195 Print solde ]
-    T --> C195
+    T[191 Annulation sold]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C43 fill:#3fb950
-    style C179 fill:#3fb950
-    style C181 fill:#3fb950
-    style C189 fill:#3fb950
-    style C195 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 43 | Recuperation du titre | 1 |
-| 1 | 179 | Get Printer | 1 |
-| 1 | 181 | Set Listing Number | 1 |
-| 1 | 189 | Print solde compte | 1 |
-| 1 | 195 | Print solde compte TIK V1 | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 15 | Moyen |
+| Tables | 19 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **HAUTE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -199,10 +201,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:22 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:48 | **DATA POPULATED** - Tables, Callgraph (25 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:09 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

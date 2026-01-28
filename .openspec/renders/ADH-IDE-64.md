@@ -1,8 +1,9 @@
-﻿# ADH IDE 64 - Solde Easy Check Out
+﻿# ADH IDE 64 - Solde Easy Check Out
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:01
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_60.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Solde Easy Check Out |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Solde Easy Check Out |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (27 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (26 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,95 +54,79 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 64 |
-| **Description** | Solde Easy Check Out |
+| **IDE Position** | 64 |
+| **Fichier XML** | `Prg_60.xml` |
+| **Description** | Solde Easy Check Out |
 | **Module** | ADH |
+| **Public Name** | SOLDE_EASY_CHECK_OUT |
+| **Nombre taches** | 26 |
+| **Lignes logique** | 626 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 1x |
-| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
-| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
-| 39 | depot_garantie___dga | `cafil017_dat` | L | 2x |
-| 40 | comptable________cte | `cafil018_dat` | R | 1x |
-| 40 | comptable________cte | `cafil018_dat` | **W** | 2x |
-| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
-| 48 | lignes_de_solde__sld | `cafil026_dat` | **W** | 1x |
-| 53 | ligne_telephone__lgn | `cafil031_dat` | **W** | 1x |
-| 66 | imputations______imp | `cafil044_dat` | L | 2x |
-| 68 | compteurs________cpt | `cafil046_dat` | **W** | 4x |
-| 69 | initialisation___ini | `cafil047_dat` | L | 1x |
-| 70 | date_comptable___dat | `cafil048_dat` | L | 1x |
-| 75 | commande_autocom_cot | `cafil053_dat` | **W** | 1x |
-| 78 | param__telephone_tel | `cafil056_dat` | L | 1x |
-| 78 | param__telephone_tel | `cafil056_dat` | R | 1x |
-| 80 | codes_autocom____aut | `cafil058_dat` | L | 1x |
-| 80 | codes_autocom____aut | `cafil058_dat` | **W** | 1x |
-| 87 | sda_telephone____sda | `cafil065_dat` | L | 2x |
-| 87 | sda_telephone____sda | `cafil065_dat` | **W** | 2x |
-| 91 | garantie_________gar | `cafil069_dat` | L | 1x |
-| 136 | fichier_echanges | `cafil114_dat` | **W** | 2x |
-| 151 | nb_code__poste | `cafil129_dat` | **W** | 2x |
-| 285 | email | `email` | L | 1x |
-| 312 | ez_card | `ezcard` | **W** | 1x |
-| 911 | log_booker | `log_booker` | **W** | 1x |
-| 934 | selection enregistrement diver | `selection_enregistrement_div` | **W** | 1x |
-### 2.3 Parametres d'entree
+| 30 | gm-recherche_____gmr | cafil008_dat | LINK/READ | Jointure+Lecture |
+| 31 | gm-complet_______gmc | cafil009_dat | LINK | Jointure |
+| 39 | depot_garantie___dga | cafil017_dat | LINK | Jointure |
+| 40 | comptable________cte | cafil018_dat | READ/WRITE | Lecture+Ecriture |
+| 47 | compte_gm________cgm | cafil025_dat | WRITE | Ecriture |
+| 48 | lignes_de_solde__sld | cafil026_dat | WRITE | Ecriture |
+| 53 | ligne_telephone__lgn | cafil031_dat | WRITE | Ecriture |
+| 66 | imputations______imp | cafil044_dat | LINK | Jointure |
+| 68 | compteurs________cpt | cafil046_dat | WRITE | Ecriture |
+| 69 | initialisation___ini | cafil047_dat | LINK | Jointure |
+| 70 | date_comptable___dat | cafil048_dat | LINK | Jointure |
+| 75 | commande_autocom_cot | cafil053_dat | WRITE | Ecriture |
+| 78 | param__telephone_tel | cafil056_dat | LINK/READ | Jointure+Lecture |
+| 80 | codes_autocom____aut | cafil058_dat | LINK/WRITE | Jointure+Ecriture |
+| 87 | sda_telephone____sda | cafil065_dat | LINK/WRITE | Jointure+Ecriture |
+| 91 | garantie_________gar | cafil069_dat | LINK | Jointure |
+| 136 | fichier_echanges | cafil114_dat | WRITE | Ecriture |
+| 151 | nb_code__poste | cafil129_dat | WRITE | Ecriture |
+| 285 | email | email | LINK | Jointure |
+| 312 | ez_card | ezcard | WRITE | Ecriture |
+| 911 | log_booker | log_booker | WRITE | Ecriture |
+| 934 | selection enregistrement diver | selection_enregistrement_div | WRITE | Ecriture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 27 tables accedees dont **13 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>26 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `{0,6}` | - |
-| 2 | `{0,7}` | - |
-| 3 | `{0,8}` | - |
-| 4 | `{0,40}` | - |
-| 5 | `Trim({0,11})&Trim({0,12})<>''` | - |
-| 6 | `'00/00/0000'DATE` | - |
-| 7 | `{0,1}` | - |
-| 8 | `({32768,43} OR {32768,94}) AND NOT({0,5})` | - |
-| 9 | `{0,5}` | - |
-| 10 | `({32768,43} OR {32768,94}) AND {0,56}<0` | - |
-| 11 | `{32768,23}` | - |
-| 12 | `{32768,94} AND NOT({32768,23})` | - |
-| 13 | `'S'` | - |
-| 14 | `IF(Trim({0,12})<>'','A'&Trim({0,12}),{0,11})` | - |
-| 15 | `Date()` | - |
-| 16 | `Time()` | - |
-| 17 | `Trim({0,36})<>'' AND Trim({0,57})<>''` | - |
-| 18 | `'TRUE'LOG` | - |
-| 19 | `'I'` | - |
-| 20 | `{0,3}` | - |
-
-> **Total**: 43 expressions (affichees: 20)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 26 |
 | **Lignes logique** | 626 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 27 |
+| **Tables en ecriture** | 13 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -146,64 +137,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    N55[55 Easy Check O]
-    N66[66 Lancement So]
-    N283[283 Easy Check O]
-    T[64 Solde Easy C]
-    M --> N55
-    N55 --> N66
-    N66 --> N283
-    N283 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N55 fill:#f59e0b
-    style N66 fill:#f59e0b
-    style N283 fill:#f59e0b
+    T[64 Solde Easy Chec]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 55 | Easy Check-Out === V2.00 | 1 |
-| 66 | Lancement Solde ECO | 1 |
-| 283 | Easy Check-Out === V2.00 | 1 |
-### 3.3 Callees
+| - | ECF partage - appels cross-projet | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[64 Programme]
-    C54[54 FacturesChec]
-    T --> C54
-    C65[65 Edition  Mai]
-    T --> C65
-    C71[71 Print extrai]
-    T --> C71
-    C179[179 Get Printer]
-    T --> C179
-    C181[181 Set Listing ]
-    T --> C181
+    T[64 Solde Easy Chec]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C54 fill:#3fb950
-    style C65 fill:#3fb950
-    style C71 fill:#3fb950
-    style C179 fill:#3fb950
-    style C181 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 54 | Factures_Check_Out | 1 |
-| 1 | 65 | Edition & Mail Easy Check Out | 1 |
-| 1 | 71 | Print extrait compte /Date | 1 |
-| 1 | 179 | Get Printer | 1 |
-| 1 | 181 | Set Listing Number | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| ADH.ecf | 64 | SOLDE_EASY_CHECK_OUT | Sessions_Reprises |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Defini: SOLDE_EASY_CHECK_OUT |
+| ECF partage | OUI - ADH.ecf |
+| **Conclusion** | **NON ORPHELIN** - Composant ECF partage |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 26 | Complexe |
+| Tables | 27 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **HAUTE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -211,10 +208,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:19 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:45 | **DATA POPULATED** - Tables, Callgraph (43 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:01 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

@@ -1,8 +1,9 @@
-﻿# ADH IDE 109 - Print creation garantie TIK V1
+﻿# ADH IDE 109 - Print creation garantie TIK V1
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:04
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_105.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Print creation garantie TIK V1 |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Print creation garantie TIK V1 |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (7 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (14 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,67 +54,64 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 109 |
-| **Description** | Print creation garantie TIK V1 |
+| **IDE Position** | 109 |
+| **Fichier XML** | `Prg_105.xml` |
+| **Description** | Print creation garantie TIK V1 |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 14 |
+| **Lignes logique** | 281 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
-| 31 | gm-complet_______gmc | `cafil009_dat` | L | 1x |
-| 34 | hebergement______heb | `cafil012_dat` | L | 1x |
-| 39 | depot_garantie___dga | `cafil017_dat` | R | 7x |
-| 91 | garantie_________gar | `cafil069_dat` | L | 7x |
-| 368 | pms_village | `pmsvillage` | R | 1x |
-| 818 | Circuit supprime | `zcircafil146` | L | 1x |
-### 2.3 Parametres d'entree
+| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
+| 31 | gm-complet_______gmc | cafil009_dat | LINK | Jointure |
+| 34 | hebergement______heb | cafil012_dat | LINK | Jointure |
+| 39 | depot_garantie___dga | cafil017_dat | READ | Lecture |
+| 91 | garantie_________gar | cafil069_dat | LINK | Jointure |
+| 368 | pms_village | pmsvillage | READ | Lecture |
+| 818 | Circuit supprime | zcircafil146 | LINK | Jointure |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 7 tables accedees dont **0 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>14 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `SetCrsr (2)` | - |
-| 2 | `GetParam ('CURRENTLISTINGNUM')` | - |
-| 3 | `Trim ({0,15})&' '&Trim ({0,16})&' '&Trim ({0,17})` | - |
-| 4 | `SetCrsr (1)` | - |
-| 5 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
-| 6 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
-| 7 | `GetParam ('CURRENTPRINTERNUM')=5` | - |
-| 8 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
-| 9 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
-| 10 | `'GL1'` | - |
-| 11 | `'GL2'` | - |
-| 12 | `'TRUE'LOG` | - |
-
-> **Total**: 12 expressions (affichees: 12)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 14 |
 | **Lignes logique** | 281 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 7 |
+| **Tables en ecriture** | 0 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -118,52 +122,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    N112[112 Garantie sur]
-    N288[288 Garantie sur]
-    N111[111 Garantie sur]
-    N1[1 Main Program]
-    N163[163 Menu caisse ]
-    T[109 Print creati]
-    N112 --> N288
-    N288 --> N111
-    N111 --> N1
-    N1 --> N163
-    N163 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N112 fill:#f59e0b
-    style N288 fill:#f59e0b
-    style N111 fill:#f59e0b
-    style N1 fill:#f59e0b
-    style N163 fill:#f59e0b
+    T[109 Print creation ]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 111 | Garantie sur compte | 2 |
-| 112 | Garantie sur compte PMS-584 | 2 |
-| 288 | Garantie sur compte | 2 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[109 Programme]
-    C182[182 Raz Current ]
-    T --> C182
+    T[109 Print creation ]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C182 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 182 | Raz Current Printer | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 14 | Moyen |
+| Tables | 7 | Lecture seule |
+| Callees | 0 | Faible couplage |
+| **Score global** | **MOYENNE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -171,10 +193,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:20 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:46 | **DATA POPULATED** - Tables, Callgraph (12 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:04 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

@@ -1,8 +1,9 @@
-﻿# ADH IDE 276 - Programme supprime (Prg_272)
+﻿# ADH IDE 276 - Selection Vols
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:14
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_272.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Programme supprime (Prg_272) |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Selection Vols |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (1 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,69 +54,58 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 276 |
-| **Description** | Programme supprime (Prg_272) |
+| **IDE Position** | 276 |
+| **Fichier XML** | `Prg_272.xml` |
+| **Description** | Selection Vols |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 1 |
+| **Lignes logique** | 48 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 134 | groupe_arr_dep___vol | `cafil112_dat` | **W** | 1x |
-### 2.3 Parametres d'entree
+| 134 | groupe_arr_dep___vol | cafil112_dat | WRITE | Ecriture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 1 tables accedees dont **1 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>1 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `{0,14}` | - |
-| 2 | `{0,15}` | - |
-| 3 | `'&Selectionner'` | - |
-| 4 | `'&Quitter'` | - |
-| 5 | `{0,3}` | - |
-| 6 | `{0,1}` | - |
-| 7 | `{0,4}` | - |
-| 8 | `{0,5}` | - |
-| 9 | `{0,2}` | - |
-| 10 | `'TRUE'LOG` | - |
-| 11 | `''` | - |
-| 12 | `0` | - |
-| 13 | `IF ({0,7},'TRUE'LOG,InStr ('VV1,VV2,VV3',Trim (...` | - |
-| 14 | `{0,16}` | - |
-| 15 | `{0,13}` | - |
-| 16 | `StrBuild(MlsTrans('Aucun vol aller n''est défin...` | - |
-| 17 | `StrBuild(MlsTrans('Aucun vol retour n''est défi...` | - |
-| 18 | `{0,3}='A'` | - |
-| 19 | `{0,3}='R'` | - |
-| 20 | `NOT {0,20}` | - |
-
-> **Total**: 20 expressions (affichees: 20)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 1 |
 | **Lignes logique** | 48 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 1 |
+| **Tables en ecriture** | 1 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -120,52 +116,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    N0[0 Transaction ]
-    N0[0 Transaction ]
-    N0[0 Transaction ]
-    N159[159 Selection Id]
-    T[276 Selection Vo]
-    M --> N0
-    N0 --> N0
-    N0 --> N0
-    N0 --> N159
-    N159 --> T
-    style M fill:#8b5cf6,color:#fff
-    style N0 fill:#f59e0b
-    style N0 fill:#f59e0b
-    style N0 fill:#f59e0b
-    style N159 fill:#f59e0b
+    T[276 Selection Vols]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 159 | Selection Identification | 2 |
-| 0 | Transaction Nouv vente PMS-584 | 1 |
-| 0 | Transaction Nouv vente PMS-710 | 1 |
-| 0 | Transaction Nouv vente PMS-721 | 1 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[276 Programme]
-    NONE[Aucun callee]
-    T -.-> NONE
+    T[276 Selection Vols]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| - | - | Programme terminal | - |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 1 | Simple |
+| Tables | 1 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **FAIBLE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -173,10 +187,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:25 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (20 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:14 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

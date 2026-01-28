@@ -1,8 +1,9 @@
-﻿# ADH IDE 307 - Programme supprime (Prg_304)
+﻿# ADH IDE 307 - Saisie transaction 154  N.U
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:16
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_303.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Programme supprime (Prg_304) |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Saisie transaction 154  N.U |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (35 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (34 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,103 +54,83 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 307 |
-| **Description** | Programme supprime (Prg_304) |
+| **IDE Position** | 307 |
+| **Fichier XML** | `Prg_303.xml` |
+| **Description** | Saisie transaction 154  N.U |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 34 |
+| **Lignes logique** | 1224 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 23 | reseau_cloture___rec | `cafil001_dat` | R | 1x |
-| 23 | reseau_cloture___rec | `cafil001_dat` | **W** | 2x |
-| 26 | comptes_speciaux_spc | `cafil004_dat` | L | 1x |
-| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 1x |
-| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
-| 32 | prestations | `cafil010_dat` | R | 1x |
-| 32 | prestations | `cafil010_dat` | **W** | 2x |
-| 34 | hebergement______heb | `cafil012_dat` | L | 1x |
-| 39 | depot_garantie___dga | `cafil017_dat` | R | 1x |
-| 46 | mvt_prestation___mpr | `cafil024_dat` | L | 1x |
-| 46 | mvt_prestation___mpr | `cafil024_dat` | **W** | 1x |
-| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
-| 50 | moyens_reglement_mor | `cafil028_dat` | R | 3x |
-| 67 | tables___________tab | `cafil045_dat` | L | 1x |
-| 68 | compteurs________cpt | `cafil046_dat` | **W** | 1x |
-| 70 | date_comptable___dat | `cafil048_dat` | R | 1x |
-| 77 | articles_________art | `cafil055_dat` | L | 2x |
-| 77 | articles_________art | `cafil055_dat` | R | 3x |
-| 79 | gratuites________gra | `cafil057_dat` | R | 1x |
-| 89 | moyen_paiement___mop | `cafil067_dat` | L | 5x |
-| 89 | moyen_paiement___mop | `cafil067_dat` | R | 4x |
-| 96 | table_prestation_pre | `cafil074_dat` | L | 1x |
-| 109 | table_utilisateurs | `cafil087_dat` | R | 1x |
-| 139 | moyens_reglement_mor | `cafil117_dat` | R | 1x |
-| 140 | moyen_paiement___mop | `cafil118_dat` | L | 1x |
-| 197 | articles_en_stock | `caisse_artstock` | L | 1x |
-| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | L | 5x |
-| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | R | 1x |
-| 596 | tempo_ecran_police | `%club_user%tmp_ecrpolice_dat` | **W** | 2x |
-| 697 | droits_applications | `droits` | L | 1x |
-| 728 | arc_cc_total | `arc_cctotal` | L | 1x |
-| 737 | pv_package_detail | `pv_packdetail_dat` | L | 1x |
-| 801 | moyens_reglement_complem | `moyens_reglement_complem` | L | 1x |
-| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | L | 10x |
-| 847 | stat_lieu_vente_date | `%club_user%_stat_lieu_vente_date` | **W** | 2x |
-### 2.3 Parametres d'entree
+| 23 | reseau_cloture___rec | cafil001_dat | READ/WRITE | Lecture+Ecriture |
+| 26 | comptes_speciaux_spc | cafil004_dat | LINK | Jointure |
+| 30 | gm-recherche_____gmr | cafil008_dat | LINK/READ | Jointure+Lecture |
+| 32 | prestations | cafil010_dat | READ/WRITE | Lecture+Ecriture |
+| 34 | hebergement______heb | cafil012_dat | LINK | Jointure |
+| 39 | depot_garantie___dga | cafil017_dat | READ | Lecture |
+| 46 | mvt_prestation___mpr | cafil024_dat | LINK/WRITE | Jointure+Ecriture |
+| 47 | compte_gm________cgm | cafil025_dat | WRITE | Ecriture |
+| 50 | moyens_reglement_mor | cafil028_dat | READ | Lecture |
+| 67 | tables___________tab | cafil045_dat | LINK | Jointure |
+| 68 | compteurs________cpt | cafil046_dat | WRITE | Ecriture |
+| 70 | date_comptable___dat | cafil048_dat | READ | Lecture |
+| 77 | articles_________art | cafil055_dat | LINK/READ | Jointure+Lecture |
+| 79 | gratuites________gra | cafil057_dat | READ | Lecture |
+| 89 | moyen_paiement___mop | cafil067_dat | LINK/READ | Jointure+Lecture |
+| 96 | table_prestation_pre | cafil074_dat | LINK | Jointure |
+| 109 | table_utilisateurs | cafil087_dat | READ | Lecture |
+| 139 | moyens_reglement_mor | cafil117_dat | READ | Lecture |
+| 140 | moyen_paiement___mop | cafil118_dat | LINK | Jointure |
+| 197 | articles_en_stock | caisse_artstock | LINK | Jointure |
+| 596 | tempo_ecran_police | %club_user%tmp_ecrpolice_dat | LINK/READ/WRITE | Jointure+R/W |
+| 697 | droits_applications | droits | LINK | Jointure |
+| 728 | arc_cc_total | arc_cctotal | LINK | Jointure |
+| 737 | pv_package_detail | pv_packdetail_dat | LINK | Jointure |
+| 801 | moyens_reglement_complem | moyens_reglement_complem | LINK | Jointure |
+| 847 | stat_lieu_vente_date | %club_user%_stat_lieu_vente_date | LINK/WRITE | Jointure+Ecriture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 35 tables accedees dont **7 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>34 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `MlsTrans ('Verifier que la transaction est bien...` | - |
-| 2 | `Date ()` | - |
-| 3 | `IF({0,120}=0,IF({0,23}='VSL',{0,13},Date()),{0,...` | - |
-| 4 | `{32768,2}` | - |
-| 5 | `Trim ({0,99})` | - |
-| 6 | `154` | - |
-| 7 | `{0,1}` | - |
-| 8 | `{0,5}` | - |
-| 9 | `{0,6}` | - |
-| 10 | `'F'` | - |
-| 11 | `Date ()` | - |
-| 12 | `{0,45}*{0,44}` | - |
-| 13 | `({0,45}*{0,44})-{0,55}` | - |
-| 14 | `'FALSE'LOG` | - |
-| 15 | `'N'` | - |
-| 16 | `1` | - |
-| 17 | `'CAISSE'` | - |
-| 18 | `{0,21}` | - |
-| 19 | `{0,45}>0 AND {0,44}=0` | - |
-| 20 | `{0,72} AND {0,38}='N'` | - |
-
-> **Total**: 197 expressions (affichees: 20)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 34 |
 | **Lignes logique** | 1224 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 35 |
+| **Tables en ecriture** | 7 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -154,71 +141,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[307 Saisie transaction 154  N.U]
-    M --> T
-    style M fill:#8b5cf6,color:#fff
+    T[307 Saisie transact]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | **Aucun caller** (point d'entree ou orphelin) | - |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[307 Programme]
-    C152[152 Recup Classe]
-    T --> C152
-    C84[84     SP Carac]
-    T --> C84
-    C234[234  Print ticke]
-    T --> C234
-    C43[43 Recuperation]
-    T --> C43
-    C149[149 Calcul stock]
-    T --> C149
-    C179[179 Get Printer]
-    T --> C179
-    C180[180 Printer choi]
-    T --> C180
-    C181[181 Set Listing ]
-    T --> C181
+    T[307 Saisie transact]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C152 fill:#3fb950
-    style C84 fill:#3fb950
-    style C234 fill:#3fb950
-    style C43 fill:#3fb950
-    style C149 fill:#3fb950
-    style C179 fill:#3fb950
-    style C180 fill:#3fb950
-    style C181 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 152 | Recup Classe et Lib du MOP | 4 |
-| 1 | 84 |     SP Caractères Interdits | 2 |
-| 1 | 234 |  Print ticket vente | 2 |
-| 1 | 43 | Recuperation du titre | 1 |
-| 1 | 149 | Calcul stock produit WS | 1 |
-| 1 | 179 | Get Printer | 1 |
-| 1 | 180 | Printer choice | 1 |
-| 1 | 181 | Set Listing Number | 1 |
-| 1 | 182 | Raz Current Printer | 1 |
-| 1 | 247 | Deversement Transaction | 1 |
-| 1 | 257 | Zoom articles | 1 |
-| 1 | 269 | Zoom services village | 1 |
-| 1 | 272 | Zoom modes de paiement | 1 |
-| 1 | 275 | Zoom mode de paiement TPE | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 34 | Complexe |
+| Tables | 35 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **HAUTE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -226,10 +212,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:26 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:52 | **DATA POPULATED** - Tables, Callgraph (197 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:16 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

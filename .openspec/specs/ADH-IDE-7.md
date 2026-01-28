@@ -1,8 +1,9 @@
-﻿# ADH IDE 7 - Menu Data Catching
+﻿# ADH IDE 7 - Menu Data Catching
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:56
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 22:58
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_3.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Menu Data Catching |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Menu Data Catching |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (22 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (33 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,75 +54,70 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 7 |
-| **Description** | Menu Data Catching |
+| **IDE Position** | 7 |
+| **Fichier XML** | `Prg_3.xml` |
+| **Description** | Menu Data Catching |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 33 |
+| **Lignes logique** | 1073 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 22 | address_data_catching | `cafil_address_ec` | R | 3x |
-| 22 | address_data_catching | `cafil_address_ec` | **W** | 2x |
-| 30 | gm-recherche_____gmr | `cafil008_dat` | L | 2x |
-| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 2x |
-| 31 | gm-complet_______gmc | `cafil009_dat` | L | 2x |
-| 31 | gm-complet_______gmc | `cafil009_dat` | R | 4x |
-| 34 | hebergement______heb | `cafil012_dat` | L | 3x |
-| 40 | comptable________cte | `cafil018_dat` | L | 1x |
-| 40 | comptable________cte | `cafil018_dat` | R | 1x |
-| 47 | compte_gm________cgm | `cafil025_dat` | L | 1x |
-| 47 | compte_gm________cgm | `cafil025_dat` | R | 3x |
-| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 1x |
-| 312 | ez_card | `ezcard` | **W** | 1x |
-| 780 | log_affec_auto_detail | `log_affec_auto_detail` | R | 1x |
-| 781 | log_affec_auto_entete | `log_affec_auto_entete` | L | 1x |
-| 783 | vrl_hp | `vrl_hp` | L | 3x |
-| 783 | vrl_hp | `vrl_hp` | R | 1x |
-| 783 | vrl_hp | `vrl_hp` | **W** | 2x |
-| 784 | type_repas_nenc_vill | `type_repas_nenc_vill` | L | 2x |
-| 785 | effectif_quotidien | `effectif_quotidien` | L | 4x |
-| 785 | effectif_quotidien | `effectif_quotidien` | **W** | 1x |
-| 786 | qualite_avant_reprise | `qualite_avant_reprise` | R | 1x |
-### 2.3 Parametres d'entree
+| 22 | address_data_catching | cafil_address_ec | READ/WRITE | Lecture+Ecriture |
+| 30 | gm-recherche_____gmr | cafil008_dat | LINK/READ | Jointure+Lecture |
+| 31 | gm-complet_______gmc | cafil009_dat | LINK/READ | Jointure+Lecture |
+| 34 | hebergement______heb | cafil012_dat | LINK | Jointure |
+| 40 | comptable________cte | cafil018_dat | LINK/READ | Jointure+Lecture |
+| 47 | compte_gm________cgm | cafil025_dat | LINK/READ/WRITE | Jointure+R/W |
+| 312 | ez_card | ezcard | WRITE | Ecriture |
+| 780 | log_affec_auto_detail | log_affec_auto_detail | READ | Lecture |
+| 781 | log_affec_auto_entete | log_affec_auto_entete | LINK | Jointure |
+| 783 | vrl_hp | vrl_hp | LINK/READ/WRITE | Jointure+R/W |
+| 784 | type_repas_nenc_vill | type_repas_nenc_vill | LINK | Jointure |
+| 785 | effectif_quotidien | effectif_quotidien | LINK/WRITE | Jointure+Ecriture |
+| 786 | qualite_avant_reprise | qualite_avant_reprise | READ | Lecture |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 22 tables accedees dont **5 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>33 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `{32768,79}` | - |
-| 2 | `SetParam ('LANGUAGE','ENG')` | - |
-| 3 | `NOT ({0,1})` | - |
-| 4 | `NOT ({0,3})` | - |
-| 5 | `'FALSE'LOG` | - |
-
-> **Total**: 5 expressions (affichees: 5)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 33 |
 | **Lignes logique** | 1073 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 22 |
+| **Tables en ecriture** | 5 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -126,66 +128,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    T[7 Menu Data Catching]
-    M --> T
-    style M fill:#8b5cf6,color:#fff
+    T[7 Menu Data Catch]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| - | **Aucun caller** (point d'entree ou orphelin) | - |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[7 Programme]
-    C15[15 keyboard]
-    T --> C15
-    C5[5 Alimentation]
-    T --> C5
-    C8[8      Set Vil]
-    T --> C8
-    C9[9 System avail]
-    T --> C9
-    C10[10 Print list C]
-    T --> C10
-    C12[12 Catching sta]
-    T --> C12
-    C16[16 Browse   Cou]
-    T --> C16
-    C17[17 Print CO con]
-    T --> C17
+    T[7 Menu Data Catch]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C15 fill:#3fb950
-    style C5 fill:#3fb950
-    style C8 fill:#3fb950
-    style C9 fill:#3fb950
-    style C10 fill:#3fb950
-    style C12 fill:#3fb950
-    style C16 fill:#3fb950
-    style C17 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 15 | keyboard | 6 |
-| 1 | 5 | Alimentation Combos NATION P | 1 |
-| 1 | 8 |      Set Village info | 1 |
-| 1 | 9 | System avail (top left corner | 1 |
-| 1 | 10 | Print list Checkout (shift F9) | 1 |
-| 1 | 12 | Catching stats | 1 |
-| 1 | 16 | Browse - Countries iso | 1 |
-| 1 | 17 | Print C/O confirmation | 1 |
-| 1 | 18 | Print extrait compte | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 33 | Complexe |
+| Tables | 22 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **HAUTE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -193,10 +199,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:17 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:43 | **DATA POPULATED** - Tables, Callgraph (5 expr) | Script |
-| 2026-01-27 17:56 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 22:58 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+

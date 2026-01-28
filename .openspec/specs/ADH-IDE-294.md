@@ -1,8 +1,9 @@
-﻿# ADH IDE 294 - Programme supprime (Prg_291)
+﻿# ADH IDE 294 - Bi  Change GM Vente
 
-> **Version spec**: 3.5
-> **Analyse**: 2026-01-27 17:57
-> **Source**: `Prg_XXX.xml`
+> **Version spec**: 4.0
+> **Analyse**: 2026-01-27 23:15
+> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_290.xml`
+> **Methode**: APEX + PDCA (Auto-generated)
 
 ---
 
@@ -14,28 +15,34 @@
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur |
-| **Quoi** | Programme supprime (Prg_291) |
-| **Pourquoi** | A documenter |
-| **Declencheur** | A identifier |
+| **Qui** | Operateur (utilisateur connecte) |
+| **Quoi** | Bi  Change GM Vente |
+| **Pourquoi** | Fonction metier du module ADH |
+| **Declencheur** | Appel depuis programme parent ou menu |
+| **Resultat** | Traitement effectue selon logique programme |
 
 ### 1.2 Regles metier
 
 | Code | Regle | Condition |
 |------|-------|-----------|
-| RM-001 | A documenter | - |
+| RM-001 | Execution du traitement principal | Conditions d'entree validees |
+| RM-002 | Gestion des tables (16 tables) | Acces selon mode (R/W/L) |
+| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
 
 ### 1.3 Flux utilisateur
 
-1. Demarrage programme
-2. Traitement principal
-3. Fin programme
+1. Reception des parametres d'entree (0 params)
+2. Initialisation et verification conditions
+3. Traitement principal (16 taches)
+4. Appels sous-programmes si necessaire
+5. Retour resultats
 
 ### 1.4 Cas d'erreur
 
 | Erreur | Comportement |
 |--------|--------------|
-| - | A documenter |
+| Conditions non remplies | Abandon avec message |
+| Erreur sous-programme | Propagation erreur |
 
 ---
 
@@ -47,72 +54,67 @@
 
 | Attribut | Valeur |
 |----------|--------|
-| **Format IDE** | ADH IDE 294 |
-| **Description** | Programme supprime (Prg_291) |
+| **IDE Position** | 294 |
+| **Fichier XML** | `Prg_290.xml` |
+| **Description** | Bi  Change GM Vente |
 | **Module** | ADH |
+| **Public Name** |  |
+| **Nombre taches** | 16 |
+| **Lignes logique** | 381 |
+| **Expressions** | 0 |
 
 ### 2.2 Tables
 
 | # | Nom logique | Nom physique | Acces | Usage |
 |---|-------------|--------------|-------|-------|
-| 23 | reseau_cloture___rec | `cafil001_dat` | R | 1x |
-| 23 | reseau_cloture___rec | `cafil001_dat` | **W** | 2x |
-| 30 | gm-recherche_____gmr | `cafil008_dat` | R | 1x |
-| 35 | personnel_go______go | `cafil013_dat` | R | 1x |
-| 47 | compte_gm________cgm | `cafil025_dat` | **W** | 2x |
-| 68 | compteurs________cpt | `cafil046_dat` | **W** | 1x |
-| 70 | date_comptable___dat | `cafil048_dat` | L | 1x |
-| 124 | type_taux_change | `cafil102_dat` | L | 1x |
-| 124 | type_taux_change | `cafil102_dat` | R | 1x |
-| 139 | moyens_reglement_mor | `cafil117_dat` | L | 2x |
-| 139 | moyens_reglement_mor | `cafil117_dat` | R | 1x |
-| 139 | moyens_reglement_mor | `cafil117_dat` | **W** | 1x |
-| 141 | devises__________dev | `cafil119_dat` | R | 1x |
-| 147 | change_vente_____chg | `cafil125_dat` | L | 1x |
-| 147 | change_vente_____chg | `cafil125_dat` | R | 1x |
-| 147 | change_vente_____chg | `cafil125_dat` | **W** | 2x |
-### 2.3 Parametres d'entree
+| 23 | reseau_cloture___rec | cafil001_dat | READ/WRITE | Lecture+Ecriture |
+| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
+| 35 | personnel_go______go | cafil013_dat | READ | Lecture |
+| 47 | compte_gm________cgm | cafil025_dat | WRITE | Ecriture |
+| 68 | compteurs________cpt | cafil046_dat | WRITE | Ecriture |
+| 70 | date_comptable___dat | cafil048_dat | LINK | Jointure |
+| 124 | type_taux_change | cafil102_dat | LINK/READ | Jointure+Lecture |
+| 139 | moyens_reglement_mor | cafil117_dat | LINK/READ/WRITE | Jointure+R/W |
+| 141 | devises__________dev | cafil119_dat | READ | Lecture |
+| 147 | change_vente_____chg | cafil125_dat | LINK/READ/WRITE | Jointure+R/W |
 
-| Variable | Nom | Type | Picture |
-|----------|-----|------|---------|
+**Resume**: 16 tables accedees dont **5 en ecriture**
+
+### 2.3 Parametres d'entree (0 parametres)
+
+| Var | Nom | Type | Picture |
+|-----|-----|------|---------|
 | - | Aucun parametre | - | - |
+
 ### 2.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START])
-    PROCESS[Traitement]
+    START([START - 0 params])
+    INIT["Initialisation"]
+    PROCESS["Traitement principal<br/>16 taches"]
+    CALLS["Appels sous-programmes<br/>0 callees"]
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
     style START fill:#3fb950
     style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
 ```
 
-### 2.5 Expressions cles
-
-| IDE | Expression | Commentaire |
-|-----|------------|-------------|
-| 1 | `{0,1}` | - |
-| 2 | `{0,16}<>'F'` | - |
-| 3 | `{0,16}='F'` | - |
-| 4 | `{0,25}` | - |
-| 5 | `{32768,1}` | - |
-| 6 | `{0,23}<>'R'` | - |
-| 7 | `{0,2}` | - |
-| 8 | `{0,3}` | - |
-
-> **Total**: 8 expressions (affichees: 8)
-### 2.6 Variables importantes
-
-
-
-### 2.7 Statistiques
+### 2.5 Statistiques
 
 | Metrique | Valeur |
 |----------|--------|
 | **Taches** | 16 |
 | **Lignes logique** | 381 |
-| **Lignes desactivees** | 0 |
+| **Expressions** | 0 |
+| **Parametres** | 0 |
+| **Tables accedees** | 16 |
+| **Tables en ecriture** | 5 |
+| **Callees niveau 1** | 0 |
+
 ---
 
 <!-- TAB:Cartographie -->
@@ -123,71 +125,70 @@ flowchart TD
 
 ```mermaid
 graph LR
-    M[1 Main]
-    N295[295 Menu change ]
-    T[294 Bi  Change G]
-    M --> N
-    N --> N
-    N --> N
-    N --> T
-    style M fill:#8b5cf6,color:#fff
-    style N295 fill:#f59e0b
+    T[294 Bi  Change GM V]
+    ORPHAN([ORPHELIN ou Main])
+    T -.-> ORPHAN
     style T fill:#58a6ff,color:#000
+    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
 ```
+
 ### 3.2 Callers directs
 
 | IDE | Programme | Nb appels |
 |-----|-----------|-----------|
-| 295 | Menu change bilateral | 1 |
-### 3.3 Callees
+| - | ORPHELIN ou Main direct | - |
+
+### 3.3 Callees (3 niveaux)
 
 ```mermaid
 graph LR
-    T[294 Programme]
-    C43[43 Recuperation]
-    T --> C43
-    C44[44 Appel progra]
-    T --> C44
-    C47[47 DateHeure se]
-    T --> C47
-    C153[153 Calcul du st]
-    T --> C153
-    C179[179 Get Printer]
-    T --> C179
-    C180[180 Printer choi]
-    T --> C180
-    C181[181 Set Listing ]
-    T --> C181
-    C182[182 Raz Current ]
-    T --> C182
+    T[294 Bi  Change GM V]
+    TERM([TERMINAL])
+    T -.-> TERM
+    style TERM fill:#6b7280,stroke-dasharray: 5 5
     style T fill:#58a6ff,color:#000
-    style C43 fill:#3fb950
-    style C44 fill:#3fb950
-    style C47 fill:#3fb950
-    style C153 fill:#3fb950
-    style C179 fill:#3fb950
-    style C180 fill:#3fb950
-    style C181 fill:#3fb950
-    style C182 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels |
-|-----|-----|-----------|-----------|
-| 1 | 43 | Recuperation du titre | 4 |
-| 1 | 44 | Appel programme | 1 |
-| 1 | 47 | Date/Heure session user | 1 |
-| 1 | 153 | Calcul du stock devise | 1 |
-| 1 | 179 | Get Printer | 1 |
-| 1 | 180 | Printer choice | 1 |
-| 1 | 181 | Set Listing Number | 1 |
-| 1 | 182 | Raz Current Printer | 1 |
-| 1 | 291 | Print reçu change vente | 1 |
-### 3.4 Verification orphelin
+| Niv | IDE | Programme | Nb appels | Status |
+|-----|-----|-----------|-----------|--------|
+| - | - | TERMINAL | - | - |
+
+### 3.4 Composants ECF utilises
+
+| ECF | IDE | Public Name | Description |
+|-----|-----|-------------|-------------|
+| - | - | Aucun composant ECF | - |
+
+### 3.5 Verification orphelin
 
 | Critere | Resultat |
 |---------|----------|
-| Callers actifs | A verifier |
-| **Conclusion** | A analyser |
+| Callers actifs | 0 programmes |
+| PublicName | Non defini |
+| ECF partage | NON |
+| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+
+---
+
+## NOTES MIGRATION
+
+### Complexite
+
+| Critere | Score | Detail |
+|---------|-------|--------|
+| Taches | 16 | Moyen |
+| Tables | 16 | Ecriture |
+| Callees | 0 | Faible couplage |
+| **Score global** | **MOYENNE** | - |
+
+### Points d'attention migration
+
+| Point | Solution moderne |
+|-------|-----------------|
+| Variables globales (VG*) | Service/Repository injection |
+| Tables Magic | Entity Framework / Dapper |
+| CallTask | Service method calls |
+| Forms | React/Angular components |
 
 ---
 
@@ -195,10 +196,9 @@ graph LR
 
 | Date | Action | Auteur |
 |------|--------|--------|
-| 2026-01-27 20:25 | **DATA V2** - Tables reelles, Expressions, Stats, CallChain | Script |
-| 2026-01-27 19:51 | **DATA POPULATED** - Tables, Callgraph (8 expr) | Script |
-| 2026-01-27 17:57 | **Upgrade V3.5** - TAB markers, Mermaid | Claude |
+| 2026-01-27 23:15 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
 
 ---
 
-*Specification V3.5 - Format avec TAB markers et Mermaid*
+*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
+
