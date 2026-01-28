@@ -210,17 +210,31 @@ foreach ($table in ($discovery.tables.by_access.LINK | Select-Object -First 15))
     $tablesSection += "`n| $($table.id) | $($table.logical_name) | $($table.physical_name) | $($table.usage_count) |"
 }
 
-# Build variables section
+# Build variables section - using variable_mapping which has UNIQUE letters
 $variablesSection = ""
-if ($mapping) {
-    $variablesSection = @"
-### Variables Locales
+if ($mapping -and $mapping.variable_mapping) {
+    # Convert variable_mapping to array sorted by letter
+    $mappedVars = @()
+    $mapping.variable_mapping.PSObject.Properties | ForEach-Object {
+        if ($_.Value.type -eq "local") {
+            $mappedVars += [PSCustomObject]@{
+                key = $_.Name
+                letter = $_.Value.letter
+                name = $_.Value.name
+            }
+        }
+    }
+    # Sort by letter length then alphabetically (A, B, ... Z, AA, AB, ... BA, BB)
+    $sortedVars = $mappedVars | Sort-Object { $_.letter.Length }, { $_.letter }
 
-| Lettre | Nom | Type | Picture |
-|--------|-----|------|---------|
+    $variablesSection = @"
+### Variables Locales (Mapping Expression)
+
+| Ref Expression | Lettre IDE | Nom Variable |
+|----------------|------------|--------------|
 "@
-    foreach ($v in ($mapping.variables.local | Select-Object -First 30)) {
-        $variablesSection += "`n| $($v.letter) | $($v.name) | $($v.data_type) | $($v.picture) |"
+    foreach ($v in ($sortedVars | Select-Object -First 50)) {
+        $variablesSection += "`n| ``$($v.key)`` | **$($v.letter)** | $($v.name) |"
     }
 
     if ($mapping.variables.parameters.Count -gt 0) {

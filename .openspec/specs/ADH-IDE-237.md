@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: 2026-01-28 18:24
+> **Analyse**: 2026-01-28 18:31
 > **Pipeline**: V6.0 Deep Analysis
 > **Niveau**: DETAILED (Migration)
 
@@ -83,40 +83,60 @@ Transaction Nouv vente avec GP
 
 ## 4. VARIABLES ET PARAMETRES
 
-### Variables Locales
+### Variables Locales (Mapping Expression)
 
-| Lettre | Nom | Type | Picture |
-|--------|-----|------|---------|
-| A | P0 societe | Alpha | U |
-| A | V.Existe MOP ? | Logical |  |
-| A | V.Existe reglement ? | Logical |  |
-| A | v Concatenation | Alpha | 11 |
-| A | v Montant cumulé saisie | Numeric | N12.3 |
-| A | v Montant cumulé saisie | Numeric | N12.3 |
-| A | P.Toute ligne | Logical |  |
-| A | b.Valider | Alpha | 10 |
-| A | W2 Titre | Alpha | 2 |
-| A | W1 fin tache | Alpha | U |
-| A | W1 ret.lien forfait | Numeric | 1 |
-| A | W1 fin tâche | Alpha | U |
-| A | W2 date debut | Date | ##/##/##Z |
-| A | W1 ret.lien gratuite | Numeric | 1 |
-| A | W2 ret.lien imput | Numeric | 1 |
-| A | Mont-GiftPass | Numeric | N12.3 |
-| A | P.Ligne | Numeric | 3 |
-| A | DETAIL | Alpha | 6 |
-| A | V garantie trouvee | Logical |  |
-| A | V.Changement effectue ? | Logical |  |
-| A | P Type transfert Global | Alpha | 1 |
-| A | P Type transfert Detail | Alpha | 1 |
-| A | v.Sélectionné ? | Logical |  |
-| A | p.o.Abandon | Logical |  |
-| A | p.o.Nb chambres/LCO | Numeric | 4 |
-| B | P0 devise locale | Alpha | U3 |
-| B | V.Existe MOP ligne ? | Logical |  |
-| B | b.abandonner | Alpha | 10 |
-| B | b.Abandonner | Alpha | 10 |
-| B | W2 Nom | Alpha | U30 |
+| Ref Expression | Lettre IDE | Nom Variable |
+|----------------|------------|--------------|
+| `{0,1}` | **A** | P0 societe |
+| `{0,2}` | **B** | P0 devise locale |
+| `{0,3}` | **C** | P0 masque montant |
+| `{0,4}` | **D** | P0 solde compte |
+| `{0,5}` | **E** | P0 code GM |
+| `{0,6}` | **F** | P0 filiation |
+| `{0,7}` | **G** | P0 date fin sejour |
+| `{0,8}` | **H** | P0 etat compte |
+| `{0,9}` | **I** | P0 date solde |
+| `{0,10}` | **J** | P0 garanti O/N |
+| `{0,11}` | **K** | P0 Nom & prenom |
+| `{0,12}` | **L** | P0 UNI/BI |
+| `{0,13}` | **M** | P0.Date debut sejour |
+| `{0,14}` | **N** | P0.Valide ? |
+| `{0,15}` | **O** | P0.Nb decimales |
+| `{0,16}` | **P** | Bouton IDENTITE |
+| `{0,17}` | **Q** | Bouton ABANDON |
+| `{0,18}` | **R** | W0 FIN SAISIE OD |
+| `{0,19}` | **S** | Bouton FIN SAISIE OD |
+| `{0,20}` | **T** | W0 Cloture en cours |
+| `{0,21}` | **U** | W0 code article |
+| `{0,22}` | **V** | v.SoldeGiftPass |
+| `{0,23}` | **W** | W0 imputation |
+| `{0,24}` | **X** | W0 sous-imput. |
+| `{0,25}` | **Y** | W0 date d'achat |
+| `{0,26}` | **Z** | W0 annulation |
+| `{0,53}` | **BA** | W0 service village |
+| `{0,54}` | **BB** | W0 libelle article |
+| `{0,55}` | **BC** | W0 article dernière minute |
+| `{0,56}` | **BD** | W0 nbre articles |
+| `{0,57}` | **BE** | W0 prix unitaire |
+| `{0,58}` | **BF** | W0 Categorie de chambre |
+| `{0,59}` | **BG** | W0 Lieu sejour |
+| `{0,60}` | **BH** | W0 Code reduction |
+| `{0,61}` | **BI** | v Sens Transfert Global |
+| `{0,62}` | **BJ** | v.Date activité VAE |
+| `{0,63}` | **BK** | v.VAE pendant le séjour ? |
+| `{0,64}` | **BL** | v.Matin/Après midi |
+| `{0,65}` | **BM** | W0 Sens du transfert Aller |
+| `{0,66}` | **BN** | W0 Date du transfert Aller |
+| `{0,67}` | **BO** | W0 Heure du transfert Aller |
+| `{0,68}` | **BP** | W0 b.Date du transfert |
+| `{0,69}` | **BQ** | W0 Type d'endroit Aller |
+| `{0,70}` | **BR** | W0 Code Gare/Aéroport Aller |
+| `{0,71}` | **BS** | W0 Numéro du vol Aller |
+| `{0,72}` | **BT** | W0 Compagnie Aller |
+| `{0,73}` | **BU** | W0 Commentaire Aller |
+| `{0,74}` | **BV** | W0 Sens du transfert Retour |
+| `{0,75}` | **BW** | W0 Date du transfert Retour |
+| `{0,76}` | **BX** | W0 Heure du transfert Retour |
 
 ## 5. LOGIQUE METIER
 
@@ -337,4 +357,4 @@ graph LR
 - Expressions conditionnelles: 31
 
 ---
-*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 18:24*
+*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 18:31*
