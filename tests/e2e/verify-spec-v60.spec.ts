@@ -30,7 +30,7 @@ test.describe('Validation specs V6.0 Pipeline - Timing', () => {
   });
 
   test('ADH IDE 236 a les informations de timing', async ({ page }) => {
-    await navigateToSpec(page, '236');
+    await navigateToSpec(page, '236', 'Unknown');
     const content = await page.locator('.content').textContent();
 
     expect(content).toContain('Debut');
@@ -60,7 +60,7 @@ test.describe('Validation specs V6.0 Pipeline - Timing', () => {
   });
 
   test('ADH IDE 236 a les donnees V6.0 (tables, expressions)', async ({ page }) => {
-    await navigateToSpec(page, '236');
+    await navigateToSpec(page, '236', 'Unknown');
     const content = await page.locator('.content').textContent();
 
     expect(content).toContain('Print ticket vente');
