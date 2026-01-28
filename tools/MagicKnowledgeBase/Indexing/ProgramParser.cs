@@ -366,15 +366,16 @@ public partial class ProgramParser
             }
 
             // Position X, Y, Width, Height (if available)
+            // XML format: <X id="21" val="98"/> or by element name directly
             int? posX = null, posY = null, width = null, height = null;
-            var leftElement = propList.Elements().FirstOrDefault(e =>
-                e.Attribute("id")?.Value == "319");
-            var topElement = propList.Elements().FirstOrDefault(e =>
-                e.Attribute("id")?.Value == "320");
-            var widthElement = propList.Elements().FirstOrDefault(e =>
-                e.Attribute("id")?.Value == "325");
-            var heightElement = propList.Elements().FirstOrDefault(e =>
-                e.Attribute("id")?.Value == "326");
+            var leftElement = propList.Element("X")
+                ?? propList.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "21");
+            var topElement = propList.Element("Y")
+                ?? propList.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "22");
+            var widthElement = propList.Element("Width")
+                ?? propList.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "23");
+            var heightElement = propList.Element("Height")
+                ?? propList.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "24");
 
             if (leftElement?.Attribute("val")?.Value is string lVal && int.TryParse(lVal, out int l)) posX = l;
             if (topElement?.Attribute("val")?.Value is string tVal && int.TryParse(tVal, out int t)) posY = t;
