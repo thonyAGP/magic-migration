@@ -114,7 +114,9 @@ function Generate-SpecIndex {
         specs = $specs
     }
 
-    $index | ConvertTo-Json -Depth 5 | Set-Content -Path $IndexFile -Encoding UTF8
+    # Write without BOM (UTF8 BOM breaks JSON parsing in browsers)
+    $jsonContent = $index | ConvertTo-Json -Depth 5
+    [System.IO.File]::WriteAllText($IndexFile, $jsonContent, [System.Text.UTF8Encoding]::new($false))
 
     Write-Host "  Generated index with $($specs.Count) specs" -ForegroundColor Green
     Write-Host "  Output: $IndexFile"
