@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: 2026-01-29 12:35
+> **Analyse**: 2026-01-29 13:01
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -21,14 +21,39 @@
 | Tables modifiees | 9 |
 | Programmes appeles | 20 |
 
-## 2. DESCRIPTION
+## 2. DESCRIPTION FONCTIONNELLE
 
-**Transaction Nouv vente avec GP** est un programme de complexite **HAUTE** comportant 49 taches et 305 expressions.
+**Transaction Nouv vente avec GP** assure la gestion complete de ce processus, accessible depuis Menu caisse GM - scroll, Menu Choix Saisie/Annul vente, Saisie transaction Nouv vente.
 
-Il presente 14 ecran(s) a l'utilisateur: Saisie transaction, Reglements suite a refus TPE, Saisie Bilaterale, Saisie mode de règlement, Saisie Commentaires, VRL : Saisie identité, , Saisie dates forfait, Affiche saisie, Type transfert, Affiche Transfert A/R, Affectation PAX / Transfert, Libération du logement, Récup nb chambre /LCO.
-Il modifie 9 table(s) en base et delegue des traitements a 20 sous-programme(s).
+Le flux de traitement s'organise en **10 blocs fonctionnels** :
 
-**Contexte d'appel**: Appele depuis Menu caisse GM - scroll (IDE 163), Menu Choix Saisie/Annul vente (IDE 242), Saisie transaction Nouv vente (IDE 316).
+- **Traitement** (18 taches) : traitements metier divers
+- **Saisie** (7 taches) : ecrans de saisie utilisateur (formulaires, champs, donnees)
+- **Calcul** (5 taches) : calculs de montants, stocks ou compteurs
+- **Creation** (5 taches) : insertion d'enregistrements en base (mouvements, prestations)
+- **Transfert** (4 taches) : transferts de donnees entre modules ou deversements
+- **Reglement** (4 taches) : gestion des moyens de paiement et reglements
+- **Initialisation** (3 taches) : reinitialisation d'etats et de variables de travail
+- **Validation** (1 taches) : controles et verifications de coherence
+- **Impression** (1 taches) : generation de tickets et documents
+- **Consultation** (1 taches) : ecrans de recherche, selection et consultation
+
+Le programme delegue des operations a **20 sous-programmes** couvrant :
+
+- **Calcul de donnees** : Calcul stock produit WS
+- **Configuration impression** : Set Listing Number
+- **Gestion moyens paiement** : Gestion Chèque
+- **Impression ticket/document** : Appel Print ticket vente PMS28, Get Printer, Printer choice (+1)
+- **Recuperation donnees** : Recup Classe et Lib du MOP, Recuperation du titre, Get Fidelisation et Remise (+1)
+- **Reinitialisation** : Reinit Aff PYR
+- **Selection/consultation** : Selection Vols /t Ville à côté, Choix PYR (plusieurs chambres), Zoom articles (+1)
+- **Transfert donnees** : Deversement Transaction
+- **Validation saisie** :     SP Caractères Interdits
+- **Verification solde** : Solde Gift Pass, Solde Resort Credit
+
+**Donnees modifiees** : 9 tables en ecriture (reseau_cloture___rec, prestations, mvt_prestation___mpr, compte_gm________cgm, compteurs________cpt, tempo_ecran_police, stat_lieu_vente_date, Boo_ResultsRechercheHoraire, Table_1037).
+
+**Logique metier** : 17 regles identifiees couvrant conditions metier, calculs avec pourcentages, positionnement dynamique d'UI, valeurs par defaut.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -1308,4 +1333,4 @@ graph LR
 | IDE 277 - Selection Vols /t Ville à côté | Sous-programme (2x) | Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 12:35*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 13:01*

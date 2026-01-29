@@ -1,6 +1,6 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: 2026-01-29 12:37
+> **Analyse**: 2026-01-29 13:01
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -21,14 +21,29 @@
 | Tables modifiees | 4 |
 | Programmes appeles | 18 |
 
-## 2. DESCRIPTION
+## 2. DESCRIPTION FONCTIONNELLE
 
-**Gestion caisse** est un programme de complexite **MOYENNE** comportant 32 taches et 7 expressions.
+**Gestion caisse** assure la gestion complete de ce processus, accessible depuis Menu caisse GM - scroll, Fermeture Sessions.
 
-Il presente 2 ecran(s) a l'utilisateur: Gestion de la caisse, Concurrence sessions for devel.
-Il modifie 4 table(s) en base et delegue des traitements a 18 sous-programme(s).
+Le flux de traitement s'organise en **7 blocs fonctionnels** :
 
-**Contexte d'appel**: Appele depuis Menu caisse GM - scroll (IDE 163), Fermeture Sessions (IDE 281).
+- **Traitement** (23 taches) : traitements metier divers
+- **Creation** (2 taches) : insertion d'enregistrements en base (mouvements, prestations)
+- **Saisie** (2 taches) : ecrans de saisie utilisateur (formulaires, champs, donnees)
+- **Validation** (2 taches) : controles et verifications de coherence
+- **Initialisation** (1 taches) : reinitialisation d'etats et de variables de travail
+- **Impression** (1 taches) : generation de tickets et documents
+- **Calcul** (1 taches) : calculs de montants, stocks ou compteurs
+
+Le programme delegue des operations a **18 sous-programmes** couvrant :
+
+- **Calcul de donnees** : Calcul concurrence sessions
+- **Impression ticket/document** : Ticket appro remise, Reimpression tickets fermeture
+- **Programme fidelite** : Remise en caisse
+- **Recuperation donnees** : Recuperation du titre
+- **Reinitialisation** : Init apport article session WS, Init devise session WS
+
+**Donnees modifiees** : 4 tables en ecriture (concurrence_sessions, saisie_approvisionnement, histo_sessions_caisse, sessions_coffre2).
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -481,4 +496,4 @@ graph LR
 | IDE 155 - Controle fermeture caisse WS | Sous-programme (2x) | [Phase 2] |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 12:37*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 13:01*

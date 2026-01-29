@@ -47,9 +47,9 @@
                    },
     "metadata":  {
                      "pipeline_version":  "7.0",
-                     "generated_at":  "2026-01-29 12:37:05",
+                     "generated_at":  "2026-01-29 13:01:55",
                      "ide_position":  121,
-                     "duration_seconds":  0.5,
+                     "duration_seconds":  0.4,
                      "program_name":  "Gestion caisse",
                      "project":  "ADH"
                  }

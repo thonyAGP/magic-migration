@@ -414,25 +414,105 @@ Add-Line "| Tables modifiees | $writeCount |"
 Add-Line "| Programmes appeles | $calleeCount |"
 Add-Line
 
-# --- 2. Description ---
-Add-Line "## 2. DESCRIPTION"
+# --- 2. Description fonctionnelle ---
+Add-Line "## 2. DESCRIPTION FONCTIONNELLE"
 Add-Line
-Add-Line "**$programName** est un programme de complexite **$($complexity.level)** comportant $taskCount taches et $exprCount expressions."
-Add-Line
-if ($visibleForms.Count -gt 0) {
-    $vNames = ($visibleForms | ForEach-Object { $_.name }) -join ', '
-    Add-Line "Il presente $($visibleForms.Count) ecran(s) a l'utilisateur: $vNames."
-    Add-Line "Il modifie $writeCount table(s) en base et delegue des traitements a $calleeCount sous-programme(s)."
-} else {
-    Add-Line "Ce programme est un traitement sans interface visible (batch ou sous-programme)."
-    Add-Line "Il modifie $writeCount table(s) et delegue $calleeCount sous-programme(s)."
-}
-Add-Line
+
+# Build functional narrative from blocks, callees, tables, rules
+$descParts = @()
+
+# Purpose from program name + caller context
+$purposeCtx = ""
 if ($discovery.call_graph.callers.Count -gt 0) {
-    $cNames = ($discovery.call_graph.callers | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
-    Add-Line "**Contexte d'appel**: Appele depuis $cNames."
-    Add-Line
+    $callerNames = ($discovery.call_graph.callers | ForEach-Object { $_.name }) -join ', '
+    $purposeCtx = ", accessible depuis $callerNames"
 }
+$descParts += "**$programName** assure la gestion complete de ce processus$purposeCtx."
+
+# Workflow from functional blocks (only significant ones, sorted by task count desc)
+$sigBlocs = @()
+foreach ($blocName in $blocMap.Keys) {
+    $bCount = $blocMap[$blocName].Count
+    if ($bCount -ge 1) {
+        $sigBlocs += @{ name = $blocName; count = $bCount }
+    }
+}
+$sigBlocs = @($sigBlocs | Sort-Object { $_.count } -Descending)
+
+if ($sigBlocs.Count -gt 0) {
+    $descParts += ""
+    $descParts += "Le flux de traitement s'organise en **$($sigBlocs.Count) blocs fonctionnels** :"
+    $descParts += ""
+    foreach ($sb in $sigBlocs) {
+        $bn = $sb.name
+        $bc = $sb.count
+        $blocDesc = switch ($bn) {
+            "Saisie"         { "ecrans de saisie utilisateur (formulaires, champs, donnees)" }
+            "Reglement"      { "gestion des moyens de paiement et reglements" }
+            "Validation"     { "controles et verifications de coherence" }
+            "Impression"     { "generation de tickets et documents" }
+            "Calcul"         { "calculs de montants, stocks ou compteurs" }
+            "Transfert"      { "transferts de donnees entre modules ou deversements" }
+            "Consultation"   { "ecrans de recherche, selection et consultation" }
+            "Creation"       { "insertion d'enregistrements en base (mouvements, prestations)" }
+            "Initialisation" { "reinitialisation d'etats et de variables de travail" }
+            default          { "traitements metier divers" }
+        }
+        $descParts += "- **$bn** ($bc taches) : $blocDesc"
+    }
+}
+
+# Key operations from callees with context (group by context type)
+$ctxGroups = @{}
+foreach ($c in $calleesCtx) {
+    $ctx = $c.context
+    if ($ctx -eq "[Phase 2]") { continue }
+    if (-not $ctxGroups.ContainsKey($ctx)) { $ctxGroups[$ctx] = @() }
+    $ctxGroups[$ctx] += $c.name
+}
+if ($ctxGroups.Count -gt 0) {
+    $descParts += ""
+    $descParts += "Le programme delegue des operations a **$calleeCount sous-programmes** couvrant :"
+    $descParts += ""
+    foreach ($ctxName in ($ctxGroups.Keys | Sort-Object)) {
+        $progs = $ctxGroups[$ctxName]
+        $progList = ($progs | Select-Object -First 3) -join ', '
+        if ($progs.Count -gt 3) { $progList += " (+$($progs.Count - 3))" }
+        $descParts += "- **$ctxName** : $progList"
+    }
+}
+
+# Data impact from WRITE tables
+if ($discovery.tables.by_access.WRITE -and $discovery.tables.by_access.WRITE.Count -gt 0) {
+    $writeTblNames = ($discovery.tables.by_access.WRITE | ForEach-Object { $_.logical_name }) -join ', '
+    $descParts += ""
+    $descParts += "**Donnees modifiees** : $writeCount tables en ecriture ($writeTblNames)."
+}
+
+# Key business logic from rules (summarize categories)
+if ($businessRules.Count -gt 0) {
+    $ruleCategories = @()
+    $hasPositioning = $false; $hasCalc = $false; $hasCondition = $false; $hasDefault = $false
+    foreach ($rule in $businessRules) {
+        $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { "" }
+        if ($dExpr -match "IN\s*\(" -and $dExpr -match "\d+\.\d+") { $hasPositioning = $true }
+        elseif ($dExpr -match "Fix\(.*\*.*\/100") { $hasCalc = $true }
+        elseif ($dExpr -match "=''") { $hasDefault = $true }
+        else { $hasCondition = $true }
+    }
+    if ($hasCondition) { $ruleCategories += "conditions metier" }
+    if ($hasCalc) { $ruleCategories += "calculs avec pourcentages" }
+    if ($hasPositioning) { $ruleCategories += "positionnement dynamique d'UI" }
+    if ($hasDefault) { $ruleCategories += "valeurs par defaut" }
+
+    if ($ruleCategories.Count -gt 0) {
+        $descParts += ""
+        $descParts += "**Logique metier** : $($businessRules.Count) regles identifiees couvrant $($ruleCategories -join ', ')."
+    }
+}
+
+foreach ($dp in $descParts) { Add-Line $dp }
+Add-Line
 
 # --- 3. Blocs fonctionnels ---
 Add-Line "## 3. BLOCS FONCTIONNELS"

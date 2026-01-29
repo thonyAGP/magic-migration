@@ -47,9 +47,9 @@
                    },
     "metadata":  {
                      "pipeline_version":  "7.0",
-                     "generated_at":  "2026-01-29 12:35:19",
+                     "generated_at":  "2026-01-29 13:01:41",
                      "ide_position":  237,
-                     "duration_seconds":  0.7,
+                     "duration_seconds":  0.5,
                      "program_name":  "Transaction Nouv vente avec GP",
                      "project":  "ADH"
                  }
