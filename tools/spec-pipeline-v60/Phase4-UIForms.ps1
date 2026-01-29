@@ -132,7 +132,7 @@ $uiForms = @{
         ide_position = $IdePosition
         program_name = $programName
         generated_at = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
-        pipeline_version = "6.0"
+        pipeline_version = "7.0"
     }
 
     forms = @($forms | ForEach-Object {

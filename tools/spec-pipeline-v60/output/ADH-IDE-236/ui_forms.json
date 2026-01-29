@@ -1,11 +1,11 @@
 ﻿{
     "screen_mockup_ascii":  [
-                                "+--------------------------------------+",
-                                "|        Veuillez patienter ...        |",
-                                "+--------------------------------------+",
-                                "|  [Form content - MDI]                |",
-                                "|                                      |",
-                                "+--------------------------------------+"
+                                "+----------------------------------------+",
+                                "|         Veuillez patienter ...         |",
+                                "+----------------------------------------+",
+                                "|  [Form content - MDI]                  |",
+                                "|  Size: 422 x 56 DLU                    |",
+                                "+----------------------------------------+"
                             ],
     "statistics":  {
                        "table_count":  0,
@@ -16,18 +16,18 @@
                    },
     "metadata":  {
                      "ide_position":  236,
-                     "pipeline_version":  "6.0",
+                     "pipeline_version":  "7.0",
                      "project":  "ADH",
                      "program_name":  " Print ticket vente PMS-584",
-                     "generated_at":  "2026-01-28 17:46:19"
+                     "generated_at":  "2026-01-29 19:45:21"
                  },
     "forms":  [
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  568,
+                                         "y":  20,
+                                         "width":  422,
+                                         "height":  56
                                      },
                       "name":  "Veuillez patienter ...",
                       "window_type":  1,
@@ -39,9 +39,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  8,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  184
                                      },
                       "name":  "Counter",
                       "window_type":  1,
@@ -53,9 +53,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "y":  8,
+                                         "width":  333,
+                                         "height":  86
                                      },
                       "name":  "Impression reçu change",
                       "window_type":  1,
@@ -81,9 +81,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  8,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  184
                                      },
                       "name":  "Impression reçu change",
                       "window_type":  1,
@@ -124,7 +124,7 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
+                                         "width":  506,
                                          "height":  0
                                      },
                       "name":  "Print Tva",
@@ -165,9 +165,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  8,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  184
                                      },
                       "name":  "Counter",
                       "window_type":  1,
@@ -179,9 +179,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  8,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  184
                                      },
                       "name":  "Impression reçu change",
                       "window_type":  1,
@@ -193,9 +193,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  8,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  184
                                      },
                       "name":  "Impression reçu change",
                       "window_type":  1,
@@ -222,7 +222,7 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
+                                         "width":  506,
                                          "height":  0
                                      },
                       "name":  "Print Tva",
@@ -248,10 +248,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  573,
+                                         "y":  1,
+                                         "width":  424,
+                                         "height":  56
                                      },
                       "name":  "Printer 5",
                       "window_type":  1,
@@ -262,10 +262,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  573,
+                                         "y":  1,
+                                         "width":  424,
+                                         "height":  56
                                      },
                       "name":  "Veuillez patienter ...",
                       "window_type":  1,
@@ -306,7 +306,7 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
+                                         "width":  506,
                                          "height":  0
                                      },
                       "name":  "Print Tva",
@@ -318,10 +318,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  573,
+                                         "y":  1,
+                                         "width":  424,
+                                         "height":  56
                                      },
                       "name":  "Printer 5",
                       "window_type":  1,
@@ -332,10 +332,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  573,
+                                         "y":  1,
+                                         "width":  424,
+                                         "height":  56
                                      },
                       "name":  "Veuillez patienter ...",
                       "window_type":  1,
@@ -390,7 +390,7 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
+                                         "width":  506,
                                          "height":  0
                                      },
                       "name":  "Print Tva",
@@ -402,10 +402,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  573,
+                                         "y":  1,
+                                         "width":  424,
+                                         "height":  56
                                      },
                       "name":  "Printer 9",
                       "window_type":  1,
@@ -416,10 +416,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  573,
+                                         "y":  1,
+                                         "width":  435,
+                                         "height":  63
                                      },
                       "name":  "Veuillez patienter ...",
                       "window_type":  1,
@@ -488,7 +488,7 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
+                                         "width":  565,
                                          "height":  0
                                      },
                       "name":  "Print Tva",
@@ -530,8 +530,8 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "width":  600,
+                                         "height":  259
                                      },
                       "name":  "Errors",
                       "window_type":  0,
@@ -544,8 +544,8 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "width":  725,
+                                         "height":  303
                                      },
                       "name":  "",
                       "window_type":  0,

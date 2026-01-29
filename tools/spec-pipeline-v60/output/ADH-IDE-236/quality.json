@@ -1,9 +1,9 @@
 ﻿{
     "pipeline_timing":  {
-                            "phases_start":  "2026-01-28 17:46:09",
-                            "assembly_start":  "2026-01-29 18:22:27",
-                            "phases_duration":  "10s",
-                            "phases_end":  "2026-01-28 17:46:19"
+                            "phases_start":  "2026-01-29 19:45:12",
+                            "assembly_start":  "2026-01-29 19:45:21",
+                            "phases_duration":  "9s",
+                            "phases_end":  "2026-01-29 19:45:21"
                         },
     "audit":  {
                   "checks":  [
@@ -24,8 +24,8 @@
                                  {
                                      "expected":  0,
                                      "status":  "PASS",
-                                     "detail":  "0/0 tables WRITE",
-                                     "actual":  0,
+                                     "detail":  "2/0 tables WRITE",
+                                     "actual":  2,
                                      "check":  "TABLES_WRITE"
                                  },
                                  {
@@ -43,10 +43,10 @@
                                      "check":  "CALLEES_SECTION"
                                  },
                                  {
-                                     "expected":  0,
+                                     "expected":  15,
                                      "status":  "PASS",
                                      "detail":  "Ecrans visibles coherents",
-                                     "actual":  0,
+                                     "actual":  15,
                                      "check":  "SCREENS_VISIBLE"
                                  },
                                  {
@@ -87,15 +87,15 @@
                                  {
                                      "expected":  "present",
                                      "status":  "PASS",
-                                     "detail":  "0 blocs avec variables cles",
-                                     "actual":  0,
+                                     "detail":  "2 blocs avec variables cles",
+                                     "actual":  2,
                                      "check":  "BLOC_VARIABLES"
                                  },
                                  {
-                                     "expected":  "N/A",
+                                     "expected":  "flowchart LR",
                                      "status":  "PASS",
-                                     "detail":  "Programme mono-ecran, navigation N/A",
-                                     "actual":  "N/A",
+                                     "detail":  "Navigation en flowchart LR",
+                                     "actual":  "present",
                                      "check":  "NAV_FLOWCHART_LR"
                                  },
                                  {
@@ -120,9 +120,9 @@
               },
     "metadata":  {
                      "pipeline_version":  "7.0",
-                     "generated_at":  "2026-01-29 18:22:27",
+                     "generated_at":  "2026-01-29 19:45:22",
                      "ide_position":  236,
-                     "duration_seconds":  0.5,
+                     "duration_seconds":  1.3,
                      "program_name":  "Print ticket vente PMS-584",
                      "project":  "ADH"
                  },
@@ -141,7 +141,7 @@
                                        "Code desactive: 0% (SAIN)"
                                    ]
                    },
-    "quality_score":  90,
+    "quality_score":  100,
     "structure":  {
                       "tabs":  4,
                       "callees_with_context":  2,
@@ -159,15 +159,15 @@
                                 "expressions_decoded":  true,
                                 "callers_extracted":  true,
                                 "callees_extracted":  true,
-                                "variables_mapped":  false,
+                                "variables_mapped":  true,
                                 "forms_extracted":  true
                             },
     "validation":  {
                        "callers_shown":  4,
                        "callees_shown":  2,
-                       "visible_forms_count":  0,
+                       "visible_forms_count":  15,
                        "tables_unified_count":  15,
-                       "variables_mapped_count":  0,
+                       "variables_mapped_count":  39,
                        "business_rules_count":  0,
                        "total_forms_count":  38
                    }

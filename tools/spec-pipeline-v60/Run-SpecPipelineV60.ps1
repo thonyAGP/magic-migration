@@ -199,7 +199,7 @@ $report = @{
     project = $Project
     ide_position = $IdePosition
     duration_seconds = [math]::Round($totalDuration.TotalSeconds, 1)
-    pipeline_version = "6.0"
+    pipeline_version = "7.0"
 }
 
 $reportPath = Join-Path $OutputPath "pipeline-report.json"

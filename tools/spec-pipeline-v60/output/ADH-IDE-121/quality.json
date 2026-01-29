@@ -1,9 +1,9 @@
 ﻿{
     "pipeline_timing":  {
-                            "phases_start":  "2026-01-29 09:26:10",
-                            "assembly_start":  "2026-01-29 18:22:31",
-                            "phases_duration":  "8s",
-                            "phases_end":  "2026-01-29 09:26:18"
+                            "phases_start":  "2026-01-29 19:45:29",
+                            "assembly_start":  "2026-01-29 19:45:37",
+                            "phases_duration":  "7s",
+                            "phases_end":  "2026-01-29 19:45:37"
                         },
     "audit":  {
                   "checks":  [
@@ -24,8 +24,8 @@
                                  {
                                      "expected":  4,
                                      "status":  "PASS",
-                                     "detail":  "6/4 tables WRITE",
-                                     "actual":  6,
+                                     "detail":  "10/4 tables WRITE",
+                                     "actual":  10,
                                      "check":  "TABLES_WRITE"
                                  },
                                  {
@@ -120,9 +120,9 @@
               },
     "metadata":  {
                      "pipeline_version":  "7.0",
-                     "generated_at":  "2026-01-29 18:22:32",
+                     "generated_at":  "2026-01-29 19:45:37",
                      "ide_position":  121,
-                     "duration_seconds":  0.6,
+                     "duration_seconds":  0.5,
                      "program_name":  "Gestion caisse",
                      "project":  "ADH"
                  },

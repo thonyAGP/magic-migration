@@ -254,7 +254,7 @@
                             "is_ecf_member":  false,
                             "has_callers":  true,
                             "status":  "NON_ORPHELIN",
-                            "reason":  "Appele par 2 programme(s): IDE 163, IDE 281"
+                            "reason":  "Appele par 2 programme(s): Menu caisse GM - scroll (IDE 163), Fermeture Sessions (IDE 281)"
                         },
     "statistics":  {
                        "callee_count":  18,
@@ -390,9 +390,9 @@
                    },
     "metadata":  {
                      "ide_position":  121,
-                     "pipeline_version":  "6.0",
+                     "pipeline_version":  "7.0",
                      "project":  "ADH",
                      "program_name":  "Gestion caisse",
-                     "generated_at":  "2026-01-29 09:26:10"
+                     "generated_at":  "2026-01-29 19:45:29"
                  }
 }

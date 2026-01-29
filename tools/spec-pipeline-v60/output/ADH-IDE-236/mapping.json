@@ -5,7 +5,7 @@
                        "parameter_count":  0,
                        "total_variables":  129,
                        "global_count":  0,
-                       "mapping_entries":  0,
+                       "mapping_entries":  39,
                        "local_count":  129
                    },
     "tables":  {
@@ -1146,13 +1146,207 @@
                                      ]
                   },
     "variable_mapping":  {
-
+                             "{0,64}":  {
+                                            "type":  "local",
+                                            "name":  "v.Num printer",
+                                            "letter":  "BL"
+                                        },
+                             "{0,13}":  {
+                                            "type":  "local",
+                                            "name":  "P0 libelle paiement",
+                                            "letter":  "M"
+                                        },
+                             "{0,18}":  {
+                                            "type":  "local",
+                                            "name":  "P0 TAI Cash",
+                                            "letter":  "R"
+                                        },
+                             "{0,63}":  {
+                                            "type":  "local",
+                                            "name":  "v.TPE ICMP",
+                                            "letter":  "BK"
+                                        },
+                             "{0,14}":  {
+                                            "type":  "local",
+                                            "name":  "P0 Numero Ticket(VRL)",
+                                            "letter":  "N"
+                                        },
+                             "{0,5}":  {
+                                           "type":  "local",
+                                           "name":  "P0 Article complementaire",
+                                           "letter":  "E"
+                                       },
+                             "{0,20}":  {
+                                            "type":  "local",
+                                            "name":  "P0 TAI end date",
+                                            "letter":  "T"
+                                        },
+                             "{0,4}":  {
+                                           "type":  "local",
+                                           "name":  "P0 Article libelle 1",
+                                           "letter":  "D"
+                                       },
+                             "{0,9}":  {
+                                           "type":  "local",
+                                           "name":  "P0 Devise locale",
+                                           "letter":  "I"
+                                       },
+                             "{0,22}":  {
+                                            "type":  "local",
+                                            "name":  "P.PDF",
+                                            "letter":  "V"
+                                        },
+                             "{0,59}":  {
+                                            "type":  "local",
+                                            "name":  "W0 copies",
+                                            "letter":  "BG"
+                                        },
+                             "{0,8}":  {
+                                           "type":  "local",
+                                           "name":  "P0 Total",
+                                           "letter":  "H"
+                                       },
+                             "{0,21}":  {
+                                            "type":  "local",
+                                            "name":  "P0 OD ?",
+                                            "letter":  "U"
+                                        },
+                             "{0,7}":  {
+                                           "type":  "local",
+                                           "name":  "P0 Prix unitaire",
+                                           "letter":  "G"
+                                       },
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "P0 Date",
+                                           "letter":  "C"
+                                       },
+                             "{0,10}":  {
+                                            "type":  "local",
+                                            "name":  "P0 Masque",
+                                            "letter":  "J"
+                                        },
+                             "{0,53}":  {
+                                            "type":  "local",
+                                            "name":  "P.i.N° de Ticket si VG TENV10",
+                                            "letter":  "BA"
+                                        },
+                             "{0,25}":  {
+                                            "type":  "local",
+                                            "name":  "P.i Duplicata",
+                                            "letter":  "Y"
+                                        },
+                             "{0,57}":  {
+                                            "type":  "local",
+                                            "name":  "W0 en-tête ?",
+                                            "letter":  "BE"
+                                        },
+                             "{0,11}":  {
+                                            "type":  "local",
+                                            "name":  "P0 Chambre",
+                                            "letter":  "K"
+                                        },
+                             "{0,19}":  {
+                                            "type":  "local",
+                                            "name":  "P0 TAI start date",
+                                            "letter":  "S"
+                                        },
+                             "{0,17}":  {
+                                            "type":  "local",
+                                            "name":  "PO is TAI",
+                                            "letter":  "Q"
+                                        },
+                             "{0,62}":  {
+                                            "type":  "local",
+                                            "name":  "v.Date Conso ou date séjour",
+                                            "letter":  "BJ"
+                                        },
+                             "{0,15}":  {
+                                            "type":  "local",
+                                            "name":  "P0 Num GM",
+                                            "letter":  "O"
+                                        },
+                             "{0,26}":  {
+                                            "type":  "local",
+                                            "name":  "p.Re_Print_Annulation",
+                                            "letter":  "Z"
+                                        },
+                             "{0,61}":  {
+                                            "type":  "local",
+                                            "name":  "v.NumeroTicketsvg",
+                                            "letter":  "BI"
+                                        },
+                             "{0,16}":  {
+                                            "type":  "local",
+                                            "name":  "P0 UNI/BI",
+                                            "letter":  "P"
+                                        },
+                             "{0,54}":  {
+                                            "type":  "local",
+                                            "name":  "P.i.TPE.N° Dossier Axis",
+                                            "letter":  "BB"
+                                        },
+                             "{0,6}":  {
+                                           "type":  "local",
+                                           "name":  "P0 Qte *NU*",
+                                           "letter":  "F"
+                                       },
+                             "{0,23}":  {
+                                            "type":  "local",
+                                            "name":  "P.Document ticket",
+                                            "letter":  "W"
+                                        },
+                             "{0,58}":  {
+                                            "type":  "local",
+                                            "name":  "W0 fin tâche",
+                                            "letter":  "BF"
+                                        },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "P0 od annulation",
+                                           "letter":  "A"
+                                       },
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "P0 Nom",
+                                           "letter":  "B"
+                                       },
+                             "{0,24}":  {
+                                            "type":  "local",
+                                            "name":  "P.Filename signature",
+                                            "letter":  "X"
+                                        },
+                             "{0,56}":  {
+                                            "type":  "local",
+                                            "name":  "P.i.Decline envoi mail",
+                                            "letter":  "BD"
+                                        },
+                             "{0,60}":  {
+                                            "type":  "local",
+                                            "name":  "v.Itération Compteur ticket",
+                                            "letter":  "BH"
+                                        },
+                             "{0,55}":  {
+                                            "type":  "local",
+                                            "name":  "P.i.TPE.N° autorisation",
+                                            "letter":  "BC"
+                                        },
+                             "{0,65}":  {
+                                            "type":  "local",
+                                            "name":  "v. nb lignes erreurs",
+                                            "letter":  "BM"
+                                        },
+                             "{0,12}":  {
+                                            "type":  "local",
+                                            "name":  "P0 mode de paiement",
+                                            "letter":  "L"
+                                        }
                          },
     "metadata":  {
                      "ide_position":  236,
-                     "pipeline_version":  "6.0",
+                     "pipeline_version":  "7.0",
                      "project":  "ADH",
                      "program_name":  " Print ticket vente PMS-584",
-                     "generated_at":  "2026-01-28 17:46:12"
+                     "generated_at":  "2026-01-29 19:45:15"
                  }
 }

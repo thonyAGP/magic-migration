@@ -16,10 +16,10 @@
                    },
     "metadata":  {
                      "ide_position":  121,
-                     "pipeline_version":  "6.0",
+                     "pipeline_version":  "7.0",
                      "project":  "ADH",
                      "program_name":  "Gestion caisse",
-                     "generated_at":  "2026-01-29 09:26:18"
+                     "generated_at":  "2026-01-29 19:45:36"
                  },
     "forms":  [
                   {

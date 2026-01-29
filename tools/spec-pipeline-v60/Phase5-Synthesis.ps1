@@ -159,6 +159,7 @@ function Reformulate-BusinessRule {
         if ($text -match "\d+\.\d+") {
             return "Position UI conditionnelle selon $inVar"
         }
+        return "Verification d'appartenance de $inVar a une liste de valeurs"
     }
 
     # IF(var<>0 AND NOT(var2), Fix(a*b/100,...)) - percentage calc
@@ -170,6 +171,65 @@ function Reformulate-BusinessRule {
     if ($text -match "^IF\s*\(([^=]+)=''") {
         $var = $Matches[1].Trim()
         return "Valeur par defaut si $var est vide"
+    }
+
+    # IF(var=0,...) - zero check
+    if ($text -match "^IF\s*\(([^=]+)=0,") {
+        $var = $Matches[1].Trim()
+        return "Traitement conditionnel si $var est a zero"
+    }
+
+    # IF(var<>'', ...) - non-empty check
+    if ($text -match "^IF\s*\(([^<]+)<>''") {
+        $var = $Matches[1].Trim()
+        return "Traitement si $var est renseigne"
+    }
+
+    # IF(var<>0, ...) - non-zero check
+    if ($text -match "^IF\s*\(([^<]+)<>0,") {
+        $var = $Matches[1].Trim()
+        return "Traitement si $var est non nul"
+    }
+
+    # Str(...) / DStr(...) - formatting
+    if ($text -match "DStr\s*\(.*Date\(\)") {
+        return "Formatage de la date courante pour generation document"
+    }
+    if ($text -match "TStr\s*\(.*Time\(\)") {
+        return "Formatage de l'heure courante pour generation document"
+    }
+
+    # Translate('%TempDir%') - file path
+    if ($text -match "Translate.*TempDir") {
+        return "Construction du chemin de fichier temporaire pour document genere"
+    }
+
+    # GetParam('CURRENTPRINTERNUM') - printer check
+    if ($text -match "GetParam\s*\(\s*'CURRENTPRINTERNUM'\s*\)\s*=\s*(\d+)") {
+        $printer = $Matches[1]
+        return "Verification que l'imprimante courante est la n$printer"
+    }
+    if ($text -match "GetParam\s*\(\s*'CURRENTPRINTERNUM'\s*\)$") {
+        return "Recuperation du numero d'imprimante courante"
+    }
+
+    # Constant strings
+    if ($text -match "^'([^']+)'$") {
+        $val = $Matches[1]
+        return "Constante '$val'"
+    }
+
+    # 'TRUE'LOG / 'FALSE'LOG
+    if ($text -match "'TRUE'LOG") { return "Condition toujours vraie (flag actif)" }
+    if ($text -match "'FALSE'LOG") { return "Condition toujours fausse (flag inactif)" }
+
+    # Variable reference (VG or simple var)
+    if ($text -match "^NOT\s+(.+)$") {
+        $var = $Matches[1].Trim()
+        return "Negation de $var (condition inversee)"
+    }
+    if ($text -match "^VG\d+$") {
+        return "Reference a la variable globale $text"
     }
 
     # Fallback 1: use natural_language from Phase 3 decode
@@ -594,6 +654,52 @@ if ($blocMap.Count -gt 0) {
         Add-Line "### 3.$bIdx $blocName ($($blocForms.Count) taches)"
         Add-Line
 
+        # Narrative description per bloc (contextual paragraph)
+        $blocNarrative = switch ($blocName) {
+            "Saisie" {
+                $visNames = ($vis | ForEach-Object { $_.name }) -join ', '
+                if ($vis.Count -gt 0) {
+                    "L'operateur saisit les donnees de la transaction via $($vis.Count) ecran(s) ($visNames). Les champs de saisie sont valides en temps reel avant enregistrement."
+                } else {
+                    "Ce bloc traite la saisie des donnees de la transaction. $($blocForms.Count) tache(s) interne(s) gerent la collecte et la preparation des informations."
+                }
+            }
+            "Reglement" {
+                "Gestion des moyens de paiement : le programme traite $($blocForms.Count) tache(s) de reglement couvrant le choix du mode de paiement, le calcul des montants et la validation du paiement."
+            }
+            "Validation" {
+                "Controles de coherence et de conformite : $($blocForms.Count) tache(s) verifient les donnees saisies, les droits de l'operateur et les conditions prealables au traitement."
+            }
+            "Impression" {
+                "Generation des documents et tickets : $($blocForms.Count) tache(s) gerent l'impression des recus, tickets et documents associes a l'operation."
+            }
+            "Calcul" {
+                "Calculs metier : $($blocForms.Count) tache(s) effectuent les calculs de montants, stocks, compteurs ou statistiques necessaires au traitement."
+            }
+            "Transfert" {
+                "Transfert de donnees entre modules : $($blocForms.Count) tache(s) gerent le deversement ou le transfert d'informations vers d'autres programmes ou modules."
+            }
+            "Consultation" {
+                $visNames = ($vis | ForEach-Object { $_.name }) -join ', '
+                if ($vis.Count -gt 0) {
+                    "Ecrans de recherche et consultation ($visNames) : l'operateur peut rechercher, filtrer et selectionner des donnees existantes."
+                } else {
+                    "Consultation de donnees : $($blocForms.Count) tache(s) permettent l'acces aux informations existantes."
+                }
+            }
+            "Creation" {
+                "Insertion de nouveaux enregistrements : $($blocForms.Count) tache(s) creent des mouvements, prestations ou autres donnees en base."
+            }
+            "Initialisation" {
+                "Reinitialisation d'etats : $($blocForms.Count) tache(s) preparent les variables de travail et remettent les compteurs a zero."
+            }
+            default {
+                "Traitements internes : $($blocForms.Count) tache(s) de traitement metier."
+            }
+        }
+        Add-Line $blocNarrative
+        Add-Line
+
         # Ecrans visibles
         if ($vis.Count -gt 0) {
             foreach ($f in $vis) {
@@ -798,9 +904,66 @@ if ($visibleForms.Count -gt 0) {
         Add-Line $topBorder
         Add-Line "|$($headerText.PadRight($boxWidth - 2))|"
         Add-Line $midBorder
-        $contentLine = "  [Phase 2: controles reels]"
-        Add-Line "|$($contentLine.PadRight($boxWidth - 2))|"
-        for ($i = 0; $i -lt [math]::Min($boxHeight, 4); $i++) { Add-Line $emptyLine }
+
+        # Generate mockup content from actual variables per bloc
+        $formBloc = Get-FunctionalBloc $form.name
+        $fieldLines = @()
+
+        # P0 parameters as read-only fields (first line)
+        $formP0 = @($variableRows | Where-Object { $_.Category -eq "P0" } | Select-Object -First 4)
+        if ($formP0.Count -gt 0) {
+            $p0Fields = ($formP0 | ForEach-Object { "[$($_.Name) ($($_.Letter))]" }) -join "  "
+            $fieldLines += "  $p0Fields"
+        }
+
+        # W0 variables matching bloc as editable fields
+        $blocPattern = switch ($formBloc) {
+            "Saisie"         { 'saisie|transaction|vente|article|quantite|qte|produit|imputation|service|code|libelle|prix|montant|date' }
+            "Reglement"      { 'regl|paiement|mop|montant|total|solde|devise|mode|cheque' }
+            "Validation"     { 'controle|verif|valid|erreur|statut|confirm' }
+            "Impression"     { 'print|ticket|edition|imprim|numero' }
+            "Calcul"         { 'stock|calcul|compt|pourcentage|taux|cumul|total' }
+            "Transfert"      { 'transfer|devers|vol|gare|aerop|pax|sens|heure|date' }
+            "Consultation"   { 'affich|zoom|select|filtre|recherche|choix' }
+            "Initialisation" { 'init|raz|reinit|defaut' }
+            default          { '.' }
+        }
+        $formW0 = @($variableRows | Where-Object {
+            $_.Category -eq "W0" -and ($_.Name -match $blocPattern)
+        } | Select-Object -First 6)
+
+        # W0 fields: 2 per line
+        for ($wi = 0; $wi -lt $formW0.Count; $wi += 2) {
+            $f1 = $formW0[$wi]
+            $line = "  [$($f1.Name) ($($f1.Letter)) ____]"
+            if ($wi + 1 -lt $formW0.Count) {
+                $f2 = $formW0[$wi + 1]
+                $line += "  [$($f2.Name) ($($f2.Letter))]"
+            }
+            $fieldLines += $line
+        }
+
+        # Buttons at bottom
+        $formBtns = @($variableRows | Where-Object { $_.Name -match '^Bouton' } | Select-Object -First 3)
+        if ($formBtns.Count -gt 0) {
+            $btnLine = "  " + (($formBtns | ForEach-Object { "[$($_.Name) ($($_.Letter))]" }) -join "  ")
+            $fieldLines += ""
+            $fieldLines += $btnLine
+        }
+
+        # Fallback if no variables found
+        if ($fieldLines.Count -eq 0) {
+            $fieldLines += "  (Traitement interne - $formBloc)"
+        }
+
+        # Render field lines within box
+        foreach ($fl in $fieldLines) {
+            if ($fl.Length -gt $boxWidth - 2) { $fl = $fl.Substring(0, $boxWidth - 5) + "..." }
+            Add-Line "|$($fl.PadRight($boxWidth - 2))|"
+        }
+        # Fill remaining height
+        $remainHeight = [math]::Max(0, [math]::Min($boxHeight + 1, 5) - $fieldLines.Count)
+        for ($i = 0; $i -lt $remainHeight; $i++) { Add-Line $emptyLine }
         Add-Line $topBorder
         Add-Line ""
     }
@@ -819,54 +982,58 @@ if ($visibleForms.Count -gt 1) {
     Add-Line "### 9.1 Enchainement des ecrans"
     Add-Line
 
-    # Zigzag layout: rows of 4 nodes for readability
-    $rowSize = 4
+    # Bloc-level navigation: show flow between functional blocs (not linear chain)
     Add-Line '```mermaid'
     Add-Line "flowchart LR"
-
-    # Define all nodes first
     Add-Line "    START([Entree])"
     Add-Line "    style START fill:#3fb950"
-    $navIdx = 1
-    foreach ($form in $visibleForms) {
-        $fl = Clean-MermaidLabel $form.name
-        Add-Line "    F$navIdx[$fl]"
-        $navIdx++
+
+    # Build bloc nodes with screen counts
+    $blocOrder = @()
+    foreach ($blocName in $blocMap.Keys) {
+        $bForms = $blocMap[$blocName]
+        $bVis = @($bForms | Where-Object { $_.dimensions.width -gt 0 })
+        if ($bVis.Count -gt 0 -or $bForms.Count -gt 0) {
+            $blocOrder += $blocName
+        }
+    }
+
+    $bIdx = 1
+    foreach ($bn in $blocOrder) {
+        $bForms = $blocMap[$bn]
+        $bVis = @($bForms | Where-Object { $_.dimensions.width -gt 0 })
+        $visLabel = if ($bVis.Count -gt 0) { " $($bVis.Count) ecrans" } else { "" }
+        $bLabel = Clean-MermaidLabel "$bn$visLabel"
+        Add-Line "    B$bIdx[$bLabel]"
+        $bIdx++
     }
     Add-Line "    FIN([Sortie])"
     Add-Line "    style FIN fill:#f85149"
 
-    # Build zigzag connections: rows of $rowSize, alternating direction
-    $allNodes = @("START")
-    for ($i = 1; $i -le $visibleForms.Count; $i++) { $allNodes += "F$i" }
-    $allNodes += "FIN"
-
-    $totalNodes = $allNodes.Count
-    $rowIdx = 0
-    for ($i = 0; $i -lt $totalNodes; $i += $rowSize) {
-        $rowEnd = [math]::Min($i + $rowSize, $totalNodes)
-        $rowSlice = $allNodes[$i..($rowEnd - 1)]
-
-        if ($rowIdx % 2 -eq 0) {
-            # Left-to-right row
-            for ($j = 0; $j -lt $rowSlice.Count - 1; $j++) {
-                Add-Line "    $($rowSlice[$j]) --> $($rowSlice[$j + 1])"
-            }
-        } else {
-            # Right-to-left row (reverse connections for zigzag effect)
-            for ($j = 0; $j -lt $rowSlice.Count - 1; $j++) {
-                Add-Line "    $($rowSlice[$j]) --> $($rowSlice[$j + 1])"
-            }
-        }
-        # Connect last node of this row to first of next row (if exists)
-        if ($rowEnd -lt $totalNodes -and ($rowEnd - 1) -ge 0) {
-            $lastOfRow = $allNodes[$rowEnd - 1]
-            $firstOfNext = $allNodes[$rowEnd]
-            Add-Line "    $lastOfRow --> $firstOfNext"
-        }
-        $rowIdx++
+    # Connect blocs sequentially (main flow)
+    Add-Line "    START --> B1"
+    for ($i = 1; $i -lt $blocOrder.Count; $i++) {
+        Add-Line "    B$i --> B$($i + 1)"
     }
+    Add-Line "    B$($blocOrder.Count) --> FIN"
     Add-Line '```'
+    Add-Line
+
+    # Detail: screens per bloc
+    Add-Line "**Detail par bloc:**"
+    Add-Line
+    $bIdx2 = 1
+    foreach ($bn in $blocOrder) {
+        $bForms = $blocMap[$bn]
+        $bVis = @($bForms | Where-Object { $_.dimensions.width -gt 0 })
+        if ($bVis.Count -gt 0) {
+            $screenNames = ($bVis | ForEach-Object { "$($_.name) (T$($_.task_isn2))" }) -join ', '
+            Add-Line "- **$bn**: $screenNames"
+        } else {
+            Add-Line "- **$bn**: traitement interne ($($bForms.Count) taches)"
+        }
+        $bIdx2++
+    }
     Add-Line
 } elseif ($visibleForms.Count -eq 1) {
     Add-Line "Ecran unique: **$($visibleForms[0].name)**"
@@ -878,61 +1045,84 @@ Add-Line "### 9.2 Logique decisionnelle"
 Add-Line
 
 if ($businessRules.Count -gt 0) {
-    # Show decisions grouped by category for readability
+    # Group decisions by functional bloc for readability (not linear chain)
+    $decByBloc = [ordered]@{}
+    foreach ($rule in $businessRules) {
+        $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
+        $dLower = $dExpr.ToLower()
+        $rBloc = if ($dLower -match 'saisie|transaction|vente|W0') { "Saisie" }
+        elseif ($dLower -match 'regl|MOP|paiement|montant') { "Reglement" }
+        elseif ($dLower -match 'controle|verif|valid') { "Validation" }
+        elseif ($dLower -match 'Fix\(|pourcentage|\*.*/' ) { "Calcul" }
+        elseif ($dLower -match 'transfer|devers|bilat') { "Transfert" }
+        else { "Autres" }
+        if (-not $decByBloc.Contains($rBloc)) { $decByBloc[$rBloc] = @() }
+        $decByBloc[$rBloc] += $rule
+    }
+
     Add-Line '```mermaid'
     Add-Line "flowchart TD"
     Add-Line "    START([Debut traitement])"
     Add-Line "    style START fill:#3fb950"
 
-    $prevNode = "START"
-    $dIdx = 1
-    $maxDec = [math]::Min($businessRules.Count, 8)
+    $prevBlocNode = "START"
+    $globalDIdx = 1
+    foreach ($blocName in $decByBloc.Keys) {
+        $blocRules = $decByBloc[$blocName]
+        $blocNodeId = "BLOC_$($blocName -replace ' ','_')"
 
-    foreach ($rule in ($businessRules | Select-Object -First $maxDec)) {
-        $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
-        $nl2 = if ($rule.natural_language) { $rule.natural_language } else { "" }
-        $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id -NaturalLanguage $nl2
-        $shortLbl = Clean-MermaidLabel $frLbl
+        # Bloc header node
+        $bLabel = Clean-MermaidLabel "$blocName $($blocRules.Count) regles"
+        Add-Line "    $blocNodeId[$bLabel]"
+        Add-Line "    style $blocNodeId fill:#f59e0b"
+        Add-Line "    $prevBlocNode --> $blocNodeId"
 
-        # Decision diamond with OUI/NON branches
-        Add-Line "    D$dIdx{$shortLbl}"
-        Add-Line "    style D$dIdx fill:#58a6ff"
-        Add-Line "    $prevNode --> D$dIdx"
+        # Show max 3 rules per bloc in diagram
+        $prevNode = $blocNodeId
+        $maxPerBloc = [math]::Min($blocRules.Count, 3)
+        foreach ($rule in ($blocRules | Select-Object -First $maxPerBloc)) {
+            $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
+            $nl2 = if ($rule.natural_language) { $rule.natural_language } else { "" }
+            $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id -NaturalLanguage $nl2
+            $shortLbl = Clean-MermaidLabel $frLbl
 
-        # OUI branch: action label from rule ID
-        $actionLbl = Clean-MermaidLabel "$($rule.id) Appliquer"
-        Add-Line "    A$dIdx[$actionLbl]"
-        Add-Line "    D$dIdx -->|OUI| A$dIdx"
-        Add-Line "    D$dIdx -->|NON| N$dIdx((.))"
-        Add-Line "    A$dIdx --> N$dIdx"
-        $prevNode = "N$dIdx"
-        $dIdx++
-    }
-
-    if ($businessRules.Count -gt $maxDec) {
-        $rem = $businessRules.Count - $maxDec
-        Add-Line "    MORE[+ $rem autres regles]"
-        Add-Line "    $prevNode --> MORE"
-        $prevNode = "MORE"
+            Add-Line "    D$globalDIdx{$shortLbl}"
+            Add-Line "    style D$globalDIdx fill:#58a6ff"
+            Add-Line "    $prevNode --> D$globalDIdx"
+            Add-Line "    D$globalDIdx -->|OUI| A$globalDIdx[$($rule.id)]"
+            Add-Line "    D$globalDIdx -->|NON| N$globalDIdx((.))"
+            Add-Line "    A$globalDIdx --> N$globalDIdx"
+            $prevNode = "N$globalDIdx"
+            $globalDIdx++
+        }
+        if ($blocRules.Count -gt $maxPerBloc) {
+            $rem = $blocRules.Count - $maxPerBloc
+            Add-Line "    MORE$blocNodeId[+ $rem autres]"
+            Add-Line "    $prevNode --> MORE$blocNodeId"
+            $prevNode = "MORE$blocNodeId"
+        }
+        $prevBlocNode = $prevNode
     }
     Add-Line "    ENDOK([Fin traitement])"
     Add-Line "    style ENDOK fill:#f85149"
-    Add-Line "    $prevNode --> ENDOK"
+    Add-Line "    $prevBlocNode --> ENDOK"
     Add-Line '```'
     Add-Line
 
-    # Text legend of all rules for reference
-    Add-Line "**Legende:**"
+    # Full legend grouped by bloc
+    Add-Line "**Regles par bloc:**"
     Add-Line
-    $rIdx = 1
-    foreach ($rule in ($businessRules | Select-Object -First $maxDec)) {
-        $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
-        $nl3 = if ($rule.natural_language) { $rule.natural_language } else { "" }
-        $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id -NaturalLanguage $nl3
-        Add-Line "- **D$rIdx** ($($rule.id)): $frLbl"
-        $rIdx++
+    foreach ($blocName in $decByBloc.Keys) {
+        $blocRules = $decByBloc[$blocName]
+        Add-Line "**$blocName** ($($blocRules.Count)):"
+        foreach ($rule in $blocRules) {
+            $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
+            $nl3 = if ($rule.natural_language) { $rule.natural_language } else { "" }
+            $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id -NaturalLanguage $nl3
+            Add-Line "- **$($rule.id)**: $frLbl"
+        }
+        Add-Line
     }
-    Add-Line
 } else {
     Add-Line "*(Pas de regles metier pour l'algorigramme)*"
     Add-Line
@@ -1039,8 +1229,61 @@ Add-Line
 
 Add-Line "### 10.2 Colonnes par table"
 Add-Line
-Add-Line "*[Phase 2] Analyse des colonnes lues (R) et modifiees (W) par table avec details depliables.*"
-Add-Line
+
+# Generate foldable column details per table from variable mapping
+$tableColDetails = @{}
+if ($mapping -and $mapping.variables -and $mapping.variables.local) {
+    foreach ($v in $mapping.variables.local) {
+        $vName = $v.name
+        # Match variables to tables by name similarity
+        foreach ($tKey in $tableUnified.Keys) {
+            $tEntry = $tableUnified[$tKey]
+            $tLogical = $tEntry.logical_name.ToLower() -replace '_+', ' '
+            $vLower = $vName.ToLower()
+            # Heuristic: first word of table name matches in variable name
+            $firstWord = ($tLogical -split ' ')[0]
+            if ($firstWord.Length -ge 4 -and $vLower -match [regex]::Escape($firstWord)) {
+                if (-not $tableColDetails.ContainsKey($tKey)) { $tableColDetails[$tKey] = @() }
+                $rw = if ($tEntry.W) { "W" } else { "R" }
+                $tableColDetails[$tKey] += @{ letter = $v.letter; name = $vName; rw = $rw; type = $v.data_type }
+                break
+            }
+        }
+    }
+}
+
+# Show columns grouped by table in foldable sections
+$tablesWithAccess = @($usedTables | Where-Object { $_.W -or $_.R })
+if ($tablesWithAccess.Count -gt 0) {
+    foreach ($t in $tablesWithAccess) {
+        $tKey = "$($t.id)"
+        $accessMode = @()
+        if ($t.R) { $accessMode += "R" }
+        if ($t.W) { $accessMode += "**W**" }
+        if ($t.L) { $accessMode += "L" }
+        $accessStr = $accessMode -join '/'
+
+        Add-Line "<details>"
+        Add-Line "<summary>Table $($t.id) - $($t.logical_name) ($accessStr) - $($t.usage_total) usages</summary>"
+        Add-Line
+
+        if ($tableColDetails.ContainsKey($tKey) -and $tableColDetails[$tKey].Count -gt 0) {
+            Add-Line "| Lettre | Variable | Acces | Type |"
+            Add-Line "|--------|----------|-------|------|"
+            foreach ($col in $tableColDetails[$tKey]) {
+                Add-Line "| $($col.letter) | $($col.name) | $($col.rw) | $($col.type) |"
+            }
+        } else {
+            Add-Line "*Colonnes accessibles via outils MCP (`magic_get_line`)*"
+        }
+        Add-Line
+        Add-Line "</details>"
+        Add-Line
+    }
+} else {
+    Add-Line "*Aucune table avec acces R/W identifie.*"
+    Add-Line
+}
 
 # Declared but unused tables
 if ($unusedTables.Count -gt 0) {
@@ -1745,7 +1988,7 @@ Write-Host "STRUCTURE:" -ForegroundColor Cyan
 Write-Host "  TAB 1 Resume:     Fiche + $($blocMap.Count) blocs + $($businessRules.Count) regles FR"
 Write-Host "  TAB 2 Ecrans:     $($visibleForms.Count) mockups + Navigation + Algorigramme"
 Write-Host "  TAB 3 Donnees:    $($tableUnified.Count) tables + $($variableRows.Count) vars + $($allExprs.Count) exprs"
-Write-Host "  TAB 4 Connexions: $($discovery.call_graph.callers.Count) callers + $calleeCount callees + Migration ${effortDays}j"
+Write-Host "  TAB 4 Connexions: $($discovery.call_graph.callers.Count) callers + $calleeCount callees + Migration"
 Write-Host ""
 Write-Host "FILES: $summaryFileName | $detailedFileName"
 

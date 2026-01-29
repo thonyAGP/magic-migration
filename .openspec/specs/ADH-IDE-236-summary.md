@@ -1,6 +1,6 @@
 ﻿# ADH IDE 236 - Print ticket vente PMS-584
 
-> **Analyse**: 2026-01-29 18:22
+> **Analyse**: 2026-01-29 19:45
 > **Pipeline**: V7.0 Deep Analysis
 
 ## RESUME EXECUTIF
@@ -9,7 +9,7 @@
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (25/100)
 - **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 4 programme(s): IDE 238, IDE 243, IDE 244
+- **Raison**: Appele par 4 programme(s): Transaction Nouv vente PMS-584 (IDE 238), Histo ventes payantes (IDE 243), Histo ventes payantes /PMS-605 (IDE 244), Histo ventes payantes /PMS-623 (IDE 245)
 
 ## MOTS-CLES RECHERCHE
 

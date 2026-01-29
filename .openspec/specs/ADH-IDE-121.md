@@ -1,6 +1,6 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: Phases 1-4 2026-01-29 09:26 -> 09:26 (8s) | Assemblage 18:22
+> **Analyse**: Phases 1-4 2026-01-29 19:45 -> 19:45 (7s) | Assemblage 19:45
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -47,6 +47,8 @@ Le programme delegue des operations a **18 sous-programmes** couvrant :
 
 ### 3.1 Traitement (23 taches)
 
+Traitements internes : 23 tache(s) de traitement metier.
+
 - **Gestion de la caisse** (T7, MDI, 939x178)
 - **Concurrence sessions for devel** (T32, MDI, 524x236)
 - *Internes*: Gestion caisse (T1), Paramètres caisse (T2), Paramètres caisse (T4), Etat de la caisse (T6), Existe histo (T8), Ouverture caisse (T9), Cloture en cours v1 (T10), histo coffre2 (T13), Fermeture caisse (T15), Clôture histo session (T16), Apport coffre (T17), Apport produit (T18), Remise au coffre (T19), Historique (T21), Consultation (T22), Remise au coffre (T24), Open sessions (T25), Pointage (T26), Read Sessions (T27), Remise au coffre (T28), histo coffre2 (T31)
@@ -54,10 +56,14 @@ Le programme delegue des operations a **18 sous-programmes** couvrant :
 
 ### 3.2 Validation (2 taches)
 
+Controles de coherence et de conformite : 2 tache(s) verifient les donnees saisies, les droits de l'operateur et les conditions prealables au traitement.
+
 - *Internes*: Controle COFFRE2 (T3), Controle monnaie/produit (T11)
 - **Sous-programmes**: Controle fermeture caisse WS (IDE 155), Verif session caisse ouverte2 (IDE 156)
 
 ### 3.3 Calcul (1 taches)
+
+Calculs metier : 1 tache(s) effectuent les calculs de montants, stocks, compteurs ou statistiques necessaires au traitement.
 
 - *Internes*: Date comptable (T5)
 - **Sous-programmes**: Calcul concurrence sessions (IDE 116)
@@ -65,19 +71,27 @@ Le programme delegue des operations a **18 sous-programmes** couvrant :
 
 ### 3.4 Creation (2 taches)
 
+Insertion de nouveaux enregistrements : 2 tache(s) creent des mouvements, prestations ou autres donnees en base.
+
 - *Internes*: Creation histo session (T12), Creation histo session (T30)
 - **Tables modifiees**: histo_sessions_caisse
 
 ### 3.5 Saisie (2 taches)
 
+Ce bloc traite la saisie des donnees de la transaction. 2 tache(s) interne(s) gerent la collecte et la preparation des informations.
+
 - *Internes*: init tempo saisie dev (T14), RAZ Saisie devises P/V (T20)
 
 ### 3.6 Impression (1 taches)
+
+Generation des documents et tickets : 1 tache(s) gerent l'impression des recus, tickets et documents associes a l'operation.
 
 - *Internes*: reimprimer tickets (T23)
 - **Sous-programmes**: Ticket appro remise (IDE 139), Reimpression tickets fermeture (IDE 151)
 
 ### 3.7 Initialisation (1 taches)
+
+Reinitialisation d'etats : 1 tache(s) preparent les variables de travail et remettent les compteurs a zero.
 
 - *Internes*: Ligne Initiale (T29)
 - **Sous-programmes**: Init apport article session WS (IDE 140), Init devise session WS (IDE 141)
@@ -109,7 +123,7 @@ Le programme delegue des operations a **18 sous-programmes** couvrant :
 +=============================================+
 | Gestion de la caisse [MDI] 939x178 - Tach... |
 +---------------------------------------------+
-|  [Phase 2: controles reels]                 |
+|  (Traitement interne - Traitement)          |
 |                                             |
 |                                             |
 |                                             |
@@ -118,7 +132,7 @@ Le programme delegue des operations a **18 sous-programmes** couvrant :
 +============================+
 | Concurrence sessions for... |
 +----------------------------+
-|  [Phase 2: controles reels]|
+|  (Traitement interne - T...|
 |                            |
 |                            |
 |                            |
@@ -135,14 +149,34 @@ Le programme delegue des operations a **18 sous-programmes** couvrant :
 flowchart LR
     START([Entree])
     style START fill:#3fb950
-    F1[Gestion de la caisse]
-    F2[Concurrence sessions f...]
+    B1[Traitement 2 ecrans]
+    B2[Validation]
+    B3[Calcul]
+    B4[Creation]
+    B5[Saisie]
+    B6[Impression]
+    B7[Initialisation]
     FIN([Sortie])
     style FIN fill:#f85149
-    START --> F1
-    F1 --> F2
-    F2 --> FIN
+    START --> B1
+    B1 --> B2
+    B2 --> B3
+    B3 --> B4
+    B4 --> B5
+    B5 --> B6
+    B6 --> B7
+    B7 --> FIN
 ```
+
+**Detail par bloc:**
+
+- **Traitement**: Gestion de la caisse (T7), Concurrence sessions for devel (T32)
+- **Validation**: traitement interne (2 taches)
+- **Calcul**: traitement interne (1 taches)
+- **Creation**: traitement interne (2 taches)
+- **Saisie**: traitement interne (2 taches)
+- **Impression**: traitement interne (1 taches)
+- **Initialisation**: traitement interne (1 taches)
 
 ### 9.2 Logique decisionnelle
 
@@ -206,7 +240,91 @@ flowchart LR
 
 ### 10.2 Colonnes par table
 
-*[Phase 2] Analyse des colonnes lues (R) et modifiees (W) par table avec details depliables.*
+<details>
+<summary>Table 23 - reseau_cloture___rec (R) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 70 - date_comptable___dat (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| E | Date ouverture | R | Date |
+| R | V Date comptable | R | Date |
+| U | V Date ouverture | R | Date |
+| W | V Date Fin session | R | Date |
+
+</details>
+
+<details>
+<summary>Table 198 - coupures_monnaie_locale (R) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 227 - concurrence_sessions (**W**) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 232 - gestion_devise_session (R) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 244 - saisie_approvisionnement (**W**/L) - 2 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 246 - histo_sessions_caisse (R/**W**/L) - 6 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| G | existe histo | W | Logical |
+
+</details>
+
+<details>
+<summary>Table 248 - sessions_coffre2 (**W**/L) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| N | Param VIL open sessions | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 249 - histo_sessions_caisse_detail (R/L) - 4 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 697 - droits_applications (R) - 2 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 740 - pv_stock_movements (R) - 2 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
 
 ## 11. VARIABLES
 
@@ -482,4 +600,4 @@ graph LR
 | IDE 151 - Reimpression tickets fermeture | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:22*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 19:45*

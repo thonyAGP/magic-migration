@@ -1,6 +1,6 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: 2026-01-29 18:22
+> **Analyse**: 2026-01-29 19:45
 > **Pipeline**: V7.0 Deep Analysis
 
 ## RESUME EXECUTIF
@@ -9,7 +9,7 @@
 - **Tables modifiees**: 4
 - **Complexite**: **MOYENNE** (48/100)
 - **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 2 programme(s): IDE 163, IDE 281
+- **Raison**: Appele par 2 programme(s): Menu caisse GM - scroll (IDE 163), Fermeture Sessions (IDE 281)
 
 ## MOTS-CLES RECHERCHE
 

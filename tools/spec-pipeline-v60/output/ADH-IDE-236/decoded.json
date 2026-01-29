@@ -75,7 +75,7 @@
                                                           "comment":  "",
                                                           "raw":  "{0,22}",
                                                           "ide_position":  10,
-                                                          "decoded":  "Var_V",
+                                                          "decoded":  "P.PDF [V]",
                                                           "type":  "OTHER"
                                                       },
                                                       {
@@ -131,7 +131,7 @@
                                                           "comment":  "",
                                                           "raw":  "{0,50}\u003e0",
                                                           "ide_position":  19,
-                                                          "decoded":  "Var_AX\u003e0",
+                                                          "decoded":  "[AX]\u003e0",
                                                           "type":  "OTHER"
                                                       }
                                                   ],
@@ -140,7 +140,7 @@
                                                          "comment":  "",
                                                          "raw":  "Translate (\u0027%TempDir%\u0027)\u0026\u0027ticket_vente_\u0027\u0026IF({0,21},\u0027OD_\u0027,\u0027\u0027)\u0026\r\nStr({0,15},\u00278P0\u0027)\u0026\u0027_\u0027\u0026 DStr (Date(),\u0027YYMMDD\u0027)\u0026\r\n\u0027_\u0027\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
                                                          "ide_position":  16,
-                                                         "decoded":  "Translate (\u0027%TempDir%\u0027)\u0026\u0027ticket_vente_\u0027\u0026IF(Var_U,\u0027OD_\u0027,\u0027\u0027)\u0026\r\nStr(Var_O,\u00278P0\u0027)\u0026\u0027_\u0027\u0026 DStr (Date(),\u0027YYMMDD\u0027)\u0026\r\n\u0027_\u0027\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "decoded":  "Translate (\u0027%TempDir%\u0027)\u0026\u0027ticket_vente_\u0027\u0026IF(P0 OD ? [U],\u0027OD_\u0027,\u0027\u0027)\u0026\r\nStr(P0 Num GM [O],\u00278P0\u0027)\u0026\u0027_\u0027\u0026 DStr (Date(),\u0027YYMMDD\u0027)\u0026\r\n\u0027_\u0027\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
                                                          "type":  "DATE"
                                                      }
                                                  ],
@@ -232,7 +232,7 @@
                                         "comment":  "",
                                         "raw":  "{0,22}",
                                         "ide_position":  10,
-                                        "decoded":  "Var_V",
+                                        "decoded":  "P.PDF [V]",
                                         "type":  "OTHER"
                                     },
                                     {
@@ -274,7 +274,7 @@
                                         "comment":  "",
                                         "raw":  "Translate (\u0027%TempDir%\u0027)\u0026\u0027ticket_vente_\u0027\u0026IF({0,21},\u0027OD_\u0027,\u0027\u0027)\u0026\r\nStr({0,15},\u00278P0\u0027)\u0026\u0027_\u0027\u0026 DStr (Date(),\u0027YYMMDD\u0027)\u0026\r\n\u0027_\u0027\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
                                         "ide_position":  16,
-                                        "decoded":  "Translate (\u0027%TempDir%\u0027)\u0026\u0027ticket_vente_\u0027\u0026IF(Var_U,\u0027OD_\u0027,\u0027\u0027)\u0026\r\nStr(Var_O,\u00278P0\u0027)\u0026\u0027_\u0027\u0026 DStr (Date(),\u0027YYMMDD\u0027)\u0026\r\n\u0027_\u0027\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "decoded":  "Translate (\u0027%TempDir%\u0027)\u0026\u0027ticket_vente_\u0027\u0026IF(P0 OD ? [U],\u0027OD_\u0027,\u0027\u0027)\u0026\r\nStr(P0 Num GM [O],\u00278P0\u0027)\u0026\u0027_\u0027\u0026 DStr (Date(),\u0027YYMMDD\u0027)\u0026\r\n\u0027_\u0027\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
                                         "type":  "DATE"
                                     },
                                     {
@@ -295,7 +295,7 @@
                                         "comment":  "",
                                         "raw":  "{0,50}\u003e0",
                                         "ide_position":  19,
-                                        "decoded":  "Var_AX\u003e0",
+                                        "decoded":  "[AX]\u003e0",
                                         "type":  "OTHER"
                                     }
                                 ]
@@ -315,9 +315,9 @@
                        },
     "metadata":  {
                      "ide_position":  236,
-                     "pipeline_version":  "6.0",
+                     "pipeline_version":  "7.0",
                      "project":  "ADH",
                      "program_name":  " Print ticket vente PMS-584",
-                     "generated_at":  "2026-01-28 17:46:15"
+                     "generated_at":  "2026-01-29 19:45:17"
                  }
 }

@@ -1,9 +1,9 @@
 ﻿{
     "pipeline_timing":  {
-                            "phases_start":  "2026-01-28 23:48:30",
-                            "assembly_start":  "2026-01-29 18:22:15",
-                            "phases_duration":  "11h45min",
-                            "phases_end":  "2026-01-29 11:33:59"
+                            "phases_start":  "2026-01-29 19:42:59",
+                            "assembly_start":  "2026-01-29 19:44:21",
+                            "phases_duration":  "8s",
+                            "phases_end":  "2026-01-29 19:43:07"
                         },
     "audit":  {
                   "checks":  [
@@ -24,8 +24,8 @@
                                  {
                                      "expected":  9,
                                      "status":  "PASS",
-                                     "detail":  "11/9 tables WRITE",
-                                     "actual":  11,
+                                     "detail":  "20/9 tables WRITE",
+                                     "actual":  20,
                                      "check":  "TABLES_WRITE"
                                  },
                                  {
@@ -120,9 +120,9 @@
               },
     "metadata":  {
                      "pipeline_version":  "7.0",
-                     "generated_at":  "2026-01-29 18:22:16",
+                     "generated_at":  "2026-01-29 19:44:22",
                      "ide_position":  237,
-                     "duration_seconds":  1.4,
+                     "duration_seconds":  1.1,
                      "program_name":  "Transaction Nouv vente avec GP",
                      "project":  "ADH"
                  },

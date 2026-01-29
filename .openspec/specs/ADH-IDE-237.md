@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: Phases 1-4 2026-01-28 23:48 -> 11:33 (11h45min) | Assemblage 18:22
+> **Analyse**: Phases 1-4 2026-01-29 19:42 -> 19:43 (8s) | Assemblage 19:44
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -57,6 +57,8 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 
 ### 3.1 Saisie (7 taches)
 
+L'operateur saisit les donnees de la transaction via 7 ecran(s) (Saisie transaction, Saisie Bilaterale, Saisie mode de règlement, Saisie Commentaires, VRL : Saisie identité, Saisie dates forfait, Affiche saisie). Les champs de saisie sont valides en temps reel avant enregistrement.
+
 - **Saisie transaction** (T1, Modal, 1112x279)
 - **Saisie Bilaterale** (T7, Type6, 326x249)
 - **Saisie mode de règlement** (T8, Type6, 506x250)
@@ -71,6 +73,8 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 
 ### 3.2 Reglement (4 taches)
 
+Gestion des moyens de paiement : le programme traite 4 tache(s) de reglement couvrant le choix du mode de paiement, le calcul des montants et la validation du paiement.
+
 - **Reglements suite a refus TPE** (T2, Type6, 708x256)
 - *Internes*: Verif reglement tpe (T5), Creation reglement (T28), Changement MOP multi paiement (T34)
 - **Sous-programmes**: Recup Classe et Lib du MOP (IDE 152), Gestion Chèque (IDE 228)
@@ -80,6 +84,8 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 
 ### 3.3 Validation (1 taches)
 
+Controles de coherence et de conformite : 1 tache(s) verifient les donnees saisies, les droits de l'operateur et les conditions prealables au traitement.
+
 - *Internes*: verif reg restant (T3)
 - **Sous-programmes**:     SP Caractères Interdits (IDE 84)
 - **Regles metier**: 1 regles associees
@@ -87,10 +93,14 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 
 ### 3.4 Creation (5 taches)
 
+Insertion de nouveaux enregistrements : 5 tache(s) creent des mouvements, prestations ou autres donnees en base.
+
 - *Internes*: creation règlement (T4), Creation prestation (T22), Creation Tempo (T27), Creation (T29), Creation_heure_liberation (T47)
 - **Tables modifiees**: mvt_prestation___mpr
 
 ### 3.5 Traitement (18 taches)
+
+Traitements internes : 18 tache(s) de traitement metier.
 
 - **** (T18, Modal, 116x32)
 - **Libération du logement** (T46, Type0, 123x149)
@@ -100,10 +110,14 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 
 ### 3.6 Initialisation (3 taches)
 
+Reinitialisation d'etats : 3 tache(s) preparent les variables de travail et remettent les compteurs a zero.
+
 - *Internes*: RAZ 269 (T9), RAZ 269 (T32), RAZ LCO liberation (T48)
 - **Sous-programmes**: Reinit Aff PYR (IDE 249)
 
 ### 3.7 Calcul (5 taches)
+
+Calculs metier : 5 tache(s) effectuent les calculs de montants, stocks, compteurs ou statistiques necessaires au traitement.
 
 - *Internes*: Reaffichage infos compte (T15), calcul nombre carte (T35), Compte Enregs affectés (T37), Compte Enregs affectés (T42), Compte Enregs affectés (T43)
 - **Sous-programmes**: Calcul stock produit WS (IDE 149), Solde Gift Pass (IDE 241), Solde Resort Credit (IDE 254)
@@ -113,16 +127,22 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 
 ### 3.8 Consultation (1 taches)
 
+Consultation de donnees : 1 tache(s) permettent l'acces aux informations existantes.
+
 - *Internes*: Recherche imputation/ssimput (T26)
 - **Sous-programmes**: Recup Classe et Lib du MOP (IDE 152), Selection Vols /t Ville à côté (IDE 277), Recuperation du titre (IDE 43), Get Fidelisation et Remise (IDE 225), Get Matricule (IDE 227), Choix PYR (plusieurs chambres) (IDE 248), Zoom articles (IDE 257), Zoom services village (IDE 269)
 
 ### 3.9 Impression (1 taches)
+
+Generation des documents et tickets : 1 tache(s) gerent l'impression des recus, tickets et documents associes a l'operation.
 
 - *Internes*: Increment Num. Ticket(VRL/VSL) (T33)
 - **Sous-programmes**: Appel Print ticket vente PMS28 (IDE 233), Get Printer (IDE 179), Printer choice (IDE 180), Set Listing Number (IDE 181), Raz Current Printer (IDE 182)
 - **Variables cles**: EX (v.IncrémentTicket(VRL/VSL) OK), EY (v.IncrémentTicket(VTE) OK), EZ (v.NumeroTicket(VRL/VSL)), FA (v.NumeroTicket(VTE)), FU (V.N°Ticket OD)
 
 ### 3.10 Transfert (4 taches)
+
+Transfert de donnees entre modules : 4 tache(s) gerent le deversement ou le transfert d'informations vers d'autres programmes ou modules.
 
 - **Type transfert** (T38, Type6, 722x292)
 - **Affiche Transfert A/R** (T39, Type6, 681x205)
@@ -145,7 +165,7 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 - **[RM-008]** Comportement conditionnel selon type d'imputation 'VRL'
 - **[RM-009]** Position UI conditionnelle selon W0 imputation [W]
 - **[RM-010]** Comportement conditionnel selon type d'imputation 'TRF'
-- **[RM-011]** Si W0 Chambre [CX]<>'' alors RTrim (W0 Nb Chambres [CW])&Fill (' ' sinon Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))
+- **[RM-011]** Traitement si W0 Chambre [CX] est renseigne
 - **[RM-012]** Si V.Total reglement ligne [FF] alors V.Id transaction PMS [FI] sinon VG18)
 - **[RM-014]** Si NOT(CHG_PRV_W0 nbre articles [GO]) alors 132.875 sinon 105.875)
 - **[RM-015]** Si W0 imputation [W] vaut 'ANN' alors 'O', sinon 'N'
@@ -195,133 +215,155 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 +======================================================+
 | Saisie transaction [Modal] 1112x279 - Tache 1        |
 +------------------------------------------------------+
-|  [Phase 2: controles reels]                          |
+|  [P0 societe (A)]  [P0 devise locale (B)]  [P0 mas...|
+|  [W0 FIN SAISIE OD (R) ____]  [W0 code article (U)]  |
+|  [W0 imputation (W) ____]  [W0 date d'achat (Y)]     |
+|  [W0 service village (BA) ____]  [W0 libelle artic...|
 |                                                      |
-|                                                      |
-|                                                      |
-|                                                      |
+|  [Bouton IDENTITE (P)]  [Bouton ABANDON (Q)]  [Bou...|
 +======================================================+
 
 +=================================+
 | Reglements suite a refus TPE ... |
 +---------------------------------+
-|  [Phase 2: controles reels]     |
+|  [P0 societe (A)]  [P0 devise...|
+|  [W0 montant avant reduction ...|
+|  [W0 montant (DF) ____]  [W0 ...|
+|  [W0 Libelle MOP (DI) ____]  ...|
 |                                 |
-|                                 |
-|                                 |
-|                                 |
+|  [Bouton IDENTITE (P)]  [Bout...|
 +=================================+
 
 +============================+
 | Saisie Bilaterale [Type6... |
 +----------------------------+
-|  [Phase 2: controles reels]|
+|  [P0 societe (A)]  [P0 d...|
+|  [W0 FIN SAISIE OD (R) _...|
+|  [W0 imputation (W) ____...|
+|  [W0 service village (BA...|
 |                            |
-|                            |
-|                            |
-|                            |
+|  [Bouton IDENTITE (P)]  ...|
 +============================+
 
 +============================+
 | Saisie mode de règlement... |
 +----------------------------+
-|  [Phase 2: controles reels]|
+|  [P0 societe (A)]  [P0 d...|
+|  [W0 FIN SAISIE OD (R) _...|
+|  [W0 imputation (W) ____...|
+|  [W0 service village (BA...|
 |                            |
-|                            |
-|                            |
-|                            |
+|  [Bouton IDENTITE (P)]  ...|
 +============================+
 
 +=====================================+
 | Saisie Commentaires [Type6] 772x1... |
 +-------------------------------------+
-|  [Phase 2: controles reels]         |
+|  [P0 societe (A)]  [P0 devise loc...|
+|  [W0 FIN SAISIE OD (R) ____]  [W0...|
+|  [W0 imputation (W) ____]  [W0 da...|
+|  [W0 service village (BA) ____]  ...|
 |                                     |
-|                                     |
-|                                     |
+|  [Bouton IDENTITE (P)]  [Bouton A...|
 +=====================================+
 
 +=================================+
 | VRL : Saisie identité [MDI] 6... |
 +---------------------------------+
-|  [Phase 2: controles reels]     |
+|  [P0 societe (A)]  [P0 devise...|
+|  [W0 FIN SAISIE OD (R) ____] ...|
+|  [W0 imputation (W) ____]  [W...|
+|  [W0 service village (BA) ___...|
 |                                 |
-|                                 |
-|                                 |
+|  [Bouton IDENTITE (P)]  [Bout...|
 +=================================+
 
 +============================+
 |  [Modal] 116x32 - Tache 18 |
 +----------------------------+
-|  [Phase 2: controles reels]|
+|  [P0 societe (A)]  [P0 d...|
+|  [W0 FIN SAISIE OD (R) _...|
+|  [W0 code article (U) __...|
+|  [W0 sous-imput. (X) ___...|
 |                            |
-|                            |
-|                            |
+|  [Bouton IDENTITE (P)]  ...|
 +============================+
 
 +============================+
 | Saisie dates forfait [MD... |
 +----------------------------+
-|  [Phase 2: controles reels]|
+|  [P0 societe (A)]  [P0 d...|
+|  [W0 FIN SAISIE OD (R) _...|
+|  [W0 imputation (W) ____...|
+|  [W0 service village (BA...|
 |                            |
-|                            |
-|                            |
+|  [Bouton IDENTITE (P)]  ...|
 +============================+
 
 +============================+
 | Affiche saisie [Modal] 4... |
 +----------------------------+
-|  [Phase 2: controles reels]|
+|  [P0 societe (A)]  [P0 d...|
+|  [W0 FIN SAISIE OD (R) _...|
+|  [W0 imputation (W) ____...|
+|  [W0 service village (BA...|
 |                            |
-|                            |
-|                            |
+|  [Bouton IDENTITE (P)]  ...|
 +============================+
 
 +==================================+
 | Type transfert [Type6] 722x292... |
 +----------------------------------+
-|  [Phase 2: controles reels]      |
+|  [P0 societe (A)]  [P0 devise ...|
+|  [W0 date d'achat (Y) ____]  [...|
+|  [W0 Date du transfert Aller (...|
+|  [W0 b.Date du transfert (BP) ...|
 |                                  |
-|                                  |
-|                                  |
-|                                  |
+|  [Bouton IDENTITE (P)]  [Bouto...|
 +==================================+
 
 +================================+
 | Affiche Transfert A/R [Type6... |
 +--------------------------------+
-|  [Phase 2: controles reels]    |
+|  [P0 societe (A)]  [P0 devis...|
+|  [W0 date d'achat (Y) ____] ...|
+|  [W0 Date du transfert Aller...|
+|  [W0 b.Date du transfert (BP...|
 |                                |
-|                                |
-|                                |
+|  [Bouton IDENTITE (P)]  [Bou...|
 +================================+
 
 +===================================================+
 | Affectation PAX / Transfert [Type0] 1056x281 - ... |
 +---------------------------------------------------+
-|  [Phase 2: controles reels]                       |
+|  [P0 societe (A)]  [P0 devise locale (B)]  [P0 ...|
+|  [W0 date d'achat (Y) ____]  [W0 Sens du transf...|
+|  [W0 Date du transfert Aller (BN) ____]  [W0 He...|
+|  [W0 b.Date du transfert (BP) ____]  [W0 Code G...|
 |                                                   |
-|                                                   |
-|                                                   |
-|                                                   |
+|  [Bouton IDENTITE (P)]  [Bouton ABANDON (Q)]  [...|
 +===================================================+
 
 +============================+
 | Libération du logement [... |
 +----------------------------+
-|  [Phase 2: controles reels]|
+|  [P0 societe (A)]  [P0 d...|
+|  [W0 FIN SAISIE OD (R) _...|
+|  [W0 code article (U) __...|
+|  [W0 sous-imput. (X) ___...|
 |                            |
-|                            |
-|                            |
+|  [Bouton IDENTITE (P)]  ...|
 +============================+
 
 +============================+
 | Récup nb chambre /LCO [T... |
 +----------------------------+
-|  [Phase 2: controles reels]|
+|  [P0 societe (A)]  [P0 d...|
+|  [W0 FIN SAISIE OD (R) _...|
+|  [W0 code article (U) __...|
+|  [W0 sous-imput. (X) ___...|
 |                            |
-|                            |
-|                            |
+|  [Bouton IDENTITE (P)]  ...|
 +============================+
 
 ```
@@ -334,38 +376,43 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 flowchart LR
     START([Entree])
     style START fill:#3fb950
-    F1[Saisie transaction]
-    F2[Reglements suite a ref...]
-    F3[Saisie Bilaterale]
-    F4[Saisie mode de règlement]
-    F5[Saisie Commentaires]
-    F6[VRL : Saisie identité]
-    F7[N-A]
-    F8[Saisie dates forfait]
-    F9[Affiche saisie]
-    F10[Type transfert]
-    F11[Affiche Transfert AR]
-    F12[Affectation PAX Transfert]
-    F13[Libération du logement]
-    F14[Récup nb chambre LCO]
+    B1[Saisie 7 ecrans]
+    B2[Reglement 1 ecrans]
+    B3[Validation]
+    B4[Creation]
+    B5[Traitement 3 ecrans]
+    B6[Initialisation]
+    B7[Calcul]
+    B8[Consultation]
+    B9[Impression]
+    B10[Transfert 3 ecrans]
     FIN([Sortie])
     style FIN fill:#f85149
-    START --> F1
-    F1 --> F2
-    F2 --> F3
-    F3 --> F4
-    F4 --> F5
-    F5 --> F6
-    F6 --> F7
-    F7 --> F8
-    F8 --> F9
-    F9 --> F10
-    F10 --> F11
-    F11 --> F12
-    F12 --> F13
-    F13 --> F14
-    F14 --> FIN
+    START --> B1
+    B1 --> B2
+    B2 --> B3
+    B3 --> B4
+    B4 --> B5
+    B5 --> B6
+    B6 --> B7
+    B7 --> B8
+    B8 --> B9
+    B9 --> B10
+    B10 --> FIN
 ```
+
+**Detail par bloc:**
+
+- **Saisie**: Saisie transaction (T1), Saisie Bilaterale (T7), Saisie mode de règlement (T8), Saisie Commentaires (T10), VRL : Saisie identité (T11), Saisie dates forfait (T19), Affiche saisie (T30)
+- **Reglement**: Reglements suite a refus TPE (T2)
+- **Validation**: traitement interne (1 taches)
+- **Creation**: traitement interne (5 taches)
+- **Traitement**:  (T18), Libération du logement (T46), Récup nb chambre /LCO (T49)
+- **Initialisation**: traitement interne (3 taches)
+- **Calcul**: traitement interne (5 taches)
+- **Consultation**: traitement interne (1 taches)
+- **Impression**: traitement interne (1 taches)
+- **Transfert**: Type transfert (T38), Affiche Transfert A/R (T39), Affectation PAX / Transfert (T40)
 
 ### 9.2 Logique decisionnelle
 
@@ -373,79 +420,88 @@ flowchart LR
 flowchart TD
     START([Debut traitement])
     style START fill:#3fb950
+    BLOC_Saisie[Saisie 13 regles]
+    style BLOC_Saisie fill:#f59e0b
+    START --> BLOC_Saisie
     D1{Determine le sens du t...}
     style D1 fill:#58a6ff
-    START --> D1
-    A1[RM-001 Appliquer]
-    D1 -->|OUI| A1
+    BLOC_Saisie --> D1
+    D1 -->|OUI| A1[RM-001]
     D1 -->|NON| N1((.))
     A1 --> N1
     D2{Si V.RC utilisé GA est...}
     style D2 fill:#58a6ff
     N1 --> D2
-    A2[RM-002 Appliquer]
-    D2 -->|OUI| A2
+    D2 -->|OUI| A2[RM-002]
     D2 -->|NON| N2((.))
     A2 --> N2
-    D3{Valeur par defaut si P...}
+    D3{Si W0 Motif de non enr...}
     style D3 fill:#58a6ff
     N2 --> D3
-    A3[RM-003 Appliquer]
-    D3 -->|OUI| A3
+    D3 -->|OUI| A3[RM-005]
     D3 -->|NON| N3((.))
     A3 --> N3
-    D4{Si VG7 OR VG35 OR VG87...}
+    MOREBLOC_Saisie[+ 10 autres]
+    N3 --> MOREBLOC_Saisie
+    BLOC_Reglement[Reglement 2 regles]
+    style BLOC_Reglement fill:#f59e0b
+    MOREBLOC_Saisie --> BLOC_Reglement
+    D4{Valeur par defaut si P...}
     style D4 fill:#58a6ff
-    N3 --> D4
-    A4[RM-004 Appliquer]
-    D4 -->|OUI| A4
+    BLOC_Reglement --> D4
+    D4 -->|OUI| A4[RM-003]
     D4 -->|NON| N4((.))
     A4 --> N4
-    D5{Si W0 Motif de non enr...}
+    D5{Si VG7 OR VG35 OR VG87...}
     style D5 fill:#58a6ff
     N4 --> D5
-    A5[RM-005 Appliquer]
-    D5 -->|OUI| A5
+    D5 -->|OUI| A5[RM-004]
     D5 -->|NON| N5((.))
     A5 --> N5
-    D6{Si W0 imputation W vau...}
+    BLOC_Autres[Autres 2 regles]
+    style BLOC_Autres fill:#f59e0b
+    N5 --> BLOC_Autres
+    D6{Si V.ConfirmeUseGP FZ ...}
     style D6 fill:#58a6ff
-    N5 --> D6
-    A6[RM-006 Appliquer]
-    D6 -->|OUI| A6
+    BLOC_Autres --> D6
+    D6 -->|OUI| A6[RM-013]
     D6 -->|NON| N6((.))
     A6 --> N6
-    D7{Calcul de pourcentage ...}
+    D7{Si VG201 alors AY sinon G}
     style D7 fill:#58a6ff
     N6 --> D7
-    A7[RM-007 Appliquer]
-    D7 -->|OUI| A7
+    D7 -->|OUI| A7[RM-017]
     D7 -->|NON| N7((.))
     A7 --> N7
-    D8{Comportement condition...}
-    style D8 fill:#58a6ff
-    N7 --> D8
-    A8[RM-008 Appliquer]
-    D8 -->|OUI| A8
-    D8 -->|NON| N8((.))
-    A8 --> N8
-    MORE[+ 9 autres regles]
-    N8 --> MORE
     ENDOK([Fin traitement])
     style ENDOK fill:#f85149
-    MORE --> ENDOK
+    N7 --> ENDOK
 ```
 
-**Legende:**
+**Regles par bloc:**
 
-- **D1** (RM-001): Determine le sens du trajet selon le service village (1=ALLER, 2=RETOUR, 3=A/R)
-- **D2** (RM-002): Si V.RC utilisé [GA] est nul, choix conditionnel selon W0 imputation [W] (valeur 'VSL')
-- **D3** (RM-003): Valeur par defaut si P0 masque montant [C] est vide
-- **D4** (RM-004): Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM)
-- **D5** (RM-005): Si W0 Motif de non enreg NA [CL] est FAUX, branche alternative
-- **D6** (RM-006): Si W0 imputation [W] vaut 'VRL' alors 'Date consommation', sinon 'Date début séjour'
-- **D7** (RM-007): Calcul de pourcentage avec arrondi
-- **D8** (RM-008): Comportement conditionnel selon type d'imputation 'VRL'
+**Saisie** (13):
+- **RM-001**: Determine le sens du trajet selon le service village (1=ALLER, 2=RETOUR, 3=A/R)
+- **RM-002**: Si V.RC utilisé [GA] est nul, choix conditionnel selon W0 imputation [W] (valeur 'VSL')
+- **RM-005**: Si W0 Motif de non enreg NA [CL] est FAUX, branche alternative
+- **RM-006**: Si W0 imputation [W] vaut 'VRL' alors 'Date consommation', sinon 'Date début séjour'
+- **RM-007**: Calcul de pourcentage avec arrondi
+- **RM-008**: Comportement conditionnel selon type d'imputation 'VRL'
+- **RM-009**: Position UI conditionnelle selon W0 imputation [W]
+- **RM-010**: Comportement conditionnel selon type d'imputation 'TRF'
+- **RM-011**: Traitement si W0 Chambre [CX] est renseigne
+- **RM-012**: Si V.Total reglement ligne [FF] alors V.Id transaction PMS [FI] sinon VG18)
+- **RM-014**: Si NOT(CHG_PRV_W0 nbre articles [GO]) alors 132.875 sinon 105.875)
+- **RM-015**: Si W0 imputation [W] vaut 'ANN' alors 'O', sinon 'N'
+- **RM-016**: Comportement conditionnel selon type d'imputation 'PYR'
+
+**Reglement** (2):
+- **RM-003**: Valeur par defaut si P0 masque montant [C] est vide
+- **RM-004**: Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM)
+
+**Autres** (2):
+- **RM-013**: Si V.ConfirmeUseGP? [FZ] alors 'V' sinon IF([AP]='O','C','D'))
+- **RM-017**: Si VG20>1 alors [AY] sinon 'G')
 
 ### 9.3 Structure hierarchique (49 taches)
 
@@ -540,7 +596,146 @@ flowchart TD
 
 ### 10.2 Colonnes par table
 
-*[Phase 2] Analyse des colonnes lues (R) et modifiees (W) par table avec details depliables.*
+<details>
+<summary>Table 23 - reseau_cloture___rec (R/**W**) - 5 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| DN | W0 reseau | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R/L) - 3 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 32 - prestations (R/**W**) - 3 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 39 - depot_garantie___dga (R) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 46 - mvt_prestation___mpr (**W**/L) - 2 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 47 - compte_gm________cgm (**W**) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| D | P0 solde compte | W | Numeric |
+| EH | W0 Compte garanti | W | Logical |
+| H | P0 etat compte | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 50 - moyens_reglement_mor (R) - 3 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 77 - articles_________art (R/L) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| BD | W0 nbre articles | R | Numeric |
+| GN | CHG_REASON_W0 nbre articles | R | Numeric |
+| GO | CHG_PRV_W0 nbre articles | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 79 - gratuites________gra (R) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 89 - moyen_paiement___mop (R/L) - 8 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| FV | V.N°Ticket Autres Moyen Paie | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 103 - logement_client__loc (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| B | v.Heb_nom_logement | R | Unicode |
+| EO | W0 Lien Logement Lieu Séjour | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 109 - table_utilisateurs (R) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 139 - moyens_reglement_mor (R) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 596 - tempo_ecran_police (R/**W**/L) - 7 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 847 - stat_lieu_vente_date (**W**/L) - 13 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 899 - Boo_ResultsRechercheHoraire (R/**W**) - 8 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
+
+<details>
+<summary>Table 1037 - Table_1037 (**W**) - 3 usages</summary>
+
+*Colonnes accessibles via outils MCP (magic_get_line)*
+
+</details>
 
 ## 11. VARIABLES
 
@@ -1406,4 +1601,4 @@ graph LR
 | IDE 269 - Zoom services village | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:22*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 19:44*
