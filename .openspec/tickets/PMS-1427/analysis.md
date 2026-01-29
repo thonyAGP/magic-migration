@@ -1,6 +1,6 @@
 # PMS-1427 - POS Edition Income
 
-> **Analyse**: 2026-01-29 21:30 -> 21:55
+> **Analyse**: 2026-01-29 09:30 -> 09:55
 
 ## Informations Jira
 
