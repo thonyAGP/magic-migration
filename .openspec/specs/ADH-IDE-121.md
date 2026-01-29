@@ -1,6 +1,6 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: 2026-01-29 17:07
+> **Analyse**: Phases 1-4 2026-01-29 09:26 -> 09:26 (8s) | Assemblage 18:03
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -482,4 +482,4 @@ graph LR
 | IDE 151 - Reimpression tickets fermeture | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 17:07*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:03*

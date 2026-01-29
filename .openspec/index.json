@@ -1686,26 +1686,26 @@
                       "id":  "ADH-IDE-121-summary",
                       "type":  "Programme",
                       "project":  "ADH",
-                      "complexity":  "BASSE",
+                      "complexity":  "MOYENNE",
                       "hasTabMarkers":  false,
                       "ide":  121,
-                      "specVersion":  "6.0",
+                      "specVersion":  "7.0",
                       "title":  "ADH-IDE-121-summary",
                       "tables":  0,
                       "file":  "specs/ADH-IDE-121-summary.md"
                   },
                   {
                       "tasks":  32,
-                      "orphanStatus":  "NON_ORPHELIN",
+                      "orphanStatus":  "",
                       "id":  "ADH-IDE-121",
                       "type":  "Programme",
                       "project":  "ADH",
                       "complexity":  "BASSE",
                       "hasTabMarkers":  true,
                       "ide":  121,
-                      "specVersion":  "6.0",
+                      "specVersion":  "7.0",
                       "title":  "ADH-IDE-121",
-                      "tables":  12,
+                      "tables":  0,
                       "file":  "specs/ADH-IDE-121.md"
                   },
                   {
@@ -3313,23 +3313,23 @@
                       "complexity":  "BASSE",
                       "hasTabMarkers":  false,
                       "ide":  236,
-                      "specVersion":  "6.0",
+                      "specVersion":  "7.0",
                       "title":  "ADH-IDE-236-summary",
                       "tables":  0,
                       "file":  "specs/ADH-IDE-236-summary.md"
                   },
                   {
                       "tasks":  38,
-                      "orphanStatus":  "NON_ORPHELIN",
+                      "orphanStatus":  "",
                       "id":  "ADH-IDE-236",
                       "type":  "Programme",
                       "project":  "ADH",
                       "complexity":  "BASSE",
                       "hasTabMarkers":  true,
                       "ide":  236,
-                      "specVersion":  "6.0",
+                      "specVersion":  "7.0",
                       "title":  "ADH-IDE-236",
-                      "tables":  15,
+                      "tables":  0,
                       "file":  "specs/ADH-IDE-236.md"
                   },
                   {
@@ -3348,16 +3348,16 @@
                   },
                   {
                       "tasks":  49,
-                      "orphanStatus":  "NON_ORPHELIN",
+                      "orphanStatus":  "",
                       "id":  "ADH-IDE-237",
                       "type":  "Programme",
                       "project":  "ADH",
-                      "complexity":  "HAUTE",
+                      "complexity":  "BASSE",
                       "hasTabMarkers":  true,
                       "ide":  237,
-                      "specVersion":  "6.0",
+                      "specVersion":  "7.0",
                       "title":  "ADH-IDE-237",
-                      "tables":  30,
+                      "tables":  0,
                       "file":  "specs/ADH-IDE-237.md"
                   },
                   {
@@ -3366,10 +3366,10 @@
                       "id":  "ADH-IDE-237-summary",
                       "type":  "Programme",
                       "project":  "ADH",
-                      "complexity":  "BASSE",
+                      "complexity":  "HAUTE",
                       "hasTabMarkers":  false,
                       "ide":  237,
-                      "specVersion":  "6.0",
+                      "specVersion":  "7.0",
                       "title":  "ADH-IDE-237-summary",
                       "tables":  0,
                       "file":  "specs/ADH-IDE-237-summary.md"
@@ -4959,5 +4959,5 @@
               ],
     "totalSpecs":  354,
     "project":  "Lecteur_Magic",
-    "lastUpdated":  "2026-01-29T09:54:16+01:00"
+    "lastUpdated":  "2026-01-29T17:33:58+01:00"
 }

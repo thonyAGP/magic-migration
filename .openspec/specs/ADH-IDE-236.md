@@ -1,6 +1,6 @@
 ﻿# ADH IDE 236 - Print ticket vente PMS-584
 
-> **Analyse**: 2026-01-29 17:07
+> **Analyse**: Phases 1-4 2026-01-28 17:46 -> 17:46 (10s) | Assemblage 18:03
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -310,4 +310,4 @@ graph LR
 | IDE 152 - Recup Classe et Lib du MOP | Sous-programme | 5x | **CRITIQUE** - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 17:07*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:03*

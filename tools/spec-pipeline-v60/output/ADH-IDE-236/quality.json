@@ -1,16 +1,112 @@
 ﻿{
+    "pipeline_timing":  {
+                            "phases_start":  "2026-01-28 17:46:09",
+                            "assembly_start":  "2026-01-29 18:03:08",
+                            "phases_duration":  "10s",
+                            "phases_end":  "2026-01-28 17:46:19"
+                        },
+    "audit":  {
+                  "checks":  [
+                                 {
+                                     "expected":  0,
+                                     "status":  "PASS",
+                                     "detail":  "Aucun placeholder detecte",
+                                     "actual":  0,
+                                     "check":  "RULES_NO_PLACEHOLDER"
+                                 },
+                                 {
+                                     "expected":  0,
+                                     "status":  "PASS",
+                                     "detail":  "0/0 regles presentes",
+                                     "actual":  0,
+                                     "check":  "RULES_COUNT"
+                                 },
+                                 {
+                                     "expected":  0,
+                                     "status":  "PASS",
+                                     "detail":  "0/0 tables WRITE",
+                                     "actual":  0,
+                                     "check":  "TABLES_WRITE"
+                                 },
+                                 {
+                                     "expected":  4,
+                                     "status":  "PASS",
+                                     "detail":  "4 callers documentes",
+                                     "actual":  "present",
+                                     "check":  "CALLERS_SECTION"
+                                 },
+                                 {
+                                     "expected":  2,
+                                     "status":  "PASS",
+                                     "detail":  "2 callees documentes",
+                                     "actual":  "present",
+                                     "check":  "CALLEES_SECTION"
+                                 },
+                                 {
+                                     "expected":  0,
+                                     "status":  "PASS",
+                                     "detail":  "Ecrans visibles coherents",
+                                     "actual":  0,
+                                     "check":  "SCREENS_VISIBLE"
+                                 },
+                                 {
+                                     "expected":  "100%",
+                                     "status":  "PASS",
+                                     "detail":  "Coverage 100% documentee",
+                                     "actual":  "present",
+                                     "check":  "EXPR_COVERAGE"
+                                 },
+                                 {
+                                     "expected":  0,
+                                     "status":  "PASS",
+                                     "detail":  "Aucune reference XML brute dans Resume",
+                                     "actual":  0,
+                                     "check":  "NO_RAW_XML"
+                                 },
+                                 {
+                                     "expected":  4,
+                                     "status":  "PASS",
+                                     "detail":  "4 onglets V7.0 presents",
+                                     "actual":  4,
+                                     "check":  "TAB_STRUCTURE"
+                                 },
+                                 {
+                                     "expected":  "Phases 1-4",
+                                     "status":  "PASS",
+                                     "detail":  "Timing pipeline reel affiche",
+                                     "actual":  "present",
+                                     "check":  "TIMING_REALISTIC"
+                                 }
+                             ],
+                  "pass":  10,
+                  "fail":  0,
+                  "warn":  0,
+                  "all_passed":  true
+              },
+    "metadata":  {
+                     "pipeline_version":  "7.0",
+                     "generated_at":  "2026-01-29 18:03:09",
+                     "ide_position":  236,
+                     "duration_seconds":  0.5,
+                     "program_name":  "Print ticket vente PMS-584",
+                     "project":  "ADH"
+                 },
     "files_generated":  [
                             "ADH-IDE-236-summary.md",
                             "ADH-IDE-236.md"
                         ],
-    "extraction_coverage":  {
-                                "tables_extracted":  true,
-                                "expressions_decoded":  true,
-                                "callers_extracted":  true,
-                                "callees_extracted":  true,
-                                "variables_mapped":  false,
-                                "forms_extracted":  true
-                            },
+    "complexity":  {
+                       "score":  25,
+                       "level":  "BASSE",
+                       "details":  [
+                                       "Expressions: 19 (MINIMALE)",
+                                       "Taches: 38 (HAUTE)",
+                                       "Tables WRITE: 0 (AUCUNE)",
+                                       "Callees: 2 (BASSE)",
+                                       "Code desactive: 0% (SAIN)"
+                                   ]
+                   },
+    "quality_score":  90,
     "structure":  {
                       "tab_names":  [
                                         "Resume",
@@ -24,6 +120,14 @@
                       "callees_with_context":  2,
                       "migration_effort_days":  14
                   },
+    "extraction_coverage":  {
+                                "tables_extracted":  true,
+                                "expressions_decoded":  true,
+                                "callers_extracted":  true,
+                                "callees_extracted":  true,
+                                "variables_mapped":  false,
+                                "forms_extracted":  true
+                            },
     "validation":  {
                        "callers_shown":  4,
                        "callees_shown":  2,
@@ -32,25 +136,5 @@
                        "variables_mapped_count":  0,
                        "business_rules_count":  0,
                        "total_forms_count":  38
-                   },
-    "quality_score":  90,
-    "complexity":  {
-                       "score":  25,
-                       "level":  "BASSE",
-                       "details":  [
-                                       "Expressions: 19 (MINIMALE)",
-                                       "Taches: 38 (HAUTE)",
-                                       "Tables WRITE: 0 (AUCUNE)",
-                                       "Callees: 2 (BASSE)",
-                                       "Code desactive: 0% (SAIN)"
-                                   ]
-                   },
-    "metadata":  {
-                     "pipeline_version":  "7.0",
-                     "generated_at":  "2026-01-29 17:07:28",
-                     "ide_position":  236,
-                     "duration_seconds":  0.4,
-                     "program_name":  "Print ticket vente PMS-584",
-                     "project":  "ADH"
-                 }
+                   }
 }

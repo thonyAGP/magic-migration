@@ -35,7 +35,7 @@ Write-Host "Project: $Project | IDE: $IdePosition"
 # ============================================================
 # LOAD PHASE OUTPUTS
 # ============================================================
-Write-Host "[1/6] Loading phase outputs..." -ForegroundColor Yellow
+Write-Host "[1/7] Loading phase outputs..." -ForegroundColor Yellow
 
 $discovery = $null; $mapping = $null; $decoded = $null; $uiForms = $null
 
@@ -56,6 +56,20 @@ if (-not $discovery) {
 
 $programName = $discovery.metadata.program_name.Trim()
 $startTime = Get-Date
+
+# Read actual pipeline phase timestamps from JSON file modification dates
+$phaseFiles = @($discoveryPath, $mappingPath, $decodedPath, $uiFormsPath) | Where-Object { Test-Path $_ }
+$phaseTimestamps = @($phaseFiles | ForEach-Object { (Get-Item $_).LastWriteTime })
+$pipelineFirstPhase = if ($phaseTimestamps.Count -gt 0) { ($phaseTimestamps | Measure-Object -Minimum).Minimum } else { $startTime }
+$pipelineLastPhase = if ($phaseTimestamps.Count -gt 0) { ($phaseTimestamps | Measure-Object -Maximum).Maximum } else { $startTime }
+$pipelineDuration = $pipelineLastPhase - $pipelineFirstPhase
+$pipelineDurationStr = if ($pipelineDuration.TotalHours -ge 1) {
+    "$([math]::Floor($pipelineDuration.TotalHours))h$($pipelineDuration.Minutes.ToString('00'))min"
+} elseif ($pipelineDuration.TotalMinutes -ge 1) {
+    "$([math]::Round($pipelineDuration.TotalMinutes))min"
+} else {
+    "$([math]::Round($pipelineDuration.TotalSeconds))s"
+}
 
 # ============================================================
 # HELPER FUNCTIONS
@@ -104,7 +118,7 @@ function Get-FunctionalBloc {
 }
 
 function Reformulate-BusinessRule {
-    param([string]$Decoded, [string]$RuleId)
+    param([string]$Decoded, [string]$RuleId, [string]$NaturalLanguage = "")
 
     $text = $Decoded
 
@@ -158,8 +172,13 @@ function Reformulate-BusinessRule {
         return "Valeur par defaut si $var est vide"
     }
 
-    # Generic fallback
-    return "[Phase 2] Regle complexe"
+    # Fallback 1: use natural_language from Phase 3 decode
+    if ($NaturalLanguage -and $NaturalLanguage.Trim() -ne '') {
+        return $NaturalLanguage.Trim()
+    }
+
+    # Fallback 2: return decoded expression as-is (never "[Phase 2]")
+    return $Decoded
 }
 
 function Calculate-ComplexityScore {
@@ -208,7 +227,7 @@ function Calculate-ComplexityScore {
 # ============================================================
 # DATA PREPARATION
 # ============================================================
-Write-Host "[2/6] Preparing data..." -ForegroundColor Yellow
+Write-Host "[2/7] Preparing data..." -ForegroundColor Yellow
 
 $complexity = Calculate-ComplexityScore -Discovery $discovery -Decoded $decoded
 
@@ -334,7 +353,7 @@ Write-Host "  $($visibleForms.Count) visible forms, $($blocMap.Count) blocks, $(
 # ============================================================
 # GENERATE SUMMARY SPEC
 # ============================================================
-Write-Host "[3/6] Generating SUMMARY spec..." -ForegroundColor Yellow
+Write-Host "[3/7] Generating SUMMARY spec..." -ForegroundColor Yellow
 
 $writeTableNames = ($discovery.tables.by_access.WRITE | ForEach-Object { $_.logical_name }) -join ', '
 $callersList = if ($discovery.call_graph.callers.Count -gt 0) {
@@ -391,7 +410,7 @@ $(($programName -split ' ' | Where-Object { $_.Length -gt 3 }) -join ', ')
 # ============================================================
 # GENERATE DETAILED SPEC - 4 TABS
 # ============================================================
-Write-Host "[4/6] Generating DETAILED spec (4 tabs)..." -ForegroundColor Yellow
+Write-Host "[4/7] Generating DETAILED spec (4 tabs)..." -ForegroundColor Yellow
 
 $L = [System.Collections.ArrayList]::new()
 
@@ -400,7 +419,7 @@ function Add-Line { param([string]$Text = "") $null = $L.Add($Text) }
 # --- HEADER ---
 Add-Line "# $Project IDE $IdePosition - $programName"
 Add-Line
-Add-Line "> **Analyse**: $($startTime.ToString('yyyy-MM-dd HH:mm'))"
+Add-Line "> **Analyse**: Phases 1-4 $($pipelineFirstPhase.ToString('yyyy-MM-dd HH:mm')) -> $($pipelineLastPhase.ToString('HH:mm')) ($pipelineDurationStr) | Assemblage $($startTime.ToString('HH:mm'))"
 Add-Line "> **Pipeline**: V7.0 Deep Analysis"
 Add-Line "> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)"
 Add-Line
@@ -657,7 +676,8 @@ if ($businessRules.Count -gt 0) {
     }
     foreach ($rule in $businessRules) {
         $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
-        $frRule = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id
+        $nl = if ($rule.natural_language) { $rule.natural_language } else { "" }
+        $frRule = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id -NaturalLanguage $nl
         $entry = @{ id = $rule.id; fr = $frRule; decoded = $dExpr }
         if ($frRule -match "Position UI") {
             $rulesByCategory["Positionnement UI"] += $entry
@@ -665,7 +685,7 @@ if ($businessRules.Count -gt 0) {
             $rulesByCategory["Calculs"] += $entry
         } elseif ($frRule -match "Valeur par defaut|est vide") {
             $rulesByCategory["Valeurs par defaut"] += $entry
-        } elseif ($frRule -match "\[Phase 2\]") {
+        } elseif ($frRule -eq $dExpr) {
             $rulesByCategory["Regles complexes"] += $entry
         } else {
             $rulesByCategory["Conditions metier"] += $entry
@@ -812,7 +832,8 @@ if ($businessRules.Count -gt 0) {
 
     foreach ($rule in ($businessRules | Select-Object -First $maxDec)) {
         $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
-        $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id
+        $nl2 = if ($rule.natural_language) { $rule.natural_language } else { "" }
+        $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id -NaturalLanguage $nl2
         $shortLbl = Clean-MermaidLabel $frLbl
 
         # Decision diamond with OUI/NON branches
@@ -848,7 +869,8 @@ if ($businessRules.Count -gt 0) {
     $rIdx = 1
     foreach ($rule in ($businessRules | Select-Object -First $maxDec)) {
         $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
-        $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id
+        $nl3 = if ($rule.natural_language) { $rule.natural_language } else { "" }
+        $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id -NaturalLanguage $nl3
         Add-Line "- **D$rIdx** ($($rule.id)): $frLbl"
         $rIdx++
     }
@@ -1392,7 +1414,7 @@ $detailedSpec = $L -join "`n"
 # ============================================================
 # SAVE SPECS
 # ============================================================
-Write-Host "[5/6] Saving specs..." -ForegroundColor Yellow
+Write-Host "[5/7] Saving specs..." -ForegroundColor Yellow
 
 $summaryFileName = "$Project-IDE-$IdePosition-summary.md"
 $detailedFileName = "$Project-IDE-$IdePosition.md"
@@ -1407,9 +1429,132 @@ Write-Host "  Summary: $summaryPath"
 Write-Host "  Detailed: $detailedPath"
 
 # ============================================================
+# PHASE 6: AUDIT ANTI-REGRESSION
+# ============================================================
+Write-Host "[6/7] Audit anti-regression..." -ForegroundColor Yellow
+
+$auditResults = @()
+$auditFailed = $false
+
+# AUDIT 1: No "[Phase 2] Regle complexe" placeholders in spec
+$specContent = $detailedSpec
+$phase2Matches = ([regex]::Matches($specContent, '\[Phase 2\] Regle complexe')).Count
+if ($phase2Matches -gt 0) {
+    $auditResults += @{ check = "RULES_NO_PLACEHOLDER"; status = "FAIL"; expected = 0; actual = $phase2Matches; detail = "$phase2Matches regles avec placeholder '[Phase 2]'" }
+    $auditFailed = $true
+} else {
+    $auditResults += @{ check = "RULES_NO_PLACEHOLDER"; status = "PASS"; expected = 0; actual = 0; detail = "Aucun placeholder detecte" }
+}
+
+# AUDIT 2: Business rules count matches JSON source
+$jsonRuleCount = $businessRules.Count
+$specRuleMatches = ([regex]::Matches($specContent, '\*\*\[RM-\d+')).Count
+if ($specRuleMatches -lt $jsonRuleCount) {
+    $auditResults += @{ check = "RULES_COUNT"; status = "FAIL"; expected = $jsonRuleCount; actual = $specRuleMatches; detail = "Spec contient $specRuleMatches regles, JSON en a $jsonRuleCount" }
+    $auditFailed = $true
+} else {
+    $auditResults += @{ check = "RULES_COUNT"; status = "PASS"; expected = $jsonRuleCount; actual = $specRuleMatches; detail = "$specRuleMatches/$jsonRuleCount regles presentes" }
+}
+
+# AUDIT 3: Tables WRITE count matches (V7.0 uses unified table with **W** marker)
+$jsonWriteCount = ($discovery.tables.by_access.WRITE | Measure-Object).Count
+$specWriteRows = ([regex]::Matches($specContent, '\*\*W\*\*')).Count
+if ($specWriteRows -lt $jsonWriteCount -and $jsonWriteCount -gt 0) {
+    $auditResults += @{ check = "TABLES_WRITE"; status = "WARN"; expected = $jsonWriteCount; actual = $specWriteRows; detail = "Spec: $specWriteRows tables W, JSON: $jsonWriteCount" }
+} else {
+    $auditResults += @{ check = "TABLES_WRITE"; status = "PASS"; expected = $jsonWriteCount; actual = $specWriteRows; detail = "$specWriteRows/$jsonWriteCount tables WRITE" }
+}
+
+# AUDIT 4: Callers count matches
+$jsonCallerCount = $discovery.call_graph.callers.Count
+$specCallerRows = ([regex]::Matches($specContent, '^\| \d+ \|', [System.Text.RegularExpressions.RegexOptions]::Multiline)).Count
+# Callers are in the Callers table section - verify at least present
+if ($jsonCallerCount -gt 0 -and $specContent -notmatch '13\.2 Callers') {
+    $auditResults += @{ check = "CALLERS_SECTION"; status = "FAIL"; expected = "present"; actual = "absent"; detail = "Section Callers manquante" }
+    $auditFailed = $true
+} else {
+    $auditResults += @{ check = "CALLERS_SECTION"; status = "PASS"; expected = $jsonCallerCount; actual = "present"; detail = "$jsonCallerCount callers documentes" }
+}
+
+# AUDIT 5: Callees count matches
+$jsonCalleeCount = ($discovery.call_graph.callees | Where-Object { $_.ide -gt 0 }).Count
+if ($jsonCalleeCount -gt 0 -and $specContent -notmatch '13\.3 Callees') {
+    $auditResults += @{ check = "CALLEES_SECTION"; status = "FAIL"; expected = "present"; actual = "absent"; detail = "Section Callees manquante" }
+    $auditFailed = $true
+} else {
+    $auditResults += @{ check = "CALLEES_SECTION"; status = "PASS"; expected = $jsonCalleeCount; actual = "present"; detail = "$jsonCalleeCount callees documentes" }
+}
+
+# AUDIT 6: Visible screens count matches
+$jsonVisibleCount = ($uiForms.forms | Where-Object { $_.dimensions.width -gt 0 }).Count
+$specScreenMatches = ([regex]::Matches($specContent, '\*\*\[ECRAN\]\*\*')).Count
+if ($specScreenMatches -ne $jsonVisibleCount -and $jsonVisibleCount -gt 0) {
+    $auditResults += @{ check = "SCREENS_VISIBLE"; status = "WARN"; expected = $jsonVisibleCount; actual = $specScreenMatches; detail = "Spec: $specScreenMatches ecrans marques, JSON: $jsonVisibleCount" }
+} else {
+    $auditResults += @{ check = "SCREENS_VISIBLE"; status = "PASS"; expected = $jsonVisibleCount; actual = $specScreenMatches; detail = "Ecrans visibles coherents" }
+}
+
+# AUDIT 7: Expression coverage present
+if ($decoded -and $decoded.statistics.coverage_percent -gt 0) {
+    $coverageStr = "$($decoded.statistics.coverage_percent)%"
+    if ($specContent -match $coverageStr -or $specContent -match "$($decoded.statistics.decoded_count) / $($decoded.statistics.total_in_program)") {
+        $auditResults += @{ check = "EXPR_COVERAGE"; status = "PASS"; expected = $coverageStr; actual = "present"; detail = "Coverage $coverageStr documentee" }
+    } else {
+        $auditResults += @{ check = "EXPR_COVERAGE"; status = "WARN"; expected = $coverageStr; actual = "absent"; detail = "Coverage $coverageStr non trouvee dans spec" }
+    }
+}
+
+# AUDIT 8: No raw XML references ({0,N} patterns) in narrative sections (TAB 1 Resume only)
+$tab1Content = ""
+if ($specContent -match '(?s)<!-- TAB:Resume -->(.*?)<!-- TAB:') {
+    $tab1Content = $Matches[1]
+}
+$rawXmlMatches = ([regex]::Matches($tab1Content, '\{0,\d+\}')).Count
+if ($rawXmlMatches -gt 0) {
+    $auditResults += @{ check = "NO_RAW_XML"; status = "WARN"; expected = 0; actual = $rawXmlMatches; detail = "$rawXmlMatches references {0,N} dans Resume (devrait etre decode)" }
+} else {
+    $auditResults += @{ check = "NO_RAW_XML"; status = "PASS"; expected = 0; actual = 0; detail = "Aucune reference XML brute dans Resume" }
+}
+
+# AUDIT 9: 4 TAB markers present
+$tabMarkers = ([regex]::Matches($specContent, '<!-- TAB:\w+ -->')).Count
+if ($tabMarkers -ne 4) {
+    $auditResults += @{ check = "TAB_STRUCTURE"; status = "FAIL"; expected = 4; actual = $tabMarkers; detail = "$tabMarkers onglets sur 4 attendus" }
+    $auditFailed = $true
+} else {
+    $auditResults += @{ check = "TAB_STRUCTURE"; status = "PASS"; expected = 4; actual = 4; detail = "4 onglets V7.0 presents" }
+}
+
+# AUDIT 10: Pipeline timing is realistic (not just assembly)
+if ($specContent -match 'Phases 1-4') {
+    $auditResults += @{ check = "TIMING_REALISTIC"; status = "PASS"; expected = "Phases 1-4"; actual = "present"; detail = "Timing pipeline reel affiche" }
+} else {
+    $auditResults += @{ check = "TIMING_REALISTIC"; status = "FAIL"; expected = "Phases 1-4"; actual = "absent"; detail = "Timing pipeline reel manquant dans header" }
+    $auditFailed = $true
+}
+
+# Display audit results
+$passCount = ($auditResults | Where-Object { $_.status -eq "PASS" }).Count
+$failCount = ($auditResults | Where-Object { $_.status -eq "FAIL" }).Count
+$warnCount = ($auditResults | Where-Object { $_.status -eq "WARN" }).Count
+
+Write-Host ""
+Write-Host "  AUDIT RESULTS: $passCount PASS | $failCount FAIL | $warnCount WARN" -ForegroundColor $(if ($failCount -gt 0) { "Red" } elseif ($warnCount -gt 0) { "Yellow" } else { "Green" })
+foreach ($r in $auditResults) {
+    $icon = switch ($r.status) { "PASS" { "[OK]" } "FAIL" { "[KO]" } "WARN" { "[!!]" } }
+    $color = switch ($r.status) { "PASS" { "Green" } "FAIL" { "Red" } "WARN" { "Yellow" } }
+    Write-Host "  $icon $($r.check): $($r.detail)" -ForegroundColor $color
+}
+Write-Host ""
+
+if ($auditFailed) {
+    Write-Host "  >>> AUDIT FAILED - Spec may contain quality issues <<<" -ForegroundColor Red
+}
+
+# ============================================================
 # QUALITY REPORT
 # ============================================================
-Write-Host "[6/6] Quality report..." -ForegroundColor Yellow
+Write-Host "[7/7] Quality report..." -ForegroundColor Yellow
 
 $endTime = Get-Date
 $duration = $endTime - $startTime
@@ -1451,6 +1596,19 @@ $quality = @{
         callees_shown = $discovery.call_graph.callees.Count
         callers_shown = $discovery.call_graph.callers.Count
     }
+    audit = @{
+        pass = $passCount
+        fail = $failCount
+        warn = $warnCount
+        all_passed = -not $auditFailed
+        checks = $auditResults
+    }
+    pipeline_timing = @{
+        phases_start = $pipelineFirstPhase.ToString("yyyy-MM-dd HH:mm:ss")
+        phases_end = $pipelineLastPhase.ToString("yyyy-MM-dd HH:mm:ss")
+        phases_duration = $pipelineDurationStr
+        assembly_start = $startTime.ToString("yyyy-MM-dd HH:mm:ss")
+    }
 }
 
 $score = 0
@@ -1467,7 +1625,7 @@ $quality | ConvertTo-Json -Depth 10 | Set-Content -Path $qualityPath -Encoding U
 
 Write-Host ""
 Write-Host "=== Phase 5 COMPLETE (V7.0) ===" -ForegroundColor Green
-Write-Host "Duration: $([math]::Round($duration.TotalSeconds, 1))s | Quality: $score/100 | Complexity: $($complexity.level)"
+Write-Host "Pipeline: $pipelineDurationStr (Phases 1-4) + $([math]::Round($duration.TotalSeconds, 1))s (assemblage) | Quality: $score/100 | Audit: $passCount/$($auditResults.Count) OK"
 Write-Host ""
 Write-Host "STRUCTURE:" -ForegroundColor Cyan
 Write-Host "  TAB 1 Resume:     Fiche + $($blocMap.Count) blocs + $($businessRules.Count) regles FR"

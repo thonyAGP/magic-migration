@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: 2026-01-29 17:07
+> **Analyse**: Phases 1-4 2026-01-28 23:48 -> 11:33 (11h45min) | Assemblage 18:02
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -129,16 +129,22 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 
 17 regles identifiees:
 
-### Conditions metier (8)
+### Conditions metier (14)
 
 - **[RM-001]** Determine le sens du trajet selon le service village (1=ALLER, 2=RETOUR, 3=A/R)
 - **[RM-002]** Si V.RC utilisé [GA] est nul, choix conditionnel selon W0 imputation [W] (valeur 'VSL')
+- **[RM-004]** Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM)
 - **[RM-005]** Si W0 Motif de non enreg NA [CL] est FAUX, branche alternative
 - **[RM-006]** Si W0 imputation [W] vaut 'VRL' alors 'Date consommation', sinon 'Date début séjour'
 - **[RM-008]** Comportement conditionnel selon type d'imputation 'VRL'
 - **[RM-010]** Comportement conditionnel selon type d'imputation 'TRF'
+- **[RM-011]** Si W0 Chambre [CX]<>'' alors RTrim (W0 Nb Chambres [CW])&Fill (' ' sinon Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))
+- **[RM-012]** Si V.Total reglement ligne [FF] alors V.Id transaction PMS [FI] sinon VG18)
+- **[RM-013]** Si V.ConfirmeUseGP? [FZ] alors 'V' sinon IF([AP]='O','C','D'))
+- **[RM-014]** Si NOT(CHG_PRV_W0 nbre articles [GO]) alors 132.875 sinon 105.875)
 - **[RM-015]** Si W0 imputation [W] vaut 'ANN' alors 'O', sinon 'N'
 - **[RM-016]** Comportement conditionnel selon type d'imputation 'PYR'
+- **[RM-017]** Si VG20>1 alors [AY] sinon 'G')
 
 ### Calculs (1)
 
@@ -151,15 +157,6 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 ### Valeurs par defaut (1)
 
 - **[RM-003]** Valeur par defaut si P0 masque montant [C] est vide
-
-### Regles complexes (6)
-
-- **[RM-004]** [Phase 2] Regle complexe
-- **[RM-011]** [Phase 2] Regle complexe
-- **[RM-012]** [Phase 2] Regle complexe
-- **[RM-013]** [Phase 2] Regle complexe
-- **[RM-014]** [Phase 2] Regle complexe
-- **[RM-017]** [Phase 2] Regle complexe
 
 ## 6. CONTEXTE
 
@@ -394,7 +391,7 @@ flowchart TD
     D3 -->|OUI| A3
     D3 -->|NON| N3((.))
     A3 --> N3
-    D4{Phase 2 Regle complexe}
+    D4{Si VG7 OR VG35 OR VG87...}
     style D4 fill:#58a6ff
     N3 --> D4
     A4[RM-004 Appliquer]
@@ -441,7 +438,7 @@ flowchart TD
 - **D1** (RM-001): Determine le sens du trajet selon le service village (1=ALLER, 2=RETOUR, 3=A/R)
 - **D2** (RM-002): Si V.RC utilisé [GA] est nul, choix conditionnel selon W0 imputation [W] (valeur 'VSL')
 - **D3** (RM-003): Valeur par defaut si P0 masque montant [C] est vide
-- **D4** (RM-004): [Phase 2] Regle complexe
+- **D4** (RM-004): Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM)
 - **D5** (RM-005): Si W0 Motif de non enreg NA [CL] est FAUX, branche alternative
 - **D6** (RM-006): Si W0 imputation [W] vaut 'VRL' alors 'Date consommation', sinon 'Date début séjour'
 - **D7** (RM-007): Calcul de pourcentage avec arrondi
@@ -1408,4 +1405,4 @@ graph LR
 | IDE 269 - Zoom services village | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 17:07*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:02*
