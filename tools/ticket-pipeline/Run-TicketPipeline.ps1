@@ -70,7 +70,9 @@ function Write-Phase {
 }
 
 function Save-State {
-    $State | ConvertTo-Json -Depth 10 | Set-Content $StateFile -Encoding UTF8
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    $json = $State | ConvertTo-Json -Depth 5
+    [System.IO.File]::WriteAllText($StateFile, $json, $utf8NoBom)
 }
 
 function Invoke-MCP {
@@ -119,42 +121,7 @@ try {
 
     if ($SkipJira) {
         Write-Phase "PHASE 1" "Mode offline - lecture fichiers locaux" "Gray"
-
-        # Lire l'index des tickets pour trouver les programmes
-        $IndexFile = Join-Path $ProjectRoot ".openspec\tickets\index.json"
-        $Programs = @()
-        $Tables = @()
-        $Symptom = ""
-
-        if (Test-Path $IndexFile) {
-            $Index = Get-Content $IndexFile -Raw | ConvertFrom-Json
-            $TicketInfo = $Index.localTickets | Where-Object { $_.key -eq $TicketKey }
-            if ($TicketInfo -and $TicketInfo.program) {
-                $Programs += @{ Raw = $TicketInfo.program; Source = "index" }
-                $Symptom = $TicketInfo.summary
-            }
-        }
-
-        # Lire aussi notes.md si present
-        $NotesFile = Join-Path $FullOutputDir "notes.md"
-        if (Test-Path $NotesFile) {
-            $NotesContent = Get-Content $NotesFile -Raw
-            # Extraire programmes avec pattern IDE
-            $Matches = [regex]::Matches($NotesContent, '([A-Z]{2,3})\s+IDE\s+(\d+)')
-            foreach ($Match in $Matches) {
-                $Programs += @{ Raw = $Match.Value; Source = "notes" }
-            }
-            if (-not $Symptom) { $Symptom = ($NotesContent -split "`n" | Select-Object -First 3) -join " " }
-        }
-
-        @{
-            TicketKey = $TicketKey
-            Source = "offline"
-            Symptom = $Symptom
-            Programs = $Programs
-            Tables = $Tables
-            Keywords = @()
-        } | ConvertTo-Json -Depth 5 | Set-Content $ContextOutput -Encoding UTF8
+        & $ContextScript -TicketKey $TicketKey -OutputFile $ContextOutput -SkipJira
     }
     else {
         & $ContextScript -TicketKey $TicketKey -OutputFile $ContextOutput
@@ -190,7 +157,7 @@ try {
     $LocalizationScript = Join-Path $ScriptDir "auto-find-programs.ps1"
     $LocalizationOutput = Join-Path $FullOutputDir "programs.json"
 
-    & $LocalizationScript -Programs $State.Programs -Tables $State.Tables -McpExe $McpExe -OutputFile $LocalizationOutput
+    & $LocalizationScript -Programs $State.Programs -Tables $State.Tables -OutputFile $LocalizationOutput
 
     $Localization = Get-Content $LocalizationOutput -Raw | ConvertFrom-Json
     $State.Programs = $Localization.Programs
@@ -223,7 +190,7 @@ try {
     $FlowOutput = Join-Path $FullOutputDir "flow.json"
     $DiagramOutput = Join-Path $FullOutputDir "diagram.txt"
 
-    & $FlowScript -Programs $State.Programs -McpExe $McpExe -OutputFile $FlowOutput -DiagramFile $DiagramOutput
+    & $FlowScript -Programs $State.Programs -OutputFile $FlowOutput -DiagramFile $DiagramOutput
 
     $Flow = Get-Content $FlowOutput -Raw | ConvertFrom-Json
     $State.Expressions = $Flow.Expressions
@@ -254,7 +221,7 @@ try {
     $DecodeScript = Join-Path $ScriptDir "auto-decode-expressions.ps1"
     $DecodeOutput = Join-Path $FullOutputDir "expressions.json"
 
-    & $DecodeScript -Expressions $State.Expressions -McpExe $McpExe -OutputFile $DecodeOutput
+    & $DecodeScript -Expressions $State.Expressions -OutputFile $DecodeOutput
 
     $Decoded = Get-Content $DecodeOutput -Raw | ConvertFrom-Json
     $State.Expressions = $Decoded.Expressions

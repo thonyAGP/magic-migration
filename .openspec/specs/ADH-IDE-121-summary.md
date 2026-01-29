@@ -1,7 +1,7 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: 2026-01-29 11:34
-> **Pipeline**: V6.0 Deep Analysis
+> **Analyse**: 2026-01-29 12:37
+> **Pipeline**: V7.0 Deep Analysis
 
 ## RESUME EXECUTIF
 
@@ -26,7 +26,7 @@ Gestion, caisse
 | Direction | Programmes |
 |-----------|------------|
 | **Appele par** | Menu caisse GM - scroll (IDE 163), Fermeture Sessions (IDE 281) |
-| **Appelle** | Calcul concurrence sessions (IDE 116), Mise à jour detail session WS (IDE 134), Ticket appro remise (IDE 139), Contrôles - Integrite dates (IDE 48), Ouverture caisse (IDE 122), Fermeture caisse (IDE 131), Controle fermeture caisse WS (IDE 155), Recuperation du titre (IDE 43), Affichage sessions (IDE 119), Apport coffre (IDE 123) |
+| **Appelle** | Calcul concurrence sessions (IDE 116), Mise à jour detail session WS (IDE 134), Ticket appro remise (IDE 139), Contrôles - Integrite dates (IDE 48), Ouverture caisse (IDE 122), Fermeture caisse (IDE 131), Controle fermeture caisse WS (IDE 155), Recuperation du titre (IDE 43), Affichage sessions (IDE 119), Apport coffre (IDE 123), Apport articles (IDE 124), Remise en caisse (IDE 125), Historique session (IDE 132), Init apport article session WS (IDE 140), Init devise session WS (IDE 141), Reimpression tickets fermeture (IDE 151), Verif session caisse ouverte2 (IDE 156), Raisons utilisation ADH (IDE 231) |
 
 ## STATISTIQUES
 
@@ -38,4 +38,4 @@ Gestion, caisse
 | Tables | 12 |
 
 ---
-*Spec SUMMARY generee par Pipeline V6.0*
+*Spec SUMMARY generee par Pipeline V7.0*

@@ -438,9 +438,16 @@ Write-Host "  - Expressions {N,Y}: $TotalExpr" -ForegroundColor Gray
 Write-Host "  - UI Forms: $TotalForms" -ForegroundColor Gray
 Write-Host "  - UI Controls: $TotalControls" -ForegroundColor Gray
 
-# Sauvegarder
-$Result | ConvertTo-Json -Depth 10 | Set-Content $OutputFile -Encoding UTF8
-$Diagram | Set-Content $DiagramFile -Encoding UTF8
+# Sauvegarder (UTF-8 sans BOM)
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+try {
+    $json = $Result | ConvertTo-Json -Depth 5
+} catch {
+    Write-Warning "ConvertTo-Json Depth 5 failed, trying Depth 3: $_"
+    $json = $Result | ConvertTo-Json -Depth 3
+}
+[System.IO.File]::WriteAllText($OutputFile, $json, $utf8NoBom)
+[System.IO.File]::WriteAllText($DiagramFile, $Diagram, $utf8NoBom)
 
 Write-Host "[FlowTrace] Output: $OutputFile" -ForegroundColor Green
 Write-Host "[FlowTrace] Diagram: $DiagramFile" -ForegroundColor Green

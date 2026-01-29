@@ -21,11 +21,13 @@ $PatternsDir = Join-Path $ProjectRoot ".openspec\patterns"
 
 if (-not (Test-Path $PatternsIndexPath)) {
     Write-Warning "Patterns index not found at $PatternsIndexPath"
-    @{
+    $earlyResult = [PSCustomObject]@{
         MatchedAt = (Get-Date).ToString("o")
-        Patterns = @()
+        Patterns = ,@()
         NoIndex = $true
-    } | ConvertTo-Json | Set-Content $OutputFile -Encoding UTF8
+    }
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    [System.IO.File]::WriteAllText($OutputFile, ($earlyResult | ConvertTo-Json -Depth 3), $utf8NoBom)
     exit 0
 }
 
@@ -43,14 +45,14 @@ function Calculate-PatternScore {
     )
 
     $Score = 0
-    $Matches = @()
+    $MatchResults = @()
     $SymptomLower = $Symptom.ToLower()
 
     # Score pour les symptomes (poids 3)
     foreach ($S in $Pattern.symptoms) {
         if ($SymptomLower -match [regex]::Escape($S.ToLower())) {
             $Score += 3
-            $Matches += @{ Type = "symptom"; Value = $S; Weight = 3 }
+            $MatchResults += [PSCustomObject]@{ Type = "symptom"; Value = [string]$S; Weight = 3 }
         }
     }
 
@@ -65,7 +67,7 @@ function Calculate-PatternScore {
         $KLower = $K.ToLower()
         if ($KeywordsLower -contains $KLower -or $SymptomLower -match [regex]::Escape($KLower)) {
             $Score += 1
-            $Matches += @{ Type = "keyword"; Value = $K; Weight = 1 }
+            $MatchResults += [PSCustomObject]@{ Type = "keyword"; Value = [string]$K; Weight = 1 }
         }
     }
 
@@ -84,16 +86,16 @@ function Calculate-PatternScore {
         foreach ($DK in $DomainKeywords[$PatternDomain]) {
             if ($SymptomLower -match [regex]::Escape($DK)) {
                 $Score += 2
-                $Matches += @{ Type = "domain"; Value = $DK; Weight = 2 }
+                $MatchResults += [PSCustomObject]@{ Type = "domain"; Value = [string]$DK; Weight = 2 }
                 break
             }
         }
     }
 
-    return @{
-        PatternId = $Pattern.id
-        Score = $Score
-        Matches = $Matches
+    return [PSCustomObject]@{
+        PatternId = [string]$Pattern.id
+        Score = [int]$Score
+        MatchResults = $MatchResults
     }
 }
 
@@ -101,11 +103,11 @@ function Calculate-PatternScore {
 # EXECUTION PRINCIPALE
 # ============================================================================
 
-$Result = @{
+$Result = [PSCustomObject]@{
     MatchedAt = (Get-Date).ToString("o")
-    Input = @{
-        Symptom = $Symptom
-        Keywords = $Keywords
+    Input = [PSCustomObject]@{
+        Symptom = [string]$Symptom
+        Keywords = if ($Keywords -and @($Keywords).Count -gt 0) { @($Keywords | ForEach-Object { if ($_.Keyword) { [string]$_.Keyword } else { [string]$_ } }) } else { ,@() }
     }
     Patterns = @()
     MinimumScore = $PatternsIndex.search_algorithm.minimum_score
@@ -128,15 +130,15 @@ foreach ($Pattern in $PatternsIndex.patterns) {
             $PatternContent = Get-Content $PatternFile -Raw -ErrorAction SilentlyContinue
         }
 
-        $AllScores += @{
-            Id = $Pattern.id
-            Name = $Pattern.name
-            Domain = $Pattern.domain
-            Score = $ScoreResult.Score
-            Matches = $ScoreResult.Matches
-            File = $PatternFile
-            Source = $Pattern.source
-            HasContent = ($PatternContent.Length -gt 0)
+        $AllScores += [PSCustomObject]@{
+            Id = [string]$Pattern.id
+            Name = [string]$Pattern.name
+            Domain = [string]$Pattern.domain
+            Score = [int]$ScoreResult.Score
+            Matches = $ScoreResult.MatchResults
+            File = [string]$PatternFile
+            Source = [string]$Pattern.source
+            HasContent = [bool]($PatternContent.Length -gt 0)
         }
     }
 }
@@ -173,7 +175,14 @@ else {
     Write-Host "  - Manual analysis required" -ForegroundColor Gray
 }
 
-# Sauvegarder
-$Result | ConvertTo-Json -Depth 10 | Set-Content $OutputFile -Encoding UTF8
+# Sauvegarder (UTF-8 sans BOM)
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+try {
+    $json = $Result | ConvertTo-Json -Depth 4
+} catch {
+    Write-Warning "ConvertTo-Json Depth 4 failed: $_"
+    $json = $Result | ConvertTo-Json -Depth 3
+}
+[System.IO.File]::WriteAllText($OutputFile, $json, $utf8NoBom)
 
 Write-Host "[PatternMatch] Output: $OutputFile" -ForegroundColor Green

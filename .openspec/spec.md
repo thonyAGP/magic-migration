@@ -518,36 +518,36 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 /ticket-learn PMS-1234     # Capitaliser resolution
 ```
 
-### Pipeline Automatise (2026-01-24) - NOUVEAU
+### Pipeline Hybride v2.0 (2026-01-29) - MIS A JOUR
 
-**Pipeline PowerShell 100% automatique** - Lit XML/KB directement, aucune dependance Claude.
+**Architecture hybride** : Pipeline PS1 (collecte donnees) + Claude (analyse/redaction).
 
 | Script | Role | Inputs | Outputs |
 |--------|------|--------|---------|
-| `Run-TicketPipeline.ps1` | Orchestrateur | TicketKey | analysis.md |
-| `auto-extract-context.ps1` | Phase 1 | Jira/fichiers | context.json |
-| `auto-find-programs.ps1` | Phase 2 | Noms programmes | programs.json (IDE verifie) |
+| `Run-TicketPipeline.ps1` | Orchestrateur | TicketKey, -SkipJira | 7 fichiers JSON |
+| `auto-extract-context.ps1` | Phase 1 (v2.0) | Jira/Index/Fichiers | context.json (keywords, attachments) |
+| `auto-find-programs.ps1` | Phase 2 (v2.0) | Programmes | programs.json (callers/callees) |
 | `auto-trace-flow.ps1` | Phase 3 | Programmes | flow.json + diagram.txt |
 | `auto-decode-expressions.ps1` | Phase 4 | Expressions | expressions.json (decodees) |
 | `auto-match-patterns.ps1` | Phase 5 | Symptomes | patterns.json (scores) |
-| `auto-generate-analysis.ps1` | Phase 6 | State | analysis.md complet |
+| `auto-consolidate.ps1` | Consolidation | Tous JSON | pipeline-data.json (< 30KB) |
+| `TEMPLATE-ANALYSIS.md` | Template | - | Structure 9 sections |
 
 **Usage** :
 ```powershell
-# Pipeline complet
-.\tools\ticket-pipeline\Run-TicketPipeline.ps1 -TicketKey "PMS-1234"
-
-# Mode offline (sans Jira)
+# Pipeline complet + consolidation
 .\tools\ticket-pipeline\Run-TicketPipeline.ps1 -TicketKey "PMS-1234" -SkipJira
+.\tools\ticket-pipeline\auto-consolidate.ps1 -TicketDir ".openspec\tickets\PMS-1234"
 ```
 
-**Caracteristiques** :
-- Lecture directe Knowledge Base SQLite (~/.magic-kb/knowledge.db)
-- Parsing XML Prg_XXX.xml pour expressions et flux
-- Calcul offset automatique (formule validee: Main_VG + Σ Selects)
-- Generation diagramme ASCII automatique
-- Matching patterns KB avec scoring (minimum 2 points)
-- Generation analysis.md conforme au protocole
+**Caracteristiques v2.0** :
+- Phase 1: 3 sources prioritaires (Jira API → Index local → Fichiers)
+- Phase 2: Callers/callees via KB SQLite (KbIndexRunner CLI)
+- Phase 5: Scoring patterns avec PSCustomObject (fix $Matches PS variable)
+- Toutes phases: UTF-8 sans BOM (fix [System.IO.File]::WriteAllText)
+- Consolidation < 30KB pour consommation Claude
+- Template 9 sections: Contexte, Localisation, Tables, Flux, Expressions, Diagnostic, Checklist+Impact, Commits, Screenshots
+- **Teste**: PMS-1427 6/6 (55 progs), PMS-1419 6/6 (4 progs)
 
 ---
 
@@ -825,6 +825,7 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-01-29: **Pipeline Ticket v2.0 Hybride** - Architecture hybride PS1+Claude. (1) Refactoring Phase 1 (3 sources: Jira/Index/Fichiers, keywords, attachments), (2) Refactoring Phase 2 (callers/callees KB SQLite), (3) Fix BOM UTF-8 toutes phases, (4) Fix Phase 5 Hashtable serialization + $Matches variable PS auto, (5) Consolidation auto-consolidate.ps1 < 30KB, (6) Template ANALYSIS.md 9 sections, (7) Skill + protocole mis a jour. **Teste: PMS-1427 6/6 (55 progs, 2 patterns), PMS-1419 6/6 (4 progs)**
 - 2026-01-28: **Workflow APEX 4-Phase V4.0** - Implementation complete du workflow de specification en 4 phases: (1) DISCOVERY - identification, ECF, orphan check, (2) MAPPING - tables R/W/L, parametres, (3) DECODE - expressions, regles metier, (4) SYNTHESIS - spec 3 onglets + Mermaid. Script: `Generate-SpecV40.ps1`. README spec-generator/ mis a jour. Teste sur ADH IDE 237 et 121 (complexite HAUTE).
 - 2026-01-27: **AUDIT PDCA Phase 5 (ACT FINAL)** - **GAP CRITIQUE CORRIGE**: 321/322 specs vides maintenant peuples avec donnees reelles. (1) KbIndexRunner `spec-data` command (JSON export), (2) Populate-SpecData.ps1 reecrit pour utiliser CLI au lieu de SQLite direct. **Resultats: 2522 tables, 5830 expressions, 820 callers, 834 callees extraits**
 - 2026-01-27: **AUDIT PDCA Phase 4 (ACT)** - (1) Populate-SpecData.ps1 pour peupler 322 specs vides avec donnees MCP, (2) README spec-generator/, (3) README ticket-pipeline/, (4) Fix 24 warnings C# (CS8625, CS1998, CS0168), (5) TreatWarningsAsErrors dans csproj, (6) Template blueprint corrige (nullable, Task.FromResult). **Gap critique identifie: 322/323 specs sans data**

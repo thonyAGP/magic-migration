@@ -1,11 +1,11 @@
 ---
 name: ticket-analyze
-description: Orchestrateur d'analyse de tickets Magic Jira. Force toutes les etapes du protocole pour atteindre 100% de resolution ou piste claire.
+description: Orchestrateur hybride d'analyse de tickets Magic Jira. Pipeline PS1 automatique + Claude pour l'analyse.
 ---
 
 <objective>
 Analyser systematiquement les tickets Jira lies aux applications Magic Unipaas.
-Forcer les 6 phases du workflow pour garantir une analyse complete et verifiable.
+Architecture hybride: pipeline PowerShell collecte les donnees → Claude ecrit analysis.md.
 Objectif: 100% des tickets avec root cause identifiee ou piste claire documentee.
 </objective>
 
@@ -34,342 +34,207 @@ Capitaliser apres resolution:
 </example_usage>
 </quick_start>
 
+<architecture>
+## ARCHITECTURE HYBRIDE (v2.0)
+
+### Pipeline PowerShell (collecte automatique)
+
+Le pipeline PS1 collecte les donnees brutes en 6 phases:
+
+```
+Run-TicketPipeline.ps1 -TicketKey "PMS-1234" [-SkipJira]
+    |
+    +-- Phase 1: auto-extract-context.ps1    → context.json
+    +-- Phase 2: auto-find-programs.ps1      → programs.json
+    +-- Phase 3: auto-trace-flow.ps1         → flow.json + diagram.txt
+    +-- Phase 4: auto-decode-expressions.ps1 → expressions.json
+    +-- Phase 5: auto-match-patterns.ps1     → patterns.json
+    +-- Consolidation: auto-consolidate.ps1  → pipeline-data.json
+```
+
+### Claude (analyse et redaction)
+
+Claude lit `pipeline-data.json` et ecrit `analysis.md` avec 9 sections:
+
+| Section | Contenu | Source |
+|---------|---------|--------|
+| 1. Contexte Jira | Symptome, indices, attachments | context.json + Jira |
+| 2. Localisation | Programmes IDE verifies + callers/callees | programs.json |
+| 3. Tables | Tables avec access modes R/W/L | programs.json + MCP |
+| 4. Tracage Flux | Diagramme ASCII + logic units | flow.json + MCP |
+| 5. Expressions | Formules decodees {N,Y} → variables | expressions.json |
+| 6. Diagnostic | Root cause + pattern KB | patterns.json + analyse |
+| 7. Checklist + Impact | Validation + downstream | programmes |
+| 8. Commits | Historique git lie | git log |
+| 9. Screenshots IDE | Captures ecran | attachments/ |
+
+### Template
+
+Template de reference: `tools/ticket-pipeline/TEMPLATE-ANALYSIS.md`
+
+</architecture>
+
 <orchestration>
-## WORKFLOW ORCHESTRE (6 PHASES OBLIGATOIRES)
+## WORKFLOW ORCHESTRE
 
-**REGLE ABSOLUE**: Chaque phase DOIT etre completee avant de passer a la suivante.
-Le skill bloque si une phase est incomplete.
+### Etape 1: LANCER LE PIPELINE
 
-### Phase 1: CONTEXTE JIRA (5 min max)
+```powershell
+# Avec Jira (recommande)
+.\tools\ticket-pipeline\Run-TicketPipeline.ps1 -TicketKey "PMS-1234"
 
-```
-INPUTS:
-- Ticket Jira (KEY format: CMDS-XXXXXX ou PMS-XXXXX)
-
-ACTIONS OBLIGATOIRES:
-1. Fetch ticket via API Jira (script jira-fetch.ps1)
-2. Extraire:
-   - Symptome (citation exacte)
-   - Donnees d'entree (valeurs precises)
-   - Resultat attendu vs obtenu
-   - Indices (noms programmes, tables, villages)
-3. SI contexte insuffisant → BLOQUER avec AskUserQuestion
-
-OUTPUTS:
-- Tableau contexte complet
-- Liste programmes/tables a investiguer
-- Fichier: .openspec/tickets/{KEY}/analysis.md cree
-
-VALIDATION:
-- [ ] Symptome documente (citation Jira)
-- [ ] Donnees entree presentes
-- [ ] Attendu vs Obtenu renseignes
+# Sans Jira (mode offline)
+.\tools\ticket-pipeline\Run-TicketPipeline.ps1 -TicketKey "PMS-1234" -SkipJira
 ```
 
-### Phase 2: LOCALISATION (10 min max)
+Le pipeline genere automatiquement:
+- `context.json` - Contexte et mots-cles
+- `programs.json` - Programmes verifies avec callers/callees
+- `flow.json` - Flux traces (si XML disponible)
+- `expressions.json` - Expressions decodees
+- `patterns.json` - Patterns KB matches
+- `pipeline-state.json` - Etat pipeline
+- `diagram.txt` - Diagramme ASCII
 
-```
-INPUTS:
-- Noms programmes/tables du contexte
+### Etape 2: CONSOLIDER
 
-ACTIONS OBLIGATOIRES (EN PARALLELE):
-1. magic_find_program() pour CHAQUE nom mentionne
-2. magic_get_table() pour CHAQUE table mentionnee
-3. Pour chaque resultat:
-   - magic_get_position() pour confirmer IDE
-   - magic_get_tree() pour structure taches
-
-OUTPUTS:
-- Tableau programmes avec IDE VERIFIE (format: "XXX IDE N - Nom")
-- SI 0 programme trouve → BLOQUER demander clarification
-
-VALIDATION:
-- [ ] Tous les programmes ont un IDE verifie
-- [ ] magic_get_position() documente pour chaque prog
-- [ ] Aucun "Prg_XXX.xml" sans IDE correspondant
+```powershell
+.\tools\ticket-pipeline\auto-consolidate.ps1 -TicketDir ".openspec\tickets\PMS-1234"
 ```
 
-### Phase 3: TRACAGE FLUX (15 min max)
+Genere `pipeline-data.json` (< 30KB) avec toutes les donnees consolidees.
 
-```
-INPUTS:
-- Programmes identifies en Phase 2
+### Etape 3: ANALYSER ET REDIGER
 
-ACTIONS OBLIGATOIRES (EN PARALLELE):
-1. magic_get_logic() pour chaque programme/tache suspecte
-2. magic_kb_callgraph() pour dependances
-3. Pour chaque CallTask/CallProgram trouve:
-   - Noter TargetPrg
-   - magic_get_position() pour resoudre IDE cible
-4. magic_kb_dead_code() pour detecter code mort
-5. magic_kb_constant_conditions() pour conditions IF(0,...)
+Claude lit `pipeline-data.json` et ecrit `analysis.md` en utilisant:
+- Les donnees du pipeline comme base factuelle
+- Les outils MCP pour completer les sections manquantes
+- Le template TEMPLATE-ANALYSIS.md pour la structure
 
-OUTPUTS:
-- Tableau flux avec operations, conditions, cibles
-- Diagramme ASCII OBLIGATOIRE
-- Liste code mort/conditions constantes
+### Etape 4: VALIDATION
 
-VALIDATION:
-- [ ] Diagramme ASCII present
-- [ ] Tous CallTask resolus en IDE
-- [ ] Code mort identifie (ou "aucun")
-```
-
-### Phase 4: ANALYSE EXPRESSIONS (20 min max)
-
-```
-INPUTS:
-- Expressions identifiees dans la logique
-
-ACTIONS OBLIGATOIRES:
-1. Identifier TOUTES les expressions {N,Y} dans le flux
-2. magic_decode_expression() pour CHAQUE expression
-3. magic_get_line() pour variables contextuelles
-4. Generer formule lisible avec noms de variables
-
-OUTPUTS:
-- Tableau {N,Y} → Variable + nom logique
-- Formule decodee pour chaque expression
-- Offset calcule automatiquement (JAMAIS manuellement)
-
-VALIDATION:
-- [ ] AUCUNE reference {N,Y} sans decodage
-- [ ] Formules lisibles documentees
-- [ ] Pas de calcul d'offset manuel
-```
-
-### Phase 5: DIAGNOSTIC ROOT CAUSE (10 min max)
-
-```
-INPUTS:
-- Flux trace + expressions decodees
-
-ACTIONS:
-1. Formuler hypothese basee sur analyse
-2. Verifier via MCP (magic_get_line, etc.)
-3. Confirmer localisation exacte
-4. Rechercher patterns similaires: magic_kb_search()
-
-OUTPUTS:
-- Root Cause: "Programme.Tache.Ligne.Expression"
-- OU Piste claire documentee si root cause non trouvee
-- Patterns KB similaires (si existants)
-
-VALIDATION:
-- [ ] Root cause avec localisation precise
-- [ ] OU piste documentee avec prochaines etapes
-- [ ] Recherche patterns KB effectuee
-```
-
-### Phase 6: DOCUMENTATION SOLUTION (5 min max)
-
-```
-INPUTS:
-- Root cause confirmee
-
-ACTIONS:
-1. Documenter Avant (bug) vs Apres (fix)
-2. Identifier toutes les variables concernees
-3. Generer fichier resolution.md
-4. Proposer capitalisation si nouveau pattern
-
-OUTPUTS:
-- Comparaison Avant/Apres avec variables nommees
-- Fichier: .openspec/tickets/{KEY}/resolution.md
-- Suggestion pattern KB si applicable
-
-VALIDATION:
-- [ ] Avant/Apres documentes
-- [ ] Variables avec noms logiques
-- [ ] Hook validation passe
-```
+Le hook `.claude/hooks/validate-ticket-analysis.ps1` verifie:
+- IDE verifie pour chaque programme
+- Pas de references {N,Y} non decodees
+- Diagramme ASCII present
+- Root cause ou piste documentee
 
 </orchestration>
+
+<pipeline_phases>
+## PHASES DU PIPELINE PS1
+
+### Phase 1: CONTEXTE JIRA
+- **Script**: `auto-extract-context.ps1`
+- **Sources** (par priorite): Jira API → Index local → Fichiers locaux
+- **Output**: `context.json` (symptome, programmes, tables, keywords, attachments)
+
+### Phase 2: LOCALISATION PROGRAMMES
+- **Script**: `auto-find-programs.ps1`
+- **Methode**: Requetes KB SQLite (KbIndexRunner CLI)
+- **Output**: `programs.json` (IDE verifie, callers, callees, tables)
+
+### Phase 3: TRACAGE FLUX
+- **Script**: `auto-trace-flow.ps1`
+- **Methode**: Parsing XML Prg_XXX.xml directement
+- **Output**: `flow.json` + `diagram.txt` (CallTasks, expressions, UI forms)
+
+### Phase 4: DECODAGE EXPRESSIONS
+- **Script**: `auto-decode-expressions.ps1`
+- **Methode**: MagicMcp.exe CLI pour decoder {N,Y}
+- **Output**: `expressions.json` (expressions decodees avec variables)
+
+### Phase 5: MATCHING PATTERNS KB
+- **Script**: `auto-match-patterns.ps1`
+- **Methode**: Scoring symptomes/mots-cles vs index patterns
+- **Output**: `patterns.json` (patterns tries par score, seuil min 2)
+
+### Phase 6: CONSOLIDATION
+- **Script**: `auto-consolidate.ps1`
+- **Methode**: Lecture + validation inter-phase + JSON compact
+- **Output**: `pipeline-data.json` (< 30KB, pret pour Claude)
+
+</pipeline_phases>
 
 <blocking_conditions>
 ## CONDITIONS DE BLOCAGE
 
-Le skill BLOQUE et demande clarification si:
-
-| Phase | Condition de blocage | Action |
-|-------|---------------------|--------|
-| 1 | Contexte insuffisant (pas de symptome clair) | AskUserQuestion avec template |
-| 2 | 0 programme trouve | AskUserQuestion pour nom correct |
-| 2 | Programme XML sans IDE verifie | Forcer magic_get_position() |
-| 3 | Pas de diagramme flux | Generer avant de continuer |
-| 4 | Reference {N,Y} sans decodage | Forcer magic_decode_expression() |
-| 5 | Pas de root cause NI piste | Documenter blocage + escalade |
-| 6 | Hook validation echoue | Corriger avant commit |
+| Situation | Pipeline | Claude |
+|-----------|----------|--------|
+| Pas de symptome | Phase 1 skip | AskUserQuestion |
+| 0 programme trouve | Phase 2 vide | Demander nom programme |
+| XML non disponible | Phase 3 vide | Utiliser MCP directement |
+| Expression non decodee | Phase 4 skip | magic_decode_expression() |
+| Pas de root cause | Normal | Documenter piste + prochaines etapes |
 
 </blocking_conditions>
 
 <mcp_tools_required>
-## OUTILS MCP OBLIGATOIRES PAR PHASE
+## OUTILS MCP POUR COMPLETER LE PIPELINE
 
-### Phase 2: Localisation
+### Quand le pipeline suffit (score >= 4/6)
+Claude redige directement depuis pipeline-data.json.
+
+### Quand le pipeline est insuffisant (score < 4/6)
+Claude complete avec les outils MCP:
+
 | Outil | Usage |
 |-------|-------|
-| `magic_find_program` | Trouver programmes par nom |
-| `magic_get_position` | Confirmer IDE |
+| `magic_get_position` | Confirmer IDE si pipeline incomplet |
 | `magic_get_tree` | Structure taches |
-| `magic_get_table` | Info table |
-
-### Phase 3: Tracage
-| Outil | Usage |
-|-------|-------|
 | `magic_get_logic` | Operations/conditions |
+| `magic_decode_expression` | Decoder {N,Y} manquants |
 | `magic_kb_callgraph` | Dependances |
 | `magic_kb_dead_code` | Code desactive |
-| `magic_kb_constant_conditions` | IF(0,...) detectes |
-| `magic_kb_dynamic_calls` | Appels ProgIdx() |
-
-### Phase 4: Expressions
-| Outil | Usage |
-|-------|-------|
-| `magic_decode_expression` | Decoder {N,Y} |
 | `magic_get_line` | Variables ligne |
-| `magic_get_expression` | Contenu expression |
-
-### Phase 5: Diagnostic
-| Outil | Usage |
-|-------|-------|
-| `magic_kb_search` | Recherche patterns |
-| `magic_kb_table_usage` | Impact donnees |
-| `magic_kb_field_usage` | Lineage champs |
+| `magic_kb_search` | Recherche patterns KB |
 
 </mcp_tools_required>
-
-<pattern_matching>
-## DETECTION AUTOMATIQUE TYPE DE BUG
-
-| Mots-cles dans ticket | Type | Outils suggeres |
-|----------------------|------|-----------------|
-| "affiche", "ecran", "mauvais", "incorrect" | Display | `magic_get_dataview`, form analysis |
-| "calcul", "montant", "total", "somme" | Logic | `magic_decode_expression`, `magic_get_logic` |
-| "lent", "timeout", "erreur", "crash" | Performance | `magic_kb_table_usage`, indexes |
-| "ne marche pas", "bloque", "rien" | Config | Checklist environnement |
-| "date", "heure", "format" | Date/Time | `magic_get_line`, Time(0) check |
-| "import", "export", "fichier" | I/O | `magic_get_logic`, parsing check |
-
-### Patterns KB connus
-
-Charger depuis `.openspec/patterns/index.json` et suggerer si symptome matche.
-
-</pattern_matching>
-
-<templates>
-## TEMPLATES QUESTIONS STANDARDISEES
-
-Utiliser selon type de blocage:
-
-### Contexte insuffisant
-```
-Questions standardisees (templates/questions.json):
-- "Quel est le chemin menu exact pour reproduire?"
-- "Quelle est la valeur attendue vs affichee?"
-- "Sur quel environnement (village, base)?"
-- "Screenshot avec les donnees de test?"
-```
-
-### Programme non trouve
-```
-- "Quel est le nom exact du programme dans le titre de l'ecran?"
-- "Dans quel module: Caisse, Ventes, Editions, Batch?"
-- "Y a-t-il un code visible (ex: CA0142, PB027)?"
-```
-
-### Root cause non identifiee
-```
-- "Pouvez-vous fournir un jeu de donnees de test?"
-- "Le bug est-il reproductible systematiquement?"
-- "Depuis quand ce bug apparait-il?"
-```
-
-</templates>
 
 <output_files>
 ## FICHIERS GENERES
 
+### Pipeline (automatique)
+
 | Fichier | Phase | Contenu |
 |---------|-------|---------|
-| `.openspec/tickets/{KEY}/analysis.md` | 1-5 | Analyse complete avec toutes les phases |
-| `.openspec/tickets/{KEY}/resolution.md` | 6 | Solution detaillee |
-| `.openspec/tickets/{KEY}/notes.md` | Any | Notes de travail |
-| `.openspec/patterns/{pattern}.md` | Post | Pattern capitalise |
+| `context.json` | 1 | Contexte Jira + mots-cles |
+| `programs.json` | 2 | Programmes verifies + callers/callees |
+| `flow.json` | 3 | Flux traces + UI |
+| `diagram.txt` | 3 | Diagramme ASCII |
+| `expressions.json` | 4 | Expressions decodees |
+| `patterns.json` | 5 | Patterns KB matches |
+| `pipeline-data.json` | 6 | Consolidation < 30KB |
+| `pipeline-state.json` | - | Etat pipeline (timing, erreurs) |
 
-### Structure analysis.md
+### Claude (redaction)
 
-```markdown
-# {KEY} - {TITRE}
+| Fichier | Contenu |
+|---------|---------|
+| `analysis.md` | Analyse complete 9 sections |
+| `resolution.md` | Solution detaillee (post-resolution) |
+| `notes.md` | Notes de travail |
 
-> **Jira** : [{KEY}](https://clubmed.atlassian.net/browse/{KEY})
-> **Protocole** : `/ticket-analyze` v1.0
+### Template
 
----
-
-## 1. Contexte Jira
-[Tableau symptome, donnees, attendu/obtenu]
-
-## 2. Localisation
-[Tableau programmes avec IDE verifie]
-[Appels MCP documentes]
-
-## 3. Tracage Flux
-[Diagramme ASCII]
-[Tableau CallTask resolus]
-[Code mort detecte]
-
-## 4. Analyse Expressions
-[Tableau {N,Y} → Variables]
-[Formules decodees]
-
-## 5. Root Cause
-[Localisation precise OU piste documentee]
-
-## 6. Solution
-[Avant/Apres avec variables]
-
----
-*Analyse: {TIMESTAMP}*
-*Orchestrateur: /ticket-analyze v1.0*
-```
+| Fichier | Usage |
+|---------|-------|
+| `TEMPLATE-ANALYSIS.md` | Structure des 9 sections |
 
 </output_files>
 
 <metrics>
 ## METRIQUES CIBLES
 
-| Metrique | Actuel | Cible | Moyen |
-|----------|--------|-------|-------|
-| Root cause trouvee | 94% | **100%** | Orchestrateur + patterns |
-| Utilisation MCP | 44% | **100%** | Phases bloquantes |
-| Expressions decodees | 33% | **100%** | Phase 4 automatique |
-| Diagrammes flux | 22% | **100%** | Phase 3 obligatoire |
-| Tickets resolus | 56% | **90%** | Patterns + templates |
-
-**Blocages irreductibles** (10%):
-- Depend API externe
-- Config materiel client
-- Clarification impossible (ticket abandonne)
+| Metrique | Pipeline seul | Hybride (cible) |
+|----------|---------------|-----------------|
+| Programmes verifies | 100% (KB) | 100% |
+| Expressions decodees | ~50% (XML dispo) | 100% (+ MCP) |
+| Patterns KB matches | 100% (auto) | 100% |
+| Root cause trouvee | 0% (pas d'analyse) | 90% (Claude) |
+| Diagrammes flux | ~30% (XML dispo) | 100% (+ MCP) |
 
 </metrics>
-
-<validation_hook>
-## VALIDATION FINALE
-
-Le hook `.claude/hooks/validate-ticket-analysis.ps1` verifie:
-
-1. **Lien Jira** present et formate correctement
-2. **IDE verifie** pour chaque programme (pas de Prg_XXX.xml seul)
-3. **Appels MCP documentes** (magic_get_position, magic_decode_expression)
-4. **Diagramme flux** present (caracteres ASCII box drawing)
-5. **Root cause** avec localisation precise (Programme.Tache.Ligne)
-6. **Solution** avec Avant/Apres
-7. **Aucun pattern interdit** ({N,Y} non decode, ISN_2=X, calcul offset manuel)
-
-Si validation echoue → lister les corrections requises.
-
-</validation_hook>
 
 <references>
 ## REFERENCES
@@ -377,6 +242,8 @@ Si validation echoue → lister les corrections requises.
 | Document | Lien |
 |----------|------|
 | Protocole complet | `.claude/protocols/ticket-analysis.md` |
+| Template 9 sections | `tools/ticket-pipeline/TEMPLATE-ANALYSIS.md` |
+| Pipeline scripts | `tools/ticket-pipeline/` |
 | Hook validation | `.claude/hooks/validate-ticket-analysis.ps1` |
 | Patterns KB | `.openspec/patterns/` |
 | Templates questions | `skills/ticket-analyze/templates/questions.json` |

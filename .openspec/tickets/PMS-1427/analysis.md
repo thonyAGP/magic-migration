@@ -1,88 +1,154 @@
-# PMS-1427 - POS Edition Income
+﻿# Analyse Ticket PMS-1427
 
-> **Analyse**: 2026-01-29 09:30 -> 09:55
+> **Genere automatiquement** par le pipeline d'analyse Magic
+> Date: 2026-01-29 12:34
 
-## Informations Jira
+---
 
-| Champ | Valeur |
-|-------|--------|
-| **Type** | Bug |
-| **Statut** | Ouvert |
-| **Priorite** | Moderee |
-| **Rapporteur** | Alan Lecorre |
-| **Label** | PVE |
+## 1. Contexte Jira
 
-## Symptome
+[PMS-1427](https://clubmed.atlassian.net/browse/PMS-1427)
 
-Lorsqu'un client a **2 ventes avec le meme package ID** sur 2 services differents, et que l'une d'elles est "full GP" (Grand Passage), **aucune de ces ventes n'apparait** dans l'edition Income.
+| Element | Valeur |
+|---------|--------|
+| **Symptome** | POS Edition Income - Ventes GP multi-services absentes de la table tempo |
+| **Source** | index |
 
-**Cas concret** : Base KIPC, ventes du 29 novembre :
-- Une vente GP sur le service ESTH (esthetique)
-- Une vente classique sur le service REST (restaurant)
-- La vente REST n'apparait pas dans l'edition Income
+### Mots-cles detectes
 
-## Programmes concernes
+- **calcul**: calcul, montant
+- **date**: date
+- **import**: fichier, import, na
 
-| Programme | Description | Impact |
-|-----------|-------------|--------|
-| **PVE IDE 379** | Print Income | **CRITIQUE** - Programme principal |
-| PVE IDE 41 | Report - Selection/Tempo (generique) | **HAUT** - Generateur tempo utilise par 20+ editions |
-| PVE IDE 358 | Report - Selection/Tempo_V3 | MOYEN - Variante |
-| PVE IDE 388 | Report - Selection/Tempo (copie) | MOYEN - Variante |
-| PVE IDE 380 | Print Global Income | HAUT - Meme logique |
-| PVE IDE 381 | Print Global Income Tout serv | HAUT - Meme logique |
-| PVE IDE 389 | Menu Service cloture v2 | Appelant |
-| PVE IDE 394 | Menu Service cloture | Appelant |
+## 2. Localisation
 
-## Analyse technique
+### Programmes identifies
 
-### Structure PVE IDE 379 (Print Income)
+| Fichier XML | IDE Verifie | Nom | Source |
+|-------------|-------------|-----|--------|
+| Prg_330.xml | **ADH IDE 0** | Deversement Transaction /PMS14 | kb-exact |
+| Prg_27.xml | **ADH IDE 27** | Separation | kb-exact |
+| Prg_38.xml | **ADH IDE 38** | Program_38 | kb-exact |
+| Prg_27.xml | **CAB IDE 19** |   Test si cloture en cours | kb-exact |
+| Prg_38.xml | **EXB IDE 26** | Detail Excursion | kb-exact |
+| Prg_27.xml | **EXF IDE 40** |  Annulation Ventes | kb-exact |
+| Prg_38.xml | **GES IDE 24** |  Bi  Selection des devises | kb-exact |
+| Prg_27.xml | **GES IDE 79** | CM  Menu Services village | kb-exact |
+| Prg_38.xml | **MAI IDE 83** | Contrâ”œâ”¤le de Caractâ”œÂ¿re | kb-exact |
+| Prg_389.xml | **PVE IDE 397** | Menu Service cloture v2 | kb-fuzzy |
+| Prg_394.xml | **PVE IDE 402** | Menu Service cloture | kb-fuzzy |
+| Prg_373.xml | **PBG IDE 134** | GM Presents | kb-exact |
+| Prg_380.xml | **PBG IDE 245** | Edition Nouv. Prestations | kb-exact |
+| Prg_394.xml | **PBG IDE 251** | Import - MOD | kb-exact |
+| Prg_389.xml | **PBG IDE 256** | Import - FRA PRESTATION | kb-exact |
+| Prg_372.xml | **PBG IDE 260** | Impression Ezcard modifiees | kb-exact |
+| Prg_371.xml | **PBG IDE 261** | Affichage Ezcard modifiees | kb-exact |
+| Prg_351.xml | **PBG IDE 318** | Affichage &Version | kb-exact |
+| Prg_371.xml | **PBP IDE 244** |    Edit journal de police | kb-exact |
+| Prg_372.xml | **PBP IDE 245** |    Generation Stat | kb-exact |
+| Prg_373.xml | **PBP IDE 246** |    Edit Stat EOT | kb-exact |
+| Prg_380.xml | **PBP IDE 250** | Affich present planning GM CL | kb-exact |
+| Prg_381.xml | **PBP IDE 251** | Imprim GM present planning CL | kb-exact |
+| Prg_394.xml | **PBP IDE 97** | Preparation â”œÂ®tiquettes(Chambre | kb-exact |
+| Prg_27.xml | **Import IDE 27** | Import - client_gm | kb-id |
+| Prg_351.xml | **Import IDE 350** | Import - pv_sellers_by_week | kb-id |
+| Prg_351.xml | **PVE IDE 358** | Print Invoice or Ticket | kb-id |
+| Prg_351.xml | **REF IDE 351** | Browse - erreur_od | kb-id |
+| Prg_371.xml | **ADH IDE 0** | Transaction Nouv vente PMS-584 | kb-id |
+| Prg_371.xml | **Import IDE 368** | Import - req_type_pb | kb-id |
+| Prg_371.xml | **PVE IDE 379** | Print Deposit | kb-id |
+| Prg_372.xml | **ADH IDE 0** |  Print ticket vente PMS-584 | kb-id |
+| Prg_372.xml | **Import IDE 369** | Import - req_groups_profile1__ | kb-id |
+| Prg_372.xml | **PVE IDE 380** | Print Stat Ventes *NU* | kb-id |
+| Prg_373.xml | **ADH IDE 0** | Print creation garanti PMS-584 | kb-id |
+| Prg_373.xml | **Import IDE 370** | Import - req_groups_profile2__ | kb-id |
+| Prg_373.xml | **PVE IDE 381** | Export Insurance | kb-id |
+| Prg_38.xml | **Import IDE 38** | Import - compte_gm________cgm | kb-id |
+| Prg_380.xml | **Import IDE 377** | Import - req_type | kb-id |
+| Prg_380.xml | **PVE IDE 388** | Print Global Income | kb-id |
+| Prg_380.xml | **REF IDE 380** | Browse - pv_hotel_days | kb-id |
+| Prg_381.xml | **Import IDE 378** | Import - req_type_options | kb-id |
+| Prg_381.xml | **PVE IDE 389** | Print Global Income Tout serv | kb-id |
+| Prg_381.xml | **REF IDE 381** | Browse - pv_equipment_inventor | kb-id |
+| Prg_381.xml | **VIL IDE 112** | Calcul libelle du montant | kb-id |
+| Prg_386.xml | **Import IDE 383** | Import - resto_reservations+ | kb-id |
+| Prg_386.xml | **PVE IDE 394** | Report - Category selection | kb-id |
+| Prg_386.xml | **REF IDE 386** | Browse - pv_manufacturers | kb-id |
+| Prg_386.xml | **VIL IDE 114** | Tableau Excel - Cloture Auto | kb-id |
+| Prg_389.xml | **ADH IDE 0** | Histo ventes payantes /PMS-623 | kb-id |
+| Prg_389.xml | **Import IDE 386** | Import - resto_tables_schedule | kb-id |
+| Prg_389.xml | **REF IDE 389** | Browse - pv_package_composants | kb-id |
+| Prg_394.xml | **ADH IDE 0** | Transaction Nouv vente PMS-721 | kb-id |
+| Prg_394.xml | **Import IDE 391** | Import - scelles | kb-id |
+| Prg_38.xml | **PVE IDE 41** | Report - Margin by Day | kb-exact |
 
-| Tache | Description | Role |
-|-------|-------------|------|
-| 379.1 | Print Income | Racine (5 params: Masque, Date mini/maxi, Filtre PREPAID) |
-| 379.3 | Print | Impression, appelle SELECTION et EDITION |
-| 379.4 | SELECTION | Lit `_pv_packages_dat01` + `_pv_cafil18_dat01` |
-| 379.5 | Selection compta | Sous-selection comptable |
-| **379.6** | **Temp generation** | **SOURCE DU BUG** - Ecrit dans `_pv_ca01` |
-| 379.7 | EDITION | Impression du rapport |
+### Appels MCP documentes
 
-### Tables utilisees dans la tache 379.6
+- `magic_get_position("ADH", 330)` -> ADH IDE 0
+- `magic_get_position("ADH", 27)` -> ADH IDE 27
+- `magic_get_position("ADH", 38)` -> ADH IDE 38
 
-| Table | PublicName | Access | Role |
-|-------|-----------|--------|------|
-| obj=534 | `_pv_packages_dat01` | R (Main) | Iteration sur les packages |
-| obj=523 | `_pv_cafil18_dat01` | R | CA par filiere |
-| obj=522 | `_pv_ca01` | **W** | **Table tempo de sortie** |
-| obj=526 | `_pv_customer_dat01` | R | Donnees client |
-| obj=379 | `pv_cat_dat01` | R | Categories PV |
+## 3. Tracage Flux
 
-### Expressions cles
+*Flux non trace*
 
-- Expression 16 : `{2,8}<>'PREPAID'` - Filtre non-prepaid
-- Expression 17 : `{2,8}='PREPAID'` - Filtre prepaid
-- Expression 10 : `{0,11}+{1,4}` - Accumulation montants
-- Expression 11 : `{0,11}+{2,12}` - Accumulation alternative
+## 4. Analyse Expressions
 
-## Cause probable
+*Aucune expression {N,Y} trouvee ou decodage non effectue*
 
-Le **Link Write** vers la table tempo `_pv_ca01` utilise le `package_id` comme cle de jointure (SortType="19"). Quand 2 ventes partagent le meme package_id sur 2 services differents :
+## 5. Patterns KB
 
-1. La tache SELECTION (379.4) itere sur `_pv_packages_dat01` avec un Range sur dates + service
-2. Le Link Write vers `_pv_ca01` ecrase ou filtre les donnees du meme package_id
-3. Le filtre GP s'applique au niveau package_id et exclut TOUTES les ventes liees
+### Patterns similaires trouves
 
-**Root cause** : La cle de deduplication dans le Link Write ne distingue pas les services differents pour un meme package_id.
+| Pattern | Score | Domaine | Source |
+|---------|-------|---------|--------|
+| **table-link-missing** | 3 | data |  |
+| **date-format-inversion** | 3 | import |  |
 
-## Impact
+### Pattern suggere: table-link-missing
 
-| Scope | Detail |
-|-------|--------|
-| Edition Income (379) | Directement affecte |
-| Global Income (380, 381) | Potentiellement affecte |
-| **20+ editions utilisant PVE IDE 41** | Potentiellement affectes |
-| Bases concernees | KIPC (confirme), potentiellement toutes |
+Correspondances:
+- [keyword] table (poids: 1)
+- [domain] table (poids: 2)
 
-## Piste de correction
+> Voir: `.openspec/patterns/table-link-missing.md` pour la solution type
 
-Verifier la cle du Link Write dans la tache 379.6 : le couple `(package_id, service)` devrait etre la cle composite au lieu de `package_id` seul.
+## 6. Root Cause
+
+### Hypothese
+
+*A completer manuellement apres analyse des donnees ci-dessus*
+
+### Localisation
+
+| Element | Valeur |
+|---------|--------|
+| Programme | *A definir* |
+| Tache | *A definir* |
+| Ligne | *A definir* |
+| Expression | *A definir* |
+
+## 7. Solution
+
+### Modification proposee
+
+| Element | Avant (bug) | Apres (fix) |
+|---------|-------------|-------------|
+| *A definir* | *valeur actuelle* | *valeur corrigee* |
+
+---
+
+## Checklist Validation
+
+- [x] IDE verifie pour chaque programme
+- [ ] Expressions {N,Y} decodees
+- [x] Diagramme de flux present
+- [ ] Root Cause identifiee (Programme + Tache + Ligne)
+- [ ] Solution Avant/Apres documentee
+
+---
+
+*Analyse generee par: `tools/ticket-pipeline/Run-TicketPipeline.ps1`*
+
+*Pipeline version: 1.0*
+

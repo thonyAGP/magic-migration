@@ -1,18 +1,8 @@
-# Phase5-Synthesis.ps1 - V6.0 Pipeline (Rewrite V2)
-# Generation de specs a 2 niveaux:
-# - Niveau 1: SUMMARY (2 pages max) pour triage bugs
-# - Niveau 2: DETAILED (15-30 pages) pour migration code
-#
-# Validated decisions (9 sections):
-# S1: Pipeline + Complexite + enriched Raison + orphan criteria
-# S2: Description from forms/keywords + width>0 filter + dual format rules + ALL callees
-# S3: Single unified R/W/L table + Memory indicator + ALL tables
-# S4: ALL mappings + P0/W0/V./VG categories + Type column + merged table
-# S5: Improved algorigramme + ALL expressions by type + no truncation
-# S6: Only visible forms + multi-forms mockup
-# S7: 2 separate diagrams + full names + no truncation
-# S8: LINK count + V9 metrics + ratios
-# S9: Composite score formula + migration recommendations
+# Phase5-Synthesis.ps1 - V7.0 Pipeline (4 Onglets)
+# TAB 1: Resume (Fiche + Description + Blocs + Flux + Regles FR + Stats)
+# TAB 2: Ecrans & Flux (Mockups + Navigation + Algorigramme)
+# TAB 3: Donnees (Tables R/W/L + Variables Top20/Annexe + Expressions)
+# TAB 4: Connexions (Graphes + Contexte + Complexite + Migration)
 
 param(
     [Parameter(Mandatory=$true)]
@@ -22,15 +12,13 @@ param(
     [int]$IdePosition,
 
     [string]$OutputPath,
-
-    [string]$SpecsOutputPath  # Where to save final .md files
+    [string]$SpecsOutputPath
 )
 
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent (Split-Path -Parent $ScriptDir)
 
-# Default output paths
 if (-not $OutputPath) {
     $OutputPath = Join-Path $ScriptDir "output\$Project-IDE-$IdePosition"
 }
@@ -41,45 +29,28 @@ if (-not (Test-Path $SpecsOutputPath)) {
     New-Item -ItemType Directory -Path $SpecsOutputPath -Force | Out-Null
 }
 
-Write-Host "=== Phase 5: SYNTHESIS (V6.0) ===" -ForegroundColor Cyan
-Write-Host "Project: $Project"
-Write-Host "IDE Position: $IdePosition"
-Write-Host ""
+Write-Host "=== Phase 5: SYNTHESIS (V7.0 - 4 Onglets) ===" -ForegroundColor Cyan
+Write-Host "Project: $Project | IDE: $IdePosition"
 
 # ============================================================
 # LOAD PHASE OUTPUTS
 # ============================================================
-Write-Host "[1/5] Loading phase outputs..." -ForegroundColor Yellow
+Write-Host "[1/6] Loading phase outputs..." -ForegroundColor Yellow
 
-$discovery = $null
-$mapping = $null
-$decoded = $null
-$uiForms = $null
+$discovery = $null; $mapping = $null; $decoded = $null; $uiForms = $null
 
 $discoveryPath = Join-Path $OutputPath "discovery.json"
 $mappingPath = Join-Path $OutputPath "mapping.json"
 $decodedPath = Join-Path $OutputPath "decoded.json"
 $uiFormsPath = Join-Path $OutputPath "ui_forms.json"
 
-if (Test-Path $discoveryPath) {
-    $discovery = Get-Content $discoveryPath -Raw | ConvertFrom-Json
-    Write-Host "  - discovery.json loaded"
-}
-if (Test-Path $mappingPath) {
-    $mapping = Get-Content $mappingPath -Raw | ConvertFrom-Json
-    Write-Host "  - mapping.json loaded"
-}
-if (Test-Path $decodedPath) {
-    $decoded = Get-Content $decodedPath -Raw | ConvertFrom-Json
-    Write-Host "  - decoded.json loaded"
-}
-if (Test-Path $uiFormsPath) {
-    $uiForms = Get-Content $uiFormsPath -Raw | ConvertFrom-Json
-    Write-Host "  - ui_forms.json loaded"
-}
+if (Test-Path $discoveryPath) { $discovery = Get-Content $discoveryPath -Raw | ConvertFrom-Json }
+if (Test-Path $mappingPath) { $mapping = Get-Content $mappingPath -Raw | ConvertFrom-Json }
+if (Test-Path $decodedPath) { $decoded = Get-Content $decodedPath -Raw | ConvertFrom-Json }
+if (Test-Path $uiFormsPath) { $uiForms = Get-Content $uiFormsPath -Raw | ConvertFrom-Json }
 
 if (-not $discovery) {
-    Write-Host "ERROR: discovery.json not found - run Phase 1 first" -ForegroundColor Red
+    Write-Host "ERROR: discovery.json not found" -ForegroundColor Red
     exit 1
 }
 
@@ -92,10 +63,10 @@ $startTime = Get-Date
 
 function Clean-MermaidLabel {
     param([string]$Text)
-    # Remove all special characters that break Mermaid syntax
     $clean = $Text -replace "['""`<>{}()\[\]/\\?!&]", ''
     $clean = $clean -replace '\s+', ' '
     $clean = $clean.Trim()
+    if ($clean.Length -gt 25) { $clean = $clean.Substring(0, 22) + "..." }
     if (-not $clean) { $clean = "N-A" }
     return $clean
 }
@@ -117,270 +88,155 @@ function Get-TableStorageType {
     return "Database"
 }
 
+function Get-FunctionalBloc {
+    param([string]$TaskName)
+    $n = $TaskName.ToLower()
+    if ($n -match 'saisie|transaction|vente') { return "Saisie" }
+    if ($n -match 'regl|reglement|paiement|mop|moyen') { return "Reglement" }
+    if ($n -match 'verif|controle|valid') { return "Validation" }
+    if ($n -match 'print|ticket|edition|imprim') { return "Impression" }
+    if ($n -match 'stock|calcul|compt') { return "Calcul" }
+    if ($n -match 'bilat|transfer|devers') { return "Transfert" }
+    if ($n -match 'affich|zoom|select|choix|rech') { return "Consultation" }
+    if ($n -match 'creat|insert|ajout') { return "Creation" }
+    if ($n -match 'init|raz|reinit') { return "Initialisation" }
+    return "Traitement"
+}
+
+function Reformulate-BusinessRule {
+    param([string]$Decoded, [string]$RuleId)
+
+    $text = $Decoded
+
+    # IF(var='val','then','else') - simple equality
+    if ($text -match "^IF\(([^=]+)='([^']+)','([^']+)','([^']+)'\)$") {
+        $var = $Matches[1].Trim()
+        return "Si $var vaut '$($Matches[2])' alors '$($Matches[3])', sinon '$($Matches[4])'"
+    }
+
+    # IF(Trim(var)='1',...) - service village pattern
+    if ($text -match "Trim\(([^)]+)\)='(\d)'" -and $text -match 'ALLER|RETOUR') {
+        return "Determine le sens du trajet selon le service village (1=ALLER, 2=RETOUR, 3=A/R)"
+    }
+
+    # IF(var=0, IF(var2='XXX', ...)) - nested with zero check
+    if ($text -match "^IF\(([^=]+)=0,IF\(([^=]+)='([^']+)',") {
+        $var1 = $Matches[1].Trim()
+        $var2 = $Matches[2].Trim()
+        $val = $Matches[3]
+        return "Si $var1 est nul, choix conditionnel selon $var2 (valeur '$val')"
+    }
+
+    # IF(var='VRL',...) - imputation type
+    if ($text -match "W0 imputation[^=]*='([^']+)'") {
+        $imp = $Matches[1]
+        return "Comportement conditionnel selon type d'imputation '$imp'"
+    }
+
+    # IF(NOT var, ...) - negation
+    if ($text -match "^IF\(NOT\s+([^,]+),") {
+        $var = $Matches[1].Trim()
+        return "Si $var est FAUX, branche alternative"
+    }
+
+    # IF(IN(var,'A','B','C'), valTrue, valFalse) - membership
+    if ($text -match "IF\(IN\s*\(([^,]+),") {
+        $inVar = $Matches[1].Trim()
+        if ($text -match "\d+\.\d+") {
+            return "Position UI conditionnelle selon $inVar"
+        }
+    }
+
+    # IF(var<>0 AND NOT(var2), Fix(a*b/100,...)) - percentage calc
+    if ($text -match "Fix\([^*]+\*[^/]+/100") {
+        return "Calcul de pourcentage avec arrondi"
+    }
+
+    # IF(var='',...) - empty check
+    if ($text -match "^IF\s*\(([^=]+)=''") {
+        $var = $Matches[1].Trim()
+        return "Valeur par defaut si $var est vide"
+    }
+
+    # Generic fallback
+    return "[Phase 2] Regle complexe"
+}
+
 function Calculate-ComplexityScore {
     param($Discovery, $Decoded)
 
     $score = 0
     $details = @()
 
-    # Expression count (30%)
     $exprCount = $Discovery.statistics.expression_count
     if ($exprCount -gt 200) { $score += 30; $details += "Expressions: $exprCount (HAUTE)" }
     elseif ($exprCount -gt 100) { $score += 20; $details += "Expressions: $exprCount (MOYENNE)" }
     elseif ($exprCount -gt 50) { $score += 10; $details += "Expressions: $exprCount (BASSE)" }
     else { $details += "Expressions: $exprCount (MINIMALE)" }
 
-    # Task count (20%)
     $taskCount = $Discovery.statistics.task_count
     if ($taskCount -gt 30) { $score += 20; $details += "Taches: $taskCount (HAUTE)" }
     elseif ($taskCount -gt 15) { $score += 13; $details += "Taches: $taskCount (MOYENNE)" }
     elseif ($taskCount -gt 5) { $score += 7; $details += "Taches: $taskCount (BASSE)" }
     else { $details += "Taches: $taskCount (MINIMALE)" }
 
-    # Tables WRITE (20%)
     $writeCount = ($Discovery.tables.by_access.WRITE | Measure-Object).Count
     if ($writeCount -gt 5) { $score += 20; $details += "Tables WRITE: $writeCount (HAUTE)" }
     elseif ($writeCount -gt 3) { $score += 13; $details += "Tables WRITE: $writeCount (MOYENNE)" }
     elseif ($writeCount -gt 0) { $score += 7; $details += "Tables WRITE: $writeCount (BASSE)" }
     else { $details += "Tables WRITE: 0 (AUCUNE)" }
 
-    # Callee count (15%)
     $calleeCount = $Discovery.statistics.callee_count
     if ($calleeCount -gt 10) { $score += 15; $details += "Callees: $calleeCount (HAUTE)" }
     elseif ($calleeCount -gt 5) { $score += 10; $details += "Callees: $calleeCount (MOYENNE)" }
     elseif ($calleeCount -gt 0) { $score += 5; $details += "Callees: $calleeCount (BASSE)" }
     else { $details += "Callees: 0 (ISOLE)" }
 
-    # Disabled lines ratio (15%)
     $totalLines = $Discovery.statistics.logic_line_count
     $disabledLines = $Discovery.statistics.disabled_line_count
     $disabledRatio = if ($totalLines -gt 0) { [math]::Round($disabledLines / $totalLines * 100, 1) } else { 0 }
-    if ($disabledRatio -gt 30) { $score += 15; $details += "Lignes desactivees: ${disabledRatio}% (DETTE HAUTE)" }
-    elseif ($disabledRatio -gt 15) { $score += 10; $details += "Lignes desactivees: ${disabledRatio}% (DETTE MOYENNE)" }
-    elseif ($disabledRatio -gt 5) { $score += 5; $details += "Lignes desactivees: ${disabledRatio}% (DETTE BASSE)" }
-    else { $details += "Lignes desactivees: ${disabledRatio}% (SAIN)" }
+    if ($disabledRatio -gt 30) { $score += 15; $details += "Code desactive: ${disabledRatio}% (HAUTE)" }
+    elseif ($disabledRatio -gt 15) { $score += 10; $details += "Code desactive: ${disabledRatio}% (MOYENNE)" }
+    elseif ($disabledRatio -gt 5) { $score += 5; $details += "Code desactive: ${disabledRatio}% (BASSE)" }
+    else { $details += "Code desactive: ${disabledRatio}% (SAIN)" }
 
-    # Level
-    $level = if ($score -ge 70) { "HAUTE" }
-             elseif ($score -ge 40) { "MOYENNE" }
-             else { "BASSE" }
+    $level = if ($score -ge 70) { "HAUTE" } elseif ($score -ge 40) { "MOYENNE" } else { "BASSE" }
 
-    return @{
-        score = $score
-        level = $level
-        details = $details
-        disabled_ratio = $disabledRatio
-    }
+    return @{ score = $score; level = $level; details = $details; disabled_ratio = $disabledRatio }
 }
 
 # ============================================================
-# SECTION 7: MERMAID DIAGRAMS
+# DATA PREPARATION
 # ============================================================
+Write-Host "[2/6] Preparing data..." -ForegroundColor Yellow
 
-function Generate-CallersDiagram {
-    param($Discovery, $Project, $IdePosition, $ProgramName)
-
-    $lines = @()
-    $lines += "graph LR"
-
-    $targetLabel = Clean-MermaidLabel "$IdePosition $ProgramName"
-    $lines += "    T$IdePosition[$targetLabel]"
-    $lines += "    style T$IdePosition fill:#58a6ff"
-
-    # Callers chain from call_chain (path from Main)
-    if ($Discovery.call_graph.call_chain -and $Discovery.call_graph.call_chain.Count -gt 0) {
-        $prevNode = $null
-        foreach ($node in $Discovery.call_graph.call_chain) {
-            if ($node.ide -le 0) { continue }
-            $nodeId = "CC$($node.ide)"
-            $nodeLabel = Clean-MermaidLabel "$($node.ide) $($node.name)"
-            $lines += "    $nodeId[$nodeLabel]"
-            if ($node.level -eq 0) {
-                $lines += "    style $nodeId fill:#8b5cf6"  # Main = violet
-            } else {
-                $lines += "    style $nodeId fill:#f59e0b"  # Intermediate = orange
-            }
-            if ($prevNode) {
-                $lines += "    $prevNode --> $nodeId"
-            }
-            $prevNode = $nodeId
-        }
-        # Connect last chain node to target
-        if ($prevNode) {
-            $lines += "    $prevNode --> T$IdePosition"
-        }
-    } elseif ($Discovery.call_graph.callers -and $Discovery.call_graph.callers.Count -gt 0) {
-        # Fallback: show all callers directly connected
-        foreach ($caller in ($Discovery.call_graph.callers | Where-Object { $_.ide -gt 0 })) {
-            $callerId = "CALLER$($caller.ide)"
-            $callerLabel = Clean-MermaidLabel "$($caller.ide) $($caller.name)"
-            $lines += "    $callerId[$callerLabel]"
-            $lines += "    $callerId --> T$IdePosition"
-            $lines += "    style $callerId fill:#f59e0b"
-        }
-    } else {
-        $lines += "    NONE[Aucun caller]"
-        $lines += "    NONE -.-> T$IdePosition"
-        $lines += "    style NONE fill:#6b7280,stroke-dasharray: 5 5"
-    }
-
-    return $lines -join "`n"
-}
-
-function Generate-CalleesDiagram {
-    param($Discovery, $Project, $IdePosition, $ProgramName)
-
-    $lines = @()
-    $lines += "graph LR"
-
-    $targetLabel = Clean-MermaidLabel "$IdePosition $ProgramName"
-    $lines += "    T$IdePosition[$targetLabel]"
-    $lines += "    style T$IdePosition fill:#58a6ff"
-
-    # ALL callees - no truncation, no limit
-    $callees = @($Discovery.call_graph.callees | Where-Object { $_.ide -gt 0 })
-
-    if ($callees.Count -eq 0) {
-        $lines += "    NONE[Aucun callee]"
-        $lines += "    T$IdePosition -.-> NONE"
-        $lines += "    style NONE fill:#6b7280,stroke-dasharray: 5 5"
-    } else {
-        foreach ($callee in $callees) {
-            $calleeId = "C$($callee.ide)"
-            $calleeLabel = Clean-MermaidLabel "$($callee.ide) $($callee.name)"
-            $lines += "    $calleeId[$calleeLabel]"
-            $lines += "    T$IdePosition --> $calleeId"
-            $lines += "    style $calleeId fill:#3fb950"
-        }
-    }
-
-    return $lines -join "`n"
-}
-
-# ============================================================
-# SECTION 5: ALGORIGRAMME
-# ============================================================
-
-function Generate-Algorigramme {
-    param($UIForms, $Decoded, $ProgramName)
-
-    $lines = @()
-    $lines += "flowchart TD"
-
-    # START node
-    $lines += "    START([START])"
-    $lines += "    style START fill:#3fb950"
-
-    # Get ALL visible forms (width > 0) - no type filter, no limit
-    $visibleForms = @()
-    if ($UIForms -and $UIForms.forms) {
-        $visibleForms = @($UIForms.forms | Where-Object {
-            $_.dimensions.width -gt 0
-        } | Sort-Object { $_.task_isn2 })
-    }
-
-    # Get business rules for decision points
-    $decisions = @()
-    if ($Decoded -and $Decoded.business_rules -and $Decoded.business_rules.all) {
-        $decisions = @($Decoded.business_rules.all | Where-Object { $_.condition } | Select-Object -First 3)
-    }
-
-    if ($visibleForms.Count -eq 0 -and $decisions.Count -eq 0) {
-        # Minimal flowchart
-        $lines += "    PROCESS[Traitement principal]"
-        $lines += "    START --> PROCESS"
-        $lines += "    PROCESS --> ENDOK"
-    } elseif ($visibleForms.Count -eq 0 -and $decisions.Count -gt 0) {
-        # Decision-driven flow (no visible forms but has rules)
-        $prevNode = "START"
-        $dIdx = 1
-        foreach ($dec in $decisions) {
-            $condLabel = Clean-MermaidLabel ($dec.condition)
-            if ($condLabel.Length -gt 30) { $condLabel = $condLabel.Substring(0, 27) + "..." }
-            $lines += "    D$dIdx{$condLabel}"
-            $lines += "    style D$dIdx fill:#58a6ff"
-            $lines += "    $prevNode --> D$dIdx"
-            $lines += "    D$dIdx -->|OUI| A$dIdx[Action $dIdx]"
-            $lines += "    D$dIdx -->|NON| N$dIdx[Suite]"
-            $lines += "    A$dIdx --> N$dIdx"
-            $prevNode = "N$dIdx"
-            $dIdx++
-        }
-        $lines += "    $prevNode --> ENDOK"
-    } else {
-        # Form-driven flow with visible screens
-        $prevNode = "START"
-        $formIndex = 1
-        $maxForms = [Math]::Min($visibleForms.Count, 8)  # Show up to 8 forms
-
-        foreach ($form in ($visibleForms | Select-Object -First $maxForms)) {
-            $formName = Clean-MermaidLabel $form.name
-            if (-not $formName.Trim()) { continue }
-
-            $nodeId = "F$formIndex"
-            $lines += "    $nodeId[$formName]"
-
-            # Add decision after first form if rules exist
-            if ($formIndex -eq 1 -and $decisions.Count -gt 0) {
-                $lines += "    $prevNode --> $nodeId"
-                $condLabel = Clean-MermaidLabel ($decisions[0].condition)
-                if ($condLabel.Length -gt 30) { $condLabel = $condLabel.Substring(0, 27) + "..." }
-                $lines += "    D1{$condLabel}"
-                $lines += "    style D1 fill:#58a6ff"
-                $lines += "    $nodeId --> D1"
-                $lines += "    D1 -->|OK| NEXT1[Suite traitement]"
-                $lines += "    D1 -->|Erreur| ERR[Erreur saisie]"
-                $lines += "    ERR --> $nodeId"
-                $lines += "    style ERR fill:#f85149"
-                $prevNode = "NEXT1"
-            } else {
-                $lines += "    $prevNode --> $nodeId"
-                $prevNode = $nodeId
-            }
-
-            $formIndex++
-        }
-
-        # Connect to save + end
-        $lines += "    $prevNode --> SAVE[Enregistrement]"
-        $lines += "    style SAVE fill:#22c55e"
-        $lines += "    SAVE --> ENDOK"
-    }
-
-    # END node
-    $lines += "    ENDOK([FIN])"
-    $lines += "    style ENDOK fill:#f85149"
-
-    return $lines -join "`n"
-}
-
-# ============================================================
-# BUILD SECTIONS
-# ============================================================
-
-# --- Complexity score ---
 $complexity = Calculate-ComplexityScore -Discovery $discovery -Decoded $decoded
 
-# --- Visible forms (width > 0) for Section 2 + 6 ---
+# Forms
+$allForms = @()
 $visibleForms = @()
 if ($uiForms -and $uiForms.forms) {
+    $allForms = @($uiForms.forms)
     $visibleForms = @($uiForms.forms | Where-Object { $_.dimensions.width -gt 0 } | Sort-Object { $_.task_isn2 })
 }
 
-# --- Tables: build unified R/W/L view (Section 3) ---
-$tableUnified = @{}  # keyed by table id
+# Functional blocks
+$blocMap = [ordered]@{}
+foreach ($form in $allForms) {
+    $bloc = Get-FunctionalBloc $form.name
+    if (-not $blocMap.Contains($bloc)) { $blocMap[$bloc] = @() }
+    $blocMap[$bloc] += $form
+}
+
+# Tables unified R/W/L
+$tableUnified = @{}
 if ($discovery.tables.all) {
     foreach ($t in $discovery.tables.all) {
         $key = "$($t.id)"
         if (-not $tableUnified.ContainsKey($key)) {
             $tableUnified[$key] = @{
-                id = $t.id
-                logical_name = $t.logical_name
-                physical_name = $t.physical_name
-                R = $false
-                W = $false
-                L = $false
-                usage_total = 0
+                id = $t.id; logical_name = $t.logical_name; physical_name = $t.physical_name
+                R = $false; W = $false; L = $false; usage_total = 0
                 storage = Get-TableStorageType $t.physical_name
             }
         }
@@ -394,79 +250,96 @@ if ($discovery.tables.all) {
     }
 }
 
-# --- Variables: build categorized table (Section 4) ---
+# Variables ranked
 $variableRows = @()
 if ($mapping -and $mapping.variable_mapping) {
-    # Build data_type lookup from variables.local
     $dataTypeLookup = @{}
     if ($mapping.variables -and $mapping.variables.local) {
         foreach ($v in $mapping.variables.local) {
-            $lookupKey = "$($v.letter)|$($v.name)"
-            if (-not $dataTypeLookup.ContainsKey($lookupKey)) {
-                $dataTypeLookup[$lookupKey] = $v.data_type
-            }
+            $lk = "$($v.letter)|$($v.name)"
+            if (-not $dataTypeLookup.ContainsKey($lk)) { $dataTypeLookup[$lk] = $v.data_type }
         }
     }
-
     $mapping.variable_mapping.PSObject.Properties | ForEach-Object {
-        $ref = $_.Name
-        $letter = $_.Value.letter
-        $name = $_.Value.name
-        $type = $_.Value.type
+        $ref = $_.Name; $letter = $_.Value.letter; $name = $_.Value.name
         $category = Get-VariableCategory $name
-        $lookupKey = "$letter|$name"
-        $dataType = if ($dataTypeLookup.ContainsKey($lookupKey)) { $dataTypeLookup[$lookupKey] } else { "N/A" }
-
+        $lk = "$letter|$name"
+        $dataType = if ($dataTypeLookup.ContainsKey($lk)) { $dataTypeLookup[$lk] } else { "N/A" }
         $variableRows += [PSCustomObject]@{
-            Ref = $ref
-            Letter = $letter
-            Name = $name
-            Category = $category
-            DataType = $dataType
-            VarType = $type
+            Ref = $ref; Letter = $letter; Name = $name
+            Category = $category; DataType = $dataType; VarType = $_.Value.type
         }
     }
-
-    # Sort: by category priority, then by letter length, then alphabetically
     $catOrder = @{ "P0" = 0; "W0" = 1; "V." = 2; "VG" = 3; "Autre" = 4 }
-    $variableRows = $variableRows | Sort-Object {
-        $catOrder[$_.Category]
-    }, {
-        $_.Letter.Length
-    }, {
-        $_.Letter
+    $variableRows = $variableRows | Sort-Object { $catOrder[$_.Category] }, { $_.Letter.Length }, { $_.Letter }
+}
+
+# Business rules
+$businessRules = @()
+if ($decoded -and $decoded.business_rules -and $decoded.business_rules.all) {
+    $businessRules = @($decoded.business_rules.all)
+}
+
+# Expression by type
+$exprByType = @{}
+if ($decoded -and $decoded.expressions -and $decoded.expressions.by_type) {
+    $decoded.expressions.by_type.PSObject.Properties | ForEach-Object {
+        $exprByType[$_.Name] = @($_.Value)
     }
 }
+
+# Callees with context
+$calleesCtx = @()
+foreach ($callee in $discovery.call_graph.callees) {
+    $cn = $callee.name.ToLower()
+    $ctx = if ($cn -match 'print|ticket|edition') { "Impression ticket/document" }
+    elseif ($cn -match 'stock|calc') { "Calcul de donnees" }
+    elseif ($cn -match 'recup|get') { "Recuperation donnees" }
+    elseif ($cn -match 'zoom|select|choix') { "Selection/consultation" }
+    elseif ($cn -match 'solde|resort|gift') { "Verification solde" }
+    elseif ($cn -match 'devers|transfer') { "Transfert donnees" }
+    elseif ($cn -match 'reinit|raz|init') { "Reinitialisation" }
+    elseif ($cn -match 'caract|interdit') { "Validation saisie" }
+    elseif ($cn -match 'printer|list') { "Configuration impression" }
+    elseif ($cn -match 'cheque|gestion') { "Gestion moyens paiement" }
+    elseif ($cn -match 'fidel|remise') { "Programme fidelite" }
+    elseif ($cn -match 'matric') { "Identification operateur" }
+    else { "[Phase 2]" }
+    $calleesCtx += @{ ide = $callee.ide; name = $callee.name; calls_count = $callee.calls_count; context = $ctx }
+}
+
+$writeCount = ($discovery.tables.by_access.WRITE | Measure-Object).Count
+$readCount = ($discovery.tables.by_access.READ | Measure-Object).Count
+$linkCount = ($discovery.tables.by_access.LINK | Measure-Object).Count
+$taskCount = $discovery.statistics.task_count
+$exprCount = $discovery.statistics.expression_count
+$calleeCount = $discovery.statistics.callee_count
+
+Write-Host "  $($visibleForms.Count) visible forms, $($blocMap.Count) blocks, $($businessRules.Count) rules"
 
 # ============================================================
 # GENERATE SUMMARY SPEC
 # ============================================================
-Write-Host "[2/5] Generating SUMMARY spec..." -ForegroundColor Yellow
+Write-Host "[3/6] Generating SUMMARY spec..." -ForegroundColor Yellow
 
 $writeTableNames = ($discovery.tables.by_access.WRITE | ForEach-Object { $_.logical_name }) -join ', '
 $callersList = if ($discovery.call_graph.callers.Count -gt 0) {
     ($discovery.call_graph.callers | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
 } else { "(aucun)" }
 $calleesList = if ($discovery.call_graph.callees.Count -gt 0) {
-    ($discovery.call_graph.callees | Select-Object -First 10 | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
-} else { "(aucun)" }
-$callersIdeList = if ($discovery.call_graph.callers.Count -gt 0) {
-    ($discovery.call_graph.callers | ForEach-Object { "IDE $($_.ide)" }) -join ', '
-} else { "(aucun)" }
-$calleesIdeList = if ($discovery.call_graph.callees.Count -gt 0) {
-    ($discovery.call_graph.callees | Select-Object -First 10 | ForEach-Object { "IDE $($_.ide)" }) -join ', '
+    ($discovery.call_graph.callees | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
 } else { "(aucun)" }
 
 $summarySpec = @"
 # $Project IDE $IdePosition - $programName
 
 > **Analyse**: $($startTime.ToString("yyyy-MM-dd HH:mm"))
-> **Pipeline**: V6.0 Deep Analysis
+> **Pipeline**: V7.0 Deep Analysis
 
 ## RESUME EXECUTIF
 
 - **Fonction**: $programName
-- **Tables modifiees**: $(($discovery.tables.by_access.WRITE | Measure-Object).Count)
+- **Tables modifiees**: $writeCount
 - **Complexite**: **$($complexity.level)** ($($complexity.score)/100)
 - **Statut**: $($discovery.orphan_analysis.status)
 - **Raison**: $($discovery.orphan_analysis.reason)
@@ -492,509 +365,667 @@ $(($programName -split ' ' | Where-Object { $_.Length -gt 3 }) -join ', ')
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | $($discovery.statistics.task_count) |
+| Taches | $taskCount |
 | Lignes Logic | $($discovery.statistics.logic_line_count) |
-| Expressions | $($discovery.statistics.expression_count) |
+| Expressions | $exprCount |
 | Tables | $($discovery.statistics.table_count) |
 
 ---
-*Spec SUMMARY generee par Pipeline V6.0*
+*Spec SUMMARY generee par Pipeline V7.0*
 "@
 
 # ============================================================
-# GENERATE DETAILED SPEC
+# GENERATE DETAILED SPEC - 4 TABS
 # ============================================================
-Write-Host "[3/5] Generating DETAILED spec..." -ForegroundColor Yellow
+Write-Host "[4/6] Generating DETAILED spec (4 tabs)..." -ForegroundColor Yellow
 
-$specLines = @()
+$L = [System.Collections.ArrayList]::new()
+
+function Add-Line { param([string]$Text = "") $null = $L.Add($Text) }
 
 # --- HEADER ---
-$specLines += "# $Project IDE $IdePosition - $programName"
-$specLines += ""
-$specLines += "> **Analyse**: $($startTime.ToString("yyyy-MM-dd HH:mm"))"
-$specLines += "> **Pipeline**: V6.0 Deep Analysis"
-$specLines += "> **Niveau**: DETAILED (Migration)"
-$specLines += ""
+Add-Line "# $Project IDE $IdePosition - $programName"
+Add-Line
+Add-Line "> **Analyse**: $($startTime.ToString('yyyy-MM-dd HH:mm'))"
+Add-Line "> **Pipeline**: V7.0 Deep Analysis"
+Add-Line "> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)"
+Add-Line
 
-# ============================================================
-# SECTION 1: IDENTIFICATION
-# ============================================================
-$specLines += "<!-- TAB:Fonctionnel -->"
-$specLines += ""
-$specLines += "## 1. IDENTIFICATION"
-$specLines += ""
-$specLines += "| Attribut | Valeur |"
-$specLines += "|----------|--------|"
-$specLines += "| Projet | $Project |"
-$specLines += "| IDE Position | $IdePosition |"
-$specLines += "| Nom Programme | $programName |"
-$specLines += "| Statut Orphelin | $($discovery.orphan_analysis.status) |"
-$specLines += "| Raison | $($discovery.orphan_analysis.reason) |"
-$specLines += "| Complexite | **$($complexity.level)** ($($complexity.score)/100) |"
-$specLines += "| Pipeline | V6.0 |"
-$specLines += ""
+# ████████████████████████████████████████████████████████████
+# TAB 1: RESUME
+# ████████████████████████████████████████████████████████████
+Add-Line "<!-- TAB:Resume -->"
+Add-Line
 
-# Orphan criteria detail
-$specLines += "### Criteres Orphelin"
-$specLines += ""
-$specLines += "| Critere | Resultat |"
-$specLines += "|---------|----------|"
-$hasCallers = if ($discovery.orphan_analysis.has_callers) { "OUI ($($discovery.statistics.caller_count) callers)" } else { "NON" }
-$hasPublicName = if ($discovery.orphan_analysis.has_public_name) { "OUI" } else { "NON" }
-$isEcf = if ($discovery.orphan_analysis.is_ecf_member) { "OUI" } else { "NON" }
-$specLines += "| Callers directs | $hasCallers |"
-$specLines += "| Public Name | $hasPublicName |"
-$specLines += "| Membre ECF | $isEcf |"
-$specLines += ""
+# --- 1. Fiche identite ---
+Add-Line "## 1. FICHE D'IDENTITE"
+Add-Line
+Add-Line "| Attribut | Valeur |"
+Add-Line "|----------|--------|"
+Add-Line "| Projet | $Project |"
+Add-Line "| IDE Position | $IdePosition |"
+Add-Line "| Nom Programme | $programName |"
+Add-Line "| Complexite | **$($complexity.level)** ($($complexity.score)/100) |"
+Add-Line "| Statut | $($discovery.orphan_analysis.status) |"
+Add-Line "| Raison | $($discovery.orphan_analysis.reason) |"
+Add-Line "| Taches | $taskCount |"
+Add-Line "| Ecrans visibles | $($visibleForms.Count) |"
+Add-Line "| Tables modifiees | $writeCount |"
+Add-Line "| Programmes appeles | $calleeCount |"
+Add-Line
 
-# ============================================================
-# SECTION 2: OBJECTIF METIER
-# ============================================================
-$specLines += "## 2. OBJECTIF METIER"
-$specLines += ""
-
-# 2.1 Description from visible forms + keywords
-$keywords = @($programName -split ' ' | Where-Object { $_.Length -gt 3 })
+# --- 2. Description ---
+Add-Line "## 2. DESCRIPTION"
+Add-Line
+Add-Line "**$programName** est un programme de complexite **$($complexity.level)** comportant $taskCount taches et $exprCount expressions."
+Add-Line
 if ($visibleForms.Count -gt 0) {
-    $formNames = ($visibleForms | ForEach-Object { $_.name }) -join ', '
-    $specLines += "**$programName** - Programme comprenant $($visibleForms.Count) ecran(s) visible(s): $formNames."
+    $vNames = ($visibleForms | ForEach-Object { $_.name }) -join ', '
+    Add-Line "Il presente $($visibleForms.Count) ecran(s) a l'utilisateur: $vNames."
+    Add-Line "Il modifie $writeCount table(s) en base et delegue des traitements a $calleeCount sous-programme(s)."
 } else {
-    $specLines += "**$programName** - Programme de traitement metier ($($discovery.statistics.task_count) taches, $($discovery.statistics.expression_count) expressions)."
+    Add-Line "Ce programme est un traitement sans interface visible (batch ou sous-programme)."
+    Add-Line "Il modifie $writeCount table(s) et delegue $calleeCount sous-programme(s)."
 }
-$specLines += ""
-
-# 2.2 Fonctionnalites from visible forms
-if ($visibleForms.Count -gt 0) {
-    $specLines += "### Fonctionnalites principales"
-    $specLines += ""
-    foreach ($form in $visibleForms) {
-        $formName = $form.name
-        if ($formName.Trim()) {
-            $dims = "$($form.dimensions.width)x$($form.dimensions.height)"
-            $specLines += "- **$formName** (Tache $($form.task_isn2), $($form.window_type_str), $dims)"
-        }
-    }
-    $specLines += ""
+Add-Line
+if ($discovery.call_graph.callers.Count -gt 0) {
+    $cNames = ($discovery.call_graph.callers | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
+    Add-Line "**Contexte d'appel**: Appele depuis $cNames."
+    Add-Line
 }
 
-# 2.3 Operations sur les donnees - ALL tables by access mode
-$writeTablesAll = @()
-$readTablesAll = @()
-$linkTablesAll = @()
+# --- 3. Blocs fonctionnels ---
+Add-Line "## 3. BLOCS FONCTIONNELS"
+Add-Line
+if ($blocMap.Count -gt 0) {
+    $bIdx = 1
+    foreach ($blocName in $blocMap.Keys) {
+        $blocForms = $blocMap[$blocName]
+        $vis = @($blocForms | Where-Object { $_.dimensions.width -gt 0 })
+        $invis = @($blocForms | Where-Object { $_.dimensions.width -le 0 })
 
-if ($discovery.tables.by_access.WRITE) { $writeTablesAll = @($discovery.tables.by_access.WRITE) }
-if ($discovery.tables.by_access.READ) { $readTablesAll = @($discovery.tables.by_access.READ) }
-if ($discovery.tables.by_access.LINK) { $linkTablesAll = @($discovery.tables.by_access.LINK) }
-
-if ($writeTablesAll.Count -gt 0 -or $readTablesAll.Count -gt 0) {
-    $specLines += "### Operations sur les donnees"
-    $specLines += ""
-
-    if ($writeTablesAll.Count -gt 0) {
-        $specLines += "#### Tables modifiees (WRITE) - $($writeTablesAll.Count) tables"
-        $specLines += ""
-        foreach ($tbl in $writeTablesAll) {
-            $specLines += "- ``$($tbl.logical_name)`` ($($tbl.physical_name))"
-        }
-        $specLines += ""
-    }
-
-    if ($readTablesAll.Count -gt 0) {
-        $specLines += "#### Tables lues (READ) - $($readTablesAll.Count) tables"
-        $specLines += ""
-        foreach ($tbl in $readTablesAll) {
-            $specLines += "- ``$($tbl.logical_name)`` ($($tbl.physical_name))"
-        }
-        $specLines += ""
-    }
-
-    if ($linkTablesAll.Count -gt 0) {
-        $specLines += "#### Tables liees (LINK) - $($linkTablesAll.Count) tables"
-        $specLines += ""
-        foreach ($tbl in $linkTablesAll) {
-            $specLines += "- ``$($tbl.logical_name)`` ($($tbl.physical_name))"
-        }
-        $specLines += ""
-    }
-}
-
-# 2.4 Regles metier - DUAL FORMAT (decoded + natural language), NO TRUNCATION
-if ($decoded -and $decoded.business_rules -and $decoded.business_rules.all.Count -gt 0) {
-    $allRules = @($decoded.business_rules.all)
-    $specLines += "### Regles metier ($($allRules.Count) regles)"
-    $specLines += ""
-
-    # Group by type
-    $rulesByType = $allRules | Group-Object -Property { if ($_.type) { $_.type } else { 'Autre' } }
-
-    foreach ($group in $rulesByType) {
-        $typeName = $group.Name
-        $specLines += "#### $typeName ($($group.Count))"
-        $specLines += ""
-
-        foreach ($rule in $group.Group) {
-            # Dual format: decoded expression + natural language
-            $decodedExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
-            $naturalLang = $rule.natural_language
-
-            $specLines += "- **[$($rule.id)]** ``$decodedExpr``"
-            if ($naturalLang) {
-                $specLines += "  > $naturalLang"
+        Add-Line "### 3.$bIdx $blocName ($($blocForms.Count) taches)"
+        Add-Line
+        if ($vis.Count -gt 0) {
+            foreach ($f in $vis) {
+                Add-Line "- **$($f.name)** (Tache $($f.task_isn2), $($f.window_type_str), $($f.dimensions.width)x$($f.dimensions.height))"
             }
         }
-        $specLines += ""
+        if ($invis.Count -gt 0) {
+            $iNames = ($invis | ForEach-Object { "$($_.name) (T$($_.task_isn2))" }) -join ', '
+            Add-Line "- *Traitements internes*: $iNames"
+        }
+        Add-Line
+        $bIdx++
     }
 }
 
-# 2.5 Contexte d'utilisation - ALL callees, no limit
-$callersContext = if ($discovery.call_graph.callers.Count -gt 0) {
-    ($discovery.call_graph.callers | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
-} else { "(point d'entree ou orphelin)" }
+# --- 4. Flux utilisateur ---
+Add-Line "## 4. FLUX UTILISATEUR"
+Add-Line
+if ($visibleForms.Count -gt 1) {
+    Add-Line "Enchainement principal des ecrans:"
+    Add-Line
+    $sNum = 1
+    foreach ($form in $visibleForms) {
+        Add-Line "$sNum. **$($form.name)** ($($form.window_type_str))"
+        $sNum++
+    }
+    Add-Line
+} elseif ($visibleForms.Count -eq 1) {
+    Add-Line "Ecran unique: **$($visibleForms[0].name)** ($($visibleForms[0].window_type_str), $($visibleForms[0].dimensions.width)x$($visibleForms[0].dimensions.height))"
+    Add-Line
+} else {
+    Add-Line "Programme sans ecran visible (traitement interne)."
+    Add-Line
+}
 
-$calleesContext = if ($discovery.call_graph.callees.Count -gt 0) {
+# --- 5. Regles metier en francais ---
+Add-Line "## 5. REGLES METIER"
+Add-Line
+if ($businessRules.Count -gt 0) {
+    Add-Line "$($businessRules.Count) regles identifiees:"
+    Add-Line
+    foreach ($rule in $businessRules) {
+        $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
+        $frRule = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id
+        Add-Line "- **[$($rule.id)]** $frRule"
+        Add-Line "  > ``$dExpr``"
+    }
+    Add-Line
+} else {
+    Add-Line "*(Aucune regle metier identifiee)*"
+    Add-Line
+}
+
+# --- 6. Programmes lies ---
+Add-Line "## 6. PROGRAMMES LIES"
+Add-Line
+$clrCompact = if ($discovery.call_graph.callers.Count -gt 0) {
+    ($discovery.call_graph.callers | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
+} else { "(aucun)" }
+$cleCompact = if ($discovery.call_graph.callees.Count -gt 0) {
     ($discovery.call_graph.callees | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
 } else { "(aucun)" }
+Add-Line "- **Appele par**: $clrCompact"
+Add-Line "- **Appelle**: $cleCompact"
+Add-Line
 
-$specLines += "### Contexte d'utilisation"
-$specLines += ""
-$specLines += "- **Appele depuis**: $callersContext"
-$specLines += "- **Appelle**: $calleesContext"
-$specLines += ""
+# --- 7. Statistiques ---
+Add-Line "## 7. STATISTIQUES"
+Add-Line
+Add-Line "| Metrique | Valeur |"
+Add-Line "|----------|--------|"
+Add-Line "| Taches | $taskCount |"
+Add-Line "| Ecrans visibles | $($visibleForms.Count) / $($allForms.Count) |"
+Add-Line "| Lignes Logic | $($discovery.statistics.logic_line_count) |"
+Add-Line "| Expressions | $exprCount |"
+Add-Line "| Regles metier | $($businessRules.Count) |"
+Add-Line "| Tables | $($tableUnified.Count) (W:$writeCount R:$readCount L:$linkCount) |"
+Add-Line "| Programmes appeles | $calleeCount |"
+Add-Line
 
-# ============================================================
-# SECTION 3: MODELE DE DONNEES (TAB: Technique)
-# ============================================================
-$specLines += "<!-- TAB:Technique -->"
-$specLines += ""
-$specLines += "## 3. MODELE DE DONNEES"
-$specLines += ""
+# ████████████████████████████████████████████████████████████
+# TAB 2: ECRANS & FLUX
+# ████████████████████████████████████████████████████████████
+Add-Line "<!-- TAB:Ecrans -->"
+Add-Line
 
-# Unified table with R/W/L columns
-$specLines += "### Tables ($($tableUnified.Count) tables uniques)"
-$specLines += ""
-$specLines += "| ID | Nom Logique | Nom Physique | R | W | L | Type | Occurrences |"
-$specLines += "|----|-------------|--------------|---|---|---|------|-------------|"
+# --- 8. Ecrans ---
+Add-Line "## 8. ECRANS"
+Add-Line
 
+if ($visibleForms.Count -gt 0) {
+    Add-Line "### 8.1 Forms visibles ($($visibleForms.Count) / $($allForms.Count))"
+    Add-Line
+    Add-Line "| # | Tache | Nom | Type | Largeur | Hauteur |"
+    Add-Line "|---|-------|-----|------|---------|---------|"
+    $fIdx = 1
+    foreach ($form in $visibleForms) {
+        Add-Line "| $fIdx | $($form.task_isn2) | $($form.name) | $($form.window_type_str) | $($form.dimensions.width) | $($form.dimensions.height) |"
+        $fIdx++
+    }
+    Add-Line
+
+    # ASCII mockup
+    Add-Line "### 8.2 Mockups Ecrans"
+    Add-Line
+    Add-Line '```'
+    foreach ($form in $visibleForms) {
+        $title = $form.name
+        $w = $form.dimensions.width
+        $h = $form.dimensions.height
+        $type = $form.window_type_str
+        $tNum = $form.task_isn2
+
+        $boxWidth = [math]::Min([math]::Max([math]::Round($w / 20), 30), 70)
+        $boxHeight = [math]::Max([math]::Round($h / 60), 3)
+
+        $headerText = " $title [$type] ${w}x${h} - Tache $tNum "
+        if ($headerText.Length -gt $boxWidth - 2) {
+            $headerText = $headerText.Substring(0, $boxWidth - 5) + "... "
+        }
+
+        $topBorder = "+" + ("=" * ($boxWidth - 2)) + "+"
+        $midBorder = "+" + ("-" * ($boxWidth - 2)) + "+"
+        $emptyLine = "|" + (" " * ($boxWidth - 2)) + "|"
+
+        Add-Line $topBorder
+        Add-Line "|$($headerText.PadRight($boxWidth - 2))|"
+        Add-Line $midBorder
+        $contentLine = "  [Phase 2: controles reels]"
+        Add-Line "|$($contentLine.PadRight($boxWidth - 2))|"
+        for ($i = 0; $i -lt [math]::Min($boxHeight, 4); $i++) { Add-Line $emptyLine }
+        Add-Line $topBorder
+        Add-Line ""
+    }
+    Add-Line '```'
+    Add-Line
+} else {
+    Add-Line "*(Programme sans ecran visible)*"
+    Add-Line
+}
+
+# --- 9. Navigation ---
+Add-Line "## 9. NAVIGATION"
+Add-Line
+
+if ($visibleForms.Count -gt 1) {
+    Add-Line "### 9.1 Enchainement des ecrans"
+    Add-Line
+    Add-Line '```mermaid'
+    Add-Line "flowchart LR"
+    Add-Line "    START([Entree])"
+    Add-Line "    style START fill:#3fb950"
+
+    $prevNode = "START"
+    $navIdx = 1
+    foreach ($form in $visibleForms) {
+        $fl = Clean-MermaidLabel $form.name
+        $nId = "F$navIdx"
+        Add-Line "    $nId[$fl]"
+        Add-Line "    $prevNode --> $nId"
+        $prevNode = $nId
+        $navIdx++
+    }
+    Add-Line "    FIN([Sortie])"
+    Add-Line "    style FIN fill:#f85149"
+    Add-Line "    $prevNode --> FIN"
+    Add-Line '```'
+    Add-Line
+} elseif ($visibleForms.Count -eq 1) {
+    Add-Line "Ecran unique: **$($visibleForms[0].name)**"
+    Add-Line
+}
+
+# Decision algorigramme
+Add-Line "### 9.2 Logique decisionnelle"
+Add-Line
+
+if ($businessRules.Count -gt 0) {
+    Add-Line '```mermaid'
+    Add-Line "flowchart TD"
+    Add-Line "    START([START])"
+    Add-Line "    style START fill:#3fb950"
+
+    $prevNode = "START"
+    $dIdx = 1
+    $maxDec = [math]::Min($businessRules.Count, 6)
+
+    foreach ($rule in ($businessRules | Select-Object -First $maxDec)) {
+        $dExpr = if ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
+        $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id
+        $shortLbl = Clean-MermaidLabel $frLbl
+
+        Add-Line "    D$dIdx{$shortLbl}"
+        Add-Line "    style D$dIdx fill:#58a6ff"
+        Add-Line "    $prevNode --> D$dIdx"
+        Add-Line "    D$dIdx -->|OUI| A$dIdx[Traitement $($rule.id)]"
+        Add-Line "    D$dIdx -->|NON| S$dIdx[Suite]"
+        Add-Line "    A$dIdx --> S$dIdx"
+        $prevNode = "S$dIdx"
+        $dIdx++
+    }
+
+    if ($businessRules.Count -gt $maxDec) {
+        $rem = $businessRules.Count - $maxDec
+        Add-Line "    MORE[+ $rem autres regles]"
+        Add-Line "    $prevNode --> MORE"
+        $prevNode = "MORE"
+    }
+    Add-Line "    ENDOK([FIN])"
+    Add-Line "    style ENDOK fill:#f85149"
+    Add-Line "    $prevNode --> ENDOK"
+    Add-Line '```'
+    Add-Line
+} else {
+    Add-Line "*(Pas de regles metier pour l'algorigramme)*"
+    Add-Line
+}
+
+# All tasks list
+if ($allForms.Count -gt $visibleForms.Count) {
+    Add-Line "### 9.3 Toutes les taches ($($allForms.Count))"
+    Add-Line
+    Add-Line "| Tache | Nom | Type | Visible | Bloc |"
+    Add-Line "|-------|-----|------|---------|------|"
+    foreach ($form in ($allForms | Sort-Object { $_.task_isn2 })) {
+        $isVis = if ($form.dimensions.width -gt 0) { "OUI" } else { "-" }
+        $bloc = Get-FunctionalBloc $form.name
+        Add-Line "| $($form.task_isn2) | $($form.name) | $($form.window_type_str) | $isVis | $bloc |"
+    }
+    Add-Line
+}
+
+# ████████████████████████████████████████████████████████████
+# TAB 3: DONNEES
+# ████████████████████████████████████████████████████████████
+Add-Line "<!-- TAB:Donnees -->"
+Add-Line
+
+# --- 10. Tables ---
+Add-Line "## 10. TABLES"
+Add-Line
+Add-Line "### 10.1 Vue unifiee ($($tableUnified.Count) tables)"
+Add-Line
+Add-Line "| ID | Nom Logique | Nom Physique | R | W | L | Stockage | Usages |"
+Add-Line "|----|-------------|--------------|---|---|---|----------|--------|"
 $sortedTables = $tableUnified.Values | Sort-Object { [int]$_.id }
 foreach ($t in $sortedTables) {
-    $rMark = if ($t.R) { "R" } else { "-" }
-    $wMark = if ($t.W) { "W" } else { "-" }
-    $lMark = if ($t.L) { "L" } else { "-" }
-    $specLines += "| $($t.id) | $($t.logical_name) | $($t.physical_name) | $rMark | $wMark | $lMark | $($t.storage) | $($t.usage_total) |"
+    $rM = if ($t.R) { "R" } else { "-" }
+    $wM = if ($t.W) { "**W**" } else { "-" }
+    $lM = if ($t.L) { "L" } else { "-" }
+    Add-Line "| $($t.id) | $($t.logical_name) | $($t.physical_name) | $rM | $wM | $lM | $($t.storage) | $($t.usage_total) |"
 }
-$specLines += ""
+Add-Line
+Add-Line "### 10.2 Colonnes utilisees"
+Add-Line
+Add-Line "*[Phase 2] Analyse detaillee des colonnes reellement lues/modifiees par table.*"
+Add-Line
 
-# ============================================================
-# SECTION 4: VARIABLES ET PARAMETRES
-# ============================================================
-$specLines += "## 4. VARIABLES ET PARAMETRES"
-$specLines += ""
+# --- 11. Variables ---
+Add-Line "## 11. VARIABLES"
+Add-Line
 
 if ($variableRows.Count -gt 0) {
-    $specLines += "### Variables Mapping ($($variableRows.Count) entrees)"
-    $specLines += ""
-    $specLines += "| Cat | Ref Expression | Lettre | Nom Variable | Type |"
-    $specLines += "|-----|----------------|--------|--------------|------|"
-
-    $currentCat = ""
-    foreach ($v in $variableRows) {
-        # Category separator
-        if ($v.Category -ne $currentCat) {
-            $currentCat = $v.Category
-        }
-        $specLines += "| $($v.Category) | ``$($v.Ref)`` | **$($v.Letter)** | $($v.Name) | $($v.DataType) |"
+    $top20 = $variableRows | Select-Object -First 20
+    Add-Line "### 11.1 Variables principales (Top 20 / $($variableRows.Count))"
+    Add-Line
+    Add-Line "| Cat | Lettre | Nom Variable | Type | Ref |"
+    Add-Line "|-----|--------|--------------|------|-----|"
+    foreach ($v in $top20) {
+        Add-Line "| $($v.Category) | **$($v.Letter)** | $($v.Name) | $($v.DataType) | ``$($v.Ref)`` |"
     }
-    $specLines += ""
+    Add-Line
+
+    if ($variableRows.Count -gt 20) {
+        Add-Line "### 11.2 Variables completes ($($variableRows.Count) entrees)"
+        Add-Line
+        Add-Line "<details>"
+        Add-Line "<summary>Voir toutes les $($variableRows.Count) variables</summary>"
+        Add-Line
+        Add-Line "| Cat | Lettre | Nom Variable | Type | Ref |"
+        Add-Line "|-----|--------|--------------|------|-----|"
+        foreach ($v in $variableRows) {
+            Add-Line "| $($v.Category) | **$($v.Letter)** | $($v.Name) | $($v.DataType) | ``$($v.Ref)`` |"
+        }
+        Add-Line
+        Add-Line "</details>"
+        Add-Line
+    }
 }
 
-# Parameters section
-if ($mapping -and $mapping.variables -and $mapping.variables.parameters.Count -gt 0) {
-    $specLines += "### Parametres d'Entree"
-    $specLines += ""
-    $specLines += "| Lettre | Nom | Type | Picture |"
-    $specLines += "|--------|-----|------|---------|"
+# Parameters
+if ($mapping -and $mapping.variables -and $mapping.variables.parameters -and $mapping.variables.parameters.Count -gt 0) {
+    Add-Line "### 11.3 Parametres d'entree"
+    Add-Line
+    Add-Line "| Lettre | Nom | Type | Picture |"
+    Add-Line "|--------|-----|------|---------|"
     foreach ($p in $mapping.variables.parameters) {
-        $specLines += "| $($p.letter) | $($p.name) | $($p.data_type) | $($p.picture) |"
+        Add-Line "| $($p.letter) | $($p.name) | $($p.data_type) | $($p.picture) |"
     }
-    $specLines += ""
+    Add-Line
 }
 
-# ============================================================
-# SECTION 5: LOGIQUE METIER
-# ============================================================
-$specLines += "## 5. LOGIQUE METIER"
-$specLines += ""
+# --- 12. Expressions ---
+Add-Line "## 12. EXPRESSIONS"
+Add-Line
 
-# 5.1 Algorigramme
-$algorigramme = Generate-Algorigramme -UIForms $uiForms -Decoded $decoded -ProgramName $programName
-$specLines += "### Algorigramme"
-$specLines += ""
-$specLines += '```mermaid'
-$specLines += $algorigramme
-$specLines += '```'
-$specLines += ""
-
-# 5.2 ALL Expressions grouped by type - NO TRUNCATION
 if ($decoded) {
-    $specLines += "### Expressions ($($decoded.statistics.decoded_count) / $($decoded.statistics.total_in_program) - $($decoded.statistics.coverage_percent)%)"
-    $specLines += ""
+    $totalExpr = $decoded.statistics.decoded_count
+    $totalInProg = $decoded.statistics.total_in_program
+    $coverage = $decoded.statistics.coverage_percent
 
-    # Group by type and show all
-    $exprByType = @{}
-    if ($decoded.expressions -and $decoded.expressions.by_type) {
-        $decoded.expressions.by_type.PSObject.Properties | ForEach-Object {
-            $exprByType[$_.Name] = @($_.Value)
+    Add-Line "**$totalExpr / $totalInProg expressions decodees ($coverage%)**"
+    Add-Line
+
+    # Summary by type
+    Add-Line "### 12.1 Repartition par type"
+    Add-Line
+    Add-Line "| Type | Nombre |"
+    Add-Line "|------|--------|"
+    if ($decoded.statistics.by_type) {
+        $decoded.statistics.by_type.PSObject.Properties | ForEach-Object {
+            Add-Line "| $($_.Name) | $($_.Value) |"
         }
     }
+    Add-Line
 
+    # Top 20 expressions
+    $allExprs = @()
     foreach ($typeName in ($exprByType.Keys | Sort-Object)) {
-        $exprs = $exprByType[$typeName]
-        $specLines += "#### $typeName ($($exprs.Count) expressions)"
-        $specLines += ""
-        $specLines += "| IDE | Expression Decodee |"
-        $specLines += "|-----|-------------------|"
-        foreach ($expr in $exprs) {
-            # NO TRUNCATION - full decoded expression
-            $decodedText = if ($expr.decoded) { $expr.decoded } else { $expr.raw }
-            # Escape pipe characters in markdown table
-            $decodedText = $decodedText -replace '\|', '\|'
-            $specLines += "| $($expr.ide_position) | ``$decodedText`` |"
+        foreach ($expr in $exprByType[$typeName]) {
+            $allExprs += @{
+                type = $typeName
+                ide_position = $expr.ide_position
+                decoded = if ($expr.decoded) { $expr.decoded } else { $expr.raw }
+                rule_id = $expr.business_rule_id
+            }
         }
-        $specLines += ""
+    }
+    $allExprs = @($allExprs | Sort-Object { if ($_.rule_id) { "A" } else { "Z" } }, { $_.type })
+
+    $top20Expr = $allExprs | Select-Object -First 20
+    Add-Line "### 12.2 Expressions cles (Top 20)"
+    Add-Line
+    Add-Line "| # | Type | IDE | Expression | Regle |"
+    Add-Line "|---|------|-----|------------|-------|"
+    $eIdx = 1
+    foreach ($e in $top20Expr) {
+        $dt = $e.decoded -replace '\|', '\|'
+        $rr = if ($e.rule_id) { $e.rule_id } else { "-" }
+        Add-Line "| $eIdx | $($e.type) | $($e.ide_position) | ``$dt`` | $rr |"
+        $eIdx++
+    }
+    Add-Line
+
+    # Full expressions in details
+    if ($allExprs.Count -gt 20) {
+        Add-Line "### 12.3 Toutes les expressions ($($allExprs.Count))"
+        Add-Line
+        Add-Line "<details>"
+        Add-Line "<summary>Voir les $($allExprs.Count) expressions</summary>"
+        Add-Line
+        foreach ($typeName in ($exprByType.Keys | Sort-Object)) {
+            $exprs = $exprByType[$typeName]
+            Add-Line "#### $typeName ($($exprs.Count))"
+            Add-Line
+            Add-Line "| IDE | Expression Decodee |"
+            Add-Line "|-----|-------------------|"
+            foreach ($expr in $exprs) {
+                $dt = if ($expr.decoded) { $expr.decoded } else { $expr.raw }
+                $dt = $dt -replace '\|', '\|'
+                Add-Line "| $($expr.ide_position) | ``$dt`` |"
+            }
+            Add-Line
+        }
+        Add-Line "</details>"
+        Add-Line
     }
 }
 
-# ============================================================
-# SECTION 6: INTERFACE UTILISATEUR
-# ============================================================
-$specLines += "## 6. INTERFACE UTILISATEUR"
-$specLines += ""
+# ████████████████████████████████████████████████████████████
+# TAB 4: CONNEXIONS
+# ████████████████████████████████████████████████████████████
+Add-Line "<!-- TAB:Connexions -->"
+Add-Line
 
-if ($uiForms -and $uiForms.forms.Count -gt 0) {
-    # 6.1 Only visible forms (width > 0)
-    $specLines += "### Forms Visibles ($($visibleForms.Count) / $($uiForms.forms.Count) total)"
-    $specLines += ""
-    $specLines += "| Tache | Nom | Type | Dimensions |"
-    $specLines += "|-------|-----|------|------------|"
-    foreach ($form in $visibleForms) {
-        $dims = "$($form.dimensions.width)x$($form.dimensions.height)"
-        $specLines += "| $($form.task_isn2) | $($form.name) | $($form.window_type_str) | $dims |"
-    }
-    $specLines += ""
+# --- 13. Graphe d'appels ---
+Add-Line "## 13. GRAPHE D'APPELS"
+Add-Line
 
-    # 6.2 Full forms list (all)
-    $specLines += "### Toutes les Forms ($($uiForms.forms.Count))"
-    $specLines += ""
-    $specLines += "| Tache | Nom | Type | Dimensions |"
-    $specLines += "|-------|-----|------|------------|"
-    foreach ($form in $uiForms.forms) {
-        $dims = if ($form.dimensions.width -gt 0) { "$($form.dimensions.width)x$($form.dimensions.height)" } else { "-" }
-        $specLines += "| $($form.task_isn2) | $($form.name) | $($form.window_type_str) | $dims |"
-    }
-    $specLines += ""
+# Callers diagram
+Add-Line "### 13.1 Chaine depuis Main (Callers)"
+Add-Line
 
-    # 6.3 Multi-form mockup
-    if ($visibleForms.Count -gt 0) {
-        $specLines += "### Mockup"
-        $specLines += ""
-        $specLines += '```'
-
-        foreach ($form in $visibleForms) {
-            $title = $form.name
-            $w = $form.dimensions.width
-            $h = $form.dimensions.height
-            $type = $form.window_type_str
-            $headerText = "$title [$type] ${w}x${h}"
-            $boxWidth = [Math]::Max($headerText.Length + 4, 40)
-            $border = "+" + ("-" * $boxWidth) + "+"
-            $paddedTitle = $headerText.PadRight($boxWidth)
-
-            $specLines += $border
-            $specLines += "| $paddedTitle |"
-            $specLines += $border
-            $specLines += "| " + ("(contenu tache $($form.task_isn2))").PadRight($boxWidth) + " |"
-            $specLines += $border
-            $specLines += ""
-        }
-
-        $specLines += '```'
-        $specLines += ""
-    }
-}
-
-# ============================================================
-# SECTION 7: GRAPHE D'APPELS (TAB: Cartographie)
-# ============================================================
-$specLines += "<!-- TAB:Cartographie -->"
-$specLines += ""
-$specLines += "## 7. GRAPHE D'APPELS"
-$specLines += ""
-
-# 7.1 Callers diagram (chain from Main)
-$callersDiagram = Generate-CallersDiagram -Discovery $discovery -Project $Project -IdePosition $IdePosition -ProgramName $programName
-$specLines += "### 7.1 Chaine depuis Main (Callers)"
-$specLines += ""
-
-# Build human-readable path
 if ($discovery.call_graph.call_chain -and $discovery.call_graph.call_chain.Count -gt 0) {
-    $chainPath = ($discovery.call_graph.call_chain | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ' -> '
-    $specLines += "**Chemin**: $chainPath -> $programName (IDE $IdePosition)"
+    $chainNodes = @($discovery.call_graph.call_chain | Where-Object { $_.ide -gt 0 })
+    $chainPath = ($chainNodes | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ' -> '
+    Add-Line "**Chemin**: $chainPath -> $programName (IDE $IdePosition)"
 } elseif ($discovery.call_graph.callers.Count -gt 0) {
-    $firstCaller = $discovery.call_graph.callers[0]
-    $specLines += "**Chemin**: ... -> $($firstCaller.name) (IDE $($firstCaller.ide)) -> $programName (IDE $IdePosition)"
+    $fc = $discovery.call_graph.callers[0]
+    Add-Line "**Chemin**: ... -> $($fc.name) (IDE $($fc.ide)) -> $programName (IDE $IdePosition)"
 } else {
-    $specLines += "**Chemin**: (pas de callers directs)"
+    Add-Line "**Chemin**: (pas de callers directs)"
 }
-$specLines += ""
-$specLines += '```mermaid'
-$specLines += $callersDiagram
-$specLines += '```'
-$specLines += ""
+Add-Line
 
-# 7.2 Callers table
-$specLines += "### 7.2 Callers (Qui m'appelle)"
-$specLines += ""
-$specLines += "| IDE | Nom Programme | Nb Appels |"
-$specLines += "|-----|---------------|-----------|"
+Add-Line '```mermaid'
+Add-Line "graph LR"
+$tgtLabel = Clean-MermaidLabel "$IdePosition $programName"
+Add-Line "    T$IdePosition[$tgtLabel]"
+Add-Line "    style T$IdePosition fill:#58a6ff"
+
+if ($discovery.call_graph.call_chain -and $discovery.call_graph.call_chain.Count -gt 0) {
+    $prevNode = $null
+    foreach ($node in $discovery.call_graph.call_chain) {
+        if ($node.ide -le 0) { continue }
+        $nId = "CC$($node.ide)"
+        $nLbl = Clean-MermaidLabel "$($node.ide) $($node.name)"
+        Add-Line "    $nId[$nLbl]"
+        $clr = if ($node.level -eq 0) { "#8b5cf6" } else { "#f59e0b" }
+        Add-Line "    style $nId fill:$clr"
+        if ($prevNode) { Add-Line "    $prevNode --> $nId" }
+        $prevNode = $nId
+    }
+    if ($prevNode) { Add-Line "    $prevNode --> T$IdePosition" }
+} elseif ($discovery.call_graph.callers.Count -gt 0) {
+    foreach ($caller in ($discovery.call_graph.callers | Where-Object { $_.ide -gt 0 })) {
+        $cId = "CALLER$($caller.ide)"
+        $cLbl = Clean-MermaidLabel "$($caller.ide) $($caller.name)"
+        Add-Line "    $cId[$cLbl]"
+        Add-Line "    $cId --> T$IdePosition"
+        Add-Line "    style $cId fill:#f59e0b"
+    }
+} else {
+    Add-Line "    NONE[Aucun caller]"
+    Add-Line "    NONE -.-> T$IdePosition"
+    Add-Line "    style NONE fill:#6b7280,stroke-dasharray: 5 5"
+}
+Add-Line '```'
+Add-Line
+
+# Callers table
+Add-Line "### 13.2 Callers"
+Add-Line
+Add-Line "| IDE | Nom Programme | Nb Appels |"
+Add-Line "|-----|---------------|-----------|"
 foreach ($caller in $discovery.call_graph.callers) {
-    $specLines += "| $($caller.ide) | $($caller.name) | $($caller.calls_count) |"
+    Add-Line "| $($caller.ide) | $($caller.name) | $($caller.calls_count) |"
 }
-if ($discovery.call_graph.callers.Count -eq 0) {
-    $specLines += "| - | (aucun caller) | - |"
+if ($discovery.call_graph.callers.Count -eq 0) { Add-Line "| - | (aucun) | - |" }
+Add-Line
+
+# Callees diagram
+Add-Line "### 13.3 Callees (programmes appeles)"
+Add-Line
+
+Add-Line '```mermaid'
+Add-Line "graph LR"
+Add-Line "    T$IdePosition[$tgtLabel]"
+Add-Line "    style T$IdePosition fill:#58a6ff"
+$callees = @($discovery.call_graph.callees | Where-Object { $_.ide -gt 0 })
+if ($callees.Count -eq 0) {
+    Add-Line "    NONE[Aucun callee]"
+    Add-Line "    T$IdePosition -.-> NONE"
+    Add-Line "    style NONE fill:#6b7280,stroke-dasharray: 5 5"
+} else {
+    foreach ($callee in $callees) {
+        $cId = "C$($callee.ide)"
+        $cLbl = Clean-MermaidLabel "$($callee.ide) $($callee.name)"
+        Add-Line "    $cId[$cLbl]"
+        Add-Line "    T$IdePosition --> $cId"
+        Add-Line "    style $cId fill:#3fb950"
+    }
 }
-$specLines += ""
+Add-Line '```'
+Add-Line
 
-# 7.3 Callees diagram
-$calleesDiagram = Generate-CalleesDiagram -Discovery $discovery -Project $Project -IdePosition $IdePosition -ProgramName $programName
-$specLines += "### 7.3 Callees (Qui j'appelle)"
-$specLines += ""
-$specLines += '```mermaid'
-$specLines += $calleesDiagram
-$specLines += '```'
-$specLines += ""
-
-# 7.4 Callees table - ALL callees
-$specLines += "### 7.4 Callees Detail"
-$specLines += ""
-$specLines += "| IDE | Nom Programme | Nb Appels |"
-$specLines += "|-----|---------------|-----------|"
-foreach ($callee in $discovery.call_graph.callees) {
-    $specLines += "| $($callee.ide) | $($callee.name) | $($callee.calls_count) |"
+# Callees table WITH CONTEXT
+Add-Line "### 13.4 Detail Callees avec contexte"
+Add-Line
+Add-Line "| IDE | Nom Programme | Appels | Contexte |"
+Add-Line "|-----|---------------|--------|----------|"
+foreach ($c in $calleesCtx) {
+    Add-Line "| $($c.ide) | $($c.name) | $($c.calls_count) | $($c.context) |"
 }
-if ($discovery.call_graph.callees.Count -eq 0) {
-    $specLines += "| - | (aucun callee) | - |"
+if ($calleesCtx.Count -eq 0) { Add-Line "| - | (aucun) | - | - |" }
+Add-Line
+
+# --- 14. Complexite & Migration ---
+Add-Line "## 14. COMPLEXITE ET MIGRATION"
+Add-Line
+
+Add-Line "### 14.1 Score: **$($complexity.level)** ($($complexity.score)/100)"
+Add-Line
+Add-Line "| Critere | Evaluation |"
+Add-Line "|---------|------------|"
+foreach ($detail in $complexity.details) {
+    Add-Line "| $detail |  |"
 }
-$specLines += ""
+Add-Line
 
-# ============================================================
-# SECTION 8: STATISTIQUES
-# ============================================================
-$specLines += "## 8. STATISTIQUES"
-$specLines += ""
-$specLines += "| Metrique | Valeur |"
-$specLines += "|----------|--------|"
-$specLines += "| Taches | $($discovery.statistics.task_count) |"
-$specLines += "| Lignes Logic | $($discovery.statistics.logic_line_count) |"
-$specLines += "| Lignes Desactivees | $($discovery.statistics.disabled_line_count) |"
-$specLines += "| Expressions | $($discovery.statistics.expression_count) |"
-$specLines += "| Regles Metier | $(if ($decoded) { $decoded.statistics.business_rules_count } else { "N/A" }) |"
+# Effort estimation
+$lines = $discovery.statistics.logic_line_count
+$effortDays = [math]::Ceiling($lines / 100 + $exprCount / 50 + $writeCount * 0.5 + $calleeCount * 0.3)
+$effortDays = [math]::Max($effortDays, 1)
+if ($complexity.level -eq "HAUTE") { $effortDays = [math]::Ceiling($effortDays * 1.5) }
 
-# Table counts with LINK
-$writeCount = ($discovery.tables.by_access.WRITE | Measure-Object).Count
-$readCount = ($discovery.tables.by_access.READ | Measure-Object).Count
-$linkCount = ($discovery.tables.by_access.LINK | Measure-Object).Count
-$specLines += "| Tables (total unique) | $($tableUnified.Count) |"
-$specLines += "| Tables WRITE | $writeCount |"
-$specLines += "| Tables READ | $readCount |"
-$specLines += "| Tables LINK | $linkCount |"
+Add-Line "### 14.2 Estimation effort: **$effortDays jours**"
+Add-Line
 
-# V9 metrics
-$specLines += "| Callers | $($discovery.statistics.caller_count) |"
-$specLines += "| Callees | $($discovery.statistics.callee_count) |"
-$specLines += "| Forms (total) | $(if ($uiForms) { $uiForms.forms.Count } else { "N/A" }) |"
-$specLines += "| Forms Visibles | $($visibleForms.Count) |"
-$specLines += "| Variables Mappees | $(if ($mapping) { $mapping.statistics.mapping_entries } else { "N/A" }) |"
+# Recommendations per block
+Add-Line "### 14.3 Recommandations par bloc"
+Add-Line
+foreach ($blocName in $blocMap.Keys) {
+    $blocForms = $blocMap[$blocName]
+    $blocEffort = [math]::Max(1, [math]::Ceiling($effortDays * $blocForms.Count / [math]::Max($allForms.Count, 1)))
 
-# Ratios
+    Add-Line "#### $blocName ($($blocForms.Count) taches, ~${blocEffort}j)"
+    Add-Line
+
+    switch ($blocName) {
+        "Saisie" {
+            Add-Line "- Ecran principal de saisie a reproduire"
+            Add-Line "- Gerer les validations champs"
+        }
+        "Reglement" {
+            Add-Line "- Logique multi-moyens de paiement"
+            Add-Line "- Integration TPE"
+        }
+        "Validation" { Add-Line "- Conditions de verification a transformer en validators" }
+        "Impression" {
+            Add-Line "- Generation tickets/documents"
+            Add-Line "- Configuration imprimantes"
+        }
+        "Consultation" { Add-Line "- Ecrans zoom/selection en modales" }
+        "Transfert" { Add-Line "- Logique deversement/transfert entre modules" }
+        "Calcul" { Add-Line "- Logique de calcul a migrer (stock, compteurs)" }
+        "Creation" { Add-Line "- Insertion de donnees (reglements, mouvements)" }
+        "Initialisation" { Add-Line "- Reinitialisation etats/variables" }
+        default { Add-Line "- Traitement standard a migrer" }
+    }
+    Add-Line
+}
+
+# Dependencies
+Add-Line "### 14.4 Dependances critiques"
+Add-Line
+Add-Line "| Dependance | Type | Impact |"
+Add-Line "|------------|------|--------|"
+if ($discovery.tables.by_access.WRITE) {
+    foreach ($tbl in $discovery.tables.by_access.WRITE) {
+        Add-Line "| $($tbl.logical_name) | Table WRITE | Modification directe |"
+    }
+}
+$critCallees = @($calleesCtx | Where-Object { $_.calls_count -ge 2 })
+foreach ($c in $critCallees) {
+    Add-Line "| IDE $($c.ide) - $($c.name) | Sous-programme ($($c.calls_count)x) | $($c.context) |"
+}
+Add-Line
+
+# Disabled code
 $totalLines = $discovery.statistics.logic_line_count
 $disabledLines = $discovery.statistics.disabled_line_count
-$activeLines = $totalLines - $disabledLines
 $disabledPct = if ($totalLines -gt 0) { [math]::Round($disabledLines / $totalLines * 100, 1) } else { 0 }
-$activePct = if ($totalLines -gt 0) { [math]::Round($activeLines / $totalLines * 100, 1) } else { 0 }
-
-$specLines += "| **Ratio lignes actives** | **$activeLines / $totalLines ($activePct%)** |"
-$specLines += "| **Ratio lignes desactivees** | **$disabledLines / $totalLines ($disabledPct%)** |"
-if ($decoded -and $decoded.statistics.total_in_program -gt 0) {
-    $specLines += "| **Couverture expressions** | **$($decoded.statistics.coverage_percent)%** |"
-}
-$specLines += ""
-
-# ============================================================
-# SECTION 9: NOTES MIGRATION
-# ============================================================
-$specLines += "---"
-$specLines += ""
-$specLines += "## 9. NOTES MIGRATION"
-$specLines += ""
-
-# 9.1 Composite complexity score
-$specLines += "### Complexite Estimee: **$($complexity.level)** ($($complexity.score)/100)"
-$specLines += ""
-$specLines += "| Critere | Score | Detail |"
-$specLines += "|---------|-------|--------|"
-foreach ($detail in $complexity.details) {
-    # Parse detail to extract component score
-    $parts = $detail -split '\('
-    $critere = $parts[0].Trim()
-    $niveau = if ($parts.Count -gt 1) { $parts[1] -replace '\)', '' } else { "" }
-    $specLines += "| $critere | $niveau | $detail |"
-}
-$specLines += ""
-
-# 9.2 Points d'attention
-$specLines += "### Points d'attention"
-$specLines += ""
-$specLines += "- **Tables en ecriture**: $writeTableNames"
-$specLines += "- **Dependances callees**: $($discovery.call_graph.callees.Count) programmes appeles"
-$specLines += "- **Expressions conditionnelles**: $(if ($decoded) { $decoded.statistics.by_type.condition } else { "N/A" })"
-$specLines += "- **Code desactive**: $disabledLines lignes ($disabledPct%)"
-if ($visibleForms.Count -eq 0) {
-    $specLines += "- **Pas d'ecran visible** (traitement batch ou sous-programme)"
-}
-$specLines += ""
-
-# 9.3 Recommendations migration
-$specLines += "### Recommandations Migration"
-$specLines += ""
-if ($complexity.level -eq "HAUTE") {
-    $specLines += "1. **Decomposer** en sous-modules avant migration (programme complexe)"
-    $specLines += "2. **Prioriser** la couverture des $($allRules.Count) regles metier par des tests"
-    $specLines += "3. **Mapper** les $writeCount tables WRITE vers le schema cible"
-    $specLines += "4. **Verifier** les $($discovery.call_graph.callees.Count) dependances callees"
-} elseif ($complexity.level -eq "MOYENNE") {
-    $specLines += "1. **Migration directe** possible avec attention aux regles metier"
-    $specLines += "2. **Tester** les conditions principales ($(if ($decoded) { $decoded.statistics.by_type.condition } else { 0 }) conditions)"
-    $specLines += "3. **Valider** les tables WRITE: $writeTableNames"
-} else {
-    $specLines += "1. **Migration simple** - programme peu complexe"
-    $specLines += "2. **Tester** le flux principal et les cas limites"
+if ($disabledPct -gt 5) {
+    Add-Line "### 14.5 Code desactive"
+    Add-Line
+    Add-Line "- **$disabledLines lignes desactivees** sur $totalLines ($disabledPct%)"
+    Add-Line "- Recommandation: nettoyer avant migration"
+    Add-Line
 }
 
-if ($disabledPct -gt 20) {
-    $specLines += "4. **Nettoyer** $disabledPct% de code desactive avant migration"
-}
-$specLines += ""
+# Footer
+Add-Line "---"
+Add-Line "*Spec DETAILED generee par Pipeline V7.0 - $(Get-Date -Format 'yyyy-MM-dd HH:mm')*"
 
-$specLines += "---"
-$specLines += "*Spec DETAILED generee par Pipeline V6.0 - $(Get-Date -Format "yyyy-MM-dd HH:mm")*"
-
-# Join all lines
-$detailedSpec = $specLines -join "`n"
+$detailedSpec = $L -join "`n"
 
 # ============================================================
 # SAVE SPECS
 # ============================================================
-Write-Host "[4/5] Saving specs..." -ForegroundColor Yellow
+Write-Host "[5/6] Saving specs..." -ForegroundColor Yellow
 
 $summaryFileName = "$Project-IDE-$IdePosition-summary.md"
 $detailedFileName = "$Project-IDE-$IdePosition.md"
@@ -1011,7 +1042,7 @@ Write-Host "  Detailed: $detailedPath"
 # ============================================================
 # QUALITY REPORT
 # ============================================================
-Write-Host "[5/5] Generating quality report..." -ForegroundColor Yellow
+Write-Host "[6/6] Quality report..." -ForegroundColor Yellow
 
 $endTime = Get-Date
 $duration = $endTime - $startTime
@@ -1023,9 +1054,8 @@ $quality = @{
         program_name = $programName
         generated_at = $endTime.ToString("yyyy-MM-dd HH:mm:ss")
         duration_seconds = [math]::Round($duration.TotalSeconds, 1)
-        pipeline_version = "6.0"
+        pipeline_version = "7.0"
     }
-
     quality_score = 0
     extraction_coverage = @{
         callers_extracted = $discovery.call_graph.callers.Count -gt 0 -or $discovery.orphan_analysis.status -eq "ORPHELIN_POTENTIEL"
@@ -1035,34 +1065,27 @@ $quality = @{
         variables_mapped = if ($mapping) { $mapping.statistics.mapping_entries -gt 0 } else { $false }
         forms_extracted = if ($uiForms) { $uiForms.forms.Count -gt 0 } else { $false }
     }
-
-    complexity = @{
-        score = $complexity.score
-        level = $complexity.level
-        details = $complexity.details
+    complexity = @{ score = $complexity.score; level = $complexity.level; details = $complexity.details }
+    structure = @{
+        tabs = 4
+        tab_names = @("Resume", "Ecrans", "Donnees", "Connexions")
+        functional_blocks = $blocMap.Count
+        business_rules_fr = $businessRules.Count
+        callees_with_context = ($calleesCtx | Where-Object { $_.context -ne "[Phase 2]" }).Count
+        migration_effort_days = $effortDays
     }
-
-    files_generated = @(
-        $summaryFileName
-        $detailedFileName
-    )
-
+    files_generated = @($summaryFileName, $detailedFileName)
     validation = @{
         tables_unified_count = $tableUnified.Count
         variables_mapped_count = $variableRows.Count
         visible_forms_count = $visibleForms.Count
-        total_forms_count = if ($uiForms) { $uiForms.forms.Count } else { 0 }
-        business_rules_count = if ($decoded) { $decoded.statistics.business_rules_count } else { 0 }
+        total_forms_count = $allForms.Count
+        business_rules_count = $businessRules.Count
         callees_shown = $discovery.call_graph.callees.Count
         callers_shown = $discovery.call_graph.callers.Count
-        all_tables_no_truncation = $true
-        all_variables_no_truncation = $true
-        all_expressions_no_truncation = $true
-        all_callees_no_truncation = $true
     }
 }
 
-# Calculate quality score
 $score = 0
 if ($quality.extraction_coverage.callers_extracted) { $score += 20 }
 if ($quality.extraction_coverage.callees_extracted) { $score += 20 }
@@ -1076,23 +1099,15 @@ $qualityPath = Join-Path $OutputPath "quality.json"
 $quality | ConvertTo-Json -Depth 10 | Set-Content -Path $qualityPath -Encoding UTF8
 
 Write-Host ""
-Write-Host "=== Phase 5 COMPLETE ===" -ForegroundColor Green
-Write-Host "Duration: $([math]::Round($duration.TotalSeconds, 1)) seconds"
-Write-Host "Quality Score: $score / 100"
-Write-Host "Complexity: $($complexity.level) ($($complexity.score)/100)"
+Write-Host "=== Phase 5 COMPLETE (V7.0) ===" -ForegroundColor Green
+Write-Host "Duration: $([math]::Round($duration.TotalSeconds, 1))s | Quality: $score/100 | Complexity: $($complexity.level)"
 Write-Host ""
-
-# Final summary
-Write-Host "SYNTHESIS SUMMARY:" -ForegroundColor Cyan
-Write-Host "  - Summary spec: $summaryFileName"
-Write-Host "  - Detailed spec: $detailedFileName"
-Write-Host "  - Quality score: $score%"
-Write-Host "  - Complexity: $($complexity.level)"
-Write-Host "  - Tables unified: $($tableUnified.Count)"
-Write-Host "  - Variables mapped: $($variableRows.Count)"
-Write-Host "  - Visible forms: $($visibleForms.Count)"
-Write-Host "  - Business rules: $(if ($decoded) { $decoded.statistics.business_rules_count } else { 0 })"
-Write-Host "  - Callees shown: $($discovery.call_graph.callees.Count) (ALL)"
-Write-Host "  - Output folder: $SpecsOutputPath"
+Write-Host "STRUCTURE:" -ForegroundColor Cyan
+Write-Host "  TAB 1 Resume:     Fiche + $($blocMap.Count) blocs + $($businessRules.Count) regles FR"
+Write-Host "  TAB 2 Ecrans:     $($visibleForms.Count) mockups + Navigation + Algorigramme"
+Write-Host "  TAB 3 Donnees:    $($tableUnified.Count) tables + $($variableRows.Count) vars + $($allExprs.Count) exprs"
+Write-Host "  TAB 4 Connexions: $($discovery.call_graph.callers.Count) callers + $calleeCount callees + Migration ${effortDays}j"
+Write-Host ""
+Write-Host "FILES: $summaryFileName | $detailedFileName"
 
 return $quality

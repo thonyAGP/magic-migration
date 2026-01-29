@@ -1,6 +1,11 @@
 # auto-extract-context.ps1
-# Phase 1: Extraction automatique du contexte depuis Jira
-# Extrait: symptome, programmes mentionnes, tables, mots-cles
+# Phase 1 (v2.0): Extraction automatique du contexte depuis Jira + index local
+# Extrait: symptome, programmes mentionnes, tables, mots-cles, attachments
+#
+# Sources (par priorite):
+#   1. Jira API (si disponible)
+#   2. Index local (.openspec/tickets/index.json)
+#   3. Fichiers locaux (notes.md, analysis.md)
 
 param(
     [Parameter(Mandatory=$true)]
@@ -9,7 +14,8 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$OutputFile,
 
-    [switch]$WithComments
+    [switch]$WithComments,
+    [switch]$SkipJira
 )
 
 $ErrorActionPreference = "Stop"
@@ -134,17 +140,20 @@ function Extract-Symptom {
 $Result = @{
     TicketKey = $TicketKey
     ExtractedAt = (Get-Date).ToString("o")
-    Source = "jira"
+    Source = "unknown"
     Symptom = ""
     Programs = @()
     Tables = @()
     Keywords = @()
-    RawDescription = ""
-    Comments = @()
+    Attachments = @()
 }
 
-# Appeler le script Jira si disponible
-if (Test-Path $JiraScript) {
+$AllText = ""
+$TicketDir = Join-Path $ProjectRoot ".openspec\tickets\$TicketKey"
+
+# --- Source 1: Jira API ---
+$jiraFetched = $false
+if (-not $SkipJira -and (Test-Path $JiraScript)) {
     Write-Host "[Context] Fetching Jira ticket $TicketKey..." -ForegroundColor Cyan
 
     $TempFile = [System.IO.Path]::GetTempFileName()
@@ -153,14 +162,13 @@ if (Test-Path $JiraScript) {
         if ($WithComments) { $JiraArgs += "-WithComments" }
 
         & powershell -NoProfile -File $JiraScript @JiraArgs > $TempFile 2>&1
-        $JiraOutput = Get-Content $TempFile -Raw -ErrorAction SilentlyContinue
+        $JiraOutput = [System.IO.File]::ReadAllText($TempFile, [System.Text.Encoding]::UTF8)
 
-        if ($JiraOutput) {
-            $Result.RawDescription = $JiraOutput
-            $Result.Symptom = Extract-Symptom $JiraOutput
-            $Result.Programs = @(Extract-Programs $JiraOutput)
-            $Result.Tables = @(Extract-Tables $JiraOutput)
-            $Result.Keywords = @(Extract-Keywords $JiraOutput)
+        if ($JiraOutput -and $JiraOutput.Length -gt 50) {
+            $AllText += $JiraOutput
+            $Result.Source = "jira"
+            $jiraFetched = $true
+            Write-Host "[Context] Jira fetched: $($JiraOutput.Length) chars" -ForegroundColor Green
         }
     }
     catch {
@@ -170,42 +178,102 @@ if (Test-Path $JiraScript) {
         Remove-Item $TempFile -ErrorAction SilentlyContinue
     }
 }
-else {
-    # Mode offline - chercher dans les fichiers existants
-    Write-Host "[Context] Mode offline - recherche fichiers locaux" -ForegroundColor Yellow
 
-    $TicketDir = Join-Path $ProjectRoot ".openspec\tickets\$TicketKey"
-    if (Test-Path $TicketDir) {
-        $NotesFile = Join-Path $TicketDir "notes.md"
-        $AnalysisFile = Join-Path $TicketDir "analysis.md"
+# --- Source 2: Index local ---
+$IndexPath = Join-Path (Split-Path $TicketDir) "index.json"
+if (Test-Path $IndexPath) {
+    $indexRaw = [System.IO.File]::ReadAllText($IndexPath, [System.Text.Encoding]::UTF8)
+    $indexRaw = $indexRaw.TrimStart([char]0xFEFF)
+    try {
+        $IndexData = $indexRaw | ConvertFrom-Json
+        if ($IndexData.localTickets) {
+            $ticket = $IndexData.localTickets | Where-Object { $_.key -eq $TicketKey } | Select-Object -First 1
+            if ($ticket) {
+                Write-Host "[Context] Index local found: $($ticket.summary)" -ForegroundColor Green
+                if (-not $jiraFetched) {
+                    $Result.Source = "index"
+                    $AllText += "`n$($ticket.summary)"
+                }
+                # Enrichir avec donnees index
+                $Result.Summary    = [string]$ticket.summary
+                $Result.Status     = [string]$ticket.status
+                $Result.Program    = [string]$ticket.program
+                $Result.RootCause  = [string]$ticket.rootCause
+                $Result.CreatedDate = [string]$ticket.createdDate
+                $Result.LastAnalysis = [string]$ticket.lastAnalysis
 
-        foreach ($File in @($NotesFile, $AnalysisFile)) {
-            if (Test-Path $File) {
-                $Content = Get-Content $File -Raw
-                $Result.RawDescription += $Content
-                $Result.Programs += @(Extract-Programs $Content)
-                $Result.Tables += @(Extract-Tables $Content)
-                $Result.Keywords += @(Extract-Keywords $Content)
+                # Extraire programme depuis index si present
+                if ($ticket.program) {
+                    $AllText += "`n$($ticket.program)"
+                }
             }
         }
-
-        $Result.Symptom = Extract-Symptom $Result.RawDescription
+    } catch {
+        Write-Warning "Index parse error: $_"
     }
 }
 
+# --- Source 3: Fichiers locaux ---
+if (Test-Path $TicketDir) {
+    foreach ($File in @("notes.md", "analysis.md")) {
+        $FilePath = Join-Path $TicketDir $File
+        if (Test-Path $FilePath) {
+            $Content = [System.IO.File]::ReadAllText($FilePath, [System.Text.Encoding]::UTF8)
+            $AllText += "`n$Content"
+            if ($Result.Source -eq "unknown") { $Result.Source = "offline" }
+        }
+    }
+
+    # Detecter attachments
+    $AttachDir = Join-Path $TicketDir "attachments"
+    if (Test-Path $AttachDir) {
+        $Result.Attachments = @(Get-ChildItem $AttachDir -File | ForEach-Object {
+            @{
+                name = [string]$_.Name
+                size = [int]$_.Length
+                type = [string]$_.Extension
+            }
+        })
+    }
+}
+
+# --- Extraction depuis tout le texte collecte ---
+if ($AllText.Length -gt 0) {
+    $Result.Symptom  = [string](Extract-Symptom $AllText)
+    $Result.Programs = @(Extract-Programs $AllText)
+    $Result.Tables   = @(Extract-Tables $AllText)
+    $Result.Keywords = @(Extract-Keywords $AllText)
+}
+
 # Deduplication
-$Result.Programs = @($Result.Programs | Sort-Object { $_.Raw } -Unique)
-$Result.Tables = @($Result.Tables | Sort-Object { $_.Raw } -Unique)
-$Result.Keywords = @($Result.Keywords | Sort-Object { $_.Keyword } -Unique)
+if ($Result.Programs.Count -gt 0) {
+    $Result.Programs = @($Result.Programs | Sort-Object { $_.Raw } -Unique)
+}
+if ($Result.Tables.Count -gt 0) {
+    $Result.Tables = @($Result.Tables | Sort-Object { $_.Raw } -Unique)
+}
+if ($Result.Keywords.Count -gt 0) {
+    $Result.Keywords = @($Result.Keywords | Sort-Object { $_.Keyword } -Unique)
+}
+
+# Si symptom vide mais summary existe, utiliser summary
+if ([string]::IsNullOrWhiteSpace($Result.Symptom) -and $Result.Summary) {
+    $Result.Symptom = [string]$Result.Summary
+}
 
 # Statistiques
+$symptomPreview = if ($Result.Symptom.Length -gt 80) { $Result.Symptom.Substring(0, 77) + "..." } else { $Result.Symptom }
 Write-Host "[Context] Extracted:" -ForegroundColor Green
-Write-Host "  - Symptom: $($Result.Symptom.Substring(0, [Math]::Min(80, $Result.Symptom.Length)))..." -ForegroundColor Gray
+Write-Host "  - Source: $($Result.Source)" -ForegroundColor Gray
+Write-Host "  - Symptom: $symptomPreview" -ForegroundColor Gray
 Write-Host "  - Programs: $($Result.Programs.Count)" -ForegroundColor Gray
 Write-Host "  - Tables: $($Result.Tables.Count)" -ForegroundColor Gray
 Write-Host "  - Keywords: $($Result.Keywords.Count)" -ForegroundColor Gray
+Write-Host "  - Attachments: $($Result.Attachments.Count)" -ForegroundColor Gray
 
-# Sauvegarder
-$Result | ConvertTo-Json -Depth 5 | Set-Content $OutputFile -Encoding UTF8
+# Sauvegarder (UTF-8 sans BOM)
+$json = $Result | ConvertTo-Json -Depth 4
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+[System.IO.File]::WriteAllText($OutputFile, $json, $utf8NoBom)
 
 Write-Host "[Context] Output: $OutputFile" -ForegroundColor Green

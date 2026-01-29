@@ -1,14 +1,13 @@
 # auto-find-programs.ps1
-# Phase 2: Localisation des programmes via Knowledge Base SQLite
+# Phase 2 (v2.0): Localisation des programmes via KB SQLite + callers/callees
 # Utilise sqlite3.exe CLI pour requetes directes sur la KB
+# Produit programs.json avec programmes verifies, callers et callees
 
 param(
     [Parameter(Mandatory=$true)]
     [array]$Programs,
 
     [array]$Tables = @(),
-
-    [string]$McpExe = $null,
 
     [Parameter(Mandatory=$true)]
     [string]$OutputFile
@@ -110,94 +109,6 @@ LIMIT 20
 }
 
 # ============================================================================
-# SPEC CONTEXT LOADING (P1-A: Spec Context Injection)
-# ============================================================================
-
-function Get-SpecContext {
-    param(
-        [string]$Project,
-        [int]$IDE
-    )
-
-    # Check if spec file exists
-    $SpecFile = Join-Path $ProjectRoot ".openspec\specs\$Project-IDE-$IDE.md"
-    if (-not (Test-Path $SpecFile)) {
-        return $null
-    }
-
-    try {
-        $Content = Get-Content $SpecFile -Raw -Encoding UTF8
-
-        $Context = @{
-            SpecFile = $SpecFile
-            SpecVersion = "2.0"
-            Tables = @()
-            WriteTables = @()
-            ReadTables = @()
-            Variables = @()
-            ParameterCount = 0
-            ExpressionCount = 0
-            DecodedExpressionCount = 0
-        }
-
-        # Extract table count from ## 2. TABLES section header
-        if ($Content -match '##\s*2\.\s*TABLES\s*\((\d+)\s*tables\s*-\s*(\d+)\s*en\s*ecriture\)') {
-            $Context.TableCount = [int]$Matches[1]
-            $Context.WriteTableCount = [int]$Matches[2]
-            $Context.ReadTableCount = $Context.TableCount - $Context.WriteTableCount
-        }
-
-        # Extract tables from table section (| #NNN | ... | W/R |)
-        $TableMatches = [regex]::Matches($Content, '\|\s*#(\d+)\s*\|\s*`([^`]+)`\s*\|\s*([^|]+)\s*\|\s*\*?\*?([WR])\*?\*?\s*\|\s*(\d+)x')
-        foreach ($Match in $TableMatches) {
-            $Table = @{
-                Id = [int]$Match.Groups[1].Value
-                PhysicalName = $Match.Groups[2].Value.Trim()
-                LogicalName = $Match.Groups[3].Value.Trim()
-                Access = $Match.Groups[4].Value
-                UsageCount = [int]$Match.Groups[5].Value
-            }
-            $Context.Tables += $Table
-            if ($Table.Access -eq 'W') {
-                $Context.WriteTables += $Table
-            } else {
-                $Context.ReadTables += $Table
-            }
-        }
-
-        # Extract parameter count from ## 3. PARAMETRES section
-        if ($Content -match '##\s*3\.\s*PARAMETRES[^\(]*\((\d+)\)') {
-            $Context.ParameterCount = [int]$Matches[1]
-        }
-
-        # Extract expression count from ## 5. EXPRESSIONS section
-        if ($Content -match '##\s*5\.\s*EXPRESSIONS\s*\((\d+)\s*total,\s*(\d+)\s*decodees\)') {
-            $Context.ExpressionCount = [int]$Matches[1]
-            $Context.DecodedExpressionCount = [int]$Matches[2]
-        }
-
-        # Extract key variables from ## 4. VARIABLES section (first 20)
-        $VarMatches = [regex]::Matches($Content, '\|\s*`\{([^}]+)\}`\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|')
-        $VarCount = 0
-        foreach ($Match in $VarMatches) {
-            if ($VarCount -ge 20) { break }
-            $Context.Variables += @{
-                Ref = "{$($Match.Groups[1].Value)}"
-                Name = $Match.Groups[2].Value.Trim()
-                Type = $Match.Groups[3].Value.Trim()
-            }
-            $VarCount++
-        }
-
-        return $Context
-    }
-    catch {
-        Write-Warning "Failed to parse spec for $Project IDE $IDE : $_"
-        return $null
-    }
-}
-
-# ============================================================================
 # EXECUTION PRINCIPALE
 # ============================================================================
 
@@ -205,7 +116,6 @@ $Result = @{
     LocalizedAt = (Get-Date).ToString("o")
     Programs = @()
     Tables = @()
-    SpecContextLoaded = 0
 }
 
 Write-Host "[Localization] Processing $($Programs.Count) program candidates..." -ForegroundColor Cyan
@@ -352,32 +262,81 @@ $Result.Programs = @($Result.Programs | Group-Object { "$($_.Project)-$($_.Progr
 $Result.Tables = @($Result.Tables | Group-Object { $_.TableId } | ForEach-Object { $_.Group[0] })
 
 # ============================================================================
-# SPEC CONTEXT INJECTION (P1-A)
+# CALLERS / CALLEES ENRICHMENT
 # ============================================================================
 
-Write-Host "[Spec Context] Loading spec context for verified programs..." -ForegroundColor Cyan
+Write-Host "[Localization] Enriching with callers/callees..." -ForegroundColor Cyan
 
 foreach ($Prog in $Result.Programs) {
-    if ($Prog.Verified -and $Prog.Project -and $Prog.IDE) {
-        $SpecContext = Get-SpecContext -Project $Prog.Project -IDE $Prog.IDE
-        if ($SpecContext) {
-            $Prog.SpecContext = $SpecContext
-            $Result.SpecContextLoaded++
-            Write-Host "  [SPEC] $($Prog.Project) IDE $($Prog.IDE): $($SpecContext.TableCount) tables, $($SpecContext.ExpressionCount) expressions" -ForegroundColor Green
+    if (-not $Prog.Verified -or -not $Prog.Project -or -not $Prog.IDE) { continue }
+
+    $project = $Prog.Project
+    $ide = $Prog.IDE
+
+    # Get callers
+    $CallerSql = @"
+SELECT pr.name as project, p.ide_position as ide, p.name
+FROM program_calls pc
+JOIN tasks t ON pc.caller_task_id = t.id
+JOIN programs p ON t.program_id = p.id
+JOIN projects pr ON p.project_id = pr.id
+JOIN programs callee ON pc.callee_program_id = callee.id
+JOIN projects callee_pr ON callee.project_id = callee_pr.id
+WHERE callee_pr.name='$project' AND callee.ide_position=$ide
+ORDER BY pr.name, p.ide_position
+LIMIT 20
+"@
+    $callers = Invoke-KbQuery -Sql $CallerSql
+    $Prog.Callers = @()
+    if ($callers) {
+        foreach ($c in @($callers)) {
+            $Prog.Callers += @{
+                project = [string]$c.project
+                ide     = [int]$c.ide
+                name    = [string]$c.name
+            }
         }
     }
+
+    # Get callees
+    $CalleeSql = @"
+SELECT pr.name as project, p.ide_position as ide, p.name
+FROM program_calls pc
+JOIN programs p ON pc.callee_program_id = p.id
+JOIN projects pr ON p.project_id = pr.id
+JOIN tasks t ON pc.caller_task_id = t.id
+JOIN programs caller ON t.program_id = caller.id
+JOIN projects caller_pr ON caller.project_id = caller_pr.id
+WHERE caller_pr.name='$project' AND caller.ide_position=$ide
+ORDER BY pr.name, p.ide_position
+LIMIT 20
+"@
+    $callees = Invoke-KbQuery -Sql $CalleeSql
+    $Prog.Callees = @()
+    if ($callees) {
+        foreach ($c in @($callees)) {
+            $Prog.Callees += @{
+                project = [string]$c.project
+                ide     = [int]$c.ide
+                name    = [string]$c.name
+            }
+        }
+    }
+
+    Write-Host "  ${project} IDE ${ide}: $($Prog.Callers.Count) callers, $($Prog.Callees.Count) callees" -ForegroundColor Gray
 }
 
 # Statistiques
-$VerifiedProgs = ($Result.Programs | Where-Object { $_.Verified }).Count
-$VerifiedTables = ($Result.Tables | Where-Object { $_.Verified }).Count
+$VerifiedProgs = @($Result.Programs | Where-Object { $_.Verified }).Count
+$VerifiedTables = @($Result.Tables | Where-Object { $_.Verified }).Count
 
 Write-Host "[Localization] Results:" -ForegroundColor Green
 Write-Host "  - Programs: $VerifiedProgs verified / $($Result.Programs.Count) total" -ForegroundColor Gray
 Write-Host "  - Tables: $VerifiedTables verified / $($Result.Tables.Count) total" -ForegroundColor Gray
-Write-Host "  - Spec Context: $($Result.SpecContextLoaded) loaded" -ForegroundColor $(if ($Result.SpecContextLoaded -gt 0) { "Green" } else { "Yellow" })
 
-# Sauvegarder (Depth 7 pour supporter SpecContext imbriqué)
-$Result | ConvertTo-Json -Depth 7 | Set-Content $OutputFile -Encoding UTF8
+# Sauvegarder (UTF-8 sans BOM)
+$json = $Result | ConvertTo-Json -Depth 4
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+[System.IO.File]::WriteAllText($OutputFile, $json, $utf8NoBom)
 
 Write-Host "[Localization] Output: $OutputFile" -ForegroundColor Green

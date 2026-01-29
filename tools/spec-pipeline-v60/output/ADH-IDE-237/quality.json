@@ -1,17 +1,8 @@
 ﻿{
-    "validation":  {
-                       "callers_shown":  3,
-                       "tables_unified_count":  30,
-                       "business_rules_count":  17,
-                       "callees_shown":  20,
-                       "all_variables_no_truncation":  true,
-                       "variables_mapped_count":  171,
-                       "total_forms_count":  49,
-                       "visible_forms_count":  14,
-                       "all_callees_no_truncation":  true,
-                       "all_expressions_no_truncation":  true,
-                       "all_tables_no_truncation":  true
-                   },
+    "files_generated":  [
+                            "ADH-IDE-237-summary.md",
+                            "ADH-IDE-237.md"
+                        ],
     "extraction_coverage":  {
                                 "tables_extracted":  true,
                                 "expressions_decoded":  true,
@@ -20,15 +11,29 @@
                                 "variables_mapped":  true,
                                 "forms_extracted":  true
                             },
+    "structure":  {
+                      "tab_names":  [
+                                        "Resume",
+                                        "Ecrans",
+                                        "Donnees",
+                                        "Connexions"
+                                    ],
+                      "tabs":  4,
+                      "business_rules_fr":  17,
+                      "functional_blocks":  10,
+                      "callees_with_context":  20,
+                      "migration_effort_days":  53
+                  },
+    "validation":  {
+                       "callers_shown":  3,
+                       "callees_shown":  20,
+                       "visible_forms_count":  14,
+                       "tables_unified_count":  30,
+                       "variables_mapped_count":  171,
+                       "business_rules_count":  17,
+                       "total_forms_count":  49
+                   },
     "quality_score":  100,
-    "metadata":  {
-                     "pipeline_version":  "6.0",
-                     "generated_at":  "2026-01-29 11:34:13",
-                     "ide_position":  237,
-                     "duration_seconds":  0.8,
-                     "program_name":  "Transaction Nouv vente avec GP",
-                     "project":  "ADH"
-                 },
     "complexity":  {
                        "score":  85,
                        "level":  "HAUTE",
@@ -37,11 +42,15 @@
                                        "Taches: 49 (HAUTE)",
                                        "Tables WRITE: 9 (HAUTE)",
                                        "Callees: 20 (HAUTE)",
-                                       "Lignes desactivees: 0% (SAIN)"
+                                       "Code desactive: 0% (SAIN)"
                                    ]
                    },
-    "files_generated":  [
-                            "ADH-IDE-237-summary.md",
-                            "ADH-IDE-237.md"
-                        ]
+    "metadata":  {
+                     "pipeline_version":  "7.0",
+                     "generated_at":  "2026-01-29 12:35:19",
+                     "ide_position":  237,
+                     "duration_seconds":  0.7,
+                     "program_name":  "Transaction Nouv vente avec GP",
+                     "project":  "ADH"
+                 }
 }

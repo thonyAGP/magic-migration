@@ -26,7 +26,7 @@ if ($null -eq $Expressions -or $Expressions.Count -eq 0) {
         DecodedAt = (Get-Date).ToString("o")
         Expressions = @()
         Stats = @{ Total = 0; Decoded = 0; Failed = 0 }
-    } | ConvertTo-Json -Depth 5 | Set-Content $OutputFile -Encoding UTF8
+    } | ConvertTo-Json -Depth 5 | ForEach-Object { $utf8NoBom = [System.Text.UTF8Encoding]::new($false); [System.IO.File]::WriteAllText($OutputFile, $_, $utf8NoBom) }
     return
 }
 
@@ -372,7 +372,14 @@ Write-Host "  - Total: $($Result.Stats.Total)" -ForegroundColor Gray
 Write-Host "  - Decoded: $($Result.Stats.Decoded)" -ForegroundColor Gray
 Write-Host "  - Failed: $($Result.Stats.Failed)" -ForegroundColor Gray
 
-# Sauvegarder
-$Result | ConvertTo-Json -Depth 10 | Set-Content $OutputFile -Encoding UTF8
+# Sauvegarder (UTF-8 sans BOM)
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+try {
+    $json = $Result | ConvertTo-Json -Depth 5
+} catch {
+    Write-Warning "ConvertTo-Json Depth 5 failed: $_"
+    $json = $Result | ConvertTo-Json -Depth 3
+}
+[System.IO.File]::WriteAllText($OutputFile, $json, $utf8NoBom)
 
 Write-Host "[Decode] Output: $OutputFile" -ForegroundColor Green
