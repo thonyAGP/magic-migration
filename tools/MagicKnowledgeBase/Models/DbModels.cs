@@ -336,3 +336,154 @@ public record PatternSearchResult
     public int UsageCount { get; init; }
     public double Score { get; init; }
 }
+
+// ============================================================================
+// V9 MODELS - XML ENRICHMENT
+// ============================================================================
+
+/// <summary>V9: Extended program metadata</summary>
+public record DbProgramMetadata
+{
+    public long Id { get; init; }
+    public long ProgramId { get; init; }
+    public string? TaskType { get; init; }
+    public string? LastModifiedDate { get; init; }
+    public string? LastModifiedTime { get; init; }
+    public long? LastModifiedTs { get; init; }
+    public int? ExecutionRight { get; init; }
+    public bool IsResident { get; init; }
+    public bool IsSql { get; init; }
+    public bool IsExternal { get; init; }
+    public string? FormType { get; init; }
+    public bool HasDotNet { get; init; }
+    public bool HasSqlWhere { get; init; }
+    public bool IsMainProgram { get; init; }
+    public int? LastIsn { get; init; }
+}
+
+/// <summary>V9: Task parameter (MgAttr type)</summary>
+public record DbTaskParameter
+{
+    public long Id { get; init; }
+    public long TaskId { get; init; }
+    public int Position { get; init; }
+    public required string MgAttr { get; init; }
+    public bool IsOutput { get; init; }
+}
+
+/// <summary>V9: Task information block</summary>
+public record DbTaskInformation
+{
+    public long Id { get; init; }
+    public long TaskId { get; init; }
+    public string? InitialMode { get; init; }
+    public int? EndTaskConditionExpr { get; init; }
+    public string? EvaluateEndCondition { get; init; }
+    public string? ForceRecordDelete { get; init; }
+    public int? MainDbComponent { get; init; }
+    public string? KeyMode { get; init; }
+    public string? RangeDirection { get; init; }
+    public string? LocateDirection { get; init; }
+    public string? SortCls { get; init; }
+    public int? BoxBottom { get; init; }
+    public int? BoxRight { get; init; }
+    public string? BoxDirection { get; init; }
+}
+
+/// <summary>V9: Task properties block</summary>
+public record DbTaskProperties
+{
+    public long Id { get; init; }
+    public long TaskId { get; init; }
+    public string? TransactionMode { get; init; }
+    public string? TransactionBegin { get; init; }
+    public string? LockingStrategy { get; init; }
+    public string? CacheStrategy { get; init; }
+    public string? ErrorStrategy { get; init; }
+    public string? ConfirmUpdate { get; init; }
+    public string? ConfirmCancel { get; init; }
+    public bool AllowEmptyDataview { get; init; }
+    public bool PreloadView { get; init; }
+    public int? SelectionTable { get; init; }
+    public string? ForceRecordSuffix { get; init; }
+    public string? KeepCreatedContext { get; init; }
+}
+
+/// <summary>V9: Task permissions (SIDE_WIN)</summary>
+public record DbTaskPermissions
+{
+    public long Id { get; init; }
+    public long TaskId { get; init; }
+    public bool AllowCreate { get; init; }
+    public bool AllowDelete { get; init; }
+    public bool AllowModify { get; init; }
+    public bool AllowQuery { get; init; }
+    public bool AllowLocate { get; init; }
+    public bool AllowRange { get; init; }
+    public bool AllowSorting { get; init; }
+    public bool AllowEvents { get; init; }
+    public bool AllowIndexChange { get; init; }
+    public bool AllowIndexOptimization { get; init; }
+    public bool AllowIoFiles { get; init; }
+    public bool AllowLocationInQuery { get; init; }
+    public bool AllowOptions { get; init; }
+    public bool AllowPrintingData { get; init; }
+    public string? RecordCycle { get; init; }
+}
+
+/// <summary>V9: Call argument</summary>
+public record DbCallArgument
+{
+    public long Id { get; init; }
+    public long CallId { get; init; }
+    public int Position { get; init; }
+    public int? ArgId { get; init; }
+    public string? VariableRef { get; init; }
+    public int? ExpressionRef { get; init; }
+    public bool Skip { get; init; }
+    public bool IsParent { get; init; }
+}
+
+/// <summary>V9: Event handler</summary>
+public record DbEventHandler
+{
+    public long Id { get; init; }
+    public long TaskId { get; init; }
+    public int EventId { get; init; }
+    public string? Description { get; init; }
+    public string? ForceExit { get; init; }
+    public string? EventType { get; init; }
+    public string? PublicObjectComp { get; init; }
+    public int? PublicObjectObj { get; init; }
+}
+
+/// <summary>V9: Field range</summary>
+public record DbFieldRange
+{
+    public long Id { get; init; }
+    public long TaskId { get; init; }
+    public int RangeId { get; init; }
+    public int? ColumnObj { get; init; }
+    public int? MinExpr { get; init; }
+    public int? MaxExpr { get; init; }
+}
+
+/// <summary>V9: Form control</summary>
+public record DbFormControl
+{
+    public long Id { get; init; }
+    public long FormId { get; init; }
+    public int ControlId { get; init; }
+    public string? ControlType { get; init; }
+    public string? ControlName { get; init; }
+    public int? X { get; init; }
+    public int? Y { get; init; }
+    public int? Width { get; init; }
+    public int? Height { get; init; }
+    public bool Visible { get; init; }
+    public bool Enabled { get; init; }
+    public int? TabOrder { get; init; }
+    public int? LinkedFieldId { get; init; }
+    public string? LinkedVariable { get; init; }
+    public string? PropertiesJson { get; init; }
+}

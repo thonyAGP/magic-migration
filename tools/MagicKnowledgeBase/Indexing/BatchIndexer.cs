@@ -230,6 +230,28 @@ public class BatchIndexer
                         ExpressionCount = parsed.Expressions.Count
                     }, tx);
 
+                    // V9: Insert program metadata
+                    if (parsed.Metadata != null)
+                    {
+                        _db.InsertProgramMetadata(new DbProgramMetadata
+                        {
+                            ProgramId = programId,
+                            TaskType = parsed.Metadata.TaskType,
+                            LastModifiedDate = parsed.Metadata.LastModifiedDate,
+                            LastModifiedTime = parsed.Metadata.LastModifiedTime,
+                            LastModifiedTs = null, // Can be computed from Date+Time if needed
+                            ExecutionRight = parsed.Metadata.ExecutionRight,
+                            IsResident = parsed.Metadata.IsResident,
+                            IsSql = parsed.Metadata.IsSql,
+                            IsExternal = parsed.Metadata.IsExternal,
+                            FormType = parsed.Metadata.FormType,
+                            HasDotNet = parsed.Metadata.HasDotNet,
+                            HasSqlWhere = parsed.Metadata.HasSqlWhere,
+                            IsMainProgram = parsed.Metadata.IsMainProgram,
+                            LastIsn = parsed.Metadata.LastIsn
+                        }, tx);
+                    }
+
                     // Insert tasks
                     foreach (var task in parsed.Tasks.Values)
                     {
@@ -324,6 +346,112 @@ public class BatchIndexer
                                 Height = f.Height,
                                 WindowType = f.WindowType,
                                 Font = f.Font
+                            }), tx);
+                        }
+
+                        // V9: Insert task parameters
+                        if (task.Parameters.Count > 0)
+                        {
+                            _db.BulkInsertTaskParameters(task.Parameters.Select(p => new DbTaskParameter
+                            {
+                                TaskId = taskId,
+                                Position = p.Position,
+                                MgAttr = p.MgAttr,
+                                IsOutput = p.IsOutput
+                            }), tx);
+                        }
+
+                        // V9: Insert task information
+                        if (task.Information != null)
+                        {
+                            _db.InsertTaskInformation(new DbTaskInformation
+                            {
+                                TaskId = taskId,
+                                InitialMode = task.Information.InitialMode,
+                                EndTaskConditionExpr = task.Information.EndTaskConditionExpr,
+                                EvaluateEndCondition = task.Information.EvaluateEndCondition,
+                                ForceRecordDelete = task.Information.ForceRecordDelete,
+                                MainDbComponent = task.Information.MainDbComponent,
+                                KeyMode = task.Information.KeyMode,
+                                RangeDirection = task.Information.RangeDirection,
+                                LocateDirection = task.Information.LocateDirection,
+                                SortCls = task.Information.SortCls,
+                                BoxBottom = task.Information.BoxBottom,
+                                BoxRight = task.Information.BoxRight,
+                                BoxDirection = task.Information.BoxDirection
+                            }, tx);
+                        }
+
+                        // V9: Insert task properties
+                        if (task.Properties != null)
+                        {
+                            _db.InsertTaskProperties(new DbTaskProperties
+                            {
+                                TaskId = taskId,
+                                TransactionMode = task.Properties.TransactionMode,
+                                TransactionBegin = task.Properties.TransactionBegin,
+                                LockingStrategy = task.Properties.LockingStrategy,
+                                CacheStrategy = task.Properties.CacheStrategy,
+                                ErrorStrategy = task.Properties.ErrorStrategy,
+                                ConfirmUpdate = task.Properties.ConfirmUpdate,
+                                ConfirmCancel = task.Properties.ConfirmCancel,
+                                AllowEmptyDataview = task.Properties.AllowEmptyDataview,
+                                PreloadView = task.Properties.PreloadView,
+                                SelectionTable = task.Properties.SelectionTable,
+                                ForceRecordSuffix = task.Properties.ForceRecordSuffix,
+                                KeepCreatedContext = task.Properties.KeepCreatedContext
+                            }, tx);
+                        }
+
+                        // V9: Insert task permissions
+                        if (task.Permissions != null)
+                        {
+                            _db.InsertTaskPermissions(new DbTaskPermissions
+                            {
+                                TaskId = taskId,
+                                AllowCreate = task.Permissions.AllowCreate,
+                                AllowDelete = task.Permissions.AllowDelete,
+                                AllowModify = task.Permissions.AllowModify,
+                                AllowQuery = task.Permissions.AllowQuery,
+                                AllowLocate = task.Permissions.AllowLocate,
+                                AllowRange = task.Permissions.AllowRange,
+                                AllowSorting = task.Permissions.AllowSorting,
+                                AllowEvents = task.Permissions.AllowEvents,
+                                AllowIndexChange = task.Permissions.AllowIndexChange,
+                                AllowIndexOptimization = task.Permissions.AllowIndexOptimization,
+                                AllowIoFiles = task.Permissions.AllowIoFiles,
+                                AllowLocationInQuery = task.Permissions.AllowLocationInQuery,
+                                AllowOptions = task.Permissions.AllowOptions,
+                                AllowPrintingData = task.Permissions.AllowPrintingData,
+                                RecordCycle = task.Permissions.RecordCycle
+                            }, tx);
+                        }
+
+                        // V9: Insert event handlers
+                        if (task.EventHandlers.Count > 0)
+                        {
+                            _db.BulkInsertEventHandlers(task.EventHandlers.Select(h => new DbEventHandler
+                            {
+                                TaskId = taskId,
+                                EventId = h.EventId,
+                                Description = h.Description,
+                                ForceExit = h.ForceExit,
+                                EventType = h.EventType,
+                                PublicObjectComp = h.PublicObjectComp,
+                                PublicObjectObj = h.PublicObjectObj
+                            }), tx);
+                        }
+
+                        // V9: Insert field ranges
+                        if (task.FieldRanges.Count > 0)
+                        {
+                            _db.BulkInsertFieldRanges(task.FieldRanges.Select(r => new DbFieldRange
+                            {
+                                TaskId = taskId,
+                                RangeId = r.RangeId,
+                                ColumnObj = r.ColumnObj,
+                                MinExpr = r.MinExpr,
+                                MaxExpr = r.MaxExpr
                             }), tx);
                         }
 

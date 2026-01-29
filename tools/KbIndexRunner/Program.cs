@@ -64,7 +64,16 @@ if (args.Length > 0 && args[0] == "validate")
         ("tasks", 1000),
         ("expressions", 5000),
         ("program_calls", 100),
-        ("tables", 50)
+        ("tables", 50),
+        // V9 tables
+        ("program_metadata", 100),
+        ("task_parameters", 10),
+        ("task_information", 100),
+        ("task_properties", 100),
+        ("task_permissions", 100),
+        ("event_handlers", 10),
+        ("field_ranges", 1),
+        ("form_controls", 10)
     };
     foreach (var (table, minExpected) in tableChecks)
     {
@@ -1123,11 +1132,17 @@ if (args.Length > 1 && args[0] == "spec-data")
 
     // Get expression count
     int exprCount = 0;
+    int totalExpressions = 0;
     using (var cmd = conn.CreateCommand())
     {
         cmd.CommandText = @"SELECT COUNT(*) FROM expressions WHERE program_id = @prog_id";
         cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
         exprCount = Convert.ToInt32(cmd.ExecuteScalar());
+    }
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"SELECT COUNT(*) FROM expressions";
+        totalExpressions = Convert.ToInt32(cmd.ExecuteScalar());
     }
 
     // Get input parameters (DataView columns with Parameter source)
@@ -1227,6 +1242,7 @@ if (args.Length > 1 && args[0] == "spec-data")
     {
         program = programName,
         ide = ide,
+        dbProgramId = dbProgramId,  // DEBUG
         tables = tables,
         callers = callers,
         callees = callees,
