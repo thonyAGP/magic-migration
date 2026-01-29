@@ -652,6 +652,30 @@ if ($blocMap.Count -gt 0) {
             Add-Line "- **Regles metier**: $blocRuleCount regles associees"
         }
 
+        # Variables cles associees au bloc (match par nom de variable ou categorie)
+        $blocVarNames = @()
+        foreach ($vr in $variableRows) {
+            $vn = $vr.Name.ToLower()
+            $varMatchesBloc = switch ($blocName) {
+                "Saisie"      { $vn -match 'saisie|transaction|vente|article|quantite|qte|produit' }
+                "Reglement"   { $vn -match 'regl|paiement|mop|montant|total|solde|devise' }
+                "Validation"  { $vn -match 'controle|verif|valid|erreur|statut|status' }
+                "Impression"  { $vn -match 'print|ticket|edition|imprim|format' }
+                "Calcul"      { $vn -match 'stock|calcul|compt|pourcentage|taux|cumul' }
+                "Transfert"   { $vn -match 'bilat|transfer|devers|dest' }
+                "Consultation" { $vn -match 'affich|zoom|select|filtre|recherche' }
+                "Creation"    { $vn -match 'creat|insert|ajout|nouveau' }
+                "Initialisation" { $vn -match 'init|raz|reinit|defaut|param' }
+                default       { $false }
+            }
+            if ($varMatchesBloc -and $blocVarNames.Count -lt 5) {
+                $blocVarNames += "$($vr.Letter) ($($vr.Name))"
+            }
+        }
+        if ($blocVarNames.Count -gt 0) {
+            Add-Line "- **Variables cles**: $($blocVarNames -join ', ')"
+        }
+
         Add-Line
         $bIdx++
     }
@@ -659,45 +683,54 @@ if ($blocMap.Count -gt 0) {
 
 # --- 4. SUPPRIME (fusionne dans S3 Blocs fonctionnels) ---
 
-# --- 5. Regles metier en francais (regroupees par categorie, FR seulement) ---
+# --- 5. Regles metier en francais (regroupees par bloc fonctionnel) ---
 Add-Line "## 5. REGLES METIER"
 Add-Line
 if ($businessRules.Count -gt 0) {
     Add-Line "$($businessRules.Count) regles identifiees:"
     Add-Line
 
-    # Classify rules into categories
-    $rulesByCategory = [ordered]@{
-        "Conditions metier" = @()
-        "Calculs" = @()
-        "Positionnement UI" = @()
-        "Valeurs par defaut" = @()
-        "Regles complexes" = @()
-    }
+    # Classify rules by functional bloc (same blocs as S3)
+    $rulesByBloc = [ordered]@{}
+    foreach ($blocName in $blocMap.Keys) { $rulesByBloc[$blocName] = @() }
+    $rulesByBloc["Autres"] = @()
+
     foreach ($rule in $businessRules) {
         $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
         $nl = if ($rule.natural_language) { $rule.natural_language } else { "" }
         $frRule = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id -NaturalLanguage $nl
         $entry = @{ id = $rule.id; fr = $frRule; decoded = $dExpr }
-        if ($frRule -match "Position UI") {
-            $rulesByCategory["Positionnement UI"] += $entry
-        } elseif ($frRule -match "Calcul|pourcentage|arrondi") {
-            $rulesByCategory["Calculs"] += $entry
-        } elseif ($frRule -match "Valeur par defaut|est vide") {
-            $rulesByCategory["Valeurs par defaut"] += $entry
-        } elseif ($frRule -eq $dExpr) {
-            $rulesByCategory["Regles complexes"] += $entry
-        } else {
-            $rulesByCategory["Conditions metier"] += $entry
+
+        # Match rule to bloc using same heuristics as S3
+        $matched = $false
+        foreach ($bn in $blocMap.Keys) {
+            $ruleMatchesBloc = switch ($bn) {
+                "Saisie"      { $dExpr -match 'saisie|transaction|vente|W0' }
+                "Reglement"   { $dExpr -match 'regl|MOP|paiement|montant' }
+                "Validation"  { $dExpr -match 'controle|verif|valid' }
+                "Impression"  { $dExpr -match 'print|ticket|edition' }
+                "Calcul"      { $dExpr -match 'Fix\(|pourcentage|\*.*/' }
+                "Transfert"   { $dExpr -match 'bilat|transfer|devers' }
+                "Consultation" { $dExpr -match 'affich|zoom|select' }
+                "Creation"    { $dExpr -match 'creat|insert|ajout' }
+                "Initialisation" { $dExpr -match 'init|raz|reinit' }
+                default       { $false }
+            }
+            if ($ruleMatchesBloc) {
+                $rulesByBloc[$bn] += $entry
+                $matched = $true
+                break
+            }
         }
+        if (-not $matched) { $rulesByBloc["Autres"] += $entry }
     }
 
-    foreach ($catName in $rulesByCategory.Keys) {
-        $catRules = $rulesByCategory[$catName]
-        if ($catRules.Count -eq 0) { continue }
-        Add-Line "### $catName ($($catRules.Count))"
+    foreach ($bName in $rulesByBloc.Keys) {
+        $bRules = $rulesByBloc[$bName]
+        if ($bRules.Count -eq 0) { continue }
+        Add-Line "### $bName ($($bRules.Count) regles)"
         Add-Line
-        foreach ($r in $catRules) {
+        foreach ($r in $bRules) {
             Add-Line "- **[$($r.id)]** $($r.fr)"
         }
         Add-Line
@@ -786,28 +819,53 @@ if ($visibleForms.Count -gt 1) {
     Add-Line "### 9.1 Enchainement des ecrans"
     Add-Line
 
-    # Zigzag layout: TD direction with rows of 4 for readability
+    # Zigzag layout: rows of 4 nodes for readability
     $rowSize = 4
     Add-Line '```mermaid'
-    Add-Line "flowchart TD"
+    Add-Line "flowchart LR"
+
+    # Define all nodes first
     Add-Line "    START([Entree])"
     Add-Line "    style START fill:#3fb950"
-
-    $prevNode = "START"
     $navIdx = 1
-    $rowNodes = @()
     foreach ($form in $visibleForms) {
         $fl = Clean-MermaidLabel $form.name
-        $nId = "F$navIdx"
-        Add-Line "    $nId[$fl]"
-        Add-Line "    $prevNode --> $nId"
-        $rowNodes += $nId
-        $prevNode = $nId
+        Add-Line "    F$navIdx[$fl]"
         $navIdx++
     }
     Add-Line "    FIN([Sortie])"
     Add-Line "    style FIN fill:#f85149"
-    Add-Line "    $prevNode --> FIN"
+
+    # Build zigzag connections: rows of $rowSize, alternating direction
+    $allNodes = @("START")
+    for ($i = 1; $i -le $visibleForms.Count; $i++) { $allNodes += "F$i" }
+    $allNodes += "FIN"
+
+    $totalNodes = $allNodes.Count
+    $rowIdx = 0
+    for ($i = 0; $i -lt $totalNodes; $i += $rowSize) {
+        $rowEnd = [math]::Min($i + $rowSize, $totalNodes)
+        $rowSlice = $allNodes[$i..($rowEnd - 1)]
+
+        if ($rowIdx % 2 -eq 0) {
+            # Left-to-right row
+            for ($j = 0; $j -lt $rowSlice.Count - 1; $j++) {
+                Add-Line "    $($rowSlice[$j]) --> $($rowSlice[$j + 1])"
+            }
+        } else {
+            # Right-to-left row (reverse connections for zigzag effect)
+            for ($j = 0; $j -lt $rowSlice.Count - 1; $j++) {
+                Add-Line "    $($rowSlice[$j]) --> $($rowSlice[$j + 1])"
+            }
+        }
+        # Connect last node of this row to first of next row (if exists)
+        if ($rowEnd -lt $totalNodes -and ($rowEnd - 1) -ge 0) {
+            $lastOfRow = $allNodes[$rowEnd - 1]
+            $firstOfNext = $allNodes[$rowEnd]
+            Add-Line "    $lastOfRow --> $firstOfNext"
+        }
+        $rowIdx++
+    }
     Add-Line '```'
     Add-Line
 } elseif ($visibleForms.Count -eq 1) {
@@ -880,30 +938,42 @@ if ($businessRules.Count -gt 0) {
     Add-Line
 }
 
-# Hierarchical task structure: IDE.Task with subtasks
+# Hierarchical task structure: grouped by bloc with parent.child numbering
 Add-Line "### 9.3 Structure hierarchique ($($allForms.Count) taches)"
 Add-Line
 
-# Build hierarchical view: group by parent/subtask
-$sortedForms = @($allForms | Sort-Object { [int]$_.task_isn2 })
-$mainTaskIdx = 1
-$prevParent = -1
-foreach ($form in $sortedForms) {
-    $tId = [int]$form.task_isn2
-    $isVis = if ($form.dimensions.width -gt 0) { "**[ECRAN]**" } else { "" }
-    $bloc = Get-FunctionalBloc $form.name
-    $typeInfo = if ($form.window_type_str -and $form.window_type_str -ne 'Type0') { "($($form.window_type_str))" } else { "" }
+# Build hierarchical view: group tasks by functional bloc
+$blocIdx = 1
+$hasSubLevels = $false
+foreach ($blocName in $blocMap.Keys) {
+    $blocForms = @($blocMap[$blocName] | Sort-Object { [int]$_.task_isn2 })
+    if ($blocForms.Count -eq 0) { continue }
 
-    # Determine if this is a main task or subtask
-    # Heuristic: subtasks typically have higher ISN2 values and follow their parent
-    # For now, use bloc grouping as hierarchy indicator
-    $dims = ""
-    if ($form.dimensions.width -gt 0) {
-        $dims = " $($form.dimensions.width)x$($form.dimensions.height)"
+    # First task in bloc is the "parent"
+    $parentForm = $blocForms[0]
+    $parentTaskId = [int]$parentForm.task_isn2
+    $pVis = if ($parentForm.dimensions.width -gt 0) { "**[ECRAN]**" } else { "" }
+    $pType = if ($parentForm.window_type_str -and $parentForm.window_type_str -ne 'Type0') { "($($parentForm.window_type_str))" } else { "" }
+    $pDims = ""
+    if ($parentForm.dimensions.width -gt 0) { $pDims = " $($parentForm.dimensions.width)x$($parentForm.dimensions.height)" }
+    $pName = if ($parentForm.name -and $parentForm.name.Trim()) { $parentForm.name.Trim() } else { "(sans nom)" }
+    Add-Line "- **$IdePosition.$blocIdx** $pName (T$parentTaskId) $pVis $pType$pDims *[$blocName]*"
+
+    # Remaining tasks in bloc are children
+    $childIdx = 1
+    for ($fi = 1; $fi -lt $blocForms.Count; $fi++) {
+        $cf = $blocForms[$fi]
+        $cId = [int]$cf.task_isn2
+        $cVis = if ($cf.dimensions.width -gt 0) { "**[ECRAN]**" } else { "" }
+        $cType = if ($cf.window_type_str -and $cf.window_type_str -ne 'Type0') { "($($cf.window_type_str))" } else { "" }
+        $cDims = ""
+        if ($cf.dimensions.width -gt 0) { $cDims = " $($cf.dimensions.width)x$($cf.dimensions.height)" }
+        $cName = if ($cf.name -and $cf.name.Trim()) { $cf.name.Trim() } else { "(sans nom)" }
+        Add-Line "  - **$IdePosition.$blocIdx.$childIdx** $cName (T$cId) $cVis $cType$cDims"
+        $childIdx++
+        $hasSubLevels = $true
     }
-
-    $taskName = if ($form.name -and $form.name.Trim()) { $form.name.Trim() } else { "(sans nom)" }
-    Add-Line "- **$IdePosition.$tId** $taskName $isVis $typeInfo$dims *[$bloc]*"
+    $blocIdx++
 }
 Add-Line
 
@@ -1317,11 +1387,8 @@ Add-Line
 Add-Line "## 14. RECOMMANDATIONS MIGRATION"
 Add-Line
 
-# Effort estimation
+# Profile metrics (no effort estimation - too unreliable)
 $lines = $discovery.statistics.logic_line_count
-$effortDays = [math]::Ceiling($lines / 100 + $exprCount / 50 + $writeCount * 0.5 + $calleeCount * 0.3)
-$effortDays = [math]::Max($effortDays, 1)
-if ($complexity.level -eq "HAUTE") { $effortDays = [math]::Ceiling($effortDays * 1.5) }
 
 Add-Line "### 14.1 Profil du programme"
 Add-Line
@@ -1337,8 +1404,6 @@ $disabledLinesCalc = $discovery.statistics.disabled_line_count
 $disabledPctCalc = if ($totalLinesCalc -gt 0) { [math]::Round($disabledLinesCalc / $totalLinesCalc * 100, 1) } else { 0 }
 Add-Line "| Code desactive | ${disabledPctCalc}% ($disabledLinesCalc / $totalLinesCalc) | $(if ($disabledPctCalc -gt 15) { 'Nettoyer avant migration' } elseif ($disabledPctCalc -gt 5) { 'A verifier' } else { 'Code sain' }) |"
 Add-Line "| Regles metier | $($businessRules.Count) | $(if ($businessRules.Count -gt 10) { 'Logique metier riche - documenter chaque regle' } elseif ($businessRules.Count -gt 0) { 'Quelques regles a preserver' } else { 'Pas de regle identifiee' }) |"
-Add-Line
-Add-Line "**Estimation effort**: ~**$effortDays jours** de developpement"
 Add-Line
 
 # Enriched recommendations per block with specific data
@@ -1533,6 +1598,56 @@ if ($specContent -match 'Phases 1-4') {
     $auditFailed = $true
 }
 
+# AUDIT 11: Rules grouped by functional bloc (not technical category)
+$rulesBlocHeaders = ([regex]::Matches($specContent, '### (Saisie|Reglement|Validation|Impression|Calcul|Transfert|Consultation|Creation|Initialisation|Traitement|Autres) \(\d+ regles?\)')).Count
+$ruleTechHeaders = ([regex]::Matches($specContent, '### (Conditions metier|Calculs|Positionnement UI|Valeurs par defaut|Regles complexes) \(\d+\)')).Count
+if ($businessRules.Count -gt 0 -and $rulesBlocHeaders -eq 0 -and $ruleTechHeaders -gt 0) {
+    $auditResults += @{ check = "RULES_BY_BLOC"; status = "FAIL"; expected = "bloc_headers"; actual = "tech_headers"; detail = "Regles groupees par categorie technique au lieu de bloc fonctionnel" }
+    $auditFailed = $true
+} else {
+    $auditResults += @{ check = "RULES_BY_BLOC"; status = "PASS"; expected = "bloc_headers"; actual = $rulesBlocHeaders; detail = "$rulesBlocHeaders groupes par bloc fonctionnel" }
+}
+
+# AUDIT 12: Variables cles present in bloc sections
+$blocVarLines = ([regex]::Matches($specContent, '\*\*Variables cles\*\*:')).Count
+if ($blocMap.Count -gt 0 -and $variableRows.Count -gt 0 -and $blocVarLines -eq 0) {
+    $auditResults += @{ check = "BLOC_VARIABLES"; status = "WARN"; expected = "present"; actual = 0; detail = "Aucune variable cle dans les blocs (variables peut-etre non matchees)" }
+} else {
+    $auditResults += @{ check = "BLOC_VARIABLES"; status = "PASS"; expected = "present"; actual = $blocVarLines; detail = "$blocVarLines blocs avec variables cles" }
+}
+
+# AUDIT 13: Navigation uses LR flowchart (zigzag layout)
+if ($visibleForms.Count -gt 1) {
+    if ($specContent -match 'flowchart LR' -and $specContent -match '9\.1 Enchainement') {
+        $auditResults += @{ check = "NAV_FLOWCHART_LR"; status = "PASS"; expected = "flowchart LR"; actual = "present"; detail = "Navigation en flowchart LR" }
+    } else {
+        $auditResults += @{ check = "NAV_FLOWCHART_LR"; status = "WARN"; expected = "flowchart LR"; actual = "absent"; detail = "Navigation pas en flowchart LR" }
+    }
+} else {
+    $auditResults += @{ check = "NAV_FLOWCHART_LR"; status = "PASS"; expected = "N/A"; actual = "N/A"; detail = "Programme mono-ecran, navigation N/A" }
+}
+
+# AUDIT 14: Hierarchical task structure (parent.child numbering)
+$hierarchyMatches = ([regex]::Matches($specContent, "\*\*$IdePosition\.\d+\.\d+\*\*")).Count
+if ($blocMap.Count -gt 1 -and $allForms.Count -gt $blocMap.Count) {
+    if ($hierarchyMatches -gt 0) {
+        $auditResults += @{ check = "TASK_HIERARCHY"; status = "PASS"; expected = "parent.child"; actual = $hierarchyMatches; detail = "$hierarchyMatches sous-taches avec notation hierarchique" }
+    } else {
+        $auditResults += @{ check = "TASK_HIERARCHY"; status = "FAIL"; expected = "parent.child"; actual = 0; detail = "Pas de notation hierarchique dans 9.3" }
+        $auditFailed = $true
+    }
+} else {
+    $auditResults += @{ check = "TASK_HIERARCHY"; status = "PASS"; expected = "N/A"; actual = "N/A"; detail = "Programme simple, hierarchie N/A" }
+}
+
+# AUDIT 15: No effort estimation in days
+if ($specContent -match 'Estimation effort.*jours') {
+    $auditResults += @{ check = "NO_EFFORT_DAYS"; status = "FAIL"; expected = "absent"; actual = "present"; detail = "Estimation effort en jours encore presente" }
+    $auditFailed = $true
+} else {
+    $auditResults += @{ check = "NO_EFFORT_DAYS"; status = "PASS"; expected = "absent"; actual = "absent"; detail = "Pas d'estimation effort en jours" }
+}
+
 # Display audit results
 $passCount = ($auditResults | Where-Object { $_.status -eq "PASS" }).Count
 $failCount = ($auditResults | Where-Object { $_.status -eq "FAIL" }).Count
@@ -1584,7 +1699,6 @@ $quality = @{
         functional_blocks = $blocMap.Count
         business_rules_fr = $businessRules.Count
         callees_with_context = ($calleesCtx | Where-Object { $_.context -ne "[Phase 2]" }).Count
-        migration_effort_days = $effortDays
     }
     files_generated = @($summaryFileName, $detailedFileName)
     validation = @{

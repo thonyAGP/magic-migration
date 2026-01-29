@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: Phases 1-4 2026-01-28 23:48 -> 11:33 (11h45min) | Assemblage 18:02
+> **Analyse**: Phases 1-4 2026-01-28 23:48 -> 11:33 (11h45min) | Assemblage 18:22
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -67,6 +67,7 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 - **Sous-programmes**: Appel Print ticket vente PMS28 (IDE 233), Deversement Transaction (IDE 247)
 - **Tables modifiees**: prestations, mvt_prestation___mpr, stat_lieu_vente_date
 - **Regles metier**: 13 regles associees
+- **Variables cles**: R (W0 FIN SAISIE OD), U (W0 code article), BB (W0 libelle article), BC (W0 article dernière minute), BD (W0 nbre articles)
 
 ### 3.2 Reglement (4 taches)
 
@@ -75,12 +76,14 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 - **Sous-programmes**: Recup Classe et Lib du MOP (IDE 152), Gestion Chèque (IDE 228)
 - **Tables modifiees**: compteurs________cpt
 - **Regles metier**: 4 regles associees
+- **Variables cles**: B (P0 devise locale), C (P0 masque montant), D (P0 solde compte), I (P0 date solde), CF (W0 montant avant reduction)
 
 ### 3.3 Validation (1 taches)
 
 - *Internes*: verif reg restant (T3)
 - **Sous-programmes**:     SP Caractères Interdits (IDE 84)
 - **Regles metier**: 1 regles associees
+- **Variables cles**: N (P0.Valide ?), CY (W0 PYR Valide), EK (W0 validation), FL (V.Transaction TPE validee), FM (V.Message erreur transac TPE)
 
 ### 3.4 Creation (5 taches)
 
@@ -106,6 +109,7 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 - **Sous-programmes**: Calcul stock produit WS (IDE 149), Solde Gift Pass (IDE 241), Solde Resort Credit (IDE 254)
 - **Tables modifiees**: prestations, mvt_prestation___mpr, compteurs________cpt, stat_lieu_vente_date
 - **Regles metier**: 1 regles associees
+- **Variables cles**: D (P0 solde compte), H (P0 etat compte), CG (W0 Pourcentage reduction), DE (W0 Stock produit), EH (W0 Compte garanti)
 
 ### 3.8 Consultation (1 taches)
 
@@ -116,6 +120,7 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 
 - *Internes*: Increment Num. Ticket(VRL/VSL) (T33)
 - **Sous-programmes**: Appel Print ticket vente PMS28 (IDE 233), Get Printer (IDE 179), Printer choice (IDE 180), Set Listing Number (IDE 181), Raz Current Printer (IDE 182)
+- **Variables cles**: EX (v.IncrémentTicket(VRL/VSL) OK), EY (v.IncrémentTicket(VTE) OK), EZ (v.NumeroTicket(VRL/VSL)), FA (v.NumeroTicket(VTE)), FU (V.N°Ticket OD)
 
 ### 3.10 Transfert (4 taches)
 
@@ -124,39 +129,37 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 - **Affectation PAX / Transfert** (T40, Type0, 1056x281)
 - *Internes*: Raz Affectation Transfert (T36)
 - **Sous-programmes**: Deversement Transaction (IDE 247)
+- **Variables cles**: BM (W0 Sens du transfert Aller), BN (W0 Date du transfert Aller), BO (W0 Heure du transfert Aller), BP (W0 b.Date du transfert), BV (W0 Sens du transfert Retour)
 
 ## 5. REGLES METIER
 
 17 regles identifiees:
 
-### Conditions metier (14)
+### Saisie (13 regles)
 
 - **[RM-001]** Determine le sens du trajet selon le service village (1=ALLER, 2=RETOUR, 3=A/R)
 - **[RM-002]** Si V.RC utilisé [GA] est nul, choix conditionnel selon W0 imputation [W] (valeur 'VSL')
-- **[RM-004]** Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM)
 - **[RM-005]** Si W0 Motif de non enreg NA [CL] est FAUX, branche alternative
 - **[RM-006]** Si W0 imputation [W] vaut 'VRL' alors 'Date consommation', sinon 'Date début séjour'
+- **[RM-007]** Calcul de pourcentage avec arrondi
 - **[RM-008]** Comportement conditionnel selon type d'imputation 'VRL'
+- **[RM-009]** Position UI conditionnelle selon W0 imputation [W]
 - **[RM-010]** Comportement conditionnel selon type d'imputation 'TRF'
 - **[RM-011]** Si W0 Chambre [CX]<>'' alors RTrim (W0 Nb Chambres [CW])&Fill (' ' sinon Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))
 - **[RM-012]** Si V.Total reglement ligne [FF] alors V.Id transaction PMS [FI] sinon VG18)
-- **[RM-013]** Si V.ConfirmeUseGP? [FZ] alors 'V' sinon IF([AP]='O','C','D'))
 - **[RM-014]** Si NOT(CHG_PRV_W0 nbre articles [GO]) alors 132.875 sinon 105.875)
 - **[RM-015]** Si W0 imputation [W] vaut 'ANN' alors 'O', sinon 'N'
 - **[RM-016]** Comportement conditionnel selon type d'imputation 'PYR'
-- **[RM-017]** Si VG20>1 alors [AY] sinon 'G')
 
-### Calculs (1)
-
-- **[RM-007]** Calcul de pourcentage avec arrondi
-
-### Positionnement UI (1)
-
-- **[RM-009]** Position UI conditionnelle selon W0 imputation [W]
-
-### Valeurs par defaut (1)
+### Reglement (2 regles)
 
 - **[RM-003]** Valeur par defaut si P0 masque montant [C] est vide
+- **[RM-004]** Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM)
+
+### Autres (2 regles)
+
+- **[RM-013]** Si V.ConfirmeUseGP? [FZ] alors 'V' sinon IF([AP]='O','C','D'))
+- **[RM-017]** Si VG20>1 alors [AY] sinon 'G')
 
 ## 6. CONTEXTE
 
@@ -328,39 +331,39 @@ Le programme delegue des operations a **20 sous-programmes** couvrant :
 ### 9.1 Enchainement des ecrans
 
 ```mermaid
-flowchart TD
+flowchart LR
     START([Entree])
     style START fill:#3fb950
     F1[Saisie transaction]
-    START --> F1
     F2[Reglements suite a ref...]
-    F1 --> F2
     F3[Saisie Bilaterale]
-    F2 --> F3
     F4[Saisie mode de règlement]
-    F3 --> F4
     F5[Saisie Commentaires]
-    F4 --> F5
     F6[VRL : Saisie identité]
-    F5 --> F6
     F7[N-A]
-    F6 --> F7
     F8[Saisie dates forfait]
-    F7 --> F8
     F9[Affiche saisie]
-    F8 --> F9
     F10[Type transfert]
-    F9 --> F10
     F11[Affiche Transfert AR]
-    F10 --> F11
     F12[Affectation PAX Transfert]
-    F11 --> F12
     F13[Libération du logement]
-    F12 --> F13
     F14[Récup nb chambre LCO]
-    F13 --> F14
     FIN([Sortie])
     style FIN fill:#f85149
+    START --> F1
+    F1 --> F2
+    F2 --> F3
+    F3 --> F4
+    F4 --> F5
+    F5 --> F6
+    F6 --> F7
+    F7 --> F8
+    F8 --> F9
+    F9 --> F10
+    F10 --> F11
+    F11 --> F12
+    F12 --> F13
+    F13 --> F14
     F14 --> FIN
 ```
 
@@ -446,55 +449,55 @@ flowchart TD
 
 ### 9.3 Structure hierarchique (49 taches)
 
-- **237.1** Saisie transaction **[ECRAN]** (Modal) 1112x279 *[Saisie]*
-- **237.2** Reglements suite a refus TPE **[ECRAN]** (Type6) 708x256 *[Reglement]*
-- **237.3** verif reg restant   *[Validation]*
-- **237.4** creation règlement   *[Creation]*
-- **237.5** Verif reglement tpe   *[Reglement]*
-- **237.6** Dé-Affecition   *[Traitement]*
-- **237.7** Saisie Bilaterale **[ECRAN]** (Type6) 326x249 *[Saisie]*
-- **237.8** Saisie mode de règlement **[ECRAN]** (Type6) 506x250 *[Saisie]*
-- **237.9** RAZ 269  (MDI) *[Initialisation]*
-- **237.10** Saisie Commentaires **[ECRAN]** (Type6) 772x169 *[Saisie]*
-- **237.11** VRL : Saisie identité **[ECRAN]** (MDI) 699x157 *[Saisie]*
-- **237.12** Test si cloture en cours  (MDI) *[Traitement]*
-- **237.13** Blocage cloture v1  (MDI) *[Traitement]*
-- **237.14** Blocage cloture v1  (MDI) *[Traitement]*
-- **237.15** Reaffichage infos compte  (MDI) *[Calcul]*
-- **237.16** Test reseau  (MDI) *[Traitement]*
-- **237.17** Forfait  (MDI) *[Traitement]*
-- **237.18** (sans nom) **[ECRAN]** (Modal) 116x32 *[Traitement]*
-- **237.19** Saisie dates forfait **[ECRAN]** (MDI) 528x121 *[Saisie]*
-- **237.20** Effacement forfait  (MDI) *[Traitement]*
-- **237.21** Effacement mvt forfait  (MDI) *[Traitement]*
-- **237.22** Creation prestation  (MDI) *[Creation]*
-- **237.23** Deblocage cloture v1  (MDI) *[Traitement]*
-- **237.24** Deblocage cloture  (MDI) *[Traitement]*
-- **237.25** Gratuite ?  (MDI) *[Traitement]*
-- **237.26** Recherche imputation/ssimput  (MDI) *[Consultation]*
-- **237.27** Creation Tempo  (MDI) *[Creation]*
-- **237.28** Creation reglement   *[Reglement]*
-- **237.29** Creation   *[Creation]*
-- **237.30** Affiche saisie **[ECRAN]** (Modal) 427x124 *[Saisie]*
-- **237.31** garantie?  (MDI) *[Traitement]*
-- **237.32** RAZ 269  (MDI) *[Initialisation]*
-- **237.33** Increment Num. Ticket(VRL/VSL)   *[Impression]*
-- **237.34** Changement MOP multi paiement   *[Reglement]*
-- **237.35** calcul nombre carte   *[Calcul]*
-- **237.36** Raz Affectation Transfert   *[Transfert]*
-- **237.37** Compte Enregs affectés   *[Calcul]*
-- **237.38** Type transfert **[ECRAN]** (Type6) 722x292 *[Transfert]*
-- **237.39** Affiche Transfert A/R **[ECRAN]** (Type6) 681x205 *[Transfert]*
-- **237.40** Affectation PAX / Transfert **[ECRAN]**  1056x281 *[Transfert]*
-- **237.41** Supprime enregs non affectés   *[Traitement]*
-- **237.42** Compte Enregs affectés   *[Calcul]*
-- **237.43** Compte Enregs affectés   *[Calcul]*
-- **237.44** Affectation Auto   *[Traitement]*
-- **237.45** MaJ Num Chèque   *[Traitement]*
-- **237.46** Libération du logement **[ECRAN]**  123x149 *[Traitement]*
-- **237.47** Creation_heure_liberation   *[Creation]*
-- **237.48** RAZ LCO liberation   *[Initialisation]*
-- **237.49** Récup nb chambre /LCO **[ECRAN]**  123x89 *[Traitement]*
+- **237.1** Saisie transaction (T1) **[ECRAN]** (Modal) 1112x279 *[Saisie]*
+  - **237.1.1** Saisie Bilaterale (T7) **[ECRAN]** (Type6) 326x249
+  - **237.1.2** Saisie mode de règlement (T8) **[ECRAN]** (Type6) 506x250
+  - **237.1.3** Saisie Commentaires (T10) **[ECRAN]** (Type6) 772x169
+  - **237.1.4** VRL : Saisie identité (T11) **[ECRAN]** (MDI) 699x157
+  - **237.1.5** Saisie dates forfait (T19) **[ECRAN]** (MDI) 528x121
+  - **237.1.6** Affiche saisie (T30) **[ECRAN]** (Modal) 427x124
+- **237.2** Reglements suite a refus TPE (T2) **[ECRAN]** (Type6) 708x256 *[Reglement]*
+  - **237.2.1** Verif reglement tpe (T5)  
+  - **237.2.2** Creation reglement (T28)  
+  - **237.2.3** Changement MOP multi paiement (T34)  
+- **237.3** verif reg restant (T3)   *[Validation]*
+- **237.4** creation règlement (T4)   *[Creation]*
+  - **237.4.1** Creation prestation (T22)  (MDI)
+  - **237.4.2** Creation Tempo (T27)  (MDI)
+  - **237.4.3** Creation (T29)  
+  - **237.4.4** Creation_heure_liberation (T47)  
+- **237.5** Dé-Affecition (T6)   *[Traitement]*
+  - **237.5.1** Test si cloture en cours (T12)  (MDI)
+  - **237.5.2** Blocage cloture v1 (T13)  (MDI)
+  - **237.5.3** Blocage cloture v1 (T14)  (MDI)
+  - **237.5.4** Test reseau (T16)  (MDI)
+  - **237.5.5** Forfait (T17)  (MDI)
+  - **237.5.6** (sans nom) (T18) **[ECRAN]** (Modal) 116x32
+  - **237.5.7** Effacement forfait (T20)  (MDI)
+  - **237.5.8** Effacement mvt forfait (T21)  (MDI)
+  - **237.5.9** Deblocage cloture v1 (T23)  (MDI)
+  - **237.5.10** Deblocage cloture (T24)  (MDI)
+  - **237.5.11** Gratuite ? (T25)  (MDI)
+  - **237.5.12** garantie? (T31)  (MDI)
+  - **237.5.13** Supprime enregs non affectés (T41)  
+  - **237.5.14** Affectation Auto (T44)  
+  - **237.5.15** MaJ Num Chèque (T45)  
+  - **237.5.16** Libération du logement (T46) **[ECRAN]**  123x149
+  - **237.5.17** Récup nb chambre /LCO (T49) **[ECRAN]**  123x89
+- **237.6** RAZ 269 (T9)  (MDI) *[Initialisation]*
+  - **237.6.1** RAZ 269 (T32)  (MDI)
+  - **237.6.2** RAZ LCO liberation (T48)  
+- **237.7** Reaffichage infos compte (T15)  (MDI) *[Calcul]*
+  - **237.7.1** calcul nombre carte (T35)  
+  - **237.7.2** Compte Enregs affectés (T37)  
+  - **237.7.3** Compte Enregs affectés (T42)  
+  - **237.7.4** Compte Enregs affectés (T43)  
+- **237.8** Recherche imputation/ssimput (T26)  (MDI) *[Consultation]*
+- **237.9** Increment Num. Ticket(VRL/VSL) (T33)   *[Impression]*
+- **237.10** Raz Affectation Transfert (T36)   *[Transfert]*
+  - **237.10.1** Type transfert (T38) **[ECRAN]** (Type6) 722x292
+  - **237.10.2** Affiche Transfert A/R (T39) **[ECRAN]** (Type6) 681x205
+  - **237.10.3** Affectation PAX / Transfert (T40) **[ECRAN]**  1056x281
 
 <!-- TAB:Donnees -->
 
@@ -1332,8 +1335,6 @@ graph LR
 | Code desactive | 0% (0 / 1818) | Code sain |
 | Regles metier | 17 | Logique metier riche - documenter chaque regle |
 
-**Estimation effort**: ~**53 jours** de developpement
-
 ### 14.2 Plan de migration par bloc
 
 #### Saisie (7 taches: 7 ecrans, 0 traitements)
@@ -1405,4 +1406,4 @@ graph LR
 | IDE 269 - Zoom services village | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:02*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:22*

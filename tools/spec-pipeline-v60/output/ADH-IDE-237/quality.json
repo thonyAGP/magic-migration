@@ -1,7 +1,7 @@
 ﻿{
     "pipeline_timing":  {
                             "phases_start":  "2026-01-28 23:48:30",
-                            "assembly_start":  "2026-01-29 18:02:58",
+                            "assembly_start":  "2026-01-29 18:22:15",
                             "phases_duration":  "11h45min",
                             "phases_end":  "2026-01-29 11:33:59"
                         },
@@ -76,18 +76,53 @@
                                      "detail":  "Timing pipeline reel affiche",
                                      "actual":  "present",
                                      "check":  "TIMING_REALISTIC"
+                                 },
+                                 {
+                                     "expected":  "bloc_headers",
+                                     "status":  "PASS",
+                                     "detail":  "3 groupes par bloc fonctionnel",
+                                     "actual":  3,
+                                     "check":  "RULES_BY_BLOC"
+                                 },
+                                 {
+                                     "expected":  "present",
+                                     "status":  "PASS",
+                                     "detail":  "6 blocs avec variables cles",
+                                     "actual":  6,
+                                     "check":  "BLOC_VARIABLES"
+                                 },
+                                 {
+                                     "expected":  "flowchart LR",
+                                     "status":  "PASS",
+                                     "detail":  "Navigation en flowchart LR",
+                                     "actual":  "present",
+                                     "check":  "NAV_FLOWCHART_LR"
+                                 },
+                                 {
+                                     "expected":  "parent.child",
+                                     "status":  "PASS",
+                                     "detail":  "39 sous-taches avec notation hierarchique",
+                                     "actual":  39,
+                                     "check":  "TASK_HIERARCHY"
+                                 },
+                                 {
+                                     "expected":  "absent",
+                                     "status":  "PASS",
+                                     "detail":  "Pas d\u0027estimation effort en jours",
+                                     "actual":  "absent",
+                                     "check":  "NO_EFFORT_DAYS"
                                  }
                              ],
-                  "pass":  10,
+                  "pass":  15,
                   "fail":  0,
                   "warn":  0,
                   "all_passed":  true
               },
     "metadata":  {
                      "pipeline_version":  "7.0",
-                     "generated_at":  "2026-01-29 18:02:59",
+                     "generated_at":  "2026-01-29 18:22:16",
                      "ide_position":  237,
-                     "duration_seconds":  1,
+                     "duration_seconds":  1.4,
                      "program_name":  "Transaction Nouv vente avec GP",
                      "project":  "ADH"
                  },
@@ -108,17 +143,16 @@
                    },
     "quality_score":  100,
     "structure":  {
+                      "tabs":  4,
+                      "callees_with_context":  20,
+                      "business_rules_fr":  17,
+                      "functional_blocks":  10,
                       "tab_names":  [
                                         "Resume",
                                         "Ecrans",
                                         "Donnees",
                                         "Connexions"
-                                    ],
-                      "tabs":  4,
-                      "business_rules_fr":  17,
-                      "functional_blocks":  10,
-                      "callees_with_context":  20,
-                      "migration_effort_days":  53
+                                    ]
                   },
     "extraction_coverage":  {
                                 "tables_extracted":  true,

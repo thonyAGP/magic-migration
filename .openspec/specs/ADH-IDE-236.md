@@ -1,6 +1,6 @@
 ﻿# ADH IDE 236 - Print ticket vente PMS-584
 
-> **Analyse**: Phases 1-4 2026-01-28 17:46 -> 17:46 (10s) | Assemblage 18:03
+> **Analyse**: Phases 1-4 2026-01-28 17:46 -> 17:46 (10s) | Assemblage 18:22
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -79,44 +79,44 @@ Le programme delegue des operations a **2 sous-programmes** couvrant :
 
 ### 9.3 Structure hierarchique (38 taches)
 
-- **236.1** Veuillez patienter ...  (MDI) *[Traitement]*
-- **236.2** Counter  (MDI) *[Traitement]*
-- **236.3** Impression reçu change  (MDI) *[Traitement]*
-- **236.4** Recherche dates de séjour   *[Consultation]*
-- **236.5** Impression reçu change  (MDI) *[Traitement]*
-- **236.6** Print reduction   *[Impression]*
-- **236.7** Edition Multi Moyen Paiement   *[Reglement]*
-- **236.8** Print Tva   *[Impression]*
-- **236.9** Recherche dates de séjour   *[Consultation]*
-- **236.10** Edition LCO Liberation   *[Impression]*
-- **236.11** Counter  (MDI) *[Traitement]*
-- **236.12** Impression reçu change  (MDI) *[Traitement]*
-- **236.13** Impression reçu change  (MDI) *[Traitement]*
-- **236.14** Print reduction   *[Impression]*
-- **236.15** Print Tva   *[Impression]*
-- **236.16** Edition Multi Moyen Paiement   *[Reglement]*
-- **236.17** Printer 5  (MDI) *[Impression]*
-- **236.18** Veuillez patienter ...  (MDI) *[Traitement]*
-- **236.19** Edition Multi Moyen Paiement   *[Reglement]*
-- **236.20** Print reduction   *[Impression]*
-- **236.21** Print Tva   *[Impression]*
-- **236.22** Printer 5  (MDI) *[Impression]*
-- **236.23** Veuillez patienter ...  (MDI) *[Traitement]*
-- **236.24** Récup. dates de séjour /PMS28/   *[Traitement]*
-- **236.25** Edition Multi Moyen Paiement   *[Reglement]*
-- **236.26** Print reduction   *[Impression]*
-- **236.27** Print Tva   *[Impression]*
-- **236.28** Printer 9  (MDI) *[Impression]*
-- **236.29** Veuillez patienter ...  (MDI) *[Traitement]*
-- **236.30** Edition LCO Liberation   *[Impression]*
-- **236.31** Récup. dates de séjour /PMS28/   *[Traitement]*
-- **236.32** Print reduction   *[Impression]*
-- **236.33** Edition Multi Moyen Paiement   *[Reglement]*
-- **236.34** Print Tva   *[Impression]*
-- **236.35** recup terminal   *[Traitement]*
-- **236.36** recup terminal   *[Traitement]*
-- **236.37** Errors   *[Traitement]*
-- **236.41** (sans nom)   *[Traitement]*
+- **236.1** Veuillez patienter ... (T1)  (MDI) *[Traitement]*
+  - **236.1.1** Counter (T2)  (MDI)
+  - **236.1.2** Impression reçu change (T3)  (MDI)
+  - **236.1.3** Impression reçu change (T5)  (MDI)
+  - **236.1.4** Counter (T11)  (MDI)
+  - **236.1.5** Impression reçu change (T12)  (MDI)
+  - **236.1.6** Impression reçu change (T13)  (MDI)
+  - **236.1.7** Veuillez patienter ... (T18)  (MDI)
+  - **236.1.8** Veuillez patienter ... (T23)  (MDI)
+  - **236.1.9** Récup. dates de séjour /PMS28/ (T24)  
+  - **236.1.10** Veuillez patienter ... (T29)  (MDI)
+  - **236.1.11** Récup. dates de séjour /PMS28/ (T31)  
+  - **236.1.12** recup terminal (T35)  
+  - **236.1.13** recup terminal (T36)  
+  - **236.1.14** Errors (T37)  
+  - **236.1.15** (sans nom) (T41)  
+- **236.2** Recherche dates de séjour (T4)   *[Consultation]*
+  - **236.2.1** Recherche dates de séjour (T9)  
+- **236.3** Print reduction (T6)   *[Impression]*
+  - **236.3.1** Print Tva (T8)  
+  - **236.3.2** Edition LCO Liberation (T10)  
+  - **236.3.3** Print reduction (T14)  
+  - **236.3.4** Print Tva (T15)  
+  - **236.3.5** Printer 5 (T17)  (MDI)
+  - **236.3.6** Print reduction (T20)  
+  - **236.3.7** Print Tva (T21)  
+  - **236.3.8** Printer 5 (T22)  (MDI)
+  - **236.3.9** Print reduction (T26)  
+  - **236.3.10** Print Tva (T27)  
+  - **236.3.11** Printer 9 (T28)  (MDI)
+  - **236.3.12** Edition LCO Liberation (T30)  
+  - **236.3.13** Print reduction (T32)  
+  - **236.3.14** Print Tva (T34)  
+- **236.4** Edition Multi Moyen Paiement (T7)   *[Reglement]*
+  - **236.4.1** Edition Multi Moyen Paiement (T16)  
+  - **236.4.2** Edition Multi Moyen Paiement (T19)  
+  - **236.4.3** Edition Multi Moyen Paiement (T25)  
+  - **236.4.4** Edition Multi Moyen Paiement (T33)  
 
 <!-- TAB:Donnees -->
 
@@ -279,8 +279,6 @@ graph LR
 | Code desactive | 0% (0 / 1231) | Code sain |
 | Regles metier | 0 | Pas de regle identifiee |
 
-**Estimation effort**: ~**14 jours** de developpement
-
 ### 14.2 Plan de migration par bloc
 
 #### Traitement (16 taches: 0 ecrans, 16 traitements)
@@ -310,4 +308,4 @@ graph LR
 | IDE 152 - Recup Classe et Lib du MOP | Sous-programme | 5x | **CRITIQUE** - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:03*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:22*

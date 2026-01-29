@@ -1,6 +1,6 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: Phases 1-4 2026-01-29 09:26 -> 09:26 (8s) | Assemblage 18:03
+> **Analyse**: Phases 1-4 2026-01-29 09:26 -> 09:26 (8s) | Assemblage 18:22
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -61,6 +61,7 @@ Le programme delegue des operations a **18 sous-programmes** couvrant :
 
 - *Internes*: Date comptable (T5)
 - **Sous-programmes**: Calcul concurrence sessions (IDE 116)
+- **Variables cles**: R (V Date comptable), I (Param masque cumul)
 
 ### 3.4 Creation (2 taches)
 
@@ -80,6 +81,7 @@ Le programme delegue des operations a **18 sous-programmes** couvrant :
 
 - *Internes*: Ligne Initiale (T29)
 - **Sous-programmes**: Init apport article session WS (IDE 140), Init devise session WS (IDE 141)
+- **Variables cles**: A (Param Libelle caisse), B (Param Etat caisse), C (Param societe), D (Param devise locale), E (Param nbre decimale)
 
 ## 5. REGLES METIER
 
@@ -130,15 +132,15 @@ Le programme delegue des operations a **18 sous-programmes** couvrant :
 ### 9.1 Enchainement des ecrans
 
 ```mermaid
-flowchart TD
+flowchart LR
     START([Entree])
     style START fill:#3fb950
     F1[Gestion de la caisse]
-    START --> F1
     F2[Concurrence sessions f...]
-    F1 --> F2
     FIN([Sortie])
     style FIN fill:#f85149
+    START --> F1
+    F1 --> F2
     F2 --> FIN
 ```
 
@@ -148,38 +150,38 @@ flowchart TD
 
 ### 9.3 Structure hierarchique (32 taches)
 
-- **121.1** Gestion caisse  (MDI) *[Traitement]*
-- **121.2** Paramètres caisse  (SDI) *[Traitement]*
-- **121.3** Controle COFFRE2  (MDI) *[Validation]*
-- **121.4** Paramètres caisse  (MDI) *[Traitement]*
-- **121.5** Date comptable  (MDI) *[Calcul]*
-- **121.6** Etat de la caisse  (MDI) *[Traitement]*
-- **121.7** Gestion de la caisse **[ECRAN]** (MDI) 939x178 *[Traitement]*
-- **121.8** Existe histo  (MDI) *[Traitement]*
-- **121.9** Ouverture caisse  (MDI) *[Traitement]*
-- **121.10** Cloture en cours v1  (MDI) *[Traitement]*
-- **121.11** Controle monnaie/produit  (MDI) *[Validation]*
-- **121.12** Creation histo session  (MDI) *[Creation]*
-- **121.13** histo coffre2  (MDI) *[Traitement]*
-- **121.14** init tempo saisie dev  (MDI) *[Saisie]*
-- **121.15** Fermeture caisse  (MDI) *[Traitement]*
-- **121.16** Clôture histo session  (MDI) *[Traitement]*
-- **121.17** Apport coffre  (MDI) *[Traitement]*
-- **121.18** Apport produit  (MDI) *[Traitement]*
-- **121.19** Remise au coffre  (MDI) *[Traitement]*
-- **121.20** RAZ Saisie devises P/V  (MDI) *[Saisie]*
-- **121.21** Historique  (MDI) *[Traitement]*
-- **121.22** Consultation  (MDI) *[Traitement]*
-- **121.23** reimprimer tickets  (MDI) *[Impression]*
-- **121.24** Remise au coffre  (MDI) *[Traitement]*
-- **121.25** Open sessions  (MDI) *[Traitement]*
-- **121.26** Pointage  (MDI) *[Traitement]*
-- **121.27** Read Sessions  (MDI) *[Traitement]*
-- **121.28** Remise au coffre  (MDI) *[Traitement]*
-- **121.29** Ligne Initiale  (MDI) *[Initialisation]*
-- **121.30** Creation histo session  (MDI) *[Creation]*
-- **121.31** histo coffre2  (MDI) *[Traitement]*
-- **121.32** Concurrence sessions for devel **[ECRAN]** (MDI) 524x236 *[Traitement]*
+- **121.1** Gestion caisse (T1)  (MDI) *[Traitement]*
+  - **121.1.1** Paramètres caisse (T2)  (SDI)
+  - **121.1.2** Paramètres caisse (T4)  (MDI)
+  - **121.1.3** Etat de la caisse (T6)  (MDI)
+  - **121.1.4** Gestion de la caisse (T7) **[ECRAN]** (MDI) 939x178
+  - **121.1.5** Existe histo (T8)  (MDI)
+  - **121.1.6** Ouverture caisse (T9)  (MDI)
+  - **121.1.7** Cloture en cours v1 (T10)  (MDI)
+  - **121.1.8** histo coffre2 (T13)  (MDI)
+  - **121.1.9** Fermeture caisse (T15)  (MDI)
+  - **121.1.10** Clôture histo session (T16)  (MDI)
+  - **121.1.11** Apport coffre (T17)  (MDI)
+  - **121.1.12** Apport produit (T18)  (MDI)
+  - **121.1.13** Remise au coffre (T19)  (MDI)
+  - **121.1.14** Historique (T21)  (MDI)
+  - **121.1.15** Consultation (T22)  (MDI)
+  - **121.1.16** Remise au coffre (T24)  (MDI)
+  - **121.1.17** Open sessions (T25)  (MDI)
+  - **121.1.18** Pointage (T26)  (MDI)
+  - **121.1.19** Read Sessions (T27)  (MDI)
+  - **121.1.20** Remise au coffre (T28)  (MDI)
+  - **121.1.21** histo coffre2 (T31)  (MDI)
+  - **121.1.22** Concurrence sessions for devel (T32) **[ECRAN]** (MDI) 524x236
+- **121.2** Controle COFFRE2 (T3)  (MDI) *[Validation]*
+  - **121.2.1** Controle monnaie/produit (T11)  (MDI)
+- **121.3** Date comptable (T5)  (MDI) *[Calcul]*
+- **121.4** Creation histo session (T12)  (MDI) *[Creation]*
+  - **121.4.1** Creation histo session (T30)  (MDI)
+- **121.5** init tempo saisie dev (T14)  (MDI) *[Saisie]*
+  - **121.5.1** RAZ Saisie devises P/V (T20)  (MDI)
+- **121.6** reimprimer tickets (T23)  (MDI) *[Impression]*
+- **121.7** Ligne Initiale (T29)  (MDI) *[Initialisation]*
 
 <!-- TAB:Donnees -->
 
@@ -429,8 +431,6 @@ graph LR
 | Code desactive | 0% (0 / 678) | Code sain |
 | Regles metier | 0 | Pas de regle identifiee |
 
-**Estimation effort**: ~**15 jours** de developpement
-
 ### 14.2 Plan de migration par bloc
 
 #### Traitement (23 taches: 2 ecrans, 21 traitements)
@@ -482,4 +482,4 @@ graph LR
 | IDE 151 - Reimpression tickets fermeture | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:03*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 18:22*

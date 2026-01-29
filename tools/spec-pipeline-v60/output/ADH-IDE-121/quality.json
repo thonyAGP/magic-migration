@@ -1,7 +1,7 @@
 ﻿{
     "pipeline_timing":  {
                             "phases_start":  "2026-01-29 09:26:10",
-                            "assembly_start":  "2026-01-29 18:03:13",
+                            "assembly_start":  "2026-01-29 18:22:31",
                             "phases_duration":  "8s",
                             "phases_end":  "2026-01-29 09:26:18"
                         },
@@ -76,18 +76,53 @@
                                      "detail":  "Timing pipeline reel affiche",
                                      "actual":  "present",
                                      "check":  "TIMING_REALISTIC"
+                                 },
+                                 {
+                                     "expected":  "bloc_headers",
+                                     "status":  "PASS",
+                                     "detail":  "0 groupes par bloc fonctionnel",
+                                     "actual":  0,
+                                     "check":  "RULES_BY_BLOC"
+                                 },
+                                 {
+                                     "expected":  "present",
+                                     "status":  "PASS",
+                                     "detail":  "2 blocs avec variables cles",
+                                     "actual":  2,
+                                     "check":  "BLOC_VARIABLES"
+                                 },
+                                 {
+                                     "expected":  "flowchart LR",
+                                     "status":  "PASS",
+                                     "detail":  "Navigation en flowchart LR",
+                                     "actual":  "present",
+                                     "check":  "NAV_FLOWCHART_LR"
+                                 },
+                                 {
+                                     "expected":  "parent.child",
+                                     "status":  "PASS",
+                                     "detail":  "25 sous-taches avec notation hierarchique",
+                                     "actual":  25,
+                                     "check":  "TASK_HIERARCHY"
+                                 },
+                                 {
+                                     "expected":  "absent",
+                                     "status":  "PASS",
+                                     "detail":  "Pas d\u0027estimation effort en jours",
+                                     "actual":  "absent",
+                                     "check":  "NO_EFFORT_DAYS"
                                  }
                              ],
-                  "pass":  10,
+                  "pass":  15,
                   "fail":  0,
                   "warn":  0,
                   "all_passed":  true
               },
     "metadata":  {
                      "pipeline_version":  "7.0",
-                     "generated_at":  "2026-01-29 18:03:13",
+                     "generated_at":  "2026-01-29 18:22:32",
                      "ide_position":  121,
-                     "duration_seconds":  0.7,
+                     "duration_seconds":  0.6,
                      "program_name":  "Gestion caisse",
                      "project":  "ADH"
                  },
@@ -108,17 +143,16 @@
                    },
     "quality_score":  100,
     "structure":  {
+                      "tabs":  4,
+                      "callees_with_context":  7,
+                      "business_rules_fr":  0,
+                      "functional_blocks":  7,
                       "tab_names":  [
                                         "Resume",
                                         "Ecrans",
                                         "Donnees",
                                         "Connexions"
-                                    ],
-                      "tabs":  4,
-                      "business_rules_fr":  0,
-                      "functional_blocks":  7,
-                      "callees_with_context":  7,
-                      "migration_effort_days":  15
+                                    ]
                   },
     "extraction_coverage":  {
                                 "tables_extracted":  true,
