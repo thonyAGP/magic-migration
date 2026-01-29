@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: 2026-01-29 16:52
+> **Analyse**: 2026-01-29 17:07
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -466,7 +466,7 @@ flowchart TD
 - **237.15** Reaffichage infos compte  (MDI) *[Calcul]*
 - **237.16** Test reseau  (MDI) *[Traitement]*
 - **237.17** Forfait  (MDI) *[Traitement]*
-- **237.18**  **[ECRAN]** (Modal) 116x32 *[Traitement]*
+- **237.18** (sans nom) **[ECRAN]** (Modal) 116x32 *[Traitement]*
 - **237.19** Saisie dates forfait **[ECRAN]** (MDI) 528x121 *[Saisie]*
 - **237.20** Effacement forfait  (MDI) *[Traitement]*
 - **237.21** Effacement mvt forfait  (MDI) *[Traitement]*
@@ -758,9 +758,9 @@ flowchart TD
 
 | Bloc fonctionnel | Expressions | Regles |
 |-----------------|-------------|--------|
-| Saisie | 33 | 2 |
-| Reglement | 23 | 3 |
-| Validation | 3 | 4 |
+| Saisie | 26 | 4 |
+| Reglement | 27 | 4 |
+| Validation | 6 | 4 |
 | Impression | 1 | 0 |
 | Calcul | 2 | 4 |
 | Consultation | 1 | 0 |
@@ -769,35 +769,38 @@ flowchart TD
 
 ### 12.2 Expressions cles par bloc
 
-#### Saisie (33 expressions)
+#### Saisie (26 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 225 | `IF (NOT(CHG_PRV_W0 nbre articles [GO]),132.875,105.875)` | RM-014 |
+| CALCULATION | 247 | `V.Transaction ok [FO]-1` | - |
+| CALCULATION | 284 | `W0 libelle article [BB]='00/00/0000'DATE` | - |
+| OTHER | 209 | `V Nbre de Ligne Saisies [FC]` | - |
+| OTHER | 245 | `W0 Stock produit [DE]=1` | - |
+| ... | | *+21 autres* | |
+
+#### Reglement (27 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CONDITION | 154 | `IF(V.Total reglement ligne [FF],V.Id transaction PMS [FI],VG18)` | RM-012 |
-| CONDITION | 225 | `IF (NOT(CHG_PRV_W0 nbre articles [GO]),132.875,105.875)` | RM-014 |
-| CALCULATION | 284 | `W0 libelle article [BB]='00/00/0000'DATE` | - |
-| CALCULATION | 205 | `W0 Numéro du vol Retour [CA]='00/00/0000'DATE OR W0 Compagnie Retour [CB]='00:00:00'TIME OR W0 b.Saisie PAX [CC]='' OR W0 Nbre de PAX enregistré [CD]='' OR W0 Commentaire Retour [CE]='' OR W0 montant avant reduc... [CF]=''` | - |
-| CALCULATION | 247 | `V.Transaction ok [FO]-1` | - |
-| ... | | *+28 autres* | |
-
-#### Reglement (23 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
 | CONDITION | 92 | `IF(VG7 OR VG35 OR VG87,'P0 masque montant [C]'FORM,'P0 devise locale [B]'FORM)` | RM-004 |
-| CONDITION | 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` | RM-016 |
 | CONDITION | 35 | `IF (P0 masque montant [C]='','15.2',P0 masque montant [C])` | RM-003 |
-| CALCULATION | 265 | `MlsTrans('Vous disposez d''un Resort Credit de')&' '&Trim(Str([HE],Trim(P0 masque montant [C])))&' '&Trim(P0 devise locale [B])&'. Voulez-vous l''utiliser ?'` | - |
+| CONDITION | 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` | RM-016 |
 | CALCULATION | 246 | `V.Total carte [FN]+1` | - |
-| ... | | *+18 autres* | |
+| ... | | *+22 autres* | |
 
-#### Validation (3 expressions)
+#### Validation (6 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CONDITION | 147 | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))` | RM-011 |
+| CONSTANT | 203 | `'Des informations du transfert Retour ne sont pas saisies . Validation impossible '` | - |
+| CONSTANT | 202 | `'Des informations du transfert Aller ne sont pas saisies . Validation impossible '` | - |
 | OTHER | 194 | `[AV]<>W0 Remise Obligatoire [CH]` | - |
 | OTHER | 23 | `V0 validation [DM] AND [AP]='N'` | - |
+| ... | | *+1 autres* | |
 
 #### Impression (1 expressions)
 
@@ -1201,19 +1204,19 @@ Main -> ... -> Saisie transaction Nouv vente (IDE 316) -> **Transaction Nouv ven
 graph LR
     T237[237 Transaction Nouv v...]
     style T237 fill:#58a6ff
-    CC[N-A]
-    style CC fill:#8b5cf6
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
     CC163[163 Menu caisse GM - s...]
     style CC163 fill:#3fb950
-    CC1 --> CC163
-    CC163 --> T237
-    CC242[242 Menu Choix SaisieA...]
-    style CC242 fill:#3fb950
-    CC1 --> CC242
-    CC242 --> T237
     CC316[316 Saisie transaction...]
     style CC316 fill:#3fb950
+    CC242[242 Menu Choix SaisieA...]
+    style CC242 fill:#3fb950
+    CC1 --> CC163
+    CC1 --> CC242
     CC1 --> CC316
+    CC163 --> T237
+    CC242 --> T237
     CC316 --> T237
 ```
 
@@ -1405,4 +1408,4 @@ graph LR
 | IDE 269 - Zoom services village | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 16:52*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 17:07*

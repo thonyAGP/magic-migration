@@ -1,26 +1,8 @@
 ﻿{
-    "metadata":  {
-                     "pipeline_version":  "6.0",
-                     "generated_at":  "2026-01-28 17:46:19",
-                     "ide_position":  236,
-                     "duration_seconds":  0.2,
-                     "program_name":  " Print ticket vente PMS-584",
-                     "project":  "ADH"
-                 },
     "files_generated":  [
                             "ADH-IDE-236-summary.md",
                             "ADH-IDE-236.md"
                         ],
-    "quality_score":  90,
-    "comparison_v35":  {
-                           "improvements":  [
-                                                "Callers extraits depuis program_calls",
-                                                "Callees extraits depuis program_calls",
-                                                "Expressions decodees avec lettres",
-                                                "Call chain depuis Main"
-                                            ],
-                           "note":  "V6.0 inclut callers/callees depuis KB indexee"
-                       },
     "extraction_coverage":  {
                                 "tables_extracted":  true,
                                 "expressions_decoded":  true,
@@ -28,5 +10,47 @@
                                 "callees_extracted":  true,
                                 "variables_mapped":  false,
                                 "forms_extracted":  true
-                            }
+                            },
+    "structure":  {
+                      "tab_names":  [
+                                        "Resume",
+                                        "Ecrans",
+                                        "Donnees",
+                                        "Connexions"
+                                    ],
+                      "tabs":  4,
+                      "business_rules_fr":  0,
+                      "functional_blocks":  4,
+                      "callees_with_context":  2,
+                      "migration_effort_days":  14
+                  },
+    "validation":  {
+                       "callers_shown":  4,
+                       "callees_shown":  2,
+                       "visible_forms_count":  0,
+                       "tables_unified_count":  15,
+                       "variables_mapped_count":  0,
+                       "business_rules_count":  0,
+                       "total_forms_count":  38
+                   },
+    "quality_score":  90,
+    "complexity":  {
+                       "score":  25,
+                       "level":  "BASSE",
+                       "details":  [
+                                       "Expressions: 19 (MINIMALE)",
+                                       "Taches: 38 (HAUTE)",
+                                       "Tables WRITE: 0 (AUCUNE)",
+                                       "Callees: 2 (BASSE)",
+                                       "Code desactive: 0% (SAIN)"
+                                   ]
+                   },
+    "metadata":  {
+                     "pipeline_version":  "7.0",
+                     "generated_at":  "2026-01-29 17:07:28",
+                     "ide_position":  236,
+                     "duration_seconds":  0.4,
+                     "program_name":  "Print ticket vente PMS-584",
+                     "project":  "ADH"
+                 }
 }

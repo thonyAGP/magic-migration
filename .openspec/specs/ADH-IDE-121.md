@@ -1,6 +1,6 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: 2026-01-29 16:52
+> **Analyse**: 2026-01-29 17:07
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -311,15 +311,15 @@ Main -> ... -> Fermeture Sessions (IDE 281) -> **Gestion caisse (IDE 121)**
 graph LR
     T121[121 Gestion caisse]
     style T121 fill:#58a6ff
-    CC[N-A]
-    style CC fill:#8b5cf6
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
     CC163[163 Menu caisse GM - s...]
     style CC163 fill:#3fb950
-    CC1 --> CC163
-    CC163 --> T121
     CC281[281 Fermeture Sessions]
     style CC281 fill:#3fb950
+    CC1 --> CC163
     CC1 --> CC281
+    CC163 --> T121
     CC281 --> T121
 ```
 
@@ -482,4 +482,4 @@ graph LR
 | IDE 151 - Reimpression tickets fermeture | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 16:52*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 17:07*

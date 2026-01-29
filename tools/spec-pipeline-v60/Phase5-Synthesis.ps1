@@ -54,7 +54,7 @@ if (-not $discovery) {
     exit 1
 }
 
-$programName = $discovery.metadata.program_name
+$programName = $discovery.metadata.program_name.Trim()
 $startTime = Get-Date
 
 # ============================================================
@@ -880,7 +880,8 @@ foreach ($form in $sortedForms) {
         $dims = " $($form.dimensions.width)x$($form.dimensions.height)"
     }
 
-    Add-Line "- **$IdePosition.$tId** $($form.name) $isVis $typeInfo$dims *[$bloc]*"
+    $taskName = if ($form.name -and $form.name.Trim()) { $form.name.Trim() } else { "(sans nom)" }
+    Add-Line "- **$IdePosition.$tId** $taskName $isVis $typeInfo$dims *[$bloc]*"
 }
 Add-Line
 
@@ -1020,6 +1021,9 @@ if ($variableRows.Count -gt 0) {
         Add-Line "</details>"
         Add-Line
     }
+} else {
+    Add-Line "*(Programme sans variables locales mappees)*"
+    Add-Line
 }
 
 # Parameters
@@ -1046,19 +1050,7 @@ if ($decoded) {
     Add-Line "**$totalExpr / $totalInProg expressions decodees ($coverage%)**"
     Add-Line
 
-    # Build all expressions list
-    $allExprs = @()
-    foreach ($typeName in ($exprByType.Keys | Sort-Object)) {
-        foreach ($expr in $exprByType[$typeName]) {
-            $dText = if ($expr.decoded) { $expr.decoded } else { $expr.raw }
-            $allExprs += @{
-                type = $typeName
-                ide_position = $expr.ide_position
-                decoded = $dText
-                rule_id = $expr.business_rule_id
-            }
-        }
-    }
+    # $allExprs already built in DATA PREPARATION section
 
     # Group expressions by functional bloc (heuristic on decoded content)
     $exprByBloc = [ordered]@{
@@ -1073,10 +1065,10 @@ if ($decoded) {
     }
     foreach ($e in $allExprs) {
         $dt = $e.decoded.ToLower()
-        $bloc = if ($dt -match 'saisie|transaction|vente|article|produit|prestation') { "Saisie" }
+        $bloc = if ($dt -match 'print|ticket|edition|imprim|listing|printer') { "Impression" }
         elseif ($dt -match 'regl|mop|moyen|paiement|montant|total|solde|gift|resort') { "Reglement" }
         elseif ($dt -match 'controle|verif|valid|interdit|obligat') { "Validation" }
-        elseif ($dt -match 'print|ticket|edition|imprim|listing') { "Impression" }
+        elseif ($dt -match 'saisie|transaction|vente|article|produit|prestation') { "Saisie" }
         elseif ($dt -match 'fix\(|pourcentage|\*.*\/|stock|compteur|calcul') { "Calcul" }
         elseif ($dt -match 'zoom|select|choix|recherche|affich') { "Consultation" }
         elseif ($dt -match 'devers|transfer|bilat') { "Transfert" }
@@ -1162,17 +1154,6 @@ Add-Line
 Add-Line "### 13.1 Chaine depuis Main (Callers)"
 Add-Line
 
-# Build multi-path display: group call_chain by level
-$chainByLevel = @{}
-if ($discovery.call_graph.call_chain -and $discovery.call_graph.call_chain.Count -gt 0) {
-    foreach ($node in $discovery.call_graph.call_chain) {
-        if ($node.ide -le 0) { continue }
-        $lvl = $node.level
-        if (-not $chainByLevel.ContainsKey($lvl)) { $chainByLevel[$lvl] = @() }
-        $chainByLevel[$lvl] += $node
-    }
-}
-
 # Text path: show all direct callers
 if ($discovery.call_graph.callers.Count -gt 0) {
     $pathLines = @()
@@ -1191,55 +1172,63 @@ $tgtLabel = Clean-MermaidLabel "$IdePosition $programName"
 Add-Line "    T$IdePosition[$tgtLabel]"
 Add-Line "    style T$IdePosition fill:#58a6ff"
 
-if ($chainByLevel.Count -gt 0) {
-    # Find max level (furthest from target = closest to Main)
-    $maxLevel = ($chainByLevel.Keys | Measure-Object -Maximum).Maximum
+# Robust approach: collect all nodes as flat array, then render
+$chainNodes = @()
+if ($discovery.call_graph.call_chain -and $discovery.call_graph.call_chain.Count -gt 0) {
+    foreach ($node in $discovery.call_graph.call_chain) {
+        $nIde = [int]$node.ide
+        $nLvl = [int]$node.level
+        if ($nIde -le 0) { continue }
+        $chainNodes += @{ ide = $nIde; name = [string]$node.name; level = $nLvl }
+    }
+}
 
-    # Render nodes from Main (highest level) to direct callers (level 1)
-    # Main node (highest level)
-    $mainNodes = @($chainByLevel[$maxLevel])
-    foreach ($mn in $mainNodes) {
-        $mId = "CC$($mn.ide)"
-        $mLbl = Clean-MermaidLabel "$($mn.ide) $($mn.name)"
-        Add-Line "    $mId[$mLbl]"
-        Add-Line "    style $mId fill:#8b5cf6"
+if ($chainNodes.Count -gt 0) {
+    $maxLevel = ($chainNodes | ForEach-Object { $_.level } | Measure-Object -Maximum).Maximum
+
+    # Pass 1: Define ALL nodes (from Main down to direct callers)
+    $definedNodes = @{}
+    foreach ($n in ($chainNodes | Sort-Object { $_.level } -Descending)) {
+        $nId = "CC$($n.ide)"
+        if ($definedNodes.ContainsKey($nId)) { continue }
+        $nLbl = Clean-MermaidLabel "$($n.ide) $($n.name)"
+        $color = if ($n.level -eq $maxLevel) { "#8b5cf6" }      # purple = Main
+                 elseif ($n.level -eq 1) { "#3fb950" }           # green = direct callers
+                 else { "#f59e0b" }                               # orange = intermediaries
+        Add-Line "    $nId[$nLbl]"
+        Add-Line "    style $nId fill:$color"
+        $definedNodes[$nId] = $n
     }
 
-    # Intermediate levels (between Main and direct callers)
-    for ($lvl = $maxLevel - 1; $lvl -gt 1; $lvl--) {
-        if ($chainByLevel.ContainsKey($lvl)) {
-            foreach ($node in $chainByLevel[$lvl]) {
-                $nId = "CC$($node.ide)"
-                $nLbl = Clean-MermaidLabel "$($node.ide) $($node.name)"
-                Add-Line "    $nId[$nLbl]"
-                Add-Line "    style $nId fill:#f59e0b"
-                # Connect from parent level
-                foreach ($parent in $chainByLevel[$lvl + 1]) {
-                    Add-Line "    CC$($parent.ide) --> $nId"
-                }
+    # Pass 2: Draw connections (parent level → child level)
+    # Group nodes by level for connection lookup
+    $nodesByLevel = @{}
+    foreach ($n in $chainNodes) {
+        $lvl = $n.level
+        if (-not $nodesByLevel.ContainsKey($lvl)) { $nodesByLevel[$lvl] = @() }
+        $nodesByLevel[$lvl] += $n
+    }
+
+    # Connect: each node at level N connects from all nodes at level N+1
+    for ($lvl = 1; $lvl -lt $maxLevel; $lvl++) {
+        if (-not $nodesByLevel.ContainsKey($lvl)) { continue }
+        $parentLvl = $lvl + 1
+        if (-not $nodesByLevel.ContainsKey($parentLvl)) { continue }
+        foreach ($child in $nodesByLevel[$lvl]) {
+            foreach ($parent in $nodesByLevel[$parentLvl]) {
+                Add-Line "    CC$($parent.ide) --> CC$($child.ide)"
             }
         }
     }
 
-    # Level 1 = direct callers -> connect to target
-    if ($chainByLevel.ContainsKey(1)) {
-        foreach ($caller in $chainByLevel[1]) {
-            $cId = "CC$($caller.ide)"
-            $cLbl = Clean-MermaidLabel "$($caller.ide) $($caller.name)"
-            Add-Line "    $cId[$cLbl]"
-            Add-Line "    style $cId fill:#3fb950"
-            # Connect from parent levels
-            if ($chainByLevel.ContainsKey(2)) {
-                foreach ($parent in $chainByLevel[2]) {
-                    Add-Line "    CC$($parent.ide) --> $cId"
-                }
-            }
-            # Connect to target
-            Add-Line "    $cId --> T$IdePosition"
+    # Connect level 1 callers → target
+    if ($nodesByLevel.ContainsKey(1)) {
+        foreach ($caller in $nodesByLevel[1]) {
+            Add-Line "    CC$($caller.ide) --> T$IdePosition"
         }
     }
 } elseif ($discovery.call_graph.callers.Count -gt 0) {
-    # Fallback: just show direct callers
+    # Fallback: just show direct callers without chain
     foreach ($caller in ($discovery.call_graph.callers | Where-Object { $_.ide -gt 0 })) {
         $cId = "CALLER$($caller.ide)"
         $cLbl = Clean-MermaidLabel "$($caller.ide) $($caller.name)"
