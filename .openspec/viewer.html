@@ -566,13 +566,15 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 16px 20px;
-      margin-bottom: 20px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 8px;
+      max-width: 100%;
+      overflow: hidden;
     }
 
     .spec-header .spec-id {
@@ -585,6 +587,33 @@
       font-size: 13px;
       color: var(--text-secondary);
       margin-top: 4px;
+    }
+
+    .spec-header .ticket-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 60%;
+    }
+
+    .spec-header .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .spec-header .meta-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+    }
+
+    .spec-header .meta-value {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
     }
 
     /* Status dropdown */
@@ -640,16 +669,17 @@
     .main {
       flex: 1;
       overflow: auto;
-      padding: 32px 48px;
+      padding: 20px 32px;
     }
 
     .content {
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto;
+      overflow-x: hidden;
     }
 
     /* Typography */
-    .content h1 { font-size: 28px; font-weight: 600; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .content h1 { font-size: 26px; font-weight: 600; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
     .content h2 { font-size: 22px; font-weight: 600; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
     .content h3 { font-size: 18px; font-weight: 600; margin: 24px 0 12px; color: var(--text-primary); }
     .content h4 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; color: var(--text-secondary); }
@@ -662,11 +692,13 @@
     .content hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
 
     /* Tables */
-    .content table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
-    .content th { background: var(--bg-tertiary); font-weight: 600; text-align: left; padding: 10px 12px; border: 1px solid var(--border); color: var(--text-primary); white-space: nowrap; }
-    .content td { padding: 10px 12px; border: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+    .content table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; table-layout: auto; }
+    .content th { background: var(--bg-tertiary); font-weight: 600; text-align: left; padding: 8px 10px; border: 1px solid var(--border); color: var(--text-primary); white-space: nowrap; }
+    .content td { padding: 8px 10px; border: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; word-break: break-word; }
     .content tr:hover td { background: var(--bg-secondary); }
     .content td:first-child { color: var(--text-primary); font-weight: 500; }
+    .content .table-wrapper { overflow-x: auto; max-width: 100%; margin: 16px 0; }
+    .content .table-wrapper table { margin: 0; }
 
     /* Code */
     .content code { font-family: 'SF Mono', 'Consolas', 'Monaco', monospace; font-size: 12px; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
@@ -779,7 +811,7 @@
     .spec-section.active { display: block; }
 
     /* Analysis timing */
-    .analysis-timing { display: flex; gap: 16px; align-items: center; margin-bottom: 16px; padding: 12px 16px; background: var(--bg-tertiary); border-radius: 6px; font-size: 12px; }
+    .analysis-timing { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; padding: 8px 12px; background: var(--bg-tertiary); border-radius: 6px; font-size: 12px; }
     .analysis-timing .timing-item { display: flex; align-items: center; gap: 6px; }
     .analysis-timing .timing-label { color: var(--text-secondary); }
     .analysis-timing .timing-value { color: var(--text-primary); font-weight: 600; font-family: monospace; }
