@@ -1,6 +1,6 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: 2026-01-29 13:01
+> **Analyse**: 2026-01-29 16:52
 > **Pipeline**: V7.0 Deep Analysis
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -13,11 +13,9 @@
 | Projet | ADH |
 | IDE Position | 121 |
 | Nom Programme | Gestion caisse |
-| Complexite | **MOYENNE** (48/100) |
-| Statut | NON_ORPHELIN |
-| Raison | Appele par 2 programme(s): IDE 163, IDE 281 |
-| Taches | 32 |
-| Ecrans visibles | 2 |
+| Fichier source | `Prg_121.xml` |
+| Domaine metier | Caisse |
+| Taches | 32 (2 ecrans visibles) |
 | Tables modifiees | 4 |
 | Programmes appeles | 18 |
 
@@ -49,61 +47,48 @@ Le programme delegue des operations a **18 sous-programmes** couvrant :
 
 ### 3.1 Traitement (23 taches)
 
-- **Gestion de la caisse** (Tache 7, MDI, 939x178)
-- **Concurrence sessions for devel** (Tache 32, MDI, 524x236)
-- *Traitements internes*: Gestion caisse (T1), Paramètres caisse (T2), Paramètres caisse (T4), Etat de la caisse (T6), Existe histo (T8), Ouverture caisse (T9), Cloture en cours v1 (T10), histo coffre2 (T13), Fermeture caisse (T15), Clôture histo session (T16), Apport coffre (T17), Apport produit (T18), Remise au coffre (T19), Historique (T21), Consultation (T22), Remise au coffre (T24), Open sessions (T25), Pointage (T26), Read Sessions (T27), Remise au coffre (T28), histo coffre2 (T31)
+- **Gestion de la caisse** (T7, MDI, 939x178)
+- **Concurrence sessions for devel** (T32, MDI, 524x236)
+- *Internes*: Gestion caisse (T1), Paramètres caisse (T2), Paramètres caisse (T4), Etat de la caisse (T6), Existe histo (T8), Ouverture caisse (T9), Cloture en cours v1 (T10), histo coffre2 (T13), Fermeture caisse (T15), Clôture histo session (T16), Apport coffre (T17), Apport produit (T18), Remise au coffre (T19), Historique (T21), Consultation (T22), Remise au coffre (T24), Open sessions (T25), Pointage (T26), Read Sessions (T27), Remise au coffre (T28), histo coffre2 (T31)
+- **Sous-programmes**: Mise à jour detail session WS (IDE 134), Contrôles - Integrite dates (IDE 48), Ouverture caisse (IDE 122), Fermeture caisse (IDE 131), Recuperation du titre (IDE 43), Apport coffre (IDE 123), Apport articles (IDE 124), Remise en caisse (IDE 125), Historique session (IDE 132), Raisons utilisation ADH (IDE 231)
 
 ### 3.2 Validation (2 taches)
 
-- *Traitements internes*: Controle COFFRE2 (T3), Controle monnaie/produit (T11)
+- *Internes*: Controle COFFRE2 (T3), Controle monnaie/produit (T11)
+- **Sous-programmes**: Controle fermeture caisse WS (IDE 155), Verif session caisse ouverte2 (IDE 156)
 
 ### 3.3 Calcul (1 taches)
 
-- *Traitements internes*: Date comptable (T5)
+- *Internes*: Date comptable (T5)
+- **Sous-programmes**: Calcul concurrence sessions (IDE 116)
 
 ### 3.4 Creation (2 taches)
 
-- *Traitements internes*: Creation histo session (T12), Creation histo session (T30)
+- *Internes*: Creation histo session (T12), Creation histo session (T30)
+- **Tables modifiees**: histo_sessions_caisse
 
 ### 3.5 Saisie (2 taches)
 
-- *Traitements internes*: init tempo saisie dev (T14), RAZ Saisie devises P/V (T20)
+- *Internes*: init tempo saisie dev (T14), RAZ Saisie devises P/V (T20)
 
 ### 3.6 Impression (1 taches)
 
-- *Traitements internes*: reimprimer tickets (T23)
+- *Internes*: reimprimer tickets (T23)
+- **Sous-programmes**: Ticket appro remise (IDE 139), Reimpression tickets fermeture (IDE 151)
 
 ### 3.7 Initialisation (1 taches)
 
-- *Traitements internes*: Ligne Initiale (T29)
-
-## 4. FLUX UTILISATEUR
-
-Enchainement principal des ecrans:
-
-1. **Gestion de la caisse** (MDI)
-2. **Concurrence sessions for devel** (MDI)
+- *Internes*: Ligne Initiale (T29)
+- **Sous-programmes**: Init apport article session WS (IDE 140), Init devise session WS (IDE 141)
 
 ## 5. REGLES METIER
 
 *(Aucune regle metier identifiee)*
 
-## 6. PROGRAMMES LIES
+## 6. CONTEXTE
 
 - **Appele par**: Menu caisse GM - scroll (IDE 163), Fermeture Sessions (IDE 281)
-- **Appelle**: Calcul concurrence sessions (IDE 116), Mise à jour detail session WS (IDE 134), Ticket appro remise (IDE 139), Contrôles - Integrite dates (IDE 48), Ouverture caisse (IDE 122), Fermeture caisse (IDE 131), Controle fermeture caisse WS (IDE 155), Recuperation du titre (IDE 43), Affichage sessions (IDE 119), Apport coffre (IDE 123), Apport articles (IDE 124), Remise en caisse (IDE 125), Historique session (IDE 132), Init apport article session WS (IDE 140), Init devise session WS (IDE 141), Reimpression tickets fermeture (IDE 151), Verif session caisse ouverte2 (IDE 156), Raisons utilisation ADH (IDE 231)
-
-## 7. STATISTIQUES
-
-| Metrique | Valeur |
-|----------|--------|
-| Taches | 32 |
-| Ecrans visibles | 2 / 32 |
-| Lignes Logic | 678 |
-| Expressions | 7 |
-| Regles metier | 0 |
-| Tables | 12 (W:4 R:8 L:5) |
-| Programmes appeles | 18 |
+- **Appelle**: 18 programmes | **Tables**: 12 (W:4 R:8 L:5) | **Taches**: 32 | **Expressions**: 7
 
 <!-- TAB:Ecrans -->
 
@@ -145,7 +130,7 @@ Enchainement principal des ecrans:
 ### 9.1 Enchainement des ecrans
 
 ```mermaid
-flowchart LR
+flowchart TD
     START([Entree])
     style START fill:#3fb950
     F1[Gestion de la caisse]
@@ -161,115 +146,100 @@ flowchart LR
 
 *(Pas de regles metier pour l'algorigramme)*
 
-### 9.3 Toutes les taches (32)
+### 9.3 Structure hierarchique (32 taches)
 
-| Tache | Nom | Type | Visible | Bloc |
-|-------|-----|------|---------|------|
-| 1 | Gestion caisse | MDI | - | Traitement |
-| 2 | Paramètres caisse | SDI | - | Traitement |
-| 3 | Controle COFFRE2 | MDI | - | Validation |
-| 4 | Paramètres caisse | MDI | - | Traitement |
-| 5 | Date comptable | MDI | - | Calcul |
-| 6 | Etat de la caisse | MDI | - | Traitement |
-| 7 | Gestion de la caisse | MDI | OUI | Traitement |
-| 8 | Existe histo | MDI | - | Traitement |
-| 9 | Ouverture caisse | MDI | - | Traitement |
-| 10 | Cloture en cours v1 | MDI | - | Traitement |
-| 11 | Controle monnaie/produit | MDI | - | Validation |
-| 12 | Creation histo session | MDI | - | Creation |
-| 13 | histo coffre2 | MDI | - | Traitement |
-| 14 | init tempo saisie dev | MDI | - | Saisie |
-| 15 | Fermeture caisse | MDI | - | Traitement |
-| 16 | Clôture histo session | MDI | - | Traitement |
-| 17 | Apport coffre | MDI | - | Traitement |
-| 18 | Apport produit | MDI | - | Traitement |
-| 19 | Remise au coffre | MDI | - | Traitement |
-| 20 | RAZ Saisie devises P/V | MDI | - | Saisie |
-| 21 | Historique | MDI | - | Traitement |
-| 22 | Consultation | MDI | - | Traitement |
-| 23 | reimprimer tickets | MDI | - | Impression |
-| 24 | Remise au coffre | MDI | - | Traitement |
-| 25 | Open sessions | MDI | - | Traitement |
-| 26 | Pointage | MDI | - | Traitement |
-| 27 | Read Sessions | MDI | - | Traitement |
-| 28 | Remise au coffre | MDI | - | Traitement |
-| 29 | Ligne Initiale | MDI | - | Initialisation |
-| 30 | Creation histo session | MDI | - | Creation |
-| 31 | histo coffre2 | MDI | - | Traitement |
-| 32 | Concurrence sessions for devel | MDI | OUI | Traitement |
+- **121.1** Gestion caisse  (MDI) *[Traitement]*
+- **121.2** Paramètres caisse  (SDI) *[Traitement]*
+- **121.3** Controle COFFRE2  (MDI) *[Validation]*
+- **121.4** Paramètres caisse  (MDI) *[Traitement]*
+- **121.5** Date comptable  (MDI) *[Calcul]*
+- **121.6** Etat de la caisse  (MDI) *[Traitement]*
+- **121.7** Gestion de la caisse **[ECRAN]** (MDI) 939x178 *[Traitement]*
+- **121.8** Existe histo  (MDI) *[Traitement]*
+- **121.9** Ouverture caisse  (MDI) *[Traitement]*
+- **121.10** Cloture en cours v1  (MDI) *[Traitement]*
+- **121.11** Controle monnaie/produit  (MDI) *[Validation]*
+- **121.12** Creation histo session  (MDI) *[Creation]*
+- **121.13** histo coffre2  (MDI) *[Traitement]*
+- **121.14** init tempo saisie dev  (MDI) *[Saisie]*
+- **121.15** Fermeture caisse  (MDI) *[Traitement]*
+- **121.16** Clôture histo session  (MDI) *[Traitement]*
+- **121.17** Apport coffre  (MDI) *[Traitement]*
+- **121.18** Apport produit  (MDI) *[Traitement]*
+- **121.19** Remise au coffre  (MDI) *[Traitement]*
+- **121.20** RAZ Saisie devises P/V  (MDI) *[Saisie]*
+- **121.21** Historique  (MDI) *[Traitement]*
+- **121.22** Consultation  (MDI) *[Traitement]*
+- **121.23** reimprimer tickets  (MDI) *[Impression]*
+- **121.24** Remise au coffre  (MDI) *[Traitement]*
+- **121.25** Open sessions  (MDI) *[Traitement]*
+- **121.26** Pointage  (MDI) *[Traitement]*
+- **121.27** Read Sessions  (MDI) *[Traitement]*
+- **121.28** Remise au coffre  (MDI) *[Traitement]*
+- **121.29** Ligne Initiale  (MDI) *[Initialisation]*
+- **121.30** Creation histo session  (MDI) *[Creation]*
+- **121.31** histo coffre2  (MDI) *[Traitement]*
+- **121.32** Concurrence sessions for devel **[ECRAN]** (MDI) 524x236 *[Traitement]*
 
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
 
-### 10.1 Vue unifiee (12 tables)
+### 10.1 Tables utilisees (12)
 
-| ID | Nom Logique | Nom Physique | R | W | L | Stockage | Usages |
-|----|-------------|--------------|---|---|---|----------|--------|
-| 23 | reseau_cloture___rec | cafil001_dat | R | - | - | Database | 1 |
-| 70 | date_comptable___dat | cafil048_dat | R | - | - | Database | 1 |
-| 197 | articles_en_stock | caisse_artstock | - | - | L | Database | 1 |
-| 198 | coupures_monnaie_locale | caisse_banknote | R | - | - | Database | 1 |
-| 227 | concurrence_sessions | caisse_concurrences | - | **W** | - | Database | 1 |
-| 232 | gestion_devise_session | caisse_devise | R | - | - | Database | 1 |
-| 244 | saisie_approvisionnement | caisse_saisie_appro_dev | - | **W** | L | Database | 2 |
-| 246 | histo_sessions_caisse | caisse_session | R | **W** | L | Database | 6 |
-| 248 | sessions_coffre2 | caisse_session_coffre2 | - | **W** | L | Database | 3 |
-| 249 | histo_sessions_caisse_detail | caisse_session_detail | R | - | L | Database | 4 |
-| 697 | droits_applications | droits | R | - | - | Database | 2 |
-| 740 | pv_stock_movements | pv_stockmvt_dat | R | - | - | Database | 2 |
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R |   |   | 1 |
+| 70 | date_comptable___dat |  | DB | R |   |   | 1 |
+| 197 | articles_en_stock |  | DB |   |   | L | 1 |
+| 198 | coupures_monnaie_locale |  | DB | R |   |   | 1 |
+| 227 | concurrence_sessions |  | DB |   | **W** |   | 1 |
+| 232 | gestion_devise_session |  | DB | R |   |   | 1 |
+| 244 | saisie_approvisionnement |  | DB |   | **W** | L | 2 |
+| 246 | histo_sessions_caisse |  | DB | R | **W** | L | 6 |
+| 248 | sessions_coffre2 |  | DB |   | **W** | L | 3 |
+| 249 | histo_sessions_caisse_detail |  | DB | R |   | L | 4 |
+| 697 | droits_applications |  | DB | R |   |   | 2 |
+| 740 | pv_stock_movements |  | DB | R |   |   | 2 |
 
-### 10.2 Colonnes utilisees
+### 10.2 Colonnes par table
 
-*[Phase 2] Analyse detaillee des colonnes reellement lues/modifiees par table.*
+*[Phase 2] Analyse des colonnes lues (R) et modifiees (W) par table avec details depliables.*
 
 ## 11. VARIABLES
 
-### 11.1 Variables principales (Top 20 / 31)
+### 11.1 Variables principales (Top 20 par usage / 31)
 
-| Cat | Lettre | Nom Variable | Type | Ref |
-|-----|--------|--------------|------|-----|
-| V. | **R** | V Date comptable | Date | `{0,18}` |
-| V. | **S** | V session active | Logical | `{0,19}` |
-| V. | **T** | V User ouverture | Alpha | `{0,20}` |
-| V. | **U** | V Date ouverture | Date | `{0,21}` |
-| V. | **V** | V Time ouverture | Time | `{0,22}` |
-| V. | **W** | V Date Fin session | Date | `{0,23}` |
-| V. | **X** | V Last Chrono | Numeric | `{0,24}` |
-| V. | **Y** | V N° caisse reception mini | Numeric | `{0,25}` |
-| V. | **Z** | V N° caisse reception maxi | Numeric | `{0,26}` |
-| V. | **BA** | V Cloture en cours | Logical | `{0,53}` |
-| V. | **BC** | V avec coffre 2 | Alpha | `{0,55}` |
-| V. | **BD** | V cloture auto | Alpha | `{0,56}` |
-| V. | **BE** | v.fin | Logical | `{0,57}` |
-| Autre | **A** | Param Libelle caisse | Alpha | `{0,1}` |
-| Autre | **B** | Param Etat caisse | Alpha | `{0,2}` |
-| Autre | **C** | Param societe | Alpha | `{0,3}` |
-| Autre | **D** | Param devise locale | Alpha | `{0,4}` |
-| Autre | **E** | Param nbre decimale | Numeric | `{0,5}` |
-| Autre | **F** | Param masque montant | Alpha | `{0,6}` |
-| Autre | **G** | Param code village | Alpha | `{0,7}` |
+| Cat | Lettre | Nom Variable | Type | Usages | Ref |
+|-----|--------|--------------|------|--------|-----|
+| Autre | **N** | Param VIL open sessions | Alpha | 1x | `{0,14}` |
+| Autre | **J** | Param Uni/Bi | Alpha | - | `{0,10}` |
+| Autre | **H** | Param nom village | Alpha | - | `{0,8}` |
+| Autre | **I** | Param masque cumul | Alpha | - | `{0,9}` |
+| Autre | **E** | Param nbre decimale | Numeric | - | `{0,5}` |
+| Autre | **D** | Param devise locale | Alpha | - | `{0,4}` |
+| Autre | **G** | Param code village | Alpha | - | `{0,7}` |
+| Autre | **F** | Param masque montant | Alpha | - | `{0,6}` |
+| Autre | **P** | p.i.Hostl coffre2 | Unicode | - | `{0,16}` |
+| Autre | **Q** | i.Host courant coffre 2 ? | Logical | - | `{0,17}` |
+| Autre | **BB** | COFFRE 2 est ouvert | Logical | - | `{0,54}` |
+| Autre | **O** | Param FROM_IMS | Alpha | - | `{0,15}` |
+| Autre | **K** | Param Village TAI | Alpha | - | `{0,11}` |
+| Autre | **L** | Param Mode consultation | Logical | - | `{0,12}` |
+| Autre | **M** | p.i.Terminal coffre2 | Numeric | - | `{0,13}` |
+| Autre | **C** | Param societe | Alpha | - | `{0,3}` |
+| V. | **V** | V Time ouverture | Time | - | `{0,22}` |
+| V. | **W** | V Date Fin session | Date | - | `{0,23}` |
+| V. | **X** | V Last Chrono | Numeric | - | `{0,24}` |
+| V. | **U** | V Date ouverture | Date | - | `{0,21}` |
 
-### 11.2 Variables completes (31 entrees)
+### 11.2 Toutes les variables (31)
 
 <details>
-<summary>Voir toutes les 31 variables</summary>
+<summary>Voir les 31 variables</summary>
 
 | Cat | Lettre | Nom Variable | Type | Ref |
 |-----|--------|--------------|------|-----|
-| V. | **R** | V Date comptable | Date | `{0,18}` |
-| V. | **S** | V session active | Logical | `{0,19}` |
-| V. | **T** | V User ouverture | Alpha | `{0,20}` |
-| V. | **U** | V Date ouverture | Date | `{0,21}` |
-| V. | **V** | V Time ouverture | Time | `{0,22}` |
-| V. | **W** | V Date Fin session | Date | `{0,23}` |
-| V. | **X** | V Last Chrono | Numeric | `{0,24}` |
-| V. | **Y** | V N° caisse reception mini | Numeric | `{0,25}` |
-| V. | **Z** | V N° caisse reception maxi | Numeric | `{0,26}` |
-| V. | **BA** | V Cloture en cours | Logical | `{0,53}` |
-| V. | **BC** | V avec coffre 2 | Alpha | `{0,55}` |
-| V. | **BD** | V cloture auto | Alpha | `{0,56}` |
-| V. | **BE** | v.fin | Logical | `{0,57}` |
 | Autre | **A** | Param Libelle caisse | Alpha | `{0,1}` |
 | Autre | **B** | Param Etat caisse | Alpha | `{0,2}` |
 | Autre | **C** | Param societe | Alpha | `{0,3}` |
@@ -288,6 +258,19 @@ flowchart LR
 | Autre | **P** | p.i.Hostl coffre2 | Unicode | `{0,16}` |
 | Autre | **Q** | i.Host courant coffre 2 ? | Logical | `{0,17}` |
 | Autre | **BB** | COFFRE 2 est ouvert | Logical | `{0,54}` |
+| V. | **R** | V Date comptable | Date | `{0,18}` |
+| V. | **S** | V session active | Logical | `{0,19}` |
+| V. | **T** | V User ouverture | Alpha | `{0,20}` |
+| V. | **U** | V Date ouverture | Date | `{0,21}` |
+| V. | **V** | V Time ouverture | Time | `{0,22}` |
+| V. | **W** | V Date Fin session | Date | `{0,23}` |
+| V. | **X** | V Last Chrono | Numeric | `{0,24}` |
+| V. | **Y** | V N° caisse reception mini | Numeric | `{0,25}` |
+| V. | **Z** | V N° caisse reception maxi | Numeric | `{0,26}` |
+| V. | **BA** | V Cloture en cours | Logical | `{0,53}` |
+| V. | **BC** | V avec coffre 2 | Alpha | `{0,55}` |
+| V. | **BD** | V cloture auto | Alpha | `{0,56}` |
+| V. | **BE** | v.fin | Logical | `{0,57}` |
 
 </details>
 
@@ -295,28 +278,24 @@ flowchart LR
 
 **7 / 7 expressions decodees (100%)**
 
-### 12.1 Repartition par type
+### 12.1 Repartition par bloc
 
-| Type | Nombre |
-|------|--------|
-| condition | 0 |
-| calculation | 0 |
-| other | 6 |
-| date | 0 |
-| constant | 1 |
-| string | 0 |
+| Bloc fonctionnel | Expressions | Regles |
+|-----------------|-------------|--------|
+| Autre | 7 | 0 |
 
-### 12.2 Expressions cles (Top 20)
+### 12.2 Expressions cles par bloc
 
-| # | Type | IDE | Expression | Regle |
-|---|------|-----|------------|-------|
-| 1 | CONSTANT | 3 | `'D'` | - |
-| 2 | OTHER | 5 | `'TRUE'LOG` | - |
-| 3 | OTHER | 6 | `NOT([AE])` | - |
-| 4 | OTHER | 7 | `VG111` | - |
-| 5 | OTHER | 1 | `Param VIL open sessions [N]='O'` | - |
-| 6 | OTHER | 2 | `'FALSE'LOG` | - |
-| 7 | OTHER | 4 | `[AE]` | - |
+#### Autre (7 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANT | 3 | `'D'` | - |
+| OTHER | 5 | `'TRUE'LOG` | - |
+| OTHER | 6 | `NOT([AE])` | - |
+| OTHER | 7 | `VG111` | - |
+| OTHER | 1 | `Param VIL open sessions [N]='O'` | - |
+| ... | | *+2 autres* | |
 
 <!-- TAB:Connexions -->
 
@@ -324,21 +303,24 @@ flowchart LR
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: Menu caisse GM - scroll (IDE 163) -> Fermeture Sessions (IDE 281) -> Main Program (IDE 1) -> Gestion caisse (IDE 121)
+Main -> ... -> Menu caisse GM - scroll (IDE 163) -> **Gestion caisse (IDE 121)**
+
+Main -> ... -> Fermeture Sessions (IDE 281) -> **Gestion caisse (IDE 121)**
 
 ```mermaid
 graph LR
     T121[121 Gestion caisse]
     style T121 fill:#58a6ff
+    CC[N-A]
+    style CC fill:#8b5cf6
     CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#f59e0b
+    style CC163 fill:#3fb950
+    CC1 --> CC163
+    CC163 --> T121
     CC281[281 Fermeture Sessions]
-    style CC281 fill:#f59e0b
-    CC163 --> CC281
-    CC1[1 Main Program]
-    style CC1 fill:#f59e0b
-    CC281 --> CC1
-    CC1 --> T121
+    style CC281 fill:#3fb950
+    CC1 --> CC281
+    CC281 --> T121
 ```
 
 ### 13.2 Callers
@@ -433,67 +415,71 @@ graph LR
 | 156 | Verif session caisse ouverte2 | 1 | [Phase 2] |
 | 231 | Raisons utilisation ADH | 1 | [Phase 2] |
 
-## 14. COMPLEXITE ET MIGRATION
+## 14. RECOMMANDATIONS MIGRATION
 
-### 14.1 Score: **MOYENNE** (48/100)
+### 14.1 Profil du programme
 
-| Critere | Evaluation |
-|---------|------------|
-| Expressions: 7 (MINIMALE) |  |
-| Taches: 32 (HAUTE) |  |
-| Tables WRITE: 4 (MOYENNE) |  |
-| Callees: 18 (HAUTE) |  |
-| Code desactive: 0% (SAIN) |  |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 678 | Programme volumineux |
+| Expressions | 7 | Peu de logique |
+| Tables WRITE | 4 | Impact modere |
+| Sous-programmes | 18 | Forte dependance - migrer les callees en priorite |
+| Ecrans visibles | 2 | Quelques ecrans |
+| Code desactive | 0% (0 / 678) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
-### 14.2 Estimation effort: **15 jours**
+**Estimation effort**: ~**15 jours** de developpement
 
-### 14.3 Recommandations par bloc
+### 14.2 Plan de migration par bloc
 
-#### Traitement (23 taches, ~11j)
+#### Traitement (23 taches: 2 ecrans, 21 traitements)
 
 - Traitement standard a migrer
 
-#### Validation (2 taches, ~1j)
+#### Validation (2 taches: 0 ecrans, 2 traitements)
 
-- Conditions de verification a transformer en validators
+- Transformer les conditions en validators (FluentValidation ou equivalent)
 
-#### Calcul (1 taches, ~1j)
+#### Calcul (1 taches: 0 ecrans, 1 traitements)
 
-- Logique de calcul a migrer (stock, compteurs)
+- Migrer la logique de calcul (stock, compteurs, montants)
 
-#### Creation (2 taches, ~1j)
+#### Creation (2 taches: 0 ecrans, 2 traitements)
 
-- Insertion de donnees (reglements, mouvements)
+- Insertion de donnees via repository pattern
 
-#### Saisie (2 taches, ~1j)
+#### Saisie (2 taches: 0 ecrans, 2 traitements)
 
-- Ecran principal de saisie a reproduire
-- Gerer les validations champs
+- Implementer les validations cote client et serveur
 
-#### Impression (1 taches, ~1j)
+#### Impression (1 taches: 0 ecrans, 1 traitements)
 
-- Generation tickets/documents
-- Configuration imprimantes
+- Remplacer par generation PDF/HTML
+- Configurer le systeme d'impression
 
-#### Initialisation (1 taches, ~1j)
+#### Initialisation (1 taches: 0 ecrans, 1 traitements)
 
-- Reinitialisation etats/variables
+- Reinitialisation dans le constructeur ou methode Init()
 
-### 14.4 Dependances critiques
+### 14.3 Dependances critiques
 
-| Dependance | Type | Impact |
-|------------|------|--------|
-| concurrence_sessions | Table WRITE | Modification directe |
-| saisie_approvisionnement | Table WRITE | Modification directe |
-| histo_sessions_caisse | Table WRITE | Modification directe |
-| sessions_coffre2 | Table WRITE | Modification directe |
-| IDE 116 - Calcul concurrence sessions | Sous-programme (12x) | Calcul de donnees |
-| IDE 134 - Mise à jour detail session WS | Sous-programme (3x) | [Phase 2] |
-| IDE 139 - Ticket appro remise | Sous-programme (3x) | Impression ticket/document |
-| IDE 48 - Contrôles - Integrite dates | Sous-programme (2x) | [Phase 2] |
-| IDE 122 - Ouverture caisse | Sous-programme (2x) | [Phase 2] |
-| IDE 131 - Fermeture caisse | Sous-programme (2x) | [Phase 2] |
-| IDE 155 - Controle fermeture caisse WS | Sous-programme (2x) | [Phase 2] |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| concurrence_sessions | Table WRITE (Database) | 1x | Schema + repository |
+| saisie_approvisionnement | Table WRITE (Database) | 1x | Schema + repository |
+| histo_sessions_caisse | Table WRITE (Database) | 4x | Schema + repository |
+| sessions_coffre2 | Table WRITE (Database) | 2x | Schema + repository |
+| IDE 116 - Calcul concurrence sessions | Sous-programme | 12x | **CRITIQUE** - Calcul de donnees |
+| IDE 139 - Ticket appro remise | Sous-programme | 3x | **CRITIQUE** - Impression ticket/document |
+| IDE 134 - Mise à jour detail session WS | Sous-programme | 3x | **CRITIQUE** - [Phase 2] |
+| IDE 131 - Fermeture caisse | Sous-programme | 2x | Haute - [Phase 2] |
+| IDE 155 - Controle fermeture caisse WS | Sous-programme | 2x | Haute - [Phase 2] |
+| IDE 48 - Contrôles - Integrite dates | Sous-programme | 2x | Haute - [Phase 2] |
+| IDE 122 - Ouverture caisse | Sous-programme | 2x | Haute - [Phase 2] |
+| IDE 141 - Init devise session WS | Sous-programme | 1x | Normale - Reinitialisation |
+| IDE 140 - Init apport article session WS | Sous-programme | 1x | Normale - Reinitialisation |
+| IDE 151 - Reimpression tickets fermeture | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 13:01*
+*Spec DETAILED generee par Pipeline V7.0 - 2026-01-29 16:52*

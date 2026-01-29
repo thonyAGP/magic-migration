@@ -288,6 +288,20 @@ if ($decoded -and $decoded.expressions -and $decoded.expressions.by_type) {
     }
 }
 
+# Pre-build all expressions list (needed by S11 variables + S12 expressions)
+$allExprs = @()
+foreach ($typeName in ($exprByType.Keys | Sort-Object)) {
+    foreach ($expr in $exprByType[$typeName]) {
+        $dText = if ($expr.decoded) { $expr.decoded } else { $expr.raw }
+        $allExprs += @{
+            type = $typeName
+            ide_position = $expr.ide_position
+            decoded = $dText
+            rule_id = $expr.business_rule_id
+        }
+    }
+}
+
 # Callees with context
 $calleesCtx = @()
 foreach ($callee in $discovery.call_graph.callees) {
@@ -400,18 +414,36 @@ Add-Line
 # --- 1. Fiche identite ---
 Add-Line "## 1. FICHE D'IDENTITE"
 Add-Line
+
+# Detect business domain from program name and callees
+$domaineName = "General"
+$pnLower = $programName.ToLower()
+if ($pnLower -match 'caisse|session|coffre|approvisionnement') { $domaineName = "Caisse" }
+elseif ($pnLower -match 'vente|transaction|vrl|vsl|article') { $domaineName = "Ventes" }
+elseif ($pnLower -match 'change|devise|taux') { $domaineName = "Change" }
+elseif ($pnLower -match 'facture|tva') { $domaineName = "Facturation" }
+elseif ($pnLower -match 'extrait|solde|compte') { $domaineName = "Comptabilite" }
+elseif ($pnLower -match 'garantie|depot|caution') { $domaineName = "Garanties" }
+elseif ($pnLower -match 'menu|choix') { $domaineName = "Navigation" }
+elseif ($pnLower -match 'print|ticket|edition') { $domaineName = "Impression" }
+elseif ($pnLower -match 'telephone|phone') { $domaineName = "Telephonie" }
+elseif ($pnLower -match 'zoom|recherche|selection') { $domaineName = "Consultation" }
+
+$xmlFileName = "Prg_$IdePosition.xml"
+
 Add-Line "| Attribut | Valeur |"
 Add-Line "|----------|--------|"
 Add-Line "| Projet | $Project |"
 Add-Line "| IDE Position | $IdePosition |"
 Add-Line "| Nom Programme | $programName |"
-Add-Line "| Complexite | **$($complexity.level)** ($($complexity.score)/100) |"
-Add-Line "| Statut | $($discovery.orphan_analysis.status) |"
-Add-Line "| Raison | $($discovery.orphan_analysis.reason) |"
-Add-Line "| Taches | $taskCount |"
-Add-Line "| Ecrans visibles | $($visibleForms.Count) |"
+Add-Line "| Fichier source | ``$xmlFileName`` |"
+Add-Line "| Domaine metier | $domaineName |"
+Add-Line "| Taches | $taskCount ($($visibleForms.Count) ecrans visibles) |"
 Add-Line "| Tables modifiees | $writeCount |"
 Add-Line "| Programmes appeles | $calleeCount |"
+if ($discovery.orphan_analysis.status -eq "ORPHELIN" -or $discovery.orphan_analysis.status -eq "ORPHELIN_POTENTIEL") {
+    Add-Line "| :warning: Statut | **$($discovery.orphan_analysis.status)** |"
+}
 Add-Line
 
 # --- 2. Description fonctionnelle ---
@@ -514,10 +546,26 @@ if ($businessRules.Count -gt 0) {
 foreach ($dp in $descParts) { Add-Line $dp }
 Add-Line
 
-# --- 3. Blocs fonctionnels ---
+# --- 3. Blocs fonctionnels (enrichis: callees + tables associes) ---
 Add-Line "## 3. BLOCS FONCTIONNELS"
 Add-Line
 if ($blocMap.Count -gt 0) {
+    # Map callee contexts to bloc names for enrichment
+    $ctxToBlocMap = @{
+        "Impression ticket/document" = "Impression"
+        "Configuration impression" = "Impression"
+        "Calcul de donnees" = "Calcul"
+        "Recuperation donnees" = "Consultation"
+        "Selection/consultation" = "Consultation"
+        "Verification solde" = "Calcul"
+        "Gestion moyens paiement" = "Reglement"
+        "Programme fidelite" = "Reglement"
+        "Identification operateur" = "Validation"
+        "Validation saisie" = "Validation"
+        "Transfert donnees" = "Transfert"
+        "Reinitialisation" = "Initialisation"
+    }
+
     $bIdx = 1
     foreach ($blocName in $blocMap.Keys) {
         $blocForms = $blocMap[$blocName]
@@ -526,83 +574,127 @@ if ($blocMap.Count -gt 0) {
 
         Add-Line "### 3.$bIdx $blocName ($($blocForms.Count) taches)"
         Add-Line
+
+        # Ecrans visibles
         if ($vis.Count -gt 0) {
             foreach ($f in $vis) {
-                Add-Line "- **$($f.name)** (Tache $($f.task_isn2), $($f.window_type_str), $($f.dimensions.width)x$($f.dimensions.height))"
+                Add-Line "- **$($f.name)** (T$($f.task_isn2), $($f.window_type_str), $($f.dimensions.width)x$($f.dimensions.height))"
             }
         }
         if ($invis.Count -gt 0) {
             $iNames = ($invis | ForEach-Object { "$($_.name) (T$($_.task_isn2))" }) -join ', '
-            Add-Line "- *Traitements internes*: $iNames"
+            Add-Line "- *Internes*: $iNames"
         }
+
+        # Callees associes a ce bloc (via context ou nom)
+        $blocCallees = @($calleesCtx | Where-Object {
+            $ctxToBlocMap[$_.context] -eq $blocName -or
+            (Get-FunctionalBloc $_.name) -eq $blocName
+        })
+        if ($blocCallees.Count -gt 0) {
+            $cList = ($blocCallees | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
+            Add-Line "- **Sous-programmes**: $cList"
+        }
+
+        # Tables WRITE liees au bloc (heuristique par nom table matching bloc)
+        $blocTableNames = @()
+        if ($discovery.tables.by_access.WRITE) {
+            foreach ($tbl in $discovery.tables.by_access.WRITE) {
+                $tn = $tbl.logical_name.ToLower()
+                $match = switch ($blocName) {
+                    "Saisie"    { $tn -match 'prestation|vente|transaction' }
+                    "Reglement" { $tn -match 'reglement|paiement|mop|compteur' }
+                    "Calcul"    { $tn -match 'stock|stat|compteur' }
+                    "Transfert" { $tn -match 'devers|transfert' }
+                    "Creation"  { $tn -match 'mvt|mouvement|histo' }
+                    default     { $false }
+                }
+                if ($match) { $blocTableNames += $tbl.logical_name }
+            }
+        }
+        if ($blocTableNames.Count -gt 0) {
+            Add-Line "- **Tables modifiees**: $($blocTableNames -join ', ')"
+        }
+
+        # Regles metier associees au bloc
+        $blocRuleCount = 0
+        foreach ($rule in $businessRules) {
+            $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { "" }
+            $ruleMatchesBloc = switch ($blocName) {
+                "Saisie"    { $dExpr -match 'saisie|transaction|vente|W0' }
+                "Reglement" { $dExpr -match 'regl|MOP|paiement|montant' }
+                "Validation" { $dExpr -match 'controle|verif|valid' }
+                "Calcul"    { $dExpr -match 'Fix\(|pourcentage|\*.*/' }
+                default     { $false }
+            }
+            if ($ruleMatchesBloc) { $blocRuleCount++ }
+        }
+        if ($blocRuleCount -gt 0) {
+            Add-Line "- **Regles metier**: $blocRuleCount regles associees"
+        }
+
         Add-Line
         $bIdx++
     }
 }
 
-# --- 4. Flux utilisateur ---
-Add-Line "## 4. FLUX UTILISATEUR"
-Add-Line
-if ($visibleForms.Count -gt 1) {
-    Add-Line "Enchainement principal des ecrans:"
-    Add-Line
-    $sNum = 1
-    foreach ($form in $visibleForms) {
-        Add-Line "$sNum. **$($form.name)** ($($form.window_type_str))"
-        $sNum++
-    }
-    Add-Line
-} elseif ($visibleForms.Count -eq 1) {
-    Add-Line "Ecran unique: **$($visibleForms[0].name)** ($($visibleForms[0].window_type_str), $($visibleForms[0].dimensions.width)x$($visibleForms[0].dimensions.height))"
-    Add-Line
-} else {
-    Add-Line "Programme sans ecran visible (traitement interne)."
-    Add-Line
-}
+# --- 4. SUPPRIME (fusionne dans S3 Blocs fonctionnels) ---
 
-# --- 5. Regles metier en francais ---
+# --- 5. Regles metier en francais (regroupees par categorie, FR seulement) ---
 Add-Line "## 5. REGLES METIER"
 Add-Line
 if ($businessRules.Count -gt 0) {
     Add-Line "$($businessRules.Count) regles identifiees:"
     Add-Line
+
+    # Classify rules into categories
+    $rulesByCategory = [ordered]@{
+        "Conditions metier" = @()
+        "Calculs" = @()
+        "Positionnement UI" = @()
+        "Valeurs par defaut" = @()
+        "Regles complexes" = @()
+    }
     foreach ($rule in $businessRules) {
         $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
         $frRule = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id
-        Add-Line "- **[$($rule.id)]** $frRule"
-        Add-Line "  > ``$dExpr``"
+        $entry = @{ id = $rule.id; fr = $frRule; decoded = $dExpr }
+        if ($frRule -match "Position UI") {
+            $rulesByCategory["Positionnement UI"] += $entry
+        } elseif ($frRule -match "Calcul|pourcentage|arrondi") {
+            $rulesByCategory["Calculs"] += $entry
+        } elseif ($frRule -match "Valeur par defaut|est vide") {
+            $rulesByCategory["Valeurs par defaut"] += $entry
+        } elseif ($frRule -match "\[Phase 2\]") {
+            $rulesByCategory["Regles complexes"] += $entry
+        } else {
+            $rulesByCategory["Conditions metier"] += $entry
+        }
     }
-    Add-Line
+
+    foreach ($catName in $rulesByCategory.Keys) {
+        $catRules = $rulesByCategory[$catName]
+        if ($catRules.Count -eq 0) { continue }
+        Add-Line "### $catName ($($catRules.Count))"
+        Add-Line
+        foreach ($r in $catRules) {
+            Add-Line "- **[$($r.id)]** $($r.fr)"
+        }
+        Add-Line
+    }
 } else {
     Add-Line "*(Aucune regle metier identifiee)*"
     Add-Line
 }
 
-# --- 6. Programmes lies ---
-Add-Line "## 6. PROGRAMMES LIES"
+# --- 6. Contexte (fusion S6+S7) ---
+Add-Line "## 6. CONTEXTE"
 Add-Line
 $clrCompact = if ($discovery.call_graph.callers.Count -gt 0) {
     ($discovery.call_graph.callers | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
 } else { "(aucun)" }
-$cleCompact = if ($discovery.call_graph.callees.Count -gt 0) {
-    ($discovery.call_graph.callees | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
-} else { "(aucun)" }
 Add-Line "- **Appele par**: $clrCompact"
-Add-Line "- **Appelle**: $cleCompact"
-Add-Line
-
-# --- 7. Statistiques ---
-Add-Line "## 7. STATISTIQUES"
-Add-Line
-Add-Line "| Metrique | Valeur |"
-Add-Line "|----------|--------|"
-Add-Line "| Taches | $taskCount |"
-Add-Line "| Ecrans visibles | $($visibleForms.Count) / $($allForms.Count) |"
-Add-Line "| Lignes Logic | $($discovery.statistics.logic_line_count) |"
-Add-Line "| Expressions | $exprCount |"
-Add-Line "| Regles metier | $($businessRules.Count) |"
-Add-Line "| Tables | $($tableUnified.Count) (W:$writeCount R:$readCount L:$linkCount) |"
-Add-Line "| Programmes appeles | $calleeCount |"
+Add-Line "- **Appelle**: $calleeCount programmes | **Tables**: $($tableUnified.Count) (W:$writeCount R:$readCount L:$linkCount) | **Taches**: $taskCount | **Expressions**: $exprCount"
 Add-Line
 
 # ████████████████████████████████████████████████████████████
@@ -673,18 +765,23 @@ Add-Line
 if ($visibleForms.Count -gt 1) {
     Add-Line "### 9.1 Enchainement des ecrans"
     Add-Line
+
+    # Zigzag layout: TD direction with rows of 4 for readability
+    $rowSize = 4
     Add-Line '```mermaid'
-    Add-Line "flowchart LR"
+    Add-Line "flowchart TD"
     Add-Line "    START([Entree])"
     Add-Line "    style START fill:#3fb950"
 
     $prevNode = "START"
     $navIdx = 1
+    $rowNodes = @()
     foreach ($form in $visibleForms) {
         $fl = Clean-MermaidLabel $form.name
         $nId = "F$navIdx"
         Add-Line "    $nId[$fl]"
         Add-Line "    $prevNode --> $nId"
+        $rowNodes += $nId
         $prevNode = $nId
         $navIdx++
     }
@@ -698,32 +795,38 @@ if ($visibleForms.Count -gt 1) {
     Add-Line
 }
 
-# Decision algorigramme
+# Decision algorigramme - improved readability
 Add-Line "### 9.2 Logique decisionnelle"
 Add-Line
 
 if ($businessRules.Count -gt 0) {
+    # Show decisions grouped by category for readability
     Add-Line '```mermaid'
     Add-Line "flowchart TD"
-    Add-Line "    START([START])"
+    Add-Line "    START([Debut traitement])"
     Add-Line "    style START fill:#3fb950"
 
     $prevNode = "START"
     $dIdx = 1
-    $maxDec = [math]::Min($businessRules.Count, 6)
+    $maxDec = [math]::Min($businessRules.Count, 8)
 
     foreach ($rule in ($businessRules | Select-Object -First $maxDec)) {
-        $dExpr = if ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
+        $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
         $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id
         $shortLbl = Clean-MermaidLabel $frLbl
 
+        # Decision diamond with OUI/NON branches
         Add-Line "    D$dIdx{$shortLbl}"
         Add-Line "    style D$dIdx fill:#58a6ff"
         Add-Line "    $prevNode --> D$dIdx"
-        Add-Line "    D$dIdx -->|OUI| A$dIdx[Traitement $($rule.id)]"
-        Add-Line "    D$dIdx -->|NON| S$dIdx[Suite]"
-        Add-Line "    A$dIdx --> S$dIdx"
-        $prevNode = "S$dIdx"
+
+        # OUI branch: action label from rule ID
+        $actionLbl = Clean-MermaidLabel "$($rule.id) Appliquer"
+        Add-Line "    A$dIdx[$actionLbl]"
+        Add-Line "    D$dIdx -->|OUI| A$dIdx"
+        Add-Line "    D$dIdx -->|NON| N$dIdx((.))"
+        Add-Line "    A$dIdx --> N$dIdx"
+        $prevNode = "N$dIdx"
         $dIdx++
     }
 
@@ -733,29 +836,53 @@ if ($businessRules.Count -gt 0) {
         Add-Line "    $prevNode --> MORE"
         $prevNode = "MORE"
     }
-    Add-Line "    ENDOK([FIN])"
+    Add-Line "    ENDOK([Fin traitement])"
     Add-Line "    style ENDOK fill:#f85149"
     Add-Line "    $prevNode --> ENDOK"
     Add-Line '```'
+    Add-Line
+
+    # Text legend of all rules for reference
+    Add-Line "**Legende:**"
+    Add-Line
+    $rIdx = 1
+    foreach ($rule in ($businessRules | Select-Object -First $maxDec)) {
+        $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
+        $frLbl = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id
+        Add-Line "- **D$rIdx** ($($rule.id)): $frLbl"
+        $rIdx++
+    }
     Add-Line
 } else {
     Add-Line "*(Pas de regles metier pour l'algorigramme)*"
     Add-Line
 }
 
-# All tasks list
-if ($allForms.Count -gt $visibleForms.Count) {
-    Add-Line "### 9.3 Toutes les taches ($($allForms.Count))"
-    Add-Line
-    Add-Line "| Tache | Nom | Type | Visible | Bloc |"
-    Add-Line "|-------|-----|------|---------|------|"
-    foreach ($form in ($allForms | Sort-Object { $_.task_isn2 })) {
-        $isVis = if ($form.dimensions.width -gt 0) { "OUI" } else { "-" }
-        $bloc = Get-FunctionalBloc $form.name
-        Add-Line "| $($form.task_isn2) | $($form.name) | $($form.window_type_str) | $isVis | $bloc |"
+# Hierarchical task structure: IDE.Task with subtasks
+Add-Line "### 9.3 Structure hierarchique ($($allForms.Count) taches)"
+Add-Line
+
+# Build hierarchical view: group by parent/subtask
+$sortedForms = @($allForms | Sort-Object { [int]$_.task_isn2 })
+$mainTaskIdx = 1
+$prevParent = -1
+foreach ($form in $sortedForms) {
+    $tId = [int]$form.task_isn2
+    $isVis = if ($form.dimensions.width -gt 0) { "**[ECRAN]**" } else { "" }
+    $bloc = Get-FunctionalBloc $form.name
+    $typeInfo = if ($form.window_type_str -and $form.window_type_str -ne 'Type0') { "($($form.window_type_str))" } else { "" }
+
+    # Determine if this is a main task or subtask
+    # Heuristic: subtasks typically have higher ISN2 values and follow their parent
+    # For now, use bloc grouping as hierarchy indicator
+    $dims = ""
+    if ($form.dimensions.width -gt 0) {
+        $dims = " $($form.dimensions.width)x$($form.dimensions.height)"
     }
-    Add-Line
+
+    Add-Line "- **$IdePosition.$tId** $($form.name) $isVis $typeInfo$dims *[$bloc]*"
 }
+Add-Line
 
 # ████████████████████████████████████████████████████████████
 # TAB 3: DONNEES
@@ -763,50 +890,130 @@ if ($allForms.Count -gt $visibleForms.Count) {
 Add-Line "<!-- TAB:Donnees -->"
 Add-Line
 
-# --- 10. Tables ---
+# --- 10. Tables (enrichies: description, stockage couleur, filter unused) ---
 Add-Line "## 10. TABLES"
 Add-Line
-Add-Line "### 10.1 Vue unifiee ($($tableUnified.Count) tables)"
+
+# Separate used vs declared-but-unused tables
+$usedTables = @($tableUnified.Values | Where-Object { $_.R -or $_.W -or $_.L } | Sort-Object { [int]$_.id })
+$unusedTables = @($tableUnified.Values | Where-Object { -not $_.R -and -not $_.W -and -not $_.L } | Sort-Object { [int]$_.id })
+
+# Storage type emoji/symbol for quick visual scan
+# DB=Database, TMP=Tempo, MEM=Memory
+function Get-StorageIcon {
+    param([string]$Storage)
+    switch ($Storage) {
+        "Database" { return "DB" }
+        "Temp"     { return "TMP" }
+        "Memory"   { return "MEM" }
+        default    { return "?" }
+    }
+}
+
+# Generate description from table name
+function Get-TableDescription {
+    param([string]$LogicalName)
+    $n = $LogicalName.ToLower()
+    if ($n -match 'prestation') { return "Prestations/services vendus" }
+    if ($n -match 'mvt_prestation|mouvement') { return "Mouvements de prestation" }
+    if ($n -match 'compte|cgm') { return "Comptes GM (generaux)" }
+    if ($n -match 'compteur|cpt') { return "Compteurs (sequences)" }
+    if ($n -match 'stat_lieu') { return "Statistiques point de vente" }
+    if ($n -match 'reseau|cloture') { return "Donnees reseau/cloture" }
+    if ($n -match 'hebergement|heb') { return "Hebergement (chambres)" }
+    if ($n -match 'depot|garantie|dga') { return "Depots et garanties" }
+    if ($n -match 'recherche|gmr') { return "Index de recherche" }
+    if ($n -match 'comptes_speciaux|spc') { return "Comptes speciaux" }
+    if ($n -match 'resultat|horaire') { return "Resultats recherche" }
+    if ($n -match 'tempo|ecran') { return "Table temporaire ecran" }
+    if ($n -match 'police') { return "Donnees police/session" }
+    return ""
+}
+
+Add-Line "### 10.1 Tables utilisees ($($usedTables.Count))"
 Add-Line
-Add-Line "| ID | Nom Logique | Nom Physique | R | W | L | Stockage | Usages |"
-Add-Line "|----|-------------|--------------|---|---|---|----------|--------|"
-$sortedTables = $tableUnified.Values | Sort-Object { [int]$_.id }
-foreach ($t in $sortedTables) {
-    $rM = if ($t.R) { "R" } else { "-" }
-    $wM = if ($t.W) { "**W**" } else { "-" }
-    $lM = if ($t.L) { "L" } else { "-" }
-    Add-Line "| $($t.id) | $($t.logical_name) | $($t.physical_name) | $rM | $wM | $lM | $($t.storage) | $($t.usage_total) |"
+Add-Line "| ID | Nom | Description | Type | R | W | L | Usages |"
+Add-Line "|----|-----|-------------|------|---|---|---|--------|"
+foreach ($t in $usedTables) {
+    $rM = if ($t.R) { "R" } else { " " }
+    $wM = if ($t.W) { "**W**" } else { " " }
+    $lM = if ($t.L) { "L" } else { " " }
+    $icon = Get-StorageIcon $t.storage
+    $desc = Get-TableDescription $t.logical_name
+    Add-Line "| $($t.id) | $($t.logical_name) | $desc | $icon | $rM | $wM | $lM | $($t.usage_total) |"
 }
 Add-Line
-Add-Line "### 10.2 Colonnes utilisees"
+
+Add-Line "### 10.2 Colonnes par table"
 Add-Line
-Add-Line "*[Phase 2] Analyse detaillee des colonnes reellement lues/modifiees par table.*"
+Add-Line "*[Phase 2] Analyse des colonnes lues (R) et modifiees (W) par table avec details depliables.*"
 Add-Line
+
+# Declared but unused tables
+if ($unusedTables.Count -gt 0) {
+    Add-Line "### 10.3 Tables declarees non utilisees ($($unusedTables.Count))"
+    Add-Line
+    Add-Line "<details>"
+    Add-Line "<summary>$($unusedTables.Count) tables declarees sans acces R/W/L</summary>"
+    Add-Line
+    Add-Line "| ID | Nom | Type |"
+    Add-Line "|----|-----|------|"
+    foreach ($t in $unusedTables) {
+        $icon = Get-StorageIcon $t.storage
+        Add-Line "| $($t.id) | $($t.logical_name) | $icon |"
+    }
+    Add-Line
+    Add-Line "</details>"
+    Add-Line
+}
 
 # --- 11. Variables ---
 Add-Line "## 11. VARIABLES"
 Add-Line
 
 if ($variableRows.Count -gt 0) {
-    $top20 = $variableRows | Select-Object -First 20
-    Add-Line "### 11.1 Variables principales (Top 20 / $($variableRows.Count))"
+    # Count usage: how many times each variable appears in decoded expressions
+    $varUsage = @{}
+    foreach ($e in $allExprs) {
+        foreach ($v in $variableRows) {
+            if ($e.decoded -match [regex]::Escape($v.Name)) {
+                $key = "$($v.Letter)|$($v.Name)"
+                if (-not $varUsage.ContainsKey($key)) { $varUsage[$key] = 0 }
+                $varUsage[$key]++
+            }
+        }
+    }
+
+    # Sort by real usage (desc), then by category
+    $rankedVars = $variableRows | ForEach-Object {
+        $key = "$($_.Letter)|$($_.Name)"
+        $usage = if ($varUsage.ContainsKey($key)) { $varUsage[$key] } else { 0 }
+        [PSCustomObject]@{
+            Category = $_.Category; Letter = $_.Letter; Name = $_.Name
+            DataType = $_.DataType; Ref = $_.Ref; Usage = $usage; VarType = $_.VarType
+        }
+    } | Sort-Object Usage -Descending
+
+    $top20 = $rankedVars | Select-Object -First 20
+    Add-Line "### 11.1 Variables principales (Top 20 par usage / $($variableRows.Count))"
     Add-Line
-    Add-Line "| Cat | Lettre | Nom Variable | Type | Ref |"
-    Add-Line "|-----|--------|--------------|------|-----|"
+    Add-Line "| Cat | Lettre | Nom Variable | Type | Usages | Ref |"
+    Add-Line "|-----|--------|--------------|------|--------|-----|"
     foreach ($v in $top20) {
-        Add-Line "| $($v.Category) | **$($v.Letter)** | $($v.Name) | $($v.DataType) | ``$($v.Ref)`` |"
+        $usageLabel = if ($v.Usage -gt 0) { "$($v.Usage)x" } else { "-" }
+        Add-Line "| $($v.Category) | **$($v.Letter)** | $($v.Name) | $($v.DataType) | $usageLabel | ``$($v.Ref)`` |"
     }
     Add-Line
 
     if ($variableRows.Count -gt 20) {
-        Add-Line "### 11.2 Variables completes ($($variableRows.Count) entrees)"
+        Add-Line "### 11.2 Toutes les variables ($($variableRows.Count))"
         Add-Line
         Add-Line "<details>"
-        Add-Line "<summary>Voir toutes les $($variableRows.Count) variables</summary>"
+        Add-Line "<summary>Voir les $($variableRows.Count) variables</summary>"
         Add-Line
         Add-Line "| Cat | Lettre | Nom Variable | Type | Ref |"
         Add-Line "|-----|--------|--------------|------|-----|"
-        foreach ($v in $variableRows) {
+        foreach ($v in ($rankedVars | Sort-Object Category, { $_.Letter.Length }, Letter)) {
             Add-Line "| $($v.Category) | **$($v.Letter)** | $($v.Name) | $($v.DataType) | ``$($v.Ref)`` |"
         }
         Add-Line
@@ -827,7 +1034,7 @@ if ($mapping -and $mapping.variables -and $mapping.variables.parameters -and $ma
     Add-Line
 }
 
-# --- 12. Expressions ---
+# --- 12. Expressions (groupees par bloc fonctionnel) ---
 Add-Line "## 12. EXPRESSIONS"
 Add-Line
 
@@ -839,47 +1046,84 @@ if ($decoded) {
     Add-Line "**$totalExpr / $totalInProg expressions decodees ($coverage%)**"
     Add-Line
 
-    # Summary by type
-    Add-Line "### 12.1 Repartition par type"
-    Add-Line
-    Add-Line "| Type | Nombre |"
-    Add-Line "|------|--------|"
-    if ($decoded.statistics.by_type) {
-        $decoded.statistics.by_type.PSObject.Properties | ForEach-Object {
-            Add-Line "| $($_.Name) | $($_.Value) |"
-        }
-    }
-    Add-Line
-
-    # Top 20 expressions
+    # Build all expressions list
     $allExprs = @()
     foreach ($typeName in ($exprByType.Keys | Sort-Object)) {
         foreach ($expr in $exprByType[$typeName]) {
+            $dText = if ($expr.decoded) { $expr.decoded } else { $expr.raw }
             $allExprs += @{
                 type = $typeName
                 ide_position = $expr.ide_position
-                decoded = if ($expr.decoded) { $expr.decoded } else { $expr.raw }
+                decoded = $dText
                 rule_id = $expr.business_rule_id
             }
         }
     }
-    $allExprs = @($allExprs | Sort-Object { if ($_.rule_id) { "A" } else { "Z" } }, { $_.type })
 
-    $top20Expr = $allExprs | Select-Object -First 20
-    Add-Line "### 12.2 Expressions cles (Top 20)"
+    # Group expressions by functional bloc (heuristic on decoded content)
+    $exprByBloc = [ordered]@{
+        "Saisie" = @()
+        "Reglement" = @()
+        "Validation" = @()
+        "Impression" = @()
+        "Calcul" = @()
+        "Consultation" = @()
+        "Transfert" = @()
+        "Autre" = @()
+    }
+    foreach ($e in $allExprs) {
+        $dt = $e.decoded.ToLower()
+        $bloc = if ($dt -match 'saisie|transaction|vente|article|produit|prestation') { "Saisie" }
+        elseif ($dt -match 'regl|mop|moyen|paiement|montant|total|solde|gift|resort') { "Reglement" }
+        elseif ($dt -match 'controle|verif|valid|interdit|obligat') { "Validation" }
+        elseif ($dt -match 'print|ticket|edition|imprim|listing') { "Impression" }
+        elseif ($dt -match 'fix\(|pourcentage|\*.*\/|stock|compteur|calcul') { "Calcul" }
+        elseif ($dt -match 'zoom|select|choix|recherche|affich') { "Consultation" }
+        elseif ($dt -match 'devers|transfer|bilat') { "Transfert" }
+        else { "Autre" }
+        $exprByBloc[$bloc] += $e
+    }
+
+    # 12.1 Summary by bloc
+    Add-Line "### 12.1 Repartition par bloc"
     Add-Line
-    Add-Line "| # | Type | IDE | Expression | Regle |"
-    Add-Line "|---|------|-----|------------|-------|"
-    $eIdx = 1
-    foreach ($e in $top20Expr) {
-        $dt = $e.decoded -replace '\|', '\|'
-        $rr = if ($e.rule_id) { $e.rule_id } else { "-" }
-        Add-Line "| $eIdx | $($e.type) | $($e.ide_position) | ``$dt`` | $rr |"
-        $eIdx++
+    Add-Line "| Bloc fonctionnel | Expressions | Regles |"
+    Add-Line "|-----------------|-------------|--------|"
+    foreach ($bn in $exprByBloc.Keys) {
+        $bExprs = $exprByBloc[$bn]
+        if ($bExprs.Count -eq 0) { continue }
+        $ruleCount = ($bExprs | Where-Object { $_.rule_id }).Count
+        Add-Line "| $bn | $($bExprs.Count) | $ruleCount |"
     }
     Add-Line
 
-    # Full expressions in details
+    # 12.2 Key expressions per bloc (top 5 each)
+    Add-Line "### 12.2 Expressions cles par bloc"
+    Add-Line
+    foreach ($bn in $exprByBloc.Keys) {
+        $bExprs = $exprByBloc[$bn]
+        if ($bExprs.Count -eq 0) { continue }
+
+        # Prioritize expressions with rules, then by type
+        $sorted = @($bExprs | Sort-Object { if ($_.rule_id) { "A" } else { "Z" } }, { $_.type })
+        $top5 = $sorted | Select-Object -First 5
+
+        Add-Line "#### $bn ($($bExprs.Count) expressions)"
+        Add-Line
+        Add-Line "| Type | IDE | Expression | Regle |"
+        Add-Line "|------|-----|------------|-------|"
+        foreach ($e in $top5) {
+            $dt = $e.decoded -replace '\|', '\|'
+            $rr = if ($e.rule_id) { $e.rule_id } else { "-" }
+            Add-Line "| $($e.type) | $($e.ide_position) | ``$dt`` | $rr |"
+        }
+        if ($bExprs.Count -gt 5) {
+            Add-Line "| ... | | *+$($bExprs.Count - 5) autres* | |"
+        }
+        Add-Line
+    }
+
+    # 12.3 Full expressions in details
     if ($allExprs.Count -gt 20) {
         Add-Line "### 12.3 Toutes les expressions ($($allExprs.Count))"
         Add-Line
@@ -914,17 +1158,28 @@ Add-Line
 Add-Line "## 13. GRAPHE D'APPELS"
 Add-Line
 
-# Callers diagram
+# Callers diagram - Multi-path from Main
 Add-Line "### 13.1 Chaine depuis Main (Callers)"
 Add-Line
 
+# Build multi-path display: group call_chain by level
+$chainByLevel = @{}
 if ($discovery.call_graph.call_chain -and $discovery.call_graph.call_chain.Count -gt 0) {
-    $chainNodes = @($discovery.call_graph.call_chain | Where-Object { $_.ide -gt 0 })
-    $chainPath = ($chainNodes | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ' -> '
-    Add-Line "**Chemin**: $chainPath -> $programName (IDE $IdePosition)"
-} elseif ($discovery.call_graph.callers.Count -gt 0) {
-    $fc = $discovery.call_graph.callers[0]
-    Add-Line "**Chemin**: ... -> $($fc.name) (IDE $($fc.ide)) -> $programName (IDE $IdePosition)"
+    foreach ($node in $discovery.call_graph.call_chain) {
+        if ($node.ide -le 0) { continue }
+        $lvl = $node.level
+        if (-not $chainByLevel.ContainsKey($lvl)) { $chainByLevel[$lvl] = @() }
+        $chainByLevel[$lvl] += $node
+    }
+}
+
+# Text path: show all direct callers
+if ($discovery.call_graph.callers.Count -gt 0) {
+    $pathLines = @()
+    foreach ($caller in $discovery.call_graph.callers) {
+        $pathLines += "Main -> ... -> $($caller.name) (IDE $($caller.ide)) -> **$programName (IDE $IdePosition)**"
+    }
+    Add-Line ($pathLines -join "`n`n")
 } else {
     Add-Line "**Chemin**: (pas de callers directs)"
 }
@@ -936,26 +1191,61 @@ $tgtLabel = Clean-MermaidLabel "$IdePosition $programName"
 Add-Line "    T$IdePosition[$tgtLabel]"
 Add-Line "    style T$IdePosition fill:#58a6ff"
 
-if ($discovery.call_graph.call_chain -and $discovery.call_graph.call_chain.Count -gt 0) {
-    $prevNode = $null
-    foreach ($node in $discovery.call_graph.call_chain) {
-        if ($node.ide -le 0) { continue }
-        $nId = "CC$($node.ide)"
-        $nLbl = Clean-MermaidLabel "$($node.ide) $($node.name)"
-        Add-Line "    $nId[$nLbl]"
-        $clr = if ($node.level -eq 0) { "#8b5cf6" } else { "#f59e0b" }
-        Add-Line "    style $nId fill:$clr"
-        if ($prevNode) { Add-Line "    $prevNode --> $nId" }
-        $prevNode = $nId
+if ($chainByLevel.Count -gt 0) {
+    # Find max level (furthest from target = closest to Main)
+    $maxLevel = ($chainByLevel.Keys | Measure-Object -Maximum).Maximum
+
+    # Render nodes from Main (highest level) to direct callers (level 1)
+    # Main node (highest level)
+    $mainNodes = @($chainByLevel[$maxLevel])
+    foreach ($mn in $mainNodes) {
+        $mId = "CC$($mn.ide)"
+        $mLbl = Clean-MermaidLabel "$($mn.ide) $($mn.name)"
+        Add-Line "    $mId[$mLbl]"
+        Add-Line "    style $mId fill:#8b5cf6"
     }
-    if ($prevNode) { Add-Line "    $prevNode --> T$IdePosition" }
+
+    # Intermediate levels (between Main and direct callers)
+    for ($lvl = $maxLevel - 1; $lvl -gt 1; $lvl--) {
+        if ($chainByLevel.ContainsKey($lvl)) {
+            foreach ($node in $chainByLevel[$lvl]) {
+                $nId = "CC$($node.ide)"
+                $nLbl = Clean-MermaidLabel "$($node.ide) $($node.name)"
+                Add-Line "    $nId[$nLbl]"
+                Add-Line "    style $nId fill:#f59e0b"
+                # Connect from parent level
+                foreach ($parent in $chainByLevel[$lvl + 1]) {
+                    Add-Line "    CC$($parent.ide) --> $nId"
+                }
+            }
+        }
+    }
+
+    # Level 1 = direct callers -> connect to target
+    if ($chainByLevel.ContainsKey(1)) {
+        foreach ($caller in $chainByLevel[1]) {
+            $cId = "CC$($caller.ide)"
+            $cLbl = Clean-MermaidLabel "$($caller.ide) $($caller.name)"
+            Add-Line "    $cId[$cLbl]"
+            Add-Line "    style $cId fill:#3fb950"
+            # Connect from parent levels
+            if ($chainByLevel.ContainsKey(2)) {
+                foreach ($parent in $chainByLevel[2]) {
+                    Add-Line "    CC$($parent.ide) --> $cId"
+                }
+            }
+            # Connect to target
+            Add-Line "    $cId --> T$IdePosition"
+        }
+    }
 } elseif ($discovery.call_graph.callers.Count -gt 0) {
+    # Fallback: just show direct callers
     foreach ($caller in ($discovery.call_graph.callers | Where-Object { $_.ide -gt 0 })) {
         $cId = "CALLER$($caller.ide)"
         $cLbl = Clean-MermaidLabel "$($caller.ide) $($caller.name)"
         Add-Line "    $cId[$cLbl]"
         Add-Line "    $cId --> T$IdePosition"
-        Add-Line "    style $cId fill:#f59e0b"
+        Add-Line "    style $cId fill:#3fb950"
     }
 } else {
     Add-Line "    NONE[Aucun caller]"
@@ -1012,17 +1302,8 @@ foreach ($c in $calleesCtx) {
 if ($calleesCtx.Count -eq 0) { Add-Line "| - | (aucun) | - | - |" }
 Add-Line
 
-# --- 14. Complexite & Migration ---
-Add-Line "## 14. COMPLEXITE ET MIGRATION"
-Add-Line
-
-Add-Line "### 14.1 Score: **$($complexity.level)** ($($complexity.score)/100)"
-Add-Line
-Add-Line "| Critere | Evaluation |"
-Add-Line "|---------|------------|"
-foreach ($detail in $complexity.details) {
-    Add-Line "| $detail |  |"
-}
+# --- 14. Migration ---
+Add-Line "## 14. RECOMMANDATIONS MIGRATION"
 Add-Line
 
 # Effort estimation
@@ -1031,70 +1312,87 @@ $effortDays = [math]::Ceiling($lines / 100 + $exprCount / 50 + $writeCount * 0.5
 $effortDays = [math]::Max($effortDays, 1)
 if ($complexity.level -eq "HAUTE") { $effortDays = [math]::Ceiling($effortDays * 1.5) }
 
-Add-Line "### 14.2 Estimation effort: **$effortDays jours**"
+Add-Line "### 14.1 Profil du programme"
+Add-Line
+Add-Line "| Metrique | Valeur | Impact migration |"
+Add-Line "|----------|--------|-----------------|"
+Add-Line "| Lignes de logique | $lines | $(if ($lines -gt 500) { 'Programme volumineux' } elseif ($lines -gt 200) { 'Taille moyenne' } else { 'Programme compact' }) |"
+Add-Line "| Expressions | $exprCount | $(if ($exprCount -gt 200) { 'Beaucoup de logique conditionnelle' } elseif ($exprCount -gt 50) { 'Logique moderee' } else { 'Peu de logique' }) |"
+Add-Line "| Tables WRITE | $writeCount | $(if ($writeCount -gt 5) { 'Fort impact donnees' } elseif ($writeCount -gt 2) { 'Impact modere' } else { 'Impact faible' }) |"
+Add-Line "| Sous-programmes | $calleeCount | $(if ($calleeCount -gt 10) { 'Forte dependance - migrer les callees en priorite' } elseif ($calleeCount -gt 5) { 'Dependances moderees' } else { 'Peu de dependances' }) |"
+Add-Line "| Ecrans visibles | $($visibleForms.Count) | $(if ($visibleForms.Count -gt 5) { 'Interface complexe multi-ecrans' } elseif ($visibleForms.Count -gt 1) { 'Quelques ecrans' } else { 'Ecran unique ou traitement batch' }) |"
+$totalLinesCalc = $discovery.statistics.logic_line_count
+$disabledLinesCalc = $discovery.statistics.disabled_line_count
+$disabledPctCalc = if ($totalLinesCalc -gt 0) { [math]::Round($disabledLinesCalc / $totalLinesCalc * 100, 1) } else { 0 }
+Add-Line "| Code desactive | ${disabledPctCalc}% ($disabledLinesCalc / $totalLinesCalc) | $(if ($disabledPctCalc -gt 15) { 'Nettoyer avant migration' } elseif ($disabledPctCalc -gt 5) { 'A verifier' } else { 'Code sain' }) |"
+Add-Line "| Regles metier | $($businessRules.Count) | $(if ($businessRules.Count -gt 10) { 'Logique metier riche - documenter chaque regle' } elseif ($businessRules.Count -gt 0) { 'Quelques regles a preserver' } else { 'Pas de regle identifiee' }) |"
+Add-Line
+Add-Line "**Estimation effort**: ~**$effortDays jours** de developpement"
 Add-Line
 
-# Recommendations per block
-Add-Line "### 14.3 Recommandations par bloc"
+# Enriched recommendations per block with specific data
+Add-Line "### 14.2 Plan de migration par bloc"
 Add-Line
 foreach ($blocName in $blocMap.Keys) {
     $blocForms = $blocMap[$blocName]
-    $blocEffort = [math]::Max(1, [math]::Ceiling($effortDays * $blocForms.Count / [math]::Max($allForms.Count, 1)))
+    $blocVis = @($blocForms | Where-Object { $_.dimensions.width -gt 0 })
+    $blocInvis = @($blocForms | Where-Object { $_.dimensions.width -le 0 })
 
-    Add-Line "#### $blocName ($($blocForms.Count) taches, ~${blocEffort}j)"
+    Add-Line "#### $blocName ($($blocForms.Count) taches: $($blocVis.Count) ecrans, $($blocInvis.Count) traitements)"
     Add-Line
 
+    # Specific enriched recommendations based on actual data
+    $recoms = @()
     switch ($blocName) {
         "Saisie" {
-            Add-Line "- Ecran principal de saisie a reproduire"
-            Add-Line "- Gerer les validations champs"
+            if ($blocVis.Count -gt 0) {
+                $recoms += "Reproduire $($blocVis.Count) ecran(s) de saisie: $(($blocVis | ForEach-Object { $_.name }) -join ', ')"
+            }
+            $recoms += "Implementer les validations cote client et serveur"
         }
         "Reglement" {
-            Add-Line "- Logique multi-moyens de paiement"
-            Add-Line "- Integration TPE"
+            $recoms += "Logique multi-moyens de paiement a implementer"
+            $recoms += "Integration TPE si applicable"
+            if ($blocInvis.Count -gt 0) { $recoms += "$($blocInvis.Count) traitement(s) internes de reglement" }
         }
-        "Validation" { Add-Line "- Conditions de verification a transformer en validators" }
+        "Validation" {
+            $recoms += "Transformer les conditions en validators (FluentValidation ou equivalent)"
+        }
         "Impression" {
-            Add-Line "- Generation tickets/documents"
-            Add-Line "- Configuration imprimantes"
+            $recoms += "Remplacer par generation PDF/HTML"
+            $recoms += "Configurer le systeme d'impression"
         }
-        "Consultation" { Add-Line "- Ecrans zoom/selection en modales" }
-        "Transfert" { Add-Line "- Logique deversement/transfert entre modules" }
-        "Calcul" { Add-Line "- Logique de calcul a migrer (stock, compteurs)" }
-        "Creation" { Add-Line "- Insertion de donnees (reglements, mouvements)" }
-        "Initialisation" { Add-Line "- Reinitialisation etats/variables" }
-        default { Add-Line "- Traitement standard a migrer" }
+        "Consultation" {
+            $recoms += "Ecrans de recherche/selection en modales ou composants"
+            if ($blocVis.Count -gt 0) { $recoms += "$($blocVis.Count) ecran(s) de consultation: $(($blocVis | ForEach-Object { $_.name }) -join ', ')" }
+        }
+        "Transfert" { $recoms += "Logique de deversement/transfert entre modules" }
+        "Calcul" { $recoms += "Migrer la logique de calcul (stock, compteurs, montants)" }
+        "Creation" { $recoms += "Insertion de donnees via repository pattern" }
+        "Initialisation" { $recoms += "Reinitialisation dans le constructeur ou methode Init()" }
+        default { $recoms += "Traitement standard a migrer" }
     }
+    foreach ($r in $recoms) { Add-Line "- $r" }
     Add-Line
 }
 
-# Dependencies
-Add-Line "### 14.4 Dependances critiques"
+# Critical dependencies
+Add-Line "### 14.3 Dependances critiques"
 Add-Line
-Add-Line "| Dependance | Type | Impact |"
-Add-Line "|------------|------|--------|"
+Add-Line "| Dependance | Type | Appels | Impact |"
+Add-Line "|------------|------|--------|--------|"
 if ($discovery.tables.by_access.WRITE) {
     foreach ($tbl in $discovery.tables.by_access.WRITE) {
-        Add-Line "| $($tbl.logical_name) | Table WRITE | Modification directe |"
+        $storage = Get-TableStorageType $tbl.physical_name
+        Add-Line "| $($tbl.logical_name) | Table WRITE ($storage) | $($tbl.usage_count)x | Schema + repository |"
     }
 }
-$critCallees = @($calleesCtx | Where-Object { $_.calls_count -ge 2 })
+$critCallees = @($calleesCtx | Sort-Object { $_.calls_count } -Descending | Select-Object -First 10)
 foreach ($c in $critCallees) {
-    Add-Line "| IDE $($c.ide) - $($c.name) | Sous-programme ($($c.calls_count)x) | $($c.context) |"
+    $prio = if ($c.calls_count -ge 3) { "**CRITIQUE**" } elseif ($c.calls_count -ge 2) { "Haute" } else { "Normale" }
+    Add-Line "| IDE $($c.ide) - $($c.name) | Sous-programme | $($c.calls_count)x | $prio - $($c.context) |"
 }
 Add-Line
-
-# Disabled code
-$totalLines = $discovery.statistics.logic_line_count
-$disabledLines = $discovery.statistics.disabled_line_count
-$disabledPct = if ($totalLines -gt 0) { [math]::Round($disabledLines / $totalLines * 100, 1) } else { 0 }
-if ($disabledPct -gt 5) {
-    Add-Line "### 14.5 Code desactive"
-    Add-Line
-    Add-Line "- **$disabledLines lignes desactivees** sur $totalLines ($disabledPct%)"
-    Add-Line "- Recommandation: nettoyer avant migration"
-    Add-Line
-}
 
 # Footer
 Add-Line "---"
