@@ -567,6 +567,256 @@ public class KnowledgeDb : IDisposable
     }
 
     // =========================================================================
+    // V9 BULK INSERT OPERATIONS
+    // =========================================================================
+
+    public void BulkInsertTaskParameters(IEnumerable<DbTaskParameter> parameters, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO task_parameters (task_id, position, mg_attr, is_output)
+            VALUES (@task_id, @position, @mg_attr, @is_output)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pPosition = cmd.Parameters.Add("@position", SqliteType.Integer);
+        var pMgAttr = cmd.Parameters.Add("@mg_attr", SqliteType.Text);
+        var pIsOutput = cmd.Parameters.Add("@is_output", SqliteType.Integer);
+
+        foreach (var p in parameters)
+        {
+            pTaskId.Value = p.TaskId;
+            pPosition.Value = p.Position;
+            pMgAttr.Value = p.MgAttr;
+            pIsOutput.Value = p.IsOutput ? 1 : 0;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void InsertTaskInformation(DbTaskInformation info, SqliteTransaction? tx = null)
+    {
+        ExecuteNonQuery(@"
+            INSERT OR IGNORE INTO task_information (task_id, initial_mode, end_task_condition_expr, evaluate_end_condition,
+                force_record_delete, main_db_component, key_mode, range_direction, locate_direction, sort_cls,
+                box_bottom, box_right, box_direction)
+            VALUES (@task_id, @initial_mode, @end_task_condition_expr, @evaluate_end_condition,
+                @force_record_delete, @main_db_component, @key_mode, @range_direction, @locate_direction, @sort_cls,
+                @box_bottom, @box_right, @box_direction)",
+            new Dictionary<string, object?>
+            {
+                ["@task_id"] = info.TaskId,
+                ["@initial_mode"] = info.InitialMode,
+                ["@end_task_condition_expr"] = info.EndTaskConditionExpr,
+                ["@evaluate_end_condition"] = info.EvaluateEndCondition,
+                ["@force_record_delete"] = info.ForceRecordDelete,
+                ["@main_db_component"] = info.MainDbComponent,
+                ["@key_mode"] = info.KeyMode,
+                ["@range_direction"] = info.RangeDirection,
+                ["@locate_direction"] = info.LocateDirection,
+                ["@sort_cls"] = info.SortCls,
+                ["@box_bottom"] = info.BoxBottom,
+                ["@box_right"] = info.BoxRight,
+                ["@box_direction"] = info.BoxDirection
+            }, tx);
+    }
+
+    public void InsertTaskProperties(DbTaskProperties props, SqliteTransaction? tx = null)
+    {
+        ExecuteNonQuery(@"
+            INSERT OR IGNORE INTO task_properties (task_id, transaction_mode, transaction_begin, locking_strategy,
+                cache_strategy, error_strategy, confirm_update, confirm_cancel, allow_empty_dataview, preload_view,
+                selection_table, force_record_suffix, keep_created_context)
+            VALUES (@task_id, @transaction_mode, @transaction_begin, @locking_strategy,
+                @cache_strategy, @error_strategy, @confirm_update, @confirm_cancel, @allow_empty_dataview, @preload_view,
+                @selection_table, @force_record_suffix, @keep_created_context)",
+            new Dictionary<string, object?>
+            {
+                ["@task_id"] = props.TaskId,
+                ["@transaction_mode"] = props.TransactionMode,
+                ["@transaction_begin"] = props.TransactionBegin,
+                ["@locking_strategy"] = props.LockingStrategy,
+                ["@cache_strategy"] = props.CacheStrategy,
+                ["@error_strategy"] = props.ErrorStrategy,
+                ["@confirm_update"] = props.ConfirmUpdate,
+                ["@confirm_cancel"] = props.ConfirmCancel,
+                ["@allow_empty_dataview"] = props.AllowEmptyDataview ? 1 : 0,
+                ["@preload_view"] = props.PreloadView ? 1 : 0,
+                ["@selection_table"] = props.SelectionTable,
+                ["@force_record_suffix"] = props.ForceRecordSuffix,
+                ["@keep_created_context"] = props.KeepCreatedContext
+            }, tx);
+    }
+
+    public void InsertTaskPermissions(DbTaskPermissions perms, SqliteTransaction? tx = null)
+    {
+        ExecuteNonQuery(@"
+            INSERT OR IGNORE INTO task_permissions (task_id, allow_create, allow_delete, allow_modify, allow_query,
+                allow_locate, allow_range, allow_sorting, allow_events, allow_index_change, allow_index_optimization,
+                allow_io_files, allow_location_in_query, allow_options, allow_printing_data, record_cycle)
+            VALUES (@task_id, @allow_create, @allow_delete, @allow_modify, @allow_query,
+                @allow_locate, @allow_range, @allow_sorting, @allow_events, @allow_index_change, @allow_index_optimization,
+                @allow_io_files, @allow_location_in_query, @allow_options, @allow_printing_data, @record_cycle)",
+            new Dictionary<string, object?>
+            {
+                ["@task_id"] = perms.TaskId,
+                ["@allow_create"] = perms.AllowCreate ? 1 : 0,
+                ["@allow_delete"] = perms.AllowDelete ? 1 : 0,
+                ["@allow_modify"] = perms.AllowModify ? 1 : 0,
+                ["@allow_query"] = perms.AllowQuery ? 1 : 0,
+                ["@allow_locate"] = perms.AllowLocate ? 1 : 0,
+                ["@allow_range"] = perms.AllowRange ? 1 : 0,
+                ["@allow_sorting"] = perms.AllowSorting ? 1 : 0,
+                ["@allow_events"] = perms.AllowEvents ? 1 : 0,
+                ["@allow_index_change"] = perms.AllowIndexChange ? 1 : 0,
+                ["@allow_index_optimization"] = perms.AllowIndexOptimization ? 1 : 0,
+                ["@allow_io_files"] = perms.AllowIoFiles ? 1 : 0,
+                ["@allow_location_in_query"] = perms.AllowLocationInQuery ? 1 : 0,
+                ["@allow_options"] = perms.AllowOptions ? 1 : 0,
+                ["@allow_printing_data"] = perms.AllowPrintingData ? 1 : 0,
+                ["@record_cycle"] = perms.RecordCycle
+            }, tx);
+    }
+
+    public void BulkInsertEventHandlers(IEnumerable<DbEventHandler> handlers, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO event_handlers (task_id, event_id, description, force_exit, event_type,
+                public_object_comp, public_object_obj)
+            VALUES (@task_id, @event_id, @description, @force_exit, @event_type,
+                @public_object_comp, @public_object_obj)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pEventId = cmd.Parameters.Add("@event_id", SqliteType.Integer);
+        var pDescription = cmd.Parameters.Add("@description", SqliteType.Text);
+        var pForceExit = cmd.Parameters.Add("@force_exit", SqliteType.Text);
+        var pEventType = cmd.Parameters.Add("@event_type", SqliteType.Text);
+        var pPublicObjectComp = cmd.Parameters.Add("@public_object_comp", SqliteType.Text);
+        var pPublicObjectObj = cmd.Parameters.Add("@public_object_obj", SqliteType.Integer);
+
+        foreach (var h in handlers)
+        {
+            pTaskId.Value = h.TaskId;
+            pEventId.Value = h.EventId;
+            pDescription.Value = h.Description ?? (object)DBNull.Value;
+            pForceExit.Value = h.ForceExit ?? (object)DBNull.Value;
+            pEventType.Value = h.EventType ?? (object)DBNull.Value;
+            pPublicObjectComp.Value = h.PublicObjectComp ?? (object)DBNull.Value;
+            pPublicObjectObj.Value = h.PublicObjectObj ?? (object)DBNull.Value;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void BulkInsertFieldRanges(IEnumerable<DbFieldRange> ranges, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO field_ranges (task_id, range_id, column_obj, min_expr, max_expr)
+            VALUES (@task_id, @range_id, @column_obj, @min_expr, @max_expr)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pRangeId = cmd.Parameters.Add("@range_id", SqliteType.Integer);
+        var pColumnObj = cmd.Parameters.Add("@column_obj", SqliteType.Integer);
+        var pMinExpr = cmd.Parameters.Add("@min_expr", SqliteType.Integer);
+        var pMaxExpr = cmd.Parameters.Add("@max_expr", SqliteType.Integer);
+
+        foreach (var r in ranges)
+        {
+            pTaskId.Value = r.TaskId;
+            pRangeId.Value = r.RangeId;
+            pColumnObj.Value = r.ColumnObj ?? (object)DBNull.Value;
+            pMinExpr.Value = r.MinExpr ?? (object)DBNull.Value;
+            pMaxExpr.Value = r.MaxExpr ?? (object)DBNull.Value;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void InsertProgramMetadata(DbProgramMetadata meta, SqliteTransaction? tx = null)
+    {
+        ExecuteNonQuery(@"
+            INSERT OR IGNORE INTO program_metadata (program_id, task_type, last_modified_date, last_modified_time,
+                execution_right, is_resident, is_sql, is_external, form_type, has_dotnet, has_sql_where,
+                is_main_program, last_isn)
+            VALUES (@program_id, @task_type, @last_modified_date, @last_modified_time,
+                @execution_right, @is_resident, @is_sql, @is_external, @form_type, @has_dotnet, @has_sql_where,
+                @is_main_program, @last_isn)",
+            new Dictionary<string, object?>
+            {
+                ["@program_id"] = meta.ProgramId,
+                ["@task_type"] = meta.TaskType,
+                ["@last_modified_date"] = meta.LastModifiedDate,
+                ["@last_modified_time"] = meta.LastModifiedTime,
+                ["@execution_right"] = meta.ExecutionRight,
+                ["@is_resident"] = meta.IsResident ? 1 : 0,
+                ["@is_sql"] = meta.IsSql ? 1 : 0,
+                ["@is_external"] = meta.IsExternal ? 1 : 0,
+                ["@form_type"] = meta.FormType,
+                ["@has_dotnet"] = meta.HasDotNet ? 1 : 0,
+                ["@has_sql_where"] = meta.HasSqlWhere ? 1 : 0,
+                ["@is_main_program"] = meta.IsMainProgram ? 1 : 0,
+                ["@last_isn"] = meta.LastIsn
+            }, tx);
+    }
+
+    public long BulkInsertFormControls(IEnumerable<DbFormControl> controls, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO form_controls (form_id, control_id, control_type, control_name, x, y, width, height,
+                visible, enabled, tab_order, linked_field_id, linked_variable, properties_json)
+            VALUES (@form_id, @control_id, @control_type, @control_name, @x, @y, @width, @height,
+                @visible, @enabled, @tab_order, @linked_field_id, @linked_variable, @properties_json)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pFormId = cmd.Parameters.Add("@form_id", SqliteType.Integer);
+        var pControlId = cmd.Parameters.Add("@control_id", SqliteType.Integer);
+        var pControlType = cmd.Parameters.Add("@control_type", SqliteType.Text);
+        var pControlName = cmd.Parameters.Add("@control_name", SqliteType.Text);
+        var pX = cmd.Parameters.Add("@x", SqliteType.Integer);
+        var pY = cmd.Parameters.Add("@y", SqliteType.Integer);
+        var pWidth = cmd.Parameters.Add("@width", SqliteType.Integer);
+        var pHeight = cmd.Parameters.Add("@height", SqliteType.Integer);
+        var pVisible = cmd.Parameters.Add("@visible", SqliteType.Integer);
+        var pEnabled = cmd.Parameters.Add("@enabled", SqliteType.Integer);
+        var pTabOrder = cmd.Parameters.Add("@tab_order", SqliteType.Integer);
+        var pLinkedFieldId = cmd.Parameters.Add("@linked_field_id", SqliteType.Integer);
+        var pLinkedVariable = cmd.Parameters.Add("@linked_variable", SqliteType.Text);
+        var pPropertiesJson = cmd.Parameters.Add("@properties_json", SqliteType.Text);
+
+        long count = 0;
+        foreach (var c in controls)
+        {
+            pFormId.Value = c.FormId;
+            pControlId.Value = c.ControlId;
+            pControlType.Value = c.ControlType ?? (object)DBNull.Value;
+            pControlName.Value = c.ControlName ?? (object)DBNull.Value;
+            pX.Value = c.X ?? (object)DBNull.Value;
+            pY.Value = c.Y ?? (object)DBNull.Value;
+            pWidth.Value = c.Width ?? (object)DBNull.Value;
+            pHeight.Value = c.Height ?? (object)DBNull.Value;
+            pVisible.Value = c.Visible ? 1 : 0;
+            pEnabled.Value = c.Enabled ? 1 : 0;
+            pTabOrder.Value = c.TabOrder ?? (object)DBNull.Value;
+            pLinkedFieldId.Value = c.LinkedFieldId ?? (object)DBNull.Value;
+            pLinkedVariable.Value = c.LinkedVariable ?? (object)DBNull.Value;
+            pPropertiesJson.Value = c.PropertiesJson ?? (object)DBNull.Value;
+            cmd.ExecuteNonQuery();
+            count++;
+        }
+        return count;
+    }
+
+    // =========================================================================
     // FILE HASH OPERATIONS
     // =========================================================================
 

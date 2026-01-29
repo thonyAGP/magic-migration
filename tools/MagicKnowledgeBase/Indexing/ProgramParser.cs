@@ -54,6 +54,9 @@ public partial class ProgramParser
             ProjectName = projectName
         };
 
+        // V9: Parse program metadata
+        program.Metadata = ParseProgramMetadata(doc);
+
         // Parse tasks
         ParseTasks(doc, program, idePosition, projectName);
 
@@ -138,6 +141,14 @@ public partial class ProgramParser
             // Parse TaskForms (UI screens)
             var forms = ParseTaskForms(taskElement);
 
+            // V9: Parse extended task properties
+            var parameters = ParseTaskParameters(taskElement);
+            var information = ParseTaskInformation(taskElement);
+            var properties = ParseTaskProperties(taskElement);
+            var permissions = ParseTaskPermissions(taskElement);
+            var eventHandlers = ParseEventHandlers(taskElement);
+            var fieldRanges = ParseFieldRanges(taskElement);
+
             program.Tasks[isn2] = new ParsedTask
             {
                 Isn2 = isn2,
@@ -152,7 +163,14 @@ public partial class ProgramParser
                 LogicLines = logicLines,
                 TableUsages = tableUsages,
                 ProgramCalls = programCalls,
-                Forms = forms
+                Forms = forms,
+                // V9 properties
+                Parameters = parameters,
+                Information = information,
+                Properties = properties,
+                Permissions = permissions,
+                EventHandlers = eventHandlers,
+                FieldRanges = fieldRanges
             };
         }
 
@@ -434,6 +452,9 @@ public partial class ProgramParser
                 e.Attribute("id")?.Value == "330");
             var font = fontElement?.Attribute("val")?.Value;
 
+            // V9: Parse form controls
+            var controls = ParseFormControls(formEntry);
+
             forms.Add(new ParsedTaskForm
             {
                 FormEntryId = formId,
@@ -443,7 +464,8 @@ public partial class ProgramParser
                 Width = width,
                 Height = height,
                 WindowType = windowType,
-                Font = font
+                Font = font,
+                Controls = controls
             });
         }
 
@@ -503,12 +525,16 @@ public partial class ProgramParser
                                 // BUG FIX: XML uses <Argument> not <Arg>
                                 var argCount = operation.Element("Arguments")?.Elements("Argument").Count() ?? 0;
 
+                                // V9: Parse call arguments
+                                var arguments = ParseCallArguments(operation);
+
                                 calls.Add(new ParsedProgramCall
                                 {
                                     LineNumber = lineNum,
                                     TargetProject = targetProject,
                                     TargetProgramXmlId = targetPrgId,
-                                    ArgCount = argCount
+                                    ArgCount = argCount,
+                                    Arguments = arguments
                                 });
 
                                 parameters["TargetComp"] = targetProject;
@@ -668,6 +694,245 @@ public partial class ProgramParser
         return XDocument.Parse(cleanContent);
     }
 
+    // ========================================================================
+    // V9 PARSING METHODS - Extended XML Enrichment
+    // ========================================================================
+
+    /// <summary>V9: Parse program-level metadata from XML</summary>
+    private ParsedProgramMetadata ParseProgramMetadata(XDocument doc)
+    {
+        var firstTask = doc.Descendants("Task").FirstOrDefault();
+        var header = firstTask?.Element("Header");
+
+        return new ParsedProgramMetadata
+        {
+            TaskType = header?.Element("TaskType")?.Attribute("val")?.Value,
+            LastModifiedDate = header?.Attribute("Date")?.Value,
+            LastModifiedTime = header?.Attribute("Time")?.Value,
+            ExecutionRight = ParseInt(header?.Attribute("ExRight")?.Value),
+            IsResident = header?.Attribute("Resident")?.Value == "Y",
+            IsSql = header?.Attribute("SQL")?.Value == "Y",
+            IsExternal = header?.Attribute("External")?.Value == "Y",
+            FormType = header?.Attribute("FormType")?.Value,
+            HasDotNet = header?.Attribute("DotNet")?.Value == "Y",
+            HasSqlWhere = header?.Attribute("SQLWhere")?.Value == "Y",
+            IsMainProgram = header?.Attribute("MainPrg")?.Value == "Y",
+            LastIsn = ParseInt(header?.Attribute("LastISN")?.Value)
+        };
+    }
+
+    /// <summary>V9: Parse task parameters (MgAttr types)</summary>
+    private List<ParsedTaskParameter> ParseTaskParameters(XElement taskElement)
+    {
+        var parameters = new List<ParsedTaskParameter>();
+        // ParametersAttributes is inside Header > ReturnValue
+        var header = taskElement.Element("Header");
+        var returnValue = header?.Element("ReturnValue");
+        var paramsAttrs = returnValue?.Element("ParametersAttributes");
+        if (paramsAttrs == null) return parameters;
+
+        int position = 1;
+        foreach (var attr in paramsAttrs.Elements("Attr"))
+        {
+            var mgAttr = attr.Attribute("MgAttr")?.Value;
+            if (!string.IsNullOrEmpty(mgAttr))
+            {
+                parameters.Add(new ParsedTaskParameter
+                {
+                    Position = position++,
+                    MgAttr = mgAttr,
+                    IsOutput = attr.Attribute("TSK_PARAMS")?.Value == "Y"
+                });
+            }
+        }
+        return parameters;
+    }
+
+    /// <summary>V9: Parse task information block</summary>
+    private ParsedTaskInformation? ParseTaskInformation(XElement taskElement)
+    {
+        var info = taskElement.Element("Information");
+        if (info == null) return null;
+
+        return new ParsedTaskInformation
+        {
+            InitialMode = info.Element("InitialMode")?.Attribute("val")?.Value,
+            EndTaskConditionExpr = ParseInt(info.Element("EndTaskCondition")?.Attribute("val")?.Value),
+            EvaluateEndCondition = info.Element("EVL_END_CND")?.Attribute("val")?.Value,
+            ForceRecordDelete = info.Element("DEL")?.Attribute("val")?.Value,
+            MainDbComponent = ParseInt(info.Element("DB")?.Attribute("comp")?.Value),
+            KeyMode = info.Element("Key")?.Element("Mode")?.Attribute("val")?.Value,
+            RangeDirection = info.Element("RngDIR")?.Attribute("val")?.Value,
+            LocateDirection = info.Element("LocDIR")?.Attribute("val")?.Value,
+            SortCls = info.Element("SortCLS")?.Attribute("val")?.Value,
+            BoxBottom = ParseInt(info.Element("BoxBottom")?.Attribute("val")?.Value),
+            BoxRight = ParseInt(info.Element("BoxRight")?.Attribute("val")?.Value),
+            BoxDirection = info.Element("BoxDirection")?.Attribute("val")?.Value
+        };
+    }
+
+    /// <summary>V9: Parse task properties block</summary>
+    private ParsedTaskProperties? ParseTaskProperties(XElement taskElement)
+    {
+        var props = taskElement.Element("TaskProperties");
+        if (props == null) return null;
+
+        return new ParsedTaskProperties
+        {
+            TransactionMode = props.Element("TransactionMode")?.Attribute("val")?.Value,
+            TransactionBegin = props.Element("TransactionBegin")?.Attribute("val")?.Value,
+            LockingStrategy = props.Element("LockingStrategy")?.Attribute("val")?.Value,
+            CacheStrategy = props.Element("CacheStrategy")?.Attribute("val")?.Value,
+            ErrorStrategy = props.Element("ErrorStrategy")?.Attribute("val")?.Value,
+            ConfirmUpdate = props.Element("ConfirmUpdate")?.Attribute("val")?.Value,
+            ConfirmCancel = props.Element("ConfirmCancel")?.Attribute("val")?.Value,
+            AllowEmptyDataview = props.Element("AllowEmptyDataview")?.Attribute("val")?.Value != "N",
+            PreloadView = props.Element("PreloadView")?.Attribute("val")?.Value == "Y",
+            SelectionTable = ParseInt(props.Element("SelectionTable")?.Attribute("val")?.Value),
+            ForceRecordSuffix = props.Element("ForceRecordSuffix")?.Attribute("val")?.Value,
+            KeepCreatedContext = props.Element("KeepCreatedContext")?.Attribute("val")?.Value
+        };
+    }
+
+    /// <summary>V9: Parse task permissions (SIDE_WIN block)</summary>
+    private ParsedTaskPermissions? ParseTaskPermissions(XElement taskElement)
+    {
+        var sideWin = taskElement.Element("SIDE_WIN");
+        if (sideWin == null) return null;
+
+        return new ParsedTaskPermissions
+        {
+            AllowCreate = sideWin.Element("AllowCreate")?.Attribute("val")?.Value != "N",
+            AllowDelete = sideWin.Element("AllowDelete")?.Attribute("val")?.Value != "N",
+            AllowModify = sideWin.Element("AllowModify")?.Attribute("val")?.Value != "N",
+            AllowQuery = sideWin.Element("AllowQuery")?.Attribute("val")?.Value != "N",
+            AllowLocate = sideWin.Element("AllowLocate")?.Attribute("val")?.Value != "N",
+            AllowRange = sideWin.Element("AllowRange")?.Attribute("val")?.Value != "N",
+            AllowSorting = sideWin.Element("AllowSorting")?.Attribute("val")?.Value != "N",
+            AllowEvents = sideWin.Element("AllowEvents")?.Attribute("val")?.Value != "N",
+            AllowIndexChange = sideWin.Element("AllowIndexChange")?.Attribute("val")?.Value != "N",
+            AllowIndexOptimization = sideWin.Element("AllowIndexOptimization")?.Attribute("val")?.Value != "N",
+            AllowIoFiles = sideWin.Element("AllowIOFiles")?.Attribute("val")?.Value != "N",
+            AllowLocationInQuery = sideWin.Element("AllowLocationInQuery")?.Attribute("val")?.Value != "N",
+            AllowOptions = sideWin.Element("AllowOptions")?.Attribute("val")?.Value != "N",
+            AllowPrintingData = sideWin.Element("AllowPrintingData")?.Attribute("val")?.Value != "N",
+            RecordCycle = sideWin.Element("RecordCycle")?.Attribute("val")?.Value
+        };
+    }
+
+    /// <summary>V9: Parse event handlers (EVNT elements)</summary>
+    private List<ParsedEventHandler> ParseEventHandlers(XElement taskElement)
+    {
+        var handlers = new List<ParsedEventHandler>();
+        foreach (var evnt in taskElement.Elements("EVNT"))
+        {
+            var idAttr = evnt.Attribute("id");
+            if (idAttr == null || !int.TryParse(idAttr.Value, out int eventId)) continue;
+
+            var eventEl = evnt.Element("Event");
+            handlers.Add(new ParsedEventHandler
+            {
+                EventId = eventId,
+                Description = evnt.Attribute("DESC")?.Value,
+                ForceExit = evnt.Attribute("FORCE_EXIT")?.Value,
+                EventType = eventEl?.Element("EventType")?.Attribute("val")?.Value,
+                PublicObjectComp = eventEl?.Element("PublicObject")?.Attribute("comp")?.Value,
+                PublicObjectObj = ParseInt(eventEl?.Element("PublicObject")?.Attribute("obj")?.Value)
+            });
+        }
+        return handlers;
+    }
+
+    /// <summary>V9: Parse field ranges (FLD_RNG elements)</summary>
+    private List<ParsedFieldRange> ParseFieldRanges(XElement taskElement)
+    {
+        var ranges = new List<ParsedFieldRange>();
+        foreach (var fldRng in taskElement.Elements("FLD_RNG"))
+        {
+            var idEl = fldRng.Element("id");
+            if (idEl == null || !int.TryParse(idEl.Attribute("val")?.Value, out int rangeId)) continue;
+
+            ranges.Add(new ParsedFieldRange
+            {
+                RangeId = rangeId,
+                ColumnObj = ParseInt(fldRng.Element("_Column")?.Attribute("obj")?.Value),
+                MinExpr = ParseInt(fldRng.Element("MIN")?.Attribute("val")?.Value),
+                MaxExpr = ParseInt(fldRng.Element("MAX")?.Attribute("val")?.Value)
+            });
+        }
+        return ranges;
+    }
+
+    /// <summary>V9: Parse call arguments from CallTask</summary>
+    private List<ParsedCallArgument> ParseCallArguments(XElement callTaskElement)
+    {
+        var arguments = new List<ParsedCallArgument>();
+        var argsElement = callTaskElement.Element("Arguments");
+        if (argsElement == null) return arguments;
+
+        int position = 1;
+        foreach (var arg in argsElement.Elements("Argument"))
+        {
+            arguments.Add(new ParsedCallArgument
+            {
+                Position = position++,
+                ArgId = ParseInt(arg.Attribute("id")?.Value),
+                VariableRef = arg.Element("Variable")?.Attribute("val")?.Value,
+                ExpressionRef = ParseInt(arg.Element("Expression")?.Attribute("val")?.Value),
+                Skip = arg.Element("Skip")?.Attribute("val")?.Value == "Y",
+                IsParent = arg.Element("Parent")?.Attribute("val")?.Value == "Y"
+            });
+        }
+        return arguments;
+    }
+
+    /// <summary>V9: Parse form controls</summary>
+    private List<ParsedFormControl> ParseFormControls(XElement formEntry)
+    {
+        var controls = new List<ParsedFormControl>();
+        var controlsElement = formEntry.Element("Controls");
+        if (controlsElement == null) return controls;
+
+        foreach (var ctrl in controlsElement.Elements("Control"))
+        {
+            var idAttr = ctrl.Attribute("id");
+            if (idAttr == null || !int.TryParse(idAttr.Value, out int ctrlId)) continue;
+
+            var propList = ctrl.Element("PropertyList");
+            controls.Add(new ParsedFormControl
+            {
+                ControlId = ctrlId,
+                ControlType = propList?.Attribute("model")?.Value?.Replace("CTRL_GUI0_", ""),
+                ControlName = ctrl.Attribute("name")?.Value
+                    ?? propList?.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "311")?.Attribute("val")?.Value,
+                X = ParseInt(propList?.Element("X")?.Attribute("val")?.Value
+                    ?? propList?.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "21")?.Attribute("val")?.Value),
+                Y = ParseInt(propList?.Element("Y")?.Attribute("val")?.Value
+                    ?? propList?.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "22")?.Attribute("val")?.Value),
+                Width = ParseInt(propList?.Element("Width")?.Attribute("val")?.Value
+                    ?? propList?.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "23")?.Attribute("val")?.Value),
+                Height = ParseInt(propList?.Element("Height")?.Attribute("val")?.Value
+                    ?? propList?.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "24")?.Attribute("val")?.Value),
+                Visible = propList?.Element("Visible")?.Attribute("val")?.Value != "N",
+                Enabled = propList?.Element("Enabled")?.Attribute("val")?.Value != "N",
+                TabOrder = ParseInt(propList?.Element("TabOrder")?.Attribute("val")?.Value),
+                LinkedFieldId = ParseInt(ctrl.Element("FieldID")?.Attribute("val")?.Value),
+                LinkedVariable = ctrl.Element("Variable")?.Attribute("val")?.Value
+            });
+        }
+        return controls;
+    }
+
+    private static int? ParseInt(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return null;
+        return int.TryParse(value, out int result) ? result : null;
+    }
+
+    // ========================================================================
+    // END V9 PARSING METHODS
+    // ========================================================================
+
     public static string IndexToVariable(int index)
     {
         if (index < 0) return "?";
@@ -716,6 +981,8 @@ public record ParsedProgram
     /// Dynamic calls detected via ProgIdx() in expressions
     /// </summary>
     public List<ParsedDynamicCall> DynamicCalls { get; } = new();
+    /// <summary>V9: Extended program metadata from XML Header</summary>
+    public ParsedProgramMetadata? Metadata { get; set; }
 }
 
 public record ParsedTask
@@ -733,6 +1000,20 @@ public record ParsedTask
     public List<ParsedTableUsage> TableUsages { get; init; } = new();
     public List<ParsedProgramCall> ProgramCalls { get; init; } = new();
     public List<ParsedTaskForm> Forms { get; init; } = new();
+    // V9: Extended task properties
+    public List<ParsedTaskParameter> Parameters { get; init; } = new();
+    public ParsedTaskInformation? Information { get; init; }
+    public ParsedTaskProperties? Properties { get; init; }
+    public ParsedTaskPermissions? Permissions { get; init; }
+    public List<ParsedEventHandler> EventHandlers { get; init; } = new();
+    public List<ParsedFieldRange> FieldRanges { get; init; } = new();
+    public List<ParsedSelectDefinition> SelectDefinitions { get; init; } = new();
+    public List<ParsedUpdateOperation> UpdateOperations { get; init; } = new();
+    public List<ParsedLinkOperation> LinkOperations { get; init; } = new();
+    public List<ParsedStopOperation> StopOperations { get; init; } = new();
+    public List<ParsedRaiseEventOperation> RaiseEventOperations { get; init; } = new();
+    public List<ParsedBlockOperation> BlockOperations { get; init; } = new();
+    public List<ParsedEvaluateOperation> EvaluateOperations { get; init; } = new();
 }
 
 public record ParsedColumn
@@ -777,6 +1058,8 @@ public record ParsedProgramCall
     public required string TargetProject { get; init; }
     public int TargetProgramXmlId { get; init; }
     public int ArgCount { get; init; }
+    // V9: Call arguments details
+    public List<ParsedCallArgument> Arguments { get; init; } = new();
 }
 
 public record ParsedExpression
@@ -797,6 +1080,8 @@ public record ParsedTaskForm
     public int? Height { get; init; }
     public int? WindowType { get; init; }
     public string? Font { get; init; }
+    // V9: Form controls
+    public List<ParsedFormControl> Controls { get; init; } = new();
 }
 
 /// <summary>
@@ -810,4 +1095,215 @@ public record ParsedDynamicCall
     public required string TargetPublicName { get; init; }
     /// <summary>Full match string (e.g., "ProgIdx('EXTRAIT_COMPTE')")</summary>
     public required string FullMatch { get; init; }
+}
+
+// ============================================================================
+// V9 MODELS - Extended XML Enrichment
+// ============================================================================
+
+public record ParsedProgramMetadata
+{
+    public string? TaskType { get; init; }           // O=Online, B=Batch, R=Rich Client
+    public string? LastModifiedDate { get; init; }   // DD/MM/YYYY
+    public string? LastModifiedTime { get; init; }   // HH:MM:SS
+    public int? ExecutionRight { get; init; }
+    public bool IsResident { get; init; }
+    public bool IsSql { get; init; }
+    public bool IsExternal { get; init; }
+    public string? FormType { get; init; }
+    public bool HasDotNet { get; init; }
+    public bool HasSqlWhere { get; init; }
+    public bool IsMainProgram { get; init; }
+    public int? LastIsn { get; init; }
+}
+
+public record ParsedTaskParameter
+{
+    public int Position { get; init; }
+    public required string MgAttr { get; init; }     // A=Alpha, N=Numeric, D=Date, L=Logical, T=Time, B=Blob
+    public bool IsOutput { get; init; }
+}
+
+public record ParsedTaskInformation
+{
+    public string? InitialMode { get; init; }
+    public int? EndTaskConditionExpr { get; init; }
+    public string? EvaluateEndCondition { get; init; }
+    public string? ForceRecordDelete { get; init; }
+    public int? MainDbComponent { get; init; }
+    public string? KeyMode { get; init; }
+    public string? RangeDirection { get; init; }
+    public string? LocateDirection { get; init; }
+    public string? SortCls { get; init; }
+    public int? BoxBottom { get; init; }
+    public int? BoxRight { get; init; }
+    public string? BoxDirection { get; init; }
+}
+
+public record ParsedTaskProperties
+{
+    public string? TransactionMode { get; init; }
+    public string? TransactionBegin { get; init; }
+    public string? LockingStrategy { get; init; }
+    public string? CacheStrategy { get; init; }
+    public string? ErrorStrategy { get; init; }
+    public string? ConfirmUpdate { get; init; }
+    public string? ConfirmCancel { get; init; }
+    public bool AllowEmptyDataview { get; init; } = true;
+    public bool PreloadView { get; init; }
+    public int? SelectionTable { get; init; }
+    public string? ForceRecordSuffix { get; init; }
+    public string? KeepCreatedContext { get; init; }
+}
+
+public record ParsedTaskPermissions
+{
+    public bool AllowCreate { get; init; } = true;
+    public bool AllowDelete { get; init; } = true;
+    public bool AllowModify { get; init; } = true;
+    public bool AllowQuery { get; init; } = true;
+    public bool AllowLocate { get; init; } = true;
+    public bool AllowRange { get; init; } = true;
+    public bool AllowSorting { get; init; } = true;
+    public bool AllowEvents { get; init; } = true;
+    public bool AllowIndexChange { get; init; } = true;
+    public bool AllowIndexOptimization { get; init; } = true;
+    public bool AllowIoFiles { get; init; } = true;
+    public bool AllowLocationInQuery { get; init; } = true;
+    public bool AllowOptions { get; init; } = true;
+    public bool AllowPrintingData { get; init; } = true;
+    public string? RecordCycle { get; init; }
+}
+
+public record ParsedCallArgument
+{
+    public int Position { get; init; }
+    public int? ArgId { get; init; }
+    public string? VariableRef { get; init; }        // {0,N} or {32768,N}
+    public int? ExpressionRef { get; init; }
+    public bool Skip { get; init; }
+    public bool IsParent { get; init; }
+}
+
+public record ParsedSelectDefinition
+{
+    public int FieldId { get; init; }
+    public int? SelectId { get; init; }
+    public int? ColumnRef { get; init; }
+    public string? SelectType { get; init; }         // V=Virtual, P=Parameter, R=Real, C=Control
+    public bool IsParameter { get; init; }
+    public int? AssignmentExpr { get; init; }
+    public string? DiffUpdate { get; init; }
+    public int? LocateMinExpr { get; init; }
+    public int? LocateMaxExpr { get; init; }
+    public bool PartOfDataview { get; init; } = true;
+    public string? RealVarName { get; init; }
+    public int? ControlIndex { get; init; }
+    public int? FormIndex { get; init; }
+    public int? TabbingOrder { get; init; }
+    public int? RecomputeIndex { get; init; }
+}
+
+public record ParsedUpdateOperation
+{
+    public int LineNumber { get; init; }
+    public int FieldId { get; init; }
+    public int? WithValueExpr { get; init; }
+    public bool ForcedUpdate { get; init; }
+    public bool Incremental { get; init; }
+    public string? Direction { get; init; }
+}
+
+public record ParsedLinkOperation
+{
+    public int LineNumber { get; init; }
+    public int TableId { get; init; }
+    public int? KeyIndex { get; init; }
+    public string? LinkMode { get; init; }           // L=Link, Q=Query, W=Write
+    public string? Direction { get; init; }
+    public string? SortType { get; init; }
+    public int? ViewNumber { get; init; }
+    public string? Views { get; init; }
+    public int? FieldId { get; init; }
+    public int? ConditionExpr { get; init; }
+    public string? EvalCondition { get; init; }
+    public bool IsExpanded { get; init; }
+}
+
+public record ParsedStopOperation
+{
+    public int LineNumber { get; init; }
+    public string? Mode { get; init; }               // V=Verify, E=Error, W=Warning, S=Status
+    public string? Buttons { get; init; }
+    public int? DefaultButton { get; init; }
+    public string? TitleText { get; init; }
+    public string? MessageText { get; init; }
+    public int? MessageExpr { get; init; }
+    public string? Image { get; init; }
+    public int? DisplayVar { get; init; }
+    public int? ReturnVar { get; init; }
+    public bool AppendToErrorLog { get; init; }
+}
+
+public record ParsedRaiseEventOperation
+{
+    public int LineNumber { get; init; }
+    public string? EventType { get; init; }
+    public int? InternalEventId { get; init; }
+    public string? PublicObjectComp { get; init; }
+    public int? PublicObjectObj { get; init; }
+    public string? WaitMode { get; init; }
+    public string? Direction { get; init; }
+}
+
+public record ParsedEventHandler
+{
+    public int EventId { get; init; }
+    public string? Description { get; init; }
+    public string? ForceExit { get; init; }
+    public string? EventType { get; init; }
+    public string? PublicObjectComp { get; init; }
+    public int? PublicObjectObj { get; init; }
+}
+
+public record ParsedFieldRange
+{
+    public int RangeId { get; init; }
+    public int? ColumnObj { get; init; }
+    public int? MinExpr { get; init; }
+    public int? MaxExpr { get; init; }
+}
+
+public record ParsedFormControl
+{
+    public int ControlId { get; init; }
+    public string? ControlType { get; init; }
+    public string? ControlName { get; init; }
+    public int? X { get; init; }
+    public int? Y { get; init; }
+    public int? Width { get; init; }
+    public int? Height { get; init; }
+    public bool Visible { get; init; } = true;
+    public bool Enabled { get; init; } = true;
+    public int? TabOrder { get; init; }
+    public int? LinkedFieldId { get; init; }
+    public string? LinkedVariable { get; init; }
+    public string? PropertiesJson { get; init; }
+}
+
+public record ParsedBlockOperation
+{
+    public int LineNumber { get; init; }
+    public string? BlockType { get; init; }          // IF, ELSE, LOOP
+    public int? ConditionExpr { get; init; }
+    public string? Modifier { get; init; }
+}
+
+public record ParsedEvaluateOperation
+{
+    public int LineNumber { get; init; }
+    public int? ExpressionRef { get; init; }
+    public int? ConditionExpr { get; init; }
+    public string? Direction { get; init; }
+    public string? Modifier { get; init; }
 }
