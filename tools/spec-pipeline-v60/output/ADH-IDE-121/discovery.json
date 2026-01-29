@@ -1,0 +1,398 @@
+﻿{
+    "tables":  {
+                   "all":  [
+                               {
+                                   "logical_name":  "reseau_cloture___rec",
+                                   "physical_name":  "cafil001_dat",
+                                   "access_mode":  "READ",
+                                   "id":  23,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "date_comptable___dat",
+                                   "physical_name":  "cafil048_dat",
+                                   "access_mode":  "READ",
+                                   "id":  70,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "articles_en_stock",
+                                   "physical_name":  "caisse_artstock",
+                                   "access_mode":  "LINK",
+                                   "id":  197,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "coupures_monnaie_locale",
+                                   "physical_name":  "caisse_banknote",
+                                   "access_mode":  "READ",
+                                   "id":  198,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "concurrence_sessions",
+                                   "physical_name":  "caisse_concurrences",
+                                   "access_mode":  "WRITE",
+                                   "id":  227,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "gestion_devise_session",
+                                   "physical_name":  "caisse_devise",
+                                   "access_mode":  "READ",
+                                   "id":  232,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "saisie_approvisionnement",
+                                   "physical_name":  "caisse_saisie_appro_dev",
+                                   "access_mode":  "LINK",
+                                   "id":  244,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "saisie_approvisionnement",
+                                   "physical_name":  "caisse_saisie_appro_dev",
+                                   "access_mode":  "WRITE",
+                                   "id":  244,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "histo_sessions_caisse",
+                                   "physical_name":  "caisse_session",
+                                   "access_mode":  "LINK",
+                                   "id":  246,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "histo_sessions_caisse",
+                                   "physical_name":  "caisse_session",
+                                   "access_mode":  "READ",
+                                   "id":  246,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "histo_sessions_caisse",
+                                   "physical_name":  "caisse_session",
+                                   "access_mode":  "WRITE",
+                                   "id":  246,
+                                   "usage_count":  4
+                               },
+                               {
+                                   "logical_name":  "sessions_coffre2",
+                                   "physical_name":  "caisse_session_coffre2",
+                                   "access_mode":  "LINK",
+                                   "id":  248,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "sessions_coffre2",
+                                   "physical_name":  "caisse_session_coffre2",
+                                   "access_mode":  "WRITE",
+                                   "id":  248,
+                                   "usage_count":  2
+                               },
+                               {
+                                   "logical_name":  "histo_sessions_caisse_detail",
+                                   "physical_name":  "caisse_session_detail",
+                                   "access_mode":  "LINK",
+                                   "id":  249,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "histo_sessions_caisse_detail",
+                                   "physical_name":  "caisse_session_detail",
+                                   "access_mode":  "READ",
+                                   "id":  249,
+                                   "usage_count":  3
+                               },
+                               {
+                                   "logical_name":  "droits_applications",
+                                   "physical_name":  "droits",
+                                   "access_mode":  "READ",
+                                   "id":  697,
+                                   "usage_count":  2
+                               },
+                               {
+                                   "logical_name":  "pv_stock_movements",
+                                   "physical_name":  "pv_stockmvt_dat",
+                                   "access_mode":  "READ",
+                                   "id":  740,
+                                   "usage_count":  2
+                               }
+                           ],
+                   "by_access":  {
+                                     "LINK":  [
+                                                  {
+                                                      "logical_name":  "articles_en_stock",
+                                                      "physical_name":  "caisse_artstock",
+                                                      "access_mode":  "LINK",
+                                                      "id":  197,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "saisie_approvisionnement",
+                                                      "physical_name":  "caisse_saisie_appro_dev",
+                                                      "access_mode":  "LINK",
+                                                      "id":  244,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "histo_sessions_caisse",
+                                                      "physical_name":  "caisse_session",
+                                                      "access_mode":  "LINK",
+                                                      "id":  246,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "sessions_coffre2",
+                                                      "physical_name":  "caisse_session_coffre2",
+                                                      "access_mode":  "LINK",
+                                                      "id":  248,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "histo_sessions_caisse_detail",
+                                                      "physical_name":  "caisse_session_detail",
+                                                      "access_mode":  "LINK",
+                                                      "id":  249,
+                                                      "usage_count":  1
+                                                  }
+                                              ],
+                                     "READ":  [
+                                                  {
+                                                      "logical_name":  "reseau_cloture___rec",
+                                                      "physical_name":  "cafil001_dat",
+                                                      "access_mode":  "READ",
+                                                      "id":  23,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "date_comptable___dat",
+                                                      "physical_name":  "cafil048_dat",
+                                                      "access_mode":  "READ",
+                                                      "id":  70,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "coupures_monnaie_locale",
+                                                      "physical_name":  "caisse_banknote",
+                                                      "access_mode":  "READ",
+                                                      "id":  198,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "gestion_devise_session",
+                                                      "physical_name":  "caisse_devise",
+                                                      "access_mode":  "READ",
+                                                      "id":  232,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "histo_sessions_caisse",
+                                                      "physical_name":  "caisse_session",
+                                                      "access_mode":  "READ",
+                                                      "id":  246,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "histo_sessions_caisse_detail",
+                                                      "physical_name":  "caisse_session_detail",
+                                                      "access_mode":  "READ",
+                                                      "id":  249,
+                                                      "usage_count":  3
+                                                  },
+                                                  {
+                                                      "logical_name":  "droits_applications",
+                                                      "physical_name":  "droits",
+                                                      "access_mode":  "READ",
+                                                      "id":  697,
+                                                      "usage_count":  2
+                                                  },
+                                                  {
+                                                      "logical_name":  "pv_stock_movements",
+                                                      "physical_name":  "pv_stockmvt_dat",
+                                                      "access_mode":  "READ",
+                                                      "id":  740,
+                                                      "usage_count":  2
+                                                  }
+                                              ],
+                                     "WRITE":  [
+                                                   {
+                                                       "logical_name":  "concurrence_sessions",
+                                                       "physical_name":  "caisse_concurrences",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  227,
+                                                       "usage_count":  1
+                                                   },
+                                                   {
+                                                       "logical_name":  "saisie_approvisionnement",
+                                                       "physical_name":  "caisse_saisie_appro_dev",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  244,
+                                                       "usage_count":  1
+                                                   },
+                                                   {
+                                                       "logical_name":  "histo_sessions_caisse",
+                                                       "physical_name":  "caisse_session",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  246,
+                                                       "usage_count":  4
+                                                   },
+                                                   {
+                                                       "logical_name":  "sessions_coffre2",
+                                                       "physical_name":  "caisse_session_coffre2",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  248,
+                                                       "usage_count":  2
+                                                   }
+                                               ]
+                                 }
+               },
+    "orphan_analysis":  {
+                            "has_public_name":  false,
+                            "is_ecf_member":  false,
+                            "has_callers":  true,
+                            "status":  "NON_ORPHELIN",
+                            "reason":  "Appele par 2 programme(s): IDE 163, IDE 281"
+                        },
+    "statistics":  {
+                       "callee_count":  18,
+                       "expression_count":  7,
+                       "logic_line_count":  678,
+                       "caller_count":  2,
+                       "task_count":  32,
+                       "disabled_line_count":  0,
+                       "table_count":  12
+                   },
+    "call_graph":  {
+                       "call_chain":  [
+                                          {
+                                              "name":  "Menu caisse GM - scroll",
+                                              "ide":  163,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Fermeture Sessions",
+                                              "ide":  281,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Main Program",
+                                              "ide":  1,
+                                              "level":  2
+                                          }
+                                      ],
+                       "callees":  [
+                                       {
+                                           "calls_count":  12,
+                                           "name":  "Calcul concurrence sessions",
+                                           "ide":  116
+                                       },
+                                       {
+                                           "calls_count":  3,
+                                           "name":  "Mise à jour detail session WS",
+                                           "ide":  134
+                                       },
+                                       {
+                                           "calls_count":  3,
+                                           "name":  "Ticket appro remise",
+                                           "ide":  139
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Contrôles - Integrite dates",
+                                           "ide":  48
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Ouverture caisse",
+                                           "ide":  122
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Fermeture caisse",
+                                           "ide":  131
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Controle fermeture caisse WS",
+                                           "ide":  155
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Recuperation du titre",
+                                           "ide":  43
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Affichage sessions",
+                                           "ide":  119
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Apport coffre",
+                                           "ide":  123
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Apport articles",
+                                           "ide":  124
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Remise en caisse",
+                                           "ide":  125
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Historique session",
+                                           "ide":  132
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Init apport article session WS",
+                                           "ide":  140
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Init devise session WS",
+                                           "ide":  141
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Reimpression tickets fermeture",
+                                           "ide":  151
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Verif session caisse ouverte2",
+                                           "ide":  156
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Raisons utilisation ADH",
+                                           "ide":  231
+                                       }
+                                   ],
+                       "callers":  [
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Menu caisse GM - scroll",
+                                           "ide":  163
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Fermeture Sessions",
+                                           "ide":  281
+                                       }
+                                   ]
+                   },
+    "metadata":  {
+                     "ide_position":  121,
+                     "pipeline_version":  "6.0",
+                     "project":  "ADH",
+                     "program_name":  "Gestion caisse",
+                     "generated_at":  "2026-01-29 09:26:10"
+                 }
+}

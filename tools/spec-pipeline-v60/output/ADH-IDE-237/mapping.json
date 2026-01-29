@@ -5,7 +5,7 @@
                        "parameter_count":  0,
                        "total_variables":  273,
                        "global_count":  0,
-                       "mapping_entries":  0,
+                       "mapping_entries":  171,
                        "local_count":  273
                    },
     "tables":  {
@@ -2388,13 +2388,867 @@
                                      ]
                   },
     "variable_mapping":  {
-
+                             "{0,178}":  {
+                                             "type":  "local",
+                                             "name":  "V.N°Ticket Autres Moyen Paie",
+                                             "letter":  "FV"
+                                         },
+                             "{0,126}":  {
+                                             "type":  "local",
+                                             "name":  "W0 gratuite ?",
+                                             "letter":  "DV"
+                                         },
+                             "{0,120}":  {
+                                             "type":  "local",
+                                             "name":  "W0 forfait (O/N)",
+                                             "letter":  "DP"
+                                         },
+                             "{0,89}":  {
+                                            "type":  "local",
+                                            "name":  "W0.Date fin sejour",
+                                            "letter":  "CK"
+                                        },
+                             "{0,130}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Forcer Transaction Manuelle",
+                                             "letter":  "DZ"
+                                         },
+                             "{0,143}":  {
+                                             "type":  "local",
+                                             "name":  "W0 choix transac manuelle",
+                                             "letter":  "EM"
+                                         },
+                             "{0,121}":  {
+                                             "type":  "local",
+                                             "name":  "W0 effacement (O/N)",
+                                             "letter":  "DQ"
+                                         },
+                             "{0,170}":  {
+                                             "type":  "local",
+                                             "name":  "V.Total carte",
+                                             "letter":  "FN"
+                                         },
+                             "{0,153}":  {
+                                             "type":  "local",
+                                             "name":  "V.Article VSL NA ?",
+                                             "letter":  "EW"
+                                         },
+                             "{0,138}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Compte garanti",
+                                             "letter":  "EH"
+                                         },
+                             "{0,160}":  {
+                                             "type":  "local",
+                                             "name":  "v Nbre ligne de reglement Saisi",
+                                             "letter":  "FD"
+                                         },
+                             "{0,24}":  {
+                                            "type":  "local",
+                                            "name":  "W0 sous-imput.",
+                                            "letter":  "X"
+                                        },
+                             "{0,180}":  {
+                                             "type":  "local",
+                                             "name":  "V.SoldeResortCredit",
+                                             "letter":  "FX"
+                                         },
+                             "{0,74}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Sens du transfert Retour",
+                                            "letter":  "BV"
+                                        },
+                             "{0,55}":  {
+                                            "type":  "local",
+                                            "name":  "W0 article dernière minute",
+                                            "letter":  "BC"
+                                        },
+                             "{0,190}":  {
+                                             "type":  "local",
+                                             "name":  "v. pied type?",
+                                             "letter":  "GH"
+                                         },
+                             "{0,19}":  {
+                                            "type":  "local",
+                                            "name":  "Bouton FIN SAISIE OD",
+                                            "letter":  "S"
+                                        },
+                             "{0,117}":  {
+                                             "type":  "local",
+                                             "name":  "V0 validation",
+                                             "letter":  "DM"
+                                         },
+                             "{0,192}":  {
+                                             "type":  "local",
+                                             "name":  "v. stype a utiliser",
+                                             "letter":  "GJ"
+                                         },
+                             "{0,64}":  {
+                                            "type":  "local",
+                                            "name":  "v.Matin/Après midi",
+                                            "letter":  "BL"
+                                        },
+                             "{0,137}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Annulation OD active",
+                                             "letter":  "EG"
+                                         },
+                             "{0,16}":  {
+                                            "type":  "local",
+                                            "name":  "Bouton IDENTITE",
+                                            "letter":  "P"
+                                        },
+                             "{0,101}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Nb Chambres",
+                                             "letter":  "CW"
+                                         },
+                             "{0,90}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Motif de non enreg NA",
+                                            "letter":  "CL"
+                                        },
+                             "{0,88}":  {
+                                            "type":  "local",
+                                            "name":  "W0.Date consommation",
+                                            "letter":  "CJ"
+                                        },
+                             "{0,6}":  {
+                                           "type":  "local",
+                                           "name":  "P0 filiation",
+                                           "letter":  "F"
+                                       },
+                             "{0,80}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Compagnie Retour",
+                                            "letter":  "CB"
+                                        },
+                             "{0,152}":  {
+                                             "type":  "local",
+                                             "name":  "V.Premier article VSL NA ?",
+                                             "letter":  "EV"
+                                         },
+                             "{0,26}":  {
+                                            "type":  "local",
+                                            "name":  "W0 annulation",
+                                            "letter":  "Z"
+                                        },
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "P0 masque montant",
+                                           "letter":  "C"
+                                       },
+                             "{0,140}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Abandon",
+                                             "letter":  "EJ"
+                                         },
+                             "{0,184}":  {
+                                             "type":  "local",
+                                             "name":  "v.Token Id",
+                                             "letter":  "GB"
+                                         },
+                             "{0,150}":  {
+                                             "type":  "local",
+                                             "name":  "V.Reglement premier article",
+                                             "letter":  "ET"
+                                         },
+                             "{0,176}":  {
+                                             "type":  "local",
+                                             "name":  "v.email GM pour VAD",
+                                             "letter":  "FT"
+                                         },
+                             "{0,20}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Cloture en cours",
+                                            "letter":  "T"
+                                        },
+                             "{0,72}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Compagnie Aller",
+                                            "letter":  "BT"
+                                        },
+                             "{0,149}":  {
+                                             "type":  "local",
+                                             "name":  "Nbre ecriture",
+                                             "letter":  "ES"
+                                         },
+                             "{0,116}":  {
+                                             "type":  "local",
+                                             "name":  "V0 memo-nom GM",
+                                             "letter":  "DL"
+                                         },
+                             "{0,5}":  {
+                                           "type":  "local",
+                                           "name":  "P0 code GM",
+                                           "letter":  "E"
+                                       },
+                             "{0,112}":  {
+                                             "type":  "local",
+                                             "name":  "Existe mode de paiement",
+                                             "letter":  "DH"
+                                         },
+                             "{0,124}":  {
+                                             "type":  "local",
+                                             "name":  "W0 date debut",
+                                             "letter":  "DT"
+                                         },
+                             "{0,93}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Titre",
+                                            "letter":  "CO"
+                                        },
+                             "{0,7}":  {
+                                           "type":  "local",
+                                           "name":  "P0 date fin sejour",
+                                           "letter":  "G"
+                                       },
+                             "{0,54}":  {
+                                            "type":  "local",
+                                            "name":  "W0 libelle article",
+                                            "letter":  "BB"
+                                        },
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "P0 devise locale",
+                                           "letter":  "B"
+                                       },
+                             "{0,144}":  {
+                                             "type":  "local",
+                                             "name":  "Bouton Ok",
+                                             "letter":  "EN"
+                                         },
+                             "{0,9}":  {
+                                           "type":  "local",
+                                           "name":  "P0 date solde",
+                                           "letter":  "I"
+                                       },
+                             "{0,185}":  {
+                                             "type":  "local",
+                                             "name":  "v.Transaction Id",
+                                             "letter":  "GC"
+                                         },
+                             "{0,195}":  {
+                                             "type":  "local",
+                                             "name":  "P.Toute ligne",
+                                             "letter":  "GM"
+                                         },
+                             "{0,168}":  {
+                                             "type":  "local",
+                                             "name":  "V.Transaction TPE validee",
+                                             "letter":  "FL"
+                                         },
+                             "{0,53}":  {
+                                            "type":  "local",
+                                            "name":  "W0 service village",
+                                            "letter":  "BA"
+                                        },
+                             "{0,57}":  {
+                                            "type":  "local",
+                                            "name":  "W0 prix unitaire",
+                                            "letter":  "BE"
+                                        },
+                             "{0,148}":  {
+                                             "type":  "local",
+                                             "name":  "V.VAD ?",
+                                             "letter":  "ER"
+                                         },
+                             "{0,11}":  {
+                                            "type":  "local",
+                                            "name":  "P0 Nom \u0026 prenom",
+                                            "letter":  "K"
+                                        },
+                             "{0,73}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Commentaire Aller",
+                                            "letter":  "BU"
+                                        },
+                             "{0,125}":  {
+                                             "type":  "local",
+                                             "name":  "W0 date fin",
+                                             "letter":  "DU"
+                                         },
+                             "{0,94}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Nom",
+                                            "letter":  "CP"
+                                        },
+                             "{0,4}":  {
+                                           "type":  "local",
+                                           "name":  "P0 solde compte",
+                                           "letter":  "D"
+                                       },
+                             "{0,103}":  {
+                                             "type":  "local",
+                                             "name":  "W0 PYR Valide",
+                                             "letter":  "CY"
+                                         },
+                             "{0,17}":  {
+                                            "type":  "local",
+                                            "name":  "Bouton ABANDON",
+                                            "letter":  "Q"
+                                        },
+                             "{0,83}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Commentaire Retour",
+                                            "letter":  "CE"
+                                        },
+                             "{0,145}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Lien Logement Lieu Séjour",
+                                             "letter":  "EO"
+                                         },
+                             "{0,173}":  {
+                                             "type":  "local",
+                                             "name":  "b.type de transfert",
+                                             "letter":  "FQ"
+                                         },
+                             "{0,155}":  {
+                                             "type":  "local",
+                                             "name":  "v.IncrémentTicket(VTE) OK",
+                                             "letter":  "EY"
+                                         },
+                             "{0,92}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Motif annulation",
+                                            "letter":  "CN"
+                                        },
+                             "{0,135}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Total_Vente",
+                                             "letter":  "EE"
+                                         },
+                             "{0,169}":  {
+                                             "type":  "local",
+                                             "name":  "V.Message erreur transac TPE",
+                                             "letter":  "FM"
+                                         },
+                             "{0,186}":  {
+                                             "type":  "local",
+                                             "name":  "v.Nb chambres /LCO",
+                                             "letter":  "GD"
+                                         },
+                             "{0,174}":  {
+                                             "type":  "local",
+                                             "name":  "v is the First time",
+                                             "letter":  "FR"
+                                         },
+                             "{0,158}":  {
+                                             "type":  "local",
+                                             "name":  "v Réponse mode paiement",
+                                             "letter":  "FB"
+                                         },
+                             "{0,179}":  {
+                                             "type":  "local",
+                                             "name":  "V.Num Cheque",
+                                             "letter":  "FW"
+                                         },
+                             "{0,194}":  {
+                                             "type":  "local",
+                                             "name":  "CHG_PRV_W0 libelle article",
+                                             "letter":  "GL"
+                                         },
+                             "{0,110}":  {
+                                             "type":  "local",
+                                             "name":  "W0 montant",
+                                             "letter":  "DF"
+                                         },
+                             "{0,12}":  {
+                                            "type":  "local",
+                                            "name":  "P0 UNI/BI",
+                                            "letter":  "L"
+                                        },
+                             "{0,79}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Numéro du vol Retour",
+                                            "letter":  "CA"
+                                        },
+                             "{0,62}":  {
+                                            "type":  "local",
+                                            "name":  "v.Date activité VAE",
+                                            "letter":  "BJ"
+                                        },
+                             "{0,111}":  {
+                                             "type":  "local",
+                                             "name":  "W0 mode de paiement",
+                                             "letter":  "DG"
+                                         },
+                             "{0,95}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Prenom",
+                                            "letter":  "CQ"
+                                        },
+                             "{0,91}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Commentaire",
+                                            "letter":  "CM"
+                                        },
+                             "{0,85}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Pourcentage reduction",
+                                            "letter":  "CG"
+                                        },
+                             "{0,172}":  {
+                                             "type":  "local",
+                                             "name":  "V.Nombre de carte",
+                                             "letter":  "FP"
+                                         },
+                             "{0,134}":  {
+                                             "type":  "local",
+                                             "name":  "v. titre",
+                                             "letter":  "ED"
+                                         },
+                             "{0,127}":  {
+                                             "type":  "local",
+                                             "name":  "W0 ret lien special",
+                                             "letter":  "DW"
+                                         },
+                             "{0,82}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Nbre de PAX enregistré",
+                                            "letter":  "CD"
+                                        },
+                             "{0,56}":  {
+                                            "type":  "local",
+                                            "name":  "W0 nbre articles",
+                                            "letter":  "BD"
+                                        },
+                             "{0,146}":  {
+                                             "type":  "local",
+                                             "name":  "V.VADA ?",
+                                             "letter":  "EP"
+                                         },
+                             "{0,136}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Total_GiftPass",
+                                             "letter":  "EF"
+                                         },
+                             "{0,25}":  {
+                                            "type":  "local",
+                                            "name":  "W0 date d\u0027achat",
+                                            "letter":  "Y"
+                                        },
+                             "{0,187}":  {
+                                             "type":  "local",
+                                             "name":  "v.Flag exist Vte LCO",
+                                             "letter":  "GE"
+                                         },
+                             "{0,154}":  {
+                                             "type":  "local",
+                                             "name":  "v.IncrémentTicket(VRL/VSL) OK",
+                                             "letter":  "EX"
+                                         },
+                             "{0,76}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Heure du transfert Retour",
+                                            "letter":  "BX"
+                                        },
+                             "{0,197}":  {
+                                             "type":  "local",
+                                             "name":  "CHG_PRV_W0 nbre articles",
+                                             "letter":  "GO"
+                                         },
+                             "{0,166}":  {
+                                             "type":  "local",
+                                             "name":  "V.Id transaction AXIS",
+                                             "letter":  "FJ"
+                                         },
+                             "{0,70}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Code Gare/Aéroport Aller",
+                                            "letter":  "BR"
+                                        },
+                             "{0,104}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Lib Bouton Chambre",
+                                             "letter":  "CZ"
+                                         },
+                             "{0,60}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Code reduction",
+                                            "letter":  "BH"
+                                        },
+                             "{0,118}":  {
+                                             "type":  "local",
+                                             "name":  "W0 reseau",
+                                             "letter":  "DN"
+                                         },
+                             "{0,13}":  {
+                                            "type":  "local",
+                                            "name":  "P0.Date debut sejour",
+                                            "letter":  "M"
+                                        },
+                             "{0,71}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Numéro du vol Aller",
+                                            "letter":  "BS"
+                                        },
+                             "{0,61}":  {
+                                            "type":  "local",
+                                            "name":  "v Sens Transfert Global",
+                                            "letter":  "BI"
+                                        },
+                             "{0,105}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Vendeur",
+                                             "letter":  "DA"
+                                         },
+                             "{0,96}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Num rue",
+                                            "letter":  "CR"
+                                        },
+                             "{0,161}":  {
+                                             "type":  "local",
+                                             "name":  "V.Num ligne vente",
+                                             "letter":  "FE"
+                                         },
+                             "{0,23}":  {
+                                            "type":  "local",
+                                            "name":  "W0 imputation",
+                                            "letter":  "W"
+                                        },
+                             "{0,84}":  {
+                                            "type":  "local",
+                                            "name":  "W0 montant avant reduction",
+                                            "letter":  "CF"
+                                        },
+                             "{0,147}":  {
+                                             "type":  "local",
+                                             "name":  "V.VADV ?",
+                                             "letter":  "EQ"
+                                         },
+                             "{0,171}":  {
+                                             "type":  "local",
+                                             "name":  "V.Transaction ok",
+                                             "letter":  "FO"
+                                         },
+                             "{0,157}":  {
+                                             "type":  "local",
+                                             "name":  "v.NumeroTicket(VTE)",
+                                             "letter":  "FA"
+                                         },
+                             "{0,77}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Type d\u0027endroit Retour",
+                                            "letter":  "BY"
+                                        },
+                             "{0,68}":  {
+                                            "type":  "local",
+                                            "name":  "W0 b.Date du transfert",
+                                            "letter":  "BP"
+                                        },
+                             "{0,167}":  {
+                                             "type":  "local",
+                                             "name":  "V.Num Autorisation",
+                                             "letter":  "FK"
+                                         },
+                             "{0,181}":  {
+                                             "type":  "local",
+                                             "name":  "V.Confirm Use Resort Credit",
+                                             "letter":  "FY"
+                                         },
+                             "{0,107}":  {
+                                             "type":  "local",
+                                             "name":  "W0 libelle supplem pour édition",
+                                             "letter":  "DC"
+                                         },
+                             "{0,67}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Heure du transfert Aller",
+                                            "letter":  "BO"
+                                        },
+                             "{0,128}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Code Devise",
+                                             "letter":  "DX"
+                                         },
+                             "{0,177}":  {
+                                             "type":  "local",
+                                             "name":  "V.N°Ticket OD",
+                                             "letter":  "FU"
+                                         },
+                             "{0,191}":  {
+                                             "type":  "local",
+                                             "name":  "v. type a utiliser",
+                                             "letter":  "GI"
+                                         },
+                             "{0,10}":  {
+                                            "type":  "local",
+                                            "name":  "P0 garanti O/N",
+                                            "letter":  "J"
+                                        },
+                             "{0,113}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Libelle MOP",
+                                             "letter":  "DI"
+                                         },
+                             "{0,119}":  {
+                                             "type":  "local",
+                                             "name":  "W0 fin tache",
+                                             "letter":  "DO"
+                                         },
+                             "{0,97}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Nom de la rue",
+                                            "letter":  "CS"
+                                        },
+                             "{0,141}":  {
+                                             "type":  "local",
+                                             "name":  "W0 validation",
+                                             "letter":  "EK"
+                                         },
+                             "{0,123}":  {
+                                             "type":  "local",
+                                             "name":  "W0 code forfait",
+                                             "letter":  "DS"
+                                         },
+                             "{0,21}":  {
+                                            "type":  "local",
+                                            "name":  "W0 code article",
+                                            "letter":  "U"
+                                        },
+                             "{0,87}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Montant reduction",
+                                            "letter":  "CI"
+                                        },
+                             "{0,151}":  {
+                                             "type":  "local",
+                                             "name":  "V.Type premier article",
+                                             "letter":  "EU"
+                                         },
+                             "{0,133}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Fin Transaction TPE",
+                                             "letter":  "EC"
+                                         },
+                             "{0,131}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Message TPE",
+                                             "letter":  "EA"
+                                         },
+                             "{0,58}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Categorie de chambre",
+                                            "letter":  "BF"
+                                        },
+                             "{0,78}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Code Gare/Aéroport Retour",
+                                            "letter":  "BZ"
+                                        },
+                             "{0,196}":  {
+                                             "type":  "local",
+                                             "name":  "CHG_REASON_W0 nbre articles",
+                                             "letter":  "GN"
+                                         },
+                             "{0,182}":  {
+                                             "type":  "local",
+                                             "name":  "V.ConfirmeUseGP?",
+                                             "letter":  "FZ"
+                                         },
+                             "{0,156}":  {
+                                             "type":  "local",
+                                             "name":  "v.NumeroTicket(VRL/VSL)",
+                                             "letter":  "EZ"
+                                         },
+                             "{0,189}":  {
+                                             "type":  "local",
+                                             "name":  "v. pied stype?",
+                                             "letter":  "GG"
+                                         },
+                             "{0,115}":  {
+                                             "type":  "local",
+                                             "name":  "V0 memo-service",
+                                             "letter":  "DK"
+                                         },
+                             "{0,164}":  {
+                                             "type":  "local",
+                                             "name":  "V.MOP TPE",
+                                             "letter":  "FH"
+                                         },
+                             "{0,100}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Ville",
+                                             "letter":  "CV"
+                                         },
+                             "{0,122}":  {
+                                             "type":  "local",
+                                             "name":  "W0 forfait date(O/N)",
+                                             "letter":  "DR"
+                                         },
+                             "{0,106}":  {
+                                             "type":  "local",
+                                             "name":  "W0 libelle supplem",
+                                             "letter":  "DB"
+                                         },
+                             "{0,66}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Date du transfert Aller",
+                                            "letter":  "BN"
+                                        },
+                             "{0,69}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Type d\u0027endroit Aller",
+                                            "letter":  "BQ"
+                                        },
+                             "{0,81}":  {
+                                            "type":  "local",
+                                            "name":  "W0 b.Saisie PAX",
+                                            "letter":  "CC"
+                                        },
+                             "{0,102}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Chambre",
+                                             "letter":  "CX"
+                                         },
+                             "{0,98}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Commune",
+                                            "letter":  "CT"
+                                        },
+                             "{0,14}":  {
+                                            "type":  "local",
+                                            "name":  "P0.Valide ?",
+                                            "letter":  "N"
+                                        },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "P0 societe",
+                                           "letter":  "A"
+                                       },
+                             "{0,142}":  {
+                                             "type":  "local",
+                                             "name":  "W0 choix personne absente",
+                                             "letter":  "EL"
+                                         },
+                             "{0,129}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Retour Transmission TPE",
+                                             "letter":  "DY"
+                                         },
+                             "{0,8}":  {
+                                           "type":  "local",
+                                           "name":  "P0 etat compte",
+                                           "letter":  "H"
+                                       },
+                             "{0,163}":  {
+                                             "type":  "local",
+                                             "name":  "V.Multi reglement ligne",
+                                             "letter":  "FG"
+                                         },
+                             "{0,159}":  {
+                                             "type":  "local",
+                                             "name":  "V Nbre de Ligne Saisies",
+                                             "letter":  "FC"
+                                         },
+                             "{0,139}":  {
+                                             "type":  "local",
+                                             "name":  "W0 confirmation si non garanti",
+                                             "letter":  "EI"
+                                         },
+                             "{0,63}":  {
+                                            "type":  "local",
+                                            "name":  "v.VAE pendant le séjour ?",
+                                            "letter":  "BK"
+                                        },
+                             "{0,188}":  {
+                                             "type":  "local",
+                                             "name":  "v.Flag abandon libération",
+                                             "letter":  "GF"
+                                         },
+                             "{0,162}":  {
+                                             "type":  "local",
+                                             "name":  "V.Total reglement ligne",
+                                             "letter":  "FF"
+                                         },
+                             "{0,59}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Lieu sejour",
+                                            "letter":  "BG"
+                                        },
+                             "{0,86}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Remise Obligatoire",
+                                            "letter":  "CH"
+                                        },
+                             "{0,109}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Stock produit",
+                                             "letter":  "DE"
+                                         },
+                             "{0,22}":  {
+                                            "type":  "local",
+                                            "name":  "v.SoldeGiftPass",
+                                            "letter":  "V"
+                                        },
+                             "{0,75}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Date du transfert Retour",
+                                            "letter":  "BW"
+                                        },
+                             "{0,108}":  {
+                                             "type":  "local",
+                                             "name":  "W0 article trouve",
+                                             "letter":  "DD"
+                                         },
+                             "{0,165}":  {
+                                             "type":  "local",
+                                             "name":  "V.Id transaction PMS",
+                                             "letter":  "FI"
+                                         },
+                             "{0,132}":  {
+                                             "type":  "local",
+                                             "name":  "W0 Retour Lecture TPE",
+                                             "letter":  "EB"
+                                         },
+                             "{0,183}":  {
+                                             "type":  "local",
+                                             "name":  "V.RC utilisé",
+                                             "letter":  "GA"
+                                         },
+                             "{0,65}":  {
+                                            "type":  "local",
+                                            "name":  "W0 Sens du transfert Aller",
+                                            "letter":  "BM"
+                                        },
+                             "{0,175}":  {
+                                             "type":  "local",
+                                             "name":  "v.Montant-giftPass",
+                                             "letter":  "FS"
+                                         },
+                             "{0,114}":  {
+                                             "type":  "local",
+                                             "name":  "WO Classe MOP",
+                                             "letter":  "DJ"
+                                         },
+                             "{0,193}":  {
+                                             "type":  "local",
+                                             "name":  "CHG_REASON_W0 libelle article",
+                                             "letter":  "GK"
+                                         },
+                             "{0,18}":  {
+                                            "type":  "local",
+                                            "name":  "W0 FIN SAISIE OD",
+                                            "letter":  "R"
+                                        },
+                             "{0,99}":  {
+                                            "type":  "local",
+                                            "name":  "W0 CP",
+                                            "letter":  "CU"
+                                        },
+                             "{0,15}":  {
+                                            "type":  "local",
+                                            "name":  "P0.Nb decimales",
+                                            "letter":  "O"
+                                        }
                          },
     "metadata":  {
                      "ide_position":  237,
                      "pipeline_version":  "6.0",
                      "project":  "ADH",
                      "program_name":  "Transaction Nouv vente avec GP",
-                     "generated_at":  "2026-01-28 17:47:53"
+                     "generated_at":  "2026-01-28 23:48:30"
                  }
 }

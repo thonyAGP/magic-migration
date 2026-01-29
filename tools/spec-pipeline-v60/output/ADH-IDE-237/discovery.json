@@ -576,7 +576,7 @@
                             "is_ecf_member":  false,
                             "has_callers":  true,
                             "status":  "NON_ORPHELIN",
-                            "reason":  "Appele par 3 programme(s): IDE 163, IDE 242, IDE 316"
+                            "reason":  "Appele par 3 programme(s): Menu caisse GM - scroll (IDE 163), Menu Choix Saisie/Annul vente (IDE 242), Saisie transaction Nouv vente (IDE 316)"
                         },
     "statistics":  {
                        "callee_count":  20,
@@ -750,6 +750,6 @@
                      "pipeline_version":  "6.0",
                      "project":  "ADH",
                      "program_name":  "Transaction Nouv vente avec GP",
-                     "generated_at":  "2026-01-28 17:47:49"
+                     "generated_at":  "2026-01-29 11:33:59"
                  }
 }

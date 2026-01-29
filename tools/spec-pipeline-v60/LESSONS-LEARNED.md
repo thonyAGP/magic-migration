@@ -176,6 +176,52 @@ Le champ `pipeline-report.json` contient `duration_seconds` qui est le temps pip
 
 ---
 
+## Erreur #5: KB partiellement indexee - Expressions non liees
+
+### Contexte
+Lors de l'execution de Phase1-Discovery, les donnees retournaient 0 pour tables, callers, callees et expressions, bien que le programme existait dans la KB.
+
+### Symptomes
+```
+DEBUG: dbProgramId = 50054
+DEBUG: exprCount for 50054 = 0, total expressions = 2353
+```
+
+Les expressions existaient (2353) mais aucune n'etait liee au program_id du programme demande.
+
+### Diagnostic
+```powershell
+# Ajouter ce debug dans spec-data pour voir quels programs ont des expressions
+SELECT e.program_id, p.ide_position, p.name, COUNT(*) as cnt
+FROM expressions e
+JOIN programs p ON e.program_id = p.id
+GROUP BY e.program_id
+ORDER BY cnt DESC LIMIT 10
+```
+
+### Cause
+La KB avait ete partiellement reindexee ou corrompue. Les IDs de programmes avaient change entre les indexations, creant des orphelins.
+
+### Solution
+Reindexer completement la KB:
+```bash
+cd tools/KbIndexRunner
+dotnet run -- "D:/Data/Migration/XPA/PMS"
+```
+
+### Verification post-reindexation
+```
+DEBUG: dbProgramId = 233
+DEBUG: exprCount for 233 = 305, total expressions = 43539
+```
+
+### Lecon
+- Toujours verifier que les donnees sont bien liees apres une reindexation
+- Utiliser les logs DEBUG pour confirmer les IDs
+- En cas de doute, reindexer completement plutot que incrementalement
+
+---
+
 ## Resume des Regles
 
 | Regle | Faire | Ne pas faire |
@@ -186,7 +232,9 @@ Le champ `pipeline-report.json` contient `duration_seconds` qui est le temps pip
 | Nouveaux scripts | Copier patterns valides | Reinventer |
 | Timing comparaisons | `duration_seconds` pipeline | Wall-clock time |
 | Batch analyses | Warm-up run d'abord | Comparer cold vs warm |
+| KB suspecte | Reindexer completement | Indexation incrementale |
+| Donnees manquantes | Verifier DEBUG logs | Supposer que ca marche |
 
 ---
 
-*Derniere mise a jour: 2026-01-28 - Post documentation cold start dotnet*
+*Derniere mise a jour: 2026-01-28 - Post diagnostic KB corrompue et plan enrichissement KB*

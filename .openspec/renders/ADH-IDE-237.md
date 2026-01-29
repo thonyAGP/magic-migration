@@ -1,8 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Debut**: 2026-01-28 17:47:37
-> **Fin**: 2026-01-28 17:48:11
-> **Duree pipeline**: 15.8s
+> **Analyse**: 2026-01-28 18:24
 > **Pipeline**: V6.0 Deep Analysis
 > **Niveau**: DETAILED (Migration)
 
@@ -130,41 +128,41 @@ Transaction Nouv vente avec GP
 
 | ID | Condition | Resultat | Description |
 |----|-----------|----------|-------------|
-| RM-001 | `Trim(Var_BA)='1'` | 'ALLER' | Si Trim(Variable )='1' alors 'ALLER' sinon IF(T... |
-| RM-002 | `Var_GA=0` | IF(Var_W='VSL' | Si Variable =0 alors IF(Var_W='VSL' sinon Var_M... |
-| RM-003 | `Var_C=''` | '15.2' | Si Variable ='' alors '15.2' sinon Var_C) |
-| RM-004 | `VG7 OR VG35 OR VG87` | 'Var_C'FORM | Si VG7 OR VG35 OR VG87 alors 'Var_C'FORM sinon ... |
-| RM-005 | `NOT Var_CL` | Var_CK | Si NOT Variable  alors Var_CK sinon Var_CO) |
-| RM-006 | `Var_W='VRL'` | 'Date consommation' | Si Variable ='VRL' alors 'Date consommation' si... |
-| RM-007 | `Var_CO<>0 AND NOT(Var_CL)` | Fix(Var_CN*Var_CO/100 | Si Variable <>0 AND NOT(Variable ) alors Fix(Va... |
-| RM-008 | `Var_GA=0` | IF(Var_W='VSL' | Si Variable =0 alors IF(Var_W='VSL' sinon Var_G... |
-| RM-009 | `Var_W='VRL' OR Var_W='VSL'` | 'Nb forfait' | Si Variable ='VRL' OR Variable ='VSL' alors 'Nb... |
-| RM-010 | `IN (Var_W` | 'VRL' | Si IN (Variable  alors 'VRL' sinon 'VSL','TRF',... |
-| RM-011 | `IN (Var_W` | 'VRL' | Si IN (Variable  alors 'VRL' sinon 'VSL','TRF',... |
-| RM-012 | `IN (Var_W` | 'VRL' | Si IN (Variable  alors 'VRL' sinon 'VSL','TRF',... |
-| RM-013 | `IN (Var_W` | 'VRL' | Si IN (Variable  alors 'VRL' sinon 'VSL','TRF',... |
-| RM-014 | `IN (Var_W` | 'VRL' | Si IN (Variable  alors 'VRL' sinon 'VSL','TRF',... |
-| RM-015 | `IN (Var_W` | 'VRL' | Si IN (Variable  alors 'VRL' sinon 'VSL','TRF',... |
+| RM-001 | `Trim(Var_BA(W0 service village))='1'` | 'ALLER' | Si Trim(W0 service village)='1' alors 'ALLER' s... |
+| RM-002 | `Var_GA(V.RC utilisé)=0` | IF(Var_W(W0 imputation)='VSL' | Si V.RC utilisé=0 alors IF(Var_W(W0 imputation)... |
+| RM-003 | `Var_C(P0 masque montant)=''` | '15.2' | Si P0 masque montant='' alors '15.2' sinon Var_... |
+| RM-004 | `VG7 OR VG35 OR VG87` | 'Var_C(P0 masque montant)'FORM | Si VG7 OR VG35 OR VG87 alors 'Var_C(P0 masque m... |
+| RM-005 | `NOT Var_CL(W0 Motif de non e...)` | Var_CK(W0.Date fin sejour) | Si NOT W0 Motif de non e... alors Var_CK(W0.Dat... |
+| RM-006 | `Var_W(W0 imputation)='VRL'` | 'Date consommation' | Si W0 imputation='VRL' alors 'Date consommation... |
+| RM-007 | `Var_CO(W0 Titre)<>0 AND NOT(Var_CL(W0...` | Fix(Var_CN(W0 Motif annulation)*Var_CO(W0 Titre)/100 | Si W0 Titre<>0 AND NOT(W0 Motif de non e...) al... |
+| RM-008 | `Var_GA(V.RC utilisé)=0` | IF(Var_W(W0 imputation)='VSL' | Si V.RC utilisé=0 alors IF(Var_W(W0 imputation)... |
+| RM-009 | `Var_W(W0 imputation)='VRL' OR Var_W(W...` | 'Nb forfait' | Si W0 imputation='VRL' OR W0 imputation='VSL' a... |
+| RM-010 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
+| RM-011 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
+| RM-012 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
+| RM-013 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
+| RM-014 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
+| RM-015 | `IN (Var_W(W0 imputation)` | 'VRL' | Si IN (W0 imputation alors 'VRL' sinon 'VSL','T... |
 #### Top 20 Expressions
 
 | IDE | Type | Expression Decodee |
 |-----|------|-------------------|
-| 1 | DATE | `DStr(Var_G,'DD/MM/YYYY')` |
-| 2 | CONDITION | `IF(Trim(Var_BA)='1','ALLER',IF(Trim(Var_BA)='2','RETOUR',...` |
+| 1 | DATE | `DStr(Var_G(P0 date fin sejour),'DD/MM/YYYY')` |
+| 2 | CONDITION | `IF(Trim(Var_BA(W0 service village))='1','ALLER',IF(Trim(V...` |
 | 3 | STRING | `MlsTrans ('Verifier que la transaction est bien pour')&' ...` |
 | 4 | DATE | `Date ()` |
-| 5 | CONDITION | `IF(Var_GA=0,IF(Var_W='VSL',Var_M,Date()),Var_CR)` |
+| 5 | CONDITION | `IF(Var_GA(V.RC utilisé)=0,IF(Var_W(W0 imputation)='VSL',V...` |
 | 6 | OTHER | `NOT VG38` |
 | 7 | OTHER | `VG2` |
-| 8 | STRING | `Trim (Var_EM)` |
+| 8 | STRING | `Trim (Var_EM(W0 choix transac ...))` |
 | 9 | CONSTANT | `154` |
-| 10 | OTHER | `Var_A` |
-| 11 | OTHER | `Var_E` |
-| 12 | OTHER | `Var_F` |
+| 10 | OTHER | `Var_A(P0 societe)` |
+| 11 | OTHER | `Var_E(P0 code GM)` |
+| 12 | OTHER | `Var_F(P0 filiation)` |
 | 13 | CONSTANT | `'F'` |
 | 14 | DATE | `Date ()` |
 | 15 | CALCULATION | `Var_AW*Var_AV` |
-| 16 | CALCULATION | `(Var_AW*Var_AV)-Var_CQ` |
+| 16 | CALCULATION | `(Var_AW*Var_AV)-Var_CQ(W0 Prenom)` |
 | 17 | OTHER | `'FALSE'LOG` |
 | 18 | CONSTANT | `'N'` |
 | 19 | CONSTANT | `1` |
@@ -339,4 +337,4 @@ graph LR
 - Expressions conditionnelles: 31
 
 ---
-*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 17:48*
+*Spec DETAILED generee par Pipeline V6.0 - 2026-01-28 18:24*

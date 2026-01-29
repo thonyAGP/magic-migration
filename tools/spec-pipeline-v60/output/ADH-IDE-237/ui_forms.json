@@ -1,11 +1,20 @@
 ﻿{
     "screen_mockup_ascii":  [
-                                "+--------------------------------------+",
-                                "|          Saisie transaction          |",
-                                "+--------------------------------------+",
-                                "|  [Form content - Modal]              |",
-                                "|                                      |",
-                                "+--------------------------------------+"
+                                "+--------------------------------------------------------------------+",
+                                "|                         Saisie transaction                         |",
+                                "+--------------------------------------------------------------------+",
+                                "|  [Form content - Modal]                                            |",
+                                "|  Size: 1112 x 279 DLU                                              |",
+                                "|  Task: 1                                                           |",
+                                "|                                                                    |",
+                                "|                                                                    |",
+                                "|                                                                    |",
+                                "|                                                                    |",
+                                "|                                                                    |",
+                                "|                                                                    |",
+                                "|                                                                    |",
+                                "|                                                                    |",
+                                "+--------------------------------------------------------------------+"
                             ],
     "statistics":  {
                        "table_count":  0,
@@ -19,15 +28,15 @@
                      "pipeline_version":  "6.0",
                      "project":  "ADH",
                      "program_name":  "Transaction Nouv vente avec GP",
-                     "generated_at":  "2026-01-28 17:48:01"
+                     "generated_at":  "2026-01-28 23:50:23"
                  },
     "forms":  [
                   {
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "width":  1112,
+                                         "height":  279
                                      },
                       "name":  "Saisie transaction",
                       "window_type":  3,
@@ -40,8 +49,8 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "width":  708,
+                                         "height":  256
                                      },
                       "name":  "Reglements suite a refus TPE",
                       "window_type":  6,
@@ -110,8 +119,8 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "width":  326,
+                                         "height":  249
                                      },
                       "name":  "Saisie Bilaterale",
                       "window_type":  6,
@@ -124,8 +133,8 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "width":  506,
+                                         "height":  250
                                      },
                       "name":  "Saisie mode de règlement",
                       "window_type":  6,
@@ -152,8 +161,8 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "width":  772,
+                                         "height":  169
                                      },
                       "name":  "Saisie Commentaires",
                       "window_type":  6,
@@ -164,10 +173,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  437,
+                                         "y":  90,
+                                         "width":  699,
+                                         "height":  157
                                      },
                       "name":  "VRL : Saisie identité",
                       "window_type":  1,
@@ -179,9 +188,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Test si cloture en cours",
                       "window_type":  1,
@@ -193,9 +202,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Blocage cloture v1",
                       "window_type":  1,
@@ -207,9 +216,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Blocage cloture v1",
                       "window_type":  1,
@@ -220,10 +229,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
+                                         "x":  11,
+                                         "y":  17,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Reaffichage infos compte",
                       "window_type":  1,
@@ -235,9 +244,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Test reseau",
                       "window_type":  1,
@@ -249,9 +258,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Forfait",
                       "window_type":  1,
@@ -262,10 +271,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  196,
+                                         "y":  142,
+                                         "width":  116,
+                                         "height":  32
                                      },
                       "name":  "",
                       "window_type":  3,
@@ -276,10 +285,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  437,
+                                         "y":  90,
+                                         "width":  528,
+                                         "height":  121
                                      },
                       "name":  "Saisie dates forfait",
                       "window_type":  1,
@@ -291,9 +300,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Effacement forfait",
                       "window_type":  1,
@@ -305,9 +314,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Effacement mvt forfait",
                       "window_type":  1,
@@ -319,9 +328,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Creation prestation",
                       "window_type":  1,
@@ -333,9 +342,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Deblocage cloture v1",
                       "window_type":  1,
@@ -347,9 +356,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Deblocage cloture",
                       "window_type":  1,
@@ -361,9 +370,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Gratuite ?",
                       "window_type":  1,
@@ -375,9 +384,9 @@
                   {
                       "dimensions":  {
                                          "x":  0,
-                                         "y":  0,
+                                         "y":  80,
                                          "width":  0,
-                                         "height":  0
+                                         "height":  24
                                      },
                       "name":  "Recherche imputation/ssimput",
                       "window_type":  1,
@@ -430,10 +439,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  123,
+                                         "y":  56,
+                                         "width":  427,
+                                         "height":  124
                                      },
                       "name":  "Affiche saisie",
                       "window_type":  3,
@@ -544,8 +553,8 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "width":  722,
+                                         "height":  292
                                      },
                       "name":  "Type transfert",
                       "window_type":  6,
@@ -556,10 +565,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  16,
+                                         "y":  88,
+                                         "width":  681,
+                                         "height":  205
                                      },
                       "name":  "Affiche Transfert A/R",
                       "window_type":  6,
@@ -570,10 +579,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  8,
+                                         "y":  2,
+                                         "width":  1056,
+                                         "height":  281
                                      },
                       "name":  "Affectation PAX / Transfert",
                       "window_type":  0,
@@ -654,10 +663,10 @@
                   },
                   {
                       "dimensions":  {
-                                         "x":  0,
-                                         "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "x":  423,
+                                         "y":  74,
+                                         "width":  123,
+                                         "height":  149
                                      },
                       "name":  "Libération du logement",
                       "window_type":  0,
@@ -698,8 +707,8 @@
                       "dimensions":  {
                                          "x":  0,
                                          "y":  0,
-                                         "width":  0,
-                                         "height":  0
+                                         "width":  123,
+                                         "height":  89
                                      },
                       "name":  "Récup nb chambre /LCO",
                       "window_type":  0,

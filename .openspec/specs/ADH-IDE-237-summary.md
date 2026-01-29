@@ -1,14 +1,15 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: 2026-01-28 20:53
+> **Analyse**: 2026-01-29 11:34
 > **Pipeline**: V6.0 Deep Analysis
 
 ## RESUME EXECUTIF
 
 - **Fonction**: Transaction Nouv vente avec GP
 - **Tables modifiees**: 9
+- **Complexite**: **HAUTE** (85/100)
 - **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 3 programme(s): IDE 163, IDE 242, IDE 316
+- **Raison**: Appele par 3 programme(s): Menu caisse GM - scroll (IDE 163), Menu Choix Saisie/Annul vente (IDE 242), Saisie transaction Nouv vente (IDE 316)
 
 ## MOTS-CLES RECHERCHE
 
@@ -16,16 +17,16 @@ Transaction, Nouv, vente, avec
 
 ## CE PROGRAMME EST CONCERNE SI...
 
-- Bug sur les tables: reseau_cloture___rec, prestations, mvt_prestation___mpr, compte_gm________cgm, compteurs________cpt
-- Probleme dans le flux depuis: IDE 163, IDE 242, IDE 316
-- Erreur dans les appels vers: IDE 152, IDE 84, IDE 233
+- Bug sur les tables: reseau_cloture___rec, prestations, mvt_prestation___mpr, compte_gm________cgm, compteurs________cpt, tempo_ecran_police, stat_lieu_vente_date, Boo_ResultsRechercheHoraire, Table_1037
+- Probleme dans le flux depuis: Menu caisse GM - scroll (IDE 163), Menu Choix Saisie/Annul vente (IDE 242), Saisie transaction Nouv vente (IDE 316)
+- Erreur dans les appels vers: Recup Classe et Lib du MOP (IDE 152),     SP Caractères Interdits (IDE 84), Appel Print ticket vente PMS28 (IDE 233), Reinit Aff PYR (IDE 249), Selection Vols /t Ville à côté (IDE 277)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | IDE 163, IDE 242, IDE 316 |
-| **Appelle** | IDE 152, IDE 84, IDE 233, IDE 249, IDE 277, IDE 43, IDE 149, IDE 179, IDE 180, IDE 181 |
+| **Appele par** | Menu caisse GM - scroll (IDE 163), Menu Choix Saisie/Annul vente (IDE 242), Saisie transaction Nouv vente (IDE 316) |
+| **Appelle** | Recup Classe et Lib du MOP (IDE 152),     SP Caractères Interdits (IDE 84), Appel Print ticket vente PMS28 (IDE 233), Reinit Aff PYR (IDE 249), Selection Vols /t Ville à côté (IDE 277), Recuperation du titre (IDE 43), Calcul stock produit WS (IDE 149), Get Printer (IDE 179), Printer choice (IDE 180), Set Listing Number (IDE 181) |
 
 ## STATISTIQUES
 

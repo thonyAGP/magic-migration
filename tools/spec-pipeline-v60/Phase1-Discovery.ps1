@@ -31,8 +31,8 @@ Write-Host ""
 
 # Execute spec-data command from KbIndexRunner
 Write-Host "[1/4] Extracting data from Knowledge Base..." -ForegroundColor Yellow
-$specDataCmd = "cd '$KbIndexRunnerPath'; dotnet run -- 'spec-data' '$Project $IdePosition'"
-$jsonOutput = powershell -NoProfile -Command $specDataCmd 2>&1
+$specDataCmd = "cd '$KbIndexRunnerPath'; dotnet run -- 'spec-data' '$Project $IdePosition' 2>`$null"
+$jsonOutput = powershell -NoProfile -Command $specDataCmd
 
 # Check for errors
 if ($jsonOutput -match '"error"') {
@@ -148,7 +148,8 @@ $AdhEcfPrograms = @(27, 28, 53, 54, 64, 65, 69, 70, 71, 72, 73, 76, 84, 97, 111,
 
 if ($specData.callers.Count -gt 0) {
     $discovery.orphan_analysis.status = "NON_ORPHELIN"
-    $discovery.orphan_analysis.reason = "Appele par $($specData.callers.Count) programme(s): $(($specData.callers | Select-Object -First 3 | ForEach-Object { "IDE $($_.ide)" }) -join ', ')"
+    $callerDetails = ($specData.callers | ForEach-Object { "$($_.name) (IDE $($_.ide))" }) -join ', '
+    $discovery.orphan_analysis.reason = "Appele par $($specData.callers.Count) programme(s): $callerDetails"
 } elseif ($IdePosition -in $AdhEcfPrograms -and $Project -eq "ADH") {
     $discovery.orphan_analysis.status = "ECF_SHARED"
     $discovery.orphan_analysis.is_ecf_member = $true

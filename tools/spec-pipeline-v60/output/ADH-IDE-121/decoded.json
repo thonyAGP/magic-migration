@@ -1,0 +1,156 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  0,
+                                       "calculation":  0,
+                                       "other":  6,
+                                       "date":  0,
+                                       "constant":  1,
+                                       "string":  0
+                                   },
+                       "total_in_program":  7,
+                       "decoded_count":  7,
+                       "business_rules_count":  0
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+
+                                                      ],
+                                        "CALCULATION":  [
+
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,14}=\u0027O\u0027",
+                                                          "ide_position":  1,
+                                                          "decoded":  "Param VIL open sessions [N]=\u0027O\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027FALSE\u0027LOG",
+                                                          "ide_position":  2,
+                                                          "decoded":  "\u0027FALSE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,31}",
+                                                          "ide_position":  4,
+                                                          "decoded":  "[AE]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027TRUE\u0027LOG",
+                                                          "ide_position":  5,
+                                                          "decoded":  "\u0027TRUE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT({0,31})",
+                                                          "ide_position":  6,
+                                                          "decoded":  "NOT([AE])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{32768,111}",
+                                                          "ide_position":  7,
+                                                          "decoded":  "VG111",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027D\u0027",
+                                                             "ide_position":  3,
+                                                             "decoded":  "\u0027D\u0027",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,14}=\u0027O\u0027",
+                                        "ide_position":  1,
+                                        "decoded":  "Param VIL open sessions [N]=\u0027O\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027FALSE\u0027LOG",
+                                        "ide_position":  2,
+                                        "decoded":  "\u0027FALSE\u0027LOG",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027D\u0027",
+                                        "ide_position":  3,
+                                        "decoded":  "\u0027D\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,31}",
+                                        "ide_position":  4,
+                                        "decoded":  "[AE]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TRUE\u0027LOG",
+                                        "ide_position":  5,
+                                        "decoded":  "\u0027TRUE\u0027LOG",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT({0,31})",
+                                        "ide_position":  6,
+                                        "decoded":  "NOT([AE])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{32768,111}",
+                                        "ide_position":  7,
+                                        "decoded":  "VG111",
+                                        "type":  "OTHER"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  121,
+                     "pipeline_version":  "6.0",
+                     "project":  "ADH",
+                     "program_name":  "Gestion caisse",
+                     "generated_at":  "2026-01-29 09:26:15"
+                 }
+}

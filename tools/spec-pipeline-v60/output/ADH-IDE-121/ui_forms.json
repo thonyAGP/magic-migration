@@ -1,0 +1,491 @@
+﻿{
+    "screen_mockup_ascii":  [
+                                "+--------------------------------------+",
+                                "|            Gestion caisse            |",
+                                "+--------------------------------------+",
+                                "|  [Form content - MDI]                |",
+                                "|                                      |",
+                                "+--------------------------------------+"
+                            ],
+    "statistics":  {
+                       "table_count":  0,
+                       "button_count":  0,
+                       "label_count":  0,
+                       "form_count":  32,
+                       "input_count":  0
+                   },
+    "metadata":  {
+                     "ide_position":  121,
+                     "pipeline_version":  "6.0",
+                     "project":  "ADH",
+                     "program_name":  "Gestion caisse",
+                     "generated_at":  "2026-01-29 09:26:18"
+                 },
+    "forms":  [
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Gestion caisse",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  1,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Paramètres caisse",
+                      "window_type":  2,
+                      "window_type_str":  "SDI",
+                      "task_isn2":  2,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Controle COFFRE2",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  3,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Paramètres caisse",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  4,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Date comptable",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  5,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  71,
+                                         "y":  38,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Etat de la caisse",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  6,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  98,
+                                         "y":  44,
+                                         "width":  939,
+                                         "height":  178
+                                     },
+                      "name":  "Gestion de la caisse",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  7,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Existe histo",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  8,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Ouverture caisse",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  9,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Cloture en cours v1",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  10,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Controle monnaie/produit",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  11,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Creation histo session",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  12,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "histo coffre2",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  13,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "init tempo saisie dev",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  14,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Fermeture caisse",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  15,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Clôture histo session",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  16,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Apport coffre",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  17,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Apport produit",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  18,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Remise au coffre",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  19,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "RAZ Saisie devises P/V",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  20,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Historique",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  21,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Consultation",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  22,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "reimprimer tickets",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  23,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Remise au coffre",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  24,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Open sessions",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  25,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Pointage",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  26,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Read Sessions",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  27,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Remise au coffre",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  28,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Ligne Initiale",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  29,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Creation histo session",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  30,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "histo coffre2",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  31,
+                      "form_id":  2,
+                      "font":  ""
+                  },
+                  {
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  524,
+                                         "height":  236
+                                     },
+                      "name":  "Concurrence sessions for devel",
+                      "window_type":  1,
+                      "window_type_str":  "MDI",
+                      "task_isn2":  32,
+                      "form_id":  2,
+                      "font":  ""
+                  }
+              ],
+    "notes":  [
+                  "Controls extraction requires KB schema extension"
+              ],
+    "controls":  {
+                     "tables":  [
+
+                                ],
+                     "inputs":  [
+
+                                ],
+                     "labels":  [
+
+                                ],
+                     "buttons":  [
+
+                                 ]
+                 }
+}

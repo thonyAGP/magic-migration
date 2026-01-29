@@ -1,0 +1,1094 @@
+﻿{
+    "statistics":  {
+                       "virtual_count":  0,
+                       "table_count":  12,
+                       "parameter_count":  0,
+                       "total_variables":  104,
+                       "global_count":  0,
+                       "mapping_entries":  31,
+                       "local_count":  104
+                   },
+    "tables":  {
+                   "198":  {
+                               "physical":  "caisse_banknote",
+                               "name":  "coupures_monnaie_locale",
+                               "access":  "READ",
+                               "logical":  "coupures_monnaie_locale"
+                           },
+                   "232":  {
+                               "physical":  "caisse_devise",
+                               "name":  "gestion_devise_session",
+                               "access":  "READ",
+                               "logical":  "gestion_devise_session"
+                           },
+                   "697":  {
+                               "physical":  "droits",
+                               "name":  "droits_applications",
+                               "access":  "READ",
+                               "logical":  "droits_applications"
+                           },
+                   "248":  {
+                               "physical":  "caisse_session_coffre2",
+                               "name":  "sessions_coffre2",
+                               "access":  "WRITE",
+                               "logical":  "sessions_coffre2"
+                           },
+                   "246":  {
+                               "physical":  "caisse_session",
+                               "name":  "histo_sessions_caisse",
+                               "access":  "WRITE",
+                               "logical":  "histo_sessions_caisse"
+                           },
+                   "249":  {
+                               "physical":  "caisse_session_detail",
+                               "name":  "histo_sessions_caisse_detail",
+                               "access":  "READ",
+                               "logical":  "histo_sessions_caisse_detail"
+                           },
+                   "244":  {
+                               "physical":  "caisse_saisie_appro_dev",
+                               "name":  "saisie_approvisionnement",
+                               "access":  "WRITE",
+                               "logical":  "saisie_approvisionnement"
+                           },
+                   "23":  {
+                              "physical":  "cafil001_dat",
+                              "name":  "reseau_cloture___rec",
+                              "access":  "READ",
+                              "logical":  "reseau_cloture___rec"
+                          },
+                   "197":  {
+                               "physical":  "caisse_artstock",
+                               "name":  "articles_en_stock",
+                               "access":  "LINK",
+                               "logical":  "articles_en_stock"
+                           },
+                   "70":  {
+                              "physical":  "cafil048_dat",
+                              "name":  "date_comptable___dat",
+                              "access":  "READ",
+                              "logical":  "date_comptable___dat"
+                          },
+                   "740":  {
+                               "physical":  "pv_stockmvt_dat",
+                               "name":  "pv_stock_movements",
+                               "access":  "READ",
+                               "logical":  "pv_stock_movements"
+                           },
+                   "227":  {
+                               "physical":  "caisse_concurrences",
+                               "name":  "concurrence_sessions",
+                               "access":  "WRITE",
+                               "logical":  "concurrence_sessions"
+                           }
+               },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Param Libelle caisse",
+                                        "data_type":  "Alpha",
+                                        "picture":  "32",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Existe session 90",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Existe session",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Bouton continuer",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Existe monnaie et produit",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Existe monnaie",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Fermeture validee",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Montant",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Montant",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Montant compte",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Montant compte",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "userFromVillage",
+                                        "data_type":  "Alpha",
+                                        "picture":  "8",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Montant calcule",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Param Etat caisse",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "COFFRE 2 est ferme",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Field for cursor",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Ouverture validee",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Existe produit en stock",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Coffre en cours de comptage",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Nbre devises en appro",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Coffre en cours de comptage",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Montant compte monnaie",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Montant compte monnaie",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "v.Logon reussi",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Montant calcule monnaie",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BA",
+                                        "name":  "V Cloture en cours",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BB",
+                                        "name":  "COFFRE 2 est ouvert",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BC",
+                                        "name":  "V avec coffre 2",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BD",
+                                        "name":  "V cloture auto",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "BE",
+                                        "name":  "v.fin",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "Param societe",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "Message",
+                                        "data_type":  "Alpha",
+                                        "picture":  "32",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "Coffre en cours de comptage",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "L Contrôle OK",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "Coffre en cours de comptage",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "Montant compte produit",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "Montant compte produit",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "Montant calcule produit",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "Param devise locale",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "Titre",
+                                        "data_type":  "Alpha",
+                                        "picture":  "45",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "L Contrôle OK",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "Montant compte cartes",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "Montant compte cartes",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "Montant calcule cartes",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "Param nbre decimale",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "Date ouverture",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "Montant compte cheques",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "Montant compte cheques",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "Montant calcule cheques",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "Param masque montant",
+                                        "data_type":  "Alpha",
+                                        "picture":  "16",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "heure ouverture",
+                                        "data_type":  "Time",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "Montant compte od",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "Montant compte od",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "Montant calcule od",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "Param code village",
+                                        "data_type":  "Alpha",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "existe histo",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "Nbre devises compte",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "Nbre devises compte",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "Nbre devises calcule",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "Param nom village",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "Autorisation_cloture_ne sert_pa",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "Montant",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "Montant",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "Type Caisse",
+                                        "data_type":  "Alpha",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "Param masque cumul",
+                                        "data_type":  "Alpha",
+                                        "picture":  "18",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "abandon",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "Montant monnaie",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "Montant monnaie",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "Terminal",
+                                        "data_type":  "Alpha",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "Param Uni/Bi",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "Bouton Pointage AppRem",
+                                        "data_type":  "Alpha",
+                                        "picture":  "32",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "Montant produits",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "Montant produits",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "Hostname",
+                                        "data_type":  "Unicode",
+                                        "picture":  "50",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "Param Village TAI",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "Bouton Telecollecte TPE",
+                                        "data_type":  "Alpha",
+                                        "picture":  "32",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "Montant cartes",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "Montant cartes",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "Last Chrono detail",
+                                        "data_type":  "Numeric",
+                                        "picture":  "4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "Param Mode consultation",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "Bouton Regul TPE",
+                                        "data_type":  "Alpha",
+                                        "picture":  "32",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "Montant cheques",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "Montant cheques",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "M",
+                                        "name":  "p.i.Terminal coffre2",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "M",
+                                        "name":  "Ecart TPE corrige",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "M",
+                                        "name":  "Montant od",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "M",
+                                        "name":  "Montant od",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N## ### ### ###.###Z",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "N",
+                                        "name":  "Param VIL open sessions",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "N",
+                                        "name":  "Ouverture Caisse possible?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "N",
+                                        "name":  "Nbre devise",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "N",
+                                        "name":  "Nbre devise",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "O",
+                                        "name":  "Param FROM_IMS",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "O",
+                                        "name":  "Coffre en cours de comptage",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "P",
+                                        "name":  "p.i.Hostl coffre2",
+                                        "data_type":  "Unicode",
+                                        "picture":  "50",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "Q",
+                                        "name":  "i.Host courant coffre 2 ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "R",
+                                        "name":  "V Date comptable",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "S",
+                                        "name":  "V session active",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "T",
+                                        "name":  "V User ouverture",
+                                        "data_type":  "Alpha",
+                                        "picture":  "8",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "U",
+                                        "name":  "V Date ouverture",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "V",
+                                        "name":  "V Time ouverture",
+                                        "data_type":  "Time",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "W",
+                                        "name":  "V Date Fin session",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "X",
+                                        "name":  "V Last Chrono",
+                                        "data_type":  "Numeric",
+                                        "picture":  "12",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "Y",
+                                        "name":  "V N° caisse reception mini",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "Z",
+                                        "name":  "V N° caisse reception maxi",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  },
+    "variable_mapping":  {
+                             "{0,13}":  {
+                                            "type":  "local",
+                                            "name":  "p.i.Terminal coffre2",
+                                            "letter":  "M"
+                                        },
+                             "{0,18}":  {
+                                            "type":  "local",
+                                            "name":  "V Date comptable",
+                                            "letter":  "R"
+                                        },
+                             "{0,5}":  {
+                                           "type":  "local",
+                                           "name":  "Param nbre decimale",
+                                           "letter":  "E"
+                                       },
+                             "{0,14}":  {
+                                            "type":  "local",
+                                            "name":  "Param VIL open sessions",
+                                            "letter":  "N"
+                                        },
+                             "{0,17}":  {
+                                            "type":  "local",
+                                            "name":  "i.Host courant coffre 2 ?",
+                                            "letter":  "Q"
+                                        },
+                             "{0,20}":  {
+                                            "type":  "local",
+                                            "name":  "V User ouverture",
+                                            "letter":  "T"
+                                        },
+                             "{0,4}":  {
+                                           "type":  "local",
+                                           "name":  "Param devise locale",
+                                           "letter":  "D"
+                                       },
+                             "{0,56}":  {
+                                            "type":  "local",
+                                            "name":  "V cloture auto",
+                                            "letter":  "BD"
+                                        },
+                             "{0,22}":  {
+                                            "type":  "local",
+                                            "name":  "V Time ouverture",
+                                            "letter":  "V"
+                                        },
+                             "{0,8}":  {
+                                           "type":  "local",
+                                           "name":  "Param nom village",
+                                           "letter":  "H"
+                                       },
+                             "{0,21}":  {
+                                            "type":  "local",
+                                            "name":  "V Date ouverture",
+                                            "letter":  "U"
+                                        },
+                             "{0,7}":  {
+                                           "type":  "local",
+                                           "name":  "Param code village",
+                                           "letter":  "G"
+                                       },
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "Param societe",
+                                           "letter":  "C"
+                                       },
+                             "{0,10}":  {
+                                            "type":  "local",
+                                            "name":  "Param Uni/Bi",
+                                            "letter":  "J"
+                                        },
+                             "{0,53}":  {
+                                            "type":  "local",
+                                            "name":  "V Cloture en cours",
+                                            "letter":  "BA"
+                                        },
+                             "{0,25}":  {
+                                            "type":  "local",
+                                            "name":  "V N° caisse reception mini",
+                                            "letter":  "Y"
+                                        },
+                             "{0,57}":  {
+                                            "type":  "local",
+                                            "name":  "v.fin",
+                                            "letter":  "BE"
+                                        },
+                             "{0,11}":  {
+                                            "type":  "local",
+                                            "name":  "Param Village TAI",
+                                            "letter":  "K"
+                                        },
+                             "{0,19}":  {
+                                            "type":  "local",
+                                            "name":  "V session active",
+                                            "letter":  "S"
+                                        },
+                             "{0,9}":  {
+                                           "type":  "local",
+                                           "name":  "Param masque cumul",
+                                           "letter":  "I"
+                                       },
+                             "{0,15}":  {
+                                            "type":  "local",
+                                            "name":  "Param FROM_IMS",
+                                            "letter":  "O"
+                                        },
+                             "{0,26}":  {
+                                            "type":  "local",
+                                            "name":  "V N° caisse reception maxi",
+                                            "letter":  "Z"
+                                        },
+                             "{0,16}":  {
+                                            "type":  "local",
+                                            "name":  "p.i.Hostl coffre2",
+                                            "letter":  "P"
+                                        },
+                             "{0,54}":  {
+                                            "type":  "local",
+                                            "name":  "COFFRE 2 est ouvert",
+                                            "letter":  "BB"
+                                        },
+                             "{0,6}":  {
+                                           "type":  "local",
+                                           "name":  "Param masque montant",
+                                           "letter":  "F"
+                                       },
+                             "{0,23}":  {
+                                            "type":  "local",
+                                            "name":  "V Date Fin session",
+                                            "letter":  "W"
+                                        },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "Param Libelle caisse",
+                                           "letter":  "A"
+                                       },
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "Param Etat caisse",
+                                           "letter":  "B"
+                                       },
+                             "{0,24}":  {
+                                            "type":  "local",
+                                            "name":  "V Last Chrono",
+                                            "letter":  "X"
+                                        },
+                             "{0,55}":  {
+                                            "type":  "local",
+                                            "name":  "V avec coffre 2",
+                                            "letter":  "BC"
+                                        },
+                             "{0,12}":  {
+                                            "type":  "local",
+                                            "name":  "Param Mode consultation",
+                                            "letter":  "L"
+                                        }
+                         },
+    "metadata":  {
+                     "ide_position":  121,
+                     "pipeline_version":  "6.0",
+                     "project":  "ADH",
+                     "program_name":  "Gestion caisse",
+                     "generated_at":  "2026-01-29 09:26:13"
+                 }
+}
