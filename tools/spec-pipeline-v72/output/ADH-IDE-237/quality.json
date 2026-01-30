@@ -49,7 +49,7 @@
                                      "check":  "V72_VAR_ROLES"
                                  },
                                  {
-                                     "detail":  "37 types precis",
+                                     "detail":  "6 types precis",
                                      "status":  "PASS",
                                      "check":  "V72_EXPR_TYPES"
                                  },
@@ -113,23 +113,23 @@
                    },
     "pipeline_timing":  {
                             "phases_start":  "2026-01-30 19:09:34",
-                            "assembly_end":  "2026-01-30 19:09:47",
-                            "assembly_start":  "2026-01-30 19:09:43",
+                            "assembly_end":  "2026-01-30 20:14:29",
+                            "assembly_start":  "2026-01-30 20:14:25",
                             "phases_duration":  "10s",
                             "phases_end":  "2026-01-30 19:09:43"
                         },
     "v72_features":  {
                          "clickable_links":  126,
                          "variable_roles":  3,
-                         "precise_expr_types":  37,
+                         "precise_expr_types":  6,
                          "anchors":  49,
                          "form_data_blocks":  14
                      },
     "metadata":  {
                      "pipeline_version":  "7.2",
-                     "generated_at":  "2026-01-30 19:09:47",
+                     "generated_at":  "2026-01-30 20:14:29",
                      "ide_position":  237,
-                     "duration_seconds":  3.4,
+                     "duration_seconds":  3.3,
                      "program_name":  "Transaction Nouv vente avec GP",
                      "project":  "ADH"
                  }

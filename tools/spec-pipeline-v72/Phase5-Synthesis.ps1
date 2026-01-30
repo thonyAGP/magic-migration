@@ -1301,35 +1301,85 @@ if ($isComplex) {
     Add-Line "    START([Entree])"
     Add-Line "    style START fill:#3fb950"
 
+    # Extract decision conditions from decoded expressions
+    $decisions = @()
+    if ($decoded -and $decoded.expressions) {
+        # decoded.json structure: expressions.all[] or expressions.by_type.CONDITION[]
+        $allExprs = @()
+        if ($decoded.expressions.by_type -and $decoded.expressions.by_type.CONDITION) {
+            $allExprs = @($decoded.expressions.by_type.CONDITION)
+        } elseif ($decoded.expressions.all) {
+            $allExprs = @($decoded.expressions.all | Where-Object {
+                $_.decoded -and ($_.decoded -match '(?i)IF\s*\(')
+            })
+        } elseif ($decoded.expressions -is [array]) {
+            $allExprs = @($decoded.expressions | Where-Object {
+                $_.decoded -and ($_.decoded -match '(?i)IF\s*\(')
+            })
+        }
+
+        $ifExprs = @($allExprs | Select-Object -First 6)
+
+        foreach ($expr in $ifExprs) {
+            # Extract condition from IF(condition, ...)
+            $condMatch = [regex]::Match($expr.decoded, '(?i)IF\s*\(([^,]+)')
+            if ($condMatch.Success) {
+                $cond = $condMatch.Groups[1].Value.Trim()
+                # Shorten for display
+                if ($cond.Length -gt 25) { $cond = $cond.Substring(0, 22) + "..." }
+                $cond = $cond -replace "['""`<>{}()\[\]/\\?!&]", ''
+                if ($cond.Trim()) {
+                    $decisions += @{ condition = $cond; task = $expr.task; exprId = $expr.id }
+                }
+            }
+        }
+    }
+
+    # Build nodes: mix of functional blocs and decision diamonds
     $blocKeys = @($blocMap.Keys)
-    $blocNodeIds = @{}
+    $nodeIds = @()
     $bIdx = 1
+    $dIdx = 0
+
     foreach ($bk in $blocKeys) {
         $bForms = @($blocMap[$bk])
         $screenCount = @($bForms | Where-Object { $_.dimensions.width -gt 0 }).Count
         $taskCount = $bForms.Count
         $nodeId = "BLK$bIdx"
-        $blocNodeIds[$bk] = $nodeId
-        $shortName = if ($bk.Length -gt 20) { $bk.Substring(0, 20) } else { $bk }
+        $shortName = Clean-MermaidLabel $bk
+
+        # Add bloc node
         if ($screenCount -gt 0) {
-            Add-Line "    $nodeId[$shortName $screenCount ecr $taskCount taches]"
+            Add-Line "    $nodeId[$shortName]"
         } else {
-            Add-Line "    $nodeId[$shortName $taskCount taches]"
+            Add-Line "    $nodeId[$shortName]"
         }
         Add-Line "    style $nodeId fill:#58a6ff"
+        $nodeIds += $nodeId
+
+        # Add decision after this bloc if a matching IF expression exists
+        if ($dIdx -lt $decisions.Count) {
+            $dec = $decisions[$dIdx]
+            $decNodeId = "DEC$($dIdx + 1)"
+            $decLabel = Clean-MermaidLabel $dec.condition
+            Add-Line "    $decNodeId{$decLabel}"
+            Add-Line "    style $decNodeId fill:#ffeb3b,color:#000"
+            $nodeIds += $decNodeId
+            $dIdx++
+        }
+
         $bIdx++
     }
 
-    # External calls as separate nodes
+    # External calls
     $calleeList = @()
     if ($discovery.call_graph -and $discovery.call_graph.callees) {
         $calleeList = @($discovery.call_graph.callees | Select-Object -First 8)
     }
     $extIdx = 1
     foreach ($callee in $calleeList) {
-        $cName = if ($callee.name.Length -gt 18) { $callee.name.Substring(0, 18) } else { $callee.name }
-        $cName = $cName -replace '["\[\]{}()<>]', ''
-        Add-Line "    EXT$extIdx([IDE $($callee.ide) $cName])"
+        $cName = Clean-MermaidLabel "IDE $($callee.ide) $($callee.name)"
+        Add-Line "    EXT$extIdx([$cName])"
         Add-Line "    style EXT$extIdx fill:#3fb950"
         $extIdx++
     }
@@ -1337,39 +1387,48 @@ if ($isComplex) {
     Add-Line "    FIN([Sortie])"
     Add-Line "    style FIN fill:#f85149"
 
-    # Connect: START -> first block
-    if ($blocKeys.Count -gt 0) {
-        Add-Line "    START --> $($blocNodeIds[$blocKeys[0]])"
+    # Connect nodes sequentially with decision branches
+    if ($nodeIds.Count -gt 0) {
+        Add-Line "    START --> $($nodeIds[0])"
+
+        for ($i = 0; $i -lt $nodeIds.Count - 1; $i++) {
+            $current = $nodeIds[$i]
+            $next = $nodeIds[$i + 1]
+
+            if ($current -match '^DEC') {
+                # Decision node: OUI goes forward, NON skips
+                $skipTarget = if ($i + 2 -lt $nodeIds.Count) { $nodeIds[$i + 2] } else { "FIN" }
+                Add-Line "    $current -->|OUI| $next"
+                Add-Line "    $current -->|NON| $skipTarget"
+            } else {
+                Add-Line "    $current --> $next"
+            }
+        }
+
+        # Connect last node to FIN
+        $lastNode = $nodeIds[$nodeIds.Count - 1]
+        if ($lastNode -match '^DEC') {
+            Add-Line "    $lastNode -->|OUI| FIN"
+        } else {
+            Add-Line "    $lastNode --> FIN"
+        }
+    } else {
+        Add-Line "    START --> FIN"
     }
 
-    # Connect blocks sequentially
-    for ($bi = 0; $bi -lt $blocKeys.Count - 1; $bi++) {
-        $fromNode = $blocNodeIds[$blocKeys[$bi]]
-        $toNode = $blocNodeIds[$blocKeys[$bi + 1]]
-        Add-Line "    $fromNode --> $toNode"
-    }
-
-    # Connect last block -> FIN
-    if ($blocKeys.Count -gt 0) {
-        $lastNode = $blocNodeIds[$blocKeys[$blocKeys.Count - 1]]
-        Add-Line "    $lastNode --> FIN"
-    }
-
-    # Connect first block to external calls
-    if ($calleeList.Count -gt 0 -and $blocKeys.Count -gt 0) {
-        $mainNode = $blocNodeIds[$blocKeys[0]]
+    # Connect external calls with dotted lines from first bloc
+    $firstBloc = $nodeIds | Where-Object { $_ -match '^BLK' } | Select-Object -First 1
+    if ($firstBloc) {
         $extIdx = 1
         foreach ($callee in $calleeList) {
-            $ctx = if ($callee.context) { $callee.context } else { "appel" }
-            $ctx = if ($ctx.Length -gt 20) { $ctx.Substring(0, 20) } else { $ctx }
-            Add-Line "    $mainNode -.->|$ctx| EXT$extIdx"
+            Add-Line "    $firstBloc -.->|appel| EXT$extIdx"
             $extIdx++
         }
     }
 
     Add-Line '```'
     Add-Line
-    Add-Line "**Legende** : Bleu = blocs fonctionnels | Vert = programmes externes | Rouge = sortie"
+    Add-Line "> **Legende** : Bleu = blocs fonctionnels | Vert = programmes externes | Jaune = decisions | Rouge = sortie"
     Add-Line
 }
 
