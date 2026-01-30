@@ -1138,19 +1138,21 @@
 
     function showFragmentBackButton(fromTab) {
       // Remove existing button if any
-      hideFragmentBackButton();
+      const existing = document.getElementById('fragmentBackBtn');
+      if (existing) existing.remove();
       const btn = document.createElement('button');
       btn.className = 'fragment-back-btn';
       btn.id = 'fragmentBackBtn';
       btn.innerHTML = `← Retour onglet ${fromTab}`;
       btn.onclick = () => {
         if (fragmentBackState) {
-          switchSpecTab(fragmentBackState.tab);
-          setTimeout(() => {
-            content.scrollTop = fragmentBackState.scrollTop;
-            fragmentBackState = null;
-            hideFragmentBackButton();
-          }, 100);
+          // Save state before switchSpecTab clears it via hideFragmentBackButton
+          const { tab, scrollTop } = fragmentBackState;
+          fragmentBackState = null;
+          const b = document.getElementById('fragmentBackBtn');
+          if (b) b.remove();
+          switchSpecTab(tab);
+          setTimeout(() => { content.scrollTop = scrollTop; }, 100);
         }
       };
       document.body.appendChild(btn);
