@@ -94,6 +94,67 @@
         }
       }
     }
+
+    function preprocessFormData(markdown) {
+      // Replace <!-- FORM-DATA: {JSON} --> with visual mockup HTML
+      return markdown.replace(/<!--\s*FORM-DATA:\s*\n([\s\S]*?)\n\s*-->/g, (match, jsonStr) => {
+        try {
+          const data = JSON.parse(jsonStr.trim());
+          const scale = 0.6; // Scale factor for DLU to pixels
+          const ctrls = data.controls || [];
+          const w = Math.round((data.width || 700) * scale);
+          const title = data.type || 'Form';
+
+          // Calculate body height from controls
+          let maxY = 100;
+          ctrls.forEach(c => {
+            const bottom = (c.y + c.h) * scale;
+            if (bottom > maxY) maxY = bottom;
+          });
+          maxY += 30; // padding
+
+          let html = `<div class="magic-mockup" style="width:${Math.min(w, 900)}px">`;
+          html += `<div class="magic-mockup-title"><span>${title} - T${data.taskId || '?'}</span>`;
+          html += `<div class="win-btns"><span class="win-btn">_</span><span class="win-btn">□</span><span class="win-btn">×</span></div>`;
+          html += `</div>`;
+          html += `<div class="magic-mockup-body" style="height:${maxY}px">`;
+
+          ctrls.forEach(c => {
+            const cx = Math.round(c.x * scale);
+            const cy = Math.round(c.y * scale);
+            const cw = Math.round(c.w * scale);
+            const ch = Math.round(c.h * scale);
+
+            if (c.type === 'edit') {
+              html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px">`;
+              html += `<div class="magic-ctrl-label">${c.label || ''}</div>`;
+              html += `<div class="magic-ctrl-edit${c.readonly ? ' readonly' : ''}" style="height:${ch}px">`;
+              html += c.readonly ? (c.label || '').substring(0, 15) : '';
+              html += `</div>`;
+              html += `<span class="magic-ctrl-var">${c.var || ''}</span>`;
+              html += `</div>`;
+            } else if (c.type === 'button') {
+              html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+              html += `<div class="magic-ctrl-button" style="width:100%;height:100%">${c.label || 'Btn'}</div>`;
+              html += `<span class="magic-ctrl-var">${c.var || ''}</span>`;
+              html += `</div>`;
+            }
+          });
+
+          html += `</div>`;
+          html += `<div class="magic-mockup-legend">`;
+          html += `${ctrls.filter(c => c.type === 'edit').length} champs`;
+          html += ` | ${ctrls.filter(c => c.type === 'button').length} boutons`;
+          html += ` | ${data.width}×${data.height} DLU`;
+          html += `</div></div>`;
+
+          return html;
+        } catch (e) {
+          console.error('FORM-DATA parse error:', e);
+          return '<!-- FORM-DATA: parse error -->';
+        }
+      });
+    }
   </script>
   <style>
     :root {
@@ -865,6 +926,104 @@
     .mermaid svg {
       max-width: 100%;
       height: auto;
+    }
+
+    /* Magic Form Mockup Renderer */
+    .magic-mockup {
+      background: #d4d0c8;
+      border: 2px outset #fff;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+      border-radius: 0;
+      margin: 16px 0;
+      font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+      font-size: 11px;
+      position: relative;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    .magic-mockup-title {
+      background: linear-gradient(to right, #0a246a, #3a6ea5);
+      color: #fff;
+      padding: 3px 6px;
+      font-weight: bold;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .magic-mockup-title .win-btns {
+      display: flex;
+      gap: 2px;
+    }
+    .magic-mockup-title .win-btn {
+      width: 16px;
+      height: 14px;
+      background: #c0c0c0;
+      border: 1px outset #fff;
+      font-size: 9px;
+      text-align: center;
+      line-height: 12px;
+      cursor: default;
+      color: #000;
+    }
+    .magic-mockup-body {
+      position: relative;
+      min-height: 120px;
+      padding: 4px;
+    }
+    .magic-ctrl {
+      position: absolute;
+      box-sizing: border-box;
+    }
+    .magic-ctrl-label {
+      font-size: 10px;
+      color: #000;
+      margin-bottom: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .magic-ctrl-edit {
+      background: #fff;
+      border: 1px inset #808080;
+      padding: 1px 3px;
+      font-size: 11px;
+      color: #000;
+      height: 18px;
+      line-height: 18px;
+      overflow: hidden;
+    }
+    .magic-ctrl-edit.readonly {
+      background: #e8e8e8;
+      color: #444;
+    }
+    .magic-ctrl-button {
+      background: linear-gradient(to bottom, #e8e8e8 0%, #c8c8c8 100%);
+      border: 2px outset #d4d0c8;
+      text-align: center;
+      cursor: default;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .magic-ctrl-var {
+      position: absolute;
+      top: -1px;
+      right: 2px;
+      font-size: 8px;
+      color: #58a6ff;
+      font-family: 'SF Mono', 'Consolas', monospace;
+      opacity: 0.8;
+    }
+    .magic-mockup-legend {
+      font-size: 10px;
+      color: var(--text-secondary);
+      padding: 4px 6px;
+      border-top: 1px solid #999;
+      background: #c0c0c0;
     }
 
     /* Ticket header with date/time */
@@ -2091,9 +2250,9 @@
           content.innerHTML = backLinkHtml + renderedContent;
         } else if (isRender) {
           // V2.1 renders without TAB markers
-          content.innerHTML = backLinkHtml + headerHtml + tabsHtml + marked.parse(text);
+          content.innerHTML = backLinkHtml + headerHtml + tabsHtml + marked.parse(preprocessFormData(text));
         } else {
-          content.innerHTML = backLinkHtml + headerHtml + tabsHtml + marked.parse(text);
+          content.innerHTML = backLinkHtml + headerHtml + tabsHtml + marked.parse(preprocessFormData(text));
         }
         // Render Mermaid diagrams
         await renderMermaidDiagrams();
@@ -2178,10 +2337,11 @@
         const endPos = i < tabs.length - 1 ? tabs[i + 1].position : markdown.length;
         const sectionContent = markdown.substring(startPos, endPos).trim();
         const active = i === 0 ? 'active' : '';
-        sectionsHtml += `<div class="spec-section ${active}" data-tab="${tab.name}">${marked.parse(sectionContent)}</div>`;
+        const processedContent = preprocessFormData(sectionContent);
+        sectionsHtml += `<div class="spec-section ${active}" data-tab="${tab.name}">${marked.parse(processedContent)}</div>`;
       });
 
-      return headerHtml + timingHtml + marked.parse(headerContent) + tabsBarHtml + sectionsHtml;
+      return headerHtml + timingHtml + marked.parse(preprocessFormData(headerContent)) + tabsBarHtml + sectionsHtml;
     }
 
     function calculateDuration(startTime, endTime) {

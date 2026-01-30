@@ -3,7 +3,7 @@
     Validation systematique du contenu d'une spec V7.2 generee
 
 .DESCRIPTION
-    Verifie que la spec respecte les 20 criteres V7.2 :
+    Verifie que la spec respecte les 23 criteres V7.2 :
     - 8 checks structurels (TAB, anchors, links, FORM-DATA, roles, types)
     - 7 checks GAP (roles specifiques, sous-taches, regles enrichies,
       boutons, colonnes, variables, migration)
@@ -309,6 +309,51 @@ function Test-SpecV72 {
         [void]$checks.Add([PSCustomObject]@{ check = "NR_ALGORIGRAMME"; status = "PASS"; detail = "N/A (programme simple)" })
     }
 
+    # CHECK 21 (NR-FIX6): No raw "Variable X" without real name in expressions
+    # Good: "P0 societe [A]" or "W0 imputation [W]"
+    # Bad: "Variable A", "Variable B" (no real name)
+    $rawVarRefs = [regex]::Matches($content, '\bVariable\s+[A-Z]{1,3}\b')
+    # Filter out table header "| Variable |" which is OK
+    $badVarRefs = @($rawVarRefs | Where-Object { $_.Value -notmatch '^\| Variable$' })
+    if ($badVarRefs.Count -eq 0) {
+        [void]$checks.Add([PSCustomObject]@{ check = "NR_VAR_NAMING"; status = "PASS"; detail = "Pas de 'Variable X' sans nom reel" })
+    } else {
+        [void]$checks.Add([PSCustomObject]@{ check = "NR_VAR_NAMING"; status = "FAIL"; detail = "$($badVarRefs.Count) references 'Variable X' sans nom reel" })
+    }
+
+    # CHECK 22 (NR-FIX7): No raw {0,N} or {1,N} field references in decoded expressions
+    # These should have been decoded to "VariableName [LETTER]" format
+    # Only check in expression tables (lines starting with |)
+    $exprTableLines = @($content -split "`n" | Where-Object { $_ -match '^\|.*\{[01],\d+\}' })
+    if ($exprTableLines.Count -eq 0) {
+        [void]$checks.Add([PSCustomObject]@{ check = "NR_RAW_FIELD_REF"; status = "PASS"; detail = "Pas de references {0,N} brutes dans expressions" })
+    } else {
+        [void]$checks.Add([PSCustomObject]@{ check = "NR_RAW_FIELD_REF"; status = "WARN"; detail = "$($exprTableLines.Count) lignes avec {0,N} brut dans expressions" })
+    }
+
+    # CHECK 23 (NR-FIX8): Algorigramme has decision nodes (not just linear blocks)
+    # Good algorigramme: has {Decision} diamond nodes
+    # Bad algorigramme: only [Block] rectangular nodes (purely structural)
+    if ($isComplexProgram) {
+        $algoSection = [regex]::Match($content, '(?s)### 9\.4 Algorigramme.*?```mermaid\s*\n(.*?)```')
+        if ($algoSection.Success) {
+            $algoBody = $algoSection.Groups[1].Value
+            $decisionNodes = [regex]::Matches($algoBody, '\w+\{[^}]+\}')
+            $totalNodes = [regex]::Matches($algoBody, '^\s+\w+[\[\({]', [System.Text.RegularExpressions.RegexOptions]::Multiline)
+            if ($decisionNodes.Count -ge 2) {
+                [void]$checks.Add([PSCustomObject]@{ check = "NR_ALGO_DECISIONS"; status = "PASS"; detail = "$($decisionNodes.Count) noeuds decision dans algorigramme" })
+            } elseif ($decisionNodes.Count -eq 1) {
+                [void]$checks.Add([PSCustomObject]@{ check = "NR_ALGO_DECISIONS"; status = "WARN"; detail = "1 seul noeud decision (algorigramme pauvre)" })
+            } else {
+                [void]$checks.Add([PSCustomObject]@{ check = "NR_ALGO_DECISIONS"; status = "FAIL"; detail = "0 noeud decision - algorigramme purement lineaire" })
+            }
+        } else {
+            [void]$checks.Add([PSCustomObject]@{ check = "NR_ALGO_DECISIONS"; status = "WARN"; detail = "Pas d'algorigramme (section 9.4)" })
+        }
+    } else {
+        [void]$checks.Add([PSCustomObject]@{ check = "NR_ALGO_DECISIONS"; status = "PASS"; detail = "N/A (programme simple)" })
+    }
+
     # ========================================
     # COMPUTE RESULTS
     # ========================================
@@ -346,7 +391,7 @@ function Test-SpecV72 {
 # ============================================================
 
 Write-Host "`n=================================================================" -ForegroundColor Cyan
-Write-Host "    VALIDATION CONTENU V7.2 - 20 CRITERES SYSTEMATIQUES        " -ForegroundColor Cyan
+Write-Host "    VALIDATION CONTENU V7.2 - 23 CRITERES SYSTEMATIQUES        " -ForegroundColor Cyan
 Write-Host "=================================================================" -ForegroundColor Cyan
 
 $allResults = [System.Collections.ArrayList]::new()
