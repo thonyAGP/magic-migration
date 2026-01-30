@@ -34,7 +34,7 @@
                                      "check":  "V72_ANCHORS"
                                  },
                                  {
-                                     "detail":  "112 liens cliquables",
+                                     "detail":  "126 liens cliquables",
                                      "status":  "PASS",
                                      "check":  "V72_LINKS"
                                  },
@@ -52,9 +52,49 @@
                                      "detail":  "37 types precis",
                                      "status":  "PASS",
                                      "check":  "V72_EXPR_TYPES"
+                                 },
+                                 {
+                                     "detail":  "Roles specifiques aux taches",
+                                     "status":  "PASS",
+                                     "check":  "GAP1_SPECIFIC_ROLES"
+                                 },
+                                 {
+                                     "detail":  "Liste sous-taches presente",
+                                     "status":  "PASS",
+                                     "check":  "GAP2_SUBTASKS"
+                                 },
+                                 {
+                                     "detail":  "Variables liees aux taches",
+                                     "status":  "PASS",
+                                     "check":  "GAP2_VARS_TASK"
+                                 },
+                                 {
+                                     "detail":  "3/3 champs enrichis (source/exemple/impact)",
+                                     "status":  "PASS",
+                                     "check":  "GAP3_ENRICHED_RULES"
+                                 },
+                                 {
+                                     "detail":  "Actions boutons specifiques",
+                                     "status":  "PASS",
+                                     "check":  "GAP4_BTN_ACTIONS"
+                                 },
+                                 {
+                                     "detail":  "Pas de fallback MCP",
+                                     "status":  "PASS",
+                                     "check":  "GAP5_COLUMNS"
+                                 },
+                                 {
+                                     "detail":  "Variables avec contexte (pas de \u0027Xx refs\u0027)",
+                                     "status":  "PASS",
+                                     "check":  "GAP6_VAR_LINKS"
+                                 },
+                                 {
+                                     "detail":  "Migration concrete (pas generique)",
+                                     "status":  "PASS",
+                                     "check":  "GAP7_MIGRATION"
                                  }
                              ],
-                  "pass":  8,
+                  "pass":  16,
                   "fail":  0,
                   "warn":  0,
                   "all_passed":  true
@@ -72,14 +112,14 @@
                                    ]
                    },
     "pipeline_timing":  {
-                            "phases_start":  "2026-01-30 10:07:28",
-                            "assembly_end":  "2026-01-30 10:07:38",
-                            "assembly_start":  "2026-01-30 10:07:37",
-                            "phases_duration":  "8s",
-                            "phases_end":  "2026-01-30 10:07:37"
+                            "phases_start":  "2026-01-30 10:45:23",
+                            "assembly_end":  "2026-01-30 10:45:35",
+                            "assembly_start":  "2026-01-30 10:45:32",
+                            "phases_duration":  "9s",
+                            "phases_end":  "2026-01-30 10:45:32"
                         },
     "v72_features":  {
-                         "clickable_links":  112,
+                         "clickable_links":  126,
                          "variable_roles":  3,
                          "precise_expr_types":  37,
                          "anchors":  49,
@@ -87,9 +127,9 @@
                      },
     "metadata":  {
                      "pipeline_version":  "7.2",
-                     "generated_at":  "2026-01-30 10:07:38",
+                     "generated_at":  "2026-01-30 10:45:35",
                      "ide_position":  237,
-                     "duration_seconds":  1,
+                     "duration_seconds":  2.9,
                      "program_name":  "Transaction Nouv vente avec GP",
                      "project":  "ADH"
                  }

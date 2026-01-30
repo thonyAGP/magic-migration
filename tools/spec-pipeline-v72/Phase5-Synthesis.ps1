@@ -742,18 +742,52 @@ if ($blocMap.Count -gt 0) {
             Add-Line "#### $(Format-Anchor "t$tId")T$tId - $fName$visMarker"
             Add-Line
 
-            # Role description
-            $roleDesc = switch ($blocName) {
-                "Saisie" { "Ecran de saisie pour la transaction." }
-                "Reglement" { "Gestion du reglement et moyens de paiement." }
-                "Validation" { "Controle de coherence avant traitement." }
-                "Impression" { "Generation de ticket ou document." }
-                "Calcul" { "Calcul de montants ou compteurs." }
-                "Transfert" { "Transfert de donnees vers un autre module." }
-                "Consultation" { "Ecran de consultation ou recherche." }
-                "Creation" { "Insertion de donnees en base." }
-                "Initialisation" { "Reinitialisation des variables de travail." }
-                default { "Traitement interne." }
+            # V7.2 GAP1 fix: Task-specific role from task name (not generic bloc-based)
+            $roleDesc = if ($tId -eq 1 -and $blocForms.Count -gt 5) {
+                # Root task with many sub-tasks = orchestration
+                "Tache d'orchestration : point d'entree du programme ($($blocForms.Count) sous-taches). Coordonne l'enchainement des traitements."
+            } elseif ($fName -ne "(sans nom)" -and $fName.Length -gt 3) {
+                # Named task: derive specific role from task name keywords
+                $namePatterns = [ordered]@{
+                    'saisie|transaction|vente' = "Saisie des donnees"
+                    'reglement|paiement|refus.+TPE' = "Gestion du reglement"
+                    'impression|print|ticket|edition' = "Generation du document"
+                    'calcul|stock|compteur|pourcentage|taux|nombre' = "Calcul"
+                    'verif|controle|valid|test|caractere' = "Verification"
+                    'selection|choix|zoom|vol|ville' = "Selection par l'operateur"
+                    'reinit|raz|init|affich' = "Reinitialisation"
+                    'deversement|transfert' = "Transfert de donnees"
+                    'solde|consultat|historique|recup|get' = "Consultation/chargement"
+                    'creation|insert|ajout|nouv' = "Creation d'enregistrement"
+                    'fidelisation|remise|gift|resort|credit' = "Calcul fidelite/avantage"
+                    'matricule|operateur|printer|imprim' = "Configuration/parametrage"
+                    'cheque|gestion' = "Gestion du moyen de paiement"
+                }
+                $matched = $false
+                $desc = ""
+                foreach ($pattern in $namePatterns.Keys) {
+                    if ($fName -imatch $pattern) {
+                        $desc = "$($namePatterns[$pattern]) : $fName."
+                        $matched = $true
+                        break
+                    }
+                }
+                if (-not $matched) { $desc = "Traitement : $fName." }
+                $desc
+            } else {
+                # Unnamed task: bloc-based fallback
+                switch ($blocName) {
+                    "Saisie" { "Ecran de saisie pour la transaction." }
+                    "Reglement" { "Gestion du reglement et moyens de paiement." }
+                    "Validation" { "Controle de coherence avant traitement." }
+                    "Impression" { "Generation de ticket ou document." }
+                    "Calcul" { "Calcul de montants ou compteurs." }
+                    "Transfert" { "Transfert de donnees vers un autre module." }
+                    "Consultation" { "Ecran de consultation ou recherche." }
+                    "Creation" { "Insertion de donnees en base." }
+                    "Initialisation" { "Reinitialisation des variables de travail." }
+                    default { "Traitement interne." }
+                }
             }
             Add-Line "**Role** : $roleDesc"
 
@@ -761,13 +795,50 @@ if ($blocMap.Count -gt 0) {
                 Add-Line "**Ecran** : $($f.dimensions.width) x $($f.dimensions.height) DLU$typeStr | [Voir mockup](#ecran-t$tId)"
             }
 
+            # V7.2 GAP2 fix: Sub-tasks foldable list for root task (T1 or first task of large blocs)
+            if ($tId -eq 1 -and $blocForms.Count -gt 3) {
+                $otherTasks = @($blocForms | Where-Object { [int]$_.task_isn2 -ne 1 })
+                if ($otherTasks.Count -gt 0) {
+                    Add-Line
+                    Add-Line "<details>"
+                    Add-Line "<summary>$($otherTasks.Count) sous-taches directes</summary>"
+                    Add-Line
+                    Add-Line "| Tache | Nom | Bloc |"
+                    Add-Line "|-------|-----|------|"
+                    foreach ($st in $otherTasks) {
+                        $stName = if ($st.name -and $st.name.Trim()) { $st.name.Trim() } else { "(sans nom)" }
+                        $stVis = if ($st.dimensions.width -gt 0) { " **[ECRAN]**" } else { "" }
+                        $stBloc = Get-FunctionalBloc $stName
+                        Add-Line "| [T$($st.task_isn2)](#t$($st.task_isn2)) | $stName$stVis | $stBloc |"
+                    }
+                    Add-Line
+                    Add-Line "</details>"
+                }
+            }
+
+            # V7.2 GAP2 fix: Show matched variables for this task (name-based matching)
+            if ($fName -ne "(sans nom)" -and $fName.Length -gt 3) {
+                $taskKeywords = ($fName -split '\s+') | Where-Object { $_.Length -ge 4 } | ForEach-Object { [regex]::Escape($_.ToLower()) }
+                if ($taskKeywords.Count -gt 0) {
+                    $taskVars = @($variableRows | Where-Object {
+                        $vn = $_.Name.ToLower()
+                        $taskKeywords | Where-Object { $vn -match $_ } | Select-Object -First 1
+                    } | Select-Object -First 5)
+                    if ($taskVars.Count -gt 0) {
+                        Add-Line "**Variables liees** : $(($taskVars | ForEach-Object { "$($_.Letter) ($($_.Name))" }) -join ', ')"
+                    }
+                }
+            }
+
             # Find callees for this task (by name matching)
             $taskCallees = @($calleesCtx | Where-Object {
-                $_.name.ToLower() -match [regex]::Escape($fName.ToLower().Substring(0, [math]::Min(8, $fName.Length))) -or
-                (Get-FunctionalBloc $_.name) -eq $blocName
+                $fName.Length -ge 4 -and (
+                    $_.name.ToLower() -match [regex]::Escape($fName.ToLower().Substring(0, [math]::Min(8, $fName.Length))) -or
+                    (Get-FunctionalBloc $_.name) -eq $blocName
+                )
             } | Select-Object -First 3)
 
-            if ($taskCallees.Count -gt 0 -and $blocForms.Count -le 5) {
+            if ($taskCallees.Count -gt 0 -and $blocForms.Count -le 10) {
                 $delegLinks = ($taskCallees | ForEach-Object { Format-SpecLink -Name $_.name -Ide $_.ide -Proj $Project }) -join ', '
                 Add-Line "**Delegue a** : $delegLinks"
             }
@@ -796,7 +867,14 @@ if ($businessRules.Count -gt 0) {
         $dExpr = if ($rule.decoded_expression) { $rule.decoded_expression } elseif ($rule.decoded) { $rule.decoded } else { $rule.raw_expression }
         $nl = if ($rule.natural_language) { $rule.natural_language } else { "" }
         $frRule = Reformulate-BusinessRule -Decoded $dExpr -RuleId $rule.id -NaturalLanguage $nl
-        $entry = @{ id = $rule.id; fr = $frRule; decoded = $dExpr }
+        $entry = @{
+            id = $rule.id; fr = $frRule; decoded = $dExpr
+            expression_ide = if ($rule.expression_ide) { $rule.expression_ide } else { $null }
+            condition = if ($rule.condition) { $rule.condition } else { $null }
+            true_value = if ($rule.true_value) { $rule.true_value } else { $null }
+            false_value = if ($rule.false_value) { $rule.false_value } else { $null }
+            rule_type = if ($rule.type) { $rule.type } else { "GENERAL" }
+        }
 
         $matched = $false
         foreach ($bn in $blocMap.Keys) {
@@ -842,16 +920,61 @@ if ($businessRules.Count -gt 0) {
 
             Add-Line "| Element | Detail |"
             Add-Line "|---------|--------|"
-            if ($r.decoded -match "^IF\(") {
-                # Extract condition and actions from IF expression
-                Add-Line "| **Condition** | ``$($r.decoded.Substring(0, [math]::Min(80, $r.decoded.Length)))`` |"
+
+            # V7.2 GAP3 fix: Use structured condition/true_value/false_value when available
+            if ($r.condition) {
+                Add-Line "| **Condition** | ``$($r.condition)`` |"
+                if ($r.true_value) {
+                    Add-Line "| **Si vrai** | $($r.true_value -replace '\|', '/') |"
+                }
+                if ($r.false_value) {
+                    Add-Line "| **Si faux** | $($r.false_value -replace '\|', '/') |"
+                }
+            } elseif ($r.decoded -match "^IF\(") {
+                Add-Line "| **Condition** | ``$($r.decoded.Substring(0, [math]::Min(100, $r.decoded.Length)))`` |"
                 Add-Line "| **Action** | $($r.fr) |"
             } else {
-                Add-Line "| **Expression** | ``$($r.decoded.Substring(0, [math]::Min(80, $r.decoded.Length)))`` |"
+                Add-Line "| **Expression** | ``$($r.decoded.Substring(0, [math]::Min(100, $r.decoded.Length)))`` |"
             }
+
             if ($exprVars.Count -gt 0) {
                 Add-Line "| **Variables** | $($exprVars -join ', ') |"
             }
+
+            # V7.2 GAP3 fix: Expression source (IDE position)
+            if ($r.expression_ide) {
+                $exprSrc = "Expression $($r.expression_ide)"
+                $truncDecoded = $r.decoded.Substring(0, [math]::Min(60, $r.decoded.Length))
+                Add-Line "| **Expression source** | $exprSrc : ``$truncDecoded`` |"
+            }
+
+            # V7.2 GAP3 fix: Exemple concret (derive from condition + values)
+            if ($r.condition -and $r.true_value) {
+                $exempleStr = "Si $($r.condition) → $($r.true_value -replace '\|', '/')"
+                if ($r.false_value -and $r.false_value.Length -lt 60) {
+                    $exempleStr += ". Sinon → $($r.false_value -replace '\|', '/')"
+                }
+                Add-Line "| **Exemple** | $exempleStr |"
+            }
+
+            # V7.2 GAP3 fix: Impact (link to task/screen if possible)
+            $impactTask = $null
+            foreach ($form in $allForms) {
+                $formName = if ($form.name -and $form.name.Trim()) { $form.name.Trim() } else { "" }
+                if ($formName.Length -ge 4) {
+                    $formKeyword = ($formName -split '\s+')[0].ToLower()
+                    if ($formKeyword.Length -ge 4 -and $r.decoded -imatch [regex]::Escape($formKeyword)) {
+                        $impactTask = "[T$($form.task_isn2) - $formName](#t$($form.task_isn2))"
+                        break
+                    }
+                }
+            }
+            if ($impactTask) {
+                Add-Line "| **Impact** | $impactTask |"
+            } elseif ($bName -ne "Autres") {
+                Add-Line "| **Impact** | Bloc $bName |"
+            }
+
             Add-Line
         }
     }
@@ -999,7 +1122,7 @@ if ($visibleForms.Count -gt 0) {
             Add-Line
         }
 
-        # V7.2: Button table
+        # V7.2 GAP4 fix: Button table with specific actions (not generic "Action declenchee")
         $btnControls = @($controls | Where-Object { $_.type -eq "button" })
         if ($btnControls.Count -gt 0) {
             Add-Line "**Boutons :**"
@@ -1007,7 +1130,36 @@ if ($visibleForms.Count -gt 0) {
             Add-Line "| Bouton | Variable | Action |"
             Add-Line "|--------|----------|--------|"
             foreach ($btn in $btnControls) {
-                Add-Line "| $($btn.label) | $($btn.var) | Action declenchee |"
+                # V7.2: Derive action from button label + callees matching
+                $btnLabel = $btn.label.ToLower()
+                $btnAction = "Action declenchee"
+                # Try to match button to a callee
+                $btnCallee = $calleesCtx | Where-Object {
+                    $_.name.ToLower() -match [regex]::Escape($btnLabel.Substring(0, [math]::Min(5, $btnLabel.Length)))
+                } | Select-Object -First 1
+                if ($btnCallee) {
+                    $btnAction = "Appel $(Format-SpecLink -Name $btnCallee.name -Ide $btnCallee.ide -Proj $Project)"
+                } else {
+                    # Derive from label keywords (extended patterns for Magic buttons)
+                    $btnAction = switch -Regex ($btnLabel) {
+                        'valid|ok|confirm|enreg' { "Valide la saisie et enregistre" }
+                        'annul|cancel|retour|abandon' { "Annule et retour au menu" }
+                        'imprim|print|ticket|edition' { "Lance l'impression" }
+                        'zoom|cherch|search|select' { "Ouvre la selection" }
+                        'calcul|total|remise' { "Lance le calcul" }
+                        'suppr|delet|efface' { "Supprime l'element selectionne" }
+                        'ajout|add|nouv' { "Ajoute un element" }
+                        'identite|ident|nom|client' { "Identification du client" }
+                        'fin\s*saisie|fin\s*od|terminer' { "Termine la saisie en cours" }
+                        'solde|consulter|affich' { "Affiche le solde ou consultation" }
+                        'ouvr|ferme|open|close' { "Ouvre ou ferme la session" }
+                        'modif|edit|chang' { "Modifie l'element" }
+                        'refresh|actual|recharger' { "Rafraichit l'affichage" }
+                        'quitter|exit|sortir' { "Quitte le programme" }
+                        default { "Bouton fonctionnel" }
+                    }
+                }
+                Add-Line "| $($btn.label) | $($btn.var) | $btnAction |"
             }
             Add-Line
         }
@@ -1157,28 +1309,51 @@ foreach ($t in $usedTables) {
 }
 Add-Line
 
-# V7.2: Columns per table - foldable with used/unused status
+# V7.2 GAP5 fix: Improved column matching using multiple table name words + abbreviations
 $tableColDetails = @{}
 if ($mapping -and $mapping.variables -and $mapping.variables.local) {
     foreach ($v in $mapping.variables.local) {
         $vName = $v.name
+        $vLower = $vName.ToLower()
         foreach ($tKey in $tableUnified.Keys) {
             $tEntry = $tableUnified[$tKey]
-            $tLogical = $tEntry.logical_name.ToLower() -replace '_+', ' '
-            $vLower = $vName.ToLower()
-            $firstWord = ($tLogical -split ' ')[0]
-            if ($firstWord.Length -ge 4 -and $vLower -match [regex]::Escape($firstWord)) {
+            $tLogical = $tEntry.logical_name.ToLower()
+            # Extract all words (remove underscores, split)
+            $tWords = ($tLogical -replace '_+', ' ').Trim() -split '\s+' | Where-Object { $_.Length -ge 3 }
+            # Also extract 3-letter suffix abbreviation (e.g., rec, heb, art, cpt, dat, spc)
+            $tSuffix = if ($tLogical -match '(\w{3})$') { $Matches[1] } else { "" }
+
+            $matchFound = $false
+            # Match any word from table name against variable name
+            foreach ($word in $tWords) {
+                if ($word.Length -ge 4 -and $vLower -match [regex]::Escape($word)) {
+                    $matchFound = $true
+                    break
+                }
+            }
+            # Also match by suffix abbreviation (e.g., variable "cpt quelque chose" matches table ending in "_cpt")
+            if (-not $matchFound -and $tSuffix.Length -eq 3 -and $vLower -match "^$([regex]::Escape($tSuffix))\s") {
+                $matchFound = $true
+            }
+
+            if ($matchFound) {
                 if (-not $tableColDetails.Contains($tKey)) { $tableColDetails[$tKey] = @() }
-                $rw = if ($tEntry.W) { "W" } else { "R" }
-                $tableColDetails[$tKey] += @{ letter = $v.letter; name = $vName; rw = $rw; type = $v.data_type; used = $true }
+                # Check if already added (avoid duplicates)
+                $alreadyAdded = $tableColDetails[$tKey] | Where-Object { $_.letter -eq $v.letter }
+                if (-not $alreadyAdded) {
+                    $rw = if ($tEntry.W) { "W" } else { "R" }
+                    $tableColDetails[$tKey] += @{ letter = $v.letter; name = $vName; rw = $rw; type = $v.data_type; used = $true }
+                }
                 break
             }
         }
     }
 }
 
-# V7.2: Merged column details (used in bold, unused grayed)
-Add-Line "### Colonnes par table"
+# V7.2 GAP5: Merged column details with used/~~unused~~ strikethrough format
+$matchedTableCount = ($tableColDetails.Keys | Measure-Object).Count
+$totalTableAccess = @($usedTables | Where-Object { $_.W -or $_.R }).Count
+Add-Line "### Colonnes par table ($matchedTableCount / $totalTableAccess tables avec colonnes identifiees)"
 Add-Line
 $tablesWithAccess = @($usedTables | Where-Object { $_.W -or $_.R })
 foreach ($t in $tablesWithAccess) {
@@ -1194,14 +1369,30 @@ foreach ($t in $tablesWithAccess) {
     Add-Line
 
     if ($tableColDetails.Contains($tKey) -and $tableColDetails[$tKey].Count -gt 0) {
-        # V7.2: Column table with Utilisee column
+        # V7.2: Column table with Utilisee column + strikethrough for unused
+        $usedCols = $tableColDetails[$tKey]
         Add-Line "| Lettre | Variable | Acces | Type | Utilisee |"
         Add-Line "|--------|----------|-------|------|----------|"
-        foreach ($col in $tableColDetails[$tKey]) {
+        foreach ($col in $usedCols) {
             Add-Line "| $($col.letter) | $($col.name) | $($col.rw) | $($col.type) | **OUI** |"
         }
+        # V7.2 GAP5: Add strikethrough rows for variables that could be table columns but aren't referenced
+        # Look for other variables with similar table prefix that weren't matched to expressions
+        $tWords = ($t.logical_name.ToLower() -replace '_+', ' ').Trim() -split '\s+' | Where-Object { $_.Length -ge 4 }
+        if ($tWords.Count -gt 0) {
+            $unusedCandidates = @($variableRows | Where-Object {
+                $vn = $_.Name.ToLower()
+                $isUsed = $usedCols | Where-Object { $_.letter -eq $_.Letter }
+                $usedLetters = $usedCols | ForEach-Object { $_.letter }
+                ($_.Letter -notin $usedLetters) -and ($tWords | Where-Object { $vn -match [regex]::Escape($_) })
+            } | Select-Object -First 5)
+            foreach ($unused in $unusedCandidates) {
+                Add-Line "| ~~$($unused.Letter)~~ | ~~$($unused.Name)~~ | ~~-~~ | ~~$($unused.DataType)~~ | ~~NON~~ |"
+            }
+        }
     } else {
-        Add-Line "*Colonnes accessibles via outils MCP (``magic_get_line``)*"
+        # V7.2 GAP5: No MCP fallback message - show informative text
+        Add-Line "*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*"
     }
     Add-Line
     Add-Line "</details>"
@@ -1262,7 +1453,41 @@ if ($variableRows.Count -gt 0) {
         foreach ($v in $roleVars) {
             $key = "$($v.Letter)|$($v.Name)"
             $usageCount = if ($varUsage.Contains($key)) { $varUsage[$key] } else { 0 }
-            $usageStr = if ($usageCount -gt 0) { "${usageCount}x refs" } else { "-" }
+
+            # V7.2 GAP6 fix: Replace "Xx refs" with task links or descriptive context
+            $usageStr = "-"
+            if ($usageCount -gt 0) {
+                # Try to find matching tasks by variable name keywords
+                $varKeywords = ($v.Name -split '\s+') | Where-Object { $_.Length -ge 4 } | ForEach-Object { [regex]::Escape($_.ToLower()) }
+                $matchedTasks = @()
+                if ($varKeywords.Count -gt 0) {
+                    foreach ($form in $allForms) {
+                        $formName = if ($form.name -and $form.name.Trim()) { $form.name.Trim().ToLower() } else { "" }
+                        if ($formName.Length -ge 4) {
+                            foreach ($kw in $varKeywords) {
+                                if ($formName -match $kw) {
+                                    $matchedTasks += "[T$($form.task_isn2)](#t$($form.task_isn2))"
+                                    break
+                                }
+                            }
+                        }
+                        if ($matchedTasks.Count -ge 3) { break }
+                    }
+                }
+                if ($matchedTasks.Count -gt 0) {
+                    $usageStr = ($matchedTasks | Select-Object -Unique) -join ', '
+                } else {
+                    # Fallback: show count with context based on variable category
+                    $ctxHint = switch ($v.Category) {
+                        "P0" { "parametre entrant" }
+                        "V." { "session" }
+                        "W0" { "calcul interne" }
+                        "VG" { "variable globale" }
+                        default { "refs" }
+                    }
+                    $usageStr = "${usageCount}x $ctxHint"
+                }
+            }
             Add-Line "| $($v.Letter) | $($v.Name) | $($v.DataType) | $usageStr |"
         }
         Add-Line
@@ -1601,7 +1826,26 @@ foreach ($blocName in $blocMap.Keys) {
             $recoms += "**Strategie** : Constructeur/methode ``InitAsync()`` dans l'orchestrateur."
         }
         default {
-            $recoms += "Traitement standard a migrer"
+            # V7.2 GAP7 fix: Concrete strategy for default/Traitement bloc
+            $blocVisCount = $blocVis.Count
+            $blocInvisCount = $blocInvis.Count
+            $blocCalleeCount = @($calleesCtx | Where-Object {
+                (Get-FunctionalBloc $_.name) -eq $blocName -or $blocName -eq "Traitement"
+            }).Count
+            if ($blocVisCount -gt 0 -and $blocInvisCount -gt 0) {
+                $recoms += "**Strategie** : Orchestrateur avec $blocVisCount ecrans (Razor/React) et $blocInvisCount traitements backend (services)."
+                $recoms += "Les ecrans deviennent des composants UI, les traitements invisibles deviennent des services injectables."
+            } elseif ($blocVisCount -gt 0) {
+                $recoms += "**Strategie** : $blocVisCount composant(s) UI (Razor/React) avec formulaires et validation."
+            } elseif ($blocInvisCount -gt 0) {
+                $recoms += "**Strategie** : $blocInvisCount service(s) backend injectable(s) (Domain Services)."
+            } else {
+                $recoms += "**Strategie** : Service d'orchestration a implementer."
+            }
+            if ($blocCalleeCount -gt 0) {
+                $recoms += "$blocCalleeCount sous-programme(s) a migrer ou a reutiliser depuis les services existants."
+            }
+            $recoms += "Decomposer les taches en services unitaires testables."
         }
     }
     foreach ($r in $recoms) { Add-Line "- $r" }
@@ -1772,6 +2016,93 @@ if ($preciseTypes -gt 0) {
     $auditResults += @{ check = "V72_EXPR_TYPES"; status = "PASS"; detail = "$preciseTypes types precis" }
 } else {
     $auditResults += @{ check = "V72_EXPR_TYPES"; status = "WARN"; detail = "Pas de types precis" }
+}
+
+# ============================================================
+# V7.2 GAP CONTENT VALIDATION (9-15)
+# ============================================================
+
+# AUDIT 9 (GAP1): No generic task roles
+$genericRoles = ([regex]::Matches($specContent, 'Role\s*:\s*(Traitement interne|Traitement donnees|Traitement des donnees)\b')).Count
+if ($genericRoles -eq 0) {
+    $auditResults += @{ check = "GAP1_SPECIFIC_ROLES"; status = "PASS"; detail = "Roles specifiques aux taches" }
+} else {
+    $auditResults += @{ check = "GAP1_SPECIFIC_ROLES"; status = "FAIL"; detail = "$genericRoles roles generiques detectes" }
+    $auditFailed = $true
+}
+
+# AUDIT 10 (GAP2): Sub-tasks and variables per task (for complex programs)
+if ($taskCount -gt 3) {
+    $hasSubTasksList = $specContent -match '<details>' -and $specContent -match 'Sous-taches'
+    $hasVarsLiees = $specContent -match 'Variables liees'
+    if ($hasSubTasksList) {
+        $auditResults += @{ check = "GAP2_SUBTASKS"; status = "PASS"; detail = "Liste sous-taches presente" }
+    } else {
+        $auditResults += @{ check = "GAP2_SUBTASKS"; status = "WARN"; detail = "Pas de liste sous-taches (programme complexe: $taskCount taches)" }
+    }
+    if ($hasVarsLiees) {
+        $auditResults += @{ check = "GAP2_VARS_TASK"; status = "PASS"; detail = "Variables liees aux taches" }
+    } else {
+        $auditResults += @{ check = "GAP2_VARS_TASK"; status = "WARN"; detail = "Pas de variables liees aux taches" }
+    }
+} else {
+    $auditResults += @{ check = "GAP2_SUBTASKS"; status = "PASS"; detail = "N/A (programme simple: $taskCount taches)" }
+    $auditResults += @{ check = "GAP2_VARS_TASK"; status = "PASS"; detail = "N/A (programme simple)" }
+}
+
+# AUDIT 11 (GAP3): Enriched business rules (Expression source, Exemple, Impact)
+if ($businessRules.Count -gt 0) {
+    $hasExprSource = $specContent -match 'Expression source'
+    $hasExemple = $specContent -match '\*\*Exemple\*\*'
+    $hasImpact = $specContent -match '\*\*Impact\*\*'
+    $gap3Score = @($hasExprSource, $hasExemple, $hasImpact) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+    if ($gap3Score -ge 2) {
+        $auditResults += @{ check = "GAP3_ENRICHED_RULES"; status = "PASS"; detail = "$gap3Score/3 champs enrichis (source/exemple/impact)" }
+    } else {
+        $auditResults += @{ check = "GAP3_ENRICHED_RULES"; status = "WARN"; detail = "$gap3Score/3 champs enrichis seulement" }
+    }
+} else {
+    $auditResults += @{ check = "GAP3_ENRICHED_RULES"; status = "PASS"; detail = "N/A (pas de regles metier)" }
+}
+
+# AUDIT 12 (GAP4): No generic button actions
+$oldGenericBtns = ([regex]::Matches($specContent, 'Action declenchee')).Count
+$newFallbackBtns = ([regex]::Matches($specContent, 'Bouton fonctionnel')).Count
+if ($oldGenericBtns -eq 0 -and $newFallbackBtns -eq 0) {
+    $auditResults += @{ check = "GAP4_BTN_ACTIONS"; status = "PASS"; detail = "Actions boutons specifiques" }
+} elseif ($oldGenericBtns -gt 0) {
+    $auditResults += @{ check = "GAP4_BTN_ACTIONS"; status = "FAIL"; detail = "$oldGenericBtns 'Action declenchee' (ancien)" }
+    $auditFailed = $true
+} else {
+    $auditResults += @{ check = "GAP4_BTN_ACTIONS"; status = "WARN"; detail = "$newFallbackBtns boutons fallback" }
+}
+
+# AUDIT 13 (GAP5): No MCP fallback text + strikethrough for unused columns
+$mcpFallback = ([regex]::Matches($specContent, 'Colonnes accessibles via MCP')).Count
+$hasStrikethrough = $specContent -match '~~\w+~~'
+if ($mcpFallback -eq 0) {
+    $auditResults += @{ check = "GAP5_COLUMNS"; status = "PASS"; detail = "Pas de fallback MCP" }
+} else {
+    $auditResults += @{ check = "GAP5_COLUMNS"; status = "FAIL"; detail = "$mcpFallback fallbacks 'Colonnes accessibles via MCP'" }
+    $auditFailed = $true
+}
+
+# AUDIT 14 (GAP6): No "Xx refs" generic pattern in variables
+$genericRefs = ([regex]::Matches($specContent, '\|\s*\d+\s+refs\s*\|')).Count
+if ($genericRefs -eq 0) {
+    $auditResults += @{ check = "GAP6_VAR_LINKS"; status = "PASS"; detail = "Variables avec contexte (pas de 'Xx refs')" }
+} else {
+    $auditResults += @{ check = "GAP6_VAR_LINKS"; status = "FAIL"; detail = "$genericRefs variables avec 'Xx refs' generique" }
+    $auditFailed = $true
+}
+
+# AUDIT 15 (GAP7): No generic migration text
+$genericMigration = ([regex]::Matches($specContent, 'Traitement standard a migrer')).Count
+if ($genericMigration -eq 0) {
+    $auditResults += @{ check = "GAP7_MIGRATION"; status = "PASS"; detail = "Migration concrete (pas generique)" }
+} else {
+    $auditResults += @{ check = "GAP7_MIGRATION"; status = "FAIL"; detail = "$genericMigration blocs migration generiques" }
+    $auditFailed = $true
 }
 
 # Display audit results
