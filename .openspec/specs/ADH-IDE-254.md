@@ -1,195 +1,328 @@
 ﻿# ADH IDE 254 - Solde Resort Credit
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:13
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_250.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-01-30 09:43 -> 09:43 (8s) | Assemblage 09:43
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Solde Resort Credit |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 254 |
-| **Fichier XML** | `Prg_250.xml` |
-| **Description** | Solde Resort Credit |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 18 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 254 |
+| Nom Programme | Solde Resort Credit |
+| Fichier source | `Prg_254.xml` |
+| Domaine metier | Comptabilite |
+| Taches | 1 (1 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 980 | Table_980 |  | READ | Lecture |
+**Solde Resort Credit** assure la gestion complete de ce processus, accessible depuis [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md).
 
-**Resume**: 1 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (1 tache) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Logique metier** : 1 regles identifiees couvrant conditions metier.
 
-### 2.4 Algorigramme
+## 3. BLOCS FONCTIONNELS
 
-```mermaid
-flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+### 3.1 Traitement (1 tache)
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
-
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
-```
-
-### 2.5 Statistiques
-
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 18 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+Traitements internes.
 
 ---
 
-<!-- TAB:Cartographie -->
+#### <a id="t1"></a>T1 - Veuillez patienter... [ECRAN]
 
-## CARTOGRAPHIE APPLICATIVE
+**Role** : Traitement interne.
+**Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
 
-### 3.1 Chaine d'appels depuis Main
+
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Si [J]>[K] alors [J]-[K] sinon 0)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF([J]>[K],[J]-[K],0)` |
+| **Action** | Si [J]>[K] alors [J]-[K] sinon 0) |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md)
+- **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 7
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 1)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 254.1 | T1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>254.1 - Veuillez patienter...
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
+
+<!-- FORM-DATA:
+{
+    "width":  422,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 compte",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 service",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 solde resort credit",
+                         "h":  20,
+                         "var":  "E"
+                     }
+                 ],
+    "type":  "MDI",
+    "height":  56,
+    "taskId":  1
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 compte | Numeric | Lecture |
+| C | P0 filiation | Numeric | Lecture |
+| D | P0 service | Unicode | Lecture |
+| E | P0 solde resort credit | Numeric | Lecture |
+
+## 9. NAVIGATION
+
+Ecran unique: **Veuillez patienter...**
+
+### 9.3 Structure hierarchique (1 tache)
+
+- **254.1** [Veuillez patienter... (T1)](#t1) **[ECRAN]** (MDI) 422x56 -> [mockup](#ecran-t1) *[Traitement]*
+
+<!-- TAB:Donnees -->
+
+## 10. TABLES
+
+### Tables utilisees (1)
+
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 980 | Table_980 |  | MEM | R |   |   | 1 |
+
+### Colonnes par table
+
+<details>
+<summary>Table 980 - Table_980 (R) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (5)
+
+Variables recues du programme appelant ([Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P0 societe | Alpha | 1x refs |
+| B | P0 compte | Numeric | 1x refs |
+| C | P0 filiation | Numeric | 1x refs |
+| D | P0 service | Unicode | 1x refs |
+| E | P0 solde resort credit | Numeric | - |
+
+## 12. EXPRESSIONS
+
+**7 / 7 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 1 | 5 |
+| OTHER | 6 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 7 | `IF([J]>[K],[J]-[K],0)` | [RM-001](#rm-RM-001) |
+
+#### OTHER (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 4 | `P0 compte [B]` | - |
+| OTHER | 5 | `P0 filiation [C]` | - |
+| OTHER | 6 | `P0 service [D]` | - |
+| OTHER | 1 | `SetCrsr (1)` | - |
+| OTHER | 2 | `SetCrsr (2)` | - |
+| ... | | *+1 autres* | |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Solde Resort Credit (IDE 254)**
+
+Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md) -> **Solde Resort Credit (IDE 254)**
+
+Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md) -> **Solde Resort Credit (IDE 254)**
+
+Main -> ... -> [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md) -> **Solde Resort Credit (IDE 254)**
+
+Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md) -> **Solde Resort Credit (IDE 254)**
+
+Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md) -> **Solde Resort Credit (IDE 254)**
+
+Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md) -> **Solde Resort Credit (IDE 254)**
 
 ```mermaid
 graph LR
-    T[254 Solde Resort Cr]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T254[254 Solde Resort Credit]
+    style T254 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC242[242 Menu Choix SaisieA...]
+    style CC242 fill:#f59e0b
+    CC316[316 Saisie transaction...]
+    style CC316 fill:#f59e0b
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC237[237 Transaction Nouv v...]
+    style CC237 fill:#3fb950
+    CC238[238 Transaction Nouv v...]
+    style CC238 fill:#3fb950
+    CC163 --> CC237
+    CC242 --> CC237
+    CC316 --> CC237
+    CC163 --> CC238
+    CC242 --> CC238
+    CC316 --> CC238
+    CC1 --> CC163
+    CC1 --> CC242
+    CC1 --> CC316
+    CC237 --> T254
+    CC238 --> T254
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-584 | 1 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-710 | 1 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-721 | 1 |
+| [237](ADH-IDE-237.md) | Transaction Nouv vente avec GP | 1 |
+| [238](ADH-IDE-238.md) | Transaction Nouv vente PMS-584 | 1 |
+| [239](ADH-IDE-239.md) | Transaction Nouv vente PMS-721 | 1 |
+| [240](ADH-IDE-240.md) | Transaction Nouv vente PMS-710 | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[254 Solde Resort Cr]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T254[254 Solde Resort Credit]
+    style T254 fill:#58a6ff
+    NONE[Aucun callee]
+    T254 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 18 | Programme compact |
+| Expressions | 7 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 18) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (1 tache: 1 ecran, 0 traitement)
 
-### Complexite
+- Traitement standard a migrer
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 1 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+### 14.3 Dependances critiques
 
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:13 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-01-30 09:43*

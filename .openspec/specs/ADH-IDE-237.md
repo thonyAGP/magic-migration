@@ -1,7 +1,7 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: Phases 1-4 2026-01-29 20:08 -> 20:09 (14s) | Assemblage 20:09
-> **Pipeline**: V7.1 Deep Analysis
+> **Analyse**: Phases 1-4 2026-01-30 09:42 -> 09:42 (9s) | Assemblage 09:42
+> **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
 <!-- TAB:Resume -->
@@ -21,7 +21,7 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Transaction Nouv vente avec GP** assure la gestion complete de ce processus, accessible depuis Menu caisse GM - scroll, Menu Choix Saisie/Annul vente, Saisie transaction Nouv vente.
+**Transaction Nouv vente avec GP** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md), [Saisie transaction Nouv vente (IDE 316)](ADH-IDE-316.md).
 
 Le flux de traitement s'organise en **10 blocs fonctionnels** :
 
@@ -36,120 +36,499 @@ Le flux de traitement s'organise en **10 blocs fonctionnels** :
 - **Impression** (1 tache) : generation de tickets et documents
 - **Consultation** (1 tache) : ecrans de recherche, selection et consultation
 
-Le programme delegue des operations a **20 sous-programmes** couvrant :
-
-- **Calcul de donnees** : Calcul stock produit WS
-- **Configuration impression** : Set Listing Number
-- **Gestion moyens paiement** : Gestion Chèque
-- **Impression ticket/document** : Appel Print ticket vente PMS28, Get Printer, Printer choice (+1)
-- **Recuperation donnees** : Recup Classe et Lib du MOP, Recuperation du titre, Get Fidelisation et Remise (+1)
-- **Reinitialisation** : Reinit Aff PYR
-- **Selection/consultation** : Selection Vols /t Ville à côté, Choix PYR (plusieurs chambres), Zoom articles (+1)
-- **Transfert donnees** : Deversement Transaction
-- **Validation saisie** :     SP Caractères Interdits
-- **Verification solde** : Solde Gift Pass, Solde Resort Credit
-
 **Donnees modifiees** : 9 tables en ecriture (reseau_cloture___rec, prestations, mvt_prestation___mpr, compte_gm________cgm, compteurs________cpt, tempo_ecran_police, stat_lieu_vente_date, Boo_ResultsRechercheHoraire, Table_1037).
 
 **Logique metier** : 17 regles identifiees couvrant conditions metier, calculs avec pourcentages, positionnement dynamique d'UI, valeurs par defaut.
+
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Saisie (7 taches)
+
+- **T1** - Saisie transaction **[ECRAN]**
+- **T7** - Saisie Bilaterale **[ECRAN]**
+- **T8** - Saisie mode de règlement **[ECRAN]**
+- **T10** - Saisie Commentaires **[ECRAN]**
+- **T11** - VRL : Saisie identité **[ECRAN]**
+- **T19** - Saisie dates forfait **[ECRAN]**
+- **T30** - Affiche saisie **[ECRAN]**
+
+Delegue a : [Appel Print ticket vente PMS28 (IDE 233)](ADH-IDE-233.md), [Deversement Transaction (IDE 247)](ADH-IDE-247.md)
+
+#### Phase 2 : Reglement (4 taches)
+
+- **T2** - Reglements suite a refus TPE **[ECRAN]**
+- **T5** - Verif reglement tpe
+- **T28** - Creation reglement
+- **T34** - Changement MOP multi paiement
+
+Delegue a : [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md), [Gestion Chèque (IDE 228)](ADH-IDE-228.md)
+
+#### Phase 3 : Validation (1 tache)
+
+- **T3** - verif reg restant
+
+Delegue a : [    SP Caractères Interdits (IDE 84)](ADH-IDE-84.md)
+
+#### Phase 4 : Creation (5 taches)
+
+- **T4** - creation règlement
+- **T22** - Creation prestation
+- **T27** - Creation Tempo
+- **T29** - Creation
+- **T47** - Creation_heure_liberation
+
+#### Phase 5 : Traitement (18 taches)
+
+- **T6** - Dé-Affecition
+- **T12** - Test si cloture en cours
+- **T13** - Blocage cloture v1
+- **T14** - Blocage cloture v1
+- **T16** - Test reseau
+- **T17** - Forfait
+- **T18** - (sans nom) **[ECRAN]**
+- **T20** - Effacement forfait
+- **T21** - Effacement mvt forfait
+- **T23** - Deblocage cloture v1
+- **T24** - Deblocage cloture
+- **T25** - Gratuite ?
+- **T31** - garantie?
+- **T41** - Supprime enregs non affectés
+- **T44** - Affectation Auto
+- **T45** - MaJ Num Chèque
+- **T46** - Libération du logement **[ECRAN]**
+- **T49** - Récup nb chambre /LCO **[ECRAN]**
+
+Delegue a : [    SP Caractères Interdits (IDE 84)](ADH-IDE-84.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Get Fidelisation et Remise (IDE 225)](ADH-IDE-225.md), [Get Matricule (IDE 227)](ADH-IDE-227.md), [Gestion Chèque (IDE 228)](ADH-IDE-228.md), [Solde Gift Pass (IDE 241)](ADH-IDE-241.md), [Solde Resort Credit (IDE 254)](ADH-IDE-254.md)
+
+#### Phase 6 : Initialisation (3 taches)
+
+- **T9** - RAZ 269
+- **T32** - RAZ 269
+- **T48** - RAZ LCO liberation
+
+Delegue a : [Reinit Aff PYR (IDE 249)](ADH-IDE-249.md)
+
+#### Phase 7 : Calcul (5 taches)
+
+- **T15** - Reaffichage infos compte
+- **T35** - calcul nombre carte
+- **T37** - Compte Enregs affectés
+- **T42** - Compte Enregs affectés
+- **T43** - Compte Enregs affectés
+
+Delegue a : [Calcul stock produit WS (IDE 149)](ADH-IDE-149.md), [Solde Gift Pass (IDE 241)](ADH-IDE-241.md), [Solde Resort Credit (IDE 254)](ADH-IDE-254.md)
+
+#### Phase 8 : Consultation (1 tache)
+
+- **T26** - Recherche imputation/ssimput
+
+Delegue a : [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md), [Selection Vols /t Ville à côté (IDE 277)](ADH-IDE-277.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Get Fidelisation et Remise (IDE 225)](ADH-IDE-225.md), [Get Matricule (IDE 227)](ADH-IDE-227.md), [Choix PYR (plusieurs chambres) (IDE 248)](ADH-IDE-248.md), [Zoom articles (IDE 257)](ADH-IDE-257.md), [Zoom services village (IDE 269)](ADH-IDE-269.md)
+
+#### Phase 9 : Impression (1 tache)
+
+- **T33** - Increment Num. Ticket(VRL/VSL)
+
+Delegue a : [Appel Print ticket vente PMS28 (IDE 233)](ADH-IDE-233.md), [Get Printer (IDE 179)](ADH-IDE-179.md), [Printer choice (IDE 180)](ADH-IDE-180.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+#### Phase 10 : Transfert (4 taches)
+
+- **T36** - Raz Affectation Transfert
+- **T38** - Type transfert **[ECRAN]**
+- **T39** - Affiche Transfert A/R **[ECRAN]**
+- **T40** - Affectation PAX / Transfert **[ECRAN]**
+
+Delegue a : [Deversement Transaction (IDE 247)](ADH-IDE-247.md)
+
+#### Tables impactees
+
+| Table | Operations | Role metier |
+|-------|-----------|-------------|
+| stat_lieu_vente_date | **W**/L (13 usages) | Statistiques point de vente |
+| Boo_ResultsRechercheHoraire | R/**W** (8 usages) | Index de recherche |
+| tempo_ecran_police | R/**W**/L (7 usages) | Table temporaire ecran |
+| reseau_cloture___rec | R/**W** (5 usages) | Donnees reseau/cloture |
+| Table_1037 | **W** (3 usages) |  |
+| prestations | R/**W** (3 usages) | Prestations/services vendus |
+| compte_gm________cgm | **W** (2 usages) | Comptes GM (generaux) |
+| mvt_prestation___mpr | **W**/L (2 usages) | Prestations/services vendus |
+| compteurs________cpt | **W** (1 usages) | Comptes GM (generaux) |
+
+</details>
 
 ## 3. BLOCS FONCTIONNELS
 
 ### 3.1 Saisie (7 taches)
 
-L'operateur saisit les donnees de la transaction via 7 ecrans (Saisie transaction, Saisie Bilaterale, Saisie mode de règlement, Saisie Commentaires, VRL : Saisie identité, Saisie dates forfait, Affiche saisie). Les champs de saisie sont valides en temps reel avant enregistrement.
+L'operateur saisit les donnees de la transaction via 7 ecrans (Saisie transaction, Saisie Bilaterale, Saisie mode de règlement, Saisie Commentaires, VRL : Saisie identité, Saisie dates forfait, Affiche saisie).
 
-- **Saisie transaction** (T1, Modal, 1112x279)
-- **Saisie Bilaterale** (T7, Type6, 326x249)
-- **Saisie mode de règlement** (T8, Type6, 506x250)
-- **Saisie Commentaires** (T10, Type6, 772x169)
-- **VRL : Saisie identité** (T11, MDI, 699x157)
-- **Saisie dates forfait** (T19, MDI, 528x121)
-- **Affiche saisie** (T30, Modal, 427x124)
-- **Sous-programmes**: Appel Print ticket vente PMS28 (IDE 233), Deversement Transaction (IDE 247)
-- **Tables modifiees**: prestations, mvt_prestation___mpr, stat_lieu_vente_date
-- **Regles metier**: 13 regles associees
-- **Variables cles**: R (W0 FIN SAISIE OD), U (W0 code article), BB (W0 libelle article), BC (W0 article dernière minute), BD (W0 nbre articles)
+---
+
+#### <a id="t1"></a>T1 - Saisie transaction [ECRAN]
+
+**Role** : Ecran de saisie pour la transaction.
+**Ecran** : 1112 x 279 DLU (Modal) | [Voir mockup](#ecran-t1)
+
+---
+
+#### <a id="t7"></a>T7 - Saisie Bilaterale [ECRAN]
+
+**Role** : Ecran de saisie pour la transaction.
+**Ecran** : 326 x 249 DLU (Type6) | [Voir mockup](#ecran-t7)
+
+---
+
+#### <a id="t8"></a>T8 - Saisie mode de règlement [ECRAN]
+
+**Role** : Ecran de saisie pour la transaction.
+**Ecran** : 506 x 250 DLU (Type6) | [Voir mockup](#ecran-t8)
+
+---
+
+#### <a id="t10"></a>T10 - Saisie Commentaires [ECRAN]
+
+**Role** : Ecran de saisie pour la transaction.
+**Ecran** : 772 x 169 DLU (Type6) | [Voir mockup](#ecran-t10)
+
+---
+
+#### <a id="t11"></a>T11 - VRL : Saisie identité [ECRAN]
+
+**Role** : Ecran de saisie pour la transaction.
+**Ecran** : 699 x 157 DLU (MDI) | [Voir mockup](#ecran-t11)
+
+---
+
+#### <a id="t19"></a>T19 - Saisie dates forfait [ECRAN]
+
+**Role** : Ecran de saisie pour la transaction.
+**Ecran** : 528 x 121 DLU (MDI) | [Voir mockup](#ecran-t19)
+
+---
+
+#### <a id="t30"></a>T30 - Affiche saisie [ECRAN]
+
+**Role** : Ecran de saisie pour la transaction.
+**Ecran** : 427 x 124 DLU (Modal) | [Voir mockup](#ecran-t30)
+
 
 ### 3.2 Reglement (4 taches)
 
-Gestion des moyens de paiement : le programme traite 4 taches de reglement couvrant le choix du mode de paiement, le calcul des montants et la validation du paiement.
+Gestion des moyens de paiement : 4 taches de reglement.
 
-- **Reglements suite a refus TPE** (T2, Type6, 708x256)
-- *Internes*: Verif reglement tpe (T5), Creation reglement (T28), Changement MOP multi paiement (T34)
-- **Sous-programmes**: Recup Classe et Lib du MOP (IDE 152), Gestion Chèque (IDE 228)
-- **Tables modifiees**: compteurs________cpt
-- **Regles metier**: 4 regles associees
-- **Variables cles**: B (P0 devise locale), C (P0 masque montant), D (P0 solde compte), I (P0 date solde), CF (W0 montant avant reduction)
+---
+
+#### <a id="t2"></a>T2 - Reglements suite a refus TPE [ECRAN]
+
+**Role** : Gestion du reglement et moyens de paiement.
+**Ecran** : 708 x 256 DLU (Type6) | [Voir mockup](#ecran-t2)
+**Delegue a** : [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md)
+
+---
+
+#### <a id="t5"></a>T5 - Verif reglement tpe
+
+**Role** : Gestion du reglement et moyens de paiement.
+**Delegue a** : [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md)
+
+---
+
+#### <a id="t28"></a>T28 - Creation reglement
+
+**Role** : Gestion du reglement et moyens de paiement.
+**Delegue a** : [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md)
+
+---
+
+#### <a id="t34"></a>T34 - Changement MOP multi paiement
+
+**Role** : Gestion du reglement et moyens de paiement.
+**Delegue a** : [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md)
+
 
 ### 3.3 Validation (1 tache)
 
-Controles de coherence et de conformite : 1 tache verifie les donnees saisies, les droits de l'operateur et les conditions prealables au traitement.
+Controles de coherence : 1 tache verifie les donnees et conditions.
 
-- *Internes*: verif reg restant (T3)
-- **Sous-programmes**:     SP Caractères Interdits (IDE 84)
-- **Regles metier**: 1 regles associees
-- **Variables cles**: N (P0.Valide ?), CY (W0 PYR Valide), EK (W0 validation), FL (V.Transaction TPE validee), FM (V.Message erreur transac TPE)
+---
+
+#### <a id="t3"></a>T3 - verif reg restant
+
+**Role** : Controle de coherence avant traitement.
+
 
 ### 3.4 Creation (5 taches)
 
-Insertion de nouveaux enregistrements : 5 taches creent des mouvements, prestations ou autres donnees en base.
+Insertion de nouveaux enregistrements en base.
 
-- *Internes*: creation règlement (T4), Creation prestation (T22), Creation Tempo (T27), Creation (T29), Creation_heure_liberation (T47)
-- **Tables modifiees**: mvt_prestation___mpr
+---
+
+#### <a id="t4"></a>T4 - creation règlement
+
+**Role** : Insertion de donnees en base.
+
+---
+
+#### <a id="t22"></a>T22 - Creation prestation
+
+**Role** : Insertion de donnees en base.
+
+---
+
+#### <a id="t27"></a>T27 - Creation Tempo
+
+**Role** : Insertion de donnees en base.
+
+---
+
+#### <a id="t29"></a>T29 - Creation
+
+**Role** : Insertion de donnees en base.
+
+---
+
+#### <a id="t47"></a>T47 - Creation_heure_liberation
+
+**Role** : Insertion de donnees en base.
+
 
 ### 3.5 Traitement (18 taches)
 
-Traitements internes : 18 taches de traitement metier.
+Traitements internes.
 
-- **(sans nom)** (T18, Modal, 116x32)
-- **Libération du logement** (T46, Type0, 123x149)
-- **Récup nb chambre /LCO** (T49, Type0, 123x89)
-- *Internes*: Dé-Affecition (T6), Test si cloture en cours (T12), Blocage cloture v1 (T13), Blocage cloture v1 (T14), Test reseau (T16), Forfait (T17), Effacement forfait (T20), Effacement mvt forfait (T21), Deblocage cloture v1 (T23), Deblocage cloture (T24), Gratuite ? (T25), garantie? (T31), Supprime enregs non affectés (T41), Affectation Auto (T44), MaJ Num Chèque (T45)
-- **Sous-programmes**:     SP Caractères Interdits (IDE 84), Recuperation du titre (IDE 43), Set Listing Number (IDE 181), Get Fidelisation et Remise (IDE 225), Get Matricule (IDE 227), Gestion Chèque (IDE 228), Solde Gift Pass (IDE 241), Solde Resort Credit (IDE 254)
+---
+
+#### <a id="t6"></a>T6 - Dé-Affecition
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t12"></a>T12 - Test si cloture en cours
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t13"></a>T13 - Blocage cloture v1
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t14"></a>T14 - Blocage cloture v1
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t16"></a>T16 - Test reseau
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t17"></a>T17 - Forfait
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t18"></a>T18 - (sans nom) [ECRAN]
+
+**Role** : Traitement interne.
+**Ecran** : 116 x 32 DLU (Modal) | [Voir mockup](#ecran-t18)
+
+---
+
+#### <a id="t20"></a>T20 - Effacement forfait
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t21"></a>T21 - Effacement mvt forfait
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t23"></a>T23 - Deblocage cloture v1
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t24"></a>T24 - Deblocage cloture
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t25"></a>T25 - Gratuite ?
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t31"></a>T31 - garantie?
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t41"></a>T41 - Supprime enregs non affectés
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t44"></a>T44 - Affectation Auto
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t45"></a>T45 - MaJ Num Chèque
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t46"></a>T46 - Libération du logement [ECRAN]
+
+**Role** : Traitement interne.
+**Ecran** : 123 x 149 DLU | [Voir mockup](#ecran-t46)
+
+---
+
+#### <a id="t49"></a>T49 - Récup nb chambre /LCO [ECRAN]
+
+**Role** : Traitement interne.
+**Ecran** : 123 x 89 DLU | [Voir mockup](#ecran-t49)
+
 
 ### 3.6 Initialisation (3 taches)
 
-Reinitialisation d'etats : 3 taches preparent les variables de travail et remettent les compteurs a zero.
+Reinitialisation d'etats et variables de travail.
 
-- *Internes*: RAZ 269 (T9), RAZ 269 (T32), RAZ LCO liberation (T48)
-- **Sous-programmes**: Reinit Aff PYR (IDE 249)
+---
+
+#### <a id="t9"></a>T9 - RAZ 269
+
+**Role** : Reinitialisation des variables de travail.
+**Delegue a** : [Reinit Aff PYR (IDE 249)](ADH-IDE-249.md)
+
+---
+
+#### <a id="t32"></a>T32 - RAZ 269
+
+**Role** : Reinitialisation des variables de travail.
+**Delegue a** : [Reinit Aff PYR (IDE 249)](ADH-IDE-249.md)
+
+---
+
+#### <a id="t48"></a>T48 - RAZ LCO liberation
+
+**Role** : Reinitialisation des variables de travail.
+**Delegue a** : [Reinit Aff PYR (IDE 249)](ADH-IDE-249.md)
+
 
 ### 3.7 Calcul (5 taches)
 
-Calculs metier : 5 taches effectuent les calculs de montants, stocks, compteurs ou statistiques necessaires au traitement.
+Calculs metier : montants, stocks, compteurs.
 
-- *Internes*: Reaffichage infos compte (T15), calcul nombre carte (T35), Compte Enregs affectés (T37), Compte Enregs affectés (T42), Compte Enregs affectés (T43)
-- **Sous-programmes**: Calcul stock produit WS (IDE 149), Solde Gift Pass (IDE 241), Solde Resort Credit (IDE 254)
-- **Tables modifiees**: prestations, mvt_prestation___mpr, compteurs________cpt, stat_lieu_vente_date
-- **Regles metier**: 1 regles associees
-- **Variables cles**: D (P0 solde compte), H (P0 etat compte), CG (W0 Pourcentage reduction), DE (W0 Stock produit), EH (W0 Compte garanti)
+---
+
+#### <a id="t15"></a>T15 - Reaffichage infos compte
+
+**Role** : Calcul de montants ou compteurs.
+**Delegue a** : [Calcul stock produit WS (IDE 149)](ADH-IDE-149.md)
+
+---
+
+#### <a id="t35"></a>T35 - calcul nombre carte
+
+**Role** : Calcul de montants ou compteurs.
+**Delegue a** : [Calcul stock produit WS (IDE 149)](ADH-IDE-149.md)
+
+---
+
+#### <a id="t37"></a>T37 - Compte Enregs affectés
+
+**Role** : Calcul de montants ou compteurs.
+**Delegue a** : [Calcul stock produit WS (IDE 149)](ADH-IDE-149.md)
+
+---
+
+#### <a id="t42"></a>T42 - Compte Enregs affectés
+
+**Role** : Calcul de montants ou compteurs.
+**Delegue a** : [Calcul stock produit WS (IDE 149)](ADH-IDE-149.md)
+
+---
+
+#### <a id="t43"></a>T43 - Compte Enregs affectés
+
+**Role** : Calcul de montants ou compteurs.
+**Delegue a** : [Calcul stock produit WS (IDE 149)](ADH-IDE-149.md)
+
 
 ### 3.8 Consultation (1 tache)
 
-Consultation de donnees : 1 tache permet l'acces aux informations existantes.
+Ecrans de recherche et consultation.
 
-- *Internes*: Recherche imputation/ssimput (T26)
-- **Sous-programmes**: Recup Classe et Lib du MOP (IDE 152), Selection Vols /t Ville à côté (IDE 277), Recuperation du titre (IDE 43), Get Fidelisation et Remise (IDE 225), Get Matricule (IDE 227), Choix PYR (plusieurs chambres) (IDE 248), Zoom articles (IDE 257), Zoom services village (IDE 269)
+---
+
+#### <a id="t26"></a>T26 - Recherche imputation/ssimput
+
+**Role** : Ecran de consultation ou recherche.
+**Delegue a** : [Selection Vols /t Ville à côté (IDE 277)](ADH-IDE-277.md), [Choix PYR (plusieurs chambres) (IDE 248)](ADH-IDE-248.md), [Zoom articles (IDE 257)](ADH-IDE-257.md)
+
 
 ### 3.9 Impression (1 tache)
 
-Generation des documents et tickets : 1 tache gere l'impression des recus, tickets et documents associes a l'operation.
+Generation des documents et tickets.
 
-- *Internes*: Increment Num. Ticket(VRL/VSL) (T33)
-- **Sous-programmes**: Appel Print ticket vente PMS28 (IDE 233), Get Printer (IDE 179), Printer choice (IDE 180), Set Listing Number (IDE 181), Raz Current Printer (IDE 182)
-- **Variables cles**: EX (v.IncrémentTicket(VRL/VSL) OK), EY (v.IncrémentTicket(VTE) OK), EZ (v.NumeroTicket(VRL/VSL)), FA (v.NumeroTicket(VTE)), FU (V.N°Ticket OD)
+---
+
+#### <a id="t33"></a>T33 - Increment Num. Ticket(VRL/VSL)
+
+**Role** : Generation de ticket ou document.
+**Delegue a** : [Get Printer (IDE 179)](ADH-IDE-179.md), [Printer choice (IDE 180)](ADH-IDE-180.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
 
 ### 3.10 Transfert (4 taches)
 
-Transfert de donnees entre modules : 4 taches gerent le deversement ou le transfert d'informations vers d'autres programmes ou modules.
+Transfert de donnees entre modules.
 
-- **Type transfert** (T38, Type6, 722x292)
-- **Affiche Transfert A/R** (T39, Type6, 681x205)
-- **Affectation PAX / Transfert** (T40, Type0, 1056x281)
-- *Internes*: Raz Affectation Transfert (T36)
-- **Sous-programmes**: Deversement Transaction (IDE 247)
-- **Variables cles**: BM (W0 Sens du transfert Aller), BN (W0 Date du transfert Aller), BO (W0 Heure du transfert Aller), BP (W0 b.Date du transfert), BV (W0 Sens du transfert Retour)
+---
+
+#### <a id="t36"></a>T36 - Raz Affectation Transfert
+
+**Role** : Transfert de donnees vers un autre module.
+
+---
+
+#### <a id="t38"></a>T38 - Type transfert [ECRAN]
+
+**Role** : Transfert de donnees vers un autre module.
+**Ecran** : 722 x 292 DLU (Type6) | [Voir mockup](#ecran-t38)
+
+---
+
+#### <a id="t39"></a>T39 - Affiche Transfert A/R [ECRAN]
+
+**Role** : Transfert de donnees vers un autre module.
+**Ecran** : 681 x 205 DLU (Type6) | [Voir mockup](#ecran-t39)
+
+---
+
+#### <a id="t40"></a>T40 - Affectation PAX / Transfert [ECRAN]
+
+**Role** : Transfert de donnees vers un autre module.
+**Ecran** : 1056 x 281 DLU | [Voir mockup](#ecran-t40)
+
 
 ## 5. REGLES METIER
 
@@ -157,33 +536,146 @@ Transfert de donnees entre modules : 4 taches gerent le deversement ou le transf
 
 ### Saisie (13 regles)
 
-- **[RM-001]** Determine le sens du trajet selon le service village (1=ALLER, 2=RETOUR, 3=A/R)
-- **[RM-002]** Si V.RC utilisé [GA] est nul, choix conditionnel selon W0 imputation [W] (valeur 'VSL')
-- **[RM-005]** Si W0 Motif de non enreg NA [CL] est FAUX, branche alternative
-- **[RM-006]** Si W0 imputation [W] vaut 'VRL' alors 'Date consommation', sinon 'Date début séjour'
-- **[RM-007]** Calcul de pourcentage avec arrondi
-- **[RM-008]** Comportement conditionnel selon type d'imputation 'VRL'
-- **[RM-009]** Position UI conditionnelle selon W0 imputation [W]
-- **[RM-010]** Comportement conditionnel selon type d'imputation 'TRF'
-- **[RM-011]** Traitement si W0 Chambre [CX] est renseigne
-- **[RM-012]** Si V.Total reglement ligne [FF] alors V.Id transaction PMS [FI] sinon VG18)
-- **[RM-014]** Si NOT(CHG_PRV_W0 nbre articles [GO]) alors 132.875 sinon 105.875)
-- **[RM-015]** Si W0 imputation [W] vaut 'ANN' alors 'O', sinon 'N'
-- **[RM-016]** Comportement conditionnel selon type d'imputation 'PYR'
+#### <a id="rm-RM-001"></a>[RM-001] Determine le sens du trajet selon le service village (1=ALLER, 2=RETOUR, 3=A/R)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(Trim(W0 service village [BA])='1','ALLER',IF(Trim(W0 service village [BA])='2` |
+| **Action** | Determine le sens du trajet selon le service village (1=ALLER, 2=RETOUR, 3=A/R) |
+| **Variables** | BA (W0 service village) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Si V.RC utilisé [GA] est nul, choix conditionnel selon W0 imputation [W] (valeur 'VSL')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(V.RC utilisé [GA]=0,IF(W0 imputation [W]='VSL',P0.Date debut sejour [M],Date(` |
+| **Action** | Si V.RC utilisé [GA] est nul, choix conditionnel selon W0 imputation [W] (valeur 'VSL') |
+| **Variables** | M (P0.Date debut sejour), W (W0 imputation), CR (W0 Num rue), GA (V.RC utilisé) |
+
+#### <a id="rm-RM-005"></a>[RM-005] Si W0 Motif de non enreg NA [CL] est FAUX, branche alternative
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(NOT W0 Motif de non enreg NA [CL],W0.Date fin sejour [CK],W0 Titre [CO])` |
+| **Action** | Si W0 Motif de non enreg NA [CL] est FAUX, branche alternative |
+| **Variables** | CK (W0.Date fin sejour), CL (W0 Motif de non enreg NA), CO (W0 Titre) |
+
+#### <a id="rm-RM-006"></a>[RM-006] Si W0 imputation [W] vaut 'VRL' alors 'Date consommation', sinon 'Date début séjour'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(W0 imputation [W]='VRL','Date consommation','Date début séjour')` |
+| **Action** | Si W0 imputation [W] vaut 'VRL' alors 'Date consommation', sinon 'Date début séjour' |
+| **Variables** | W (W0 imputation) |
+
+#### <a id="rm-RM-007"></a>[RM-007] Calcul de pourcentage avec arrondi
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(W0 Titre [CO]<>0 AND NOT(W0 Motif de non enreg NA [CL]),Fix(W0 Motif annulati` |
+| **Action** | Calcul de pourcentage avec arrondi |
+| **Variables** | O (P0.Nb decimales), CL (W0 Motif de non enreg NA), CN (W0 Motif annulation), CO (W0 Titre), CQ (W0 Prenom) |
+
+#### <a id="rm-RM-008"></a>[RM-008] Comportement conditionnel selon type d'imputation 'VRL'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(W0 imputation [W]='VRL' OR W0 imputation [W]='VSL','Nb forfait',IF(W0 imputat` |
+| **Action** | Comportement conditionnel selon type d'imputation 'VRL' |
+| **Variables** | W (W0 imputation) |
+
+#### <a id="rm-RM-009"></a>[RM-009] Position UI conditionnelle selon W0 imputation [W]
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(IN (W0 imputation [W],'VRL','VSL','TRF','PYR'),31.125,14.875)` |
+| **Action** | Position UI conditionnelle selon W0 imputation [W] |
+| **Variables** | W (W0 imputation) |
+
+#### <a id="rm-RM-010"></a>[RM-010] Comportement conditionnel selon type d'imputation 'TRF'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(W0 imputation [W]='TRF',31.750,40.125)` |
+| **Action** | Comportement conditionnel selon type d'imputation 'TRF' |
+| **Variables** | W (W0 imputation) |
+
+#### <a id="rm-RM-011"></a>[RM-011] Traitement si W0 Chambre [CX] est renseigne
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb C` |
+| **Action** | Traitement si W0 Chambre [CX] est renseigne |
+| **Variables** | K (P0 Nom & prenom), CW (W0 Nb Chambres), CX (W0 Chambre), CY (W0 PYR Valide) |
+
+#### <a id="rm-RM-012"></a>[RM-012] Si V.Total reglement ligne [FF] alors V.Id transaction PMS [FI] sinon VG18)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(V.Total reglement ligne [FF],V.Id transaction PMS [FI],VG18)` |
+| **Action** | Si V.Total reglement ligne [FF] alors V.Id transaction PMS [FI] sinon VG18) |
+| **Variables** | FF (V.Total reglement ligne), FI (V.Id transaction PMS) |
+
+#### <a id="rm-RM-014"></a>[RM-014] Si NOT(CHG_PRV_W0 nbre articles [GO]) alors 132.875 sinon 105.875)
+
+| Element | Detail |
+|---------|--------|
+| **Expression** | `IF (NOT(CHG_PRV_W0 nbre articles [GO]),132.875,105.875)` |
+| **Variables** | BD (W0 nbre articles), GO (CHG_PRV_W0 nbre articles) |
+
+#### <a id="rm-RM-015"></a>[RM-015] Si W0 imputation [W] vaut 'ANN' alors 'O', sinon 'N'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(W0 imputation [W]='ANN','O','N')` |
+| **Action** | Si W0 imputation [W] vaut 'ANN' alors 'O', sinon 'N' |
+| **Variables** | W (W0 imputation) |
+
+#### <a id="rm-RM-016"></a>[RM-016] Comportement conditionnel selon type d'imputation 'PYR'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` |
+| **Action** | Comportement conditionnel selon type d'imputation 'PYR' |
+| **Variables** | W (W0 imputation), DG (W0 mode de paiement) |
 
 ### Reglement (2 regles)
 
-- **[RM-003]** Valeur par defaut si P0 masque montant [C] est vide
-- **[RM-004]** Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM)
+#### <a id="rm-RM-003"></a>[RM-003] Valeur par defaut si P0 masque montant [C] est vide
+
+| Element | Detail |
+|---------|--------|
+| **Expression** | `IF (P0 masque montant [C]='','15.2',P0 masque montant [C])` |
+| **Variables** | C (P0 masque montant) |
+
+#### <a id="rm-RM-004"></a>[RM-004] Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(VG7 OR VG35 OR VG87,'P0 masque montant [C]'FORM,'P0 devise locale [B]'FORM)` |
+| **Action** | Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM) |
+| **Variables** | B (P0 devise locale), C (P0 masque montant) |
 
 ### Autres (2 regles)
 
-- **[RM-013]** Si V.ConfirmeUseGP? [FZ] alors 'V' sinon IF([AP]='O','C','D'))
-- **[RM-017]** Si VG20>1 alors [AY] sinon 'G')
+#### <a id="rm-RM-013"></a>[RM-013] Si V.ConfirmeUseGP? [FZ] alors 'V' sinon IF([AP]='O','C','D'))
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(V.ConfirmeUseGP? [FZ],'V',IF([AP]='O','C','D'))` |
+| **Action** | Si V.ConfirmeUseGP? [FZ] alors 'V' sinon IF([AP]='O','C','D')) |
+| **Variables** | FZ (V.ConfirmeUseGP?) |
+
+#### <a id="rm-RM-017"></a>[RM-017] Si VG20>1 alors [AY] sinon 'G')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IF(VG20>1,[AY],'G')` |
+| **Action** | Si VG20>1 alors [AY] sinon 'G') |
 
 ## 6. CONTEXTE
 
-- **Appele par**: Menu caisse GM - scroll (IDE 163), Menu Choix Saisie/Annul vente (IDE 242), Saisie transaction Nouv vente (IDE 316)
+- **Appele par**: [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md), [Saisie transaction Nouv vente (IDE 316)](ADH-IDE-316.md)
 - **Appelle**: 20 programmes | **Tables**: 30 (W:9 R:13 L:18) | **Taches**: 49 | **Expressions**: 305
 
 <!-- TAB:Ecrans -->
@@ -192,374 +684,3291 @@ Transfert de donnees entre modules : 4 taches gerent le deversement ou le transf
 
 ### 8.1 Forms visibles (14 / 49)
 
-| # | Tache | Nom | Type | Largeur | Hauteur |
-|---|-------|-----|------|---------|---------|
-| 1 | 1 | Saisie transaction | Modal | 1112 | 279 |
-| 2 | 2 | Reglements suite a refus TPE | Type6 | 708 | 256 |
-| 3 | 7 | Saisie Bilaterale | Type6 | 326 | 249 |
-| 4 | 8 | Saisie mode de règlement | Type6 | 506 | 250 |
-| 5 | 10 | Saisie Commentaires | Type6 | 772 | 169 |
-| 6 | 11 | VRL : Saisie identité | MDI | 699 | 157 |
-| 7 | 18 | (sans nom) | Modal | 116 | 32 |
-| 8 | 19 | Saisie dates forfait | MDI | 528 | 121 |
-| 9 | 30 | Affiche saisie | Modal | 427 | 124 |
-| 10 | 38 | Type transfert | Type6 | 722 | 292 |
-| 11 | 39 | Affiche Transfert A/R | Type6 | 681 | 205 |
-| 12 | 40 | Affectation PAX / Transfert | Type0 | 1056 | 281 |
-| 13 | 46 | Libération du logement | Type0 | 123 | 149 |
-| 14 | 49 | Récup nb chambre /LCO | Type0 | 123 | 89 |
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 237.1 | T1 | Saisie transaction | Modal | 1112 | 279 | Saisie |
+| 2 | 237.2 | T2 | Reglements suite a refus TPE | Type6 | 708 | 256 | Reglement |
+| 3 | 237.3 | T7 | Saisie Bilaterale | Type6 | 326 | 249 | Saisie |
+| 4 | 237.4 | T8 | Saisie mode de règlement | Type6 | 506 | 250 | Saisie |
+| 5 | 237.5 | T10 | Saisie Commentaires | Type6 | 772 | 169 | Saisie |
+| 6 | 237.6 | T11 | VRL : Saisie identité | MDI | 699 | 157 | Saisie |
+| 7 | 237.7 | T18 | (sans nom) | Modal | 116 | 32 | Traitement |
+| 8 | 237.8 | T19 | Saisie dates forfait | MDI | 528 | 121 | Saisie |
+| 9 | 237.9 | T30 | Affiche saisie | Modal | 427 | 124 | Saisie |
+| 10 | 237.10 | T38 | Type transfert | Type6 | 722 | 292 | Transfert |
+| 11 | 237.11 | T39 | Affiche Transfert A/R | Type6 | 681 | 205 | Transfert |
+| 12 | 237.12 | T40 | Affectation PAX / Transfert | Type0 | 1056 | 281 | Transfert |
+| 13 | 237.13 | T46 | Libération du logement | Type0 | 123 | 149 | Traitement |
+| 14 | 237.14 | T49 | Récup nb chambre /LCO | Type0 | 123 | 89 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
-```
-+======================================================+
-| Saisie transaction [Modal] 1112x279 - Tache 1        |
-+------------------------------------------------------+
-|  [P0 societe (A)]  [P0 devise locale (B)]  [P0 mas...|
-|  [W0 FIN SAISIE OD (R) ____]  [W0 code article (U)]  |
-|  [W0 imputation (W) ____]  [W0 date d'achat (Y)]     |
-|  [W0 service village (BA) ____]  [W0 libelle artic...|
-|                                                      |
-|  [Bouton IDENTITE (P)]  [Bouton ABANDON (Q)]  [Bou...|
-+======================================================+
+---
 
-+=================================+
-| Reglements suite a refus TPE ... |
-+---------------------------------+
-|  [P0 societe (A)]  [P0 devise...|
-|  [W0 montant avant reduction ...|
-|  [W0 montant (DF) ____]  [W0 ...|
-|  [W0 Libelle MOP (DI) ____]  ...|
-|                                 |
-|  [Bouton IDENTITE (P)]  [Bout...|
-+=================================+
+#### <a id="ecran-t1"></a>237.1 - Saisie transaction
+**Tache** : [T1](#t1) | **Type** : Modal | **Dimensions** : 1112 x 279 DLU
+**Bloc** : Saisie | **Titre IDE** : Saisie transaction
 
-+============================+
-| Saisie Bilaterale [Type6... |
-+----------------------------+
-|  [P0 societe (A)]  [P0 d...|
-|  [W0 FIN SAISIE OD (R) _...|
-|  [W0 imputation (W) ____...|
-|  [W0 service village (BA...|
-|                            |
-|  [Bouton IDENTITE (P)]  ...|
-+============================+
+<!-- FORM-DATA:
+{
+    "width":  1112,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 libelle article",
+                         "h":  20,
+                         "var":  "BB"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 article dernière minute",
+                         "h":  20,
+                         "var":  "BC"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 nbre articles",
+                         "h":  20,
+                         "var":  "BD"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Modal",
+    "height":  279,
+    "taskId":  1
+}
+-->
 
-+============================+
-| Saisie mode de règlement... |
-+----------------------------+
-|  [P0 societe (A)]  [P0 d...|
-|  [W0 FIN SAISIE OD (R) _...|
-|  [W0 imputation (W) ____...|
-|  [W0 service village (BA...|
-|                            |
-|  [Bouton IDENTITE (P)]  ...|
-+============================+
+**Champs :**
 
-+=====================================+
-| Saisie Commentaires [Type6] 772x1... |
-+-------------------------------------+
-|  [P0 societe (A)]  [P0 devise loc...|
-|  [W0 FIN SAISIE OD (R) ____]  [W0...|
-|  [W0 imputation (W) ____]  [W0 da...|
-|  [W0 service village (BA) ____]  ...|
-|                                     |
-|  [Bouton IDENTITE (P)]  [Bouton A...|
-+=====================================+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+| BB | W0 libelle article | Alpha | **Saisie** |
+| BC | W0 article dernière minute | Logical | **Saisie** |
+| BD | W0 nbre articles | Numeric | **Saisie** |
 
-+=================================+
-| VRL : Saisie identité [MDI] 6... |
-+---------------------------------+
-|  [P0 societe (A)]  [P0 devise...|
-|  [W0 FIN SAISIE OD (R) ____] ...|
-|  [W0 imputation (W) ____]  [W...|
-|  [W0 service village (BA) ___...|
-|                                 |
-|  [Bouton IDENTITE (P)]  [Bout...|
-+=================================+
+**Boutons :**
 
-+============================+
-| (sans nom) [Modal] 116x3... |
-+----------------------------+
-|  [P0 societe (A)]  [P0 d...|
-|  [W0 FIN SAISIE OD (R) _...|
-|  [W0 code article (U) __...|
-|  [W0 sous-imput. (X) ___...|
-|                            |
-|  [Bouton IDENTITE (P)]  ...|
-+============================+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
 
-+============================+
-| Saisie dates forfait [MD... |
-+----------------------------+
-|  [P0 societe (A)]  [P0 d...|
-|  [W0 FIN SAISIE OD (R) _...|
-|  [W0 imputation (W) ____...|
-|  [W0 service village (BA...|
-|                            |
-|  [Bouton IDENTITE (P)]  ...|
-+============================+
+---
 
-+============================+
-| Affiche saisie [Modal] 4... |
-+----------------------------+
-|  [P0 societe (A)]  [P0 d...|
-|  [W0 FIN SAISIE OD (R) _...|
-|  [W0 imputation (W) ____...|
-|  [W0 service village (BA...|
-|                            |
-|  [Bouton IDENTITE (P)]  ...|
-+============================+
+#### <a id="ecran-t2"></a>237.2 - Reglements suite a refus TPE
+**Tache** : [T2](#t2) | **Type** : Type6 | **Dimensions** : 708 x 256 DLU
+**Bloc** : Reglement | **Titre IDE** : Reglements suite a refus TPE
 
-+==================================+
-| Type transfert [Type6] 722x292... |
-+----------------------------------+
-|  [P0 societe (A)]  [P0 devise ...|
-|  [W0 date d'achat (Y) ____]  [...|
-|  [W0 Date du transfert Aller (...|
-|  [W0 b.Date du transfert (BP) ...|
-|                                  |
-|  [Bouton IDENTITE (P)]  [Bouto...|
-+==================================+
+<!-- FORM-DATA:
+{
+    "width":  708,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 montant avant reduction",
+                         "h":  20,
+                         "var":  "CF"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 Montant reduction",
+                         "h":  20,
+                         "var":  "CI"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 montant",
+                         "h":  20,
+                         "var":  "DF"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 mode de paiement",
+                         "h":  20,
+                         "var":  "DG"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 Libelle MOP",
+                         "h":  20,
+                         "var":  "DI"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Code Devise",
+                         "h":  20,
+                         "var":  "DX"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Total_Vente",
+                         "h":  20,
+                         "var":  "EE"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 Total_GiftPass",
+                         "h":  20,
+                         "var":  "EF"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Type6",
+    "height":  256,
+    "taskId":  2
+}
+-->
 
-+================================+
-| Affiche Transfert A/R [Type6... |
-+--------------------------------+
-|  [P0 societe (A)]  [P0 devis...|
-|  [W0 date d'achat (Y) ____] ...|
-|  [W0 Date du transfert Aller...|
-|  [W0 b.Date du transfert (BP...|
-|                                |
-|  [Bouton IDENTITE (P)]  [Bou...|
-+================================+
+**Champs :**
 
-+===================================================+
-| Affectation PAX / Transfert [Type0] 1056x281 - ... |
-+---------------------------------------------------+
-|  [P0 societe (A)]  [P0 devise locale (B)]  [P0 ...|
-|  [W0 date d'achat (Y) ____]  [W0 Sens du transf...|
-|  [W0 Date du transfert Aller (BN) ____]  [W0 He...|
-|  [W0 b.Date du transfert (BP) ____]  [W0 Code G...|
-|                                                   |
-|  [Bouton IDENTITE (P)]  [Bouton ABANDON (Q)]  [...|
-+===================================================+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| CF | W0 montant avant reduction | Numeric | **Saisie** |
+| CI | W0 Montant reduction | Numeric | **Saisie** |
+| DF | W0 montant | Numeric | **Saisie** |
+| DG | W0 mode de paiement | Alpha | **Saisie** |
+| DI | W0 Libelle MOP | Alpha | **Saisie** |
+| DX | W0 Code Devise | Numeric | **Saisie** |
+| EE | W0 Total_Vente | Numeric | **Saisie** |
+| EF | W0 Total_GiftPass | Numeric | **Saisie** |
 
-+============================+
-| Libération du logement [... |
-+----------------------------+
-|  [P0 societe (A)]  [P0 d...|
-|  [W0 FIN SAISIE OD (R) _...|
-|  [W0 code article (U) __...|
-|  [W0 sous-imput. (X) ___...|
-|                            |
-|  [Bouton IDENTITE (P)]  ...|
-+============================+
+**Boutons :**
 
-+============================+
-| Récup nb chambre /LCO [T... |
-+----------------------------+
-|  [P0 societe (A)]  [P0 d...|
-|  [W0 FIN SAISIE OD (R) _...|
-|  [W0 code article (U) __...|
-|  [W0 sous-imput. (X) ___...|
-|                            |
-|  [Bouton IDENTITE (P)]  ...|
-+============================+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
 
-```
+---
+
+#### <a id="ecran-t7"></a>237.3 - Saisie Bilaterale
+**Tache** : [T7](#t7) | **Type** : Type6 | **Dimensions** : 326 x 249 DLU
+**Bloc** : Saisie | **Titre IDE** : Saisie Bilaterale
+
+<!-- FORM-DATA:
+{
+    "width":  326,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 libelle article",
+                         "h":  20,
+                         "var":  "BB"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 article dernière minute",
+                         "h":  20,
+                         "var":  "BC"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 nbre articles",
+                         "h":  20,
+                         "var":  "BD"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Type6",
+    "height":  249,
+    "taskId":  7
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+| BB | W0 libelle article | Alpha | **Saisie** |
+| BC | W0 article dernière minute | Logical | **Saisie** |
+| BD | W0 nbre articles | Numeric | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t8"></a>237.4 - Saisie mode de règlement
+**Tache** : [T8](#t8) | **Type** : Type6 | **Dimensions** : 506 x 250 DLU
+**Bloc** : Saisie | **Titre IDE** : Saisie mode de règlement
+
+<!-- FORM-DATA:
+{
+    "width":  506,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 libelle article",
+                         "h":  20,
+                         "var":  "BB"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 article dernière minute",
+                         "h":  20,
+                         "var":  "BC"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 nbre articles",
+                         "h":  20,
+                         "var":  "BD"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Type6",
+    "height":  250,
+    "taskId":  8
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+| BB | W0 libelle article | Alpha | **Saisie** |
+| BC | W0 article dernière minute | Logical | **Saisie** |
+| BD | W0 nbre articles | Numeric | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t10"></a>237.5 - Saisie Commentaires
+**Tache** : [T10](#t10) | **Type** : Type6 | **Dimensions** : 772 x 169 DLU
+**Bloc** : Saisie | **Titre IDE** : Saisie Commentaires
+
+<!-- FORM-DATA:
+{
+    "width":  772,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 libelle article",
+                         "h":  20,
+                         "var":  "BB"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 article dernière minute",
+                         "h":  20,
+                         "var":  "BC"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 nbre articles",
+                         "h":  20,
+                         "var":  "BD"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Type6",
+    "height":  169,
+    "taskId":  10
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+| BB | W0 libelle article | Alpha | **Saisie** |
+| BC | W0 article dernière minute | Logical | **Saisie** |
+| BD | W0 nbre articles | Numeric | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t11"></a>237.6 - VRL : Saisie identité
+**Tache** : [T11](#t11) | **Type** : MDI | **Dimensions** : 699 x 157 DLU
+**Bloc** : Saisie | **Titre IDE** : VRL : Saisie identité
+
+<!-- FORM-DATA:
+{
+    "width":  699,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 libelle article",
+                         "h":  20,
+                         "var":  "BB"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 article dernière minute",
+                         "h":  20,
+                         "var":  "BC"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 nbre articles",
+                         "h":  20,
+                         "var":  "BD"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "MDI",
+    "height":  157,
+    "taskId":  11
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+| BB | W0 libelle article | Alpha | **Saisie** |
+| BC | W0 article dernière minute | Logical | **Saisie** |
+| BD | W0 nbre articles | Numeric | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t18"></a>237.7 - (sans nom)
+**Tache** : [T18](#t18) | **Type** : Modal | **Dimensions** : 116 x 32 DLU
+**Bloc** : Traitement | **Titre IDE** : (sans nom)
+
+<!-- FORM-DATA:
+{
+    "width":  116,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 Cloture en cours",
+                         "h":  20,
+                         "var":  "T"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 sous-imput.",
+                         "h":  20,
+                         "var":  "X"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 annulation",
+                         "h":  20,
+                         "var":  "Z"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Modal",
+    "height":  32,
+    "taskId":  18
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| T | W0 Cloture en cours | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| X | W0 sous-imput. | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| Z | W0 annulation | Alpha | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t19"></a>237.8 - Saisie dates forfait
+**Tache** : [T19](#t19) | **Type** : MDI | **Dimensions** : 528 x 121 DLU
+**Bloc** : Saisie | **Titre IDE** : Saisie dates forfait
+
+<!-- FORM-DATA:
+{
+    "width":  528,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 libelle article",
+                         "h":  20,
+                         "var":  "BB"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 article dernière minute",
+                         "h":  20,
+                         "var":  "BC"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 nbre articles",
+                         "h":  20,
+                         "var":  "BD"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "MDI",
+    "height":  121,
+    "taskId":  19
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+| BB | W0 libelle article | Alpha | **Saisie** |
+| BC | W0 article dernière minute | Logical | **Saisie** |
+| BD | W0 nbre articles | Numeric | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t30"></a>237.9 - Affiche saisie
+**Tache** : [T30](#t30) | **Type** : Modal | **Dimensions** : 427 x 124 DLU
+**Bloc** : Saisie | **Titre IDE** : Affiche saisie
+
+<!-- FORM-DATA:
+{
+    "width":  427,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 libelle article",
+                         "h":  20,
+                         "var":  "BB"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 article dernière minute",
+                         "h":  20,
+                         "var":  "BC"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 nbre articles",
+                         "h":  20,
+                         "var":  "BD"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Modal",
+    "height":  124,
+    "taskId":  30
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+| BB | W0 libelle article | Alpha | **Saisie** |
+| BC | W0 article dernière minute | Logical | **Saisie** |
+| BD | W0 nbre articles | Numeric | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t38"></a>237.10 - Type transfert
+**Tache** : [T38](#t38) | **Type** : Type6 | **Dimensions** : 722 x 292 DLU
+**Bloc** : Transfert | **Titre IDE** : Type transfert
+
+<!-- FORM-DATA:
+{
+    "width":  722,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 Cloture en cours",
+                         "h":  20,
+                         "var":  "T"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 sous-imput.",
+                         "h":  20,
+                         "var":  "X"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 annulation",
+                         "h":  20,
+                         "var":  "Z"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Type6",
+    "height":  292,
+    "taskId":  38
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| T | W0 Cloture en cours | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| X | W0 sous-imput. | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| Z | W0 annulation | Alpha | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t39"></a>237.11 - Affiche Transfert A/R
+**Tache** : [T39](#t39) | **Type** : Type6 | **Dimensions** : 681 x 205 DLU
+**Bloc** : Transfert | **Titre IDE** : Affiche Transfert A/R
+
+<!-- FORM-DATA:
+{
+    "width":  681,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 Cloture en cours",
+                         "h":  20,
+                         "var":  "T"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 sous-imput.",
+                         "h":  20,
+                         "var":  "X"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 annulation",
+                         "h":  20,
+                         "var":  "Z"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Type6",
+    "height":  205,
+    "taskId":  39
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| T | W0 Cloture en cours | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| X | W0 sous-imput. | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| Z | W0 annulation | Alpha | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t40"></a>237.12 - Affectation PAX / Transfert
+**Tache** : [T40](#t40) | **Type** : Type0 | **Dimensions** : 1056 x 281 DLU
+**Bloc** : Transfert | **Titre IDE** : Affectation PAX / Transfert
+
+<!-- FORM-DATA:
+{
+    "width":  1056,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 Cloture en cours",
+                         "h":  20,
+                         "var":  "T"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 sous-imput.",
+                         "h":  20,
+                         "var":  "X"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 annulation",
+                         "h":  20,
+                         "var":  "Z"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Type0",
+    "height":  281,
+    "taskId":  40
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| T | W0 Cloture en cours | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| X | W0 sous-imput. | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| Z | W0 annulation | Alpha | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t46"></a>237.13 - Libération du logement
+**Tache** : [T46](#t46) | **Type** : Type0 | **Dimensions** : 123 x 149 DLU
+**Bloc** : Traitement | **Titre IDE** : Libération du logement
+
+<!-- FORM-DATA:
+{
+    "width":  123,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 Cloture en cours",
+                         "h":  20,
+                         "var":  "T"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 sous-imput.",
+                         "h":  20,
+                         "var":  "X"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 annulation",
+                         "h":  20,
+                         "var":  "Z"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Type0",
+    "height":  149,
+    "taskId":  46
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| T | W0 Cloture en cours | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| X | W0 sous-imput. | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| Z | W0 annulation | Alpha | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
+
+---
+
+#### <a id="ecran-t49"></a>237.14 - Récup nb chambre /LCO
+**Tache** : [T49](#t49) | **Type** : Type0 | **Dimensions** : 123 x 89 DLU
+**Bloc** : Traitement | **Titre IDE** : Récup nb chambre /LCO
+
+<!-- FORM-DATA:
+{
+    "width":  123,
+    "controls":  [
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 societe",
+                         "h":  20,
+                         "var":  "A"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 devise locale",
+                         "h":  20,
+                         "var":  "B"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 masque montant",
+                         "h":  20,
+                         "var":  "C"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 solde compte",
+                         "h":  20,
+                         "var":  "D"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  13,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 code GM",
+                         "h":  20,
+                         "var":  "E"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  true,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "P0 filiation",
+                         "h":  20,
+                         "var":  "F"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 FIN SAISIE OD",
+                         "h":  20,
+                         "var":  "R"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 Cloture en cours",
+                         "h":  20,
+                         "var":  "T"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 code article",
+                         "h":  20,
+                         "var":  "U"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 imputation",
+                         "h":  20,
+                         "var":  "W"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 sous-imput.",
+                         "h":  20,
+                         "var":  "X"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 date d\u0027achat",
+                         "h":  20,
+                         "var":  "Y"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 annulation",
+                         "h":  20,
+                         "var":  "Z"
+                     },
+                     {
+                         "w":  200,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  220,
+                         "label":  "W0 service village",
+                         "h":  20,
+                         "var":  "BA"
+                     },
+                     {
+                         "h":  25,
+                         "label":  "IDENTITE",
+                         "var":  "P",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  10,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "ABANDON",
+                         "var":  "Q",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  100,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "FIN SAISIE OD",
+                         "var":  "S",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  190,
+                         "w":  80
+                     },
+                     {
+                         "h":  25,
+                         "label":  "Ok",
+                         "var":  "EN",
+                         "y":  200,
+                         "type":  "button",
+                         "x":  280,
+                         "w":  80
+                     }
+                 ],
+    "type":  "Type0",
+    "height":  89,
+    "taskId":  49
+}
+-->
+
+**Champs :**
+
+| Variable | Nom | Type | Saisie |
+|----------|-----|------|--------|
+| A | P0 societe | Alpha | Lecture |
+| B | P0 devise locale | Alpha | Lecture |
+| C | P0 masque montant | Alpha | Lecture |
+| D | P0 solde compte | Numeric | Lecture |
+| E | P0 code GM | Numeric | Lecture |
+| F | P0 filiation | Numeric | Lecture |
+| R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| T | W0 Cloture en cours | Logical | **Saisie** |
+| U | W0 code article | Numeric | **Saisie** |
+| W | W0 imputation | Numeric | **Saisie** |
+| X | W0 sous-imput. | Numeric | **Saisie** |
+| Y | W0 date d'achat | Date | **Saisie** |
+| Z | W0 annulation | Alpha | **Saisie** |
+| BA | W0 service village | Alpha | **Saisie** |
+
+**Boutons :**
+
+| Bouton | Variable | Action |
+|--------|----------|--------|
+| IDENTITE | P | Action declenchee |
+| ABANDON | Q | Action declenchee |
+| FIN SAISIE OD | S | Action declenchee |
+| Ok | EN | Action declenchee |
 
 ## 9. NAVIGATION
 
 ### 9.1 Enchainement des ecrans
 
 ```mermaid
-flowchart LR
+flowchart TD
     START([Entree])
     style START fill:#3fb950
-    B1[Saisie 7 ecrans]
-    B2[Reglement 1 ecrans]
-    B3[Validation]
-    B4[Creation]
-    B5[Traitement 3 ecrans]
-    B6[Initialisation]
-    B7[Calcul]
-    B8[Consultation]
-    B9[Impression]
-    B10[Transfert 3 ecrans]
+    VF1[T1 Saisie transaction]
+    style VF1 fill:#58a6ff
+    VF2[T2 Reglements suite a ...]
+    style VF2 fill:#58a6ff
+    VF7[T7 Saisie Bilaterale]
+    style VF7 fill:#58a6ff
+    VF8[T8 Saisie mode de règl...]
+    style VF8 fill:#58a6ff
+    VF10[T10 Saisie Commentaires]
+    style VF10 fill:#58a6ff
+    VF11[T11 VRL : Saisie identité]
+    style VF11 fill:#58a6ff
+    VF18[T18 sans nom]
+    style VF18 fill:#58a6ff
+    VF19[T19 Saisie dates forfait]
+    style VF19 fill:#58a6ff
+    VF30[T30 Affiche saisie]
+    style VF30 fill:#58a6ff
+    VF38[T38 Type transfert]
+    style VF38 fill:#58a6ff
+    VF39[T39 Affiche Transfert AR]
+    style VF39 fill:#58a6ff
+    VF40[T40 Affectation PAX Tr...]
+    style VF40 fill:#58a6ff
+    VF46[T46 Libération du loge...]
+    style VF46 fill:#58a6ff
+    VF49[T49 Récup nb chambre LCO]
+    style VF49 fill:#58a6ff
+    EXT152[IDE 152 Recup Classe e...]
+    style EXT152 fill:#3fb950
+    EXT84[IDE 84 SP Caractères I...]
+    style EXT84 fill:#3fb950
+    EXT233[IDE 233 Appel Print ti...]
+    style EXT233 fill:#3fb950
+    EXT249[IDE 249 Reinit Aff PYR]
+    style EXT249 fill:#3fb950
+    EXT277[IDE 277 Selection Vols...]
+    style EXT277 fill:#3fb950
+    EXT43[IDE 43 Recuperation du...]
+    style EXT43 fill:#3fb950
+    EXT149[IDE 149 Calcul stock p...]
+    style EXT149 fill:#3fb950
+    EXT179[IDE 179 Get Printer]
+    style EXT179 fill:#3fb950
+    EXT180[IDE 180 Printer choice]
+    style EXT180 fill:#3fb950
+    EXT181[IDE 181 Set Listing Nu...]
+    style EXT181 fill:#3fb950
+    EXT182[IDE 182 Raz Current Pr...]
+    style EXT182 fill:#3fb950
+    EXT225[IDE 225 Get Fidelisati...]
+    style EXT225 fill:#3fb950
+    EXT227[IDE 227 Get Matricule]
+    style EXT227 fill:#3fb950
+    EXT228[IDE 228 Gestion Chèque]
+    style EXT228 fill:#3fb950
+    EXT241[IDE 241 Solde Gift Pass]
+    style EXT241 fill:#3fb950
+    EXT247[IDE 247 Deversement Tr...]
+    style EXT247 fill:#3fb950
+    EXT248[IDE 248 Choix PYR plus...]
+    style EXT248 fill:#3fb950
+    EXT254[IDE 254 Solde Resort C...]
+    style EXT254 fill:#3fb950
+    EXT257[IDE 257 Zoom articles]
+    style EXT257 fill:#3fb950
+    EXT269[IDE 269 Zoom services ...]
+    style EXT269 fill:#3fb950
     FIN([Sortie])
     style FIN fill:#f85149
-    START --> B1
-    B1 --> B2
-    B2 --> B3
-    B3 --> B4
-    B4 --> B5
-    B5 --> B6
-    B6 --> B7
-    B7 --> B8
-    B8 --> B9
-    B9 --> B10
-    B10 --> FIN
+    START --> VF1
+    VF1 -->|Recuperation donnees| EXT152
+    VF1 -->|Validation saisie| EXT84
+    VF1 -->|Impression ticket/document| EXT233
+    VF1 -->|Reinitialisation| EXT249
+    VF1 -->|Selection/consultation| EXT277
+    VF1 -->|Recuperation donnees| EXT43
+    VF1 -->|Calcul de donnees| EXT149
+    VF1 -->|Impression ticket/document| EXT179
+    EXT269 --> FIN
 ```
 
-**Detail par bloc:**
+**Detail par enchainement :**
 
-- **Saisie**: Saisie transaction (T1), Saisie Bilaterale (T7), Saisie mode de règlement (T8), Saisie Commentaires (T10), VRL : Saisie identité (T11), Saisie dates forfait (T19), Affiche saisie (T30)
-- **Reglement**: Reglements suite a refus TPE (T2)
-- **Validation**: traitement interne (1 tache)
-- **Creation**: traitement interne (5 taches)
-- **Traitement**: (sans nom) (T18), Libération du logement (T46), Récup nb chambre /LCO (T49)
-- **Initialisation**: traitement interne (3 taches)
-- **Calcul**: traitement interne (5 taches)
-- **Consultation**: traitement interne (1 tache)
-- **Impression**: traitement interne (1 tache)
-- **Transfert**: Type transfert (T38), Affiche Transfert A/R (T39), Affectation PAX / Transfert (T40)
-
-### 9.2 Logique decisionnelle
-
-```mermaid
-flowchart TD
-    START([Debut traitement])
-    style START fill:#3fb950
-    BLOC_Saisie[Saisie 13 regles]
-    style BLOC_Saisie fill:#f59e0b
-    START --> BLOC_Saisie
-    D1{Determine le sens du t...}
-    style D1 fill:#58a6ff
-    BLOC_Saisie --> D1
-    D1 -->|OUI| A1[RM-001]
-    D1 -->|NON| N1((.))
-    A1 --> N1
-    D2{Si V.RC utilisé GA est...}
-    style D2 fill:#58a6ff
-    N1 --> D2
-    D2 -->|OUI| A2[RM-002]
-    D2 -->|NON| N2((.))
-    A2 --> N2
-    D3{Si W0 Motif de non enr...}
-    style D3 fill:#58a6ff
-    N2 --> D3
-    D3 -->|OUI| A3[RM-005]
-    D3 -->|NON| N3((.))
-    A3 --> N3
-    MOREBLOC_Saisie[+ 10 autres]
-    N3 --> MOREBLOC_Saisie
-    BLOC_Reglement[Reglement 2 regles]
-    style BLOC_Reglement fill:#f59e0b
-    MOREBLOC_Saisie --> BLOC_Reglement
-    D4{Valeur par defaut si P...}
-    style D4 fill:#58a6ff
-    BLOC_Reglement --> D4
-    D4 -->|OUI| A4[RM-003]
-    D4 -->|NON| N4((.))
-    A4 --> N4
-    D5{Si VG7 OR VG35 OR VG87...}
-    style D5 fill:#58a6ff
-    N4 --> D5
-    D5 -->|OUI| A5[RM-004]
-    D5 -->|NON| N5((.))
-    A5 --> N5
-    BLOC_Autres[Autres 2 regles]
-    style BLOC_Autres fill:#f59e0b
-    N5 --> BLOC_Autres
-    D6{Si V.ConfirmeUseGP FZ ...}
-    style D6 fill:#58a6ff
-    BLOC_Autres --> D6
-    D6 -->|OUI| A6[RM-013]
-    D6 -->|NON| N6((.))
-    A6 --> N6
-    D7{Si VG201 alors AY sinon G}
-    style D7 fill:#58a6ff
-    N6 --> D7
-    D7 -->|OUI| A7[RM-017]
-    D7 -->|NON| N7((.))
-    A7 --> N7
-    ENDOK([Fin traitement])
-    style ENDOK fill:#f85149
-    N7 --> ENDOK
-```
-
-**Regles par bloc:**
-
-**Saisie** (13):
-- **RM-001**: Determine le sens du trajet selon le service village (1=ALLER, 2=RETOUR, 3=A/R)
-- **RM-002**: Si V.RC utilisé [GA] est nul, choix conditionnel selon W0 imputation [W] (valeur 'VSL')
-- **RM-005**: Si W0 Motif de non enreg NA [CL] est FAUX, branche alternative
-- **RM-006**: Si W0 imputation [W] vaut 'VRL' alors 'Date consommation', sinon 'Date début séjour'
-- **RM-007**: Calcul de pourcentage avec arrondi
-- **RM-008**: Comportement conditionnel selon type d'imputation 'VRL'
-- **RM-009**: Position UI conditionnelle selon W0 imputation [W]
-- **RM-010**: Comportement conditionnel selon type d'imputation 'TRF'
-- **RM-011**: Traitement si W0 Chambre [CX] est renseigne
-- **RM-012**: Si V.Total reglement ligne [FF] alors V.Id transaction PMS [FI] sinon VG18)
-- **RM-014**: Si NOT(CHG_PRV_W0 nbre articles [GO]) alors 132.875 sinon 105.875)
-- **RM-015**: Si W0 imputation [W] vaut 'ANN' alors 'O', sinon 'N'
-- **RM-016**: Comportement conditionnel selon type d'imputation 'PYR'
-
-**Reglement** (2):
-- **RM-003**: Valeur par defaut si P0 masque montant [C] est vide
-- **RM-004**: Si VG7 OR VG35 OR VG87 alors 'P0 masque montant [C]'FORM sinon 'P0 devise locale [B]'FORM)
-
-**Autres** (2):
-- **RM-013**: Si V.ConfirmeUseGP? [FZ] alors 'V' sinon IF([AP]='O','C','D'))
-- **RM-017**: Si VG20>1 alors [AY] sinon 'G')
+| Depuis | Action | Vers | Retour |
+|--------|--------|------|--------|
+| Saisie transaction | Recuperation donnees | [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md) | Retour ecran |
+| Saisie transaction | Validation saisie | [    SP Caractères Interdits (IDE 84)](ADH-IDE-84.md) | Retour ecran |
+| Saisie transaction | Impression ticket/document | [Appel Print ticket vente PMS28 (IDE 233)](ADH-IDE-233.md) | Retour ecran |
+| Saisie transaction | Reinitialisation | [Reinit Aff PYR (IDE 249)](ADH-IDE-249.md) | Retour ecran |
+| Saisie transaction | Selection/consultation | [Selection Vols /t Ville à côté (IDE 277)](ADH-IDE-277.md) | Retour ecran |
+| Saisie transaction | Recuperation donnees | [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Retour ecran |
+| Saisie transaction | Calcul de donnees | [Calcul stock produit WS (IDE 149)](ADH-IDE-149.md) | Retour ecran |
+| Saisie transaction | Impression ticket/document | [Get Printer (IDE 179)](ADH-IDE-179.md) | Retour ecran |
+| Saisie transaction | Impression ticket/document | [Printer choice (IDE 180)](ADH-IDE-180.md) | Retour ecran |
+| Saisie transaction | Configuration impression | [Set Listing Number (IDE 181)](ADH-IDE-181.md) | Retour ecran |
+| Saisie transaction | Impression ticket/document | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Retour ecran |
+| Saisie transaction | Recuperation donnees | [Get Fidelisation et Remise (IDE 225)](ADH-IDE-225.md) | Retour ecran |
+| Saisie transaction | Recuperation donnees | [Get Matricule (IDE 227)](ADH-IDE-227.md) | Retour ecran |
+| Saisie transaction | Gestion moyens paiement | [Gestion Chèque (IDE 228)](ADH-IDE-228.md) | Retour ecran |
+| Saisie transaction | Verification solde | [Solde Gift Pass (IDE 241)](ADH-IDE-241.md) | Retour ecran |
+| Saisie transaction | Transfert donnees | [Deversement Transaction (IDE 247)](ADH-IDE-247.md) | Retour ecran |
+| Saisie transaction | Selection/consultation | [Choix PYR (plusieurs chambres) (IDE 248)](ADH-IDE-248.md) | Retour ecran |
+| Saisie transaction | Verification solde | [Solde Resort Credit (IDE 254)](ADH-IDE-254.md) | Retour ecran |
+| Saisie transaction | Selection/consultation | [Zoom articles (IDE 257)](ADH-IDE-257.md) | Retour ecran |
+| Saisie transaction | Selection/consultation | [Zoom services village (IDE 269)](ADH-IDE-269.md) | Retour ecran |
 
 ### 9.3 Structure hierarchique (49 taches)
 
-- **237.1** Saisie transaction (T1) **[ECRAN]** (Modal) 1112x279 *[Saisie]*
-  - **237.1.1** Saisie Bilaterale (T7) **[ECRAN]** (Type6) 326x249
-  - **237.1.2** Saisie mode de règlement (T8) **[ECRAN]** (Type6) 506x250
-  - **237.1.3** Saisie Commentaires (T10) **[ECRAN]** (Type6) 772x169
-  - **237.1.4** VRL : Saisie identité (T11) **[ECRAN]** (MDI) 699x157
-  - **237.1.5** Saisie dates forfait (T19) **[ECRAN]** (MDI) 528x121
-  - **237.1.6** Affiche saisie (T30) **[ECRAN]** (Modal) 427x124
-- **237.2** Reglements suite a refus TPE (T2) **[ECRAN]** (Type6) 708x256 *[Reglement]*
-  - **237.2.1** Verif reglement tpe (T5)  
-  - **237.2.2** Creation reglement (T28)  
-  - **237.2.3** Changement MOP multi paiement (T34)  
-- **237.3** verif reg restant (T3)   *[Validation]*
-- **237.4** creation règlement (T4)   *[Creation]*
-  - **237.4.1** Creation prestation (T22)  (MDI)
-  - **237.4.2** Creation Tempo (T27)  (MDI)
-  - **237.4.3** Creation (T29)  
-  - **237.4.4** Creation_heure_liberation (T47)  
-- **237.5** Dé-Affecition (T6)   *[Traitement]*
-  - **237.5.1** Test si cloture en cours (T12)  (MDI)
-  - **237.5.2** Blocage cloture v1 (T13)  (MDI)
-  - **237.5.3** Blocage cloture v1 (T14)  (MDI)
-  - **237.5.4** Test reseau (T16)  (MDI)
-  - **237.5.5** Forfait (T17)  (MDI)
-  - **237.5.6** (sans nom) (T18) **[ECRAN]** (Modal) 116x32
-  - **237.5.7** Effacement forfait (T20)  (MDI)
-  - **237.5.8** Effacement mvt forfait (T21)  (MDI)
-  - **237.5.9** Deblocage cloture v1 (T23)  (MDI)
-  - **237.5.10** Deblocage cloture (T24)  (MDI)
-  - **237.5.11** Gratuite ? (T25)  (MDI)
-  - **237.5.12** garantie? (T31)  (MDI)
-  - **237.5.13** Supprime enregs non affectés (T41)  
-  - **237.5.14** Affectation Auto (T44)  
-  - **237.5.15** MaJ Num Chèque (T45)  
-  - **237.5.16** Libération du logement (T46) **[ECRAN]**  123x149
-  - **237.5.17** Récup nb chambre /LCO (T49) **[ECRAN]**  123x89
-- **237.6** RAZ 269 (T9)  (MDI) *[Initialisation]*
-  - **237.6.1** RAZ 269 (T32)  (MDI)
-  - **237.6.2** RAZ LCO liberation (T48)  
-- **237.7** Reaffichage infos compte (T15)  (MDI) *[Calcul]*
-  - **237.7.1** calcul nombre carte (T35)  
-  - **237.7.2** Compte Enregs affectés (T37)  
-  - **237.7.3** Compte Enregs affectés (T42)  
-  - **237.7.4** Compte Enregs affectés (T43)  
-- **237.8** Recherche imputation/ssimput (T26)  (MDI) *[Consultation]*
-- **237.9** Increment Num. Ticket(VRL/VSL) (T33)   *[Impression]*
-- **237.10** Raz Affectation Transfert (T36)   *[Transfert]*
-  - **237.10.1** Type transfert (T38) **[ECRAN]** (Type6) 722x292
-  - **237.10.2** Affiche Transfert A/R (T39) **[ECRAN]** (Type6) 681x205
-  - **237.10.3** Affectation PAX / Transfert (T40) **[ECRAN]**  1056x281
+- **237.1** [Saisie transaction (T1)](#t1) **[ECRAN]** (Modal) 1112x279 -> [mockup](#ecran-t1) *[Saisie]*
+  - **237.1.1** [Saisie Bilaterale (T7)](#t7) **[ECRAN]** (Type6) 326x249 -> [mockup](#ecran-t7)
+  - **237.1.2** [Saisie mode de règlement (T8)](#t8) **[ECRAN]** (Type6) 506x250 -> [mockup](#ecran-t8)
+  - **237.1.3** [Saisie Commentaires (T10)](#t10) **[ECRAN]** (Type6) 772x169 -> [mockup](#ecran-t10)
+  - **237.1.4** [VRL : Saisie identité (T11)](#t11) **[ECRAN]** (MDI) 699x157 -> [mockup](#ecran-t11)
+  - **237.1.5** [Saisie dates forfait (T19)](#t19) **[ECRAN]** (MDI) 528x121 -> [mockup](#ecran-t19)
+  - **237.1.6** [Affiche saisie (T30)](#t30) **[ECRAN]** (Modal) 427x124 -> [mockup](#ecran-t30)
+- **237.2** [Reglements suite a refus TPE (T2)](#t2) **[ECRAN]** (Type6) 708x256 -> [mockup](#ecran-t2) *[Reglement]*
+  - **237.2.1** [Verif reglement tpe (T5)](#t5)  
+  - **237.2.2** [Creation reglement (T28)](#t28)  
+  - **237.2.3** [Changement MOP multi paiement (T34)](#t34)  
+- **237.3** [verif reg restant (T3)](#t3)   *[Validation]*
+- **237.4** [creation règlement (T4)](#t4)   *[Creation]*
+  - **237.4.1** [Creation prestation (T22)](#t22)  (MDI)
+  - **237.4.2** [Creation Tempo (T27)](#t27)  (MDI)
+  - **237.4.3** [Creation (T29)](#t29)  
+  - **237.4.4** [Creation_heure_liberation (T47)](#t47)  
+- **237.5** [Dé-Affecition (T6)](#t6)   *[Traitement]*
+  - **237.5.1** [Test si cloture en cours (T12)](#t12)  (MDI)
+  - **237.5.2** [Blocage cloture v1 (T13)](#t13)  (MDI)
+  - **237.5.3** [Blocage cloture v1 (T14)](#t14)  (MDI)
+  - **237.5.4** [Test reseau (T16)](#t16)  (MDI)
+  - **237.5.5** [Forfait (T17)](#t17)  (MDI)
+  - **237.5.6** [(sans nom) (T18)](#t18) **[ECRAN]** (Modal) 116x32 -> [mockup](#ecran-t18)
+  - **237.5.7** [Effacement forfait (T20)](#t20)  (MDI)
+  - **237.5.8** [Effacement mvt forfait (T21)](#t21)  (MDI)
+  - **237.5.9** [Deblocage cloture v1 (T23)](#t23)  (MDI)
+  - **237.5.10** [Deblocage cloture (T24)](#t24)  (MDI)
+  - **237.5.11** [Gratuite ? (T25)](#t25)  (MDI)
+  - **237.5.12** [garantie? (T31)](#t31)  (MDI)
+  - **237.5.13** [Supprime enregs non affectés (T41)](#t41)  
+  - **237.5.14** [Affectation Auto (T44)](#t44)  
+  - **237.5.15** [MaJ Num Chèque (T45)](#t45)  
+  - **237.5.16** [Libération du logement (T46)](#t46) **[ECRAN]**  123x149 -> [mockup](#ecran-t46)
+  - **237.5.17** [Récup nb chambre /LCO (T49)](#t49) **[ECRAN]**  123x89 -> [mockup](#ecran-t49)
+- **237.6** [RAZ 269 (T9)](#t9)  (MDI) *[Initialisation]*
+  - **237.6.1** [RAZ 269 (T32)](#t32)  (MDI)
+  - **237.6.2** [RAZ LCO liberation (T48)](#t48)  
+- **237.7** [Reaffichage infos compte (T15)](#t15)  (MDI) *[Calcul]*
+  - **237.7.1** [calcul nombre carte (T35)](#t35)  
+  - **237.7.2** [Compte Enregs affectés (T37)](#t37)  
+  - **237.7.3** [Compte Enregs affectés (T42)](#t42)  
+  - **237.7.4** [Compte Enregs affectés (T43)](#t43)  
+- **237.8** [Recherche imputation/ssimput (T26)](#t26)  (MDI) *[Consultation]*
+- **237.9** [Increment Num. Ticket(VRL/VSL) (T33)](#t33)   *[Impression]*
+- **237.10** [Raz Affectation Transfert (T36)](#t36)   *[Transfert]*
+  - **237.10.1** [Type transfert (T38)](#t38) **[ECRAN]** (Type6) 722x292 -> [mockup](#ecran-t38)
+  - **237.10.2** [Affiche Transfert A/R (T39)](#t39) **[ECRAN]** (Type6) 681x205 -> [mockup](#ecran-t39)
+  - **237.10.3** [Affectation PAX / Transfert (T40)](#t40) **[ECRAN]**  1056x281 -> [mockup](#ecran-t40)
 
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
 
-### 10.1 Tables utilisees (30)
+### Tables utilisees (30)
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
@@ -571,377 +3980,549 @@ flowchart TD
 | 39 | depot_garantie___dga | Depots et garanties | DB | R |   |   | 1 |
 | 46 | mvt_prestation___mpr | Prestations/services vendus | DB |   | **W** | L | 2 |
 | 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** |   | 2 |
-| 50 | moyens_reglement_mor |  | DB | R |   |   | 3 |
+| 50 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 3 |
 | 67 | tables___________tab |  | DB |   |   | L | 1 |
 | 68 | compteurs________cpt | Comptes GM (generaux) | DB |   | **W** |   | 1 |
 | 70 | date_comptable___dat |  | DB |   |   | L | 1 |
-| 77 | articles_________art |  | DB | R |   | L | 4 |
+| 77 | articles_________art | Articles et stock | DB | R |   | L | 4 |
 | 79 | gratuites________gra |  | DB | R |   |   | 1 |
 | 89 | moyen_paiement___mop |  | DB | R |   | L | 8 |
 | 96 | table_prestation_pre | Prestations/services vendus | DB |   |   | L | 1 |
 | 103 | logement_client__loc |  | DB | R |   |   | 1 |
 | 109 | table_utilisateurs |  | DB | R |   |   | 1 |
-| 139 | moyens_reglement_mor |  | DB | R |   |   | 1 |
+| 139 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 1 |
 | 140 | moyen_paiement___mop |  | DB |   |   | L | 1 |
-| 197 | articles_en_stock |  | DB |   |   | L | 1 |
+| 197 | articles_en_stock | Articles et stock | DB |   |   | L | 1 |
 | 372 | pv_budget |  | DB |   |   | L | 1 |
 | 596 | tempo_ecran_police | Table temporaire ecran | TMP | R | **W** | L | 7 |
-| 697 | droits_applications |  | DB |   |   | L | 1 |
+| 697 | droits_applications | Droits operateur | DB |   |   | L | 1 |
 | 728 | arc_cc_total |  | DB |   |   | L | 1 |
-| 801 | moyens_reglement_complem |  | DB |   |   | L | 1 |
+| 801 | moyens_reglement_complem | Reglements / paiements | DB |   |   | L | 1 |
 | 818 | Circuit supprime |  | DB |   |   | L | 1 |
 | 847 | stat_lieu_vente_date | Statistiques point de vente | TMP |   | **W** | L | 13 |
 | 899 | Boo_ResultsRechercheHoraire | Index de recherche | DB | R | **W** |   | 8 |
 | 1037 | Table_1037 |  | MEM |   | **W** |   | 3 |
 
-### 10.2 Colonnes par table
+### Colonnes par table
 
 <details>
 <summary>Table 23 - reseau_cloture___rec (R/**W**) - 5 usages</summary>
 
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| DN | W0 reseau | W | Alpha |
+| Lettre | Variable | Acces | Type | Utilisee |
+|--------|----------|-------|------|----------|
+| DN | W0 reseau | W | Alpha | **OUI** |
 
 </details>
 
 <details>
 <summary>Table 30 - gm-recherche_____gmr (R/L) - 3 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 32 - prestations (R/**W**) - 3 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 39 - depot_garantie___dga (R) - 1 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 46 - mvt_prestation___mpr (**W**/L) - 2 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 47 - compte_gm________cgm (**W**) - 2 usages</summary>
 
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| D | P0 solde compte | W | Numeric |
-| EH | W0 Compte garanti | W | Logical |
-| H | P0 etat compte | W | Alpha |
+| Lettre | Variable | Acces | Type | Utilisee |
+|--------|----------|-------|------|----------|
+| D | P0 solde compte | W | Numeric | **OUI** |
+| EH | W0 Compte garanti | W | Logical | **OUI** |
+| H | P0 etat compte | W | Alpha | **OUI** |
 
 </details>
 
 <details>
 <summary>Table 50 - moyens_reglement_mor (R) - 3 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 77 - articles_________art (R/L) - 4 usages</summary>
 
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| BD | W0 nbre articles | R | Numeric |
-| GN | CHG_REASON_W0 nbre articles | R | Numeric |
-| GO | CHG_PRV_W0 nbre articles | R | Numeric |
+| Lettre | Variable | Acces | Type | Utilisee |
+|--------|----------|-------|------|----------|
+| BD | W0 nbre articles | R | Numeric | **OUI** |
+| GN | CHG_REASON_W0 nbre articles | R | Numeric | **OUI** |
+| GO | CHG_PRV_W0 nbre articles | R | Numeric | **OUI** |
 
 </details>
 
 <details>
 <summary>Table 79 - gratuites________gra (R) - 1 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 89 - moyen_paiement___mop (R/L) - 8 usages</summary>
 
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| FV | V.N°Ticket Autres Moyen Paie | R | Numeric |
+| Lettre | Variable | Acces | Type | Utilisee |
+|--------|----------|-------|------|----------|
+| FV | V.N°Ticket Autres Moyen Paie | R | Numeric | **OUI** |
 
 </details>
 
 <details>
 <summary>Table 103 - logement_client__loc (R) - 1 usages</summary>
 
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| B | v.Heb_nom_logement | R | Unicode |
-| EO | W0 Lien Logement Lieu Séjour | R | Logical |
+| Lettre | Variable | Acces | Type | Utilisee |
+|--------|----------|-------|------|----------|
+| B | v.Heb_nom_logement | R | Unicode | **OUI** |
+| EO | W0 Lien Logement Lieu Séjour | R | Logical | **OUI** |
 
 </details>
 
 <details>
 <summary>Table 109 - table_utilisateurs (R) - 1 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 139 - moyens_reglement_mor (R) - 1 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 596 - tempo_ecran_police (R/**W**/L) - 7 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 847 - stat_lieu_vente_date (**W**/L) - 13 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 899 - Boo_ResultsRechercheHoraire (R/**W**) - 8 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 <details>
 <summary>Table 1037 - Table_1037 (**W**) - 3 usages</summary>
 
-*Colonnes accessibles via outils MCP (magic_get_line)*
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Variables principales (Top 20 par usage / 171)
+### 11.1 Parametres entrants (15)
 
-| Cat | Lettre | Nom Variable | Type | Usages | Ref |
-|-----|--------|--------------|------|--------|-----|
-| W0 | **W** | W0 imputation | Numeric | 68x | `{0,23}` |
-| Autre | **Q** | Bouton ABANDON | Alpha | 16x | `{0,17}` |
-| W0 | **DP** | W0 forfait (O/N) | Alpha | 10x | `{0,120}` |
-| V. | **GA** | V.RC utilisé | Logical | 10x | `{0,183}` |
-| W0 | **CO** | W0 Titre | Alpha | 9x | `{0,93}` |
-| W0 | **CL** | W0 Motif de non enreg NA | Numeric | 8x | `{0,90}` |
-| W0 | **DO** | W0 fin tache | Alpha | 7x | `{0,119}` |
-| W0 | **U** | W0 code article | Numeric | 6x | `{0,21}` |
-| W0 | **CR** | W0 Num rue | Alpha | 6x | `{0,96}` |
-| W0 | **CQ** | W0 Prenom | Alpha | 6x | `{0,95}` |
-| W0 | **CP** | W0 Nom | Alpha | 6x | `{0,94}` |
-| V. | **GE** | v.Flag exist Vte LCO | Logical | 6x | `{0,187}` |
-| V. | **FZ** | V.ConfirmeUseGP? | Numeric | 5x | `{0,182}` |
-| W0 | **R** | W0 FIN SAISIE OD | Logical | 5x | `{0,18}` |
-| W0 | **EF** | W0 Total_GiftPass | Numeric | 5x | `{0,136}` |
-| W0 | **DV** | W0 gratuite ? | Alpha | 5x | `{0,126}` |
-| W0 | **DF** | W0 montant | Numeric | 4x | `{0,110}` |
-| P0 | **G** | P0 date fin sejour | Date | 4x | `{0,7}` |
-| W0 | **BD** | W0 nbre articles | Numeric | 4x | `{0,56}` |
-| Autre | **GO** | CHG_PRV_W0 nbre articles | Numeric | 4x | `{0,197}` |
+Variables recues du programme appelant ([Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)).
 
-### 11.2 Toutes les variables (171)
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P0 societe | Alpha | 2x refs |
+| B | P0 devise locale | Alpha | 3x refs |
+| C | P0 masque montant | Alpha | 3x refs |
+| D | P0 solde compte | Numeric | - |
+| E | P0 code GM | Numeric | 2x refs |
+| F | P0 filiation | Numeric | 2x refs |
+| G | P0 date fin sejour | Date | 4x refs |
+| H | P0 etat compte | Alpha | - |
+| I | P0 date solde | Date | - |
+| J | P0 garanti O/N | Alpha | - |
+| K | P0 Nom & prenom | Alpha | 2x refs |
+| L | P0 UNI/BI | Alpha | 2x refs |
+| M | P0.Date debut sejour | Date | 1x refs |
+| N | P0.Valide ? | Numeric | 1x refs |
+| O | P0.Nb decimales | Numeric | 2x refs |
+
+### 11.2 Variables de session (51)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| V | v.SoldeGiftPass | Numeric | 2x refs |
+| BI | v Sens Transfert Global | Alpha | 1x refs |
+| BJ | v.Date activité VAE | Date | 1x refs |
+| BK | v.VAE pendant le séjour ? | Logical | - |
+| BL | v.Matin/Après midi | Unicode | 1x refs |
+| ED | v. titre | Alpha | - |
+| EP | V.VADA ? | Logical | 1x refs |
+| EQ | V.VADV ? | Logical | 4x refs |
+| ER | V.VAD ? | Logical | 1x refs |
+| ET | V.Reglement premier article | Alpha | - |
+| EU | V.Type premier article | Alpha | 1x refs |
+| EV | V.Premier article VSL NA ? | Logical | - |
+| EW | V.Article VSL NA ? | Logical | - |
+| EX | v.IncrémentTicket(VRL/VSL) OK | Logical | - |
+| EY | v.IncrémentTicket(VTE) OK | Logical | - |
+| EZ | v.NumeroTicket(VRL/VSL) | Numeric | - |
+| FA | v.NumeroTicket(VTE) | Numeric | - |
+| FB | v Réponse mode paiement | Numeric | - |
+| FC | V Nbre de Ligne Saisies | Numeric | 1x refs |
+| FD | v Nbre ligne de reglement Saisi | Numeric | - |
+| FE | V.Num ligne vente | Numeric | - |
+| FF | V.Total reglement ligne | Numeric | 1x refs |
+| FG | V.Multi reglement ligne | Logical | - |
+| FH | V.MOP TPE | Alpha | - |
+| FI | V.Id transaction PMS | Alpha | 1x refs |
+| FJ | V.Id transaction AXIS | Alpha | - |
+| FK | V.Num Autorisation | Alpha | - |
+| FL | V.Transaction TPE validee | Logical | - |
+| FM | V.Message erreur transac TPE | Alpha | - |
+| FN | V.Total carte | Numeric | 1x refs |
+| FO | V.Transaction ok | Logical | 1x refs |
+| FP | V.Nombre de carte | Numeric | 1x refs |
+| FR | v is the First time | Numeric | - |
+| FS | v.Montant-giftPass | Numeric | - |
+| FT | v.email GM pour VAD | Alpha | - |
+| FU | V.N°Ticket OD | Numeric | 1x refs |
+| FV | V.N°Ticket Autres Moyen Paie | Numeric | - |
+| FW | V.Num Cheque | Unicode | - |
+| FX | V.SoldeResortCredit | Numeric | - |
+| FY | V.Confirm Use Resort Credit | Numeric | - |
+| FZ | V.ConfirmeUseGP? | Numeric | 5x refs |
+| GA | V.RC utilisé | Logical | 10x refs |
+| GB | v.Token Id | Unicode | 2x refs |
+| GC | v.Transaction Id | Unicode | 1x refs |
+| GD | v.Nb chambres /LCO | Numeric | - |
+| GE | v.Flag exist Vte LCO | Logical | 6x refs |
+| GF | v.Flag abandon libération | Logical | 1x refs |
+| GG | v. pied stype? | Logical | - |
+| GH | v. pied type? | Logical | 1x refs |
+| GI | v. type a utiliser | Unicode | - |
+| GJ | v. stype a utiliser | Unicode | - |
+
+### 11.3 Variables de travail (89)
+
+Variables internes au programme.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| R | W0 FIN SAISIE OD | Logical | 5x refs |
+| T | W0 Cloture en cours | Logical | 1x refs |
+| U | W0 code article | Numeric | 6x refs |
+| W | W0 imputation | Numeric | 68x refs |
+| X | W0 sous-imput. | Numeric | 2x refs |
+| Y | W0 date d'achat | Date | - |
+| Z | W0 annulation | Alpha | 1x refs |
+| BA | W0 service village | Alpha | 3x refs |
+| BB | W0 libelle article | Alpha | 2x refs |
+| BC | W0 article dernière minute | Logical | - |
+| BD | W0 nbre articles | Numeric | 4x refs |
+| BE | W0 prix unitaire | Numeric | - |
+| BF | W0 Categorie de chambre | Alpha | - |
+| BG | W0 Lieu sejour | Alpha | - |
+| BH | W0 Code reduction | Alpha | - |
+| BM | W0 Sens du transfert Aller | Alpha | - |
+| BN | W0 Date du transfert Aller | Date | - |
+| BO | W0 Heure du transfert Aller | Time | - |
+| BP | W0 b.Date du transfert | Alpha | 1x refs |
+| BQ | W0 Type d'endroit Aller | Alpha | - |
+| BR | W0 Code Gare/Aéroport Aller | Alpha | - |
+| BS | W0 Numéro du vol Aller | Alpha | 1x refs |
+| BT | W0 Compagnie Aller | Alpha | - |
+| BU | W0 Commentaire Aller | Alpha | 1x refs |
+| BV | W0 Sens du transfert Retour | Alpha | - |
+| BW | W0 Date du transfert Retour | Date | - |
+| BX | W0 Heure du transfert Retour | Time | - |
+| BY | W0 Type d'endroit Retour | Alpha | - |
+| BZ | W0 Code Gare/Aéroport Retour | Alpha | - |
+| CA | W0 Numéro du vol Retour | Alpha | 1x refs |
+| CB | W0 Compagnie Retour | Alpha | 1x refs |
+| CC | W0 b.Saisie PAX | Alpha | 1x refs |
+| CD | W0 Nbre de PAX enregistré | Numeric | 1x refs |
+| CE | W0 Commentaire Retour | Alpha | 1x refs |
+| CF | W0 montant avant reduction | Numeric | - |
+| CG | W0 Pourcentage reduction | Numeric | - |
+| CH | W0 Remise Obligatoire | Numeric | 1x refs |
+| CI | W0 Montant reduction | Numeric | - |
+| CJ | W0.Date consommation | Date | - |
+| CK | W0.Date fin sejour | Date | 1x refs |
+| CL | W0 Motif de non enreg NA | Numeric | 8x refs |
+| CM | W0 Commentaire | Alpha | 2x refs |
+| CN | W0 Motif annulation | Alpha | 3x refs |
+| CO | W0 Titre | Alpha | 9x refs |
+| CP | W0 Nom | Alpha | 6x refs |
+| CQ | W0 Prenom | Alpha | 6x refs |
+| CR | W0 Num rue | Alpha | 6x refs |
+| CS | W0 Nom de la rue | Alpha | 3x refs |
+| CT | W0 Commune | Alpha | - |
+| CU | W0 CP | Alpha | 2x refs |
+| CV | W0 Ville | Alpha | 1x refs |
+| CW | W0 Nb Chambres | Numeric | 1x refs |
+| CX | W0 Chambre | Unicode | 2x refs |
+| CY | W0 PYR Valide | Logical | 1x refs |
+| CZ | W0 Lib Bouton Chambre | Unicode | - |
+| DA | W0 Vendeur | Unicode | - |
+| DB | W0 libelle supplem | Alpha | - |
+| DC | W0 libelle supplem pour édition | Alpha | - |
+| DD | W0 article trouve | Logical | - |
+| DE | W0 Stock produit | Numeric | 3x refs |
+| DF | W0 montant | Numeric | 4x refs |
+| DG | W0 mode de paiement | Alpha | 3x refs |
+| DI | W0 Libelle MOP | Alpha | - |
+| DN | W0 reseau | Alpha | 1x refs |
+| DO | W0 fin tache | Alpha | 7x refs |
+| DP | W0 forfait (O/N) | Alpha | 10x refs |
+| DQ | W0 effacement (O/N) | Alpha | 1x refs |
+| DR | W0 forfait date(O/N) | Alpha | 1x refs |
+| DS | W0 code forfait | Alpha | 1x refs |
+| DT | W0 date debut | Date | - |
+| DU | W0 date fin | Date | - |
+| DV | W0 gratuite ? | Alpha | 5x refs |
+| DW | W0 ret lien special | Numeric | 1x refs |
+| DX | W0 Code Devise | Numeric | 1x refs |
+| DY | W0 Retour Transmission TPE | Logical | - |
+| DZ | W0 Forcer Transaction Manuelle | Logical | - |
+| EA | W0 Message TPE | Alpha | 1x refs |
+| EB | W0 Retour Lecture TPE | Logical | - |
+| EC | W0 Fin Transaction TPE | Logical | - |
+| EE | W0 Total_Vente | Numeric | 1x refs |
+| EF | W0 Total_GiftPass | Numeric | 5x refs |
+| EG | W0 Annulation OD active | Logical | - |
+| EH | W0 Compte garanti | Logical | - |
+| EI | W0 confirmation si non garanti | Numeric | - |
+| EJ | W0 Abandon | Logical | - |
+| EK | W0 validation | Logical | - |
+| EL | W0 choix personne absente | Numeric | - |
+| EM | W0 choix transac manuelle | Numeric | 1x refs |
+| EO | W0 Lien Logement Lieu Séjour | Logical | - |
+
+### 11.4 Autres (16)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| P | Bouton IDENTITE | Alpha | - |
+| Q | Bouton ABANDON | Alpha | 16x refs |
+| S | Bouton FIN SAISIE OD | Alpha | - |
+| DH | Existe mode de paiement | Logical | 1x refs |
+| DJ | WO Classe MOP | Alpha | 1x refs |
+| DK | V0 memo-service | Alpha | - |
+| DL | V0 memo-nom GM | Alpha | - |
+| DM | V0 validation | Logical | 1x refs |
+| EN | Bouton Ok | Alpha | - |
+| ES | Nbre ecriture | Numeric | 3x refs |
+| FQ | b.type de transfert | Alpha | - |
+| GK | CHG_REASON_W0 libelle article | Numeric | - |
+| GL | CHG_PRV_W0 libelle article | Alpha | - |
+| GM | P.Toute ligne | Logical | - |
+| GN | CHG_REASON_W0 nbre articles | Numeric | - |
+| GO | CHG_PRV_W0 nbre articles | Numeric | 4x refs |
 
 <details>
-<summary>Voir les 171 variables</summary>
+<summary>Toutes les 171 variables (liste complete)</summary>
 
-| Cat | Lettre | Nom Variable | Type | Ref |
-|-----|--------|--------------|------|-----|
-| Autre | **P** | Bouton IDENTITE | Alpha | `{0,16}` |
-| Autre | **Q** | Bouton ABANDON | Alpha | `{0,17}` |
-| Autre | **S** | Bouton FIN SAISIE OD | Alpha | `{0,19}` |
-| Autre | **DH** | Existe mode de paiement | Logical | `{0,112}` |
-| Autre | **DJ** | WO Classe MOP | Alpha | `{0,114}` |
-| Autre | **DK** | V0 memo-service | Alpha | `{0,115}` |
-| Autre | **DL** | V0 memo-nom GM | Alpha | `{0,116}` |
-| Autre | **DM** | V0 validation | Logical | `{0,117}` |
-| Autre | **EN** | Bouton Ok | Alpha | `{0,144}` |
-| Autre | **ES** | Nbre ecriture | Numeric | `{0,149}` |
-| Autre | **FQ** | b.type de transfert | Alpha | `{0,173}` |
-| Autre | **GK** | CHG_REASON_W0 libelle article | Numeric | `{0,193}` |
-| Autre | **GL** | CHG_PRV_W0 libelle article | Alpha | `{0,194}` |
-| Autre | **GM** | P.Toute ligne | Logical | `{0,195}` |
-| Autre | **GN** | CHG_REASON_W0 nbre articles | Numeric | `{0,196}` |
-| Autre | **GO** | CHG_PRV_W0 nbre articles | Numeric | `{0,197}` |
-| P0 | **A** | P0 societe | Alpha | `{0,1}` |
-| P0 | **B** | P0 devise locale | Alpha | `{0,2}` |
-| P0 | **C** | P0 masque montant | Alpha | `{0,3}` |
-| P0 | **D** | P0 solde compte | Numeric | `{0,4}` |
-| P0 | **E** | P0 code GM | Numeric | `{0,5}` |
-| P0 | **F** | P0 filiation | Numeric | `{0,6}` |
-| P0 | **G** | P0 date fin sejour | Date | `{0,7}` |
-| P0 | **H** | P0 etat compte | Alpha | `{0,8}` |
-| P0 | **I** | P0 date solde | Date | `{0,9}` |
-| P0 | **J** | P0 garanti O/N | Alpha | `{0,10}` |
-| P0 | **K** | P0 Nom & prenom | Alpha | `{0,11}` |
-| P0 | **L** | P0 UNI/BI | Alpha | `{0,12}` |
-| P0 | **M** | P0.Date debut sejour | Date | `{0,13}` |
-| P0 | **N** | P0.Valide ? | Numeric | `{0,14}` |
-| P0 | **O** | P0.Nb decimales | Numeric | `{0,15}` |
-| V. | **V** | v.SoldeGiftPass | Numeric | `{0,22}` |
-| V. | **BI** | v Sens Transfert Global | Alpha | `{0,61}` |
-| V. | **BJ** | v.Date activité VAE | Date | `{0,62}` |
-| V. | **BK** | v.VAE pendant le séjour ? | Logical | `{0,63}` |
-| V. | **BL** | v.Matin/Après midi | Unicode | `{0,64}` |
-| V. | **ED** | v. titre | Alpha | `{0,134}` |
-| V. | **EP** | V.VADA ? | Logical | `{0,146}` |
-| V. | **EQ** | V.VADV ? | Logical | `{0,147}` |
-| V. | **ER** | V.VAD ? | Logical | `{0,148}` |
-| V. | **ET** | V.Reglement premier article | Alpha | `{0,150}` |
-| V. | **EU** | V.Type premier article | Alpha | `{0,151}` |
-| V. | **EV** | V.Premier article VSL NA ? | Logical | `{0,152}` |
-| V. | **EW** | V.Article VSL NA ? | Logical | `{0,153}` |
-| V. | **EX** | v.IncrémentTicket(VRL/VSL) OK | Logical | `{0,154}` |
-| V. | **EY** | v.IncrémentTicket(VTE) OK | Logical | `{0,155}` |
-| V. | **EZ** | v.NumeroTicket(VRL/VSL) | Numeric | `{0,156}` |
-| V. | **FA** | v.NumeroTicket(VTE) | Numeric | `{0,157}` |
-| V. | **FB** | v Réponse mode paiement | Numeric | `{0,158}` |
-| V. | **FC** | V Nbre de Ligne Saisies | Numeric | `{0,159}` |
-| V. | **FD** | v Nbre ligne de reglement Saisi | Numeric | `{0,160}` |
-| V. | **FE** | V.Num ligne vente | Numeric | `{0,161}` |
-| V. | **FF** | V.Total reglement ligne | Numeric | `{0,162}` |
-| V. | **FG** | V.Multi reglement ligne | Logical | `{0,163}` |
-| V. | **FH** | V.MOP TPE | Alpha | `{0,164}` |
-| V. | **FI** | V.Id transaction PMS | Alpha | `{0,165}` |
-| V. | **FJ** | V.Id transaction AXIS | Alpha | `{0,166}` |
-| V. | **FK** | V.Num Autorisation | Alpha | `{0,167}` |
-| V. | **FL** | V.Transaction TPE validee | Logical | `{0,168}` |
-| V. | **FM** | V.Message erreur transac TPE | Alpha | `{0,169}` |
-| V. | **FN** | V.Total carte | Numeric | `{0,170}` |
-| V. | **FO** | V.Transaction ok | Logical | `{0,171}` |
-| V. | **FP** | V.Nombre de carte | Numeric | `{0,172}` |
-| V. | **FR** | v is the First time | Numeric | `{0,174}` |
-| V. | **FS** | v.Montant-giftPass | Numeric | `{0,175}` |
-| V. | **FT** | v.email GM pour VAD | Alpha | `{0,176}` |
-| V. | **FU** | V.N°Ticket OD | Numeric | `{0,177}` |
-| V. | **FV** | V.N°Ticket Autres Moyen Paie | Numeric | `{0,178}` |
-| V. | **FW** | V.Num Cheque | Unicode | `{0,179}` |
-| V. | **FX** | V.SoldeResortCredit | Numeric | `{0,180}` |
-| V. | **FY** | V.Confirm Use Resort Credit | Numeric | `{0,181}` |
-| V. | **FZ** | V.ConfirmeUseGP? | Numeric | `{0,182}` |
-| V. | **GA** | V.RC utilisé | Logical | `{0,183}` |
-| V. | **GB** | v.Token Id | Unicode | `{0,184}` |
-| V. | **GC** | v.Transaction Id | Unicode | `{0,185}` |
-| V. | **GD** | v.Nb chambres /LCO | Numeric | `{0,186}` |
-| V. | **GE** | v.Flag exist Vte LCO | Logical | `{0,187}` |
-| V. | **GF** | v.Flag abandon libération | Logical | `{0,188}` |
-| V. | **GG** | v. pied stype? | Logical | `{0,189}` |
-| V. | **GH** | v. pied type? | Logical | `{0,190}` |
-| V. | **GI** | v. type a utiliser | Unicode | `{0,191}` |
-| V. | **GJ** | v. stype a utiliser | Unicode | `{0,192}` |
-| W0 | **R** | W0 FIN SAISIE OD | Logical | `{0,18}` |
-| W0 | **T** | W0 Cloture en cours | Logical | `{0,20}` |
-| W0 | **U** | W0 code article | Numeric | `{0,21}` |
-| W0 | **W** | W0 imputation | Numeric | `{0,23}` |
-| W0 | **X** | W0 sous-imput. | Numeric | `{0,24}` |
-| W0 | **Y** | W0 date d'achat | Date | `{0,25}` |
-| W0 | **Z** | W0 annulation | Alpha | `{0,26}` |
-| W0 | **BA** | W0 service village | Alpha | `{0,53}` |
-| W0 | **BB** | W0 libelle article | Alpha | `{0,54}` |
-| W0 | **BC** | W0 article dernière minute | Logical | `{0,55}` |
-| W0 | **BD** | W0 nbre articles | Numeric | `{0,56}` |
-| W0 | **BE** | W0 prix unitaire | Numeric | `{0,57}` |
-| W0 | **BF** | W0 Categorie de chambre | Alpha | `{0,58}` |
-| W0 | **BG** | W0 Lieu sejour | Alpha | `{0,59}` |
-| W0 | **BH** | W0 Code reduction | Alpha | `{0,60}` |
-| W0 | **BM** | W0 Sens du transfert Aller | Alpha | `{0,65}` |
-| W0 | **BN** | W0 Date du transfert Aller | Date | `{0,66}` |
-| W0 | **BO** | W0 Heure du transfert Aller | Time | `{0,67}` |
-| W0 | **BP** | W0 b.Date du transfert | Alpha | `{0,68}` |
-| W0 | **BQ** | W0 Type d'endroit Aller | Alpha | `{0,69}` |
-| W0 | **BR** | W0 Code Gare/Aéroport Aller | Alpha | `{0,70}` |
-| W0 | **BS** | W0 Numéro du vol Aller | Alpha | `{0,71}` |
-| W0 | **BT** | W0 Compagnie Aller | Alpha | `{0,72}` |
-| W0 | **BU** | W0 Commentaire Aller | Alpha | `{0,73}` |
-| W0 | **BV** | W0 Sens du transfert Retour | Alpha | `{0,74}` |
-| W0 | **BW** | W0 Date du transfert Retour | Date | `{0,75}` |
-| W0 | **BX** | W0 Heure du transfert Retour | Time | `{0,76}` |
-| W0 | **BY** | W0 Type d'endroit Retour | Alpha | `{0,77}` |
-| W0 | **BZ** | W0 Code Gare/Aéroport Retour | Alpha | `{0,78}` |
-| W0 | **CA** | W0 Numéro du vol Retour | Alpha | `{0,79}` |
-| W0 | **CB** | W0 Compagnie Retour | Alpha | `{0,80}` |
-| W0 | **CC** | W0 b.Saisie PAX | Alpha | `{0,81}` |
-| W0 | **CD** | W0 Nbre de PAX enregistré | Numeric | `{0,82}` |
-| W0 | **CE** | W0 Commentaire Retour | Alpha | `{0,83}` |
-| W0 | **CF** | W0 montant avant reduction | Numeric | `{0,84}` |
-| W0 | **CG** | W0 Pourcentage reduction | Numeric | `{0,85}` |
-| W0 | **CH** | W0 Remise Obligatoire | Numeric | `{0,86}` |
-| W0 | **CI** | W0 Montant reduction | Numeric | `{0,87}` |
-| W0 | **CJ** | W0.Date consommation | Date | `{0,88}` |
-| W0 | **CK** | W0.Date fin sejour | Date | `{0,89}` |
-| W0 | **CL** | W0 Motif de non enreg NA | Numeric | `{0,90}` |
-| W0 | **CM** | W0 Commentaire | Alpha | `{0,91}` |
-| W0 | **CN** | W0 Motif annulation | Alpha | `{0,92}` |
-| W0 | **CO** | W0 Titre | Alpha | `{0,93}` |
-| W0 | **CP** | W0 Nom | Alpha | `{0,94}` |
-| W0 | **CQ** | W0 Prenom | Alpha | `{0,95}` |
-| W0 | **CR** | W0 Num rue | Alpha | `{0,96}` |
-| W0 | **CS** | W0 Nom de la rue | Alpha | `{0,97}` |
-| W0 | **CT** | W0 Commune | Alpha | `{0,98}` |
-| W0 | **CU** | W0 CP | Alpha | `{0,99}` |
-| W0 | **CV** | W0 Ville | Alpha | `{0,100}` |
-| W0 | **CW** | W0 Nb Chambres | Numeric | `{0,101}` |
-| W0 | **CX** | W0 Chambre | Unicode | `{0,102}` |
-| W0 | **CY** | W0 PYR Valide | Logical | `{0,103}` |
-| W0 | **CZ** | W0 Lib Bouton Chambre | Unicode | `{0,104}` |
-| W0 | **DA** | W0 Vendeur | Unicode | `{0,105}` |
-| W0 | **DB** | W0 libelle supplem | Alpha | `{0,106}` |
-| W0 | **DC** | W0 libelle supplem pour édition | Alpha | `{0,107}` |
-| W0 | **DD** | W0 article trouve | Logical | `{0,108}` |
-| W0 | **DE** | W0 Stock produit | Numeric | `{0,109}` |
-| W0 | **DF** | W0 montant | Numeric | `{0,110}` |
-| W0 | **DG** | W0 mode de paiement | Alpha | `{0,111}` |
-| W0 | **DI** | W0 Libelle MOP | Alpha | `{0,113}` |
-| W0 | **DN** | W0 reseau | Alpha | `{0,118}` |
-| W0 | **DO** | W0 fin tache | Alpha | `{0,119}` |
-| W0 | **DP** | W0 forfait (O/N) | Alpha | `{0,120}` |
-| W0 | **DQ** | W0 effacement (O/N) | Alpha | `{0,121}` |
-| W0 | **DR** | W0 forfait date(O/N) | Alpha | `{0,122}` |
-| W0 | **DS** | W0 code forfait | Alpha | `{0,123}` |
-| W0 | **DT** | W0 date debut | Date | `{0,124}` |
-| W0 | **DU** | W0 date fin | Date | `{0,125}` |
-| W0 | **DV** | W0 gratuite ? | Alpha | `{0,126}` |
-| W0 | **DW** | W0 ret lien special | Numeric | `{0,127}` |
-| W0 | **DX** | W0 Code Devise | Numeric | `{0,128}` |
-| W0 | **DY** | W0 Retour Transmission TPE | Logical | `{0,129}` |
-| W0 | **DZ** | W0 Forcer Transaction Manuelle | Logical | `{0,130}` |
-| W0 | **EA** | W0 Message TPE | Alpha | `{0,131}` |
-| W0 | **EB** | W0 Retour Lecture TPE | Logical | `{0,132}` |
-| W0 | **EC** | W0 Fin Transaction TPE | Logical | `{0,133}` |
-| W0 | **EE** | W0 Total_Vente | Numeric | `{0,135}` |
-| W0 | **EF** | W0 Total_GiftPass | Numeric | `{0,136}` |
-| W0 | **EG** | W0 Annulation OD active | Logical | `{0,137}` |
-| W0 | **EH** | W0 Compte garanti | Logical | `{0,138}` |
-| W0 | **EI** | W0 confirmation si non garanti | Numeric | `{0,139}` |
-| W0 | **EJ** | W0 Abandon | Logical | `{0,140}` |
-| W0 | **EK** | W0 validation | Logical | `{0,141}` |
-| W0 | **EL** | W0 choix personne absente | Numeric | `{0,142}` |
-| W0 | **EM** | W0 choix transac manuelle | Numeric | `{0,143}` |
-| W0 | **EO** | W0 Lien Logement Lieu Séjour | Logical | `{0,145}` |
+| Cat | Lettre | Nom Variable | Type |
+|-----|--------|--------------|------|
+| P0 | **A** | P0 societe | Alpha |
+| P0 | **B** | P0 devise locale | Alpha |
+| P0 | **C** | P0 masque montant | Alpha |
+| P0 | **D** | P0 solde compte | Numeric |
+| P0 | **E** | P0 code GM | Numeric |
+| P0 | **F** | P0 filiation | Numeric |
+| P0 | **G** | P0 date fin sejour | Date |
+| P0 | **H** | P0 etat compte | Alpha |
+| P0 | **I** | P0 date solde | Date |
+| P0 | **J** | P0 garanti O/N | Alpha |
+| P0 | **K** | P0 Nom & prenom | Alpha |
+| P0 | **L** | P0 UNI/BI | Alpha |
+| P0 | **M** | P0.Date debut sejour | Date |
+| P0 | **N** | P0.Valide ? | Numeric |
+| P0 | **O** | P0.Nb decimales | Numeric |
+| W0 | **R** | W0 FIN SAISIE OD | Logical |
+| W0 | **T** | W0 Cloture en cours | Logical |
+| W0 | **U** | W0 code article | Numeric |
+| W0 | **W** | W0 imputation | Numeric |
+| W0 | **X** | W0 sous-imput. | Numeric |
+| W0 | **Y** | W0 date d'achat | Date |
+| W0 | **Z** | W0 annulation | Alpha |
+| W0 | **BA** | W0 service village | Alpha |
+| W0 | **BB** | W0 libelle article | Alpha |
+| W0 | **BC** | W0 article dernière minute | Logical |
+| W0 | **BD** | W0 nbre articles | Numeric |
+| W0 | **BE** | W0 prix unitaire | Numeric |
+| W0 | **BF** | W0 Categorie de chambre | Alpha |
+| W0 | **BG** | W0 Lieu sejour | Alpha |
+| W0 | **BH** | W0 Code reduction | Alpha |
+| W0 | **BM** | W0 Sens du transfert Aller | Alpha |
+| W0 | **BN** | W0 Date du transfert Aller | Date |
+| W0 | **BO** | W0 Heure du transfert Aller | Time |
+| W0 | **BP** | W0 b.Date du transfert | Alpha |
+| W0 | **BQ** | W0 Type d'endroit Aller | Alpha |
+| W0 | **BR** | W0 Code Gare/Aéroport Aller | Alpha |
+| W0 | **BS** | W0 Numéro du vol Aller | Alpha |
+| W0 | **BT** | W0 Compagnie Aller | Alpha |
+| W0 | **BU** | W0 Commentaire Aller | Alpha |
+| W0 | **BV** | W0 Sens du transfert Retour | Alpha |
+| W0 | **BW** | W0 Date du transfert Retour | Date |
+| W0 | **BX** | W0 Heure du transfert Retour | Time |
+| W0 | **BY** | W0 Type d'endroit Retour | Alpha |
+| W0 | **BZ** | W0 Code Gare/Aéroport Retour | Alpha |
+| W0 | **CA** | W0 Numéro du vol Retour | Alpha |
+| W0 | **CB** | W0 Compagnie Retour | Alpha |
+| W0 | **CC** | W0 b.Saisie PAX | Alpha |
+| W0 | **CD** | W0 Nbre de PAX enregistré | Numeric |
+| W0 | **CE** | W0 Commentaire Retour | Alpha |
+| W0 | **CF** | W0 montant avant reduction | Numeric |
+| W0 | **CG** | W0 Pourcentage reduction | Numeric |
+| W0 | **CH** | W0 Remise Obligatoire | Numeric |
+| W0 | **CI** | W0 Montant reduction | Numeric |
+| W0 | **CJ** | W0.Date consommation | Date |
+| W0 | **CK** | W0.Date fin sejour | Date |
+| W0 | **CL** | W0 Motif de non enreg NA | Numeric |
+| W0 | **CM** | W0 Commentaire | Alpha |
+| W0 | **CN** | W0 Motif annulation | Alpha |
+| W0 | **CO** | W0 Titre | Alpha |
+| W0 | **CP** | W0 Nom | Alpha |
+| W0 | **CQ** | W0 Prenom | Alpha |
+| W0 | **CR** | W0 Num rue | Alpha |
+| W0 | **CS** | W0 Nom de la rue | Alpha |
+| W0 | **CT** | W0 Commune | Alpha |
+| W0 | **CU** | W0 CP | Alpha |
+| W0 | **CV** | W0 Ville | Alpha |
+| W0 | **CW** | W0 Nb Chambres | Numeric |
+| W0 | **CX** | W0 Chambre | Unicode |
+| W0 | **CY** | W0 PYR Valide | Logical |
+| W0 | **CZ** | W0 Lib Bouton Chambre | Unicode |
+| W0 | **DA** | W0 Vendeur | Unicode |
+| W0 | **DB** | W0 libelle supplem | Alpha |
+| W0 | **DC** | W0 libelle supplem pour édition | Alpha |
+| W0 | **DD** | W0 article trouve | Logical |
+| W0 | **DE** | W0 Stock produit | Numeric |
+| W0 | **DF** | W0 montant | Numeric |
+| W0 | **DG** | W0 mode de paiement | Alpha |
+| W0 | **DI** | W0 Libelle MOP | Alpha |
+| W0 | **DN** | W0 reseau | Alpha |
+| W0 | **DO** | W0 fin tache | Alpha |
+| W0 | **DP** | W0 forfait (O/N) | Alpha |
+| W0 | **DQ** | W0 effacement (O/N) | Alpha |
+| W0 | **DR** | W0 forfait date(O/N) | Alpha |
+| W0 | **DS** | W0 code forfait | Alpha |
+| W0 | **DT** | W0 date debut | Date |
+| W0 | **DU** | W0 date fin | Date |
+| W0 | **DV** | W0 gratuite ? | Alpha |
+| W0 | **DW** | W0 ret lien special | Numeric |
+| W0 | **DX** | W0 Code Devise | Numeric |
+| W0 | **DY** | W0 Retour Transmission TPE | Logical |
+| W0 | **DZ** | W0 Forcer Transaction Manuelle | Logical |
+| W0 | **EA** | W0 Message TPE | Alpha |
+| W0 | **EB** | W0 Retour Lecture TPE | Logical |
+| W0 | **EC** | W0 Fin Transaction TPE | Logical |
+| W0 | **EE** | W0 Total_Vente | Numeric |
+| W0 | **EF** | W0 Total_GiftPass | Numeric |
+| W0 | **EG** | W0 Annulation OD active | Logical |
+| W0 | **EH** | W0 Compte garanti | Logical |
+| W0 | **EI** | W0 confirmation si non garanti | Numeric |
+| W0 | **EJ** | W0 Abandon | Logical |
+| W0 | **EK** | W0 validation | Logical |
+| W0 | **EL** | W0 choix personne absente | Numeric |
+| W0 | **EM** | W0 choix transac manuelle | Numeric |
+| W0 | **EO** | W0 Lien Logement Lieu Séjour | Logical |
+| V. | **V** | v.SoldeGiftPass | Numeric |
+| V. | **BI** | v Sens Transfert Global | Alpha |
+| V. | **BJ** | v.Date activité VAE | Date |
+| V. | **BK** | v.VAE pendant le séjour ? | Logical |
+| V. | **BL** | v.Matin/Après midi | Unicode |
+| V. | **ED** | v. titre | Alpha |
+| V. | **EP** | V.VADA ? | Logical |
+| V. | **EQ** | V.VADV ? | Logical |
+| V. | **ER** | V.VAD ? | Logical |
+| V. | **ET** | V.Reglement premier article | Alpha |
+| V. | **EU** | V.Type premier article | Alpha |
+| V. | **EV** | V.Premier article VSL NA ? | Logical |
+| V. | **EW** | V.Article VSL NA ? | Logical |
+| V. | **EX** | v.IncrémentTicket(VRL/VSL) OK | Logical |
+| V. | **EY** | v.IncrémentTicket(VTE) OK | Logical |
+| V. | **EZ** | v.NumeroTicket(VRL/VSL) | Numeric |
+| V. | **FA** | v.NumeroTicket(VTE) | Numeric |
+| V. | **FB** | v Réponse mode paiement | Numeric |
+| V. | **FC** | V Nbre de Ligne Saisies | Numeric |
+| V. | **FD** | v Nbre ligne de reglement Saisi | Numeric |
+| V. | **FE** | V.Num ligne vente | Numeric |
+| V. | **FF** | V.Total reglement ligne | Numeric |
+| V. | **FG** | V.Multi reglement ligne | Logical |
+| V. | **FH** | V.MOP TPE | Alpha |
+| V. | **FI** | V.Id transaction PMS | Alpha |
+| V. | **FJ** | V.Id transaction AXIS | Alpha |
+| V. | **FK** | V.Num Autorisation | Alpha |
+| V. | **FL** | V.Transaction TPE validee | Logical |
+| V. | **FM** | V.Message erreur transac TPE | Alpha |
+| V. | **FN** | V.Total carte | Numeric |
+| V. | **FO** | V.Transaction ok | Logical |
+| V. | **FP** | V.Nombre de carte | Numeric |
+| V. | **FR** | v is the First time | Numeric |
+| V. | **FS** | v.Montant-giftPass | Numeric |
+| V. | **FT** | v.email GM pour VAD | Alpha |
+| V. | **FU** | V.N°Ticket OD | Numeric |
+| V. | **FV** | V.N°Ticket Autres Moyen Paie | Numeric |
+| V. | **FW** | V.Num Cheque | Unicode |
+| V. | **FX** | V.SoldeResortCredit | Numeric |
+| V. | **FY** | V.Confirm Use Resort Credit | Numeric |
+| V. | **FZ** | V.ConfirmeUseGP? | Numeric |
+| V. | **GA** | V.RC utilisé | Logical |
+| V. | **GB** | v.Token Id | Unicode |
+| V. | **GC** | v.Transaction Id | Unicode |
+| V. | **GD** | v.Nb chambres /LCO | Numeric |
+| V. | **GE** | v.Flag exist Vte LCO | Logical |
+| V. | **GF** | v.Flag abandon libération | Logical |
+| V. | **GG** | v. pied stype? | Logical |
+| V. | **GH** | v. pied type? | Logical |
+| V. | **GI** | v. type a utiliser | Unicode |
+| V. | **GJ** | v. stype a utiliser | Unicode |
+| Autre | **P** | Bouton IDENTITE | Alpha |
+| Autre | **Q** | Bouton ABANDON | Alpha |
+| Autre | **S** | Bouton FIN SAISIE OD | Alpha |
+| Autre | **DH** | Existe mode de paiement | Logical |
+| Autre | **DJ** | WO Classe MOP | Alpha |
+| Autre | **DK** | V0 memo-service | Alpha |
+| Autre | **DL** | V0 memo-nom GM | Alpha |
+| Autre | **DM** | V0 validation | Logical |
+| Autre | **EN** | Bouton Ok | Alpha |
+| Autre | **ES** | Nbre ecriture | Numeric |
+| Autre | **FQ** | b.type de transfert | Alpha |
+| Autre | **GK** | CHG_REASON_W0 libelle article | Numeric |
+| Autre | **GL** | CHG_PRV_W0 libelle article | Alpha |
+| Autre | **GM** | P.Toute ligne | Logical |
+| Autre | **GN** | CHG_REASON_W0 nbre articles | Numeric |
+| Autre | **GO** | CHG_PRV_W0 nbre articles | Numeric |
 
 </details>
 
@@ -949,99 +4530,140 @@ flowchart TD
 
 **305 / 305 expressions decodees (100%)**
 
-### 12.1 Repartition par bloc
+### 12.1 Repartition par type
 
-| Bloc fonctionnel | Expressions | Regles |
-|-----------------|-------------|--------|
-| Saisie | 26 | 4 |
-| Reglement | 27 | 4 |
-| Validation | 6 | 4 |
-| Impression | 1 | 0 |
-| Calcul | 2 | 4 |
-| Consultation | 1 | 0 |
-| Transfert | 4 | 0 |
-| Autre | 238 | 10 |
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CALCULATION | 9 | 0 |
+| NEGATION | 19 | 0 |
+| CONDITION | 149 | 16 |
+| FORMAT | 8 | 0 |
+| CAST_LOGIQUE | 9 | 5 |
+| CONSTANTE | 28 | 0 |
+| DATE | 3 | 0 |
+| REFERENCE_VG | 4 | 0 |
+| OTHER | 71 | 0 |
+| CONCATENATION | 1 | 0 |
+| STRING | 4 | 0 |
 
-### 12.2 Expressions cles par bloc
+### 12.2 Expressions cles par type
 
-#### Saisie (26 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 225 | `IF (NOT(CHG_PRV_W0 nbre articles [GO]),132.875,105.875)` | RM-014 |
-| CALCULATION | 247 | `V.Transaction ok [FO]-1` | - |
-| CALCULATION | 284 | `W0 libelle article [BB]='00/00/0000'DATE` | - |
-| OTHER | 209 | `V Nbre de Ligne Saisies [FC]` | - |
-| OTHER | 245 | `W0 Stock produit [DE]=1` | - |
-| ... | | *+21 autres* | |
-
-#### Reglement (27 expressions)
+#### CALCULATION (9 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 154 | `IF(V.Total reglement ligne [FF],V.Id transaction PMS [FI],VG18)` | RM-012 |
-| CONDITION | 92 | `IF(VG7 OR VG35 OR VG87,'P0 masque montant [C]'FORM,'P0 devise locale [B]'FORM)` | RM-004 |
-| CONDITION | 35 | `IF (P0 masque montant [C]='','15.2',P0 masque montant [C])` | RM-003 |
-| CONDITION | 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` | RM-016 |
 | CALCULATION | 246 | `V.Total carte [FN]+1` | - |
-| ... | | *+22 autres* | |
+| CALCULATION | 234 | `W0 fin tache [DO]-[AG]` | - |
+| CALCULATION | 294 | `MlsTrans('Pas de chambre en-cours pour ce GM !')` | - |
+| CALCULATION | 247 | `V.Transaction ok [FO]-1` | - |
+| CALCULATION | 206 | `'00/00/0000'DATE` | - |
+| ... | | *+4 autres* | |
 
-#### Validation (6 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 147 | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))` | RM-011 |
-| CONSTANT | 203 | `'Des informations du transfert Retour ne sont pas saisies . Validation impossible '` | - |
-| CONSTANT | 202 | `'Des informations du transfert Aller ne sont pas saisies . Validation impossible '` | - |
-| OTHER | 194 | `[AV]<>W0 Remise Obligatoire [CH]` | - |
-| OTHER | 23 | `V0 validation [DM] AND [AP]='N'` | - |
-| ... | | *+1 autres* | |
-
-#### Impression (1 expressions)
+#### NEGATION (19 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 219 | `V.Nombre de carte [FP] OR V.N°Ticket OD [FU]` | - |
+| NEGATION | 191 | `NOT ExpCalc('189'EXP)` | - |
+| NEGATION | 280 | `NOT ExpCalc('277'EXP)` | - |
+| NEGATION | 172 | `NOT [GS]` | - |
+| NEGATION | 185 | `NOT CHG_PRV_W0 nbre articles [GO]` | - |
+| NEGATION | 282 | `NOT ExpCalc('280'EXP)` | - |
+| ... | | *+14 autres* | |
 
-#### Calcul (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 114 | `IF(W0 Titre [CO]<>0 AND NOT(W0 Motif de non enreg NA [CL]),Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O]),W0 Prenom [CQ])` | RM-007 |
-| CALCULATION | 153 | `NOT W0 Motif de non enreg NA [CL] AND W0 Titre [CO]<>0 AND (W0 Prenom [CQ]<Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O])-1 OR W0 Prenom [CQ]>Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O])+1)` | - |
-
-#### Consultation (1 expressions)
+#### CONDITION (149 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
+| CONDITION | 167 | `IF(V.ConfirmeUseGP? [FZ],'V',IF([AP]='O','C','D'))` | [RM-013](#rm-RM-013) |
+| CONDITION | 120 | `IF(W0 imputation [W]='VRL' OR W0 imputation [W]='VSL','Nb forfait',IF(W0 imputation [W]='TRF', 'Nb PAX','Nbre'))` | [RM-008](#rm-RM-008) |
+| CONDITION | 111 | `IF(W0 imputation [W]='VRL','Date consommation','Date début séjour')` | [RM-006](#rm-RM-006) |
+| CONDITION | 114 | `IF(W0 Titre [CO]<>0 AND NOT(W0 Motif de non enreg NA [CL]),Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O]),W0 Prenom [CQ])` | [RM-007](#rm-RM-007) |
+| CONDITION | 147 | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))` | [RM-011](#rm-RM-011) |
+| ... | | *+144 autres* | |
+
+#### FORMAT (8 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 243 | `MlsTrans('La remise ne peut pas être inférieure à')&' '&Trim(Str(W0 Nom [CP],'3'))&' %'` | - |
+| FORMAT | 175 | `W0 imputation [W]='VSL' AND Left(Trim(Str([AB],'10')),1)='5'` | - |
+| FORMAT | 295 | `MlsTrans('Il n''y a que ')&
+Trim(Str([HJ],'3L'))&MlsTrans(' chambre(s) sur le compte du GM !')` | - |
+| FORMAT | 251 | `Trim(Str(W0 Stock produit [DE],'2'))&' aff.'` | - |
+| FORMAT | 1 | `DStr(P0 date fin sejour [G],'DD/MM/YYYY')` | - |
+| ... | | *+3 autres* | |
+
+#### CAST_LOGIQUE (9 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` | [RM-016](#rm-RM-016) |
+| CAST_LOGIQUE | 188 | `'FALSE'LOG` | - |
+| CAST_LOGIQUE | 84 | `'FALSE'LOG` | - |
+| CAST_LOGIQUE | 271 | `(W0 code article [U]>0 AND (W0 imputation [W]='VRL' OR W0 imputation [W]='VSL' )) OR (W0 code article [U]>0 AND W0 fin tache [DO]>0 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL') AND [AQ]<>'' OR IF(W0 imputation [W]='PYR',W0 mode de paiement [DG],'TRUE'LOG)` | - |
+| CAST_LOGIQUE | 211 | `'TRUE'LOG` | - |
+| ... | | *+4 autres* | |
+
+#### CONSTANTE (28 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 202 | `'Des informations du transfert Aller ne sont pas saisies . Validation impossible '` | - |
+| CONSTANTE | 203 | `'Des informations du transfert Retour ne sont pas saisies . Validation impossible '` | - |
+| CONSTANTE | 208 | `''` | - |
+| CONSTANTE | 195 | `'2'` | - |
+| CONSTANTE | 149 | `'SANS'` | - |
+| ... | | *+23 autres* | |
+
+#### DATE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 67 | `Date ()` | - |
+| DATE | 14 | `Date ()` | - |
+| DATE | 4 | `Date ()` | - |
+
+#### REFERENCE_VG (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 237 | `VG38` | - |
+| REFERENCE_VG | 273 | `VG63` | - |
+| REFERENCE_VG | 7 | `VG2` | - |
+| REFERENCE_VG | 156 | `VG21` | - |
+
+#### OTHER (71 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 242 | `W0 Nom [CP]` | - |
+| OTHER | 248 | `W0 montant [DF]` | - |
+| OTHER | 221 | `W0 forfait (O/N) [DP]` | - |
+| OTHER | 235 | `W0 fin tache [DO]` | - |
+| OTHER | 254 | `28.125` | - |
+| ... | | *+66 autres* | |
+
+#### CONCATENATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 3 | `MlsTrans ('Verifier que la transaction est bien pour')&' '&Trim (P0 Nom & prenom [K])` | - |
+
+#### STRING (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 171 | `MlsTrans('Transaction TPE : ')&Trim([GT])` | - |
+| STRING | 262 | `Trim(VG57)` | - |
 | STRING | 8 | `Trim (W0 choix transac manuelle [EM])` | - |
-
-#### Transfert (4 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CALCULATION | 204 | `W0 Code Gare/Aéroport ... [BR]='00/00/0000'DATE OR W0 Numéro du vol Aller [BS]='00:00:00'TIME OR W0 Commentaire Aller [BU]='' OR W0 Sens du transfert R... [BV]='' OR W0 Date du transfert R... [BW]='' OR W0 Heure du transfert ... [BX]=''` | - |
-| OTHER | 289 | `NOT v Sens Transfert Global [BI]` | - |
-| OTHER | 216 | `W0 b.Date du transfert [BP]` | - |
-| OTHER | 214 | `W0 Heure du transfert ... [BO]` | - |
-
-#### Autre (238 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 290 | `IF(VG20>1,[AY],'G')` | RM-017 |
-| CONDITION | 120 | `IF(W0 imputation [W]='VRL' OR W0 imputation [W]='VSL','Nb forfait',IF(W0 imputation [W]='TRF', 'Nb PAX','Nbre'))` | RM-008 |
-| CONDITION | 2 | `IF(Trim(W0 service village [BA])='1','ALLER',IF(Trim(W0 service village [BA])='2','RETOUR',IF(Trim(W0 service village [BA])='3','ALLER/RETOUR','')))` | RM-001 |
-| CONDITION | 94 | `IF(NOT W0 Motif de non enreg NA [CL],W0.Date fin sejour [CK],W0 Titre [CO])` | RM-005 |
-| CONDITION | 5 | `IF(V.RC utilisé [GA]=0,IF(W0 imputation [W]='VSL',P0.Date debut sejour [M],Date()),W0 Num rue [CR])` | RM-002 |
-| ... | | *+233 autres* | |
+| STRING | 83 | `MlsTrans (Trim (W0 forfait date(O/N) [DR]))` | - |
 
 ### 12.3 Toutes les expressions (305)
 
 <details>
 <summary>Voir les 305 expressions</summary>
 
-#### CALCULATION (15)
+#### CALCULATION (9)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
@@ -1049,22 +4671,44 @@ flowchart TD
 | 16 | `([AW]*[AV])-W0 Prenom [CQ]` |
 | 75 | `V.RC utilisé [GA]+1` |
 | 117 | `W0 Prenom [CQ]/([AW]*[AV])*100` |
-| 153 | `NOT W0 Motif de non enreg NA [CL] AND W0 Titre [CO]<>0 AND (W0 Prenom [CQ]<Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O])-1 OR W0 Prenom [CQ]>Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O])+1)` |
-| 204 | `W0 Code Gare/Aéroport ... [BR]='00/00/0000'DATE OR W0 Numéro du vol Aller [BS]='00:00:00'TIME OR W0 Commentaire Aller [BU]='' OR W0 Sens du transfert R... [BV]='' OR W0 Date du transfert R... [BW]='' OR W0 Heure du transfert ... [BX]=''` |
-| 205 | `W0 Numéro du vol Retour [CA]='00/00/0000'DATE OR W0 Compagnie Retour [CB]='00:00:00'TIME OR W0 b.Saisie PAX [CC]='' OR W0 Nbre de PAX enregistré [CD]='' OR W0 Commentaire Retour [CE]='' OR W0 montant avant reduc... [CF]=''` |
 | 206 | `'00/00/0000'DATE` |
-| 229 | `W0 Nom de la rue [CS]-W0 Num rue [CR]>45` |
 | 234 | `W0 fin tache [DO]-[AG]` |
 | 246 | `V.Total carte [FN]+1` |
 | 247 | `V.Transaction ok [FO]-1` |
-| 265 | `MlsTrans('Vous disposez d''un Resort Credit de')&' '&Trim(Str([HE],Trim(P0 masque montant [C])))&' '&Trim(P0 devise locale [B])&'. Voulez-vous l''utiliser ?'` |
-| 284 | `W0 libelle article [BB]='00/00/0000'DATE` |
 | 294 | `MlsTrans('Pas de chambre en-cours pour ce GM !')` |
 
-#### CONDITION (31)
+#### NEGATION (19)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
+| 153 | `NOT W0 Motif de non enreg NA [CL] AND W0 Titre [CO]<>0 AND (W0 Prenom [CQ]<Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O])-1 OR W0 Prenom [CQ]>Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O])+1)` |
+| 33 | `NOT (P0 date fin sejour [G]=0 OR P0 date fin sejour [G]<Date ())` |
+| 6 | `NOT VG38` |
+| 59 | `NOT (W0 FIN SAISIE OD [R])` |
+| 61 | `NOT (Nbre ecriture [ES]) AND DbRecs ('{596,4}'DSOURCE,'')=0 AND [AQ]&[AR]=''` |
+| 62 | `NOT (V.VADV ? [EQ])` |
+| 78 | `NOT ExpCalc('77'EXP)` |
+| 80 | `NOT (W0 effacement (O/N) [DQ]) AND LastClicked()<>'Bouton ABANDON'` |
+| 148 | `NOT IN(W0 imputation [W],'VRL','VSL','TRF', 'VAR')` |
+| 165 | `NOT ExpCalc('162'EXP)` |
+| 172 | `NOT [GS]` |
+| 185 | `NOT CHG_PRV_W0 nbre articles [GO]` |
+| 191 | `NOT ExpCalc('189'EXP)` |
+| 280 | `NOT ExpCalc('277'EXP)` |
+| 282 | `NOT ExpCalc('280'EXP)` |
+| 283 | `NOT ExpCalc('280'EXP) OR ExpCalc('285'EXP)` |
+| 289 | `NOT v Sens Transfert Global [BI]` |
+| 298 | `NOT [HL]` |
+| 173 | `NOT [GS] AND Trim([GT])<>''` |
+
+#### CONDITION (149)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 204 | `W0 Code Gare/Aéroport ... [BR]='00/00/0000'DATE OR W0 Numéro du vol Aller [BS]='00:00:00'TIME OR W0 Commentaire Aller [BU]='' OR W0 Sens du transfert R... [BV]='' OR W0 Date du transfert R... [BW]='' OR W0 Heure du transfert ... [BX]=''` |
+| 205 | `W0 Numéro du vol Retour [CA]='00/00/0000'DATE OR W0 Compagnie Retour [CB]='00:00:00'TIME OR W0 b.Saisie PAX [CC]='' OR W0 Nbre de PAX enregistré [CD]='' OR W0 Commentaire Retour [CE]='' OR W0 montant avant reduc... [CF]=''` |
+| 229 | `W0 Nom de la rue [CS]-W0 Num rue [CR]>45` |
+| 284 | `W0 libelle article [BB]='00/00/0000'DATE` |
 | 2 | `IF(Trim(W0 service village [BA])='1','ALLER',IF(Trim(W0 service village [BA])='2','RETOUR',IF(Trim(W0 service village [BA])='3','ALLER/RETOUR','')))` |
 | 5 | `IF(V.RC utilisé [GA]=0,IF(W0 imputation [W]='VSL',P0.Date debut sejour [M],Date()),W0 Num rue [CR])` |
 | 35 | `IF (P0 masque montant [C]='','15.2',P0 masque montant [C])` |
@@ -1089,15 +4733,161 @@ flowchart TD
 | 137 | `IF(W0 imputation [W]='TRF',110.625,110.625)` |
 | 147 | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))` |
 | 154 | `IF(V.Total reglement ligne [FF],V.Id transaction PMS [FI],VG18)` |
-| 162 | `IF(W0 imputation [W]='VRL','TRUE'LOG,V.RC utilisé [GA]=0)` |
 | 167 | `IF(V.ConfirmeUseGP? [FZ],'V',IF([AP]='O','C','D'))` |
 | 210 | `IF(V.ConfirmeUseGP? [FZ],P0 devise locale [B],VG30)` |
 | 225 | `IF (NOT(CHG_PRV_W0 nbre articles [GO]),132.875,105.875)` |
 | 236 | `IF(W0 imputation [W]='ANN','O','N')` |
-| 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` |
 | 290 | `IF(VG20>1,[AY],'G')` |
+| 32 | `P0 date fin sejour [G]=0 OR P0 date fin sejour [G]<Date ()` |
+| 107 | `W0 imputation [W]='VSL' AND W0 Num rue [CR]-Date()>21 AND W0 Titre [CO]<>0` |
+| 109 | `W0 imputation [W]='VSL' AND W0 Num rue [CR]-Date()>[HM] AND W0 Titre [CO]<>0` |
+| 305 | `W0 imputation [W]='VRL' AND IF(Date()>BOM(Date()),W0 Num rue [CR]<BOM(Date()),BOM(Date()-1)>W0 Num rue [CR])` |
+| 22 | `[AW]>0 AND [AV]=0` |
+| 23 | `V0 validation [DM] AND [AP]='N'` |
+| 24 | `[AV]>W0 reseau [DN] AND NOT (Nbre ecriture [ES])` |
+| 25 | `W0 fin tache [DO]=0 AND [AQ]<>'' AND W0 Titre [CO]<>100 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL' AND NOT([HH])` |
+| 26 | `W0 imputation [W]='VRL' OR W0 imputation [W]='VSL'` |
+| 28 | `[AW]>0 AND W0 Retour Transmission... [DY]='N'` |
+| 29 | `([AW]=0) AND (ExpCalc('55'EXP))` |
+| 30 | `([AW]=0) AND W0 imputation [W]<>'VRL' AND (ExpCalc('55'EXP))` |
+| 31 | `W0 code article [U]>0 AND W0 ret lien special [DW]<>'R'` |
+| 34 | `W0 code article [U]>0 AND W0 fin tache [DO]>0` |
+| 36 | `W0 Retour Transmission... [DY]='O' AND W0 Message TPE [EA]='O'` |
+| 37 | `W0 gratuite ? [DV] AND W0 Retour Transmission... [DY]='O' AND W0 Forcer Transaction ... [DZ]='O'` |
+| 38 | `[AP]='N'` |
+| 39 | `W0 gratuite ? [DV] AND W0 Retour Transmission... [DY]='O'` |
+| 43 | `[AP]='O' AND W0 gratuite ? [DV]` |
+| 52 | `DbRecs ('{596,4}'DSOURCE,'')>0 AND ExpCalc('41'EXP)` |
+| 53 | `DbRecs ('{596,4}'DSOURCE,'')>0` |
+| 54 | `DbRecs ('{596,4}'DSOURCE,'')>0 AND [AR]=''` |
+| 55 | `DbRecs ('{596,4}'DSOURCE,'')<6` |
+| 58 | `W0 gratuite ? [DV] AND [AP]='O'` |
+| 60 | `V.VAD ? [ER]<>6` |
+| 74 | `W0 forfait (O/N) [DP]=''` |
+| 79 | `W0 forfait (O/N) [DP]='' AND LastClicked()<>'Bouton ABANDON'` |
+| 81 | `W0 forfait (O/N) [DP]=GetParam ('MOPCMP') AND NOT (V.VADV ? [EQ]) AND LastClicked()<>'Bouton ABANDON'` |
+| 82 | `W0 Code Devise [DX]='F' OR Nbre ecriture [ES]` |
+| 88 | `(DbRecs ('{596,4}'DSOURCE,'')=0) AND (ExpCalc('55'EXP))` |
+| 89 | `([AW]>0 AND W0 Retour Transmission... [DY]='N') AND (ExpCalc('55'EXP))` |
+| 90 | `(W0 Retour Transmission... [DY]='N' AND (NOT(ExpCalc('285'EXP)) OR [HJ]>1 )) 
+AND (ExpCalc('55'EXP))` |
+| 91 | `V.Type premier article [EU]=6` |
+| 95 | `NOT(W0 Motif de non enreg NA [CL]) OR W0 imputation [W]='PYR'` |
+| 97 | `IN(W0 imputation [W],'VRL','VSL') AND [AF]<>'LCO'` |
+| 100 | `W0 imputation [W]='VRL'` |
+| 101 | `W0 imputation [W]='VSL' AND [AF]<>'LCO'` |
+| 102 | `LastClicked()<>'Bouton ABANDON' AND DbRecs ('{596,4}'DSOURCE,'')<6` |
+| 103 | `W0 imputation [W]='VSL' AND [AF]<>'LCO' AND DbRecs ('{596,4}'DSOURCE,'')<3 AND 
+LastClicked()<>'Bouton ABANDON'` |
+| 104 | `(W0 imputation [W]='VRL' OR W0 imputation [W]='VSL')AND [AF]<>'LCO' AND VG7 AND 
+DbRecs ('{596,4}'DSOURCE,'')<3 AND 
+LastClicked()<>'Bouton ABANDON'` |
+| 105 | `W0 imputation [W]='VSL' AND W0 CP [CU]='' AND NOT v.Flag exist Vte LCO [GE] AND LastClicked()<>'Bouton ABANDON'` |
+| 106 | `W0 Num rue [CR]=0` |
+| 112 | `(W0 Titre [CO]=100 OR W0 Motif de non enreg NA [CL]) AND W0 CP [CU]='' AND LastClicked()<>'Bouton ABANDON'` |
+| 113 | `[AP]='O' AND IN (W0 imputation [W],'VRL','VSL','TRF')` |
+| 116 | `W0 Motif de non enreg NA [CL] OR [AZ]='SANS'` |
+| 118 | `W0 Ville [CV]='' AND [AP]='O'` |
+| 121 | `W0 Nom de la rue [CS]=0` |
+| 122 | `[AX]=''` |
+| 123 | `W0 annulation [Z]=0 AND ExpCalc('55'EXP)` |
+| 138 | `V.RC utilisé [GA]>0 AND [AR]<>'' AND VG7 AND ((IN(W0 imputation [W],'VRL','VSL','PYR') AND W0 imputation [W]<>v.Transaction Id [GC]) OR (IN(v.Transaction Id [GC],'VRL','VSL','PYR') AND W0 imputation [W]<>v.Transaction Id [GC]))` |
+| 140 | `W0 Prenom [CQ]>W0 Motif annulation [CN]` |
+| 141 | `P0.Valide ? [N]<>0 AND NOT(IN(W0 imputation [W],'VSL','VRL','PYR')) AND VG7 AND v.SoldeGiftPass [V]<>0` |
+| 143 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VRL' AND VG7 AND W0 Chambre [CX]='' AND V.RC utilisé [GA]=0` |
+| 144 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VRL' AND VG7 AND V.RC utilisé [GA]=0` |
+| 145 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VSL' AND VG7 AND W0 sous-imput. [X]>0` |
+| 146 | `W0 imputation [W]='VRL' AND W0 Total_GiftPass [EF]=0` |
+| 150 | `[AW]=0` |
+| 151 | `V.RC utilisé [GA]=0` |
+| 152 | `[AA]='X'` |
+| 155 | `(W0 imputation [W]='VRL'  OR W0 imputation [W]='VSL')  AND VG17 AND VG20>1` |
+| 157 | `W0 imputation [W]='VRL' AND VG7 AND VG20>1 AND VG17 AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
+| 158 | `[AY]=''` |
+| 159 | `VG20>1` |
+| 163 | `VG23 AND VG24 AND [GU]>0 AND NOT [GS]` |
+| 168 | `[GS] AND Left(W0 forfait (O/N) [DP],3)<>'VAD'` |
+| 174 | `VG7 AND v.Flag exist Vte LCO [GE] AND [AC]='' AND v.SoldeGiftPass [V]<>0` |
+| 178 | `([GU]<>0 AND VG24) OR V.ConfirmeUseGP? [FZ] AND [AP]='N'` |
+| 179 | `VG23 AND VG24 AND [GW]>1` |
+| 181 | `ExpCalc('55'EXP) AND (W0 imputation [W]='VSL') AND NOT v.Flag exist Vte LCO [GE]` |
+| 182 | `W0 fin tache [DO]<>0` |
+| 183 | `P0 UNI/BI [L]='U'` |
+| 184 | `P0 UNI/BI [L]<>'U'` |
+| 189 | `W0 imputation [W]='VSL' AND NOT v.Flag exist Vte LCO [GE] AND W0 sous-imput. [X]<>0 AND LastClicked()<>'Bouton ABANDON'` |
+| 190 | `V.VADV ? [EQ] AND W0 imputation [W]<>'VSL'` |
+| 194 | `[AV]<>W0 Remise Obligatoire [CH]` |
+| 196 | `W0 imputation [W]='TRF'  AND VG35` |
+| 197 | `W0 imputation [W]='TRF'  AND VG35 AND LastClicked ()<>'Bouton ABANDON'` |
+| 198 | `[GY]=0` |
+| 199 | `[GY]=0 AND W0 imputation [W]='TRF' AND VG35` |
+| 220 | `(Left(v.Token Id [GB],3)='VAD' AND Left(W0 forfait (O/N) [DP],3)<>'VAD' AND Left(W0 forfait (O/N) [DP],3)<>'' OR Left(v.Token Id [GB],3)<>'VAD' AND Left(v.Token Id [GB],3)<>'' AND Left(W0 forfait (O/N) [DP],3)='VAD') AND LastClicked()<>'Bouton ABANDON'` |
+| 222 | `(v.Token Id [GB]='VADA' AND W0 forfait (O/N) [DP]='VADV' OR v.Token Id [GB]='VADV' AND W0 forfait (O/N) [DP]='VADA') AND LastClicked()<>'Bouton ABANDON'` |
+| 223 | `[AR]<>''` |
+| 224 | `V.ConfirmeUseGP? [FZ] AND [AP]='O'` |
+| 226 | `[HR]>1 AND [AV]=1 AND [HQ]=0` |
+| 227 | `W0 imputation [W]='TRF' AND VG35` |
+| 228 | `[AV]>1 AND W0 imputation [W]='TRF' AND VG35` |
+| 230 | `(W0 Prenom [CQ]<>0 OR W0 Titre [CO]<>0) OR W0 Motif de non enreg NA [CL]` |
+| 231 | `VG38 AND [AD] AND [AG]>0` |
+| 232 | `[AG]>=W0 fin tache [DO]` |
+| 238 | `W0 imputation [W]='ANN' AND W0 forfait (O/N) [DP]<>'OD'` |
+| 239 | `[AP]='O'` |
+| 241 | `W0 imputation [W]='PYR'` |
+| 244 | `W0 Nom [CP]>0 AND W0 Nom [CP]>W0 Titre [CO] AND W0 imputation [W]='PYR'` |
+| 245 | `W0 Stock produit [DE]=1` |
+| 250 | `W0 Stock produit [DE]>1` |
+| 257 | `LastClicked()<>'Bouton ABANDON'` |
+| 260 | `VG55 AND NOT(CHG_PRV_W0 nbre articles [GO]) AND W0 code forfait [DS]='$PAPER'` |
+| 267 | `VG38 AND [AG]>0 AND W0 Total_Vente [EE]<>'O' AND VG60 AND [HF]<>6 AND [AD]` |
+| 268 | `[HE] > 0 AND VG63` |
+| 270 | `[HF] = 6` |
+| 279 | `[HA]=''` |
+| 281 | `W0 imputation [W]='VAE' AND VG87` |
+| 285 | `v.Date activité VAE [BJ]=''` |
+| 286 | `VG36 AND W0 imputation [W]='VSL' AND [AF]='LCO'` |
+| 292 | `[HJ]>0` |
+| 296 | `[AV]>[HJ]` |
+| 301 | `V.RC utilisé [GA]=1` |
+| 45 | `Trim (INIGet ('[MAGIC_LOGICAL_NAMES]club_editod'))='O' AND Trim (INIGet ('[MAGIC_LOGICAL_NAMES]club_formation'))<>'O'` |
+| 69 | `CndRange(Trim(W0 imputation [W])<>'PYR',ASCIIChr (33))` |
+| 169 | `(W0 imputation [W]<>'VSL' AND [AR]<>'') AND (Trim(W0 forfait (O/N) [DP])='VADA' OR Trim(W0 forfait (O/N) [DP])='VADV') AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
+| 170 | `(W0 Total_GiftPass [EF]<>0 AND V.Message erreur trans... [FM]<>'GO') AND W0 imputation [W]='VSL' AND [AR]<>'' AND (Trim(W0 forfait (O/N) [DP])='VADA' OR Trim(W0 forfait (O/N) [DP])='VADV') AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
+| 249 | `Trim(W0 montant [DF])<>''` |
+| 259 | `W0 imputation [W]='PYR' AND Trim(W0 montant [DF])<>''` |
+| 261 | `ExpCalc('259'EXP) AND Trim([HD])=''` |
+| 263 | `ExpCalc('259'EXP) AND Trim([HD])<>''` |
+| 300 | `NOT(Trim([IC])=Trim(W0 imputation [W]) AND Trim([ID])=Trim([AF])) AND V.RC utilisé [GA]>0 AND Trim([AR])<>'' AND VG108` |
 
-#### CONSTANT (28)
+#### FORMAT (8)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 265 | `MlsTrans('Vous disposez d''un Resort Credit de')&' '&Trim(Str([HE],Trim(P0 masque montant [C])))&' '&Trim(P0 devise locale [B])&'. Voulez-vous l''utiliser ?'` |
+| 1 | `DStr(P0 date fin sejour [G],'DD/MM/YYYY')` |
+| 108 | `'La date début séjour doit être inferieure à ' & Trim(Str([HM],'2')) & ' jours par rapport à la date du jour'` |
+| 160 | `'# '&Str(v. pied type? [GH],'10P0')` |
+| 175 | `W0 imputation [W]='VSL' AND Left(Trim(Str([AB],'10')),1)='5'` |
+| 243 | `MlsTrans('La remise ne peut pas être inférieure à')&' '&Trim(Str(W0 Nom [CP],'3'))&' %'` |
+| 251 | `Trim(Str(W0 Stock produit [DE],'2'))&' aff.'` |
+| 295 | `MlsTrans('Il n''y a que ')&
+Trim(Str([HJ],'3L'))&MlsTrans(' chambre(s) sur le compte du GM !')` |
+
+#### CAST_LOGIQUE (9)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 162 | `IF(W0 imputation [W]='VRL','TRUE'LOG,V.RC utilisé [GA]=0)` |
+| 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` |
+| 17 | `'FALSE'LOG` |
+| 56 | `'TRUE'LOG` |
+| 57 | `'FALSE'LOG` |
+| 84 | `'FALSE'LOG` |
+| 188 | `'FALSE'LOG` |
+| 211 | `'TRUE'LOG` |
+| 271 | `(W0 code article [U]>0 AND (W0 imputation [W]='VRL' OR W0 imputation [W]='VSL' )) OR (W0 code article [U]>0 AND W0 fin tache [DO]>0 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL') AND [AQ]<>'' OR IF(W0 imputation [W]='PYR',W0 mode de paiement [DG],'TRUE'LOG)` |
+
+#### CONSTANTE (28)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
@@ -1130,256 +4920,113 @@ flowchart TD
 | 240 | `'PYR'` |
 | 266 | `'Voulez vous utiliser le Gift Pass ?'` |
 
-#### DATE (9)
+#### DATE (3)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 1 | `DStr(P0 date fin sejour [G],'DD/MM/YYYY')` |
 | 4 | `Date ()` |
 | 14 | `Date ()` |
-| 32 | `P0 date fin sejour [G]=0 OR P0 date fin sejour [G]<Date ()` |
-| 33 | `NOT (P0 date fin sejour [G]=0 OR P0 date fin sejour [G]<Date ())` |
 | 67 | `Date ()` |
-| 107 | `W0 imputation [W]='VSL' AND W0 Num rue [CR]-Date()>21 AND W0 Titre [CO]<>0` |
-| 109 | `W0 imputation [W]='VSL' AND W0 Num rue [CR]-Date()>[HM] AND W0 Titre [CO]<>0` |
-| 305 | `W0 imputation [W]='VRL' AND IF(Date()>BOM(Date()),W0 Num rue [CR]<BOM(Date()),BOM(Date()-1)>W0 Num rue [CR])` |
 
-#### OTHER (201)
+#### REFERENCE_VG (4)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 6 | `NOT VG38` |
 | 7 | `VG2` |
+| 156 | `VG21` |
+| 237 | `VG38` |
+| 273 | `VG63` |
+
+#### OTHER (71)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
 | 10 | `P0 societe [A]` |
 | 11 | `P0 code GM [E]` |
 | 12 | `P0 filiation [F]` |
-| 17 | `'FALSE'LOG` |
 | 21 | `W0 code article [U]` |
-| 22 | `[AW]>0 AND [AV]=0` |
-| 23 | `V0 validation [DM] AND [AP]='N'` |
-| 24 | `[AV]>W0 reseau [DN] AND NOT (Nbre ecriture [ES])` |
-| 25 | `W0 fin tache [DO]=0 AND [AQ]<>'' AND W0 Titre [CO]<>100 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL' AND NOT([HH])` |
-| 26 | `W0 imputation [W]='VRL' OR W0 imputation [W]='VSL'` |
 | 27 | `NOT(v.Flag abandon libération [GF])` |
-| 28 | `[AW]>0 AND W0 Retour Transmission... [DY]='N'` |
-| 29 | `([AW]=0) AND (ExpCalc('55'EXP))` |
-| 30 | `([AW]=0) AND W0 imputation [W]<>'VRL' AND (ExpCalc('55'EXP))` |
-| 31 | `W0 code article [U]>0 AND W0 ret lien special [DW]<>'R'` |
-| 34 | `W0 code article [U]>0 AND W0 fin tache [DO]>0` |
-| 36 | `W0 Retour Transmission... [DY]='O' AND W0 Message TPE [EA]='O'` |
-| 37 | `W0 gratuite ? [DV] AND W0 Retour Transmission... [DY]='O' AND W0 Forcer Transaction ... [DZ]='O'` |
-| 38 | `[AP]='N'` |
-| 39 | `W0 gratuite ? [DV] AND W0 Retour Transmission... [DY]='O'` |
 | 40 | `V.Reglement premier ar... [ET]` |
 | 41 | `W0 FIN SAISIE OD [R]` |
 | 42 | `W0 gratuite ? [DV]` |
-| 43 | `[AP]='O' AND W0 gratuite ? [DV]` |
 | 44 | `V.VADA ? [EP]` |
 | 46 | `W0 Cloture en cours [T]` |
 | 49 | `MlsTrans('Identité')` |
 | 51 | `MlsTrans ('&Fin Transaction')` |
-| 52 | `DbRecs ('{596,4}'DSOURCE,'')>0 AND ExpCalc('41'EXP)` |
-| 53 | `DbRecs ('{596,4}'DSOURCE,'')>0` |
-| 54 | `DbRecs ('{596,4}'DSOURCE,'')>0 AND [AR]=''` |
-| 55 | `DbRecs ('{596,4}'DSOURCE,'')<6` |
-| 56 | `'TRUE'LOG` |
-| 57 | `'FALSE'LOG` |
-| 58 | `W0 gratuite ? [DV] AND [AP]='O'` |
-| 59 | `NOT (W0 FIN SAISIE OD [R])` |
-| 60 | `V.VAD ? [ER]<>6` |
-| 61 | `NOT (Nbre ecriture [ES]) AND DbRecs ('{596,4}'DSOURCE,'')=0 AND [AQ]&[AR]=''` |
-| 62 | `NOT (V.VADV ? [EQ])` |
 | 64 | `P0 societe [A]` |
 | 65 | `P0 code GM [E]` |
 | 66 | `P0 filiation [F]` |
 | 70 | `GetParam ('MOPCMP')` |
 | 73 | `W0 code article [U]` |
-| 74 | `W0 forfait (O/N) [DP]=''` |
 | 77 | `V.VADV ? [EQ]` |
-| 78 | `NOT ExpCalc('77'EXP)` |
-| 79 | `W0 forfait (O/N) [DP]='' AND LastClicked()<>'Bouton ABANDON'` |
-| 80 | `NOT (W0 effacement (O/N) [DQ]) AND LastClicked()<>'Bouton ABANDON'` |
-| 81 | `W0 forfait (O/N) [DP]=GetParam ('MOPCMP') AND NOT (V.VADV ? [EQ]) AND LastClicked()<>'Bouton ABANDON'` |
-| 82 | `W0 Code Devise [DX]='F' OR Nbre ecriture [ES]` |
-| 84 | `'FALSE'LOG` |
 | 85 | `ExpCalc('55'EXP)` |
 | 86 | `ExpCalc('55'EXP) AND NOT([HH])` |
 | 87 | `ExpCalc('55'EXP) AND NOT v.Flag exist Vte LCO [GE]` |
-| 88 | `(DbRecs ('{596,4}'DSOURCE,'')=0) AND (ExpCalc('55'EXP))` |
-| 89 | `([AW]>0 AND W0 Retour Transmission... [DY]='N') AND (ExpCalc('55'EXP))` |
-| 90 | `(W0 Retour Transmission... [DY]='N' AND (NOT(ExpCalc('285'EXP)) OR [HJ]>1 )) 
-AND (ExpCalc('55'EXP))` |
-| 91 | `V.Type premier article [EU]=6` |
 | 93 | `[AZ]` |
-| 95 | `NOT(W0 Motif de non enreg NA [CL]) OR W0 imputation [W]='PYR'` |
 | 96 | `IN(W0 imputation [W],'VRL','VSL','PYR')` |
-| 97 | `IN(W0 imputation [W],'VRL','VSL') AND [AF]<>'LCO'` |
 | 98 | `IN(W0 imputation [W],'VRL','VSL')` |
 | 99 | `IN(W0 imputation [W],'VRL','VSL','TRF')` |
-| 100 | `W0 imputation [W]='VRL'` |
-| 101 | `W0 imputation [W]='VSL' AND [AF]<>'LCO'` |
-| 102 | `LastClicked()<>'Bouton ABANDON' AND DbRecs ('{596,4}'DSOURCE,'')<6` |
-| 103 | `W0 imputation [W]='VSL' AND [AF]<>'LCO' AND DbRecs ('{596,4}'DSOURCE,'')<3 AND 
-LastClicked()<>'Bouton ABANDON'` |
-| 104 | `(W0 imputation [W]='VRL' OR W0 imputation [W]='VSL')AND [AF]<>'LCO' AND VG7 AND 
-DbRecs ('{596,4}'DSOURCE,'')<3 AND 
-LastClicked()<>'Bouton ABANDON'` |
-| 105 | `W0 imputation [W]='VSL' AND W0 CP [CU]='' AND NOT v.Flag exist Vte LCO [GE] AND LastClicked()<>'Bouton ABANDON'` |
-| 106 | `W0 Num rue [CR]=0` |
 | 110 | `W0 code article [U]` |
-| 112 | `(W0 Titre [CO]=100 OR W0 Motif de non enreg NA [CL]) AND W0 CP [CU]='' AND LastClicked()<>'Bouton ABANDON'` |
-| 113 | `[AP]='O' AND IN (W0 imputation [W],'VRL','VSL','TRF')` |
 | 115 | `W0 Motif de non enreg NA [CL]` |
-| 116 | `W0 Motif de non enreg NA [CL] OR [AZ]='SANS'` |
-| 118 | `W0 Ville [CV]='' AND [AP]='O'` |
-| 121 | `W0 Nom de la rue [CS]=0` |
-| 122 | `[AX]=''` |
-| 123 | `W0 annulation [Z]=0 AND ExpCalc('55'EXP)` |
 | 124 | `GetParam('CODELANGUE')` |
-| 138 | `V.RC utilisé [GA]>0 AND [AR]<>'' AND VG7 AND ((IN(W0 imputation [W],'VRL','VSL','PYR') AND W0 imputation [W]<>v.Transaction Id [GC]) OR (IN(v.Transaction Id [GC],'VRL','VSL','PYR') AND W0 imputation [W]<>v.Transaction Id [GC]))` |
-| 140 | `W0 Prenom [CQ]>W0 Motif annulation [CN]` |
-| 141 | `P0.Valide ? [N]<>0 AND NOT(IN(W0 imputation [W],'VSL','VRL','PYR')) AND VG7 AND v.SoldeGiftPass [V]<>0` |
 | 142 | `W0 imputation [W]` |
-| 143 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VRL' AND VG7 AND W0 Chambre [CX]='' AND V.RC utilisé [GA]=0` |
-| 144 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VRL' AND VG7 AND V.RC utilisé [GA]=0` |
-| 145 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VSL' AND VG7 AND W0 sous-imput. [X]>0` |
-| 146 | `W0 imputation [W]='VRL' AND W0 Total_GiftPass [EF]=0` |
-| 148 | `NOT IN(W0 imputation [W],'VRL','VSL','TRF', 'VAR')` |
-| 150 | `[AW]=0` |
-| 151 | `V.RC utilisé [GA]=0` |
-| 152 | `[AA]='X'` |
-| 155 | `(W0 imputation [W]='VRL'  OR W0 imputation [W]='VSL')  AND VG17 AND VG20>1` |
-| 156 | `VG21` |
-| 157 | `W0 imputation [W]='VRL' AND VG7 AND VG20>1 AND VG17 AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
-| 158 | `[AY]=''` |
-| 159 | `VG20>1` |
 | 161 | `MlsTrans('Sans réduction')` |
-| 163 | `VG23 AND VG24 AND [GU]>0 AND NOT [GS]` |
 | 164 | `VG23 AND VG24 AND NOT [GS]` |
-| 165 | `NOT ExpCalc('162'EXP)` |
 | 166 | `W0 FIN SAISIE OD [R] AND VG23` |
-| 168 | `[GS] AND Left(W0 forfait (O/N) [DP],3)<>'VAD'` |
-| 172 | `NOT [GS]` |
-| 174 | `VG7 AND v.Flag exist Vte LCO [GE] AND [AC]='' AND v.SoldeGiftPass [V]<>0` |
 | 176 | `[AC]` |
 | 177 | `VG7 AND v.Flag exist Vte LCO [GE]` |
-| 178 | `([GU]<>0 AND VG24) OR V.ConfirmeUseGP? [FZ] AND [AP]='N'` |
-| 179 | `VG23 AND VG24 AND [GW]>1` |
 | 180 | `[GV]` |
-| 181 | `ExpCalc('55'EXP) AND (W0 imputation [W]='VSL') AND NOT v.Flag exist Vte LCO [GE]` |
-| 182 | `W0 fin tache [DO]<>0` |
-| 183 | `P0 UNI/BI [L]='U'` |
-| 184 | `P0 UNI/BI [L]<>'U'` |
-| 185 | `NOT CHG_PRV_W0 nbre articles [GO]` |
 | 186 | `CHG_PRV_W0 nbre articles [GO]` |
 | 187 | `VG23 AND VG24` |
-| 188 | `'FALSE'LOG` |
-| 189 | `W0 imputation [W]='VSL' AND NOT v.Flag exist Vte LCO [GE] AND W0 sous-imput. [X]<>0 AND LastClicked()<>'Bouton ABANDON'` |
-| 190 | `V.VADV ? [EQ] AND W0 imputation [W]<>'VSL'` |
-| 191 | `NOT ExpCalc('189'EXP)` |
-| 194 | `[AV]<>W0 Remise Obligatoire [CH]` |
-| 196 | `W0 imputation [W]='TRF'  AND VG35` |
-| 197 | `W0 imputation [W]='TRF'  AND VG35 AND LastClicked ()<>'Bouton ABANDON'` |
-| 198 | `[GY]=0` |
-| 199 | `[GY]=0 AND W0 imputation [W]='TRF' AND VG35` |
 | 200 | `IN(W0 service village [BA],'1','3')` |
 | 201 | `IN(W0 service village [BA],'2','3')` |
 | 207 | `'00:00:00'TIME` |
 | 209 | `V Nbre de Ligne Saisies [FC]` |
-| 211 | `'TRUE'LOG` |
 | 212 | `GetParam('CODELANGUE')` |
 | 214 | `W0 Heure du transfert ... [BO]` |
 | 216 | `W0 b.Date du transfert [BP]` |
 | 219 | `V.Nombre de carte [FP] OR V.N°Ticket OD [FU]` |
-| 220 | `(Left(v.Token Id [GB],3)='VAD' AND Left(W0 forfait (O/N) [DP],3)<>'VAD' AND Left(W0 forfait (O/N) [DP],3)<>'' OR Left(v.Token Id [GB],3)<>'VAD' AND Left(v.Token Id [GB],3)<>'' AND Left(W0 forfait (O/N) [DP],3)='VAD') AND LastClicked()<>'Bouton ABANDON'` |
 | 221 | `W0 forfait (O/N) [DP]` |
-| 222 | `(v.Token Id [GB]='VADA' AND W0 forfait (O/N) [DP]='VADV' OR v.Token Id [GB]='VADV' AND W0 forfait (O/N) [DP]='VADA') AND LastClicked()<>'Bouton ABANDON'` |
-| 223 | `[AR]<>''` |
-| 224 | `V.ConfirmeUseGP? [FZ] AND [AP]='O'` |
-| 226 | `[HR]>1 AND [AV]=1 AND [HQ]=0` |
-| 227 | `W0 imputation [W]='TRF' AND VG35` |
-| 228 | `[AV]>1 AND W0 imputation [W]='TRF' AND VG35` |
-| 230 | `(W0 Prenom [CQ]<>0 OR W0 Titre [CO]<>0) OR W0 Motif de non enreg NA [CL]` |
-| 231 | `VG38 AND [AD] AND [AG]>0` |
-| 232 | `[AG]>=W0 fin tache [DO]` |
 | 235 | `W0 fin tache [DO]` |
-| 237 | `VG38` |
-| 238 | `W0 imputation [W]='ANN' AND W0 forfait (O/N) [DP]<>'OD'` |
-| 239 | `[AP]='O'` |
-| 241 | `W0 imputation [W]='PYR'` |
 | 242 | `W0 Nom [CP]` |
-| 244 | `W0 Nom [CP]>0 AND W0 Nom [CP]>W0 Titre [CO] AND W0 imputation [W]='PYR'` |
-| 245 | `W0 Stock produit [DE]=1` |
 | 248 | `W0 montant [DF]` |
-| 250 | `W0 Stock produit [DE]>1` |
 | 252 | `Existe mode de paiement [DH]` |
 | 253 | `31.75` |
 | 254 | `28.125` |
 | 255 | `29.375` |
 | 256 | `54.125` |
-| 257 | `LastClicked()<>'Bouton ABANDON'` |
 | 258 | `W0 mode de paiement [DG]` |
-| 260 | `VG55 AND NOT(CHG_PRV_W0 nbre articles [GO]) AND W0 code forfait [DS]='$PAPER'` |
 | 264 | `IN(W0 imputation [W],'VRL','VSL') AND VG54` |
-| 267 | `VG38 AND [AG]>0 AND W0 Total_Vente [EE]<>'O' AND VG60 AND [HF]<>6 AND [AD]` |
-| 268 | `[HE] > 0 AND VG63` |
 | 269 | `[HE]` |
-| 270 | `[HF] = 6` |
-| 271 | `(W0 code article [U]>0 AND (W0 imputation [W]='VRL' OR W0 imputation [W]='VSL' )) OR (W0 code article [U]>0 AND W0 fin tache [DO]>0 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL') AND [AQ]<>'' OR IF(W0 imputation [W]='PYR',W0 mode de paiement [DG],'TRUE'LOG)` |
-| 273 | `VG63` |
 | 274 | `NOT([HH])` |
 | 275 | `NOT(W0 FIN SAISIE OD [R])` |
 | 276 | `W0 FIN SAISIE OD [R]` |
 | 277 | `v.Matin/Après midi [BL]` |
 | 278 | `VG83 AND V.ConfirmeUseGP? [FZ]` |
-| 279 | `[HA]=''` |
-| 280 | `NOT ExpCalc('277'EXP)` |
-| 281 | `W0 imputation [W]='VAE' AND VG87` |
-| 282 | `NOT ExpCalc('280'EXP)` |
-| 283 | `NOT ExpCalc('280'EXP) OR ExpCalc('285'EXP)` |
-| 285 | `v.Date activité VAE [BJ]=''` |
-| 286 | `VG36 AND W0 imputation [W]='VSL' AND [AF]='LCO'` |
 | 287 | `VG36 AND [HK]` |
 | 288 | `W0 libelle article [BB]` |
-| 289 | `NOT v Sens Transfert Global [BI]` |
 | 291 | `DbDel('{1037,4}'DSOURCE,'')` |
-| 292 | `[HJ]>0` |
 | 293 | `[HJ]` |
-| 296 | `[AV]>[HJ]` |
 | 297 | `[HL]` |
-| 298 | `NOT [HL]` |
 | 299 | `[AF]` |
-| 301 | `V.RC utilisé [GA]=1` |
 | 302 | `[IA]` |
 | 303 | `[IB]` |
 | 304 | `WO Classe MOP [DJ]` |
 
-#### STRING (21)
+#### CONCATENATION (1)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
 | 3 | `MlsTrans ('Verifier que la transaction est bien pour')&' '&Trim (P0 Nom & prenom [K])` |
+
+#### STRING (4)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
 | 8 | `Trim (W0 choix transac manuelle [EM])` |
-| 45 | `Trim (INIGet ('[MAGIC_LOGICAL_NAMES]club_editod'))='O' AND Trim (INIGet ('[MAGIC_LOGICAL_NAMES]club_formation'))<>'O'` |
-| 69 | `CndRange(Trim(W0 imputation [W])<>'PYR',ASCIIChr (33))` |
 | 83 | `MlsTrans (Trim (W0 forfait date(O/N) [DR]))` |
-| 108 | `'La date début séjour doit être inferieure à ' & Trim(Str([HM],'2')) & ' jours par rapport à la date du jour'` |
-| 160 | `'# '&Str(v. pied type? [GH],'10P0')` |
-| 169 | `(W0 imputation [W]<>'VSL' AND [AR]<>'') AND (Trim(W0 forfait (O/N) [DP])='VADA' OR Trim(W0 forfait (O/N) [DP])='VADV') AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
-| 170 | `(W0 Total_GiftPass [EF]<>0 AND V.Message erreur trans... [FM]<>'GO') AND W0 imputation [W]='VSL' AND [AR]<>'' AND (Trim(W0 forfait (O/N) [DP])='VADA' OR Trim(W0 forfait (O/N) [DP])='VADV') AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
 | 171 | `MlsTrans('Transaction TPE : ')&Trim([GT])` |
-| 173 | `NOT [GS] AND Trim([GT])<>''` |
-| 175 | `W0 imputation [W]='VSL' AND Left(Trim(Str([AB],'10')),1)='5'` |
-| 243 | `MlsTrans('La remise ne peut pas être inférieure à')&' '&Trim(Str(W0 Nom [CP],'3'))&' %'` |
-| 249 | `Trim(W0 montant [DF])<>''` |
-| 251 | `Trim(Str(W0 Stock produit [DE],'2'))&' aff.'` |
-| 259 | `W0 imputation [W]='PYR' AND Trim(W0 montant [DF])<>''` |
-| 261 | `ExpCalc('259'EXP) AND Trim([HD])=''` |
 | 262 | `Trim(VG57)` |
-| 263 | `ExpCalc('259'EXP) AND Trim([HD])<>''` |
-| 295 | `MlsTrans('Il n''y a que ')&
-Trim(Str([HJ],'3L'))&MlsTrans(' chambre(s) sur le compte du GM !')` |
-| 300 | `NOT(Trim([IC])=Trim(W0 imputation [W]) AND Trim([ID])=Trim([AF])) AND V.RC utilisé [GA]>0 AND Trim([AR])<>'' AND VG108` |
 
 </details>
 
@@ -1389,11 +5036,11 @@ Trim(Str([HJ],'3L'))&MlsTrans(' chambre(s) sur le compte du GM !')` |
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> Menu caisse GM - scroll (IDE 163) -> **Transaction Nouv vente avec GP (IDE 237)**
+Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Transaction Nouv vente avec GP (IDE 237)**
 
-Main -> ... -> Menu Choix Saisie/Annul vente (IDE 242) -> **Transaction Nouv vente avec GP (IDE 237)**
+Main -> ... -> [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md) -> **Transaction Nouv vente avec GP (IDE 237)**
 
-Main -> ... -> Saisie transaction Nouv vente (IDE 316) -> **Transaction Nouv vente avec GP (IDE 237)**
+Main -> ... -> [Saisie transaction Nouv vente (IDE 316)](ADH-IDE-316.md) -> **Transaction Nouv vente avec GP (IDE 237)**
 
 ```mermaid
 graph LR
@@ -1419,9 +5066,9 @@ graph LR
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| 163 | Menu caisse GM - scroll | 1 |
-| 242 | Menu Choix Saisie/Annul vente | 1 |
-| 316 | Saisie transaction Nouv vente | 1 |
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
+| [242](ADH-IDE-242.md) | Menu Choix Saisie/Annul vente | 1 |
+| [316](ADH-IDE-316.md) | Saisie transaction Nouv vente | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -1495,26 +5142,26 @@ graph LR
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| 152 | Recup Classe et Lib du MOP | 4 | Recuperation donnees |
-| 84 |     SP Caractères Interdits | 2 | Validation saisie |
-| 233 | Appel Print ticket vente PMS28 | 2 | Impression ticket/document |
-| 249 | Reinit Aff PYR | 2 | Reinitialisation |
-| 277 | Selection Vols /t Ville à côté | 2 | Selection/consultation |
-| 43 | Recuperation du titre | 1 | Recuperation donnees |
-| 149 | Calcul stock produit WS | 1 | Calcul de donnees |
-| 179 | Get Printer | 1 | Impression ticket/document |
-| 180 | Printer choice | 1 | Impression ticket/document |
-| 181 | Set Listing Number | 1 | Configuration impression |
-| 182 | Raz Current Printer | 1 | Impression ticket/document |
-| 225 | Get Fidelisation et Remise | 1 | Recuperation donnees |
-| 227 | Get Matricule | 1 | Recuperation donnees |
-| 228 | Gestion Chèque | 1 | Gestion moyens paiement |
-| 241 | Solde Gift Pass | 1 | Verification solde |
-| 247 | Deversement Transaction | 1 | Transfert donnees |
-| 248 | Choix PYR (plusieurs chambres) | 1 | Selection/consultation |
-| 254 | Solde Resort Credit | 1 | Verification solde |
-| 257 | Zoom articles | 1 | Selection/consultation |
-| 269 | Zoom services village | 1 | Selection/consultation |
+| [152](ADH-IDE-152.md) | Recup Classe et Lib du MOP | 4 | Recuperation donnees |
+| [84](ADH-IDE-84.md) |     SP Caractères Interdits | 2 | Validation saisie |
+| [233](ADH-IDE-233.md) | Appel Print ticket vente PMS28 | 2 | Impression ticket/document |
+| [249](ADH-IDE-249.md) | Reinit Aff PYR | 2 | Reinitialisation |
+| [277](ADH-IDE-277.md) | Selection Vols /t Ville à côté | 2 | Selection/consultation |
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
+| [149](ADH-IDE-149.md) | Calcul stock produit WS | 1 | Calcul de donnees |
+| [179](ADH-IDE-179.md) | Get Printer | 1 | Impression ticket/document |
+| [180](ADH-IDE-180.md) | Printer choice | 1 | Impression ticket/document |
+| [181](ADH-IDE-181.md) | Set Listing Number | 1 | Configuration impression |
+| [182](ADH-IDE-182.md) | Raz Current Printer | 1 | Impression ticket/document |
+| [225](ADH-IDE-225.md) | Get Fidelisation et Remise | 1 | Recuperation donnees |
+| [227](ADH-IDE-227.md) | Get Matricule | 1 | Recuperation donnees |
+| [228](ADH-IDE-228.md) | Gestion Chèque | 1 | Gestion moyens paiement |
+| [241](ADH-IDE-241.md) | Solde Gift Pass | 1 | Verification solde |
+| [247](ADH-IDE-247.md) | Deversement Transaction | 1 | Transfert donnees |
+| [248](ADH-IDE-248.md) | Choix PYR (plusieurs chambres) | 1 | Selection/consultation |
+| [254](ADH-IDE-254.md) | Solde Resort Credit | 1 | Verification solde |
+| [257](ADH-IDE-257.md) | Zoom articles | 1 | Selection/consultation |
+| [269](ADH-IDE-269.md) | Zoom services village | 1 | Selection/consultation |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -1525,31 +5172,33 @@ graph LR
 | Lignes de logique | 1818 | Programme volumineux |
 | Expressions | 305 | Beaucoup de logique conditionnelle |
 | Tables WRITE | 9 | Fort impact donnees |
-| Sous-programmes | 20 | Forte dependance - migrer les callees en priorite |
+| Sous-programmes | 20 | Forte dependance |
 | Ecrans visibles | 14 | Interface complexe multi-ecrans |
 | Code desactive | 0% (0 / 1818) | Code sain |
-| Regles metier | 17 | Logique metier riche - documenter chaque regle |
+| Regles metier | 17 | Logique metier riche |
 
 ### 14.2 Plan de migration par bloc
 
 #### Saisie (7 taches: 7 ecrans, 0 traitement)
 
-- Reproduire 7 ecrans de saisie: Saisie transaction, Saisie Bilaterale, Saisie mode de règlement, Saisie Commentaires, VRL : Saisie identité, Saisie dates forfait, Affiche saisie
-- Implementer les validations cote client et serveur
+- **Strategie** : Formulaire React/Blazor avec validation Zod/FluentValidation.
+- Reproduire 7 ecrans : Saisie transaction, Saisie Bilaterale, Saisie mode de règlement, Saisie Commentaires, VRL : Saisie identité, Saisie dates forfait, Affiche saisie
+- Validation temps reel cote client + serveur
 
 #### Reglement (4 taches: 1 ecran, 3 traitements)
 
-- Logique multi-moyens de paiement a implementer
+- **Strategie** : Service `IReglementService` avec pattern Strategy par mode de paiement.
 - Integration TPE si applicable
-- 3 traitements internes de reglement
 
 #### Validation (1 tache: 0 ecran, 1 traitement)
 
-- Transformer les conditions en validators (FluentValidation ou equivalent)
+- **Strategie** : FluentValidation avec validators specifiques.
+- Chaque tache de validation -> un validator injectable
 
 #### Creation (5 taches: 0 ecran, 5 traitements)
 
-- Insertion de donnees via repository pattern
+- **Strategie** : Repository pattern avec Entity Framework Core.
+- Insertion via `IRepository<T>.CreateAsync()`
 
 #### Traitement (18 taches: 3 ecrans, 15 traitements)
 
@@ -1557,24 +5206,25 @@ graph LR
 
 #### Initialisation (3 taches: 0 ecran, 3 traitements)
 
-- Reinitialisation dans le constructeur ou methode Init()
+- **Strategie** : Constructeur/methode `InitAsync()` dans l'orchestrateur.
 
 #### Calcul (5 taches: 0 ecran, 5 traitements)
 
+- **Strategie** : Services de calcul purs (Domain Services).
 - Migrer la logique de calcul (stock, compteurs, montants)
 
 #### Consultation (1 tache: 0 ecran, 1 traitement)
 
-- Ecrans de recherche/selection en modales ou composants
+- **Strategie** : Composants de recherche/selection en modales.
 
 #### Impression (1 tache: 0 ecran, 1 traitement)
 
-- Remplacer par generation PDF/HTML
-- Configurer le systeme d'impression
+- **Strategie** : Templates HTML -> PDF via wkhtmltopdf ou Puppeteer.
+- `PrintService` injectable avec choix imprimante
 
 #### Transfert (4 taches: 3 ecrans, 1 traitement)
 
-- Logique de deversement/transfert entre modules
+- **Strategie** : Service `ITransfertService` avec logique de deversement.
 
 ### 14.3 Dependances critiques
 
@@ -1589,16 +5239,16 @@ graph LR
 | stat_lieu_vente_date | Table WRITE (Temp) | 3x | Schema + repository |
 | Boo_ResultsRechercheHoraire | Table WRITE (Database) | 6x | Schema + repository |
 | Table_1037 | Table WRITE (Memory) | 3x | Schema + repository |
-| IDE 152 - Recup Classe et Lib du MOP | Sous-programme | 4x | **CRITIQUE** - Recuperation donnees |
-| IDE 249 - Reinit Aff PYR | Sous-programme | 2x | Haute - Reinitialisation |
-| IDE 277 - Selection Vols /t Ville à côté | Sous-programme | 2x | Haute - Selection/consultation |
-| IDE 84 -     SP Caractères Interdits | Sous-programme | 2x | Haute - Validation saisie |
-| IDE 233 - Appel Print ticket vente PMS28 | Sous-programme | 2x | Haute - Impression ticket/document |
-| IDE 247 - Deversement Transaction | Sous-programme | 1x | Normale - Transfert donnees |
-| IDE 241 - Solde Gift Pass | Sous-programme | 1x | Normale - Verification solde |
-| IDE 228 - Gestion Chèque | Sous-programme | 1x | Normale - Gestion moyens paiement |
-| IDE 248 - Choix PYR (plusieurs chambres) | Sous-programme | 1x | Normale - Selection/consultation |
-| IDE 269 - Zoom services village | Sous-programme | 1x | Normale - Selection/consultation |
+| [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md) | Sous-programme | 4x | **CRITIQUE** - Recuperation donnees |
+| [Reinit Aff PYR (IDE 249)](ADH-IDE-249.md) | Sous-programme | 2x | Haute - Reinitialisation |
+| [Selection Vols /t Ville à côté (IDE 277)](ADH-IDE-277.md) | Sous-programme | 2x | Haute - Selection/consultation |
+| [    SP Caractères Interdits (IDE 84)](ADH-IDE-84.md) | Sous-programme | 2x | Haute - Validation saisie |
+| [Appel Print ticket vente PMS28 (IDE 233)](ADH-IDE-233.md) | Sous-programme | 2x | Haute - Impression ticket/document |
+| [Deversement Transaction (IDE 247)](ADH-IDE-247.md) | Sous-programme | 1x | Normale - Transfert donnees |
+| [Solde Gift Pass (IDE 241)](ADH-IDE-241.md) | Sous-programme | 1x | Normale - Verification solde |
+| [Gestion Chèque (IDE 228)](ADH-IDE-228.md) | Sous-programme | 1x | Normale - Gestion moyens paiement |
+| [Choix PYR (plusieurs chambres) (IDE 248)](ADH-IDE-248.md) | Sous-programme | 1x | Normale - Selection/consultation |
+| [Zoom services village (IDE 269)](ADH-IDE-269.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.1 - 2026-01-29 20:09*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-01-30 09:42*

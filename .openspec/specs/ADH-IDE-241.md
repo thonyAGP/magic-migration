@@ -1,195 +1,232 @@
 ﻿# ADH IDE 241 - Solde Gift Pass
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:12
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_237.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-01-30 09:42 -> 09:43 (8s) | Assemblage 09:43
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Solde Gift Pass |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 241 |
-| **Fichier XML** | `Prg_237.xml` |
-| **Description** | Solde Gift Pass |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 12 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 241 |
+| Nom Programme | Solde Gift Pass |
+| Fichier source | `Prg_241.xml` |
+| Domaine metier | Comptabilite |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 268 | cc_total_par_type | ccpartyp | READ | Lecture |
+**Solde Gift Pass** assure la gestion complete de ce processus, accessible depuis [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md).
 
-**Resume**: 1 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (1 tache) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+### 3.1 Traitement (1 tache)
 
-```mermaid
-flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
-
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
-
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
-```
-
-### 2.5 Statistiques
-
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 12 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+Traitements internes.
 
 ---
 
-<!-- TAB:Cartographie -->
+#### <a id="t1"></a>T1 - Solde Gift Pass
 
-## CARTOGRAPHIE APPLICATIVE
+**Role** : Traitement interne.
 
-### 3.1 Chaine d'appels depuis Main
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md)
+- **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 5
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (1 tache)
+
+- **241.1** [Solde Gift Pass (T1)](#t1)   *[Traitement]*
+
+<!-- TAB:Donnees -->
+
+## 10. TABLES
+
+### Tables utilisees (1)
+
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 268 | cc_total_par_type |  | DB | R |   |   | 1 |
+
+### Colonnes par table
+
+<details>
+<summary>Table 268 - cc_total_par_type (R) - 1 usages</summary>
+
+*Colonnes accessibles via outils MCP (`magic_get_line`)*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Autres (4)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | p.Societe | Unicode | 1x refs |
+| B | p.Compte | Numeric | 1x refs |
+| C | p.Filiation | Numeric | - |
+| D | P.solde_credit_conso | Numeric | 1x refs |
+
+## 12. EXPRESSIONS
+
+**5 / 5 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CALCULATION | 1 | 0 |
+| CONSTANTE | 2 | 0 |
+| OTHER | 2 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CALCULATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CALCULATION | 5 | `P.solde_credit_conso [D]+[I]` | - |
+
+#### CONSTANTE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 4 | `0` | - |
+| CONSTANTE | 3 | `'99'` | - |
+
+#### OTHER (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 2 | `p.Compte [B]` | - |
+| OTHER | 1 | `p.Societe [A]` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md) -> **Solde Gift Pass (IDE 241)**
+
+Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md) -> **Solde Gift Pass (IDE 241)**
+
+Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md) -> **Solde Gift Pass (IDE 241)**
+
+Main -> ... -> [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md) -> **Solde Gift Pass (IDE 241)**
 
 ```mermaid
 graph LR
-    T[241 Solde Gift Pass]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T241[241 Solde Gift Pass]
+    style T241 fill:#58a6ff
+    CC242[242 Menu Choix SaisieA...]
+    style CC242 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#8b5cf6
+    CC316[316 Saisie transaction...]
+    style CC316 fill:#8b5cf6
+    CC237[237 Transaction Nouv v...]
+    style CC237 fill:#3fb950
+    CC238[238 Transaction Nouv v...]
+    style CC238 fill:#3fb950
+    CC239[239 Transaction Nouv v...]
+    style CC239 fill:#3fb950
+    CC240[240 Transaction Nouv v...]
+    style CC240 fill:#3fb950
+    CC163 --> CC237
+    CC242 --> CC237
+    CC316 --> CC237
+    CC163 --> CC238
+    CC242 --> CC238
+    CC316 --> CC238
+    CC163 --> CC239
+    CC242 --> CC239
+    CC316 --> CC239
+    CC163 --> CC240
+    CC242 --> CC240
+    CC316 --> CC240
+    CC237 --> T241
+    CC238 --> T241
+    CC239 --> T241
+    CC240 --> T241
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [238](ADH-IDE-238.md) | Transaction Nouv vente PMS-584 | 3 |
+| [239](ADH-IDE-239.md) | Transaction Nouv vente PMS-721 | 3 |
+| [240](ADH-IDE-240.md) | Transaction Nouv vente PMS-710 | 3 |
+| [237](ADH-IDE-237.md) | Transaction Nouv vente avec GP | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[241 Solde Gift Pass]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T241[241 Solde Gift Pass]
+    style T241 fill:#58a6ff
+    NONE[Aucun callee]
+    T241 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 12 | Programme compact |
+| Expressions | 5 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 12) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (1 tache: 0 ecran, 1 traitement)
 
-### Complexite
+- Traitement standard a migrer
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 1 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+### 14.3 Dependances critiques
 
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:12 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-01-30 09:43*

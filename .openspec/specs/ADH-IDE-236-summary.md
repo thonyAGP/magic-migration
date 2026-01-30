@@ -1,7 +1,7 @@
 ﻿# ADH IDE 236 - Print ticket vente PMS-584
 
-> **Analyse**: 2026-01-29 20:09
-> **Pipeline**: V7.1 Deep Analysis
+> **Analyse**: 2026-01-30 09:42
+> **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
@@ -11,22 +11,12 @@
 - **Statut**: NON_ORPHELIN
 - **Raison**: Appele par 4 programme(s): Transaction Nouv vente PMS-584 (IDE 238), Histo ventes payantes (IDE 243), Histo ventes payantes /PMS-605 (IDE 244), Histo ventes payantes /PMS-623 (IDE 245)
 
-## MOTS-CLES RECHERCHE
-
-Print, ticket, vente, PMS-584
-
-## CE PROGRAMME EST CONCERNE SI...
-
-- Bug sur les tables: 
-- Probleme dans le flux depuis: Transaction Nouv vente PMS-584 (IDE 238), Histo ventes payantes (IDE 243), Histo ventes payantes /PMS-605 (IDE 244), Histo ventes payantes /PMS-623 (IDE 245)
-- Erreur dans les appels vers: Recup Classe et Lib du MOP (IDE 152), Creation pied Ticket (IDE 251)
-
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | Transaction Nouv vente PMS-584 (IDE 238), Histo ventes payantes (IDE 243), Histo ventes payantes /PMS-605 (IDE 244), Histo ventes payantes /PMS-623 (IDE 245) |
-| **Appelle** | Recup Classe et Lib du MOP (IDE 152), Creation pied Ticket (IDE 251) |
+| **Appele par** | [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Histo ventes payantes (IDE 243)](ADH-IDE-243.md), [Histo ventes payantes /PMS-605 (IDE 244)](ADH-IDE-244.md), [Histo ventes payantes /PMS-623 (IDE 245)](ADH-IDE-245.md) |
+| **Appelle** | [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md), [Creation pied Ticket (IDE 251)](ADH-IDE-251.md) |
 
 ## STATISTIQUES
 
@@ -38,4 +28,4 @@ Print, ticket, vente, PMS-584
 | Tables | 15 |
 
 ---
-*Spec SUMMARY generee par Pipeline V7.1*
+*Spec SUMMARY generee par Pipeline V7.2*
