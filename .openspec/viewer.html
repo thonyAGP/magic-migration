@@ -778,6 +778,36 @@
       border-color: var(--accent);
     }
 
+    /* Floating back button for intra-spec fragment navigation */
+    .fragment-back-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 100;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: all 0.2s;
+      animation: slideUp 0.3s ease-out;
+    }
+    .fragment-back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     /* Scrollbar */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
@@ -1102,6 +1132,35 @@
 
     // Navigation history stack for back button between specs
     const navHistory = [];
+
+    // Fragment navigation history (intra-spec tab switching)
+    let fragmentBackState = null; // { tab, scrollTop }
+
+    function showFragmentBackButton(fromTab) {
+      // Remove existing button if any
+      hideFragmentBackButton();
+      const btn = document.createElement('button');
+      btn.className = 'fragment-back-btn';
+      btn.id = 'fragmentBackBtn';
+      btn.innerHTML = `← Retour onglet ${fromTab}`;
+      btn.onclick = () => {
+        if (fragmentBackState) {
+          switchSpecTab(fragmentBackState.tab);
+          setTimeout(() => {
+            content.scrollTop = fragmentBackState.scrollTop;
+            fragmentBackState = null;
+            hideFragmentBackButton();
+          }, 100);
+        }
+      };
+      document.body.appendChild(btn);
+    }
+
+    function hideFragmentBackButton() {
+      const btn = document.getElementById('fragmentBackBtn');
+      if (btn) btn.remove();
+      fragmentBackState = null;
+    }
 
     const STATUSES = [
       { id: 'progress', label: 'En cours' },
@@ -1806,13 +1865,22 @@
             const targetId = href.slice(1);
             const target = document.getElementById(targetId);
             if (target) {
-              // If target is in a hidden tab, switch to that tab first
-              const section = target.closest('.spec-section');
-              if (section && !section.classList.contains('active')) {
-                const tabName = section.dataset.tab;
-                if (tabName) switchSpecTab(tabName);
+              // Save current tab + scroll for back navigation
+              const currentActiveSection = document.querySelector('.spec-section.active');
+              const currentTab = currentActiveSection?.dataset?.tab;
+
+              const targetSection = target.closest('.spec-section');
+              const targetTab = targetSection?.dataset?.tab;
+
+              // If navigating to a different tab, show back button
+              if (targetTab && currentTab && targetTab !== currentTab) {
+                fragmentBackState = { tab: currentTab, scrollTop: content.scrollTop };
+                switchSpecTab(targetTab, true);
+                showFragmentBackButton(currentTab);
                 setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
               } else {
+                // Same tab: just scroll, hide back button
+                hideFragmentBackButton();
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }
             }
@@ -1872,6 +1940,7 @@
     }
 
     async function loadFile(path, showCommits = false) {
+      hideFragmentBackButton();
       content.innerHTML = '<div class="loading">Chargement...</div>';
 
       const isTicket = path.includes('tickets/');
@@ -2126,7 +2195,7 @@
       return `${minutes} min`;
     }
 
-    function switchSpecTab(tabName) {
+    function switchSpecTab(tabName, isFragmentNav = false) {
       // Update tab buttons
       document.querySelectorAll('.spec-tab').forEach(tab => {
         tab.classList.toggle('active', tab.textContent.includes(tabName) || tab.getAttribute('onclick')?.includes(tabName));
@@ -2137,6 +2206,10 @@
       });
       // Re-render Mermaid diagrams for newly visible tab
       setTimeout(() => renderMermaidDiagrams(), 100);
+      // Manual tab click: hide fragment back button
+      if (!isFragmentNav) {
+        hideFragmentBackButton();
+      }
     }
 
     function buildCommitsPanel(ticketId) {
