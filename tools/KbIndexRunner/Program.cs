@@ -1841,7 +1841,7 @@ if (args.Length > 1 && args[0] == "forms-json")
         return variable;
     }
 
-    // Extract forms with ide_position
+    // Extract forms with ide_position + all form properties
     var forms = new List<object>();
     using (var cmd = conn.CreateCommand())
     {
@@ -1857,7 +1857,15 @@ if (args.Length > 1 && args[0] == "forms-json")
                 tf.font,
                 t.isn2 as task_isn2,
                 t.description as task_name,
-                t.ide_position as task_ide_position
+                t.ide_position as task_ide_position,
+                tf.form_units,
+                tf.h_factor,
+                tf.v_factor,
+                tf.color,
+                tf.system_menu,
+                tf.minimize_box,
+                tf.maximize_box,
+                tf.properties_json
             FROM task_forms tf
             JOIN tasks t ON tf.task_id = t.id
             WHERE t.program_id = @prog_id
@@ -1881,7 +1889,15 @@ if (args.Length > 1 && args[0] == "forms-json")
                 },
                 task_isn2 = reader.GetInt32(8),
                 task_ide_position = reader.IsDBNull(10) ? "" : reader.GetString(10),
-                font = reader.IsDBNull(7) ? "" : reader.GetString(7)
+                font = reader.IsDBNull(7) ? "" : reader.GetString(7),
+                form_units = reader.IsDBNull(11) ? (int?)null : reader.GetInt32(11),
+                h_factor = reader.IsDBNull(12) ? (int?)null : reader.GetInt32(12),
+                v_factor = reader.IsDBNull(13) ? (int?)null : reader.GetInt32(13),
+                color = reader.IsDBNull(14) ? (int?)null : reader.GetInt32(14),
+                system_menu = reader.IsDBNull(15) ? 0 : reader.GetInt32(15),
+                minimize_box = reader.IsDBNull(16) ? 0 : reader.GetInt32(16),
+                maximize_box = reader.IsDBNull(17) ? 0 : reader.GetInt32(17),
+                properties_json = reader.IsDBNull(18) ? "" : reader.GetString(18)
             });
         }
     }
@@ -1934,6 +1950,101 @@ if (args.Length > 1 && args[0] == "forms-json")
         }
     }
 
+    // Extract form controls with ALL properties per task
+    var formControls = new Dictionary<int, List<object>>();
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT
+                t.isn2,
+                fc.control_id,
+                fc.control_type,
+                fc.control_name,
+                fc.x, fc.y, fc.width, fc.height,
+                fc.visible,
+                fc.enabled,
+                fc.tab_order,
+                fc.linked_field_id,
+                fc.linked_variable,
+                fc.parent_id,
+                fc.style,
+                fc.color,
+                fc.font_id,
+                fc.text,
+                fc.format,
+                fc.data_field_id,
+                fc.data_expression_id,
+                fc.raise_event_type,
+                fc.raise_event_id,
+                fc.image_file,
+                fc.items_list,
+                fc.column_title,
+                fc.control_layer,
+                fc.h_alignment,
+                fc.title_height,
+                fc.row_height,
+                fc.elements,
+                fc.allow_parking,
+                fc.visible_expression,
+                fc.enabled_expression,
+                fc.properties_json
+            FROM form_controls fc
+            JOIN task_forms tf ON fc.form_id = tf.id
+            JOIN tasks t ON tf.task_id = t.id
+            WHERE t.program_id = @prog_id
+            ORDER BY t.isn2, fc.tab_order, fc.control_id";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var taskIsn2 = reader.GetInt32(0);
+            var linkedFieldId = reader.IsDBNull(11) ? (int?)null : reader.GetInt32(11);
+            var linkedVar = reader.IsDBNull(12) ? "" : reader.GetString(12);
+            var letter = !string.IsNullOrEmpty(linkedVar) ? FjVarToLetter(linkedVar) : "";
+
+            if (!formControls.ContainsKey(taskIsn2))
+                formControls[taskIsn2] = new List<object>();
+
+            formControls[taskIsn2].Add(new {
+                control_id = reader.GetInt32(1),
+                control_type = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                control_name = reader.IsDBNull(3) ? "" : reader.GetString(3),
+                x = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
+                y = reader.IsDBNull(5) ? 0 : reader.GetInt32(5),
+                width = reader.IsDBNull(6) ? 0 : reader.GetInt32(6),
+                height = reader.IsDBNull(7) ? 0 : reader.GetInt32(7),
+                visible = reader.IsDBNull(8) ? 1 : reader.GetInt32(8),
+                enabled = reader.IsDBNull(9) ? 1 : reader.GetInt32(9),
+                tab_order = reader.IsDBNull(10) ? 0 : reader.GetInt32(10),
+                linked_variable = letter,
+                linked_field_id = linkedFieldId,
+                parent_id = reader.IsDBNull(13) ? (int?)null : reader.GetInt32(13),
+                style = reader.IsDBNull(14) ? (int?)null : reader.GetInt32(14),
+                color = reader.IsDBNull(15) ? (int?)null : reader.GetInt32(15),
+                font_id = reader.IsDBNull(16) ? (int?)null : reader.GetInt32(16),
+                text = reader.IsDBNull(17) ? "" : reader.GetString(17),
+                format = reader.IsDBNull(18) ? "" : reader.GetString(18),
+                data_field_id = reader.IsDBNull(19) ? (int?)null : reader.GetInt32(19),
+                data_expression_id = reader.IsDBNull(20) ? (int?)null : reader.GetInt32(20),
+                raise_event_type = reader.IsDBNull(21) ? "" : reader.GetString(21),
+                raise_event_id = reader.IsDBNull(22) ? (int?)null : reader.GetInt32(22),
+                image_file = reader.IsDBNull(23) ? "" : reader.GetString(23),
+                items_list = reader.IsDBNull(24) ? "" : reader.GetString(24),
+                column_title = reader.IsDBNull(25) ? "" : reader.GetString(25),
+                control_layer = reader.IsDBNull(26) ? (int?)null : reader.GetInt32(26),
+                h_alignment = reader.IsDBNull(27) ? (int?)null : reader.GetInt32(27),
+                title_height = reader.IsDBNull(28) ? (int?)null : reader.GetInt32(28),
+                row_height = reader.IsDBNull(29) ? (int?)null : reader.GetInt32(29),
+                elements = reader.IsDBNull(30) ? (int?)null : reader.GetInt32(30),
+                allow_parking = reader.IsDBNull(31) ? 0 : reader.GetInt32(31),
+                visible_expression = reader.IsDBNull(32) ? (int?)null : reader.GetInt32(32),
+                enabled_expression = reader.IsDBNull(33) ? (int?)null : reader.GetInt32(33),
+                properties_json = reader.IsDBNull(34) ? "" : reader.GetString(34)
+            });
+        }
+    }
+
     // Serialize task_columns as dictionary
     var taskColsSerialized = new Dictionary<string, object>();
     foreach (var kv in taskColumns)
@@ -1941,7 +2052,15 @@ if (args.Length > 1 && args[0] == "forms-json")
         taskColsSerialized[kv.Key.ToString()] = kv.Value;
     }
 
+    // Serialize form_controls as dictionary
+    var formCtrlsSerialized = new Dictionary<string, object>();
+    foreach (var kv in formControls)
+    {
+        formCtrlsSerialized[kv.Key.ToString()] = kv.Value;
+    }
+
     var totalColumns = taskColumns.Values.Sum(v => v.Count);
+    var totalControls = formControls.Values.Sum(v => v.Count);
 
     var formsResult = new
     {
@@ -1949,10 +2068,13 @@ if (args.Length > 1 && args[0] == "forms-json")
         ide = ide,
         forms = forms,
         task_columns = taskColsSerialized,
+        form_controls = formCtrlsSerialized,
         statistics = new {
             form_count = forms.Count,
             tasks_with_columns = taskColumns.Count,
-            total_columns = totalColumns
+            total_columns = totalColumns,
+            tasks_with_controls = formControls.Count,
+            total_controls = totalControls
         }
     };
 

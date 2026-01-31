@@ -100,10 +100,9 @@
       return markdown.replace(/<!--\s*FORM-DATA:\s*\n([\s\S]*?)\n\s*-->/g, (match, jsonStr) => {
         try {
           const data = JSON.parse(jsonStr.trim());
-          const scale = 0.6; // Scale factor for DLU to pixels
+          const scale = 0.6; // DLU to pixels
           const ctrls = data.controls || [];
           const w = Math.round((data.width || 700) * scale);
-          const title = data.type || 'Form';
 
           // Calculate body height from controls
           let maxY = 100;
@@ -111,10 +110,10 @@
             const bottom = (c.y + c.h) * scale;
             if (bottom > maxY) maxY = bottom;
           });
-          maxY += 30; // padding
+          maxY += 30;
 
           let html = `<div class="magic-mockup" style="width:${Math.min(w, 900)}px">`;
-          html += `<div class="magic-mockup-title"><span>${data.taskId || title}</span>`;
+          html += `<div class="magic-mockup-title"><span>${data.taskId || data.type || 'Form'}</span>`;
           html += `<div class="win-btns"><span class="win-btn">_</span><span class="win-btn">□</span><span class="win-btn">×</span></div>`;
           html += `</div>`;
           html += `<div class="magic-mockup-body" style="height:${maxY}px">`;
@@ -124,29 +123,109 @@
             const cy = Math.round(c.y * scale);
             const cw = Math.round(c.w * scale);
             const ch = Math.round(c.h * scale);
+            const varTag = c.var ? `<span class="magic-ctrl-var">${c.var}</span>` : '';
 
-            if (c.type === 'edit') {
-              html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px">`;
-              html += `<div class="magic-ctrl-label">${c.label || ''}</div>`;
-              html += `<div class="magic-ctrl-edit${c.readonly ? ' readonly' : ''}" style="height:${ch}px">`;
-              html += c.readonly ? (c.label || '').substring(0, 15) : '';
-              html += `</div>`;
-              html += `<span class="magic-ctrl-var">${c.var || ''}</span>`;
-              html += `</div>`;
-            } else if (c.type === 'button') {
-              html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
-              html += `<div class="magic-ctrl-button" style="width:100%;height:100%">${c.label || 'Btn'}</div>`;
-              html += `<span class="magic-ctrl-var">${c.var || ''}</span>`;
-              html += `</div>`;
+            switch (c.type) {
+              case 'label':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl-static">${c.label || ''}</div>`;
+                html += `</div>`;
+                break;
+
+              case 'edit':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px">`;
+                html += `<div class="magic-ctrl-edit" style="height:${ch}px">${c.label || ''}</div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'button':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl-button" style="width:100%;height:100%">${c.label || 'Btn'}</div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'checkbox':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl-checkbox"><span class="chk-box">☐</span> ${c.label || ''}</div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'combobox':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px">`;
+                html += `<div class="magic-ctrl-combo" style="height:${ch}px"><span>${c.label || ''}</span><span class="combo-arrow">▼</span></div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'radio':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl-radio"><span class="radio-dot">○</span> ${c.label || ''}</div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'listbox':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl-listbox" style="height:100%"><div class="lb-item">${c.label || 'Item 1'}</div><div class="lb-item">Item 2</div></div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'table':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl-table" style="height:100%">`;
+                html += `<div class="tbl-header">${c.label || 'Table'}</div>`;
+                html += `<div class="tbl-body"></div>`;
+                html += `</div>`;
+                html += varTag;
+                html += `</div>`;
+                break;
+
+              case 'image':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl-image" style="width:100%;height:100%">${c.label || '🖼'}</div>`;
+                html += `</div>`;
+                break;
+
+              case 'subform':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl-subform" style="width:100%;height:100%">${c.label || 'Subform'}</div>`;
+                html += `</div>`;
+                break;
+
+              case 'tab':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl-tab" style="width:100%;height:100%">`;
+                html += `<div class="tab-header"><span class="tab-active">${c.label || 'Tab 1'}</span><span class="tab-inactive">Tab 2</span></div>`;
+                html += `<div class="tab-body"></div>`;
+                html += `</div>`;
+                html += `</div>`;
+                break;
+
+              case 'line':
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${Math.max(ch, 2)}px">`;
+                html += `<div class="magic-ctrl-line"></div>`;
+                html += `</div>`;
+                break;
+
+              default:
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px">`;
+                html += `<div class="magic-ctrl-edit" style="height:${ch}px">${c.label || ''}</div>`;
+                html += varTag;
+                html += `</div>`;
             }
           });
 
           html += `</div>`;
-          html += `<div class="magic-mockup-legend">`;
-          html += `${ctrls.filter(c => c.type === 'edit').length} champs`;
-          html += ` | ${ctrls.filter(c => c.type === 'button').length} boutons`;
-          html += ` | ${data.width}×${data.height} DLU`;
-          html += `</div></div>`;
+          // Legend with counts per type
+          const counts = {};
+          ctrls.forEach(c => { counts[c.type] = (counts[c.type] || 0) + 1; });
+          const parts = Object.entries(counts).map(([t, n]) => `${n} ${t}`);
+          html += `<div class="magic-mockup-legend">${parts.join(' | ')} | ${data.width}×${data.height} DLU</div>`;
+          html += `</div>`;
 
           return html;
         } catch (e) {
@@ -975,28 +1054,27 @@
       position: absolute;
       box-sizing: border-box;
     }
-    .magic-ctrl-label {
-      font-size: 10px;
+    /* Static label (STATIC control) */
+    .magic-ctrl-static {
+      font-size: 11px;
       color: #000;
-      margin-bottom: 1px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.3;
     }
+    /* Edit field */
     .magic-ctrl-edit {
       background: #fff;
       border: 1px inset #808080;
       padding: 1px 3px;
       font-size: 11px;
-      color: #000;
+      color: #888;
       height: 18px;
       line-height: 18px;
       overflow: hidden;
     }
-    .magic-ctrl-edit.readonly {
-      background: #e8e8e8;
-      color: #444;
-    }
+    /* Push button */
     .magic-ctrl-button {
       background: linear-gradient(to bottom, #e8e8e8 0%, #c8c8c8 100%);
       border: 2px outset #d4d0c8;
@@ -1009,6 +1087,143 @@
       align-items: center;
       justify-content: center;
     }
+    /* Checkbox */
+    .magic-ctrl-checkbox {
+      font-size: 11px;
+      color: #000;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .magic-ctrl-checkbox .chk-box {
+      font-size: 13px;
+      line-height: 1;
+    }
+    /* Combobox (dropdown) */
+    .magic-ctrl-combo {
+      background: #fff;
+      border: 1px inset #808080;
+      padding: 1px 3px;
+      font-size: 11px;
+      color: #000;
+      height: 18px;
+      line-height: 18px;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .magic-ctrl-combo .combo-arrow {
+      background: #d4d0c8;
+      border: 1px outset #fff;
+      padding: 0 3px;
+      font-size: 8px;
+      line-height: 16px;
+    }
+    /* Radio button */
+    .magic-ctrl-radio {
+      font-size: 11px;
+      color: #000;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .magic-ctrl-radio .radio-dot { font-size: 13px; line-height: 1; }
+    /* Listbox */
+    .magic-ctrl-listbox {
+      background: #fff;
+      border: 1px inset #808080;
+      overflow: hidden;
+      font-size: 11px;
+    }
+    .magic-ctrl-listbox .lb-item {
+      padding: 1px 3px;
+      color: #000;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    /* Table control */
+    .magic-ctrl-table {
+      border: 1px solid #808080;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .magic-ctrl-table .tbl-header {
+      background: #d4d0c8;
+      border-bottom: 1px solid #808080;
+      padding: 1px 4px;
+      font-size: 10px;
+      font-weight: bold;
+      color: #000;
+    }
+    .magic-ctrl-table .tbl-body {
+      background: #fff;
+      flex: 1;
+    }
+    /* Image placeholder */
+    .magic-ctrl-image {
+      background: #e8e8e8;
+      border: 1px solid #808080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #666;
+    }
+    /* Subform */
+    .magic-ctrl-subform {
+      background: #ececec;
+      border: 1px dashed #808080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #666;
+      font-style: italic;
+    }
+    /* Tab control */
+    .magic-ctrl-tab {
+      border: 1px solid #808080;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .magic-ctrl-tab .tab-header {
+      display: flex;
+      background: #d4d0c8;
+    }
+    .magic-ctrl-tab .tab-active {
+      background: #fff;
+      border: 1px solid #808080;
+      border-bottom: none;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .magic-ctrl-tab .tab-inactive {
+      background: #c0c0c0;
+      border: 1px solid #808080;
+      border-bottom: none;
+      padding: 2px 8px;
+      font-size: 10px;
+      color: #666;
+    }
+    .magic-ctrl-tab .tab-body {
+      background: #fff;
+      flex: 1;
+      border-top: 1px solid #808080;
+    }
+    /* Separator line */
+    .magic-ctrl-line {
+      border-top: 1px solid #808080;
+      border-bottom: 1px solid #fff;
+      height: 0;
+      width: 100%;
+      margin-top: 50%;
+    }
+    /* Variable overlay */
     .magic-ctrl-var {
       position: absolute;
       top: -1px;

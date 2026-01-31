@@ -155,6 +155,14 @@ public record DbTaskForm
     public int? Height { get; init; }
     public int? WindowType { get; init; }
     public string? Font { get; init; }
+    public int? FormUnits { get; init; }
+    public int? HFactor { get; init; }
+    public int? VFactor { get; init; }
+    public int? Color { get; init; }
+    public bool SystemMenu { get; init; }
+    public bool MinimizeBox { get; init; }
+    public bool MaximizeBox { get; init; }
+    public string? PropertiesJson { get; init; }
 }
 
 /// <summary>
@@ -485,5 +493,26 @@ public record DbFormControl
     public int? TabOrder { get; init; }
     public int? LinkedFieldId { get; init; }
     public string? LinkedVariable { get; init; }
+    public int? ParentId { get; init; }
+    public int? Style { get; init; }
+    public int? Color { get; init; }
+    public int? FontId { get; init; }
+    public string? Text { get; init; }
+    public string? Format { get; init; }
+    public int? DataFieldId { get; init; }
+    public int? DataExpressionId { get; init; }
+    public string? RaiseEventType { get; init; }
+    public int? RaiseEventId { get; init; }
+    public string? ImageFile { get; init; }
+    public string? ItemsList { get; init; }
+    public string? ColumnTitle { get; init; }
+    public int? ControlLayer { get; init; }
+    public int? HAlignment { get; init; }
+    public int? TitleHeight { get; init; }
+    public int? RowHeight { get; init; }
+    public int? Elements { get; init; }
+    public bool AllowParking { get; init; }
+    public int? VisibleExpression { get; init; }
+    public int? EnabledExpression { get; init; }
     public string? PropertiesJson { get; init; }
 }

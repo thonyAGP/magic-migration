@@ -414,45 +414,44 @@ public partial class ProgramParser
             var propList = formEntry.Element("PropertyList");
             if (propList == null) continue;
 
-            // FormName is in element with id="311"
-            var formNameElement = propList.Elements().FirstOrDefault(e =>
-                e.Attribute("id")?.Value == "311");
-            var formName = formNameElement?.Attribute("valUnicode")?.Value
-                ?? formNameElement?.Attribute("val")?.Value;
+            // Helper: get property element by id
+            XElement? GetProp(string pid) => propList.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == pid);
+            string? GetPropVal(string pid) => GetProp(pid)?.Attribute("val")?.Value;
+            string? GetPropUnicode(string pid) => GetProp(pid)?.Attribute("valUnicode")?.Value ?? GetPropVal(pid);
+            bool HasProp(string pid) => GetProp(pid) != null;
 
-            // WindowType is in element with id="358"
-            var windowTypeElement = propList.Elements().FirstOrDefault(e =>
-                e.Attribute("id")?.Value == "358");
-            int? windowType = null;
-            if (windowTypeElement?.Attribute("val")?.Value is string wtVal &&
-                int.TryParse(wtVal, out int wt))
+            var formName = GetPropUnicode("311");
+            int? windowType = ParseInt(GetPropVal("358"));
+            int? posX = ParseInt(GetPropVal("21") ?? propList.Element("X")?.Attribute("val")?.Value);
+            int? posY = ParseInt(GetPropVal("22") ?? propList.Element("Y")?.Attribute("val")?.Value);
+            int? width = ParseInt(GetPropVal("23") ?? propList.Element("Width")?.Attribute("val")?.Value);
+            int? height = ParseInt(GetPropVal("24") ?? propList.Element("Height")?.Attribute("val")?.Value);
+            var font = GetPropVal("50") ?? GetPropVal("330");
+            int? formUnits = ParseInt(GetPropVal("33"));
+            int? hFactor = ParseInt(GetPropVal("35"));
+            int? vFactor = ParseInt(GetPropVal("34"));
+            int? color = ParseInt(GetPropVal("51"));
+            bool systemMenu = HasProp("27");
+            bool minimizeBox = HasProp("28");
+            bool maximizeBox = HasProp("29");
+
+            // Collect ALL remaining properties as JSON
+            var extraProps = new Dictionary<string, object>();
+            var knownFormIds = new HashSet<string> { "21", "22", "23", "24", "27", "28", "29", "33", "34", "35", "50", "51", "311", "330", "358" };
+            foreach (var prop in propList.Elements())
             {
-                windowType = wt;
+                var pid = prop.Attribute("id")?.Value;
+                if (pid == null || knownFormIds.Contains(pid)) continue;
+                var val = prop.Attribute("valUnicode")?.Value ?? prop.Attribute("val")?.Value;
+                if (val != null)
+                    extraProps[prop.Name.LocalName + "_" + pid] = val;
+                else
+                    extraProps[prop.Name.LocalName + "_" + pid] = true;
             }
+            string? propsJson = extraProps.Count > 0
+                ? System.Text.Json.JsonSerializer.Serialize(extraProps)
+                : null;
 
-            // Position X, Y, Width, Height (if available)
-            // XML format: <X id="21" val="98"/> or by element name directly
-            int? posX = null, posY = null, width = null, height = null;
-            var leftElement = propList.Element("X")
-                ?? propList.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "21");
-            var topElement = propList.Element("Y")
-                ?? propList.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "22");
-            var widthElement = propList.Element("Width")
-                ?? propList.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "23");
-            var heightElement = propList.Element("Height")
-                ?? propList.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "24");
-
-            if (leftElement?.Attribute("val")?.Value is string lVal && int.TryParse(lVal, out int l)) posX = l;
-            if (topElement?.Attribute("val")?.Value is string tVal && int.TryParse(tVal, out int t)) posY = t;
-            if (widthElement?.Attribute("val")?.Value is string wVal && int.TryParse(wVal, out int w)) width = w;
-            if (heightElement?.Attribute("val")?.Value is string hVal && int.TryParse(hVal, out int h)) height = h;
-
-            // Font (if available)
-            var fontElement = propList.Elements().FirstOrDefault(e =>
-                e.Attribute("id")?.Value == "330");
-            var font = fontElement?.Attribute("val")?.Value;
-
-            // V9: Parse form controls
             var controls = ParseFormControls(formEntry);
 
             forms.Add(new ParsedTaskForm
@@ -465,6 +464,14 @@ public partial class ProgramParser
                 Height = height,
                 WindowType = windowType,
                 Font = font,
+                FormUnits = formUnits,
+                HFactor = hFactor,
+                VFactor = vFactor,
+                Color = color,
+                SystemMenu = systemMenu,
+                MinimizeBox = minimizeBox,
+                MaximizeBox = maximizeBox,
+                PropertiesJson = propsJson,
                 Controls = controls
             });
         }
@@ -886,38 +893,159 @@ public partial class ProgramParser
         return arguments;
     }
 
-    /// <summary>V9: Parse form controls</summary>
+    /// <summary>V9+: Parse form controls with ALL XML properties</summary>
     private List<ParsedFormControl> ParseFormControls(XElement formEntry)
     {
         var controls = new List<ParsedFormControl>();
-        var controlsElement = formEntry.Element("Controls");
-        if (controlsElement == null) return controls;
+        // Controls are direct children of FormEntry (not inside a wrapper element)
+        var controlElements = formEntry.Elements("Control");
+        if (!controlElements.Any()) return controls;
 
-        foreach (var ctrl in controlsElement.Elements("Control"))
+        foreach (var ctrl in controlElements)
         {
             var idAttr = ctrl.Attribute("id");
             if (idAttr == null || !int.TryParse(idAttr.Value, out int ctrlId)) continue;
 
             var propList = ctrl.Element("PropertyList");
+            if (propList == null) continue;
+
+            // Helper: get property by id
+            XElement? CP(string pid) => propList.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == pid);
+            string? CPVal(string pid) => CP(pid)?.Attribute("val")?.Value;
+            string? CPUni(string pid) => CP(pid)?.Attribute("valUnicode")?.Value ?? CPVal(pid);
+
+            // Control type: strip CTRL_GUI0_ and CTRL_GUI1_ prefixes
+            var rawModel = propList.Attribute("model")?.Value ?? "";
+            var controlType = rawModel.Replace("CTRL_GUI0_", "").Replace("CTRL_GUI1_", "");
+
+            // Control name: id=46 (ControlName), or id=311, or xml attribute
+            var controlName = CPVal("46") ?? CPVal("311")
+                ?? ctrl.Attribute("name")?.Value;
+
+            // ISN_FATHER for parent-child (table columns)
+            int? parentId = null;
+            if (ctrl.Attribute("ISN_FATHER")?.Value is string fatherVal && int.TryParse(fatherVal, out int fId))
+                parentId = fId;
+
+            // Position and size
+            int? x = ParseInt(CPVal("21") ?? propList.Element("X")?.Attribute("val")?.Value);
+            int? y = ParseInt(CPVal("22") ?? propList.Element("Y")?.Attribute("val")?.Value);
+            int? w = ParseInt(CPVal("23") ?? propList.Element("Width")?.Attribute("val")?.Value);
+            int? h = ParseInt(CPVal("24") ?? propList.Element("Height")?.Attribute("val")?.Value);
+
+            // Visibility and Enabled (can be flag, val, or expression)
+            var visEl = CP("61");
+            bool visible = visEl == null || visEl.Attribute("val")?.Value != "N";
+            int? visibleExpr = ParseInt(visEl?.Attribute("Exp")?.Value);
+
+            var enEl = CP("62");
+            bool enabled = enEl == null || enEl.Attribute("val")?.Value != "N";
+            int? enabledExpr = ParseInt(enEl?.Attribute("Exp")?.Value);
+
+            // Data binding (id=43)
+            var dataEl = CP("43");
+            int? dataFieldId = ParseInt(dataEl?.Attribute("FieldID")?.Value);
+            int? dataExprId = ParseInt(dataEl?.Attribute("Exp")?.Value);
+
+            // RaiseEvent (id=234)
+            var raiseEl = CP("234");
+            string? raiseEventType = null;
+            int? raiseEventId = null;
+            if (raiseEl != null)
+            {
+                raiseEventType = raiseEl.Element("EventType")?.Attribute("val")?.Value;
+                raiseEventId = ParseInt(raiseEl.Element("InternalEventID")?.Attribute("val")?.Value);
+            }
+
+            // Text properties
+            var text = CPUni("19") ?? CPUni("45");
+            var format = CPUni("82");
+            var imageFile = CPVal("88");
+            var itemsList = CPUni("45");
+            var columnTitle = CPUni("139");
+
+            // Style, color, font
+            int? style = ParseInt(CPVal("63"));
+            int? color = ParseInt(CPVal("51"));
+            int? fontId = ParseInt(CPVal("50"));
+
+            // Table properties
+            int? controlLayer = ParseInt(CPVal("25"));
+            int? titleHeight = ParseInt(CPVal("79"));
+            int? rowHeight = ParseInt(CPVal("80"));
+            int? elements = ParseInt(CPVal("81"));
+            int? hAlignment = ParseInt(CPVal("65"));
+            int? tabOrder = ParseInt(CPVal("314"));
+            bool allowParking = CPVal("315") == "Y";
+
+            // LinkedFieldId / LinkedVariable from control-level elements
+            int? linkedFieldId = ParseInt(ctrl.Element("FieldID")?.Attribute("val")?.Value) ?? dataFieldId;
+            var linkedVariable = ctrl.Element("Variable")?.Attribute("val")?.Value;
+
+            // Collect ALL remaining properties as JSON
+            var extraProps = new Dictionary<string, object>();
+            var knownCtrlIds = new HashSet<string> {
+                "19", "21", "22", "23", "24", "25", "43", "45", "46", "50", "51",
+                "61", "62", "63", "65", "79", "80", "81", "82", "88", "139",
+                "234", "311", "314", "315"
+            };
+            foreach (var prop in propList.Elements())
+            {
+                var pid = prop.Attribute("id")?.Value;
+                if (pid == null || knownCtrlIds.Contains(pid)) continue;
+                // Special handling for Model element
+                if (prop.Name.LocalName == "Model")
+                {
+                    var modelId = prop.Attribute("ID")?.Value;
+                    if (modelId != null) extraProps["Model"] = modelId;
+                    continue;
+                }
+                var val = prop.Attribute("valUnicode")?.Value ?? prop.Attribute("val")?.Value;
+                if (val != null)
+                    extraProps[prop.Name.LocalName + "_" + pid] = val;
+                else
+                    extraProps[prop.Name.LocalName + "_" + pid] = true;
+            }
+            string? propsJson = extraProps.Count > 0
+                ? System.Text.Json.JsonSerializer.Serialize(extraProps)
+                : null;
+
             controls.Add(new ParsedFormControl
             {
                 ControlId = ctrlId,
-                ControlType = propList?.Attribute("model")?.Value?.Replace("CTRL_GUI0_", ""),
-                ControlName = ctrl.Attribute("name")?.Value
-                    ?? propList?.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "311")?.Attribute("val")?.Value,
-                X = ParseInt(propList?.Element("X")?.Attribute("val")?.Value
-                    ?? propList?.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "21")?.Attribute("val")?.Value),
-                Y = ParseInt(propList?.Element("Y")?.Attribute("val")?.Value
-                    ?? propList?.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "22")?.Attribute("val")?.Value),
-                Width = ParseInt(propList?.Element("Width")?.Attribute("val")?.Value
-                    ?? propList?.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "23")?.Attribute("val")?.Value),
-                Height = ParseInt(propList?.Element("Height")?.Attribute("val")?.Value
-                    ?? propList?.Elements().FirstOrDefault(e => e.Attribute("id")?.Value == "24")?.Attribute("val")?.Value),
-                Visible = propList?.Element("Visible")?.Attribute("val")?.Value != "N",
-                Enabled = propList?.Element("Enabled")?.Attribute("val")?.Value != "N",
-                TabOrder = ParseInt(propList?.Element("TabOrder")?.Attribute("val")?.Value),
-                LinkedFieldId = ParseInt(ctrl.Element("FieldID")?.Attribute("val")?.Value),
-                LinkedVariable = ctrl.Element("Variable")?.Attribute("val")?.Value
+                ControlType = controlType,
+                ControlName = controlName,
+                X = x,
+                Y = y,
+                Width = w,
+                Height = h,
+                Visible = visible,
+                Enabled = enabled,
+                TabOrder = tabOrder,
+                LinkedFieldId = linkedFieldId,
+                LinkedVariable = linkedVariable,
+                ParentId = parentId,
+                Style = style,
+                Color = color,
+                FontId = fontId,
+                Text = text,
+                Format = format,
+                DataFieldId = dataFieldId,
+                DataExpressionId = dataExprId,
+                RaiseEventType = raiseEventType,
+                RaiseEventId = raiseEventId,
+                ImageFile = imageFile,
+                ItemsList = itemsList,
+                ColumnTitle = columnTitle,
+                ControlLayer = controlLayer,
+                HAlignment = hAlignment,
+                TitleHeight = titleHeight,
+                RowHeight = rowHeight,
+                Elements = elements,
+                AllowParking = allowParking,
+                VisibleExpression = visibleExpr,
+                EnabledExpression = enabledExpr,
+                PropertiesJson = propsJson
             });
         }
         return controls;
@@ -1080,7 +1208,14 @@ public record ParsedTaskForm
     public int? Height { get; init; }
     public int? WindowType { get; init; }
     public string? Font { get; init; }
-    // V9: Form controls
+    public int? FormUnits { get; init; }
+    public int? HFactor { get; init; }
+    public int? VFactor { get; init; }
+    public int? Color { get; init; }
+    public bool SystemMenu { get; init; }
+    public bool MinimizeBox { get; init; }
+    public bool MaximizeBox { get; init; }
+    public string? PropertiesJson { get; init; }
     public List<ParsedFormControl> Controls { get; init; } = new();
 }
 
@@ -1288,6 +1423,27 @@ public record ParsedFormControl
     public int? TabOrder { get; init; }
     public int? LinkedFieldId { get; init; }
     public string? LinkedVariable { get; init; }
+    public int? ParentId { get; init; }
+    public int? Style { get; init; }
+    public int? Color { get; init; }
+    public int? FontId { get; init; }
+    public string? Text { get; init; }
+    public string? Format { get; init; }
+    public int? DataFieldId { get; init; }
+    public int? DataExpressionId { get; init; }
+    public string? RaiseEventType { get; init; }
+    public int? RaiseEventId { get; init; }
+    public string? ImageFile { get; init; }
+    public string? ItemsList { get; init; }
+    public string? ColumnTitle { get; init; }
+    public int? ControlLayer { get; init; }
+    public int? HAlignment { get; init; }
+    public int? TitleHeight { get; init; }
+    public int? RowHeight { get; init; }
+    public int? Elements { get; init; }
+    public bool AllowParking { get; init; }
+    public int? VisibleExpression { get; init; }
+    public int? EnabledExpression { get; init; }
     public string? PropertiesJson { get; init; }
 }
 

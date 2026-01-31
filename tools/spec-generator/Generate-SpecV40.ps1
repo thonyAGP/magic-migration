@@ -374,6 +374,27 @@ function Invoke-Phase2Mapping {
         Write-Warning "Failed to get mapping data: $_"
     }
 
+    # 2.3 Get forms and controls from KB
+    Write-Step "Extracting forms and controls..."
+    try {
+        $formsJson = & dotnet run --project $KbRunnerPath -- "forms-json" "$Project $IdePosition" 2>$null
+        if ($formsJson -and $formsJson -notmatch "^ERROR") {
+            $formsData = $formsJson | ConvertFrom-Json
+            if ($formsData -and $formsData.forms) {
+                $mapping.forms = @($formsData.forms)
+                $mapping.formControls = @{}
+                if ($formsData.form_controls) {
+                    foreach ($prop in $formsData.form_controls.PSObject.Properties) {
+                        $mapping.formControls[$prop.Name] = @($prop.Value)
+                    }
+                }
+                Write-Step "Found $($mapping.forms.Count) forms, $($formsData.statistics.total_controls) controls"
+            }
+        }
+    } catch {
+        Write-Warning "Failed to get forms data: $_"
+    }
+
     Write-Phase -Number 2 -Name "MAPPING" -Status "DONE"
     return $mapping
 }
@@ -536,6 +557,71 @@ function Invoke-Phase4Synthesis {
         $exprsSection = @("| - | Aucune expression | - |")
     }
 
+    Write-Step "Building UI Forms section..."
+    $formsSection = @()
+    $formDataBlocks = @()
+    $visibleForms = @($Mapping.forms | Where-Object { $_.window_type -ne 0 -and $_.dimensions.width -gt 0 })
+
+    if ($visibleForms.Count -gt 0) {
+        $formControls = $Mapping.formControls
+        if (-not $formControls) { $formControls = @{} }
+
+        $fIdx = 1
+        foreach ($form in $visibleForms) {
+            $fName = if ($form.name -and $form.name.Trim()) { $form.name.Trim() } else { "(sans nom)" }
+            $w = $form.dimensions.width
+            $h = $form.dimensions.height
+            $type = $form.window_type_str
+            $tNum = $form.task_isn2
+            $idePos = if ($form.task_ide_position -and $form.task_ide_position.Trim()) { $form.task_ide_position } else { "$ide.$fIdx" }
+
+            $formsSection += "| $fIdx | $idePos | T$tNum | $fName | $type | ${w}x${h} |"
+
+            # Build FORM-DATA controls from real form_controls
+            $controls = @()
+            $taskKey = "$tNum"
+            if ($formControls.ContainsKey($taskKey)) {
+                foreach ($fc in @($formControls[$taskKey])) {
+                    $ctrlType = $fc.control_type
+                    if ($ctrlType -eq 'COLUMN' -or -not $fc.visible) { continue }
+
+                    $label = if ($fc.control_name) { $fc.control_name } elseif ($fc.text) { $fc.text } elseif ($fc.format) { $fc.format } else { '' }
+                    $linkedVar = if ($fc.linked_variable) { $fc.linked_variable } else { '' }
+                    $mappedType = switch ($ctrlType) {
+                        'PUSH_BUTTON' { 'button' }
+                        'TABLE'       { 'table' }
+                        'STATIC'      { 'label' }
+                        'CHECKBOX'    { 'checkbox' }
+                        'COMBOBOX'    { 'combobox' }
+                        'RADIO'       { 'radio' }
+                        'IMAGE'       { 'image' }
+                        'SUBFORM'     { 'subform' }
+                        'LINE'        { 'line' }
+                        'TAB'         { 'tab' }
+                        'LISTBOX'     { 'listbox' }
+                        default       { 'edit' }
+                    }
+                    $controls += @{ type = $mappedType; x = [int]$fc.x; y = [int]$fc.y; w = [int]$fc.width; h = [int]$fc.height; var = $linkedVar; label = $label }
+                }
+            }
+
+            $formData = @{ taskId = $idePos; type = $type; width = [int]$w; height = [int]$h; controls = $controls }
+            $formDataBlocks += @{
+                idePos = $idePos
+                fName = $fName
+                type = $type
+                tNum = $tNum
+                w = $w; h = $h
+                json = ($formData | ConvertTo-Json -Depth 4)
+                controls = $controls
+            }
+            $fIdx++
+        }
+    }
+    if ($formsSection.Count -eq 0) {
+        $formsSection = @("| - | - | - | Aucun ecran | - | - |")
+    }
+
     Write-Step "Generating Mermaid diagrams..."
 
     # Call chain diagram
@@ -593,6 +679,54 @@ function Invoke-Phase4Synthesis {
     if ($ecfSection.Count -eq 0) {
         $ecfSection = @("| - | - | Aucun composant ECF | - |")
     }
+
+    # Build forms detail section with FORM-DATA blocks
+    $formsDetailLines = @()
+    foreach ($block in $formDataBlocks) {
+        $formsDetailLines += "#### $($block.idePos) - $($block.fName)"
+        $formsDetailLines += "**Tache** : T$($block.tNum) | **Type** : $($block.type) | **Dimensions** : $($block.w) x $($block.h) DLU"
+        $formsDetailLines += ""
+        $formsDetailLines += "<!-- FORM-DATA:"
+        $formsDetailLines += $block.json
+        $formsDetailLines += "-->"
+        $formsDetailLines += ""
+
+        # Collapsible fields table
+        $editCtrls = @($block.controls | Where-Object { $_.type -in @('edit', 'combobox', 'checkbox') })
+        if ($editCtrls.Count -gt 0) {
+            $formsDetailLines += "<details>"
+            $formsDetailLines += "<summary><strong>$($editCtrls.Count) champs</strong></summary>"
+            $formsDetailLines += ""
+            $formsDetailLines += "| Pos (x,y) | Nom | Variable | Type |"
+            $formsDetailLines += "|-----------|-----|----------|------|"
+            foreach ($c in $editCtrls) {
+                $cLabel = if ($c.label) { $c.label } else { '(sans nom)' }
+                $cVar = if ($c.var) { $c.var } else { '-' }
+                $formsDetailLines += "| $($c.x),$($c.y) | $cLabel | $cVar | $($c.type) |"
+            }
+            $formsDetailLines += ""
+            $formsDetailLines += "</details>"
+            $formsDetailLines += ""
+        }
+
+        # Collapsible buttons table
+        $btnCtrls = @($block.controls | Where-Object { $_.type -eq 'button' })
+        if ($btnCtrls.Count -gt 0) {
+            $formsDetailLines += "<details>"
+            $formsDetailLines += "<summary><strong>$($btnCtrls.Count) boutons</strong></summary>"
+            $formsDetailLines += ""
+            $formsDetailLines += "| Bouton | Pos (x,y) |"
+            $formsDetailLines += "|--------|-----------|"
+            foreach ($b in $btnCtrls) {
+                $bLabel = if ($b.label) { $b.label } else { '(sans nom)' }
+                $formsDetailLines += "| $bLabel | $($b.x),$($b.y) |"
+            }
+            $formsDetailLines += ""
+            $formsDetailLines += "</details>"
+            $formsDetailLines += ""
+        }
+    }
+    $formsDetailSection = $formsDetailLines -join "`n"
 
     Write-Step "Assembling final spec..."
 
@@ -716,6 +850,15 @@ $($exprsSection -join "`n")
 | **Tables accedees** | $tableCount |
 | **Tables en ecriture** | $writeTableCount |
 | **Callees niveau 1** | $calleeCount |
+| **Ecrans visibles** | $($visibleForms.Count) |
+
+### 2.7 ECRANS
+
+| # | IDE | Tache | Nom | Type | DLU |
+|---|-----|-------|-----|------|-----|
+$($formsSection -join "`n")
+
+$formsDetailSection
 
 ---
 

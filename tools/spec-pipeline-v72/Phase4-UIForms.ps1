@@ -56,8 +56,8 @@ Write-Host "  Program: $programName" -ForegroundColor Green
 Write-Host "  Forms found: $($forms.Count)" -ForegroundColor $(if ($forms.Count -gt 0) { "Green" } else { "Yellow" })
 Write-Host ""
 
-# Step 2: Extract DataView columns per task (real controls)
-Write-Host "[2/4] Extracting DataView columns per task..." -ForegroundColor Yellow
+# Step 2: Extract DataView columns and Form Controls per task
+Write-Host "[2/4] Extracting columns and form controls per task..." -ForegroundColor Yellow
 $taskColumns = @{}
 if ($formsData.task_columns) {
     foreach ($prop in $formsData.task_columns.PSObject.Properties) {
@@ -65,8 +65,18 @@ if ($formsData.task_columns) {
     }
 }
 $totalCols = ($taskColumns.Values | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum
-Write-Host "  Tasks with columns: $($taskColumns.Count)" -ForegroundColor Green
-Write-Host "  Total columns: $totalCols"
+
+# Extract form controls (positioned UI elements: buttons, fields, tables, etc.)
+$formControls = @{}
+if ($formsData.form_controls) {
+    foreach ($prop in $formsData.form_controls.PSObject.Properties) {
+        $formControls[$prop.Name] = @($prop.Value)
+    }
+}
+$totalControls = ($formControls.Values | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum
+
+Write-Host "  Tasks with columns: $($taskColumns.Count) ($totalCols total)" -ForegroundColor Green
+Write-Host "  Tasks with controls: $($formControls.Count) ($totalControls total)" -ForegroundColor $(if ($totalControls -gt 0) { "Green" } else { "Yellow" })
 Write-Host ""
 
 # Step 3: Generate ASCII mockup for main form
@@ -133,7 +143,7 @@ $uiForms = @{
         ide_position = $IdePosition
         program_name = $programName
         generated_at = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
-        pipeline_version = "7.1"
+        pipeline_version = "7.5"
     }
 
     forms = @($forms | ForEach-Object {
@@ -146,10 +156,16 @@ $uiForms = @{
             task_isn2 = $_.task_isn2
             task_ide_position = $_.task_ide_position
             font = $_.font
+            form_units = $_.form_units
+            h_factor = $_.h_factor
+            v_factor = $_.v_factor
+            color = $_.color
+            properties_json = $_.properties_json
         }
     })
 
     task_columns = $taskColumns
+    form_controls = $formControls
 
     screen_mockup_ascii = $mockupLines
 
@@ -157,6 +173,8 @@ $uiForms = @{
         form_count = $forms.Count
         tasks_with_columns = $taskColumns.Count
         total_columns = $totalCols
+        tasks_with_controls = $formControls.Count
+        total_controls = $totalControls
     }
 }
 
@@ -178,5 +196,6 @@ if ($forms.Count -gt 10) {
     Write-Host "    ... and $($forms.Count - 10) more forms"
 }
 Write-Host "  - Tasks with columns: $($taskColumns.Count) ($totalCols total columns)"
+Write-Host "  - Tasks with controls: $($formControls.Count) ($totalControls total controls)"
 
 return $uiForms

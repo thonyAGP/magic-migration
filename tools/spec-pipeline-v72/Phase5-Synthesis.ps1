@@ -1028,14 +1028,14 @@ if ($visibleForms.Count -gt 0) {
     Add-Line "### 8.2 Mockups Ecrans"
     Add-Line
 
-    # V7.3: Load task_columns from ui_forms.json for real DataView columns per task
-    $taskColumnsData = @{}
-    if ($uiForms -and $uiForms.task_columns) {
-        if ($uiForms.task_columns -is [hashtable]) {
-            $taskColumnsData = $uiForms.task_columns
+    # V7.5: Load form_controls from ui_forms.json (real positioned UI controls)
+    $formControlsData = @{}
+    if ($uiForms -and $uiForms.form_controls) {
+        if ($uiForms.form_controls -is [hashtable]) {
+            $formControlsData = $uiForms.form_controls
         } else {
-            foreach ($prop in $uiForms.task_columns.PSObject.Properties) {
-                $taskColumnsData[$prop.Name] = @($prop.Value)
+            foreach ($prop in $uiForms.form_controls.PSObject.Properties) {
+                $formControlsData[$prop.Name] = @($prop.Value)
             }
         }
     }
@@ -1048,43 +1048,54 @@ if ($visibleForms.Count -gt 0) {
         $type = $form.window_type_str
         $tNum = $form.task_isn2
         $fBloc = Get-FunctionalBloc $form.name
-        # V7.3: Use real IDE position from KB tree
         $idePos = if ($form.task_ide_position -and $form.task_ide_position.Trim()) { $form.task_ide_position } else { "$IdePosition.$fIdx2" }
 
         Add-Line "---"
         Add-Line
-        # V7.3: Anchor with real IDE position
         Add-Line "#### $(Format-Anchor "ecran-t$tNum")$idePos - $fName"
         Add-Line "**Tache** : [T$tNum](#t$tNum) | **Type** : $type | **Dimensions** : $w x $h DLU"
         Add-Line "**Bloc** : $fBloc | **Titre IDE** : $fName"
         Add-Line
 
-        # V7.3: Build controls from REAL DataView columns for this task
+        # V7.5: Build FORM-DATA from real form_controls (positioned UI elements)
         $controls = @()
         $taskKey = "$tNum"
-        $taskCols = @()
-        if ($taskColumnsData.ContainsKey($taskKey)) {
-            $taskCols = @($taskColumnsData[$taskKey])
+        $taskFormControls = @()
+        if ($formControlsData.ContainsKey($taskKey)) {
+            $taskFormControls = @($formControlsData[$taskKey])
         }
 
-        $yPos = 13
-        $xPos = 10
-        foreach ($col in $taskCols) {
-            $colName = if ($col.name) { $col.name } else { $col.letter }
-            $isBtn = ($col.gui_control -eq "PUSH_BUTTON" -or $colName -match '(?i)^(Bouton|Bt |btn)')
-            if ($isBtn) {
-                $controls += @{
-                    type = "button"; x = $xPos; y = $yPos; w = 80; h = 25
-                    var = $col.letter; label = $colName; readonly = $col.readonly
-                }
-            } else {
-                $controls += @{
-                    type = "edit"; x = $xPos; y = $yPos; w = 130; h = 20
-                    var = $col.letter; label = $colName; readonly = $col.readonly
-                }
+        # Map form_controls to FORM-DATA controls (only top-level, skip columns)
+        foreach ($fc in $taskFormControls) {
+            $ctrlType = $fc.control_type
+            # Skip table COLUMNs (they are children of TABLE) and invisible controls
+            if ($ctrlType -eq 'COLUMN' -or -not $fc.visible) { continue }
+
+            $label = if ($fc.control_name) { $fc.control_name } elseif ($fc.text) { $fc.text } elseif ($fc.format) { $fc.format } else { '' }
+            $linkedVar = if ($fc.linked_variable) { $fc.linked_variable } else { '' }
+
+            $mappedType = switch ($ctrlType) {
+                'PUSH_BUTTON' { 'button' }
+                'TABLE'       { 'table' }
+                'STATIC'      { 'label' }
+                'CHECKBOX'    { 'checkbox' }
+                'COMBOBOX'    { 'combobox' }
+                'RADIO'       { 'radio' }
+                'IMAGE'       { 'image' }
+                'SUBFORM'     { 'subform' }
+                'LINE'        { 'line' }
+                'TAB'         { 'tab' }
+                'LISTBOX'     { 'listbox' }
+                default       { 'edit' }
             }
-            $xPos += 140
-            if ($xPos -gt 600) { $xPos = 10; $yPos += 30 }
+
+            $controls += @{
+                type = $mappedType
+                x = [int]$fc.x; y = [int]$fc.y
+                w = [int]$fc.width; h = [int]$fc.height
+                var = $linkedVar; label = $label
+                parent = $fc.parent_id
+            }
         }
 
         # Write FORM-DATA JSON block
@@ -1100,61 +1111,67 @@ if ($visibleForms.Count -gt 0) {
         Add-Line "-->"
         Add-Line
 
-        # V7.3: Champs table (collapsible)
-        $editControls = @($controls | Where-Object { $_.type -eq "edit" })
+        # V7.5: Champs table (collapsible) - only edit/combobox/checkbox controls
+        $editControls = @($controls | Where-Object { $_.type -in @('edit', 'combobox', 'checkbox') })
         if ($editControls.Count -gt 0) {
             Add-Line "<details>"
             Add-Line "<summary><strong>Champs : $($editControls.Count) champs</strong></summary>"
             Add-Line
-            Add-Line "| Variable | Nom | Type | Saisie |"
-            Add-Line "|----------|-----|------|--------|"
+            Add-Line "| Pos (x,y) | Nom | Variable | Type |"
+            Add-Line "|-----------|-----|----------|------|"
             foreach ($ctrl in $editControls) {
-                $tcol = $taskCols | Where-Object { $_.letter -eq $ctrl.var } | Select-Object -First 1
-                $saisie = if ($ctrl.readonly) { "Lecture" } else { "**Saisie**" }
-                $dt = if ($tcol -and $tcol.data_type) { $tcol.data_type } else { "N/A" }
-                Add-Line "| $($ctrl.var) | $($ctrl.label) | $dt | $saisie |"
+                $ctrlLabel = if ($ctrl.label) { $ctrl.label } else { '(sans nom)' }
+                $ctrlVar = if ($ctrl.var) { $ctrl.var } else { '-' }
+                Add-Line "| $($ctrl.x),$($ctrl.y) | $ctrlLabel | $ctrlVar | $($ctrl.type) |"
             }
             Add-Line
             Add-Line "</details>"
             Add-Line
         }
 
-        # V7.3: Boutons table (collapsible) with action derivation
-        $btnControls = @($controls | Where-Object { $_.type -eq "button" })
+        # V7.5: Boutons table (collapsible) with action derivation
+        $btnControls = @($controls | Where-Object { $_.type -eq 'button' })
         if ($btnControls.Count -gt 0) {
             Add-Line "<details>"
             Add-Line "<summary><strong>Boutons : $($btnControls.Count) boutons</strong></summary>"
             Add-Line
-            Add-Line "| Bouton | Variable | Action |"
-            Add-Line "|--------|----------|--------|"
+            Add-Line "| Bouton | Pos (x,y) | Action |"
+            Add-Line "|--------|-----------|--------|"
             foreach ($btn in $btnControls) {
-                $btnLabel = $btn.label.ToLower()
+                $btnLabel = if ($btn.label) { $btn.label.ToLower() } else { '' }
                 $btnAction = "Action declenchee"
-                $btnCallee = $calleesCtx | Where-Object {
-                    $_.name.ToLower() -match [regex]::Escape($btnLabel.Substring(0, [math]::Min(5, $btnLabel.Length)))
-                } | Select-Object -First 1
-                if ($btnCallee) {
-                    $btnAction = "Appel $(Format-SpecLink -Name $btnCallee.name -Ide $btnCallee.ide -Proj $Project)"
-                } else {
-                    $btnAction = switch -Regex ($btnLabel) {
-                        'valid|ok|confirm|enreg' { "Valide la saisie et enregistre" }
-                        'annul|cancel|retour|abandon' { "Annule et retour au menu" }
-                        'imprim|print|ticket|edition' { "Lance l'impression" }
-                        'zoom|cherch|search|select' { "Ouvre la selection" }
-                        'calcul|total|remise' { "Lance le calcul" }
-                        'suppr|delet|efface' { "Supprime l'element selectionne" }
-                        'ajout|add|nouv' { "Ajoute un element" }
-                        'identite|ident|nom|client' { "Identification du client" }
-                        'fin\s*saisie|fin\s*od|terminer' { "Termine la saisie en cours" }
-                        'solde|consulter|affich' { "Affiche le solde ou consultation" }
-                        'ouvr|ferme|open|close' { "Ouvre ou ferme la session" }
-                        'modif|edit|chang' { "Modifie l'element" }
-                        'refresh|actual|recharger' { "Rafraichit l'affichage" }
-                        'quitter|exit|sortir' { "Quitte le programme" }
-                        default { "Bouton fonctionnel" }
+                if ($btnLabel) {
+                    $btnCallee = $calleesCtx | Where-Object {
+                        $_.name -and $btnLabel -and $btnLabel.Length -ge 3 -and
+                        $_.name.ToLower() -match [regex]::Escape($btnLabel.Substring(0, [math]::Min(5, $btnLabel.Length)))
+                    } | Select-Object -First 1
+                    if ($btnCallee) {
+                        $btnAction = "Appel $(Format-SpecLink -Name $btnCallee.name -Ide $btnCallee.ide -Proj $Project)"
+                    } else {
+                        $btnAction = switch -Regex ($btnLabel) {
+                            'valid|ok|confirm|enreg' { "Valide la saisie et enregistre" }
+                            'annul|cancel|retour|abandon' { "Annule et retour au menu" }
+                            'imprim|print|ticket|edition' { "Lance l'impression" }
+                            'zoom|cherch|search|select' { "Ouvre la selection" }
+                            'calcul|total|remise' { "Lance le calcul" }
+                            'suppr|delet|efface' { "Supprime l'element selectionne" }
+                            'ajout|add|nouv' { "Ajoute un element" }
+                            'identite|ident|nom|client' { "Identification du client" }
+                            'fin\s*saisie|fin\s*od|terminer' { "Termine la saisie en cours" }
+                            'solde|consulter|affich' { "Affiche le solde ou consultation" }
+                            'ouvr|ferme|open|close' { "Ouvre ou ferme la session" }
+                            'modif|edit|chang' { "Modifie l'element" }
+                            'refresh|actual|recharger' { "Rafraichit l'affichage" }
+                            'quitter|exit|sortir' { "Quitte le programme" }
+                            'detail' { "Affiche les details" }
+                            'pax|saisie' { "Ouvre la saisie" }
+                            'printer' { "Selectionne l'imprimante" }
+                            default { "Bouton fonctionnel" }
+                        }
                     }
                 }
-                Add-Line "| $($btn.label) | $($btn.var) | $btnAction |"
+                $displayLabel = if ($btn.label) { $btn.label } else { '(sans nom)' }
+                Add-Line "| $displayLabel | $($btn.x),$($btn.y) | $btnAction |"
             }
             Add-Line
             Add-Line "</details>"

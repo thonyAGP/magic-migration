@@ -72,6 +72,14 @@ CREATE TABLE IF NOT EXISTS task_forms (
     height INTEGER,
     window_type INTEGER,
     font TEXT,
+    form_units INTEGER,              -- 1=pixels, 2=dialog units
+    h_factor INTEGER,                -- Horizontal scaling factor
+    v_factor INTEGER,                -- Vertical scaling factor
+    color INTEGER,                   -- Background color ID
+    system_menu INTEGER DEFAULT 0,   -- Has system menu
+    minimize_box INTEGER DEFAULT 0,  -- Has minimize button
+    maximize_box INTEGER DEFAULT 0,  -- Has maximize button
+    properties_json TEXT,            -- All remaining properties as JSON
     UNIQUE(task_id, form_entry_id)
 );
 
@@ -981,10 +989,10 @@ CREATE TABLE IF NOT EXISTS form_controls (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     form_id INTEGER NOT NULL REFERENCES task_forms(id) ON DELETE CASCADE,
     control_id INTEGER NOT NULL,         -- Control ID within form
-    control_type TEXT,                   -- EDIT, BUTTON, TABLE, LABEL, COMBO, CHECKBOX, etc.
-    control_name TEXT,                   -- Control name/label
-    x INTEGER,                           -- X position
-    y INTEGER,                           -- Y position
+    control_type TEXT,                   -- EDIT, PUSH_BUTTON, TABLE, STATIC, COMBO, CHECKBOX, COLUMN, etc.
+    control_name TEXT,                   -- Control name/label (property id=46)
+    x INTEGER,                           -- X position (DLU or px)
+    y INTEGER,                           -- Y position (DLU or px)
     width INTEGER,
     height INTEGER,
     visible INTEGER DEFAULT 1,
@@ -992,7 +1000,28 @@ CREATE TABLE IF NOT EXISTS form_controls (
     tab_order INTEGER,
     linked_field_id INTEGER,             -- Link to dataview column FieldID
     linked_variable TEXT,                -- Variable reference {0,N}
-    properties_json TEXT                 -- Additional properties as JSON
+    parent_id INTEGER,                   -- ISN_FATHER for nested controls (table columns)
+    style INTEGER,                       -- Control style
+    color INTEGER,                       -- Color ID
+    font_id INTEGER,                     -- Font ID
+    text TEXT,                           -- Display text (valUnicode, id=19 or 45)
+    format TEXT,                         -- Format string (valUnicode, id=82)
+    data_field_id INTEGER,               -- Data binding FieldID (id=43)
+    data_expression_id INTEGER,          -- Data binding Expression (id=43 Exp)
+    raise_event_type TEXT,               -- Event type (I=Internal, U=User, S=System)
+    raise_event_id INTEGER,              -- Internal event ID
+    image_file TEXT,                     -- DefaultImageFile (id=88)
+    items_list TEXT,                     -- ItemsList for combos (id=45)
+    column_title TEXT,                   -- Column header text (id=139)
+    control_layer INTEGER,               -- ControlLayer for table columns (id=25)
+    h_alignment INTEGER,                 -- Horizontal alignment (id=65)
+    title_height INTEGER,                -- Table title height (id=79)
+    row_height INTEGER,                  -- Table row height (id=80)
+    elements INTEGER,                    -- Table row count (id=81)
+    allow_parking INTEGER,               -- Allow parking flag (id=315)
+    visible_expression INTEGER,          -- Conditional visibility expression ID
+    enabled_expression INTEGER,          -- Conditional enabled expression ID
+    properties_json TEXT                 -- All remaining properties as JSON
 );
 
 CREATE INDEX IF NOT EXISTS idx_form_controls_form ON form_controls(form_id);

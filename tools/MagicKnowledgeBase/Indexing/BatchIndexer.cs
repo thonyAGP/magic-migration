@@ -332,7 +332,7 @@ public class BatchIndexer
                             }), tx);
                         }
 
-                        // Insert task forms (UI screens)
+                        // Insert task forms (UI screens) + form controls
                         if (task.Forms.Count > 0)
                         {
                             _db.BulkInsertTaskForms(task.Forms.Select(f => new DbTaskForm
@@ -345,8 +345,62 @@ public class BatchIndexer
                                 Width = f.Width,
                                 Height = f.Height,
                                 WindowType = f.WindowType,
-                                Font = f.Font
+                                Font = f.Font,
+                                FormUnits = f.FormUnits,
+                                HFactor = f.HFactor,
+                                VFactor = f.VFactor,
+                                Color = f.Color,
+                                SystemMenu = f.SystemMenu,
+                                MinimizeBox = f.MinimizeBox,
+                                MaximizeBox = f.MaximizeBox,
+                                PropertiesJson = f.PropertiesJson
                             }), tx);
+
+                            // Insert form controls with ALL properties
+                            foreach (var form in task.Forms)
+                            {
+                                if (form.Controls.Count == 0) continue;
+                                var formId = _db.GetTaskFormId(taskId, form.FormEntryId, tx);
+                                if (formId <= 0) continue;
+                                _db.BulkInsertFormControls(form.Controls.Select(c => new DbFormControl
+                                {
+                                    FormId = formId,
+                                    ControlId = c.ControlId,
+                                    ControlType = c.ControlType,
+                                    ControlName = c.ControlName,
+                                    X = c.X,
+                                    Y = c.Y,
+                                    Width = c.Width,
+                                    Height = c.Height,
+                                    Visible = c.Visible,
+                                    Enabled = c.Enabled,
+                                    TabOrder = c.TabOrder,
+                                    LinkedFieldId = c.LinkedFieldId,
+                                    LinkedVariable = c.LinkedVariable,
+                                    ParentId = c.ParentId,
+                                    Style = c.Style,
+                                    Color = c.Color,
+                                    FontId = c.FontId,
+                                    Text = c.Text,
+                                    Format = c.Format,
+                                    DataFieldId = c.DataFieldId,
+                                    DataExpressionId = c.DataExpressionId,
+                                    RaiseEventType = c.RaiseEventType,
+                                    RaiseEventId = c.RaiseEventId,
+                                    ImageFile = c.ImageFile,
+                                    ItemsList = c.ItemsList,
+                                    ColumnTitle = c.ColumnTitle,
+                                    ControlLayer = c.ControlLayer,
+                                    HAlignment = c.HAlignment,
+                                    TitleHeight = c.TitleHeight,
+                                    RowHeight = c.RowHeight,
+                                    Elements = c.Elements,
+                                    AllowParking = c.AllowParking,
+                                    VisibleExpression = c.VisibleExpression,
+                                    EnabledExpression = c.EnabledExpression,
+                                    PropertiesJson = c.PropertiesJson
+                                }), tx);
+                            }
                         }
 
                         // V9: Insert task parameters
