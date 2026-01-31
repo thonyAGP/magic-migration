@@ -1262,6 +1262,201 @@ if (args.Length > 1 && args[0] == "spec-data")
 }
 
 // =====================================================================
+// PHASE 2 SUPPORT: Structural table-to-column mapping
+// =====================================================================
+if (args.Length > 1 && args[0] == "table-columns")
+{
+    var tcDb = new KnowledgeDb();
+    if (!tcDb.IsInitialized())
+    {
+        Console.WriteLine("{\"error\": \"Knowledge Base not initialized\"}");
+        return 1;
+    }
+
+    var tcParts = args[1].Split(' ');
+    var tcProject = tcParts[0];
+    var tcIde = tcParts.Length > 1 ? int.Parse(tcParts[1]) : 1;
+
+    using var tcConn = new SqliteConnection($"Data Source={tcDb.DbPath}");
+    tcConn.Open();
+
+    // Get program DB ID
+    long tcProgId = 0;
+    string? tcProgName = null;
+    using (var cmd = tcConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT p.id, p.name FROM programs p
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE pr.name = @project AND p.ide_position = @ide";
+        cmd.Parameters.AddWithValue("@project", tcProject);
+        cmd.Parameters.AddWithValue("@ide", tcIde);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+        {
+            Console.WriteLine($"{{\"error\": \"Program {tcProject} IDE {tcIde} not found\"}}");
+            return 1;
+        }
+        tcProgId = reader.GetInt64(0);
+        tcProgName = reader.GetString(1);
+    }
+
+    // Helper: convert field ID to letter (same as variables command)
+    static string TcFieldToLetter(int fieldId)
+    {
+        if (fieldId <= 0) return $"Field{fieldId}";
+        var sb = new System.Text.StringBuilder();
+        int n = fieldId;
+        while (n > 0)
+        {
+            n--;
+            sb.Insert(0, (char)('A' + (n % 26)));
+            n /= 26;
+        }
+        return sb.ToString();
+    }
+
+    // Helper: convert {type,id} variable ref to letter
+    static string TcVarToLetter(string variable)
+    {
+        if (!variable.StartsWith("{") || !variable.Contains(","))
+            return variable;
+
+        var inner = variable.Trim('{', '}').Split(',');
+        if (inner.Length < 2) return variable;
+
+        int.TryParse(inner[0], out int varType);
+        int.TryParse(inner[1], out int fieldId);
+
+        if (varType == 32768) return $"VG{fieldId}";
+        if (varType == 0) return TcFieldToLetter(fieldId);
+        return variable;
+    }
+
+    // Query: Real columns (definition='R') grouped by main_source_table_id
+    var tableColumnsDict = new Dictionary<string, List<object>>();
+    var seenPerTable = new Dictionary<string, HashSet<string>>();
+
+    using (var cmd = tcConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT
+                t.main_source_table_id,
+                dc.variable,
+                dc.name,
+                dc.data_type,
+                dc.picture,
+                dc.definition
+            FROM dataview_columns dc
+            JOIN tasks t ON dc.task_id = t.id
+            WHERE t.program_id = @prog_id
+              AND t.main_source_table_id IS NOT NULL
+              AND t.main_source_table_id > 0
+              AND dc.definition = 'R'
+            ORDER BY t.main_source_table_id, dc.line_number";
+        cmd.Parameters.AddWithValue("@prog_id", tcProgId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var tableId = reader.GetInt32(0).ToString();
+            var variable = reader.GetString(1);
+            var colName = reader.GetString(2);
+            var dataType = reader.GetString(3);
+            var picture = reader.IsDBNull(4) ? "" : reader.GetString(4);
+            var letter = TcVarToLetter(variable);
+
+            if (!seenPerTable.ContainsKey(tableId))
+                seenPerTable[tableId] = new HashSet<string>();
+
+            if (seenPerTable[tableId].Contains(letter)) continue;
+            seenPerTable[tableId].Add(letter);
+
+            if (!tableColumnsDict.ContainsKey(tableId))
+                tableColumnsDict[tableId] = new List<object>();
+
+            tableColumnsDict[tableId].Add(new
+            {
+                letter,
+                name = colName,
+                data_type = dataType,
+                picture
+            });
+        }
+    }
+
+    // Also capture Virtual/Parameter columns per table for completeness
+    // (these are variables in tasks that use a given table, but aren't Real columns)
+    var tableAllColumnsDict = new Dictionary<string, List<object>>();
+    var seenAllPerTable = new Dictionary<string, HashSet<string>>();
+
+    using (var cmd = tcConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT
+                t.main_source_table_id,
+                dc.variable,
+                dc.name,
+                dc.data_type,
+                dc.definition
+            FROM dataview_columns dc
+            JOIN tasks t ON dc.task_id = t.id
+            WHERE t.program_id = @prog_id
+              AND t.main_source_table_id IS NOT NULL
+              AND t.main_source_table_id > 0
+              AND dc.definition IN ('V', 'P')
+            ORDER BY t.main_source_table_id, dc.line_number";
+        cmd.Parameters.AddWithValue("@prog_id", tcProgId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var tableId = reader.GetInt32(0).ToString();
+            var variable = reader.GetString(1);
+            var colName = reader.GetString(2);
+            var dataType = reader.GetString(3);
+            var def = reader.GetString(4);
+            var letter = TcVarToLetter(variable);
+
+            if (!seenAllPerTable.ContainsKey(tableId))
+                seenAllPerTable[tableId] = new HashSet<string>();
+
+            if (seenAllPerTable[tableId].Contains(letter)) continue;
+            seenAllPerTable[tableId].Add(letter);
+
+            if (!tableAllColumnsDict.ContainsKey(tableId))
+                tableAllColumnsDict[tableId] = new List<object>();
+
+            tableAllColumnsDict[tableId].Add(new
+            {
+                letter,
+                name = colName,
+                data_type = dataType,
+                definition = def
+            });
+        }
+    }
+
+    var tcResult = new
+    {
+        program = tcProgName,
+        ide = tcIde,
+        table_columns = tableColumnsDict,
+        table_other_vars = tableAllColumnsDict,
+        statistics = new
+        {
+            tables_with_real_columns = tableColumnsDict.Count,
+            total_real_columns = tableColumnsDict.Values.Sum(v => v.Count),
+            tables_with_other_vars = tableAllColumnsDict.Count
+        }
+    };
+
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(tcResult));
+    return 0;
+}
+
+// =====================================================================
 // PHASE 2 SUPPORT: Extract variables with letter conversion
 // =====================================================================
 if (args.Length > 1 && args[0] == "variables")

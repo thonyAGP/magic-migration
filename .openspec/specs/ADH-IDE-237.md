@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: Phases 1-4 2026-01-30 19:09 -> 19:09 (10s) | Assemblage 19:09
+> **Analyse**: Phases 1-4 2026-01-30 21:50 -> 21:50 (12s) | Assemblage 21:50
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -4094,51 +4094,75 @@ flowchart TD
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    BLK1[Saisie 7 ecr 7 taches]
+    BLK1[Saisie]
     style BLK1 fill:#58a6ff
-    BLK2[Reglement 1 ecr 4 taches]
+    DEC1{TrimW0 service villag...}
+    style DEC1 fill:#ffeb3b,color:#000
+    BLK2[Reglement]
     style BLK2 fill:#58a6ff
-    BLK3[Validation 1 taches]
+    DEC2{V.RC utilisé GA=0}
+    style DEC2 fill:#ffeb3b,color:#000
+    BLK3[Validation]
     style BLK3 fill:#58a6ff
-    BLK4[Creation 5 taches]
+    DEC3{P0 masque montant C=}
+    style DEC3 fill:#ffeb3b,color:#000
+    BLK4[Creation]
     style BLK4 fill:#58a6ff
-    BLK5[Traitement 3 ecr 18 taches]
+    DEC4{VG7 OR VG35 OR VG87}
+    style DEC4 fill:#ffeb3b,color:#000
+    BLK5[Traitement]
     style BLK5 fill:#58a6ff
-    BLK6[Initialisation 3 taches]
+    DEC5{NOT W0 Motif de non en...}
+    style DEC5 fill:#ffeb3b,color:#000
+    BLK6[Initialisation]
     style BLK6 fill:#58a6ff
-    BLK7[Calcul 5 taches]
+    DEC6{W0 imputation W=VRL}
+    style DEC6 fill:#ffeb3b,color:#000
+    BLK7[Calcul]
     style BLK7 fill:#58a6ff
-    BLK8[Consultation 1 taches]
+    BLK8[Consultation]
     style BLK8 fill:#58a6ff
-    BLK9[Impression 1 taches]
+    BLK9[Impression]
     style BLK9 fill:#58a6ff
-    BLK10[Transfert 3 ecr 4 taches]
+    BLK10[Transfert]
     style BLK10 fill:#58a6ff
-    EXT1([IDE 152 Recup Classe et Li])
+    EXT1([IDE 152 Recup Classe e...])
     style EXT1 fill:#3fb950
-    EXT2([IDE 84     SP Caractères ])
+    EXT2([IDE 84 SP Caractères I...])
     style EXT2 fill:#3fb950
-    EXT3([IDE 233 Appel Print ticket])
+    EXT3([IDE 233 Appel Print ti...])
     style EXT3 fill:#3fb950
     EXT4([IDE 249 Reinit Aff PYR])
     style EXT4 fill:#3fb950
-    EXT5([IDE 277 Selection Vols /t ])
+    EXT5([IDE 277 Selection Vols...])
     style EXT5 fill:#3fb950
-    EXT6([IDE 43 Recuperation du ti])
+    EXT6([IDE 43 Recuperation du...])
     style EXT6 fill:#3fb950
-    EXT7([IDE 149 Calcul stock produ])
+    EXT7([IDE 149 Calcul stock p...])
     style EXT7 fill:#3fb950
     EXT8([IDE 179 Get Printer])
     style EXT8 fill:#3fb950
     FIN([Sortie])
     style FIN fill:#f85149
     START --> BLK1
-    BLK1 --> BLK2
-    BLK2 --> BLK3
-    BLK3 --> BLK4
-    BLK4 --> BLK5
-    BLK5 --> BLK6
-    BLK6 --> BLK7
+    BLK1 --> DEC1
+    DEC1 -->|OUI| BLK2
+    DEC1 -->|NON| DEC2
+    BLK2 --> DEC2
+    DEC2 -->|OUI| BLK3
+    DEC2 -->|NON| DEC3
+    BLK3 --> DEC3
+    DEC3 -->|OUI| BLK4
+    DEC3 -->|NON| DEC4
+    BLK4 --> DEC4
+    DEC4 -->|OUI| BLK5
+    DEC4 -->|NON| DEC5
+    BLK5 --> DEC5
+    DEC5 -->|OUI| BLK6
+    DEC5 -->|NON| DEC6
+    BLK6 --> DEC6
+    DEC6 -->|OUI| BLK7
+    DEC6 -->|NON| BLK8
     BLK7 --> BLK8
     BLK8 --> BLK9
     BLK9 --> BLK10
@@ -4153,7 +4177,7 @@ flowchart TD
     BLK1 -.->|appel| EXT8
 ```
 
-**Legende** : Bleu = blocs fonctionnels | Vert = programmes externes | Rouge = sortie
+> **Legende** : Bleu = blocs fonctionnels | Vert = programmes externes | Jaune = decisions | Rouge = sortie
 
 <!-- TAB:Donnees -->
 
@@ -4194,161 +4218,377 @@ flowchart TD
 | 899 | Boo_ResultsRechercheHoraire | Index de recherche | DB | R | **W** |   | 8 |
 | 1037 | Table_1037 |  | MEM |   | **W** |   | 3 |
 
-### Colonnes par table (12 / 18 tables avec colonnes identifiees)
+### Colonnes par table (20 / 18 tables avec colonnes identifiees)
 
 <details>
 <summary>Table 23 - reseau_cloture___rec (R/**W**) - 5 usages</summary>
 
-| Lettre | Variable | Acces | Type | Utilisee |
-|--------|----------|-------|------|----------|
-| B | W1 cloture en cours | W | Numeric | **OUI** |
-| DN | W0 reseau | W | Alpha | **OUI** |
-| T | W0 Cloture en cours | W | Logical | **OUI** |
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 fin tache | W | Alpha |
+| B | W1 cloture en cours | W | Numeric |
 
 </details>
 
 <details>
 <summary>Table 30 - gm-recherche_____gmr (R/L) - 3 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
 <summary>Table 32 - prestations (R/**W**) - 3 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 ret.lien forfait | W | Numeric |
+| B | W1 ret.lien PRE annu | W | Numeric |
+| C | W1 ret.lien MPR | W | Numeric |
+| D | W1 ret.lien PRE sais | W | Numeric |
 
 </details>
 
 <details>
 <summary>Table 39 - depot_garantie___dga (R) - 1 usages</summary>
 
-| Lettre | Variable | Acces | Type | Utilisee |
-|--------|----------|-------|------|----------|
-| A | V garantie trouvee | R | Logical | **OUI** |
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | V garantie trouvee | R | Logical |
 
 </details>
 
 <details>
 <summary>Table 46 - mvt_prestation___mpr (**W**/L) - 2 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
 <summary>Table 47 - compte_gm________cgm (**W**) - 2 usages</summary>
 
-| Lettre | Variable | Acces | Type | Utilisee |
-|--------|----------|-------|------|----------|
-| D | P0 solde compte | W | Numeric | **OUI** |
-| EH | W0 Compte garanti | W | Logical | **OUI** |
-| H | P0 etat compte | W | Alpha | **OUI** |
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| D | P0 solde compte | W | Numeric |
+| EH | W0 Compte garanti | W | Logical |
+| H | P0 etat compte | W | Alpha |
 
 </details>
 
 <details>
 <summary>Table 50 - moyens_reglement_mor (R) - 3 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | V.Existe MOP ? | R | Logical |
+| B | V.Existe MOP ligne ? | R | Logical |
+| C | V.Existe new VSL NA ? | R | Logical |
+| D | V.Article VSL NA ? | R | Logical |
+| E | V.Plus de reglement ? | R | Logical |
+| F | V.Ecart montant ? | R | Logical |
+| G | V.Ecart num ligne | R | Numeric |
 
 </details>
 
 <details>
 <summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
 <summary>Table 77 - articles_________art (R/L) - 4 usages</summary>
 
-| Lettre | Variable | Acces | Type | Utilisee |
-|--------|----------|-------|------|----------|
-| BD | W0 nbre articles | R | Numeric | **OUI** |
-| GN | CHG_REASON_W0 nbre articles | R | Numeric | **OUI** |
-| GO | CHG_PRV_W0 nbre articles | R | Numeric | **OUI** |
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| BD | W0 nbre articles | R | Numeric |
+| GN | CHG_REASON_W0 nbre articles | R | Numeric |
+| GO | CHG_PRV_W0 nbre articles | R | Numeric |
 
 </details>
 
 <details>
 <summary>Table 79 - gratuites________gra (R) - 1 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
 <summary>Table 89 - moyen_paiement___mop (R/L) - 8 usages</summary>
 
-| Lettre | Variable | Acces | Type | Utilisee |
-|--------|----------|-------|------|----------|
-| DG | W0 mode de paiement | R | Alpha | **OUI** |
-| DH | Existe mode de paiement | R | Logical | **OUI** |
-| FB | v Réponse mode paiement | R | Numeric | **OUI** |
-| FV | V.N°Ticket Autres Moyen Paie | R | Numeric | **OUI** |
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.Toute ligne | R | Logical |
+| B | V.Confirmation Gift Pass ? | R | Numeric |
 
 </details>
 
 <details>
 <summary>Table 103 - logement_client__loc (R) - 1 usages</summary>
 
-| Lettre | Variable | Acces | Type | Utilisee |
-|--------|----------|-------|------|----------|
-| B | v.Heb_nom_logement | R | Unicode | **OUI** |
-| EO | W0 Lien Logement Lieu Séjour | R | Logical | **OUI** |
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P0 societe | R | Alpha |
+| B | P0 devise locale | R | Alpha |
+| C | P0 masque montant | R | Alpha |
+| D | P0 solde compte | R | Numeric |
+| E | P0 code GM | R | Numeric |
+| F | P0 filiation | R | Numeric |
+| G | P0 date fin sejour | R | Date |
+| H | P0 etat compte | R | Alpha |
+| I | P0 date solde | R | Date |
+| J | P0 garanti O/N | R | Alpha |
+| K | P0 Nom & prenom | R | Alpha |
+| L | P0 UNI/BI | R | Alpha |
+| M | P0.Date debut sejour | R | Date |
+| N | P0.Valide ? | R | Numeric |
+| O | P0.Nb decimales | R | Numeric |
+| P | Bouton IDENTITE | R | Alpha |
+| Q | Bouton ABANDON | R | Alpha |
+| R | W0 FIN SAISIE OD | R | Logical |
+| S | Bouton FIN SAISIE OD | R | Alpha |
+| T | W0 Cloture en cours | R | Logical |
+| U | W0 code article | R | Numeric |
+| V | v.SoldeGiftPass | R | Numeric |
+| W | W0 imputation | R | Numeric |
+| X | W0 sous-imput. | R | Numeric |
+| Y | W0 date d'achat | R | Date |
+| Z | W0 annulation | R | Alpha |
+| BA | W0 service village | R | Alpha |
+| BB | W0 libelle article | R | Alpha |
+| BC | W0 article dernière minute | R | Logical |
+| BD | W0 nbre articles | R | Numeric |
+| BE | W0 prix unitaire | R | Numeric |
+| BF | W0 Categorie de chambre | R | Alpha |
+| BG | W0 Lieu sejour | R | Alpha |
+| BH | W0 Code reduction | R | Alpha |
+| BI | v Sens Transfert Global | R | Alpha |
+| BJ | v.Date activité VAE | R | Date |
+| BK | v.VAE pendant le séjour ? | R | Logical |
+| BL | v.Matin/Après midi | R | Unicode |
+| BM | W0 Sens du transfert Aller | R | Alpha |
+| BN | W0 Date du transfert Aller | R | Date |
+| BO | W0 Heure du transfert Aller | R | Time |
+| BP | W0 b.Date du transfert | R | Alpha |
+| BQ | W0 Type d'endroit Aller | R | Alpha |
+| BR | W0 Code Gare/Aéroport Aller | R | Alpha |
+| BS | W0 Numéro du vol Aller | R | Alpha |
+| BT | W0 Compagnie Aller | R | Alpha |
+| BU | W0 Commentaire Aller | R | Alpha |
+| BV | W0 Sens du transfert Retour | R | Alpha |
+| BW | W0 Date du transfert Retour | R | Date |
+| BX | W0 Heure du transfert Retour | R | Time |
+| BY | W0 Type d'endroit Retour | R | Alpha |
+| BZ | W0 Code Gare/Aéroport Retour | R | Alpha |
+| CA | W0 Numéro du vol Retour | R | Alpha |
+| CB | W0 Compagnie Retour | R | Alpha |
+| CC | W0 b.Saisie PAX | R | Alpha |
+| CD | W0 Nbre de PAX enregistré | R | Numeric |
+| CE | W0 Commentaire Retour | R | Alpha |
+| CF | W0 montant avant reduction | R | Numeric |
+| CG | W0 Pourcentage reduction | R | Numeric |
+| CH | W0 Remise Obligatoire | R | Numeric |
+| CI | W0 Montant reduction | R | Numeric |
+| CJ | W0.Date consommation | R | Date |
+| CK | W0.Date fin sejour | R | Date |
+| CL | W0 Motif de non enreg NA | R | Numeric |
+| CM | W0 Commentaire | R | Alpha |
+| CN | W0 Motif annulation | R | Alpha |
+| CO | W0 Titre | R | Alpha |
+| CP | W0 Nom | R | Alpha |
+| CQ | W0 Prenom | R | Alpha |
+| CR | W0 Num rue | R | Alpha |
+| CS | W0 Nom de la rue | R | Alpha |
+| CT | W0 Commune | R | Alpha |
+| CU | W0 CP | R | Alpha |
+| CV | W0 Ville | R | Alpha |
+| CW | W0 Nb Chambres | R | Numeric |
+| CX | W0 Chambre | R | Unicode |
+| CY | W0 PYR Valide | R | Logical |
+| CZ | W0 Lib Bouton Chambre | R | Unicode |
+| DA | W0 Vendeur | R | Unicode |
+| DB | W0 libelle supplem | R | Alpha |
+| DC | W0 libelle supplem pour édition | R | Alpha |
+| DD | W0 article trouve | R | Logical |
+| DE | W0 Stock produit | R | Numeric |
+| DF | W0 montant | R | Numeric |
+| DG | W0 mode de paiement | R | Alpha |
+| DH | Existe mode de paiement | R | Logical |
+| DI | W0 Libelle MOP | R | Alpha |
+| DJ | WO Classe MOP | R | Alpha |
+| DK | V0 memo-service | R | Alpha |
+| DL | V0 memo-nom GM | R | Alpha |
+| DM | V0 validation | R | Logical |
+| DN | W0 reseau | R | Alpha |
+| DO | W0 fin tache | R | Alpha |
+| DP | W0 forfait (O/N) | R | Alpha |
+| DQ | W0 effacement (O/N) | R | Alpha |
+| DR | W0 forfait date(O/N) | R | Alpha |
+| DS | W0 code forfait | R | Alpha |
+| DT | W0 date debut | R | Date |
+| DU | W0 date fin | R | Date |
+| DV | W0 gratuite ? | R | Alpha |
+| DW | W0 ret lien special | R | Numeric |
+| DX | W0 Code Devise | R | Numeric |
+| DY | W0 Retour Transmission TPE | R | Logical |
+| DZ | W0 Forcer Transaction Manuelle | R | Logical |
+| EA | W0 Message TPE | R | Alpha |
+| EB | W0 Retour Lecture TPE | R | Logical |
+| EC | W0 Fin Transaction TPE | R | Logical |
+| ED | v. titre | R | Alpha |
+| EE | W0 Total_Vente | R | Numeric |
+| EF | W0 Total_GiftPass | R | Numeric |
+| EG | W0 Annulation OD active | R | Logical |
+| EH | W0 Compte garanti | R | Logical |
+| EI | W0 confirmation si non garanti | R | Numeric |
+| EJ | W0 Abandon | R | Logical |
+| EK | W0 validation | R | Logical |
+| EL | W0 choix personne absente | R | Numeric |
+| EM | W0 choix transac manuelle | R | Numeric |
+| EN | Bouton Ok | R | Alpha |
+| EO | W0 Lien Logement Lieu Séjour | R | Logical |
+| EP | V.VADA ? | R | Logical |
+| EQ | V.VADV ? | R | Logical |
+| ER | V.VAD ? | R | Logical |
+| ES | Nbre ecriture | R | Numeric |
+| ET | V.Reglement premier article | R | Alpha |
+| EU | V.Type premier article | R | Alpha |
+| EV | V.Premier article VSL NA ? | R | Logical |
+| EW | V.Article VSL NA ? | R | Logical |
+| EX | v.IncrémentTicket(VRL/VSL) OK | R | Logical |
+| EY | v.IncrémentTicket(VTE) OK | R | Logical |
+| EZ | v.NumeroTicket(VRL/VSL) | R | Numeric |
+| FA | v.NumeroTicket(VTE) | R | Numeric |
+| FB | v Réponse mode paiement | R | Numeric |
+| FC | V Nbre de Ligne Saisies | R | Numeric |
+| FD | v Nbre ligne de reglement Saisi | R | Numeric |
+| FE | V.Num ligne vente | R | Numeric |
+| FF | V.Total reglement ligne | R | Numeric |
+| FG | V.Multi reglement ligne | R | Logical |
+| FH | V.MOP TPE | R | Alpha |
+| FI | V.Id transaction PMS | R | Alpha |
+| FJ | V.Id transaction AXIS | R | Alpha |
+| FK | V.Num Autorisation | R | Alpha |
+| FL | V.Transaction TPE validee | R | Logical |
+| FM | V.Message erreur transac TPE | R | Alpha |
+| FN | V.Total carte | R | Numeric |
+| FO | V.Transaction ok | R | Logical |
+| FP | V.Nombre de carte | R | Numeric |
+| FQ | b.type de transfert | R | Alpha |
+| FR | v is the First time | R | Numeric |
+| FS | v.Montant-giftPass | R | Numeric |
+| FT | v.email GM pour VAD | R | Alpha |
+| FU | V.N°Ticket OD | R | Numeric |
+| FV | V.N°Ticket Autres Moyen Paie | R | Numeric |
+| FW | V.Num Cheque | R | Unicode |
+| FX | V.SoldeResortCredit | R | Numeric |
+| FY | V.Confirm Use Resort Credit | R | Numeric |
+| FZ | V.ConfirmeUseGP? | R | Numeric |
+| GA | V.RC utilisé | R | Logical |
+| GB | v.Token Id | R | Unicode |
+| GC | v.Transaction Id | R | Unicode |
+| GD | v.Nb chambres /LCO | R | Numeric |
+| GE | v.Flag exist Vte LCO | R | Logical |
+| GF | v.Flag abandon libération | R | Logical |
+| GG | v. pied stype? | R | Logical |
+| GH | v. pied type? | R | Logical |
+| GI | v. type a utiliser | R | Unicode |
+| GJ | v. stype a utiliser | R | Unicode |
+| GK | CHG_REASON_W0 libelle article | R | Numeric |
+| GL | CHG_PRV_W0 libelle article | R | Alpha |
+| GM | P.Toute ligne | R | Logical |
+| GN | CHG_REASON_W0 nbre articles | R | Numeric |
+| GO | CHG_PRV_W0 nbre articles | R | Numeric |
 
 </details>
 
 <details>
 <summary>Table 109 - table_utilisateurs (R) - 1 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W2 Titre | R | Alpha |
+| B | W2 Nom | R | Alpha |
+| C | W2 Prenom | R | Alpha |
+| D | W2 Num rue | R | Alpha |
+| E | W2 Nom rue | R | Alpha |
+| F | W2 Commune | R | Alpha |
+| G | W2 CP | R | Alpha |
+| H | W2 Ville | R | Alpha |
+| I | Bouton Ok | R | Alpha |
+| J | V.Chaine OK | R | Alpha |
 
 </details>
 
 <details>
 <summary>Table 139 - moyens_reglement_mor (R) - 1 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v Montant cumulé saisie | R | Numeric |
+| B | b.abandonner | R | Alpha |
+| C | b.Valider | R | Alpha |
 
 </details>
 
 <details>
 <summary>Table 596 - tempo_ecran_police (R/**W**/L) - 7 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | DETAIL | W | Alpha |
+| B | QUITTER | W | Alpha |
+| C | SUPPRIMER | W | Alpha |
 
 </details>
 
 <details>
 <summary>Table 847 - stat_lieu_vente_date (**W**/L) - 13 usages</summary>
 
-| Lettre | Variable | Acces | Type | Utilisee |
-|--------|----------|-------|------|----------|
-| BG | W0 Lieu sejour | W | Alpha | **OUI** |
-| FE | V.Num ligne vente | W | Numeric | **OUI** |
-| ~~G~~ | ~~P0 date fin sejour~~ | ~~-~~ | ~~Date~~ | ~~NON~~ |
-| ~~I~~ | ~~P0 date solde~~ | ~~-~~ | ~~Date~~ | ~~NON~~ |
-| ~~M~~ | ~~P0.Date debut sejour~~ | ~~-~~ | ~~Date~~ | ~~NON~~ |
-| ~~Y~~ | ~~W0 date d'achat~~ | ~~-~~ | ~~Date~~ | ~~NON~~ |
-| ~~BN~~ | ~~W0 Date du transfert Aller~~ | ~~-~~ | ~~Date~~ | ~~NON~~ |
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.Ligne | W | Numeric |
+| B | p.Mont-GiftPass | W | Numeric |
+| C | V.Existe ligne reglement multi? | W | Logical |
 
 </details>
 
 <details>
 <summary>Table 899 - Boo_ResultsRechercheHoraire (R/**W**) - 8 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v Concatenation | W | Alpha |
+| B | W1 V Nom recherche | W | Alpha |
+| C | W1 Afficher cochés | W | Logical |
+| D | W1 Afficher filiation | W | Logical |
+| E | W1 B.Exit | W | Alpha |
+| F | W1 B.Tout décocher | W | Alpha |
+| G | W1 Nbre de Pax Enregistrés | W | Numeric |
+| H | W1 Names of non filiated ppl | W | Alpha |
+| I | CHG_REASON_W1 V Nom recherche | W | Numeric |
+| J | CHG_PRV_W1 V Nom recherche | W | Alpha |
+| K | CHG_REASON_W1 Afficher cochés | W | Numeric |
+| L | CHG_PRV_W1 Afficher cochés | W | Logical |
+| M | CHG_REASON_W1 Afficher filiati | W | Numeric |
+| N | CHG_PRV_W1 Afficher filiation | W | Logical |
+| O | v. response | W | Numeric |
 
 </details>
 
 <details>
 <summary>Table 1037 - Table_1037 (**W**) - 3 usages</summary>
 
-*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | p.o.Abandon | W | Logical |
+| B | v.Heb_nom_logement | W | Unicode |
+| C | v.Nb chambres saisies | W | Numeric |
+| D | CHG_REASON_Heure_liberation | W | Numeric |
+| E | CHG_PRV_Heure_liberation | W | Time |
 
 </details>
 
@@ -4740,181 +4980,30 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CALCULATION | 9 | 0 |
-| NEGATION | 19 | 0 |
-| CONDITION | 149 | 16 |
-| FORMAT | 8 | 0 |
-| CAST_LOGIQUE | 9 | 5 |
-| CONSTANTE | 28 | 0 |
-| DATE | 3 | 0 |
-| REFERENCE_VG | 4 | 0 |
-| OTHER | 71 | 0 |
-| CONCATENATION | 1 | 0 |
-| STRING | 4 | 0 |
+| CONDITION | 31 | 0 |
 
 ### 12.2 Expressions cles par type
 
-#### CALCULATION (9 expressions)
+#### CONDITION (31 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CALCULATION | 246 | `V.Total carte [FN]+1` | - |
-| CALCULATION | 234 | `W0 fin tache [DO]-[AG]` | - |
-| CALCULATION | 294 | `MlsTrans('Pas de chambre en-cours pour ce GM !')` | - |
-| CALCULATION | 247 | `V.Transaction ok [FO]-1` | - |
-| CALCULATION | 206 | `'00/00/0000'DATE` | - |
-| ... | | *+4 autres* | |
+| CONDITION | 136 | `IF(W0 imputation [W]='TRF',27,27)` | - |
+| CONDITION | 137 | `IF(W0 imputation [W]='TRF',110.625,110.625)` | - |
+| CONDITION | 147 | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))` | - |
+| CONDITION | 135 | `IF(W0 imputation [W]='TRF',83.625,83.625)` | - |
+| CONDITION | 132 | `IF(W0 imputation [W]='TRF',26.875,26.875)` | - |
+| ... | | *+26 autres* | |
 
-#### NEGATION (19 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 191 | `NOT ExpCalc('189'EXP)` | - |
-| NEGATION | 280 | `NOT ExpCalc('277'EXP)` | - |
-| NEGATION | 172 | `NOT [GS]` | - |
-| NEGATION | 185 | `NOT CHG_PRV_W0 nbre articles [GO]` | - |
-| NEGATION | 282 | `NOT ExpCalc('280'EXP)` | - |
-| ... | | *+14 autres* | |
-
-#### CONDITION (149 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 167 | `IF(V.ConfirmeUseGP? [FZ],'V',IF([AP]='O','C','D'))` | [RM-013](#rm-RM-013) |
-| CONDITION | 120 | `IF(W0 imputation [W]='VRL' OR W0 imputation [W]='VSL','Nb forfait',IF(W0 imputation [W]='TRF', 'Nb PAX','Nbre'))` | [RM-008](#rm-RM-008) |
-| CONDITION | 111 | `IF(W0 imputation [W]='VRL','Date consommation','Date début séjour')` | [RM-006](#rm-RM-006) |
-| CONDITION | 114 | `IF(W0 Titre [CO]<>0 AND NOT(W0 Motif de non enreg NA [CL]),Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O]),W0 Prenom [CQ])` | [RM-007](#rm-RM-007) |
-| CONDITION | 147 | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))` | [RM-011](#rm-RM-011) |
-| ... | | *+144 autres* | |
-
-#### FORMAT (8 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| FORMAT | 243 | `MlsTrans('La remise ne peut pas être inférieure à')&' '&Trim(Str(W0 Nom [CP],'3'))&' %'` | - |
-| FORMAT | 175 | `W0 imputation [W]='VSL' AND Left(Trim(Str([AB],'10')),1)='5'` | - |
-| FORMAT | 295 | `MlsTrans('Il n''y a que ')&
-Trim(Str([HJ],'3L'))&MlsTrans(' chambre(s) sur le compte du GM !')` | - |
-| FORMAT | 251 | `Trim(Str(W0 Stock produit [DE],'2'))&' aff.'` | - |
-| FORMAT | 1 | `DStr(P0 date fin sejour [G],'DD/MM/YYYY')` | - |
-| ... | | *+3 autres* | |
-
-#### CAST_LOGIQUE (9 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CAST_LOGIQUE | 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` | [RM-016](#rm-RM-016) |
-| CAST_LOGIQUE | 188 | `'FALSE'LOG` | - |
-| CAST_LOGIQUE | 84 | `'FALSE'LOG` | - |
-| CAST_LOGIQUE | 271 | `(W0 code article [U]>0 AND (W0 imputation [W]='VRL' OR W0 imputation [W]='VSL' )) OR (W0 code article [U]>0 AND W0 fin tache [DO]>0 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL') AND [AQ]<>'' OR IF(W0 imputation [W]='PYR',W0 mode de paiement [DG],'TRUE'LOG)` | - |
-| CAST_LOGIQUE | 211 | `'TRUE'LOG` | - |
-| ... | | *+4 autres* | |
-
-#### CONSTANTE (28 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONSTANTE | 202 | `'Des informations du transfert Aller ne sont pas saisies . Validation impossible '` | - |
-| CONSTANTE | 203 | `'Des informations du transfert Retour ne sont pas saisies . Validation impossible '` | - |
-| CONSTANTE | 208 | `''` | - |
-| CONSTANTE | 195 | `'2'` | - |
-| CONSTANTE | 149 | `'SANS'` | - |
-| ... | | *+23 autres* | |
-
-#### DATE (3 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| DATE | 67 | `Date ()` | - |
-| DATE | 14 | `Date ()` | - |
-| DATE | 4 | `Date ()` | - |
-
-#### REFERENCE_VG (4 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| REFERENCE_VG | 237 | `VG38` | - |
-| REFERENCE_VG | 273 | `VG63` | - |
-| REFERENCE_VG | 7 | `VG2` | - |
-| REFERENCE_VG | 156 | `VG21` | - |
-
-#### OTHER (71 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| OTHER | 242 | `W0 Nom [CP]` | - |
-| OTHER | 248 | `W0 montant [DF]` | - |
-| OTHER | 221 | `W0 forfait (O/N) [DP]` | - |
-| OTHER | 235 | `W0 fin tache [DO]` | - |
-| OTHER | 254 | `28.125` | - |
-| ... | | *+66 autres* | |
-
-#### CONCATENATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONCATENATION | 3 | `MlsTrans ('Verifier que la transaction est bien pour')&' '&Trim (P0 Nom & prenom [K])` | - |
-
-#### STRING (4 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| STRING | 171 | `MlsTrans('Transaction TPE : ')&Trim([GT])` | - |
-| STRING | 262 | `Trim(VG57)` | - |
-| STRING | 8 | `Trim (W0 choix transac manuelle [EM])` | - |
-| STRING | 83 | `MlsTrans (Trim (W0 forfait date(O/N) [DR]))` | - |
-
-### 12.3 Toutes les expressions (305)
+### 12.3 Toutes les expressions (31)
 
 <details>
-<summary>Voir les 305 expressions</summary>
+<summary>Voir les 31 expressions</summary>
 
-#### CALCULATION (9)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 15 | `[AW]*[AV]` |
-| 16 | `([AW]*[AV])-W0 Prenom [CQ]` |
-| 75 | `V.RC utilisé [GA]+1` |
-| 117 | `W0 Prenom [CQ]/([AW]*[AV])*100` |
-| 206 | `'00/00/0000'DATE` |
-| 234 | `W0 fin tache [DO]-[AG]` |
-| 246 | `V.Total carte [FN]+1` |
-| 247 | `V.Transaction ok [FO]-1` |
-| 294 | `MlsTrans('Pas de chambre en-cours pour ce GM !')` |
-
-#### NEGATION (19)
+#### CONDITION (31)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 153 | `NOT W0 Motif de non enreg NA [CL] AND W0 Titre [CO]<>0 AND (W0 Prenom [CQ]<Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O])-1 OR W0 Prenom [CQ]>Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O])+1)` |
-| 33 | `NOT (P0 date fin sejour [G]=0 OR P0 date fin sejour [G]<Date ())` |
-| 6 | `NOT VG38` |
-| 59 | `NOT (W0 FIN SAISIE OD [R])` |
-| 61 | `NOT (Nbre ecriture [ES]) AND DbRecs ('{596,4}'DSOURCE,'')=0 AND [AQ]&[AR]=''` |
-| 62 | `NOT (V.VADV ? [EQ])` |
-| 78 | `NOT ExpCalc('77'EXP)` |
-| 80 | `NOT (W0 effacement (O/N) [DQ]) AND LastClicked()<>'Bouton ABANDON'` |
-| 148 | `NOT IN(W0 imputation [W],'VRL','VSL','TRF', 'VAR')` |
-| 165 | `NOT ExpCalc('162'EXP)` |
-| 172 | `NOT [GS]` |
-| 185 | `NOT CHG_PRV_W0 nbre articles [GO]` |
-| 191 | `NOT ExpCalc('189'EXP)` |
-| 280 | `NOT ExpCalc('277'EXP)` |
-| 282 | `NOT ExpCalc('280'EXP)` |
-| 283 | `NOT ExpCalc('280'EXP) OR ExpCalc('285'EXP)` |
-| 289 | `NOT v Sens Transfert Global [BI]` |
-| 298 | `NOT [HL]` |
-| 173 | `NOT [GS] AND Trim([GT])<>''` |
-
-#### CONDITION (149)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 204 | `W0 Code Gare/Aéroport ... [BR]='00/00/0000'DATE OR W0 Numéro du vol Aller [BS]='00:00:00'TIME OR W0 Commentaire Aller [BU]='' OR W0 Sens du transfert R... [BV]='' OR W0 Date du transfert R... [BW]='' OR W0 Heure du transfert ... [BX]=''` |
-| 205 | `W0 Numéro du vol Retour [CA]='00/00/0000'DATE OR W0 Compagnie Retour [CB]='00:00:00'TIME OR W0 b.Saisie PAX [CC]='' OR W0 Nbre de PAX enregistré [CD]='' OR W0 Commentaire Retour [CE]='' OR W0 montant avant reduc... [CF]=''` |
-| 229 | `W0 Nom de la rue [CS]-W0 Num rue [CR]>45` |
-| 284 | `W0 libelle article [BB]='00/00/0000'DATE` |
 | 2 | `IF(Trim(W0 service village [BA])='1','ALLER',IF(Trim(W0 service village [BA])='2','RETOUR',IF(Trim(W0 service village [BA])='3','ALLER/RETOUR','')))` |
 | 5 | `IF(V.RC utilisé [GA]=0,IF(W0 imputation [W]='VSL',P0.Date debut sejour [M],Date()),W0 Num rue [CR])` |
 | 35 | `IF (P0 masque montant [C]='','15.2',P0 masque montant [C])` |
@@ -4939,300 +5028,13 @@ Trim(Str([HJ],'3L'))&MlsTrans(' chambre(s) sur le compte du GM !')` | - |
 | 137 | `IF(W0 imputation [W]='TRF',110.625,110.625)` |
 | 147 | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))` |
 | 154 | `IF(V.Total reglement ligne [FF],V.Id transaction PMS [FI],VG18)` |
+| 162 | `IF(W0 imputation [W]='VRL','TRUE'LOG,V.RC utilisé [GA]=0)` |
 | 167 | `IF(V.ConfirmeUseGP? [FZ],'V',IF([AP]='O','C','D'))` |
 | 210 | `IF(V.ConfirmeUseGP? [FZ],P0 devise locale [B],VG30)` |
 | 225 | `IF (NOT(CHG_PRV_W0 nbre articles [GO]),132.875,105.875)` |
 | 236 | `IF(W0 imputation [W]='ANN','O','N')` |
-| 290 | `IF(VG20>1,[AY],'G')` |
-| 32 | `P0 date fin sejour [G]=0 OR P0 date fin sejour [G]<Date ()` |
-| 107 | `W0 imputation [W]='VSL' AND W0 Num rue [CR]-Date()>21 AND W0 Titre [CO]<>0` |
-| 109 | `W0 imputation [W]='VSL' AND W0 Num rue [CR]-Date()>[HM] AND W0 Titre [CO]<>0` |
-| 305 | `W0 imputation [W]='VRL' AND IF(Date()>BOM(Date()),W0 Num rue [CR]<BOM(Date()),BOM(Date()-1)>W0 Num rue [CR])` |
-| 22 | `[AW]>0 AND [AV]=0` |
-| 23 | `V0 validation [DM] AND [AP]='N'` |
-| 24 | `[AV]>W0 reseau [DN] AND NOT (Nbre ecriture [ES])` |
-| 25 | `W0 fin tache [DO]=0 AND [AQ]<>'' AND W0 Titre [CO]<>100 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL' AND NOT([HH])` |
-| 26 | `W0 imputation [W]='VRL' OR W0 imputation [W]='VSL'` |
-| 28 | `[AW]>0 AND W0 Retour Transmission... [DY]='N'` |
-| 29 | `([AW]=0) AND (ExpCalc('55'EXP))` |
-| 30 | `([AW]=0) AND W0 imputation [W]<>'VRL' AND (ExpCalc('55'EXP))` |
-| 31 | `W0 code article [U]>0 AND W0 ret lien special [DW]<>'R'` |
-| 34 | `W0 code article [U]>0 AND W0 fin tache [DO]>0` |
-| 36 | `W0 Retour Transmission... [DY]='O' AND W0 Message TPE [EA]='O'` |
-| 37 | `W0 gratuite ? [DV] AND W0 Retour Transmission... [DY]='O' AND W0 Forcer Transaction ... [DZ]='O'` |
-| 38 | `[AP]='N'` |
-| 39 | `W0 gratuite ? [DV] AND W0 Retour Transmission... [DY]='O'` |
-| 43 | `[AP]='O' AND W0 gratuite ? [DV]` |
-| 52 | `DbRecs ('{596,4}'DSOURCE,'')>0 AND ExpCalc('41'EXP)` |
-| 53 | `DbRecs ('{596,4}'DSOURCE,'')>0` |
-| 54 | `DbRecs ('{596,4}'DSOURCE,'')>0 AND [AR]=''` |
-| 55 | `DbRecs ('{596,4}'DSOURCE,'')<6` |
-| 58 | `W0 gratuite ? [DV] AND [AP]='O'` |
-| 60 | `V.VAD ? [ER]<>6` |
-| 74 | `W0 forfait (O/N) [DP]=''` |
-| 79 | `W0 forfait (O/N) [DP]='' AND LastClicked()<>'Bouton ABANDON'` |
-| 81 | `W0 forfait (O/N) [DP]=GetParam ('MOPCMP') AND NOT (V.VADV ? [EQ]) AND LastClicked()<>'Bouton ABANDON'` |
-| 82 | `W0 Code Devise [DX]='F' OR Nbre ecriture [ES]` |
-| 88 | `(DbRecs ('{596,4}'DSOURCE,'')=0) AND (ExpCalc('55'EXP))` |
-| 89 | `([AW]>0 AND W0 Retour Transmission... [DY]='N') AND (ExpCalc('55'EXP))` |
-| 90 | `(W0 Retour Transmission... [DY]='N' AND (NOT(ExpCalc('285'EXP)) OR [HJ]>1 )) 
-AND (ExpCalc('55'EXP))` |
-| 91 | `V.Type premier article [EU]=6` |
-| 95 | `NOT(W0 Motif de non enreg NA [CL]) OR W0 imputation [W]='PYR'` |
-| 97 | `IN(W0 imputation [W],'VRL','VSL') AND [AF]<>'LCO'` |
-| 100 | `W0 imputation [W]='VRL'` |
-| 101 | `W0 imputation [W]='VSL' AND [AF]<>'LCO'` |
-| 102 | `LastClicked()<>'Bouton ABANDON' AND DbRecs ('{596,4}'DSOURCE,'')<6` |
-| 103 | `W0 imputation [W]='VSL' AND [AF]<>'LCO' AND DbRecs ('{596,4}'DSOURCE,'')<3 AND 
-LastClicked()<>'Bouton ABANDON'` |
-| 104 | `(W0 imputation [W]='VRL' OR W0 imputation [W]='VSL')AND [AF]<>'LCO' AND VG7 AND 
-DbRecs ('{596,4}'DSOURCE,'')<3 AND 
-LastClicked()<>'Bouton ABANDON'` |
-| 105 | `W0 imputation [W]='VSL' AND W0 CP [CU]='' AND NOT v.Flag exist Vte LCO [GE] AND LastClicked()<>'Bouton ABANDON'` |
-| 106 | `W0 Num rue [CR]=0` |
-| 112 | `(W0 Titre [CO]=100 OR W0 Motif de non enreg NA [CL]) AND W0 CP [CU]='' AND LastClicked()<>'Bouton ABANDON'` |
-| 113 | `[AP]='O' AND IN (W0 imputation [W],'VRL','VSL','TRF')` |
-| 116 | `W0 Motif de non enreg NA [CL] OR [AZ]='SANS'` |
-| 118 | `W0 Ville [CV]='' AND [AP]='O'` |
-| 121 | `W0 Nom de la rue [CS]=0` |
-| 122 | `[AX]=''` |
-| 123 | `W0 annulation [Z]=0 AND ExpCalc('55'EXP)` |
-| 138 | `V.RC utilisé [GA]>0 AND [AR]<>'' AND VG7 AND ((IN(W0 imputation [W],'VRL','VSL','PYR') AND W0 imputation [W]<>v.Transaction Id [GC]) OR (IN(v.Transaction Id [GC],'VRL','VSL','PYR') AND W0 imputation [W]<>v.Transaction Id [GC]))` |
-| 140 | `W0 Prenom [CQ]>W0 Motif annulation [CN]` |
-| 141 | `P0.Valide ? [N]<>0 AND NOT(IN(W0 imputation [W],'VSL','VRL','PYR')) AND VG7 AND v.SoldeGiftPass [V]<>0` |
-| 143 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VRL' AND VG7 AND W0 Chambre [CX]='' AND V.RC utilisé [GA]=0` |
-| 144 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VRL' AND VG7 AND V.RC utilisé [GA]=0` |
-| 145 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VSL' AND VG7 AND W0 sous-imput. [X]>0` |
-| 146 | `W0 imputation [W]='VRL' AND W0 Total_GiftPass [EF]=0` |
-| 150 | `[AW]=0` |
-| 151 | `V.RC utilisé [GA]=0` |
-| 152 | `[AA]='X'` |
-| 155 | `(W0 imputation [W]='VRL'  OR W0 imputation [W]='VSL')  AND VG17 AND VG20>1` |
-| 157 | `W0 imputation [W]='VRL' AND VG7 AND VG20>1 AND VG17 AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
-| 158 | `[AY]=''` |
-| 159 | `VG20>1` |
-| 163 | `VG23 AND VG24 AND [GU]>0 AND NOT [GS]` |
-| 168 | `[GS] AND Left(W0 forfait (O/N) [DP],3)<>'VAD'` |
-| 174 | `VG7 AND v.Flag exist Vte LCO [GE] AND [AC]='' AND v.SoldeGiftPass [V]<>0` |
-| 178 | `([GU]<>0 AND VG24) OR V.ConfirmeUseGP? [FZ] AND [AP]='N'` |
-| 179 | `VG23 AND VG24 AND [GW]>1` |
-| 181 | `ExpCalc('55'EXP) AND (W0 imputation [W]='VSL') AND NOT v.Flag exist Vte LCO [GE]` |
-| 182 | `W0 fin tache [DO]<>0` |
-| 183 | `P0 UNI/BI [L]='U'` |
-| 184 | `P0 UNI/BI [L]<>'U'` |
-| 189 | `W0 imputation [W]='VSL' AND NOT v.Flag exist Vte LCO [GE] AND W0 sous-imput. [X]<>0 AND LastClicked()<>'Bouton ABANDON'` |
-| 190 | `V.VADV ? [EQ] AND W0 imputation [W]<>'VSL'` |
-| 194 | `[AV]<>W0 Remise Obligatoire [CH]` |
-| 196 | `W0 imputation [W]='TRF'  AND VG35` |
-| 197 | `W0 imputation [W]='TRF'  AND VG35 AND LastClicked ()<>'Bouton ABANDON'` |
-| 198 | `[GY]=0` |
-| 199 | `[GY]=0 AND W0 imputation [W]='TRF' AND VG35` |
-| 220 | `(Left(v.Token Id [GB],3)='VAD' AND Left(W0 forfait (O/N) [DP],3)<>'VAD' AND Left(W0 forfait (O/N) [DP],3)<>'' OR Left(v.Token Id [GB],3)<>'VAD' AND Left(v.Token Id [GB],3)<>'' AND Left(W0 forfait (O/N) [DP],3)='VAD') AND LastClicked()<>'Bouton ABANDON'` |
-| 222 | `(v.Token Id [GB]='VADA' AND W0 forfait (O/N) [DP]='VADV' OR v.Token Id [GB]='VADV' AND W0 forfait (O/N) [DP]='VADA') AND LastClicked()<>'Bouton ABANDON'` |
-| 223 | `[AR]<>''` |
-| 224 | `V.ConfirmeUseGP? [FZ] AND [AP]='O'` |
-| 226 | `[HR]>1 AND [AV]=1 AND [HQ]=0` |
-| 227 | `W0 imputation [W]='TRF' AND VG35` |
-| 228 | `[AV]>1 AND W0 imputation [W]='TRF' AND VG35` |
-| 230 | `(W0 Prenom [CQ]<>0 OR W0 Titre [CO]<>0) OR W0 Motif de non enreg NA [CL]` |
-| 231 | `VG38 AND [AD] AND [AG]>0` |
-| 232 | `[AG]>=W0 fin tache [DO]` |
-| 238 | `W0 imputation [W]='ANN' AND W0 forfait (O/N) [DP]<>'OD'` |
-| 239 | `[AP]='O'` |
-| 241 | `W0 imputation [W]='PYR'` |
-| 244 | `W0 Nom [CP]>0 AND W0 Nom [CP]>W0 Titre [CO] AND W0 imputation [W]='PYR'` |
-| 245 | `W0 Stock produit [DE]=1` |
-| 250 | `W0 Stock produit [DE]>1` |
-| 257 | `LastClicked()<>'Bouton ABANDON'` |
-| 260 | `VG55 AND NOT(CHG_PRV_W0 nbre articles [GO]) AND W0 code forfait [DS]='$PAPER'` |
-| 267 | `VG38 AND [AG]>0 AND W0 Total_Vente [EE]<>'O' AND VG60 AND [HF]<>6 AND [AD]` |
-| 268 | `[HE] > 0 AND VG63` |
-| 270 | `[HF] = 6` |
-| 279 | `[HA]=''` |
-| 281 | `W0 imputation [W]='VAE' AND VG87` |
-| 285 | `v.Date activité VAE [BJ]=''` |
-| 286 | `VG36 AND W0 imputation [W]='VSL' AND [AF]='LCO'` |
-| 292 | `[HJ]>0` |
-| 296 | `[AV]>[HJ]` |
-| 301 | `V.RC utilisé [GA]=1` |
-| 45 | `Trim (INIGet ('[MAGIC_LOGICAL_NAMES]club_editod'))='O' AND Trim (INIGet ('[MAGIC_LOGICAL_NAMES]club_formation'))<>'O'` |
-| 69 | `CndRange(Trim(W0 imputation [W])<>'PYR',ASCIIChr (33))` |
-| 169 | `(W0 imputation [W]<>'VSL' AND [AR]<>'') AND (Trim(W0 forfait (O/N) [DP])='VADA' OR Trim(W0 forfait (O/N) [DP])='VADV') AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
-| 170 | `(W0 Total_GiftPass [EF]<>0 AND V.Message erreur trans... [FM]<>'GO') AND W0 imputation [W]='VSL' AND [AR]<>'' AND (Trim(W0 forfait (O/N) [DP])='VADA' OR Trim(W0 forfait (O/N) [DP])='VADV') AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
-| 249 | `Trim(W0 montant [DF])<>''` |
-| 259 | `W0 imputation [W]='PYR' AND Trim(W0 montant [DF])<>''` |
-| 261 | `ExpCalc('259'EXP) AND Trim([HD])=''` |
-| 263 | `ExpCalc('259'EXP) AND Trim([HD])<>''` |
-| 300 | `NOT(Trim([IC])=Trim(W0 imputation [W]) AND Trim([ID])=Trim([AF])) AND V.RC utilisé [GA]>0 AND Trim([AR])<>'' AND VG108` |
-
-#### FORMAT (8)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 265 | `MlsTrans('Vous disposez d''un Resort Credit de')&' '&Trim(Str([HE],Trim(P0 masque montant [C])))&' '&Trim(P0 devise locale [B])&'. Voulez-vous l''utiliser ?'` |
-| 1 | `DStr(P0 date fin sejour [G],'DD/MM/YYYY')` |
-| 108 | `'La date début séjour doit être inferieure à ' & Trim(Str([HM],'2')) & ' jours par rapport à la date du jour'` |
-| 160 | `'# '&Str(v. pied type? [GH],'10P0')` |
-| 175 | `W0 imputation [W]='VSL' AND Left(Trim(Str([AB],'10')),1)='5'` |
-| 243 | `MlsTrans('La remise ne peut pas être inférieure à')&' '&Trim(Str(W0 Nom [CP],'3'))&' %'` |
-| 251 | `Trim(Str(W0 Stock produit [DE],'2'))&' aff.'` |
-| 295 | `MlsTrans('Il n''y a que ')&
-Trim(Str([HJ],'3L'))&MlsTrans(' chambre(s) sur le compte du GM !')` |
-
-#### CAST_LOGIQUE (9)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 162 | `IF(W0 imputation [W]='VRL','TRUE'LOG,V.RC utilisé [GA]=0)` |
 | 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` |
-| 17 | `'FALSE'LOG` |
-| 56 | `'TRUE'LOG` |
-| 57 | `'FALSE'LOG` |
-| 84 | `'FALSE'LOG` |
-| 188 | `'FALSE'LOG` |
-| 211 | `'TRUE'LOG` |
-| 271 | `(W0 code article [U]>0 AND (W0 imputation [W]='VRL' OR W0 imputation [W]='VSL' )) OR (W0 code article [U]>0 AND W0 fin tache [DO]>0 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL') AND [AQ]<>'' OR IF(W0 imputation [W]='PYR',W0 mode de paiement [DG],'TRUE'LOG)` |
-
-#### CONSTANTE (28)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 9 | `154` |
-| 13 | `'F'` |
-| 18 | `'N'` |
-| 19 | `1` |
-| 20 | `'CAISSE'` |
-| 47 | `0` |
-| 48 | `''` |
-| 50 | `'A&bandonner'` |
-| 63 | `30` |
-| 68 | `'H'` |
-| 71 | `'CASH'` |
-| 72 | `'W'` |
-| 76 | `'O'` |
-| 139 | `''` |
-| 149 | `'SANS'` |
-| 192 | `'...'` |
-| 193 | `'La quantité totale ne correspond pas au détail des PAX sélectionnés'` |
-| 195 | `'2'` |
-| 202 | `'Des informations du transfert Aller ne sont pas saisies . Validation impossible '` |
-| 203 | `'Des informations du transfert Retour ne sont pas saisies . Validation impossible '` |
-| 208 | `''` |
-| 213 | `'H'` |
-| 215 | `'PL'` |
-| 217 | `'VADA'` |
-| 218 | `'VADV'` |
-| 233 | `0` |
-| 240 | `'PYR'` |
-| 266 | `'Voulez vous utiliser le Gift Pass ?'` |
-
-#### DATE (3)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 4 | `Date ()` |
-| 14 | `Date ()` |
-| 67 | `Date ()` |
-
-#### REFERENCE_VG (4)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 7 | `VG2` |
-| 156 | `VG21` |
-| 237 | `VG38` |
-| 273 | `VG63` |
-
-#### OTHER (71)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 10 | `P0 societe [A]` |
-| 11 | `P0 code GM [E]` |
-| 12 | `P0 filiation [F]` |
-| 21 | `W0 code article [U]` |
-| 27 | `NOT(v.Flag abandon libération [GF])` |
-| 40 | `V.Reglement premier ar... [ET]` |
-| 41 | `W0 FIN SAISIE OD [R]` |
-| 42 | `W0 gratuite ? [DV]` |
-| 44 | `V.VADA ? [EP]` |
-| 46 | `W0 Cloture en cours [T]` |
-| 49 | `MlsTrans('Identité')` |
-| 51 | `MlsTrans ('&Fin Transaction')` |
-| 64 | `P0 societe [A]` |
-| 65 | `P0 code GM [E]` |
-| 66 | `P0 filiation [F]` |
-| 70 | `GetParam ('MOPCMP')` |
-| 73 | `W0 code article [U]` |
-| 77 | `V.VADV ? [EQ]` |
-| 85 | `ExpCalc('55'EXP)` |
-| 86 | `ExpCalc('55'EXP) AND NOT([HH])` |
-| 87 | `ExpCalc('55'EXP) AND NOT v.Flag exist Vte LCO [GE]` |
-| 93 | `[AZ]` |
-| 96 | `IN(W0 imputation [W],'VRL','VSL','PYR')` |
-| 98 | `IN(W0 imputation [W],'VRL','VSL')` |
-| 99 | `IN(W0 imputation [W],'VRL','VSL','TRF')` |
-| 110 | `W0 code article [U]` |
-| 115 | `W0 Motif de non enreg NA [CL]` |
-| 124 | `GetParam('CODELANGUE')` |
-| 142 | `W0 imputation [W]` |
-| 161 | `MlsTrans('Sans réduction')` |
-| 164 | `VG23 AND VG24 AND NOT [GS]` |
-| 166 | `W0 FIN SAISIE OD [R] AND VG23` |
-| 176 | `[AC]` |
-| 177 | `VG7 AND v.Flag exist Vte LCO [GE]` |
-| 180 | `[GV]` |
-| 186 | `CHG_PRV_W0 nbre articles [GO]` |
-| 187 | `VG23 AND VG24` |
-| 200 | `IN(W0 service village [BA],'1','3')` |
-| 201 | `IN(W0 service village [BA],'2','3')` |
-| 207 | `'00:00:00'TIME` |
-| 209 | `V Nbre de Ligne Saisies [FC]` |
-| 212 | `GetParam('CODELANGUE')` |
-| 214 | `W0 Heure du transfert ... [BO]` |
-| 216 | `W0 b.Date du transfert [BP]` |
-| 219 | `V.Nombre de carte [FP] OR V.N°Ticket OD [FU]` |
-| 221 | `W0 forfait (O/N) [DP]` |
-| 235 | `W0 fin tache [DO]` |
-| 242 | `W0 Nom [CP]` |
-| 248 | `W0 montant [DF]` |
-| 252 | `Existe mode de paiement [DH]` |
-| 253 | `31.75` |
-| 254 | `28.125` |
-| 255 | `29.375` |
-| 256 | `54.125` |
-| 258 | `W0 mode de paiement [DG]` |
-| 264 | `IN(W0 imputation [W],'VRL','VSL') AND VG54` |
-| 269 | `[HE]` |
-| 274 | `NOT([HH])` |
-| 275 | `NOT(W0 FIN SAISIE OD [R])` |
-| 276 | `W0 FIN SAISIE OD [R]` |
-| 277 | `v.Matin/Après midi [BL]` |
-| 278 | `VG83 AND V.ConfirmeUseGP? [FZ]` |
-| 287 | `VG36 AND [HK]` |
-| 288 | `W0 libelle article [BB]` |
-| 291 | `DbDel('{1037,4}'DSOURCE,'')` |
-| 293 | `[HJ]` |
-| 297 | `[HL]` |
-| 299 | `[AF]` |
-| 302 | `[IA]` |
-| 303 | `[IB]` |
-| 304 | `WO Classe MOP [DJ]` |
-
-#### CONCATENATION (1)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 3 | `MlsTrans ('Verifier que la transaction est bien pour')&' '&Trim (P0 Nom & prenom [K])` |
-
-#### STRING (4)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 8 | `Trim (W0 choix transac manuelle [EM])` |
-| 83 | `MlsTrans (Trim (W0 forfait date(O/N) [DR]))` |
-| 171 | `MlsTrans('Transaction TPE : ')&Trim([GT])` |
-| 262 | `Trim(VG57)` |
+| 290 | `IF(VG20>1,[AY],'G')` |
 
 </details>
 
@@ -5460,4 +5262,4 @@ graph LR
 | [Zoom services village (IDE 269)](ADH-IDE-269.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-01-30 19:09*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-01-30 21:50*

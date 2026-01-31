@@ -1459,48 +1459,93 @@ foreach ($t in $usedTables) {
 }
 Add-Line
 
-# V7.2 GAP5 fix: Improved column matching using multiple table name words + abbreviations
+# V7.3: Structural table-to-column mapping from KB (replaces heuristic name matching)
+# Strategy: 1) Real columns (definition=R) from table_columns
+#            2) Virtual/Param vars from table_other_vars (task bound to table)
+#            3) Fallback: heuristic name matching
 $tableColDetails = @{}
-if ($mapping -and $mapping.variables -and $mapping.variables.local) {
-    foreach ($v in $mapping.variables.local) {
-        $vName = $v.name
-        $vLower = $vName.ToLower()
-        foreach ($tKey in $tableUnified.Keys) {
-            $tEntry = $tableUnified[$tKey]
-            $tLogical = $tEntry.logical_name.ToLower()
-            # Extract all words (remove underscores, split)
-            $tWords = ($tLogical -replace '_+', ' ').Trim() -split '\s+' | Where-Object { $_.Length -ge 3 }
-            # Also extract 3-letter suffix abbreviation (e.g., rec, heb, art, cpt, dat, spc)
-            $tSuffix = if ($tLogical -match '(\w{3})$') { $Matches[1] } else { "" }
+$structuralMatchCount = 0
 
+# Helper: try to get columns from a mapping property (handles both Hashtable and PSObject)
+function Get-TableColsFromMapping {
+    param($MappingProp, [string]$TableKey)
+    if (-not $MappingProp) { return $null }
+    # Try Hashtable access
+    if ($MappingProp -is [hashtable] -and $MappingProp.ContainsKey($TableKey)) {
+        return @($MappingProp[$TableKey])
+    }
+    # Try PSObject property access (JSON deserialized)
+    if ($MappingProp.PSObject -and $MappingProp.PSObject.Properties[$TableKey]) {
+        return @($MappingProp.PSObject.Properties[$TableKey].Value)
+    }
+    return $null
+}
+
+if ($mapping) {
+    foreach ($tKey in $tableUnified.Keys) {
+        $tEntry = $tableUnified[$tKey]
+        $cols = $null
+
+        # Priority 1: Real columns (definition='R') - direct table column mapping
+        $cols = Get-TableColsFromMapping -MappingProp $mapping.table_columns -TableKey $tKey
+
+        # Priority 2: Virtual/Param vars in tasks bound to this table
+        if (-not $cols -or $cols.Count -eq 0) {
+            $cols = Get-TableColsFromMapping -MappingProp $mapping.table_other_vars -TableKey $tKey
+        }
+
+        if ($cols -and $cols.Count -gt 0) {
+            $tableColDetails[$tKey] = @()
+            foreach ($col in $cols) {
+                $rw = if ($tEntry.W) { "W" } else { "R" }
+                $tableColDetails[$tKey] += @{
+                    letter = $col.letter
+                    name = $col.name
+                    rw = $rw
+                    type = $col.data_type
+                    used = $true
+                }
+            }
+            $structuralMatchCount++
+        }
+    }
+}
+
+# Fallback: heuristic name matching for tables not covered by structural data
+if ($mapping -and $mapping.variables -and $mapping.variables.local) {
+    foreach ($tKey in $tableUnified.Keys) {
+        if ($tableColDetails.Contains($tKey)) { continue }  # Already matched structurally
+        $tEntry = $tableUnified[$tKey]
+        $tLogical = $tEntry.logical_name.ToLower()
+        $tWords = ($tLogical -replace '_+', ' ').Trim() -split '\s+' | Where-Object { $_.Length -ge 3 }
+        $tSuffix = if ($tLogical -match '(\w{3})$') { $Matches[1] } else { "" }
+
+        foreach ($v in $mapping.variables.local) {
+            $vName = $v.name
+            $vLower = $vName.ToLower()
             $matchFound = $false
-            # Match any word from table name against variable name
             foreach ($word in $tWords) {
                 if ($word.Length -ge 4 -and $vLower -match [regex]::Escape($word)) {
                     $matchFound = $true
                     break
                 }
             }
-            # Also match by suffix abbreviation (e.g., variable "cpt quelque chose" matches table ending in "_cpt")
             if (-not $matchFound -and $tSuffix.Length -eq 3 -and $vLower -match "^$([regex]::Escape($tSuffix))\s") {
                 $matchFound = $true
             }
-
             if ($matchFound) {
                 if (-not $tableColDetails.Contains($tKey)) { $tableColDetails[$tKey] = @() }
-                # Check if already added (avoid duplicates)
                 $alreadyAdded = $tableColDetails[$tKey] | Where-Object { $_.letter -eq $v.letter }
                 if (-not $alreadyAdded) {
                     $rw = if ($tEntry.W) { "W" } else { "R" }
                     $tableColDetails[$tKey] += @{ letter = $v.letter; name = $vName; rw = $rw; type = $v.data_type; used = $true }
                 }
-                break
             }
         }
     }
 }
 
-# V7.2 GAP5: Merged column details with used/~~unused~~ strikethrough format
+# V7.3: Column details with structural matching + heuristic fallback
 $matchedTableCount = ($tableColDetails.Keys | Measure-Object).Count
 $totalTableAccess = @($usedTables | Where-Object { $_.W -or $_.R }).Count
 Add-Line "### Colonnes par table ($matchedTableCount / $totalTableAccess tables avec colonnes identifiees)"
@@ -1519,30 +1564,14 @@ foreach ($t in $tablesWithAccess) {
     Add-Line
 
     if ($tableColDetails.Contains($tKey) -and $tableColDetails[$tKey].Count -gt 0) {
-        # V7.2: Column table with Utilisee column + strikethrough for unused
         $usedCols = $tableColDetails[$tKey]
-        Add-Line "| Lettre | Variable | Acces | Type | Utilisee |"
-        Add-Line "|--------|----------|-------|------|----------|"
+        Add-Line "| Lettre | Variable | Acces | Type |"
+        Add-Line "|--------|----------|-------|------|"
         foreach ($col in $usedCols) {
-            Add-Line "| $($col.letter) | $($col.name) | $($col.rw) | $($col.type) | **OUI** |"
-        }
-        # V7.2 GAP5: Add strikethrough rows for variables that could be table columns but aren't referenced
-        # Look for other variables with similar table prefix that weren't matched to expressions
-        $tWords = ($t.logical_name.ToLower() -replace '_+', ' ').Trim() -split '\s+' | Where-Object { $_.Length -ge 4 }
-        if ($tWords.Count -gt 0) {
-            $unusedCandidates = @($variableRows | Where-Object {
-                $vn = $_.Name.ToLower()
-                $isUsed = $usedCols | Where-Object { $_.letter -eq $_.Letter }
-                $usedLetters = $usedCols | ForEach-Object { $_.letter }
-                ($_.Letter -notin $usedLetters) -and ($tWords | Where-Object { $vn -match [regex]::Escape($_) })
-            } | Select-Object -First 5)
-            foreach ($unused in $unusedCandidates) {
-                Add-Line "| ~~$($unused.Letter)~~ | ~~$($unused.Name)~~ | ~~-~~ | ~~$($unused.DataType)~~ | ~~NON~~ |"
-            }
+            Add-Line "| $($col.letter) | $($col.name) | $($col.rw) | $($col.type) |"
         }
     } else {
-        # V7.2 GAP5: No MCP fallback message - show informative text
-        Add-Line "*Aucune variable locale matchee pour cette table. Colonnes non extraites dans cette version du pipeline.*"
+        Add-Line "*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*"
     }
     Add-Line
     Add-Line "</details>"

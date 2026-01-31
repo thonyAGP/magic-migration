@@ -123,7 +123,7 @@ Write-Host "  Mapping entries: $($variableMapping.Count)"
 Write-Host ""
 
 # Step 3: Load discovery.json for table info
-Write-Host "[3/3] Loading table info from discovery..." -ForegroundColor Yellow
+Write-Host "[3/4] Loading table info from discovery..." -ForegroundColor Yellow
 
 $discoveryPath = Join-Path $OutputPath "discovery.json"
 $tableColumns = @{}
@@ -151,6 +151,41 @@ if (Test-Path $discoveryPath) {
 }
 Write-Host ""
 
+# Step 4: Structural table-to-column mapping via KB
+Write-Host "[4/4] Fetching structural table-column mapping via CLI..." -ForegroundColor Yellow
+
+$tableColMapping = @{}
+$tableOtherVars = @{}
+$tableColCmd = "cd '$KbIndexRunnerPath'; dotnet run -- table-columns '$Project $IdePosition'"
+$tcJsonOutput = powershell -NoProfile -Command $tableColCmd 2>&1
+
+try {
+    $tcData = $tcJsonOutput | ConvertFrom-Json
+    if (-not $tcData.error) {
+        # Real columns (definition='R') per table
+        if ($tcData.table_columns) {
+            foreach ($prop in $tcData.table_columns.PSObject.Properties) {
+                $tableColMapping[$prop.Name] = @($prop.Value)
+            }
+        }
+        # Virtual/Parameter columns per table
+        if ($tcData.table_other_vars) {
+            foreach ($prop in $tcData.table_other_vars.PSObject.Properties) {
+                $tableOtherVars[$prop.Name] = @($prop.Value)
+            }
+        }
+        Write-Host "  Tables with Real columns: $($tableColMapping.Count)" -ForegroundColor Green
+        $totalRealCols = ($tableColMapping.Values | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum
+        Write-Host "  Total Real columns mapped: $totalRealCols"
+        Write-Host "  Tables with Virtual/Param vars: $($tableOtherVars.Count)"
+    } else {
+        Write-Host "  Warning: table-columns returned error: $($tcData.error)" -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host "  Warning: Failed to parse table-columns output, structural mapping unavailable" -ForegroundColor Yellow
+}
+Write-Host ""
+
 # Build mapping.json
 $mapping = @{
     metadata = @{
@@ -158,7 +193,7 @@ $mapping = @{
         ide_position = $IdePosition
         program_name = $varData.program
         generated_at = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
-        pipeline_version = "7.1"
+        pipeline_version = "7.2"
     }
 
     variables = $varData.variables
@@ -166,6 +201,10 @@ $mapping = @{
     variable_mapping = $variableMapping
 
     tables = $tableColumns
+
+    table_columns = $tableColMapping
+
+    table_other_vars = $tableOtherVars
 
     statistics = @{
         total_variables = $varData.statistics.total
@@ -175,6 +214,7 @@ $mapping = @{
         parameter_count = $varData.statistics.parameters
         table_count = $tableColumns.Count
         mapping_entries = $variableMapping.Count
+        tables_with_real_columns = $tableColMapping.Count
     }
 }
 
