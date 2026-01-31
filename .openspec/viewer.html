@@ -96,15 +96,40 @@
     }
 
     function preprocessFormData(markdown) {
-      // Replace <!-- FORM-DATA: {JSON} --> with visual mockup HTML
+      // Magic color ID to CSS color mapping
+      const magicColors = {
+        '195': '#008080', '120': '#cc0000', '143': '#cc0000',
+        '6': '#000080', '1': '#000000', '2': '#800000', '3': '#008000',
+        '4': '#808000', '5': '#000080', '7': '#808080', '8': '#c0c0c0',
+        '9': '#0000ff', '10': '#00ff00', '11': '#00ffff', '12': '#ff0000',
+        '13': '#ff00ff', '14': '#ffff00', '15': '#ffffff'
+      };
+      function getColor(colorId) {
+        if (!colorId) return '';
+        return magicColors[String(colorId)] || '';
+      }
+      // Derive button label: fmt (strip &) > name (strip "Bouton ") > "Btn"
+      function btnText(c) {
+        if (c.fmt) return c.fmt.replace(/&/g, '');
+        if (c.name) return c.name.replace(/^Bouton\s*/i, '');
+        return 'Btn';
+      }
+      // Check if a STATIC is a group box (large area with text)
+      function isGroupBox(c) {
+        return c.type === 'label' && c.text && c.w > 200 && c.h > 50;
+      }
+      // Check if a STATIC is a background element (large, no text)
+      function isBackground(c) {
+        return c.type === 'label' && !c.text && (c.w > 200 || c.h > 30);
+      }
+
       return markdown.replace(/<!--\s*FORM-DATA:\s*\n([\s\S]*?)\n\s*-->/g, (match, jsonStr) => {
         try {
           const data = JSON.parse(jsonStr.trim());
-          const scale = 0.6; // DLU to pixels
+          const scale = 0.6;
           const ctrls = data.controls || [];
           const w = Math.round((data.width || 700) * scale);
 
-          // Calculate body height from controls
           let maxY = 100;
           ctrls.forEach(c => {
             const bottom = (c.y + c.h) * scale;
@@ -114,70 +139,93 @@
 
           let html = `<div class="magic-mockup" style="width:${Math.min(w, 900)}px">`;
           html += `<div class="magic-mockup-title"><span>${data.taskId || data.type || 'Form'}</span>`;
-          html += `<div class="win-btns"><span class="win-btn">_</span><span class="win-btn">□</span><span class="win-btn">×</span></div>`;
+          html += `<div class="win-btns"><span class="win-btn">_</span><span class="win-btn">\u25a1</span><span class="win-btn">\u00d7</span></div>`;
           html += `</div>`;
           html += `<div class="magic-mockup-body" style="height:${maxY}px">`;
 
+          // Render group boxes first (behind other controls)
+          ctrls.filter(c => isGroupBox(c)).forEach(c => {
+            const cx = Math.round(c.x * scale);
+            const cy = Math.round(c.y * scale);
+            const cw = Math.round(c.w * scale);
+            const ch = Math.round(c.h * scale);
+            html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:0">`;
+            html += `<div class="magic-ctrl-groupbox" style="width:100%;height:100%"><span class="groupbox-title">${c.text}</span></div>`;
+            html += `</div>`;
+          });
+
+          // Render normal controls
           ctrls.forEach(c => {
+            if (isGroupBox(c) || isBackground(c)) return;
+
             const cx = Math.round(c.x * scale);
             const cy = Math.round(c.y * scale);
             const cw = Math.round(c.w * scale);
             const ch = Math.round(c.h * scale);
             const varTag = c.var ? `<span class="magic-ctrl-var">${c.var}</span>` : '';
+            const col = getColor(c.color);
+            const colStyle = col ? `color:${col};` : '';
 
             switch (c.type) {
-              case 'label':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
-                html += `<div class="magic-ctrl-static">${c.label || ''}</div>`;
+              case 'label': {
+                const txt = c.text || '';
+                if (!txt) break;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-static" style="${colStyle}">${txt}</div>`;
                 html += `</div>`;
                 break;
+              }
 
-              case 'edit':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px">`;
-                html += `<div class="magic-ctrl-edit" style="height:${ch}px">${c.label || ''}</div>`;
+              case 'edit': {
+                const placeholder = c.fmt || '';
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;z-index:1">`;
+                html += `<div class="magic-ctrl-edit" style="height:${ch}px;${colStyle}">`;
+                if (placeholder) html += `<span class="edit-placeholder">${placeholder}</span>`;
+                html += `</div>`;
                 html += varTag;
                 html += `</div>`;
                 break;
+              }
 
               case 'button':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
-                html += `<div class="magic-ctrl-button" style="width:100%;height:100%">${c.label || 'Btn'}</div>`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:2">`;
+                html += `<div class="magic-ctrl-button" style="width:100%;height:100%">${btnText(c)}</div>`;
                 html += varTag;
                 html += `</div>`;
                 break;
 
               case 'checkbox':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
-                html += `<div class="magic-ctrl-checkbox"><span class="chk-box">☐</span> ${c.label || ''}</div>`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-checkbox"><span class="chk-box">\u2610</span> ${c.text || c.name || ''}</div>`;
                 html += varTag;
                 html += `</div>`;
                 break;
 
               case 'combobox':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px">`;
-                html += `<div class="magic-ctrl-combo" style="height:${ch}px"><span>${c.label || ''}</span><span class="combo-arrow">▼</span></div>`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;z-index:1">`;
+                html += `<div class="magic-ctrl-combo" style="height:${ch}px"><span>${c.fmt || ''}</span><span class="combo-arrow">\u25bc</span></div>`;
                 html += varTag;
                 html += `</div>`;
                 break;
 
               case 'radio':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
-                html += `<div class="magic-ctrl-radio"><span class="radio-dot">○</span> ${c.label || ''}</div>`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-radio"><span class="radio-dot">\u25cb</span> ${c.text || c.name || ''}</div>`;
                 html += varTag;
                 html += `</div>`;
                 break;
 
               case 'listbox':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
-                html += `<div class="magic-ctrl-listbox" style="height:100%"><div class="lb-item">${c.label || 'Item 1'}</div><div class="lb-item">Item 2</div></div>`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-listbox" style="height:100%"><div class="lb-item">${c.text || 'Item 1'}</div><div class="lb-item">Item 2</div></div>`;
                 html += varTag;
                 html += `</div>`;
                 break;
 
               case 'table':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
                 html += `<div class="magic-ctrl-table" style="height:100%">`;
-                html += `<div class="tbl-header">${c.label || 'Table'}</div>`;
+                html += `<div class="tbl-header">${c.text || 'Table'}</div>`;
                 html += `<div class="tbl-body"></div>`;
                 html += `</div>`;
                 html += varTag;
@@ -185,46 +233,48 @@
                 break;
 
               case 'image':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
-                html += `<div class="magic-ctrl-image" style="width:100%;height:100%">${c.label || '🖼'}</div>`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-image" style="width:100%;height:100%">\ud83d\uddbc</div>`;
                 html += `</div>`;
                 break;
 
               case 'subform':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
-                html += `<div class="magic-ctrl-subform" style="width:100%;height:100%">${c.label || 'Subform'}</div>`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
+                html += `<div class="magic-ctrl-subform" style="width:100%;height:100%">${c.text || 'Subform'}</div>`;
                 html += `</div>`;
                 break;
 
               case 'tab':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px">`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:1">`;
                 html += `<div class="magic-ctrl-tab" style="width:100%;height:100%">`;
-                html += `<div class="tab-header"><span class="tab-active">${c.label || 'Tab 1'}</span><span class="tab-inactive">Tab 2</span></div>`;
+                html += `<div class="tab-header"><span class="tab-active">${c.text || 'Tab 1'}</span><span class="tab-inactive">Tab 2</span></div>`;
                 html += `<div class="tab-body"></div>`;
                 html += `</div>`;
                 html += `</div>`;
                 break;
 
               case 'line':
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${Math.max(ch, 2)}px">`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${Math.max(ch, 2)}px;z-index:1">`;
                 html += `<div class="magic-ctrl-line"></div>`;
                 html += `</div>`;
                 break;
 
               default:
-                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px">`;
-                html += `<div class="magic-ctrl-edit" style="height:${ch}px">${c.label || ''}</div>`;
+                html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;z-index:1">`;
+                html += `<div class="magic-ctrl-edit" style="height:${ch}px">${c.fmt || ''}</div>`;
                 html += varTag;
                 html += `</div>`;
             }
           });
 
           html += `</div>`;
-          // Legend with counts per type
           const counts = {};
-          ctrls.forEach(c => { counts[c.type] = (counts[c.type] || 0) + 1; });
+          ctrls.filter(c => !isBackground(c)).forEach(c => {
+            const t = isGroupBox(c) ? 'groupbox' : c.type;
+            counts[t] = (counts[t] || 0) + 1;
+          });
           const parts = Object.entries(counts).map(([t, n]) => `${n} ${t}`);
-          html += `<div class="magic-mockup-legend">${parts.join(' | ')} | ${data.width}×${data.height} DLU</div>`;
+          html += `<div class="magic-mockup-legend">${parts.join(' | ')} | ${data.width}\u00d7${data.height} DLU</div>`;
           html += `</div>`;
 
           return html;
@@ -1054,6 +1104,23 @@
       position: absolute;
       box-sizing: border-box;
     }
+    /* Group box (large STATIC with text = frame) */
+    .magic-ctrl-groupbox {
+      border: 1px solid #808080;
+      border-radius: 0;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .magic-ctrl-groupbox .groupbox-title {
+      position: absolute;
+      top: -7px;
+      left: 8px;
+      background: #d4d0c8;
+      padding: 0 4px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000;
+    }
     /* Static label (STATIC control) */
     .magic-ctrl-static {
       font-size: 11px;
@@ -1069,10 +1136,15 @@
       border: 1px inset #808080;
       padding: 1px 3px;
       font-size: 11px;
-      color: #888;
+      color: #000;
       height: 18px;
       line-height: 18px;
       overflow: hidden;
+    }
+    .magic-ctrl-edit .edit-placeholder {
+      color: #aaa;
+      font-style: italic;
+      font-size: 10px;
     }
     /* Push button */
     .magic-ctrl-button {

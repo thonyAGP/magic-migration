@@ -1071,7 +1071,10 @@ if ($visibleForms.Count -gt 0) {
             # Skip table COLUMNs (they are children of TABLE) and invisible controls
             if ($ctrlType -eq 'COLUMN' -or -not $fc.visible) { continue }
 
-            $label = if ($fc.control_name) { $fc.control_name } elseif ($fc.text) { $fc.text } elseif ($fc.format) { $fc.format } else { '' }
+            $ctrlName = if ($fc.control_name) { $fc.control_name } else { '' }
+            $ctrlText = if ($fc.text) { $fc.text } else { '' }
+            $ctrlFmt = if ($fc.format) { $fc.format } else { '' }
+            $ctrlColor = if ($fc.color) { "$($fc.color)" } else { '' }
             $linkedVar = if ($fc.linked_variable) { $fc.linked_variable } else { '' }
 
             $mappedType = switch ($ctrlType) {
@@ -1093,7 +1096,9 @@ if ($visibleForms.Count -gt 0) {
                 type = $mappedType
                 x = [int]$fc.x; y = [int]$fc.y
                 w = [int]$fc.width; h = [int]$fc.height
-                var = $linkedVar; label = $label
+                var = $linkedVar
+                name = $ctrlName; text = $ctrlText
+                fmt = $ctrlFmt; color = $ctrlColor
                 parent = $fc.parent_id
             }
         }
@@ -1120,9 +1125,9 @@ if ($visibleForms.Count -gt 0) {
             Add-Line "| Pos (x,y) | Nom | Variable | Type |"
             Add-Line "|-----------|-----|----------|------|"
             foreach ($ctrl in $editControls) {
-                $ctrlLabel = if ($ctrl.label) { $ctrl.label } else { '(sans nom)' }
+                $ctrlDisplay = if ($ctrl.name) { $ctrl.name } elseif ($ctrl.text) { $ctrl.text } elseif ($ctrl.fmt) { $ctrl.fmt } else { '(sans nom)' }
                 $ctrlVar = if ($ctrl.var) { $ctrl.var } else { '-' }
-                Add-Line "| $($ctrl.x),$($ctrl.y) | $ctrlLabel | $ctrlVar | $($ctrl.type) |"
+                Add-Line "| $($ctrl.x),$($ctrl.y) | $ctrlDisplay | $ctrlVar | $($ctrl.type) |"
             }
             Add-Line
             Add-Line "</details>"
@@ -1138,17 +1143,24 @@ if ($visibleForms.Count -gt 0) {
             Add-Line "| Bouton | Pos (x,y) | Action |"
             Add-Line "|--------|-----------|--------|"
             foreach ($btn in $btnControls) {
-                $btnLabel = if ($btn.label) { $btn.label.ToLower() } else { '' }
+                # Derive display label: fmt (strip &) > name (strip "Bouton ") > "(sans nom)"
+                $btnLabel = ''
+                if ($btn.fmt) {
+                    $btnLabel = $btn.fmt -replace '&', ''
+                } elseif ($btn.name) {
+                    $btnLabel = $btn.name -replace '^Bouton\s*', ''
+                }
+                $btnLabelLower = if ($btnLabel) { $btnLabel.ToLower() } else { '' }
                 $btnAction = "Action declenchee"
-                if ($btnLabel) {
+                if ($btnLabelLower) {
                     $btnCallee = $calleesCtx | Where-Object {
-                        $_.name -and $btnLabel -and $btnLabel.Length -ge 3 -and
-                        $_.name.ToLower() -match [regex]::Escape($btnLabel.Substring(0, [math]::Min(5, $btnLabel.Length)))
+                        $_.name -and $btnLabelLower -and $btnLabelLower.Length -ge 3 -and
+                        $_.name.ToLower() -match [regex]::Escape($btnLabelLower.Substring(0, [math]::Min(5, $btnLabelLower.Length)))
                     } | Select-Object -First 1
                     if ($btnCallee) {
                         $btnAction = "Appel $(Format-SpecLink -Name $btnCallee.name -Ide $btnCallee.ide -Proj $Project)"
                     } else {
-                        $btnAction = switch -Regex ($btnLabel) {
+                        $btnAction = switch -Regex ($btnLabelLower) {
                             'valid|ok|confirm|enreg' { "Valide la saisie et enregistre" }
                             'annul|cancel|retour|abandon' { "Annule et retour au menu" }
                             'imprim|print|ticket|edition' { "Lance l'impression" }
@@ -1170,7 +1182,7 @@ if ($visibleForms.Count -gt 0) {
                         }
                     }
                 }
-                $displayLabel = if ($btn.label) { $btn.label } else { '(sans nom)' }
+                $displayLabel = if ($btnLabel) { $btnLabel } else { '(sans nom)' }
                 Add-Line "| $displayLabel | $($btn.x),$($btn.y) | $btnAction |"
             }
             Add-Line
