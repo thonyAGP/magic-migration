@@ -112,11 +112,11 @@
                                    ]
                    },
     "pipeline_timing":  {
-                            "phases_start":  "2026-01-31 23:58:01",
-                            "assembly_end":  "2026-01-31 23:58:30",
-                            "assembly_start":  "2026-01-31 23:58:26",
-                            "phases_duration":  "24s",
-                            "phases_end":  "2026-01-31 23:58:25"
+                            "phases_start":  "2026-02-01 00:32:45",
+                            "assembly_end":  "2026-02-01 00:33:13",
+                            "assembly_start":  "2026-02-01 00:33:09",
+                            "phases_duration":  "23s",
+                            "phases_end":  "2026-02-01 00:33:08"
                         },
     "v72_features":  {
                          "clickable_links":  127,
@@ -127,9 +127,9 @@
                      },
     "metadata":  {
                      "pipeline_version":  "7.2",
-                     "generated_at":  "2026-01-31 23:58:30",
+                     "generated_at":  "2026-02-01 00:33:13",
                      "ide_position":  237,
-                     "duration_seconds":  4.4,
+                     "duration_seconds":  3.8,
                      "program_name":  "Transaction Nouv vente avec GP",
                      "project":  "ADH"
                  }
