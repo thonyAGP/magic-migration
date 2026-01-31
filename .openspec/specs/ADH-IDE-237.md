@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: Phases 1-4 2026-01-30 21:50 -> 21:50 (12s) | Assemblage 21:50
+> **Analyse**: Phases 1-4 2026-01-31 11:39 -> 11:39 (13s) | Assemblage 11:40
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -808,26 +808,26 @@ Transfert de donnees entre modules.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 237.1 | T1 | Saisie transaction | Modal | 1112 | 279 | Saisie |
-| 2 | 237.2 | T2 | Reglements suite a refus TPE | Type6 | 708 | 256 | Reglement |
+| 1 | 237 | T1 | Saisie transaction | Modal | 1112 | 279 | Saisie |
+| 2 | 237.1 | T2 | Reglements suite a refus TPE | Type6 | 708 | 256 | Reglement |
 | 3 | 237.3 | T7 | Saisie Bilaterale | Type6 | 326 | 249 | Saisie |
 | 4 | 237.4 | T8 | Saisie mode de règlement | Type6 | 506 | 250 | Saisie |
-| 5 | 237.5 | T10 | Saisie Commentaires | Type6 | 772 | 169 | Saisie |
-| 6 | 237.6 | T11 | VRL : Saisie identité | MDI | 699 | 157 | Saisie |
-| 7 | 237.7 | T18 | (sans nom) | Modal | 116 | 32 | Traitement |
-| 8 | 237.8 | T19 | Saisie dates forfait | MDI | 528 | 121 | Saisie |
-| 9 | 237.9 | T30 | Affiche saisie | Modal | 427 | 124 | Saisie |
-| 10 | 237.10 | T38 | Type transfert | Type6 | 722 | 292 | Transfert |
-| 11 | 237.11 | T39 | Affiche Transfert A/R | Type6 | 681 | 205 | Transfert |
-| 12 | 237.12 | T40 | Affectation PAX / Transfert | Type0 | 1056 | 281 | Transfert |
-| 13 | 237.13 | T46 | Libération du logement | Type0 | 123 | 149 | Traitement |
-| 14 | 237.14 | T49 | Récup nb chambre /LCO | Type0 | 123 | 89 | Traitement |
+| 5 | 237.6 | T10 | Saisie Commentaires | Type6 | 772 | 169 | Saisie |
+| 6 | 237.7 | T11 | VRL : Saisie identité | MDI | 699 | 157 | Saisie |
+| 7 | 237.12 | T18 | (sans nom) | Modal | 116 | 32 | Traitement |
+| 8 | 237.12.1 | T19 | Saisie dates forfait | MDI | 528 | 121 | Saisie |
+| 9 | 237.21 | T30 | Affiche saisie | Modal | 427 | 124 | Saisie |
+| 10 | 237.29 | T38 | Type transfert | Type6 | 722 | 292 | Transfert |
+| 11 | 237.29.1 | T39 | Affiche Transfert A/R | Type6 | 681 | 205 | Transfert |
+| 12 | 237.30 | T40 | Affectation PAX / Transfert | Type0 | 1056 | 281 | Transfert |
+| 13 | 237.33 | T46 | Libération du logement | Type0 | 123 | 149 | Traitement |
+| 14 | 237.36 | T49 | Récup nb chambre /LCO | Type0 | 123 | 89 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
-#### <a id="ecran-t1"></a>237.1 - Saisie transaction
+#### <a id="ecran-t1"></a>237 - Saisie transaction
 **Tache** : [T1](#t1) | **Type** : Modal | **Dimensions** : 1112 x 279 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie transaction
 
@@ -837,7 +837,7 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
@@ -847,7 +847,7 @@ Transfert de donnees entre modules.
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
@@ -857,7 +857,7 @@ Transfert de donnees entre modules.
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  290,
@@ -867,7 +867,7 @@ Transfert de donnees entre modules.
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  430,
@@ -877,7 +877,7 @@ Transfert de donnees entre modules.
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  570,
@@ -887,7 +887,7 @@ Transfert de donnees entre modules.
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  43,
                          "type":  "edit",
                          "x":  10,
@@ -896,159 +896,1852 @@ Transfert de donnees entre modules.
                          "var":  "F"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 date fin sejour",
+                         "h":  20,
+                         "var":  "G"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0 etat compte",
+                         "h":  20,
+                         "var":  "H"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0 date solde",
+                         "h":  20,
+                         "var":  "I"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0 garanti O/N",
+                         "h":  20,
+                         "var":  "J"
+                     },
+                     {
+                         "w":  130,
                          "readonly":  false,
                          "y":  73,
                          "type":  "edit",
                          "x":  10,
+                         "label":  "P0 Nom \u0026 prenom",
+                         "h":  20,
+                         "var":  "K"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "P0 UNI/BI",
+                         "h":  20,
+                         "var":  "L"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "P0.Date debut sejour",
+                         "h":  20,
+                         "var":  "M"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P0.Valide ?",
+                         "h":  20,
+                         "var":  "N"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "P0.Nb decimales",
+                         "h":  20,
+                         "var":  "O"
+                     },
+                     {
+                         "w":  80,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "button",
+                         "x":  10,
+                         "label":  "Bouton IDENTITE",
+                         "h":  25,
+                         "var":  "P"
+                     },
+                     {
+                         "w":  80,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "button",
+                         "x":  150,
+                         "label":  "Bouton ABANDON",
+                         "h":  25,
+                         "var":  "Q"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  290,
                          "label":  "W0 FIN SAISIE OD",
                          "h":  20,
                          "var":  "R"
                      },
                      {
-                         "w":  200,
+                         "w":  80,
                          "readonly":  false,
-                         "y":  73,
+                         "y":  103,
+                         "type":  "button",
+                         "x":  430,
+                         "label":  "Bouton FIN SAISIE OD",
+                         "h":  25,
+                         "var":  "S"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  103,
                          "type":  "edit",
-                         "x":  220,
+                         "x":  570,
+                         "label":  "W0 Cloture en cours",
+                         "h":  20,
+                         "var":  "T"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  10,
                          "label":  "W0 code article",
                          "h":  20,
                          "var":  "U"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  73,
+                         "y":  133,
                          "type":  "edit",
-                         "x":  430,
+                         "x":  150,
+                         "label":  "v.SoldeGiftPass",
+                         "h":  20,
+                         "var":  "V"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  290,
                          "label":  "W0 imputation",
                          "h":  20,
                          "var":  "W"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  103,
+                         "y":  133,
                          "type":  "edit",
-                         "x":  10,
+                         "x":  430,
+                         "label":  "W0 sous-imput.",
+                         "h":  20,
+                         "var":  "X"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  570,
                          "label":  "W0 date d\u0027achat",
                          "h":  20,
                          "var":  "Y"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  103,
+                         "y":  163,
                          "type":  "edit",
-                         "x":  220,
+                         "x":  10,
+                         "label":  "W0 annulation",
+                         "h":  20,
+                         "var":  "Z"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  163,
+                         "type":  "edit",
+                         "x":  150,
                          "label":  "W0 service village",
                          "h":  20,
                          "var":  "BA"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  103,
+                         "y":  163,
                          "type":  "edit",
-                         "x":  430,
+                         "x":  290,
                          "label":  "W0 libelle article",
                          "h":  20,
                          "var":  "BB"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  133,
+                         "y":  163,
                          "type":  "edit",
-                         "x":  10,
+                         "x":  430,
                          "label":  "W0 article dernière minute",
                          "h":  20,
                          "var":  "BC"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  133,
+                         "y":  163,
                          "type":  "edit",
-                         "x":  220,
+                         "x":  570,
                          "label":  "W0 nbre articles",
                          "h":  20,
                          "var":  "BD"
                      },
                      {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  193,
+                         "type":  "edit",
                          "x":  10,
-                         "w":  80
+                         "label":  "W0 prix unitaire",
+                         "h":  20,
+                         "var":  "BE"
                      },
                      {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  193,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 Categorie de chambre",
+                         "h":  20,
+                         "var":  "BF"
                      },
                      {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  193,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 Lieu sejour",
+                         "h":  20,
+                         "var":  "BG"
                      },
                      {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  193,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Code reduction",
+                         "h":  20,
+                         "var":  "BH"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  193,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "v Sens Transfert Global",
+                         "h":  20,
+                         "var":  "BI"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  223,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "v.Date activité VAE",
+                         "h":  20,
+                         "var":  "BJ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  223,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "v.VAE pendant le séjour ?",
+                         "h":  20,
+                         "var":  "BK"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  223,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "v.Matin/Après midi",
+                         "h":  20,
+                         "var":  "BL"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  223,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Sens du transfert Aller",
+                         "h":  20,
+                         "var":  "BM"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  223,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 Date du transfert Aller",
+                         "h":  20,
+                         "var":  "BN"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  253,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Heure du transfert Aller",
+                         "h":  20,
+                         "var":  "BO"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  253,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 b.Date du transfert",
+                         "h":  20,
+                         "var":  "BP"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  253,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 Type d\u0027endroit Aller",
+                         "h":  20,
+                         "var":  "BQ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  253,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Code Gare/Aéroport Aller",
+                         "h":  20,
+                         "var":  "BR"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  253,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 Numéro du vol Aller",
+                         "h":  20,
+                         "var":  "BS"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  283,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Compagnie Aller",
+                         "h":  20,
+                         "var":  "BT"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  283,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 Commentaire Aller",
+                         "h":  20,
+                         "var":  "BU"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  283,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 Sens du transfert Retour",
+                         "h":  20,
+                         "var":  "BV"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  283,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Date du transfert Retour",
+                         "h":  20,
+                         "var":  "BW"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  283,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 Heure du transfert Retour",
+                         "h":  20,
+                         "var":  "BX"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  313,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Type d\u0027endroit Retour",
+                         "h":  20,
+                         "var":  "BY"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  313,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 Code Gare/Aéroport Retour",
+                         "h":  20,
+                         "var":  "BZ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  313,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 Numéro du vol Retour",
+                         "h":  20,
+                         "var":  "CA"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  313,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Compagnie Retour",
+                         "h":  20,
+                         "var":  "CB"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  313,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 b.Saisie PAX",
+                         "h":  20,
+                         "var":  "CC"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  343,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Nbre de PAX enregistré",
+                         "h":  20,
+                         "var":  "CD"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  343,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 Commentaire Retour",
+                         "h":  20,
+                         "var":  "CE"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  343,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 montant avant reduction",
+                         "h":  20,
+                         "var":  "CF"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  343,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Pourcentage reduction",
+                         "h":  20,
+                         "var":  "CG"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  343,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 Remise Obligatoire",
+                         "h":  20,
+                         "var":  "CH"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  373,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Montant reduction",
+                         "h":  20,
+                         "var":  "CI"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  373,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0.Date consommation",
+                         "h":  20,
+                         "var":  "CJ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  373,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0.Date fin sejour",
+                         "h":  20,
+                         "var":  "CK"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  373,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Motif de non enreg NA",
+                         "h":  20,
+                         "var":  "CL"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  373,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 Commentaire",
+                         "h":  20,
+                         "var":  "CM"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  403,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Motif annulation",
+                         "h":  20,
+                         "var":  "CN"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  403,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 Titre",
+                         "h":  20,
+                         "var":  "CO"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  403,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 Nom",
+                         "h":  20,
+                         "var":  "CP"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  403,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Prenom",
+                         "h":  20,
+                         "var":  "CQ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  403,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 Num rue",
+                         "h":  20,
+                         "var":  "CR"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  433,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Nom de la rue",
+                         "h":  20,
+                         "var":  "CS"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  433,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 Commune",
+                         "h":  20,
+                         "var":  "CT"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  433,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 CP",
+                         "h":  20,
+                         "var":  "CU"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  433,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Ville",
+                         "h":  20,
+                         "var":  "CV"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  433,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 Nb Chambres",
+                         "h":  20,
+                         "var":  "CW"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  463,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Chambre",
+                         "h":  20,
+                         "var":  "CX"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  463,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 PYR Valide",
+                         "h":  20,
+                         "var":  "CY"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  463,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 Lib Bouton Chambre",
+                         "h":  20,
+                         "var":  "CZ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  463,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Vendeur",
+                         "h":  20,
+                         "var":  "DA"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  463,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 libelle supplem",
+                         "h":  20,
+                         "var":  "DB"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  493,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 libelle supplem pour édition",
+                         "h":  20,
+                         "var":  "DC"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  493,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 article trouve",
+                         "h":  20,
+                         "var":  "DD"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  493,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 Stock produit",
+                         "h":  20,
+                         "var":  "DE"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  493,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 montant",
+                         "h":  20,
+                         "var":  "DF"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  493,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 mode de paiement",
+                         "h":  20,
+                         "var":  "DG"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  523,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "Existe mode de paiement",
+                         "h":  20,
+                         "var":  "DH"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  523,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 Libelle MOP",
+                         "h":  20,
+                         "var":  "DI"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  523,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "WO Classe MOP",
+                         "h":  20,
+                         "var":  "DJ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  523,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "V0 memo-service",
+                         "h":  20,
+                         "var":  "DK"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  523,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "V0 memo-nom GM",
+                         "h":  20,
+                         "var":  "DL"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  553,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "V0 validation",
+                         "h":  20,
+                         "var":  "DM"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  553,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 reseau",
+                         "h":  20,
+                         "var":  "DN"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  553,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 fin tache",
+                         "h":  20,
+                         "var":  "DO"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  553,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 forfait (O/N)",
+                         "h":  20,
+                         "var":  "DP"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  553,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 effacement (O/N)",
+                         "h":  20,
+                         "var":  "DQ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  583,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 forfait date(O/N)",
+                         "h":  20,
+                         "var":  "DR"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  583,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 code forfait",
+                         "h":  20,
+                         "var":  "DS"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  583,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 date debut",
+                         "h":  20,
+                         "var":  "DT"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  583,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 date fin",
+                         "h":  20,
+                         "var":  "DU"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  583,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 gratuite ?",
+                         "h":  20,
+                         "var":  "DV"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  613,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 ret lien special",
+                         "h":  20,
+                         "var":  "DW"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  613,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 Code Devise",
+                         "h":  20,
+                         "var":  "DX"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  613,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 Retour Transmission TPE",
+                         "h":  20,
+                         "var":  "DY"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  613,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Forcer Transaction Manuelle",
+                         "h":  20,
+                         "var":  "DZ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  613,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 Message TPE",
+                         "h":  20,
+                         "var":  "EA"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  643,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Retour Lecture TPE",
+                         "h":  20,
+                         "var":  "EB"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  643,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 Fin Transaction TPE",
+                         "h":  20,
+                         "var":  "EC"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  643,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "v. titre",
+                         "h":  20,
+                         "var":  "ED"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  643,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Total_Vente",
+                         "h":  20,
+                         "var":  "EE"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  643,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 Total_GiftPass",
+                         "h":  20,
+                         "var":  "EF"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  673,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 Annulation OD active",
+                         "h":  20,
+                         "var":  "EG"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  673,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 Compte garanti",
+                         "h":  20,
+                         "var":  "EH"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  673,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W0 confirmation si non garanti",
+                         "h":  20,
+                         "var":  "EI"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  673,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Abandon",
+                         "h":  20,
+                         "var":  "EJ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  673,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W0 validation",
+                         "h":  20,
+                         "var":  "EK"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  703,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "W0 choix personne absente",
+                         "h":  20,
+                         "var":  "EL"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  703,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W0 choix transac manuelle",
+                         "h":  20,
+                         "var":  "EM"
+                     },
+                     {
+                         "w":  80,
+                         "readonly":  false,
+                         "y":  703,
                          "type":  "button",
-                         "x":  280,
-                         "w":  80
+                         "x":  290,
+                         "label":  "Bouton Ok",
+                         "h":  25,
+                         "var":  "EN"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  703,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W0 Lien Logement Lieu Séjour",
+                         "h":  20,
+                         "var":  "EO"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  703,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "V.VADA ?",
+                         "h":  20,
+                         "var":  "EP"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  733,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "V.VADV ?",
+                         "h":  20,
+                         "var":  "EQ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  733,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "V.VAD ?",
+                         "h":  20,
+                         "var":  "ER"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  733,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "Nbre ecriture",
+                         "h":  20,
+                         "var":  "ES"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  733,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "V.Reglement premier article",
+                         "h":  20,
+                         "var":  "ET"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  733,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "V.Type premier article",
+                         "h":  20,
+                         "var":  "EU"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  763,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "V.Premier article VSL NA ?",
+                         "h":  20,
+                         "var":  "EV"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  763,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "V.Article VSL NA ?",
+                         "h":  20,
+                         "var":  "EW"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  763,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "v.IncrémentTicket(VRL/VSL) OK",
+                         "h":  20,
+                         "var":  "EX"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  763,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "v.IncrémentTicket(VTE) OK",
+                         "h":  20,
+                         "var":  "EY"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  763,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "v.NumeroTicket(VRL/VSL)",
+                         "h":  20,
+                         "var":  "EZ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  793,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "v.NumeroTicket(VTE)",
+                         "h":  20,
+                         "var":  "FA"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  793,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "v Réponse mode paiement",
+                         "h":  20,
+                         "var":  "FB"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  793,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "V Nbre de Ligne Saisies",
+                         "h":  20,
+                         "var":  "FC"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  793,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "v Nbre ligne de reglement Saisi",
+                         "h":  20,
+                         "var":  "FD"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  793,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "V.Num ligne vente",
+                         "h":  20,
+                         "var":  "FE"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  823,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "V.Total reglement ligne",
+                         "h":  20,
+                         "var":  "FF"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  823,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "V.Multi reglement ligne",
+                         "h":  20,
+                         "var":  "FG"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  823,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "V.MOP TPE",
+                         "h":  20,
+                         "var":  "FH"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  823,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "V.Id transaction PMS",
+                         "h":  20,
+                         "var":  "FI"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  823,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "V.Id transaction AXIS",
+                         "h":  20,
+                         "var":  "FJ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  853,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "V.Num Autorisation",
+                         "h":  20,
+                         "var":  "FK"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  853,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "V.Transaction TPE validee",
+                         "h":  20,
+                         "var":  "FL"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  853,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "V.Message erreur transac TPE",
+                         "h":  20,
+                         "var":  "FM"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  853,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "V.Total carte",
+                         "h":  20,
+                         "var":  "FN"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  853,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "V.Transaction ok",
+                         "h":  20,
+                         "var":  "FO"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  883,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "V.Nombre de carte",
+                         "h":  20,
+                         "var":  "FP"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  883,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "b.type de transfert",
+                         "h":  20,
+                         "var":  "FQ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  883,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "v is the First time",
+                         "h":  20,
+                         "var":  "FR"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  883,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "v.Montant-giftPass",
+                         "h":  20,
+                         "var":  "FS"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  883,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "v.email GM pour VAD",
+                         "h":  20,
+                         "var":  "FT"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  913,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "V.N°Ticket OD",
+                         "h":  20,
+                         "var":  "FU"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  913,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "V.N°Ticket Autres Moyen Paie",
+                         "h":  20,
+                         "var":  "FV"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  913,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "V.Num Cheque",
+                         "h":  20,
+                         "var":  "FW"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  913,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "V.SoldeResortCredit",
+                         "h":  20,
+                         "var":  "FX"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  913,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "V.Confirm Use Resort Credit",
+                         "h":  20,
+                         "var":  "FY"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  943,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "V.ConfirmeUseGP?",
+                         "h":  20,
+                         "var":  "FZ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  943,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "V.RC utilisé",
+                         "h":  20,
+                         "var":  "GA"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  943,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "v.Token Id",
+                         "h":  20,
+                         "var":  "GB"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  943,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "v.Transaction Id",
+                         "h":  20,
+                         "var":  "GC"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  943,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "v.Nb chambres /LCO",
+                         "h":  20,
+                         "var":  "GD"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  973,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "v.Flag exist Vte LCO",
+                         "h":  20,
+                         "var":  "GE"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  973,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "v.Flag abandon libération",
+                         "h":  20,
+                         "var":  "GF"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  973,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "v. pied stype?",
+                         "h":  20,
+                         "var":  "GG"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  973,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "v. pied type?",
+                         "h":  20,
+                         "var":  "GH"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  973,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "v. type a utiliser",
+                         "h":  20,
+                         "var":  "GI"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  1003,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "v. stype a utiliser",
+                         "h":  20,
+                         "var":  "GJ"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  1003,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "CHG_REASON_W0 libelle article",
+                         "h":  20,
+                         "var":  "GK"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  1003,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "CHG_PRV_W0 libelle article",
+                         "h":  20,
+                         "var":  "GL"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  1003,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "P.Toute ligne",
+                         "h":  20,
+                         "var":  "GM"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  1003,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "CHG_REASON_W0 nbre articles",
+                         "h":  20,
+                         "var":  "GN"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  1033,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "CHG_PRV_W0 nbre articles",
+                         "h":  20,
+                         "var":  "GO"
                      }
                  ],
     "type":  "Modal",
     "height":  279,
-    "taskId":  1
+    "taskId":  "237"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 167 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
+| A | P0 societe | Alpha | **Saisie** |
+| B | P0 devise locale | Alpha | **Saisie** |
+| C | P0 masque montant | Alpha | **Saisie** |
+| D | P0 solde compte | Numeric | **Saisie** |
+| E | P0 code GM | Numeric | **Saisie** |
+| F | P0 filiation | Numeric | **Saisie** |
+| G | P0 date fin sejour | Date | **Saisie** |
+| H | P0 etat compte | Alpha | **Saisie** |
+| I | P0 date solde | Date | **Saisie** |
+| J | P0 garanti O/N | Alpha | **Saisie** |
+| K | P0 Nom & prenom | Alpha | **Saisie** |
+| L | P0 UNI/BI | Alpha | **Saisie** |
+| M | P0.Date debut sejour | Date | **Saisie** |
+| N | P0.Valide ? | Numeric | **Saisie** |
+| O | P0.Nb decimales | Numeric | **Saisie** |
 | R | W0 FIN SAISIE OD | Logical | **Saisie** |
+| T | W0 Cloture en cours | Logical | **Saisie** |
 | U | W0 code article | Numeric | **Saisie** |
+| V | v.SoldeGiftPass | Numeric | **Saisie** |
 | W | W0 imputation | Numeric | **Saisie** |
+| X | W0 sous-imput. | Numeric | **Saisie** |
 | Y | W0 date d'achat | Date | **Saisie** |
+| Z | W0 annulation | Alpha | **Saisie** |
 | BA | W0 service village | Alpha | **Saisie** |
 | BB | W0 libelle article | Alpha | **Saisie** |
 | BC | W0 article dernière minute | Logical | **Saisie** |
 | BD | W0 nbre articles | Numeric | **Saisie** |
+| BE | W0 prix unitaire | Numeric | **Saisie** |
+| BF | W0 Categorie de chambre | Alpha | **Saisie** |
+| BG | W0 Lieu sejour | Alpha | **Saisie** |
+| BH | W0 Code reduction | Alpha | **Saisie** |
+| BI | v Sens Transfert Global | Alpha | **Saisie** |
+| BJ | v.Date activité VAE | Date | **Saisie** |
+| BK | v.VAE pendant le séjour ? | Logical | **Saisie** |
+| BL | v.Matin/Après midi | Unicode | **Saisie** |
+| BM | W0 Sens du transfert Aller | Alpha | **Saisie** |
+| BN | W0 Date du transfert Aller | Date | **Saisie** |
+| BO | W0 Heure du transfert Aller | Time | **Saisie** |
+| BP | W0 b.Date du transfert | Alpha | **Saisie** |
+| BQ | W0 Type d'endroit Aller | Alpha | **Saisie** |
+| BR | W0 Code Gare/Aéroport Aller | Alpha | **Saisie** |
+| BS | W0 Numéro du vol Aller | Alpha | **Saisie** |
+| BT | W0 Compagnie Aller | Alpha | **Saisie** |
+| BU | W0 Commentaire Aller | Alpha | **Saisie** |
+| BV | W0 Sens du transfert Retour | Alpha | **Saisie** |
+| BW | W0 Date du transfert Retour | Date | **Saisie** |
+| BX | W0 Heure du transfert Retour | Time | **Saisie** |
+| BY | W0 Type d'endroit Retour | Alpha | **Saisie** |
+| BZ | W0 Code Gare/Aéroport Retour | Alpha | **Saisie** |
+| CA | W0 Numéro du vol Retour | Alpha | **Saisie** |
+| CB | W0 Compagnie Retour | Alpha | **Saisie** |
+| CC | W0 b.Saisie PAX | Alpha | **Saisie** |
+| CD | W0 Nbre de PAX enregistré | Numeric | **Saisie** |
+| CE | W0 Commentaire Retour | Alpha | **Saisie** |
+| CF | W0 montant avant reduction | Numeric | **Saisie** |
+| CG | W0 Pourcentage reduction | Numeric | **Saisie** |
+| CH | W0 Remise Obligatoire | Numeric | **Saisie** |
+| CI | W0 Montant reduction | Numeric | **Saisie** |
+| CJ | W0.Date consommation | Date | **Saisie** |
+| CK | W0.Date fin sejour | Date | **Saisie** |
+| CL | W0 Motif de non enreg NA | Numeric | **Saisie** |
+| CM | W0 Commentaire | Alpha | **Saisie** |
+| CN | W0 Motif annulation | Alpha | **Saisie** |
+| CO | W0 Titre | Alpha | **Saisie** |
+| CP | W0 Nom | Alpha | **Saisie** |
+| CQ | W0 Prenom | Alpha | **Saisie** |
+| CR | W0 Num rue | Alpha | **Saisie** |
+| CS | W0 Nom de la rue | Alpha | **Saisie** |
+| CT | W0 Commune | Alpha | **Saisie** |
+| CU | W0 CP | Alpha | **Saisie** |
+| CV | W0 Ville | Alpha | **Saisie** |
+| CW | W0 Nb Chambres | Numeric | **Saisie** |
+| CX | W0 Chambre | Unicode | **Saisie** |
+| CY | W0 PYR Valide | Logical | **Saisie** |
+| CZ | W0 Lib Bouton Chambre | Unicode | **Saisie** |
+| DA | W0 Vendeur | Unicode | **Saisie** |
+| DB | W0 libelle supplem | Alpha | **Saisie** |
+| DC | W0 libelle supplem pour édition | Alpha | **Saisie** |
+| DD | W0 article trouve | Logical | **Saisie** |
+| DE | W0 Stock produit | Numeric | **Saisie** |
+| DF | W0 montant | Numeric | **Saisie** |
+| DG | W0 mode de paiement | Alpha | **Saisie** |
+| DH | Existe mode de paiement | Logical | **Saisie** |
+| DI | W0 Libelle MOP | Alpha | **Saisie** |
+| DJ | WO Classe MOP | Alpha | **Saisie** |
+| DK | V0 memo-service | Alpha | **Saisie** |
+| DL | V0 memo-nom GM | Alpha | **Saisie** |
+| DM | V0 validation | Logical | **Saisie** |
+| DN | W0 reseau | Alpha | **Saisie** |
+| DO | W0 fin tache | Alpha | **Saisie** |
+| DP | W0 forfait (O/N) | Alpha | **Saisie** |
+| DQ | W0 effacement (O/N) | Alpha | **Saisie** |
+| DR | W0 forfait date(O/N) | Alpha | **Saisie** |
+| DS | W0 code forfait | Alpha | **Saisie** |
+| DT | W0 date debut | Date | **Saisie** |
+| DU | W0 date fin | Date | **Saisie** |
+| DV | W0 gratuite ? | Alpha | **Saisie** |
+| DW | W0 ret lien special | Numeric | **Saisie** |
+| DX | W0 Code Devise | Numeric | **Saisie** |
+| DY | W0 Retour Transmission TPE | Logical | **Saisie** |
+| DZ | W0 Forcer Transaction Manuelle | Logical | **Saisie** |
+| EA | W0 Message TPE | Alpha | **Saisie** |
+| EB | W0 Retour Lecture TPE | Logical | **Saisie** |
+| EC | W0 Fin Transaction TPE | Logical | **Saisie** |
+| ED | v. titre | Alpha | **Saisie** |
+| EE | W0 Total_Vente | Numeric | **Saisie** |
+| EF | W0 Total_GiftPass | Numeric | **Saisie** |
+| EG | W0 Annulation OD active | Logical | **Saisie** |
+| EH | W0 Compte garanti | Logical | **Saisie** |
+| EI | W0 confirmation si non garanti | Numeric | **Saisie** |
+| EJ | W0 Abandon | Logical | **Saisie** |
+| EK | W0 validation | Logical | **Saisie** |
+| EL | W0 choix personne absente | Numeric | **Saisie** |
+| EM | W0 choix transac manuelle | Numeric | **Saisie** |
+| EO | W0 Lien Logement Lieu Séjour | Logical | **Saisie** |
+| EP | V.VADA ? | Logical | **Saisie** |
+| EQ | V.VADV ? | Logical | **Saisie** |
+| ER | V.VAD ? | Logical | **Saisie** |
+| ES | Nbre ecriture | Numeric | **Saisie** |
+| ET | V.Reglement premier article | Alpha | **Saisie** |
+| EU | V.Type premier article | Alpha | **Saisie** |
+| EV | V.Premier article VSL NA ? | Logical | **Saisie** |
+| EW | V.Article VSL NA ? | Logical | **Saisie** |
+| EX | v.IncrémentTicket(VRL/VSL) OK | Logical | **Saisie** |
+| EY | v.IncrémentTicket(VTE) OK | Logical | **Saisie** |
+| EZ | v.NumeroTicket(VRL/VSL) | Numeric | **Saisie** |
+| FA | v.NumeroTicket(VTE) | Numeric | **Saisie** |
+| FB | v Réponse mode paiement | Numeric | **Saisie** |
+| FC | V Nbre de Ligne Saisies | Numeric | **Saisie** |
+| FD | v Nbre ligne de reglement Saisi | Numeric | **Saisie** |
+| FE | V.Num ligne vente | Numeric | **Saisie** |
+| FF | V.Total reglement ligne | Numeric | **Saisie** |
+| FG | V.Multi reglement ligne | Logical | **Saisie** |
+| FH | V.MOP TPE | Alpha | **Saisie** |
+| FI | V.Id transaction PMS | Alpha | **Saisie** |
+| FJ | V.Id transaction AXIS | Alpha | **Saisie** |
+| FK | V.Num Autorisation | Alpha | **Saisie** |
+| FL | V.Transaction TPE validee | Logical | **Saisie** |
+| FM | V.Message erreur transac TPE | Alpha | **Saisie** |
+| FN | V.Total carte | Numeric | **Saisie** |
+| FO | V.Transaction ok | Logical | **Saisie** |
+| FP | V.Nombre de carte | Numeric | **Saisie** |
+| FQ | b.type de transfert | Alpha | **Saisie** |
+| FR | v is the First time | Numeric | **Saisie** |
+| FS | v.Montant-giftPass | Numeric | **Saisie** |
+| FT | v.email GM pour VAD | Alpha | **Saisie** |
+| FU | V.N°Ticket OD | Numeric | **Saisie** |
+| FV | V.N°Ticket Autres Moyen Paie | Numeric | **Saisie** |
+| FW | V.Num Cheque | Unicode | **Saisie** |
+| FX | V.SoldeResortCredit | Numeric | **Saisie** |
+| FY | V.Confirm Use Resort Credit | Numeric | **Saisie** |
+| FZ | V.ConfirmeUseGP? | Numeric | **Saisie** |
+| GA | V.RC utilisé | Logical | **Saisie** |
+| GB | v.Token Id | Unicode | **Saisie** |
+| GC | v.Transaction Id | Unicode | **Saisie** |
+| GD | v.Nb chambres /LCO | Numeric | **Saisie** |
+| GE | v.Flag exist Vte LCO | Logical | **Saisie** |
+| GF | v.Flag abandon libération | Logical | **Saisie** |
+| GG | v. pied stype? | Logical | **Saisie** |
+| GH | v. pied type? | Logical | **Saisie** |
+| GI | v. type a utiliser | Unicode | **Saisie** |
+| GJ | v. stype a utiliser | Unicode | **Saisie** |
+| GK | CHG_REASON_W0 libelle article | Numeric | **Saisie** |
+| GL | CHG_PRV_W0 libelle article | Alpha | **Saisie** |
+| GM | P.Toute ligne | Logical | **Saisie** |
+| GN | CHG_REASON_W0 nbre articles | Numeric | **Saisie** |
+| GO | CHG_PRV_W0 nbre articles | Numeric | **Saisie** |
 
-**Boutons :**
+</details>
+
+<details>
+<summary><strong>Boutons : 4 boutons</strong></summary>
 
 | Bouton | Variable | Action |
 |--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+| Bouton IDENTITE | P | Identification du client |
+| Bouton ABANDON | Q | Annule et retour au menu |
+| Bouton FIN SAISIE OD | S | Termine la saisie en cours |
+| Bouton Ok | EN | Valide la saisie et enregistre |
+
+</details>
 
 ---
 
-#### <a id="ecran-t2"></a>237.2 - Reglements suite a refus TPE
+#### <a id="ecran-t2"></a>237.1 - Reglements suite a refus TPE
 **Tache** : [T2](#t2) | **Type** : Type6 | **Dimensions** : 708 x 256 DLU
 **Bloc** : Reglement | **Titre IDE** : Reglements suite a refus TPE
 
@@ -1058,214 +2751,95 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "V.Existe MOP ?",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "V.Existe MOP ligne ?",
                          "h":  20,
                          "var":  "B"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  290,
-                         "label":  "P0 masque montant",
+                         "label":  "V.Existe new VSL NA ?",
                          "h":  20,
                          "var":  "C"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  430,
-                         "label":  "P0 solde compte",
+                         "label":  "V.Article VSL NA ?",
                          "h":  20,
                          "var":  "D"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  570,
-                         "label":  "P0 code GM",
+                         "label":  "V.Plus de reglement ?",
                          "h":  20,
                          "var":  "E"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  43,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 filiation",
+                         "label":  "V.Ecart montant ?",
                          "h":  20,
                          "var":  "F"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  73,
+                         "y":  43,
                          "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 montant avant reduction",
+                         "x":  150,
+                         "label":  "V.Ecart num ligne",
                          "h":  20,
-                         "var":  "CF"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 Montant reduction",
-                         "h":  20,
-                         "var":  "CI"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 montant",
-                         "h":  20,
-                         "var":  "DF"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 mode de paiement",
-                         "h":  20,
-                         "var":  "DG"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 Libelle MOP",
-                         "h":  20,
-                         "var":  "DI"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Code Devise",
-                         "h":  20,
-                         "var":  "DX"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Total_Vente",
-                         "h":  20,
-                         "var":  "EE"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 Total_GiftPass",
-                         "h":  20,
-                         "var":  "EF"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
+                         "var":  "G"
                      }
                  ],
     "type":  "Type6",
     "height":  256,
-    "taskId":  2
+    "taskId":  "237.1"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 7 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| CF | W0 montant avant reduction | Numeric | **Saisie** |
-| CI | W0 Montant reduction | Numeric | **Saisie** |
-| DF | W0 montant | Numeric | **Saisie** |
-| DG | W0 mode de paiement | Alpha | **Saisie** |
-| DI | W0 Libelle MOP | Alpha | **Saisie** |
-| DX | W0 Code Devise | Numeric | **Saisie** |
-| EE | W0 Total_Vente | Numeric | **Saisie** |
-| EF | W0 Total_GiftPass | Numeric | **Saisie** |
+| A | V.Existe MOP ? | Logical | **Saisie** |
+| B | V.Existe MOP ligne ? | Logical | **Saisie** |
+| C | V.Existe new VSL NA ? | Logical | **Saisie** |
+| D | V.Article VSL NA ? | Logical | **Saisie** |
+| E | V.Plus de reglement ? | Logical | **Saisie** |
+| F | V.Ecart montant ? | Logical | **Saisie** |
+| G | V.Ecart num ligne | Numeric | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ---
 
@@ -1279,214 +2853,51 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "v Montant cumulé saisie",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "b.abandonner",
                          "h":  20,
                          "var":  "B"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  290,
-                         "label":  "P0 masque montant",
+                         "label":  "b.Valider",
                          "h":  20,
                          "var":  "C"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0 solde compte",
-                         "h":  20,
-                         "var":  "D"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0 code GM",
-                         "h":  20,
-                         "var":  "E"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 filiation",
-                         "h":  20,
-                         "var":  "F"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
-                         "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 code article",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 libelle article",
-                         "h":  20,
-                         "var":  "BB"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 article dernière minute",
-                         "h":  20,
-                         "var":  "BC"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 nbre articles",
-                         "h":  20,
-                         "var":  "BD"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
                      }
                  ],
     "type":  "Type6",
     "height":  249,
-    "taskId":  7
+    "taskId":  "237.3"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 3 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
-| BB | W0 libelle article | Alpha | **Saisie** |
-| BC | W0 article dernière minute | Logical | **Saisie** |
-| BD | W0 nbre articles | Numeric | **Saisie** |
+| A | v Montant cumulé saisie | Numeric | **Saisie** |
+| B | b.abandonner | Alpha | **Saisie** |
+| C | b.Valider | Alpha | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ---
 
@@ -1500,218 +2911,55 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "v Montant cumulé saisie",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "b.Abandonner",
                          "h":  20,
                          "var":  "B"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  290,
-                         "label":  "P0 masque montant",
+                         "label":  "b.Valider",
                          "h":  20,
                          "var":  "C"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0 solde compte",
-                         "h":  20,
-                         "var":  "D"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0 code GM",
-                         "h":  20,
-                         "var":  "E"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 filiation",
-                         "h":  20,
-                         "var":  "F"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
-                         "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 code article",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 libelle article",
-                         "h":  20,
-                         "var":  "BB"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 article dernière minute",
-                         "h":  20,
-                         "var":  "BC"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 nbre articles",
-                         "h":  20,
-                         "var":  "BD"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
                      }
                  ],
     "type":  "Type6",
     "height":  250,
-    "taskId":  8
+    "taskId":  "237.4"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 3 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
-| BB | W0 libelle article | Alpha | **Saisie** |
-| BC | W0 article dernière minute | Logical | **Saisie** |
-| BD | W0 nbre articles | Numeric | **Saisie** |
+| A | v Montant cumulé saisie | Numeric | **Saisie** |
+| B | b.Abandonner | Alpha | **Saisie** |
+| C | b.Valider | Alpha | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ---
 
-#### <a id="ecran-t10"></a>237.5 - Saisie Commentaires
+#### <a id="ecran-t10"></a>237.6 - Saisie Commentaires
 **Tache** : [T10](#t10) | **Type** : Type6 | **Dimensions** : 772 x 169 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie Commentaires
 
@@ -1721,218 +2969,33 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "b.Valider",
                          "h":  20,
                          "var":  "A"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "P0 devise locale",
-                         "h":  20,
-                         "var":  "B"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "P0 masque montant",
-                         "h":  20,
-                         "var":  "C"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0 solde compte",
-                         "h":  20,
-                         "var":  "D"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0 code GM",
-                         "h":  20,
-                         "var":  "E"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 filiation",
-                         "h":  20,
-                         "var":  "F"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
-                         "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 code article",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 libelle article",
-                         "h":  20,
-                         "var":  "BB"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 article dernière minute",
-                         "h":  20,
-                         "var":  "BC"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 nbre articles",
-                         "h":  20,
-                         "var":  "BD"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
                      }
                  ],
     "type":  "Type6",
     "height":  169,
-    "taskId":  10
+    "taskId":  "237.6"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 1 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
-| BB | W0 libelle article | Alpha | **Saisie** |
-| BC | W0 article dernière minute | Logical | **Saisie** |
-| BD | W0 nbre articles | Numeric | **Saisie** |
+| A | b.Valider | Alpha | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ---
 
-#### <a id="ecran-t11"></a>237.6 - VRL : Saisie identité
+#### <a id="ecran-t11"></a>237.7 - VRL : Saisie identité
 **Tache** : [T11](#t11) | **Type** : MDI | **Dimensions** : 699 x 157 DLU
 **Bloc** : Saisie | **Titre IDE** : VRL : Saisie identité
 
@@ -1942,218 +3005,140 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "W2 Titre",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "W2 Nom",
                          "h":  20,
                          "var":  "B"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  290,
-                         "label":  "P0 masque montant",
+                         "label":  "W2 Prenom",
                          "h":  20,
                          "var":  "C"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  430,
-                         "label":  "P0 solde compte",
+                         "label":  "W2 Num rue",
                          "h":  20,
                          "var":  "D"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  570,
-                         "label":  "P0 code GM",
+                         "label":  "W2 Nom rue",
                          "h":  20,
                          "var":  "E"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  43,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 filiation",
+                         "label":  "W2 Commune",
                          "h":  20,
                          "var":  "F"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  73,
+                         "y":  43,
                          "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
+                         "x":  150,
+                         "label":  "W2 CP",
                          "h":  20,
-                         "var":  "R"
+                         "var":  "G"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  73,
+                         "y":  43,
                          "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 code article",
+                         "x":  290,
+                         "label":  "W2 Ville",
                          "h":  20,
-                         "var":  "U"
+                         "var":  "H"
                      },
                      {
-                         "w":  200,
+                         "w":  80,
                          "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
+                         "y":  43,
+                         "type":  "button",
                          "x":  430,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 libelle article",
-                         "h":  20,
-                         "var":  "BB"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 article dernière minute",
-                         "h":  20,
-                         "var":  "BC"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 nbre articles",
-                         "h":  20,
-                         "var":  "BD"
-                     },
-                     {
+                         "label":  "Bouton Ok",
                          "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
+                         "var":  "I"
                      },
                      {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "V.Chaine OK",
+                         "h":  20,
+                         "var":  "J"
                      }
                  ],
     "type":  "MDI",
     "height":  157,
-    "taskId":  11
+    "taskId":  "237.7"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 9 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
-| BB | W0 libelle article | Alpha | **Saisie** |
-| BC | W0 article dernière minute | Logical | **Saisie** |
-| BD | W0 nbre articles | Numeric | **Saisie** |
+| A | W2 Titre | Alpha | **Saisie** |
+| B | W2 Nom | Alpha | **Saisie** |
+| C | W2 Prenom | Alpha | **Saisie** |
+| D | W2 Num rue | Alpha | **Saisie** |
+| E | W2 Nom rue | Alpha | **Saisie** |
+| F | W2 Commune | Alpha | **Saisie** |
+| G | W2 CP | Alpha | **Saisie** |
+| H | W2 Ville | Alpha | **Saisie** |
+| J | V.Chaine OK | Alpha | **Saisie** |
 
-**Boutons :**
+</details>
+
+<details>
+<summary><strong>Boutons : 1 boutons</strong></summary>
 
 | Bouton | Variable | Action |
 |--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+| Bouton Ok | I | Valide la saisie et enregistre |
+
+</details>
 
 ---
 
-#### <a id="ecran-t18"></a>237.7 - (sans nom)
+#### <a id="ecran-t18"></a>237.12 - (sans nom)
 **Tache** : [T18](#t18) | **Type** : Modal | **Dimensions** : 116 x 32 DLU
 **Bloc** : Traitement | **Titre IDE** : (sans nom)
 
@@ -2163,218 +3148,33 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "W1 fin tâche",
                          "h":  20,
                          "var":  "A"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "P0 devise locale",
-                         "h":  20,
-                         "var":  "B"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "P0 masque montant",
-                         "h":  20,
-                         "var":  "C"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0 solde compte",
-                         "h":  20,
-                         "var":  "D"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0 code GM",
-                         "h":  20,
-                         "var":  "E"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 filiation",
-                         "h":  20,
-                         "var":  "F"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
-                         "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 Cloture en cours",
-                         "h":  20,
-                         "var":  "T"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 code article",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 sous-imput.",
-                         "h":  20,
-                         "var":  "X"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 annulation",
-                         "h":  20,
-                         "var":  "Z"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
                      }
                  ],
     "type":  "Modal",
     "height":  32,
-    "taskId":  18
+    "taskId":  "237.12"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 1 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| T | W0 Cloture en cours | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| X | W0 sous-imput. | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| Z | W0 annulation | Alpha | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
+| A | W1 fin tâche | Alpha | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ---
 
-#### <a id="ecran-t19"></a>237.8 - Saisie dates forfait
+#### <a id="ecran-t19"></a>237.12.1 - Saisie dates forfait
 **Tache** : [T19](#t19) | **Type** : MDI | **Dimensions** : 528 x 121 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie dates forfait
 
@@ -2384,218 +3184,63 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "W2 date debut",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "W2 date fin",
                          "h":  20,
                          "var":  "B"
                      },
                      {
-                         "w":  130,
-                         "readonly":  true,
+                         "w":  80,
+                         "readonly":  false,
                          "y":  13,
-                         "type":  "edit",
+                         "type":  "button",
                          "x":  290,
-                         "label":  "P0 masque montant",
-                         "h":  20,
+                         "label":  "Bouton Ok",
+                         "h":  25,
                          "var":  "C"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0 solde compte",
-                         "h":  20,
-                         "var":  "D"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0 code GM",
-                         "h":  20,
-                         "var":  "E"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 filiation",
-                         "h":  20,
-                         "var":  "F"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
-                         "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 code article",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 libelle article",
-                         "h":  20,
-                         "var":  "BB"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 article dernière minute",
-                         "h":  20,
-                         "var":  "BC"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 nbre articles",
-                         "h":  20,
-                         "var":  "BD"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
                      }
                  ],
     "type":  "MDI",
     "height":  121,
-    "taskId":  19
+    "taskId":  "237.12.1"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 2 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
-| BB | W0 libelle article | Alpha | **Saisie** |
-| BC | W0 article dernière minute | Logical | **Saisie** |
-| BD | W0 nbre articles | Numeric | **Saisie** |
+| A | W2 date debut | Date | **Saisie** |
+| B | W2 date fin | Date | **Saisie** |
 
-**Boutons :**
+</details>
+
+<details>
+<summary><strong>Boutons : 1 boutons</strong></summary>
 
 | Bouton | Variable | Action |
 |--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+| Bouton Ok | C | Valide la saisie et enregistre |
+
+</details>
 
 ---
 
-#### <a id="ecran-t30"></a>237.9 - Affiche saisie
+#### <a id="ecran-t30"></a>237.21 - Affiche saisie
 **Tache** : [T30](#t30) | **Type** : Modal | **Dimensions** : 427 x 124 DLU
 **Bloc** : Saisie | **Titre IDE** : Affiche saisie
 
@@ -2605,218 +3250,55 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "DETAIL",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "QUITTER",
                          "h":  20,
                          "var":  "B"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  290,
-                         "label":  "P0 masque montant",
+                         "label":  "SUPPRIMER",
                          "h":  20,
                          "var":  "C"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0 solde compte",
-                         "h":  20,
-                         "var":  "D"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0 code GM",
-                         "h":  20,
-                         "var":  "E"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 filiation",
-                         "h":  20,
-                         "var":  "F"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
-                         "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 code article",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 libelle article",
-                         "h":  20,
-                         "var":  "BB"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 article dernière minute",
-                         "h":  20,
-                         "var":  "BC"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 nbre articles",
-                         "h":  20,
-                         "var":  "BD"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
                      }
                  ],
     "type":  "Modal",
     "height":  124,
-    "taskId":  30
+    "taskId":  "237.21"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 3 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
-| BB | W0 libelle article | Alpha | **Saisie** |
-| BC | W0 article dernière minute | Logical | **Saisie** |
-| BD | W0 nbre articles | Numeric | **Saisie** |
+| A | DETAIL | Alpha | **Saisie** |
+| B | QUITTER | Alpha | **Saisie** |
+| C | SUPPRIMER | Alpha | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ---
 
-#### <a id="ecran-t38"></a>237.10 - Type transfert
+#### <a id="ecran-t38"></a>237.29 - Type transfert
 **Tache** : [T38](#t38) | **Type** : Type6 | **Dimensions** : 722 x 292 DLU
 **Bloc** : Transfert | **Titre IDE** : Type transfert
 
@@ -2826,218 +3308,99 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "P Type transfert Global",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "v Nbre PAX",
                          "h":  20,
                          "var":  "B"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  290,
-                         "label":  "P0 masque montant",
+                         "label":  "b.Annuler",
                          "h":  20,
                          "var":  "C"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  430,
-                         "label":  "P0 solde compte",
+                         "label":  "b Exit",
                          "h":  20,
                          "var":  "D"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  570,
-                         "label":  "P0 code GM",
+                         "label":  "v.Controle saisie 1 3",
                          "h":  20,
                          "var":  "E"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  43,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 filiation",
+                         "label":  "v.Controle saisie 2",
                          "h":  20,
                          "var":  "F"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  73,
+                         "y":  43,
                          "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
+                         "x":  150,
+                         "label":  "v.Fin de tache",
                          "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 Cloture en cours",
-                         "h":  20,
-                         "var":  "T"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 code article",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 sous-imput.",
-                         "h":  20,
-                         "var":  "X"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 annulation",
-                         "h":  20,
-                         "var":  "Z"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
+                         "var":  "G"
                      }
                  ],
     "type":  "Type6",
     "height":  292,
-    "taskId":  38
+    "taskId":  "237.29"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 7 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| T | W0 Cloture en cours | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| X | W0 sous-imput. | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| Z | W0 annulation | Alpha | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
+| A | P Type transfert Global | Alpha | **Saisie** |
+| B | v Nbre PAX | Numeric | **Saisie** |
+| C | b.Annuler | Alpha | **Saisie** |
+| D | b Exit | Alpha | **Saisie** |
+| E | v.Controle saisie 1 3 | Numeric | **Saisie** |
+| F | v.Controle saisie 2 | Numeric | **Saisie** |
+| G | v.Fin de tache | Logical | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ---
 
-#### <a id="ecran-t39"></a>237.11 - Affiche Transfert A/R
+#### <a id="ecran-t39"></a>237.29.1 - Affiche Transfert A/R
 **Tache** : [T39](#t39) | **Type** : Type6 | **Dimensions** : 681 x 205 DLU
 **Bloc** : Transfert | **Titre IDE** : Affiche Transfert A/R
 
@@ -3047,218 +3410,286 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "P Type transfert Detail",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "W1 Date transfert Aller",
                          "h":  20,
                          "var":  "B"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  290,
-                         "label":  "P0 masque montant",
+                         "label":  "W1 Heure transfert Aller",
                          "h":  20,
                          "var":  "C"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  430,
-                         "label":  "P0 solde compte",
+                         "label":  "W1 Type Endroit Aller",
                          "h":  20,
                          "var":  "D"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  570,
-                         "label":  "P0 code GM",
+                         "label":  "W1 Code Aeroport/Gare Aller",
                          "h":  20,
                          "var":  "E"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  43,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 filiation",
+                         "label":  "W1 Num Vol/Train Aller",
                          "h":  20,
                          "var":  "F"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W1 Compagnie Aller",
+                         "h":  20,
+                         "var":  "G"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W1 Commentaire Aller",
+                         "h":  20,
+                         "var":  "H"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W1 Date transfert Retour",
+                         "h":  20,
+                         "var":  "I"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W1 Heure transfert Retour",
+                         "h":  20,
+                         "var":  "J"
+                     },
+                     {
+                         "w":  130,
                          "readonly":  false,
                          "y":  73,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
+                         "label":  "W1 Type Endroit Retour",
+                         "h":  20,
+                         "var":  "K"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W1 Code Aeroport/Gare Retour",
+                         "h":  20,
+                         "var":  "L"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W1 Num Vol/Train Retour",
+                         "h":  20,
+                         "var":  "M"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "W1 Compagnie Retour",
+                         "h":  20,
+                         "var":  "N"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "W1 Commentaire Retour",
+                         "h":  20,
+                         "var":  "O"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  10,
+                         "label":  "b.Abandon",
+                         "h":  20,
+                         "var":  "P"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "b Valider",
+                         "h":  20,
+                         "var":  "Q"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "b Affection",
                          "h":  20,
                          "var":  "R"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  73,
+                         "y":  103,
                          "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 Cloture en cours",
+                         "x":  430,
+                         "label":  "v.Controle saisie 1 /  3",
+                         "h":  20,
+                         "var":  "S"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  103,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "v.Controle saisie 2",
                          "h":  20,
                          "var":  "T"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  73,
+                         "y":  133,
                          "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 code article",
+                         "x":  10,
+                         "label":  "v Erreur saisie 1 / 3 ?",
                          "h":  20,
                          "var":  "U"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  103,
+                         "y":  133,
                          "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 imputation",
+                         "x":  150,
+                         "label":  "v Erreur saisie 2 ?",
+                         "h":  20,
+                         "var":  "V"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  133,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "v.Heure aller num",
                          "h":  20,
                          "var":  "W"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 sous-imput.",
-                         "h":  20,
-                         "var":  "X"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
+                         "y":  133,
                          "type":  "edit",
                          "x":  430,
-                         "label":  "W0 date d\u0027achat",
+                         "label":  "v.Heure retour num",
                          "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 annulation",
-                         "h":  20,
-                         "var":  "Z"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
+                         "var":  "X"
                      }
                  ],
     "type":  "Type6",
     "height":  205,
-    "taskId":  39
+    "taskId":  "237.29.1"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 24 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| T | W0 Cloture en cours | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| X | W0 sous-imput. | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| Z | W0 annulation | Alpha | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
+| A | P Type transfert Detail | Alpha | **Saisie** |
+| B | W1 Date transfert Aller | Date | **Saisie** |
+| C | W1 Heure transfert Aller | Time | **Saisie** |
+| D | W1 Type Endroit Aller | Alpha | **Saisie** |
+| E | W1 Code Aeroport/Gare Aller | Unicode | **Saisie** |
+| F | W1 Num Vol/Train Aller | Alpha | **Saisie** |
+| G | W1 Compagnie Aller | Alpha | **Saisie** |
+| H | W1 Commentaire Aller | Alpha | **Saisie** |
+| I | W1 Date transfert Retour | Date | **Saisie** |
+| J | W1 Heure transfert Retour | Time | **Saisie** |
+| K | W1 Type Endroit Retour | Alpha | **Saisie** |
+| L | W1 Code Aeroport/Gare Retour | Unicode | **Saisie** |
+| M | W1 Num Vol/Train Retour | Alpha | **Saisie** |
+| N | W1 Compagnie Retour | Alpha | **Saisie** |
+| O | W1 Commentaire Retour | Alpha | **Saisie** |
+| P | b.Abandon | Alpha | **Saisie** |
+| Q | b Valider | Alpha | **Saisie** |
+| R | b Affection | Alpha | **Saisie** |
+| S | v.Controle saisie 1 /  3 | Numeric | **Saisie** |
+| T | v.Controle saisie 2 | Numeric | **Saisie** |
+| U | v Erreur saisie 1 / 3 ? | Logical | **Saisie** |
+| V | v Erreur saisie 2 ? | Logical | **Saisie** |
+| W | v.Heure aller num | Numeric | **Saisie** |
+| X | v.Heure retour num | Numeric | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ---
 
-#### <a id="ecran-t40"></a>237.12 - Affectation PAX / Transfert
+#### <a id="ecran-t40"></a>237.30 - Affectation PAX / Transfert
 **Tache** : [T40](#t40) | **Type** : Type0 | **Dimensions** : 1056 x 281 DLU
 **Bloc** : Transfert | **Titre IDE** : Affectation PAX / Transfert
 
@@ -3268,218 +3699,187 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "v.Sélectionné ?",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "W1 V Nom recherche",
                          "h":  20,
                          "var":  "B"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  290,
-                         "label":  "P0 masque montant",
+                         "label":  "W1 Afficher cochés",
                          "h":  20,
                          "var":  "C"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  430,
-                         "label":  "P0 solde compte",
+                         "label":  "W1 Afficher filiation",
                          "h":  20,
                          "var":  "D"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  570,
-                         "label":  "P0 code GM",
+                         "label":  "W1 B.Exit",
                          "h":  20,
                          "var":  "E"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  43,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 filiation",
+                         "label":  "W1 B.Tout décocher",
                          "h":  20,
                          "var":  "F"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  150,
+                         "label":  "W1 Nbre de Pax Enregistrés",
+                         "h":  20,
+                         "var":  "G"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "W1 Names of non filiated ppl",
+                         "h":  20,
+                         "var":  "H"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  430,
+                         "label":  "CHG_REASON_W1 V Nom recherche",
+                         "h":  20,
+                         "var":  "I"
+                     },
+                     {
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  43,
+                         "type":  "edit",
+                         "x":  570,
+                         "label":  "CHG_PRV_W1 V Nom recherche",
+                         "h":  20,
+                         "var":  "J"
+                     },
+                     {
+                         "w":  130,
                          "readonly":  false,
                          "y":  73,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
+                         "label":  "CHG_REASON_W1 Afficher cochés",
                          "h":  20,
-                         "var":  "R"
+                         "var":  "K"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
                          "y":  73,
                          "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 Cloture en cours",
+                         "x":  150,
+                         "label":  "CHG_PRV_W1 Afficher cochés",
                          "h":  20,
-                         "var":  "T"
+                         "var":  "L"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
+                         "readonly":  false,
+                         "y":  73,
+                         "type":  "edit",
+                         "x":  290,
+                         "label":  "CHG_REASON_W1 Afficher filiati",
+                         "h":  20,
+                         "var":  "M"
+                     },
+                     {
+                         "w":  130,
                          "readonly":  false,
                          "y":  73,
                          "type":  "edit",
                          "x":  430,
-                         "label":  "W0 code article",
+                         "label":  "CHG_PRV_W1 Afficher filiation",
                          "h":  20,
-                         "var":  "U"
+                         "var":  "N"
                      },
                      {
-                         "w":  200,
+                         "w":  130,
                          "readonly":  false,
-                         "y":  103,
+                         "y":  73,
                          "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 imputation",
+                         "x":  570,
+                         "label":  "v. response",
                          "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 sous-imput.",
-                         "h":  20,
-                         "var":  "X"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 annulation",
-                         "h":  20,
-                         "var":  "Z"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
+                         "var":  "O"
                      }
                  ],
     "type":  "Type0",
     "height":  281,
-    "taskId":  40
+    "taskId":  "237.30"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 15 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| T | W0 Cloture en cours | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| X | W0 sous-imput. | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| Z | W0 annulation | Alpha | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
+| A | v.Sélectionné ? | Logical | **Saisie** |
+| B | W1 V Nom recherche | Alpha | **Saisie** |
+| C | W1 Afficher cochés | Logical | **Saisie** |
+| D | W1 Afficher filiation | Logical | **Saisie** |
+| E | W1 B.Exit | Alpha | **Saisie** |
+| F | W1 B.Tout décocher | Alpha | **Saisie** |
+| G | W1 Nbre de Pax Enregistrés | Numeric | **Saisie** |
+| H | W1 Names of non filiated ppl | Alpha | **Saisie** |
+| I | CHG_REASON_W1 V Nom recherche | Numeric | **Saisie** |
+| J | CHG_PRV_W1 V Nom recherche | Alpha | **Saisie** |
+| K | CHG_REASON_W1 Afficher cochés | Numeric | **Saisie** |
+| L | CHG_PRV_W1 Afficher cochés | Logical | **Saisie** |
+| M | CHG_REASON_W1 Afficher filiati | Numeric | **Saisie** |
+| N | CHG_PRV_W1 Afficher filiation | Logical | **Saisie** |
+| O | v. response | Numeric | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ---
 
-#### <a id="ecran-t46"></a>237.13 - Libération du logement
+#### <a id="ecran-t46"></a>237.33 - Libération du logement
 **Tache** : [T46](#t46) | **Type** : Type0 | **Dimensions** : 123 x 149 DLU
 **Bloc** : Traitement | **Titre IDE** : Libération du logement
 
@@ -3489,218 +3889,77 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "p.o.Abandon",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "v.Heb_nom_logement",
                          "h":  20,
                          "var":  "B"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  290,
-                         "label":  "P0 masque montant",
+                         "label":  "v.Nb chambres saisies",
                          "h":  20,
                          "var":  "C"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  430,
-                         "label":  "P0 solde compte",
+                         "label":  "CHG_REASON_Heure_liberation",
                          "h":  20,
                          "var":  "D"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  570,
-                         "label":  "P0 code GM",
+                         "label":  "CHG_PRV_Heure_liberation",
                          "h":  20,
                          "var":  "E"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 filiation",
-                         "h":  20,
-                         "var":  "F"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
-                         "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 Cloture en cours",
-                         "h":  20,
-                         "var":  "T"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 code article",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 sous-imput.",
-                         "h":  20,
-                         "var":  "X"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 annulation",
-                         "h":  20,
-                         "var":  "Z"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
                      }
                  ],
     "type":  "Type0",
     "height":  149,
-    "taskId":  46
+    "taskId":  "237.33"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 5 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| T | W0 Cloture en cours | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| X | W0 sous-imput. | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| Z | W0 annulation | Alpha | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
+| A | p.o.Abandon | Logical | **Saisie** |
+| B | v.Heb_nom_logement | Unicode | **Saisie** |
+| C | v.Nb chambres saisies | Numeric | **Saisie** |
+| D | CHG_REASON_Heure_liberation | Numeric | **Saisie** |
+| E | CHG_PRV_Heure_liberation | Time | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ---
 
-#### <a id="ecran-t49"></a>237.14 - Récup nb chambre /LCO
+#### <a id="ecran-t49"></a>237.36 - Récup nb chambre /LCO
 **Tache** : [T49](#t49) | **Type** : Type0 | **Dimensions** : 123 x 89 DLU
 **Bloc** : Traitement | **Titre IDE** : Récup nb chambre /LCO
 
@@ -3710,214 +3969,40 @@ Transfert de donnees entre modules.
     "controls":  [
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  10,
-                         "label":  "P0 societe",
+                         "label":  "p.o.Nb chambres/LCO",
                          "h":  20,
                          "var":  "A"
                      },
                      {
                          "w":  130,
-                         "readonly":  true,
+                         "readonly":  false,
                          "y":  13,
                          "type":  "edit",
                          "x":  150,
-                         "label":  "P0 devise locale",
+                         "label":  "Nb chambres LCO",
                          "h":  20,
                          "var":  "B"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "P0 masque montant",
-                         "h":  20,
-                         "var":  "C"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0 solde compte",
-                         "h":  20,
-                         "var":  "D"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0 code GM",
-                         "h":  20,
-                         "var":  "E"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 filiation",
-                         "h":  20,
-                         "var":  "F"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 FIN SAISIE OD",
-                         "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 Cloture en cours",
-                         "h":  20,
-                         "var":  "T"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 code article",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 sous-imput.",
-                         "h":  20,
-                         "var":  "X"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 annulation",
-                         "h":  20,
-                         "var":  "Z"
-                     },
-                     {
-                         "w":  200,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  220,
-                         "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
-                     },
-                     {
-                         "h":  25,
-                         "label":  "IDENTITE",
-                         "var":  "P",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  10,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "ABANDON",
-                         "var":  "Q",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  100,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "FIN SAISIE OD",
-                         "var":  "S",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  190,
-                         "w":  80
-                     },
-                     {
-                         "h":  25,
-                         "label":  "Ok",
-                         "var":  "EN",
-                         "y":  200,
-                         "type":  "button",
-                         "x":  280,
-                         "w":  80
                      }
                  ],
     "type":  "Type0",
     "height":  89,
-    "taskId":  49
+    "taskId":  "237.36"
 }
 -->
 
-**Champs :**
+<details>
+<summary><strong>Champs : 2 champs</strong></summary>
 
 | Variable | Nom | Type | Saisie |
 |----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 devise locale | Alpha | Lecture |
-| C | P0 masque montant | Alpha | Lecture |
-| D | P0 solde compte | Numeric | Lecture |
-| E | P0 code GM | Numeric | Lecture |
-| F | P0 filiation | Numeric | Lecture |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| T | W0 Cloture en cours | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| X | W0 sous-imput. | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| Z | W0 annulation | Alpha | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
+| A | p.o.Nb chambres/LCO | Numeric | **Saisie** |
+| B | Nb chambres LCO | Numeric | **Saisie** |
 
-**Boutons :**
-
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| IDENTITE | P | Identification du client |
-| ABANDON | Q | Annule et retour au menu |
-| FIN SAISIE OD | S | Termine la saisie en cours |
-| Ok | EN | Valide la saisie et enregistre |
+</details>
 
 ## 9. NAVIGATION
 
@@ -4092,92 +4177,18 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    START([Entree])
-    style START fill:#3fb950
-    BLK1[Saisie]
-    style BLK1 fill:#58a6ff
-    DEC1{TrimW0 service villag...}
-    style DEC1 fill:#ffeb3b,color:#000
-    BLK2[Reglement]
-    style BLK2 fill:#58a6ff
-    DEC2{V.RC utilisé GA=0}
-    style DEC2 fill:#ffeb3b,color:#000
-    BLK3[Validation]
-    style BLK3 fill:#58a6ff
-    DEC3{P0 masque montant C=}
-    style DEC3 fill:#ffeb3b,color:#000
-    BLK4[Creation]
-    style BLK4 fill:#58a6ff
-    DEC4{VG7 OR VG35 OR VG87}
-    style DEC4 fill:#ffeb3b,color:#000
-    BLK5[Traitement]
-    style BLK5 fill:#58a6ff
-    DEC5{NOT W0 Motif de non en...}
-    style DEC5 fill:#ffeb3b,color:#000
-    BLK6[Initialisation]
-    style BLK6 fill:#58a6ff
-    DEC6{W0 imputation W=VRL}
-    style DEC6 fill:#ffeb3b,color:#000
-    BLK7[Calcul]
-    style BLK7 fill:#58a6ff
-    BLK8[Consultation]
-    style BLK8 fill:#58a6ff
-    BLK9[Impression]
-    style BLK9 fill:#58a6ff
-    BLK10[Transfert]
-    style BLK10 fill:#58a6ff
-    EXT1([IDE 152 Recup Classe e...])
-    style EXT1 fill:#3fb950
-    EXT2([IDE 84 SP Caractères I...])
-    style EXT2 fill:#3fb950
-    EXT3([IDE 233 Appel Print ti...])
-    style EXT3 fill:#3fb950
-    EXT4([IDE 249 Reinit Aff PYR])
-    style EXT4 fill:#3fb950
-    EXT5([IDE 277 Selection Vols...])
-    style EXT5 fill:#3fb950
-    EXT6([IDE 43 Recuperation du...])
-    style EXT6 fill:#3fb950
-    EXT7([IDE 149 Calcul stock p...])
-    style EXT7 fill:#3fb950
-    EXT8([IDE 179 Get Printer])
-    style EXT8 fill:#3fb950
-    FIN([Sortie])
-    style FIN fill:#f85149
-    START --> BLK1
-    BLK1 --> DEC1
-    DEC1 -->|OUI| BLK2
-    DEC1 -->|NON| DEC2
-    BLK2 --> DEC2
-    DEC2 -->|OUI| BLK3
-    DEC2 -->|NON| DEC3
-    BLK3 --> DEC3
-    DEC3 -->|OUI| BLK4
-    DEC3 -->|NON| DEC4
-    BLK4 --> DEC4
-    DEC4 -->|OUI| BLK5
-    DEC4 -->|NON| DEC5
-    BLK5 --> DEC5
-    DEC5 -->|OUI| BLK6
-    DEC5 -->|NON| DEC6
-    BLK6 --> DEC6
-    DEC6 -->|OUI| BLK7
-    DEC6 -->|NON| BLK8
-    BLK7 --> BLK8
-    BLK8 --> BLK9
-    BLK9 --> BLK10
-    BLK10 --> FIN
-    BLK1 -.->|appel| EXT1
-    BLK1 -.->|appel| EXT2
-    BLK1 -.->|appel| EXT3
-    BLK1 -.->|appel| EXT4
-    BLK1 -.->|appel| EXT5
-    BLK1 -.->|appel| EXT6
-    BLK1 -.->|appel| EXT7
-    BLK1 -.->|appel| EXT8
-```
+    START([START 16 params])
+    INIT[Initialisation]
+    PROCESS[Traitement principal 49 taches]
+    CALLS[Appels sous programmes 20 callees]
+    ENDOK([END])
 
-> **Legende** : Bleu = blocs fonctionnels | Vert = programmes externes | Jaune = decisions | Rouge = sortie
+    START --> INIT --> PROCESS --> CALLS --> ENDOK
+
+    style START fill:#3fb950
+    style ENDOK fill:#f85149
+    style PROCESS fill:#58a6ff
+```
 
 <!-- TAB:Donnees -->
 
@@ -4980,30 +4991,181 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 31 | 0 |
+| CALCULATION | 9 | 0 |
+| NEGATION | 19 | 0 |
+| CONDITION | 149 | 16 |
+| FORMAT | 8 | 0 |
+| CAST_LOGIQUE | 9 | 5 |
+| CONSTANTE | 28 | 0 |
+| DATE | 3 | 0 |
+| REFERENCE_VG | 4 | 0 |
+| OTHER | 71 | 0 |
+| CONCATENATION | 1 | 0 |
+| STRING | 4 | 0 |
 
 ### 12.2 Expressions cles par type
 
-#### CONDITION (31 expressions)
+#### CALCULATION (9 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 136 | `IF(W0 imputation [W]='TRF',27,27)` | - |
-| CONDITION | 137 | `IF(W0 imputation [W]='TRF',110.625,110.625)` | - |
-| CONDITION | 147 | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))` | - |
-| CONDITION | 135 | `IF(W0 imputation [W]='TRF',83.625,83.625)` | - |
-| CONDITION | 132 | `IF(W0 imputation [W]='TRF',26.875,26.875)` | - |
-| ... | | *+26 autres* | |
+| CALCULATION | 246 | `V.Total carte [FN]+1` | - |
+| CALCULATION | 234 | `W0 fin tache [DO]-[AG]` | - |
+| CALCULATION | 294 | `MlsTrans('Pas de chambre en-cours pour ce GM !')` | - |
+| CALCULATION | 247 | `V.Transaction ok [FO]-1` | - |
+| CALCULATION | 206 | `'00/00/0000'DATE` | - |
+| ... | | *+4 autres* | |
 
-### 12.3 Toutes les expressions (31)
+#### NEGATION (19 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 191 | `NOT ExpCalc('189'EXP)` | - |
+| NEGATION | 280 | `NOT ExpCalc('277'EXP)` | - |
+| NEGATION | 172 | `NOT [GS]` | - |
+| NEGATION | 185 | `NOT CHG_PRV_W0 nbre articles [GO]` | - |
+| NEGATION | 282 | `NOT ExpCalc('280'EXP)` | - |
+| ... | | *+14 autres* | |
+
+#### CONDITION (149 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 167 | `IF(V.ConfirmeUseGP? [FZ],'V',IF([AP]='O','C','D'))` | [RM-013](#rm-RM-013) |
+| CONDITION | 120 | `IF(W0 imputation [W]='VRL' OR W0 imputation [W]='VSL','Nb forfait',IF(W0 imputation [W]='TRF', 'Nb PAX','Nbre'))` | [RM-008](#rm-RM-008) |
+| CONDITION | 111 | `IF(W0 imputation [W]='VRL','Date consommation','Date début séjour')` | [RM-006](#rm-RM-006) |
+| CONDITION | 114 | `IF(W0 Titre [CO]<>0 AND NOT(W0 Motif de non enreg NA [CL]),Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O]),W0 Prenom [CQ])` | [RM-007](#rm-RM-007) |
+| CONDITION | 147 | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))` | [RM-011](#rm-RM-011) |
+| ... | | *+144 autres* | |
+
+#### FORMAT (8 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 243 | `MlsTrans('La remise ne peut pas être inférieure à')&' '&Trim(Str(W0 Nom [CP],'3'))&' %'` | - |
+| FORMAT | 175 | `W0 imputation [W]='VSL' AND Left(Trim(Str([AB],'10')),1)='5'` | - |
+| FORMAT | 295 | `MlsTrans('Il n''y a que ')&
+Trim(Str([HJ],'3L'))&MlsTrans(' chambre(s) sur le compte du GM !')` | - |
+| FORMAT | 251 | `Trim(Str(W0 Stock produit [DE],'2'))&' aff.'` | - |
+| FORMAT | 1 | `DStr(P0 date fin sejour [G],'DD/MM/YYYY')` | - |
+| ... | | *+3 autres* | |
+
+#### CAST_LOGIQUE (9 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` | [RM-016](#rm-RM-016) |
+| CAST_LOGIQUE | 188 | `'FALSE'LOG` | - |
+| CAST_LOGIQUE | 84 | `'FALSE'LOG` | - |
+| CAST_LOGIQUE | 271 | `(W0 code article [U]>0 AND (W0 imputation [W]='VRL' OR W0 imputation [W]='VSL' )) OR (W0 code article [U]>0 AND W0 fin tache [DO]>0 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL') AND [AQ]<>'' OR IF(W0 imputation [W]='PYR',W0 mode de paiement [DG],'TRUE'LOG)` | - |
+| CAST_LOGIQUE | 211 | `'TRUE'LOG` | - |
+| ... | | *+4 autres* | |
+
+#### CONSTANTE (28 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 202 | `'Des informations du transfert Aller ne sont pas saisies . Validation impossible '` | - |
+| CONSTANTE | 203 | `'Des informations du transfert Retour ne sont pas saisies . Validation impossible '` | - |
+| CONSTANTE | 208 | `''` | - |
+| CONSTANTE | 195 | `'2'` | - |
+| CONSTANTE | 149 | `'SANS'` | - |
+| ... | | *+23 autres* | |
+
+#### DATE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 67 | `Date ()` | - |
+| DATE | 14 | `Date ()` | - |
+| DATE | 4 | `Date ()` | - |
+
+#### REFERENCE_VG (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 237 | `VG38` | - |
+| REFERENCE_VG | 273 | `VG63` | - |
+| REFERENCE_VG | 7 | `VG2` | - |
+| REFERENCE_VG | 156 | `VG21` | - |
+
+#### OTHER (71 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 242 | `W0 Nom [CP]` | - |
+| OTHER | 248 | `W0 montant [DF]` | - |
+| OTHER | 221 | `W0 forfait (O/N) [DP]` | - |
+| OTHER | 235 | `W0 fin tache [DO]` | - |
+| OTHER | 254 | `28.125` | - |
+| ... | | *+66 autres* | |
+
+#### CONCATENATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 3 | `MlsTrans ('Verifier que la transaction est bien pour')&' '&Trim (P0 Nom & prenom [K])` | - |
+
+#### STRING (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 171 | `MlsTrans('Transaction TPE : ')&Trim([GT])` | - |
+| STRING | 262 | `Trim(VG57)` | - |
+| STRING | 8 | `Trim (W0 choix transac manuelle [EM])` | - |
+| STRING | 83 | `MlsTrans (Trim (W0 forfait date(O/N) [DR]))` | - |
+
+### 12.3 Toutes les expressions (305)
 
 <details>
-<summary>Voir les 31 expressions</summary>
+<summary>Voir les 305 expressions</summary>
 
-#### CONDITION (31)
+#### CALCULATION (9)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
+| 15 | `[AW]*[AV]` |
+| 16 | `([AW]*[AV])-W0 Prenom [CQ]` |
+| 75 | `V.RC utilisé [GA]+1` |
+| 117 | `W0 Prenom [CQ]/([AW]*[AV])*100` |
+| 206 | `'00/00/0000'DATE` |
+| 234 | `W0 fin tache [DO]-[AG]` |
+| 246 | `V.Total carte [FN]+1` |
+| 247 | `V.Transaction ok [FO]-1` |
+| 294 | `MlsTrans('Pas de chambre en-cours pour ce GM !')` |
+
+#### NEGATION (19)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 153 | `NOT W0 Motif de non enreg NA [CL] AND W0 Titre [CO]<>0 AND (W0 Prenom [CQ]<Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O])-1 OR W0 Prenom [CQ]>Fix(W0 Motif annulation [CN]*W0 Titre [CO]/100,11,P0.Nb decimales [O])+1)` |
+| 33 | `NOT (P0 date fin sejour [G]=0 OR P0 date fin sejour [G]<Date ())` |
+| 6 | `NOT VG38` |
+| 59 | `NOT (W0 FIN SAISIE OD [R])` |
+| 61 | `NOT (Nbre ecriture [ES]) AND DbRecs ('{596,4}'DSOURCE,'')=0 AND [AQ]&[AR]=''` |
+| 62 | `NOT (V.VADV ? [EQ])` |
+| 78 | `NOT ExpCalc('77'EXP)` |
+| 80 | `NOT (W0 effacement (O/N) [DQ]) AND LastClicked()<>'Bouton ABANDON'` |
+| 148 | `NOT IN(W0 imputation [W],'VRL','VSL','TRF', 'VAR')` |
+| 165 | `NOT ExpCalc('162'EXP)` |
+| 172 | `NOT [GS]` |
+| 185 | `NOT CHG_PRV_W0 nbre articles [GO]` |
+| 191 | `NOT ExpCalc('189'EXP)` |
+| 280 | `NOT ExpCalc('277'EXP)` |
+| 282 | `NOT ExpCalc('280'EXP)` |
+| 283 | `NOT ExpCalc('280'EXP) OR ExpCalc('285'EXP)` |
+| 289 | `NOT v Sens Transfert Global [BI]` |
+| 298 | `NOT [HL]` |
+| 173 | `NOT [GS] AND Trim([GT])<>''` |
+
+#### CONDITION (149)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 204 | `W0 Code Gare/Aéroport ... [BR]='00/00/0000'DATE OR W0 Numéro du vol Aller [BS]='00:00:00'TIME OR W0 Commentaire Aller [BU]='' OR W0 Sens du transfert R... [BV]='' OR W0 Date du transfert R... [BW]='' OR W0 Heure du transfert ... [BX]=''` |
+| 205 | `W0 Numéro du vol Retour [CA]='00/00/0000'DATE OR W0 Compagnie Retour [CB]='00:00:00'TIME OR W0 b.Saisie PAX [CC]='' OR W0 Nbre de PAX enregistré [CD]='' OR W0 Commentaire Retour [CE]='' OR W0 montant avant reduc... [CF]=''` |
+| 229 | `W0 Nom de la rue [CS]-W0 Num rue [CR]>45` |
+| 284 | `W0 libelle article [BB]='00/00/0000'DATE` |
 | 2 | `IF(Trim(W0 service village [BA])='1','ALLER',IF(Trim(W0 service village [BA])='2','RETOUR',IF(Trim(W0 service village [BA])='3','ALLER/RETOUR','')))` |
 | 5 | `IF(V.RC utilisé [GA]=0,IF(W0 imputation [W]='VSL',P0.Date debut sejour [M],Date()),W0 Num rue [CR])` |
 | 35 | `IF (P0 masque montant [C]='','15.2',P0 masque montant [C])` |
@@ -5028,13 +5190,300 @@ Variables diverses.
 | 137 | `IF(W0 imputation [W]='TRF',110.625,110.625)` |
 | 147 | `IF(W0 Chambre [CX]<>'',RTrim (W0 Nb Chambres [CW])&Fill (' ',Len (RTrim (W0 Nb Chambres [CW]))-1)&RTrim (W0 Chambre [CX])&' '&W0 PYR Valide [CY],Trim(P0 Nom & prenom [K]))` |
 | 154 | `IF(V.Total reglement ligne [FF],V.Id transaction PMS [FI],VG18)` |
-| 162 | `IF(W0 imputation [W]='VRL','TRUE'LOG,V.RC utilisé [GA]=0)` |
 | 167 | `IF(V.ConfirmeUseGP? [FZ],'V',IF([AP]='O','C','D'))` |
 | 210 | `IF(V.ConfirmeUseGP? [FZ],P0 devise locale [B],VG30)` |
 | 225 | `IF (NOT(CHG_PRV_W0 nbre articles [GO]),132.875,105.875)` |
 | 236 | `IF(W0 imputation [W]='ANN','O','N')` |
-| 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` |
 | 290 | `IF(VG20>1,[AY],'G')` |
+| 32 | `P0 date fin sejour [G]=0 OR P0 date fin sejour [G]<Date ()` |
+| 107 | `W0 imputation [W]='VSL' AND W0 Num rue [CR]-Date()>21 AND W0 Titre [CO]<>0` |
+| 109 | `W0 imputation [W]='VSL' AND W0 Num rue [CR]-Date()>[HM] AND W0 Titre [CO]<>0` |
+| 305 | `W0 imputation [W]='VRL' AND IF(Date()>BOM(Date()),W0 Num rue [CR]<BOM(Date()),BOM(Date()-1)>W0 Num rue [CR])` |
+| 22 | `[AW]>0 AND [AV]=0` |
+| 23 | `V0 validation [DM] AND [AP]='N'` |
+| 24 | `[AV]>W0 reseau [DN] AND NOT (Nbre ecriture [ES])` |
+| 25 | `W0 fin tache [DO]=0 AND [AQ]<>'' AND W0 Titre [CO]<>100 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL' AND NOT([HH])` |
+| 26 | `W0 imputation [W]='VRL' OR W0 imputation [W]='VSL'` |
+| 28 | `[AW]>0 AND W0 Retour Transmission... [DY]='N'` |
+| 29 | `([AW]=0) AND (ExpCalc('55'EXP))` |
+| 30 | `([AW]=0) AND W0 imputation [W]<>'VRL' AND (ExpCalc('55'EXP))` |
+| 31 | `W0 code article [U]>0 AND W0 ret lien special [DW]<>'R'` |
+| 34 | `W0 code article [U]>0 AND W0 fin tache [DO]>0` |
+| 36 | `W0 Retour Transmission... [DY]='O' AND W0 Message TPE [EA]='O'` |
+| 37 | `W0 gratuite ? [DV] AND W0 Retour Transmission... [DY]='O' AND W0 Forcer Transaction ... [DZ]='O'` |
+| 38 | `[AP]='N'` |
+| 39 | `W0 gratuite ? [DV] AND W0 Retour Transmission... [DY]='O'` |
+| 43 | `[AP]='O' AND W0 gratuite ? [DV]` |
+| 52 | `DbRecs ('{596,4}'DSOURCE,'')>0 AND ExpCalc('41'EXP)` |
+| 53 | `DbRecs ('{596,4}'DSOURCE,'')>0` |
+| 54 | `DbRecs ('{596,4}'DSOURCE,'')>0 AND [AR]=''` |
+| 55 | `DbRecs ('{596,4}'DSOURCE,'')<6` |
+| 58 | `W0 gratuite ? [DV] AND [AP]='O'` |
+| 60 | `V.VAD ? [ER]<>6` |
+| 74 | `W0 forfait (O/N) [DP]=''` |
+| 79 | `W0 forfait (O/N) [DP]='' AND LastClicked()<>'Bouton ABANDON'` |
+| 81 | `W0 forfait (O/N) [DP]=GetParam ('MOPCMP') AND NOT (V.VADV ? [EQ]) AND LastClicked()<>'Bouton ABANDON'` |
+| 82 | `W0 Code Devise [DX]='F' OR Nbre ecriture [ES]` |
+| 88 | `(DbRecs ('{596,4}'DSOURCE,'')=0) AND (ExpCalc('55'EXP))` |
+| 89 | `([AW]>0 AND W0 Retour Transmission... [DY]='N') AND (ExpCalc('55'EXP))` |
+| 90 | `(W0 Retour Transmission... [DY]='N' AND (NOT(ExpCalc('285'EXP)) OR [HJ]>1 )) 
+AND (ExpCalc('55'EXP))` |
+| 91 | `V.Type premier article [EU]=6` |
+| 95 | `NOT(W0 Motif de non enreg NA [CL]) OR W0 imputation [W]='PYR'` |
+| 97 | `IN(W0 imputation [W],'VRL','VSL') AND [AF]<>'LCO'` |
+| 100 | `W0 imputation [W]='VRL'` |
+| 101 | `W0 imputation [W]='VSL' AND [AF]<>'LCO'` |
+| 102 | `LastClicked()<>'Bouton ABANDON' AND DbRecs ('{596,4}'DSOURCE,'')<6` |
+| 103 | `W0 imputation [W]='VSL' AND [AF]<>'LCO' AND DbRecs ('{596,4}'DSOURCE,'')<3 AND 
+LastClicked()<>'Bouton ABANDON'` |
+| 104 | `(W0 imputation [W]='VRL' OR W0 imputation [W]='VSL')AND [AF]<>'LCO' AND VG7 AND 
+DbRecs ('{596,4}'DSOURCE,'')<3 AND 
+LastClicked()<>'Bouton ABANDON'` |
+| 105 | `W0 imputation [W]='VSL' AND W0 CP [CU]='' AND NOT v.Flag exist Vte LCO [GE] AND LastClicked()<>'Bouton ABANDON'` |
+| 106 | `W0 Num rue [CR]=0` |
+| 112 | `(W0 Titre [CO]=100 OR W0 Motif de non enreg NA [CL]) AND W0 CP [CU]='' AND LastClicked()<>'Bouton ABANDON'` |
+| 113 | `[AP]='O' AND IN (W0 imputation [W],'VRL','VSL','TRF')` |
+| 116 | `W0 Motif de non enreg NA [CL] OR [AZ]='SANS'` |
+| 118 | `W0 Ville [CV]='' AND [AP]='O'` |
+| 121 | `W0 Nom de la rue [CS]=0` |
+| 122 | `[AX]=''` |
+| 123 | `W0 annulation [Z]=0 AND ExpCalc('55'EXP)` |
+| 138 | `V.RC utilisé [GA]>0 AND [AR]<>'' AND VG7 AND ((IN(W0 imputation [W],'VRL','VSL','PYR') AND W0 imputation [W]<>v.Transaction Id [GC]) OR (IN(v.Transaction Id [GC],'VRL','VSL','PYR') AND W0 imputation [W]<>v.Transaction Id [GC]))` |
+| 140 | `W0 Prenom [CQ]>W0 Motif annulation [CN]` |
+| 141 | `P0.Valide ? [N]<>0 AND NOT(IN(W0 imputation [W],'VSL','VRL','PYR')) AND VG7 AND v.SoldeGiftPass [V]<>0` |
+| 143 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VRL' AND VG7 AND W0 Chambre [CX]='' AND V.RC utilisé [GA]=0` |
+| 144 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VRL' AND VG7 AND V.RC utilisé [GA]=0` |
+| 145 | `W0 Total_GiftPass [EF]=0 AND W0 imputation [W]='VSL' AND VG7 AND W0 sous-imput. [X]>0` |
+| 146 | `W0 imputation [W]='VRL' AND W0 Total_GiftPass [EF]=0` |
+| 150 | `[AW]=0` |
+| 151 | `V.RC utilisé [GA]=0` |
+| 152 | `[AA]='X'` |
+| 155 | `(W0 imputation [W]='VRL'  OR W0 imputation [W]='VSL')  AND VG17 AND VG20>1` |
+| 157 | `W0 imputation [W]='VRL' AND VG7 AND VG20>1 AND VG17 AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
+| 158 | `[AY]=''` |
+| 159 | `VG20>1` |
+| 163 | `VG23 AND VG24 AND [GU]>0 AND NOT [GS]` |
+| 168 | `[GS] AND Left(W0 forfait (O/N) [DP],3)<>'VAD'` |
+| 174 | `VG7 AND v.Flag exist Vte LCO [GE] AND [AC]='' AND v.SoldeGiftPass [V]<>0` |
+| 178 | `([GU]<>0 AND VG24) OR V.ConfirmeUseGP? [FZ] AND [AP]='N'` |
+| 179 | `VG23 AND VG24 AND [GW]>1` |
+| 181 | `ExpCalc('55'EXP) AND (W0 imputation [W]='VSL') AND NOT v.Flag exist Vte LCO [GE]` |
+| 182 | `W0 fin tache [DO]<>0` |
+| 183 | `P0 UNI/BI [L]='U'` |
+| 184 | `P0 UNI/BI [L]<>'U'` |
+| 189 | `W0 imputation [W]='VSL' AND NOT v.Flag exist Vte LCO [GE] AND W0 sous-imput. [X]<>0 AND LastClicked()<>'Bouton ABANDON'` |
+| 190 | `V.VADV ? [EQ] AND W0 imputation [W]<>'VSL'` |
+| 194 | `[AV]<>W0 Remise Obligatoire [CH]` |
+| 196 | `W0 imputation [W]='TRF'  AND VG35` |
+| 197 | `W0 imputation [W]='TRF'  AND VG35 AND LastClicked ()<>'Bouton ABANDON'` |
+| 198 | `[GY]=0` |
+| 199 | `[GY]=0 AND W0 imputation [W]='TRF' AND VG35` |
+| 220 | `(Left(v.Token Id [GB],3)='VAD' AND Left(W0 forfait (O/N) [DP],3)<>'VAD' AND Left(W0 forfait (O/N) [DP],3)<>'' OR Left(v.Token Id [GB],3)<>'VAD' AND Left(v.Token Id [GB],3)<>'' AND Left(W0 forfait (O/N) [DP],3)='VAD') AND LastClicked()<>'Bouton ABANDON'` |
+| 222 | `(v.Token Id [GB]='VADA' AND W0 forfait (O/N) [DP]='VADV' OR v.Token Id [GB]='VADV' AND W0 forfait (O/N) [DP]='VADA') AND LastClicked()<>'Bouton ABANDON'` |
+| 223 | `[AR]<>''` |
+| 224 | `V.ConfirmeUseGP? [FZ] AND [AP]='O'` |
+| 226 | `[HR]>1 AND [AV]=1 AND [HQ]=0` |
+| 227 | `W0 imputation [W]='TRF' AND VG35` |
+| 228 | `[AV]>1 AND W0 imputation [W]='TRF' AND VG35` |
+| 230 | `(W0 Prenom [CQ]<>0 OR W0 Titre [CO]<>0) OR W0 Motif de non enreg NA [CL]` |
+| 231 | `VG38 AND [AD] AND [AG]>0` |
+| 232 | `[AG]>=W0 fin tache [DO]` |
+| 238 | `W0 imputation [W]='ANN' AND W0 forfait (O/N) [DP]<>'OD'` |
+| 239 | `[AP]='O'` |
+| 241 | `W0 imputation [W]='PYR'` |
+| 244 | `W0 Nom [CP]>0 AND W0 Nom [CP]>W0 Titre [CO] AND W0 imputation [W]='PYR'` |
+| 245 | `W0 Stock produit [DE]=1` |
+| 250 | `W0 Stock produit [DE]>1` |
+| 257 | `LastClicked()<>'Bouton ABANDON'` |
+| 260 | `VG55 AND NOT(CHG_PRV_W0 nbre articles [GO]) AND W0 code forfait [DS]='$PAPER'` |
+| 267 | `VG38 AND [AG]>0 AND W0 Total_Vente [EE]<>'O' AND VG60 AND [HF]<>6 AND [AD]` |
+| 268 | `[HE] > 0 AND VG63` |
+| 270 | `[HF] = 6` |
+| 279 | `[HA]=''` |
+| 281 | `W0 imputation [W]='VAE' AND VG87` |
+| 285 | `v.Date activité VAE [BJ]=''` |
+| 286 | `VG36 AND W0 imputation [W]='VSL' AND [AF]='LCO'` |
+| 292 | `[HJ]>0` |
+| 296 | `[AV]>[HJ]` |
+| 301 | `V.RC utilisé [GA]=1` |
+| 45 | `Trim (INIGet ('[MAGIC_LOGICAL_NAMES]club_editod'))='O' AND Trim (INIGet ('[MAGIC_LOGICAL_NAMES]club_formation'))<>'O'` |
+| 69 | `CndRange(Trim(W0 imputation [W])<>'PYR',ASCIIChr (33))` |
+| 169 | `(W0 imputation [W]<>'VSL' AND [AR]<>'') AND (Trim(W0 forfait (O/N) [DP])='VADA' OR Trim(W0 forfait (O/N) [DP])='VADV') AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
+| 170 | `(W0 Total_GiftPass [EF]<>0 AND V.Message erreur trans... [FM]<>'GO') AND W0 imputation [W]='VSL' AND [AR]<>'' AND (Trim(W0 forfait (O/N) [DP])='VADA' OR Trim(W0 forfait (O/N) [DP])='VADV') AND DbRecs ('{596,4}'DSOURCE,'')<3 AND LastClicked()<>'Bouton ABANDON'` |
+| 249 | `Trim(W0 montant [DF])<>''` |
+| 259 | `W0 imputation [W]='PYR' AND Trim(W0 montant [DF])<>''` |
+| 261 | `ExpCalc('259'EXP) AND Trim([HD])=''` |
+| 263 | `ExpCalc('259'EXP) AND Trim([HD])<>''` |
+| 300 | `NOT(Trim([IC])=Trim(W0 imputation [W]) AND Trim([ID])=Trim([AF])) AND V.RC utilisé [GA]>0 AND Trim([AR])<>'' AND VG108` |
+
+#### FORMAT (8)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 265 | `MlsTrans('Vous disposez d''un Resort Credit de')&' '&Trim(Str([HE],Trim(P0 masque montant [C])))&' '&Trim(P0 devise locale [B])&'. Voulez-vous l''utiliser ?'` |
+| 1 | `DStr(P0 date fin sejour [G],'DD/MM/YYYY')` |
+| 108 | `'La date début séjour doit être inferieure à ' & Trim(Str([HM],'2')) & ' jours par rapport à la date du jour'` |
+| 160 | `'# '&Str(v. pied type? [GH],'10P0')` |
+| 175 | `W0 imputation [W]='VSL' AND Left(Trim(Str([AB],'10')),1)='5'` |
+| 243 | `MlsTrans('La remise ne peut pas être inférieure à')&' '&Trim(Str(W0 Nom [CP],'3'))&' %'` |
+| 251 | `Trim(Str(W0 Stock produit [DE],'2'))&' aff.'` |
+| 295 | `MlsTrans('Il n''y a que ')&
+Trim(Str([HJ],'3L'))&MlsTrans(' chambre(s) sur le compte du GM !')` |
+
+#### CAST_LOGIQUE (9)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 162 | `IF(W0 imputation [W]='VRL','TRUE'LOG,V.RC utilisé [GA]=0)` |
+| 272 | `IF(W0 imputation [W]='PYR',NOT(W0 mode de paiement [DG]),'FALSE'LOG)` |
+| 17 | `'FALSE'LOG` |
+| 56 | `'TRUE'LOG` |
+| 57 | `'FALSE'LOG` |
+| 84 | `'FALSE'LOG` |
+| 188 | `'FALSE'LOG` |
+| 211 | `'TRUE'LOG` |
+| 271 | `(W0 code article [U]>0 AND (W0 imputation [W]='VRL' OR W0 imputation [W]='VSL' )) OR (W0 code article [U]>0 AND W0 fin tache [DO]>0 AND W0 imputation [W]<>'VRL' AND W0 imputation [W]<>'VSL') AND [AQ]<>'' OR IF(W0 imputation [W]='PYR',W0 mode de paiement [DG],'TRUE'LOG)` |
+
+#### CONSTANTE (28)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 9 | `154` |
+| 13 | `'F'` |
+| 18 | `'N'` |
+| 19 | `1` |
+| 20 | `'CAISSE'` |
+| 47 | `0` |
+| 48 | `''` |
+| 50 | `'A&bandonner'` |
+| 63 | `30` |
+| 68 | `'H'` |
+| 71 | `'CASH'` |
+| 72 | `'W'` |
+| 76 | `'O'` |
+| 139 | `''` |
+| 149 | `'SANS'` |
+| 192 | `'...'` |
+| 193 | `'La quantité totale ne correspond pas au détail des PAX sélectionnés'` |
+| 195 | `'2'` |
+| 202 | `'Des informations du transfert Aller ne sont pas saisies . Validation impossible '` |
+| 203 | `'Des informations du transfert Retour ne sont pas saisies . Validation impossible '` |
+| 208 | `''` |
+| 213 | `'H'` |
+| 215 | `'PL'` |
+| 217 | `'VADA'` |
+| 218 | `'VADV'` |
+| 233 | `0` |
+| 240 | `'PYR'` |
+| 266 | `'Voulez vous utiliser le Gift Pass ?'` |
+
+#### DATE (3)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 4 | `Date ()` |
+| 14 | `Date ()` |
+| 67 | `Date ()` |
+
+#### REFERENCE_VG (4)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 7 | `VG2` |
+| 156 | `VG21` |
+| 237 | `VG38` |
+| 273 | `VG63` |
+
+#### OTHER (71)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 10 | `P0 societe [A]` |
+| 11 | `P0 code GM [E]` |
+| 12 | `P0 filiation [F]` |
+| 21 | `W0 code article [U]` |
+| 27 | `NOT(v.Flag abandon libération [GF])` |
+| 40 | `V.Reglement premier ar... [ET]` |
+| 41 | `W0 FIN SAISIE OD [R]` |
+| 42 | `W0 gratuite ? [DV]` |
+| 44 | `V.VADA ? [EP]` |
+| 46 | `W0 Cloture en cours [T]` |
+| 49 | `MlsTrans('Identité')` |
+| 51 | `MlsTrans ('&Fin Transaction')` |
+| 64 | `P0 societe [A]` |
+| 65 | `P0 code GM [E]` |
+| 66 | `P0 filiation [F]` |
+| 70 | `GetParam ('MOPCMP')` |
+| 73 | `W0 code article [U]` |
+| 77 | `V.VADV ? [EQ]` |
+| 85 | `ExpCalc('55'EXP)` |
+| 86 | `ExpCalc('55'EXP) AND NOT([HH])` |
+| 87 | `ExpCalc('55'EXP) AND NOT v.Flag exist Vte LCO [GE]` |
+| 93 | `[AZ]` |
+| 96 | `IN(W0 imputation [W],'VRL','VSL','PYR')` |
+| 98 | `IN(W0 imputation [W],'VRL','VSL')` |
+| 99 | `IN(W0 imputation [W],'VRL','VSL','TRF')` |
+| 110 | `W0 code article [U]` |
+| 115 | `W0 Motif de non enreg NA [CL]` |
+| 124 | `GetParam('CODELANGUE')` |
+| 142 | `W0 imputation [W]` |
+| 161 | `MlsTrans('Sans réduction')` |
+| 164 | `VG23 AND VG24 AND NOT [GS]` |
+| 166 | `W0 FIN SAISIE OD [R] AND VG23` |
+| 176 | `[AC]` |
+| 177 | `VG7 AND v.Flag exist Vte LCO [GE]` |
+| 180 | `[GV]` |
+| 186 | `CHG_PRV_W0 nbre articles [GO]` |
+| 187 | `VG23 AND VG24` |
+| 200 | `IN(W0 service village [BA],'1','3')` |
+| 201 | `IN(W0 service village [BA],'2','3')` |
+| 207 | `'00:00:00'TIME` |
+| 209 | `V Nbre de Ligne Saisies [FC]` |
+| 212 | `GetParam('CODELANGUE')` |
+| 214 | `W0 Heure du transfert ... [BO]` |
+| 216 | `W0 b.Date du transfert [BP]` |
+| 219 | `V.Nombre de carte [FP] OR V.N°Ticket OD [FU]` |
+| 221 | `W0 forfait (O/N) [DP]` |
+| 235 | `W0 fin tache [DO]` |
+| 242 | `W0 Nom [CP]` |
+| 248 | `W0 montant [DF]` |
+| 252 | `Existe mode de paiement [DH]` |
+| 253 | `31.75` |
+| 254 | `28.125` |
+| 255 | `29.375` |
+| 256 | `54.125` |
+| 258 | `W0 mode de paiement [DG]` |
+| 264 | `IN(W0 imputation [W],'VRL','VSL') AND VG54` |
+| 269 | `[HE]` |
+| 274 | `NOT([HH])` |
+| 275 | `NOT(W0 FIN SAISIE OD [R])` |
+| 276 | `W0 FIN SAISIE OD [R]` |
+| 277 | `v.Matin/Après midi [BL]` |
+| 278 | `VG83 AND V.ConfirmeUseGP? [FZ]` |
+| 287 | `VG36 AND [HK]` |
+| 288 | `W0 libelle article [BB]` |
+| 291 | `DbDel('{1037,4}'DSOURCE,'')` |
+| 293 | `[HJ]` |
+| 297 | `[HL]` |
+| 299 | `[AF]` |
+| 302 | `[IA]` |
+| 303 | `[IB]` |
+| 304 | `WO Classe MOP [DJ]` |
+
+#### CONCATENATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 3 | `MlsTrans ('Verifier que la transaction est bien pour')&' '&Trim (P0 Nom & prenom [K])` |
+
+#### STRING (4)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 8 | `Trim (W0 choix transac manuelle [EM])` |
+| 83 | `MlsTrans (Trim (W0 forfait date(O/N) [DR]))` |
+| 171 | `MlsTrans('Transaction TPE : ')&Trim([GT])` |
+| 262 | `Trim(VG57)` |
 
 </details>
 
@@ -5262,4 +5711,4 @@ graph LR
 | [Zoom services village (IDE 269)](ADH-IDE-269.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-01-30 21:50*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-01-31 11:40*

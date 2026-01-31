@@ -1008,7 +1008,7 @@ Add-Line "## 8. ECRANS"
 Add-Line
 
 if ($visibleForms.Count -gt 0) {
-    # V7.2: Table with hierarchical position
+    # V7.3: Table with real hierarchical IDE position from KB
     Add-Line "### 8.1 Forms visibles ($($visibleForms.Count) / $($allForms.Count))"
     Add-Line
     Add-Line "| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |"
@@ -1017,7 +1017,9 @@ if ($visibleForms.Count -gt 0) {
     foreach ($form in $visibleForms) {
         $fName = if ($form.name -and $form.name.Trim()) { $form.name.Trim() } else { "(sans nom)" }
         $fBloc = Get-FunctionalBloc $form.name
-        Add-Line "| $fIdx | $IdePosition.$fIdx | T$($form.task_isn2) | $fName | $($form.window_type_str) | $($form.dimensions.width) | $($form.dimensions.height) | $fBloc |"
+        # Use real IDE position from KB tree if available, fallback to sequential
+        $idePos = if ($form.task_ide_position -and $form.task_ide_position.Trim()) { $form.task_ide_position } else { "$IdePosition.$fIdx" }
+        Add-Line "| $fIdx | $idePos | T$($form.task_isn2) | $fName | $($form.window_type_str) | $($form.dimensions.width) | $($form.dimensions.height) | $fBloc |"
         $fIdx++
     }
     Add-Line
@@ -1025,6 +1027,18 @@ if ($visibleForms.Count -gt 0) {
     # V7.2: Mockups with FORM-DATA blocks
     Add-Line "### 8.2 Mockups Ecrans"
     Add-Line
+
+    # V7.3: Load task_columns from ui_forms.json for real DataView columns per task
+    $taskColumnsData = @{}
+    if ($uiForms -and $uiForms.task_columns) {
+        if ($uiForms.task_columns -is [hashtable]) {
+            $taskColumnsData = $uiForms.task_columns
+        } else {
+            foreach ($prop in $uiForms.task_columns.PSObject.Properties) {
+                $taskColumnsData[$prop.Name] = @($prop.Value)
+            }
+        }
+    }
 
     $fIdx2 = 1
     foreach ($form in $visibleForms) {
@@ -1034,115 +1048,94 @@ if ($visibleForms.Count -gt 0) {
         $type = $form.window_type_str
         $tNum = $form.task_isn2
         $fBloc = Get-FunctionalBloc $form.name
+        # V7.3: Use real IDE position from KB tree
+        $idePos = if ($form.task_ide_position -and $form.task_ide_position.Trim()) { $form.task_ide_position } else { "$IdePosition.$fIdx2" }
 
         Add-Line "---"
         Add-Line
-        # V7.2: Anchor for cross-tab navigation
-        Add-Line "#### $(Format-Anchor "ecran-t$tNum")$IdePosition.$fIdx2 - $fName"
+        # V7.3: Anchor with real IDE position
+        Add-Line "#### $(Format-Anchor "ecran-t$tNum")$idePos - $fName"
         Add-Line "**Tache** : [T$tNum](#t$tNum) | **Type** : $type | **Dimensions** : $w x $h DLU"
         Add-Line "**Bloc** : $fBloc | **Titre IDE** : $fName"
         Add-Line
 
-        # V7.2: FORM-DATA block for viewer rendering
-        # Build controls from variable data
+        # V7.3: Build controls from REAL DataView columns for this task
         $controls = @()
+        $taskKey = "$tNum"
+        $taskCols = @()
+        if ($taskColumnsData.ContainsKey($taskKey)) {
+            $taskCols = @($taskColumnsData[$taskKey])
+        }
+
         $yPos = 13
         $xPos = 10
-
-        # P0 parameters as read-only fields
-        $formP0 = @($variableRows | Where-Object { $_.Category -eq "P0" } | Select-Object -First 6)
-        foreach ($p0 in $formP0) {
-            $controls += @{
-                type = "edit"; x = $xPos; y = $yPos; w = 130; h = 20
-                var = $p0.Letter; label = $p0.Name; readonly = $true
+        foreach ($col in $taskCols) {
+            $colName = if ($col.name) { $col.name } else { $col.letter }
+            $isBtn = ($col.gui_control -eq "PUSH_BUTTON" -or $colName -match '(?i)^(Bouton|Bt |btn)')
+            if ($isBtn) {
+                $controls += @{
+                    type = "button"; x = $xPos; y = $yPos; w = 80; h = 25
+                    var = $col.letter; label = $colName; readonly = $col.readonly
+                }
+            } else {
+                $controls += @{
+                    type = "edit"; x = $xPos; y = $yPos; w = 130; h = 20
+                    var = $col.letter; label = $colName; readonly = $col.readonly
+                }
             }
             $xPos += 140
             if ($xPos -gt 600) { $xPos = 10; $yPos += 30 }
         }
 
-        # W0 variables matching bloc as editable fields
-        $blocPattern = switch ($fBloc) {
-            "Saisie"         { 'saisie|transaction|vente|article|quantite|qte|produit|imputation|service|code|libelle|prix|montant|date' }
-            "Reglement"      { 'regl|paiement|mop|montant|total|solde|devise|mode|cheque' }
-            "Validation"     { 'controle|verif|valid|erreur|statut|confirm' }
-            "Impression"     { 'print|ticket|edition|imprim|numero' }
-            "Calcul"         { 'stock|calcul|compt|pourcentage|taux|cumul|total' }
-            default          { '.' }
-        }
-        $xPos = 10; $yPos += 30
-        $formW0 = @($variableRows | Where-Object {
-            $_.Category -eq "W0" -and ($_.Name -match $blocPattern)
-        } | Select-Object -First 8)
-        foreach ($w0 in $formW0) {
-            $controls += @{
-                type = "edit"; x = $xPos; y = $yPos; w = 200; h = 20
-                var = $w0.Letter; label = $w0.Name; readonly = $false
-            }
-            $xPos += 210
-            if ($xPos -gt 600) { $xPos = 10; $yPos += 30 }
-        }
-
-        # Buttons at bottom
-        $yPos = [math]::Max($yPos + 40, 200)
-        $xPos = 10
-        $formBtns = @($variableRows | Where-Object { $_.Name -match '^Bouton|^W0 Bouton|^Bt' } | Select-Object -First 4)
-        foreach ($btn in $formBtns) {
-            $controls += @{
-                type = "button"; x = $xPos; y = $yPos; w = 80; h = 25
-                var = $btn.Letter; label = ($btn.Name -replace '^(Bouton|W0 Bouton|Bt)\s*', '')
-            }
-            $xPos += 90
-        }
-
         # Write FORM-DATA JSON block
         $formData = @{
-            taskId = [int]$tNum
+            taskId = $idePos
             type = $type
             width = [int]$w
             height = [int]$h
             controls = $controls
         }
-        $formJson = $formData | ConvertTo-Json -Depth 4 -Compress
         Add-Line "<!-- FORM-DATA:"
         Add-Line ($formData | ConvertTo-Json -Depth 4)
         Add-Line "-->"
         Add-Line
 
-        # V7.2: Field table
+        # V7.3: Champs table (collapsible)
         $editControls = @($controls | Where-Object { $_.type -eq "edit" })
         if ($editControls.Count -gt 0) {
-            Add-Line "**Champs :**"
+            Add-Line "<details>"
+            Add-Line "<summary><strong>Champs : $($editControls.Count) champs</strong></summary>"
             Add-Line
             Add-Line "| Variable | Nom | Type | Saisie |"
             Add-Line "|----------|-----|------|--------|"
             foreach ($ctrl in $editControls) {
-                $vRow = $variableRows | Where-Object { $_.Letter -eq $ctrl.var } | Select-Object -First 1
+                $tcol = $taskCols | Where-Object { $_.letter -eq $ctrl.var } | Select-Object -First 1
                 $saisie = if ($ctrl.readonly) { "Lecture" } else { "**Saisie**" }
-                $dt = if ($vRow) { $vRow.DataType } else { "N/A" }
+                $dt = if ($tcol -and $tcol.data_type) { $tcol.data_type } else { "N/A" }
                 Add-Line "| $($ctrl.var) | $($ctrl.label) | $dt | $saisie |"
             }
             Add-Line
+            Add-Line "</details>"
+            Add-Line
         }
 
-        # V7.2 GAP4 fix: Button table with specific actions (not generic "Action declenchee")
+        # V7.3: Boutons table (collapsible) with action derivation
         $btnControls = @($controls | Where-Object { $_.type -eq "button" })
         if ($btnControls.Count -gt 0) {
-            Add-Line "**Boutons :**"
+            Add-Line "<details>"
+            Add-Line "<summary><strong>Boutons : $($btnControls.Count) boutons</strong></summary>"
             Add-Line
             Add-Line "| Bouton | Variable | Action |"
             Add-Line "|--------|----------|--------|"
             foreach ($btn in $btnControls) {
-                # V7.2: Derive action from button label + callees matching
                 $btnLabel = $btn.label.ToLower()
                 $btnAction = "Action declenchee"
-                # Try to match button to a callee
                 $btnCallee = $calleesCtx | Where-Object {
                     $_.name.ToLower() -match [regex]::Escape($btnLabel.Substring(0, [math]::Min(5, $btnLabel.Length)))
                 } | Select-Object -First 1
                 if ($btnCallee) {
                     $btnAction = "Appel $(Format-SpecLink -Name $btnCallee.name -Ide $btnCallee.ide -Proj $Project)"
                 } else {
-                    # Derive from label keywords (extended patterns for Magic buttons)
                     $btnAction = switch -Regex ($btnLabel) {
                         'valid|ok|confirm|enreg' { "Valide la saisie et enregistre" }
                         'annul|cancel|retour|abandon' { "Annule et retour au menu" }
@@ -1163,6 +1156,8 @@ if ($visibleForms.Count -gt 0) {
                 }
                 Add-Line "| $($btn.label) | $($btn.var) | $btnAction |"
             }
+            Add-Line
+            Add-Line "</details>"
             Add-Line
         }
 
@@ -1291,146 +1286,30 @@ foreach ($blocName in $blocMap.Keys) {
 }
 Add-Line
 
-# V7.2-FIX5: Algorigramme metier (programmes complexes >3 taches)
-$isComplex = ($allForms.Count -gt 3)
-if ($isComplex) {
-    Add-Line "### 9.4 Algorigramme"
-    Add-Line
-    Add-Line '```mermaid'
-    Add-Line "flowchart TD"
-    Add-Line "    START([Entree])"
-    Add-Line "    style START fill:#3fb950"
-
-    # Extract decision conditions from decoded expressions
-    $decisions = @()
-    if ($decoded -and $decoded.expressions) {
-        # decoded.json structure: expressions.all[] or expressions.by_type.CONDITION[]
-        $allExprs = @()
-        if ($decoded.expressions.by_type -and $decoded.expressions.by_type.CONDITION) {
-            $allExprs = @($decoded.expressions.by_type.CONDITION)
-        } elseif ($decoded.expressions.all) {
-            $allExprs = @($decoded.expressions.all | Where-Object {
-                $_.decoded -and ($_.decoded -match '(?i)IF\s*\(')
-            })
-        } elseif ($decoded.expressions -is [array]) {
-            $allExprs = @($decoded.expressions | Where-Object {
-                $_.decoded -and ($_.decoded -match '(?i)IF\s*\(')
-            })
-        }
-
-        $ifExprs = @($allExprs | Select-Object -First 6)
-
-        foreach ($expr in $ifExprs) {
-            # Extract condition from IF(condition, ...)
-            $condMatch = [regex]::Match($expr.decoded, '(?i)IF\s*\(([^,]+)')
-            if ($condMatch.Success) {
-                $cond = $condMatch.Groups[1].Value.Trim()
-                # Shorten for display
-                if ($cond.Length -gt 25) { $cond = $cond.Substring(0, 22) + "..." }
-                $cond = $cond -replace "['""`<>{}()\[\]/\\?!&]", ''
-                if ($cond.Trim()) {
-                    $decisions += @{ condition = $cond; task = $expr.task; exprId = $expr.id }
-                }
-            }
-        }
-    }
-
-    # Build nodes: mix of functional blocs and decision diamonds
-    $blocKeys = @($blocMap.Keys)
-    $nodeIds = @()
-    $bIdx = 1
-    $dIdx = 0
-
-    foreach ($bk in $blocKeys) {
-        $bForms = @($blocMap[$bk])
-        $screenCount = @($bForms | Where-Object { $_.dimensions.width -gt 0 }).Count
-        $taskCount = $bForms.Count
-        $nodeId = "BLK$bIdx"
-        $shortName = Clean-MermaidLabel $bk
-
-        # Add bloc node
-        if ($screenCount -gt 0) {
-            Add-Line "    $nodeId[$shortName]"
-        } else {
-            Add-Line "    $nodeId[$shortName]"
-        }
-        Add-Line "    style $nodeId fill:#58a6ff"
-        $nodeIds += $nodeId
-
-        # Add decision after this bloc if a matching IF expression exists
-        if ($dIdx -lt $decisions.Count) {
-            $dec = $decisions[$dIdx]
-            $decNodeId = "DEC$($dIdx + 1)"
-            $decLabel = Clean-MermaidLabel $dec.condition
-            Add-Line "    $decNodeId{$decLabel}"
-            Add-Line "    style $decNodeId fill:#ffeb3b,color:#000"
-            $nodeIds += $decNodeId
-            $dIdx++
-        }
-
-        $bIdx++
-    }
-
-    # External calls
-    $calleeList = @()
-    if ($discovery.call_graph -and $discovery.call_graph.callees) {
-        $calleeList = @($discovery.call_graph.callees | Select-Object -First 8)
-    }
-    $extIdx = 1
-    foreach ($callee in $calleeList) {
-        $cName = Clean-MermaidLabel "IDE $($callee.ide) $($callee.name)"
-        Add-Line "    EXT$extIdx([$cName])"
-        Add-Line "    style EXT$extIdx fill:#3fb950"
-        $extIdx++
-    }
-
-    Add-Line "    FIN([Sortie])"
-    Add-Line "    style FIN fill:#f85149"
-
-    # Connect nodes sequentially with decision branches
-    if ($nodeIds.Count -gt 0) {
-        Add-Line "    START --> $($nodeIds[0])"
-
-        for ($i = 0; $i -lt $nodeIds.Count - 1; $i++) {
-            $current = $nodeIds[$i]
-            $next = $nodeIds[$i + 1]
-
-            if ($current -match '^DEC') {
-                # Decision node: OUI goes forward, NON skips
-                $skipTarget = if ($i + 2 -lt $nodeIds.Count) { $nodeIds[$i + 2] } else { "FIN" }
-                Add-Line "    $current -->|OUI| $next"
-                Add-Line "    $current -->|NON| $skipTarget"
-            } else {
-                Add-Line "    $current --> $next"
-            }
-        }
-
-        # Connect last node to FIN
-        $lastNode = $nodeIds[$nodeIds.Count - 1]
-        if ($lastNode -match '^DEC') {
-            Add-Line "    $lastNode -->|OUI| FIN"
-        } else {
-            Add-Line "    $lastNode --> FIN"
-        }
-    } else {
-        Add-Line "    START --> FIN"
-    }
-
-    # Connect external calls with dotted lines from first bloc
-    $firstBloc = $nodeIds | Where-Object { $_ -match '^BLK' } | Select-Object -First 1
-    if ($firstBloc) {
-        $extIdx = 1
-        foreach ($callee in $calleeList) {
-            Add-Line "    $firstBloc -.->|appel| EXT$extIdx"
-            $extIdx++
-        }
-    }
-
-    Add-Line '```'
-    Add-Line
-    Add-Line "> **Legende** : Bleu = blocs fonctionnels | Vert = programmes externes | Jaune = decisions | Rouge = sortie"
-    Add-Line
+# V7.3: Algorigramme metier - V3.5 template style (synthetic, not data-driven)
+$paramCount = @($variableRows | Where-Object { $_.Category -eq "P0" }).Count
+$calleeCount = 0
+if ($discovery.call_graph -and $discovery.call_graph.callees) {
+    $calleeCount = @($discovery.call_graph.callees).Count
 }
+
+Add-Line "### 9.4 Algorigramme"
+Add-Line
+Add-Line '```mermaid'
+Add-Line "flowchart TD"
+Add-Line "    START([START $paramCount params])"
+Add-Line "    INIT[Initialisation]"
+Add-Line "    PROCESS[Traitement principal $taskCount taches]"
+Add-Line "    CALLS[Appels sous programmes $calleeCount callees]"
+Add-Line "    ENDOK([END])"
+Add-Line
+Add-Line "    START --> INIT --> PROCESS --> CALLS --> ENDOK"
+Add-Line
+Add-Line "    style START fill:#3fb950"
+Add-Line "    style ENDOK fill:#f85149"
+Add-Line "    style PROCESS fill:#58a6ff"
+Add-Line '```'
+Add-Line
 
 # ================================================================
 # TAB 3: DONNEES

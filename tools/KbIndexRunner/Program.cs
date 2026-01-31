@@ -1812,7 +1812,36 @@ if (args.Length > 1 && args[0] == "forms-json")
         };
     }
 
-    // Extract forms
+    // Helper: convert field ID to letter
+    static string FjFieldToLetter(int fieldId)
+    {
+        if (fieldId <= 0) return $"Field{fieldId}";
+        var sb = new System.Text.StringBuilder();
+        int n = fieldId;
+        while (n > 0)
+        {
+            n--;
+            sb.Insert(0, (char)('A' + (n % 26)));
+            n /= 26;
+        }
+        return sb.ToString();
+    }
+
+    // Helper: convert {type,id} variable ref to letter
+    static string FjVarToLetter(string variable)
+    {
+        if (!variable.StartsWith("{") || !variable.Contains(","))
+            return variable;
+        var inner = variable.Trim('{', '}').Split(',');
+        if (inner.Length < 2) return variable;
+        int.TryParse(inner[0], out int varType);
+        int.TryParse(inner[1], out int fieldId);
+        if (varType == 32768) return $"VG{fieldId}";
+        if (varType == 0) return FjFieldToLetter(fieldId);
+        return variable;
+    }
+
+    // Extract forms with ide_position
     var forms = new List<object>();
     using (var cmd = conn.CreateCommand())
     {
@@ -1827,7 +1856,8 @@ if (args.Length > 1 && args[0] == "forms-json")
                 tf.window_type,
                 tf.font,
                 t.isn2 as task_isn2,
-                t.description as task_name
+                t.description as task_name,
+                t.ide_position as task_ide_position
             FROM task_forms tf
             JOIN tasks t ON tf.task_id = t.id
             WHERE t.program_id = @prog_id
@@ -1850,26 +1880,80 @@ if (args.Length > 1 && args[0] == "forms-json")
                     height = reader.IsDBNull(5) ? 0 : reader.GetInt32(5)
                 },
                 task_isn2 = reader.GetInt32(8),
+                task_ide_position = reader.IsDBNull(10) ? "" : reader.GetString(10),
                 font = reader.IsDBNull(7) ? "" : reader.GetString(7)
             });
         }
     }
 
-    // Note about controls - would need schema extension
-    var notes = new List<string>();
-    notes.Add("Controls extraction requires KB schema extension");
+    // Extract DataView columns per task (for real field/button tables)
+    var taskColumns = new Dictionary<int, List<object>>();
+    using (var cmd = conn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT
+                t.isn2,
+                dc.variable,
+                dc.name,
+                dc.data_type,
+                dc.picture,
+                dc.definition,
+                dc.gui_control_type
+            FROM dataview_columns dc
+            JOIN tasks t ON dc.task_id = t.id
+            WHERE t.program_id = @prog_id
+            ORDER BY t.isn2, dc.line_number";
+        cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var taskIsn2 = reader.GetInt32(0);
+            var variable = reader.GetString(1);
+            var colName = reader.GetString(2);
+            var dataType = reader.GetString(3);
+            var picture = reader.IsDBNull(4) ? "" : reader.GetString(4);
+            var definition = reader.GetString(5);
+            var guiControl = reader.IsDBNull(6) ? "" : reader.GetString(6);
+
+            var letter = FjVarToLetter(variable);
+            var isReadonly = definition == "P" || definition == "R";
+
+            if (!taskColumns.ContainsKey(taskIsn2))
+                taskColumns[taskIsn2] = new List<object>();
+
+            taskColumns[taskIsn2].Add(new {
+                letter,
+                name = colName,
+                data_type = dataType,
+                picture,
+                definition,
+                gui_control = guiControl,
+                @readonly = isReadonly
+            });
+        }
+    }
+
+    // Serialize task_columns as dictionary
+    var taskColsSerialized = new Dictionary<string, object>();
+    foreach (var kv in taskColumns)
+    {
+        taskColsSerialized[kv.Key.ToString()] = kv.Value;
+    }
+
+    var totalColumns = taskColumns.Values.Sum(v => v.Count);
 
     var formsResult = new
     {
         program = programName,
         ide = ide,
         forms = forms,
-        controls = new List<object>(), // Placeholder - needs schema extension
+        task_columns = taskColsSerialized,
         statistics = new {
             form_count = forms.Count,
-            control_count = 0
-        },
-        notes = notes
+            tasks_with_columns = taskColumns.Count,
+            total_columns = totalColumns
+        }
     };
 
     Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(formsResult));

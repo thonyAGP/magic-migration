@@ -114,7 +114,7 @@
           maxY += 30; // padding
 
           let html = `<div class="magic-mockup" style="width:${Math.min(w, 900)}px">`;
-          html += `<div class="magic-mockup-title"><span>${title} - T${data.taskId || '?'}</span>`;
+          html += `<div class="magic-mockup-title"><span>${data.taskId || title}</span>`;
           html += `<div class="win-btns"><span class="win-btn">_</span><span class="win-btn">□</span><span class="win-btn">×</span></div>`;
           html += `</div>`;
           html += `<div class="magic-mockup-body" style="height:${maxY}px">`;

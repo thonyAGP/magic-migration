@@ -56,16 +56,17 @@ Write-Host "  Program: $programName" -ForegroundColor Green
 Write-Host "  Forms found: $($forms.Count)" -ForegroundColor $(if ($forms.Count -gt 0) { "Green" } else { "Yellow" })
 Write-Host ""
 
-# Step 2: Controls extraction (placeholder)
-Write-Host "[2/4] Extracting controls (placeholder)..." -ForegroundColor Yellow
-$controls = @{
-    buttons = @()
-    inputs = @()
-    tables = @()
-    labels = @()
+# Step 2: Extract DataView columns per task (real controls)
+Write-Host "[2/4] Extracting DataView columns per task..." -ForegroundColor Yellow
+$taskColumns = @{}
+if ($formsData.task_columns) {
+    foreach ($prop in $formsData.task_columns.PSObject.Properties) {
+        $taskColumns[$prop.Name] = @($prop.Value)
+    }
 }
-
-Write-Host "  NOTE: Detailed control extraction requires KB schema extension" -ForegroundColor DarkYellow
+$totalCols = ($taskColumns.Values | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum
+Write-Host "  Tasks with columns: $($taskColumns.Count)" -ForegroundColor Green
+Write-Host "  Total columns: $totalCols"
 Write-Host ""
 
 # Step 3: Generate ASCII mockup for main form
@@ -143,23 +144,20 @@ $uiForms = @{
             window_type_str = $_.window_type_str
             dimensions = $_.dimensions
             task_isn2 = $_.task_isn2
+            task_ide_position = $_.task_ide_position
             font = $_.font
         }
     })
 
-    controls = $controls
+    task_columns = $taskColumns
 
     screen_mockup_ascii = $mockupLines
 
     statistics = @{
         form_count = $forms.Count
-        button_count = $controls.buttons.Count
-        input_count = $controls.inputs.Count
-        table_count = $controls.tables.Count
-        label_count = $controls.labels.Count
+        tasks_with_columns = $taskColumns.Count
+        total_columns = $totalCols
     }
-
-    notes = $formsData.notes
 }
 
 $uiFormsPath = Join-Path $OutputPath "ui_forms.json"
@@ -179,6 +177,6 @@ foreach ($form in $forms | Select-Object -First 10) {
 if ($forms.Count -gt 10) {
     Write-Host "    ... and $($forms.Count - 10) more forms"
 }
-Write-Host "  - Controls: Requires KB extension"
+Write-Host "  - Tasks with columns: $($taskColumns.Count) ($totalCols total columns)"
 
 return $uiForms
