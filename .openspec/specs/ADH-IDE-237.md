@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: Phases 1-4 2026-01-31 11:39 -> 11:39 (13s) | Assemblage 11:40
+> **Analyse**: Phases 1-4 2026-01-31 23:34 -> 23:34 (17s) | Assemblage 23:34
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -836,1714 +836,354 @@ Transfert de donnees entre modules.
     "width":  1112,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 societe",
-                         "h":  20,
-                         "var":  "A"
+                         "w":  1039,
+                         "parent":  null,
+                         "y":  2,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  17,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "P0 devise locale",
-                         "h":  20,
-                         "var":  "B"
+                         "w":  886,
+                         "parent":  null,
+                         "y":  21,
+                         "type":  "label",
+                         "x":  226,
+                         "label":  "",
+                         "h":  230,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "P0 masque montant",
-                         "h":  20,
-                         "var":  "C"
+                         "w":  133,
+                         "parent":  null,
+                         "y":  35,
+                         "type":  "label",
+                         "x":  252,
+                         "label":  "Date d\u0027achat",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0 solde compte",
-                         "h":  20,
-                         "var":  "D"
+                         "w":  135,
+                         "parent":  null,
+                         "y":  35,
+                         "type":  "label",
+                         "x":  769,
+                         "label":  "Annulation ?",
+                         "h":  11,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0 code GM",
-                         "h":  20,
-                         "var":  "E"
+                         "w":  265,
+                         "parent":  null,
+                         "y":  244,
+                         "type":  "label",
+                         "x":  3,
+                         "label":  "Clôture en cours",
+                         "h":  8,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 filiation",
-                         "h":  20,
-                         "var":  "F"
+                         "w":  1042,
+                         "parent":  null,
+                         "y":  254,
+                         "type":  "label",
+                         "x":  0,
+                         "label":  "",
+                         "h":  24,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "P0 date fin sejour",
-                         "h":  20,
-                         "var":  "G"
+                         "w":  865,
+                         "parent":  null,
+                         "y":  47,
+                         "type":  "label",
+                         "x":  242,
+                         "label":  "Article",
+                         "h":  201,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "P0 etat compte",
-                         "h":  20,
-                         "var":  "H"
+                         "w":  746,
+                         "parent":  13,
+                         "y":  181,
+                         "type":  "line",
+                         "x":  256,
+                         "label":  "",
+                         "h":  0,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0 date solde",
-                         "h":  20,
-                         "var":  "I"
+                         "w":  58,
+                         "parent":  13,
+                         "y":  184,
+                         "type":  "label",
+                         "x":  253,
+                         "label":  "Service",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0 garanti O/N",
-                         "h":  20,
-                         "var":  "J"
+                         "w":  146,
+                         "parent":  13,
+                         "y":  184,
+                         "type":  "label",
+                         "x":  322,
+                         "label":  "Article",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 Nom \u0026 prenom",
-                         "h":  20,
-                         "var":  "K"
+                         "w":  146,
+                         "parent":  13,
+                         "y":  184,
+                         "type":  "label",
+                         "x":  478,
+                         "label":  "Libellé",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "P0 UNI/BI",
-                         "h":  20,
-                         "var":  "L"
+                         "w":  48,
+                         "parent":  13,
+                         "y":  184,
+                         "type":  "label",
+                         "x":  669,
+                         "label":  "Nbre",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "P0.Date debut sejour",
-                         "h":  20,
-                         "var":  "M"
+                         "w":  182,
+                         "parent":  13,
+                         "y":  184,
+                         "type":  "label",
+                         "x":  760,
+                         "label":  "Montant",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0.Valide ?",
-                         "h":  20,
-                         "var":  "N"
+                         "w":  19,
+                         "parent":  13,
+                         "y":  193,
+                         "type":  "label",
+                         "x":  728,
+                         "label":  "X",
+                         "h":  8,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0.Nb decimales",
-                         "h":  20,
-                         "var":  "O"
+                         "w":  182,
+                         "parent":  13,
+                         "y":  219,
+                         "type":  "label",
+                         "x":  478,
+                         "label":  "Règlement",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  80,
-                         "readonly":  false,
-                         "y":  103,
+                         "w":  48,
+                         "parent":  13,
+                         "y":  193,
+                         "type":  "edit",
+                         "x":  957,
+                         "label":  "",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  168,
+                         "parent":  null,
+                         "y":  257,
                          "type":  "button",
-                         "x":  10,
-                         "label":  "Bouton IDENTITE",
-                         "h":  25,
-                         "var":  "P"
+                         "x":  631,
+                         "label":  "Bouton DETAIL",
+                         "h":  18,
+                         "var":  ""
                      },
                      {
-                         "w":  80,
-                         "readonly":  false,
-                         "y":  103,
+                         "w":  168,
+                         "parent":  null,
+                         "y":  257,
                          "type":  "button",
-                         "x":  150,
+                         "x":  215,
                          "label":  "Bouton ABANDON",
-                         "h":  25,
-                         "var":  "Q"
+                         "h":  18,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 FIN SAISIE OD",
-                         "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  80,
-                         "readonly":  false,
-                         "y":  103,
+                         "w":  192,
+                         "parent":  11,
+                         "y":  257,
                          "type":  "button",
-                         "x":  430,
+                         "x":  841,
                          "label":  "Bouton FIN SAISIE OD",
-                         "h":  25,
-                         "var":  "S"
+                         "h":  18,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  103,
+                         "w":  126,
+                         "parent":  null,
+                         "y":  35,
                          "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 Cloture en cours",
-                         "h":  20,
-                         "var":  "T"
+                         "x":  396,
+                         "label":  "##/##/####Z",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 code article",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "v.SoldeGiftPass",
-                         "h":  20,
-                         "var":  "V"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 imputation",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 sous-imput.",
-                         "h":  20,
-                         "var":  "X"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 date d\u0027achat",
-                         "h":  20,
-                         "var":  "Y"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  163,
-                         "type":  "edit",
-                         "x":  10,
+                         "w":  110,
+                         "parent":  4,
+                         "y":  35,
+                         "type":  "combobox",
+                         "x":  908,
                          "label":  "W0 annulation",
-                         "h":  20,
-                         "var":  "Z"
+                         "h":  12,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  163,
+                         "w":  59,
+                         "parent":  13,
+                         "y":  193,
                          "type":  "edit",
-                         "x":  150,
+                         "x":  253,
                          "label":  "W0 service village",
-                         "h":  20,
-                         "var":  "BA"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  163,
+                         "w":  149,
+                         "parent":  13,
+                         "y":  193,
                          "type":  "edit",
-                         "x":  290,
+                         "x":  322,
                          "label":  "W0 libelle article",
-                         "h":  20,
-                         "var":  "BB"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  163,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 article dernière minute",
-                         "h":  20,
-                         "var":  "BC"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  163,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 nbre articles",
-                         "h":  20,
-                         "var":  "BD"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
+                         "w":  182,
+                         "parent":  13,
                          "y":  193,
                          "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 prix unitaire",
-                         "h":  20,
-                         "var":  "BE"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  193,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 Categorie de chambre",
-                         "h":  20,
-                         "var":  "BF"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  193,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 Lieu sejour",
-                         "h":  20,
-                         "var":  "BG"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  193,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Code reduction",
-                         "h":  20,
-                         "var":  "BH"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  193,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "v Sens Transfert Global",
-                         "h":  20,
-                         "var":  "BI"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  223,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "v.Date activité VAE",
-                         "h":  20,
-                         "var":  "BJ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  223,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "v.VAE pendant le séjour ?",
-                         "h":  20,
-                         "var":  "BK"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  223,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "v.Matin/Après midi",
-                         "h":  20,
-                         "var":  "BL"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  223,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Sens du transfert Aller",
-                         "h":  20,
-                         "var":  "BM"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  223,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 Date du transfert Aller",
-                         "h":  20,
-                         "var":  "BN"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  253,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Heure du transfert Aller",
-                         "h":  20,
-                         "var":  "BO"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  253,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 b.Date du transfert",
-                         "h":  20,
-                         "var":  "BP"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  253,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 Type d\u0027endroit Aller",
-                         "h":  20,
-                         "var":  "BQ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  253,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Code Gare/Aéroport Aller",
-                         "h":  20,
-                         "var":  "BR"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  253,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 Numéro du vol Aller",
-                         "h":  20,
-                         "var":  "BS"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  283,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Compagnie Aller",
-                         "h":  20,
-                         "var":  "BT"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  283,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 Commentaire Aller",
-                         "h":  20,
-                         "var":  "BU"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  283,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 Sens du transfert Retour",
-                         "h":  20,
-                         "var":  "BV"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  283,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Date du transfert Retour",
-                         "h":  20,
-                         "var":  "BW"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  283,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 Heure du transfert Retour",
-                         "h":  20,
-                         "var":  "BX"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  313,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Type d\u0027endroit Retour",
-                         "h":  20,
-                         "var":  "BY"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  313,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 Code Gare/Aéroport Retour",
-                         "h":  20,
-                         "var":  "BZ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  313,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 Numéro du vol Retour",
-                         "h":  20,
-                         "var":  "CA"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  313,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Compagnie Retour",
-                         "h":  20,
-                         "var":  "CB"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  313,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 b.Saisie PAX",
-                         "h":  20,
-                         "var":  "CC"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  343,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Nbre de PAX enregistré",
-                         "h":  20,
-                         "var":  "CD"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  343,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 Commentaire Retour",
-                         "h":  20,
-                         "var":  "CE"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  343,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 montant avant reduction",
-                         "h":  20,
-                         "var":  "CF"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  343,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Pourcentage reduction",
-                         "h":  20,
-                         "var":  "CG"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  343,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 Remise Obligatoire",
-                         "h":  20,
-                         "var":  "CH"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  373,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Montant reduction",
-                         "h":  20,
-                         "var":  "CI"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  373,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0.Date consommation",
-                         "h":  20,
-                         "var":  "CJ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  373,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0.Date fin sejour",
-                         "h":  20,
-                         "var":  "CK"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  373,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Motif de non enreg NA",
-                         "h":  20,
-                         "var":  "CL"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  373,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 Commentaire",
-                         "h":  20,
-                         "var":  "CM"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  403,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Motif annulation",
-                         "h":  20,
-                         "var":  "CN"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  403,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 Titre",
-                         "h":  20,
-                         "var":  "CO"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  403,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 Nom",
-                         "h":  20,
-                         "var":  "CP"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  403,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Prenom",
-                         "h":  20,
-                         "var":  "CQ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  403,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 Num rue",
-                         "h":  20,
-                         "var":  "CR"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  433,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Nom de la rue",
-                         "h":  20,
-                         "var":  "CS"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  433,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 Commune",
-                         "h":  20,
-                         "var":  "CT"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  433,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 CP",
-                         "h":  20,
-                         "var":  "CU"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  433,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Ville",
-                         "h":  20,
-                         "var":  "CV"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  433,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 Nb Chambres",
-                         "h":  20,
-                         "var":  "CW"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  463,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Chambre",
-                         "h":  20,
-                         "var":  "CX"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  463,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 PYR Valide",
-                         "h":  20,
-                         "var":  "CY"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  463,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 Lib Bouton Chambre",
-                         "h":  20,
-                         "var":  "CZ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  463,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Vendeur",
-                         "h":  20,
-                         "var":  "DA"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  463,
-                         "type":  "edit",
-                         "x":  570,
+                         "x":  478,
                          "label":  "W0 libelle supplem",
-                         "h":  20,
-                         "var":  "DB"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  493,
+                         "w":  48,
+                         "parent":  13,
+                         "y":  193,
                          "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 libelle supplem pour édition",
-                         "h":  20,
-                         "var":  "DC"
+                         "x":  669,
+                         "label":  "W0 nbre articles",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  493,
+                         "w":  182,
+                         "parent":  13,
+                         "y":  193,
                          "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 article trouve",
-                         "h":  20,
-                         "var":  "DD"
+                         "x":  760,
+                         "label":  "15",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  493,
+                         "w":  182,
+                         "parent":  13,
+                         "y":  205,
                          "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 Stock produit",
-                         "h":  20,
-                         "var":  "DE"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  493,
-                         "type":  "edit",
-                         "x":  430,
+                         "x":  760,
                          "label":  "W0 montant",
-                         "h":  20,
-                         "var":  "DF"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  493,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 mode de paiement",
-                         "h":  20,
-                         "var":  "DG"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  523,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "Existe mode de paiement",
-                         "h":  20,
-                         "var":  "DH"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  523,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 Libelle MOP",
-                         "h":  20,
-                         "var":  "DI"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  523,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "WO Classe MOP",
-                         "h":  20,
-                         "var":  "DJ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  523,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "V0 memo-service",
-                         "h":  20,
-                         "var":  "DK"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  523,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "V0 memo-nom GM",
-                         "h":  20,
-                         "var":  "DL"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  553,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "V0 validation",
-                         "h":  20,
-                         "var":  "DM"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  553,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 reseau",
-                         "h":  20,
-                         "var":  "DN"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  553,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 fin tache",
-                         "h":  20,
-                         "var":  "DO"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  553,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 forfait (O/N)",
-                         "h":  20,
-                         "var":  "DP"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  553,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 effacement (O/N)",
-                         "h":  20,
-                         "var":  "DQ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  583,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 forfait date(O/N)",
-                         "h":  20,
-                         "var":  "DR"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  583,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 code forfait",
-                         "h":  20,
-                         "var":  "DS"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  583,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 date debut",
-                         "h":  20,
-                         "var":  "DT"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  583,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 date fin",
-                         "h":  20,
-                         "var":  "DU"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  583,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 gratuite ?",
-                         "h":  20,
-                         "var":  "DV"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  613,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 ret lien special",
-                         "h":  20,
-                         "var":  "DW"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  613,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 Code Devise",
-                         "h":  20,
-                         "var":  "DX"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  613,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 Retour Transmission TPE",
-                         "h":  20,
-                         "var":  "DY"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  613,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Forcer Transaction Manuelle",
-                         "h":  20,
-                         "var":  "DZ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  613,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 Message TPE",
-                         "h":  20,
-                         "var":  "EA"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  643,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Retour Lecture TPE",
-                         "h":  20,
-                         "var":  "EB"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  643,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 Fin Transaction TPE",
-                         "h":  20,
-                         "var":  "EC"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  643,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "v. titre",
-                         "h":  20,
-                         "var":  "ED"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  643,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Total_Vente",
-                         "h":  20,
-                         "var":  "EE"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  643,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 Total_GiftPass",
-                         "h":  20,
-                         "var":  "EF"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  673,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 Annulation OD active",
-                         "h":  20,
-                         "var":  "EG"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  673,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 Compte garanti",
-                         "h":  20,
-                         "var":  "EH"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  673,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W0 confirmation si non garanti",
-                         "h":  20,
-                         "var":  "EI"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  673,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Abandon",
-                         "h":  20,
-                         "var":  "EJ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  673,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W0 validation",
-                         "h":  20,
-                         "var":  "EK"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  703,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W0 choix personne absente",
-                         "h":  20,
-                         "var":  "EL"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  703,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W0 choix transac manuelle",
-                         "h":  20,
-                         "var":  "EM"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
                          "w":  80,
-                         "readonly":  false,
-                         "y":  703,
+                         "parent":  13,
+                         "y":  219,
+                         "type":  "edit",
+                         "x":  669,
+                         "label":  "W0 mode de paiement",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  168,
+                         "parent":  null,
+                         "y":  257,
                          "type":  "button",
-                         "x":  290,
+                         "x":  7,
                          "label":  "Bouton Ok",
-                         "h":  25,
-                         "var":  "EN"
+                         "h":  18,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  703,
+                         "w":  267,
+                         "parent":  1,
+                         "y":  6,
                          "type":  "edit",
-                         "x":  430,
-                         "label":  "W0 Lien Logement Lieu Séjour",
-                         "h":  20,
-                         "var":  "EO"
+                         "x":  8,
+                         "label":  "20",
+                         "h":  8,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  703,
+                         "w":  203,
+                         "parent":  1,
+                         "y":  6,
                          "type":  "edit",
-                         "x":  570,
-                         "label":  "V.VADA ?",
-                         "h":  20,
-                         "var":  "EP"
+                         "x":  833,
+                         "label":  "WWW DD MMM YYYYT",
+                         "h":  8,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  733,
+                         "w":  792,
+                         "parent":  null,
+                         "y":  23,
                          "type":  "edit",
-                         "x":  10,
-                         "label":  "V.VADV ?",
-                         "h":  20,
-                         "var":  "EQ"
+                         "x":  235,
+                         "label":  "60",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  733,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "V.VAD ?",
-                         "h":  20,
-                         "var":  "ER"
+                         "w":  182,
+                         "parent":  null,
+                         "y":  77,
+                         "type":  "image",
+                         "x":  24,
+                         "label":  "",
+                         "h":  92,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  733,
+                         "w":  182,
+                         "parent":  13,
+                         "y":  219,
                          "type":  "edit",
-                         "x":  290,
-                         "label":  "Nbre ecriture",
-                         "h":  20,
-                         "var":  "ES"
+                         "x":  760,
+                         "label":  "20",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  733,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "V.Reglement premier article",
-                         "h":  20,
-                         "var":  "ET"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  733,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "V.Type premier article",
-                         "h":  20,
-                         "var":  "EU"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  763,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "V.Premier article VSL NA ?",
-                         "h":  20,
-                         "var":  "EV"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  763,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "V.Article VSL NA ?",
-                         "h":  20,
-                         "var":  "EW"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  763,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "v.IncrémentTicket(VRL/VSL) OK",
-                         "h":  20,
-                         "var":  "EX"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  763,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "v.IncrémentTicket(VTE) OK",
-                         "h":  20,
-                         "var":  "EY"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  763,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "v.NumeroTicket(VRL/VSL)",
-                         "h":  20,
-                         "var":  "EZ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  793,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "v.NumeroTicket(VTE)",
-                         "h":  20,
-                         "var":  "FA"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  793,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "v Réponse mode paiement",
-                         "h":  20,
-                         "var":  "FB"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  793,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "V Nbre de Ligne Saisies",
-                         "h":  20,
-                         "var":  "FC"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  793,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "v Nbre ligne de reglement Saisi",
-                         "h":  20,
-                         "var":  "FD"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  793,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "V.Num ligne vente",
-                         "h":  20,
-                         "var":  "FE"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  823,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "V.Total reglement ligne",
-                         "h":  20,
-                         "var":  "FF"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  823,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "V.Multi reglement ligne",
-                         "h":  20,
-                         "var":  "FG"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  823,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "V.MOP TPE",
-                         "h":  20,
-                         "var":  "FH"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  823,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "V.Id transaction PMS",
-                         "h":  20,
-                         "var":  "FI"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  823,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "V.Id transaction AXIS",
-                         "h":  20,
-                         "var":  "FJ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  853,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "V.Num Autorisation",
-                         "h":  20,
-                         "var":  "FK"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  853,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "V.Transaction TPE validee",
-                         "h":  20,
-                         "var":  "FL"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  853,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "V.Message erreur transac TPE",
-                         "h":  20,
-                         "var":  "FM"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  853,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "V.Total carte",
-                         "h":  20,
-                         "var":  "FN"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  853,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "V.Transaction ok",
-                         "h":  20,
-                         "var":  "FO"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  883,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "V.Nombre de carte",
-                         "h":  20,
-                         "var":  "FP"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  883,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "b.type de transfert",
-                         "h":  20,
-                         "var":  "FQ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  883,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "v is the First time",
-                         "h":  20,
-                         "var":  "FR"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  883,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "v.Montant-giftPass",
-                         "h":  20,
-                         "var":  "FS"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  883,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "v.email GM pour VAD",
-                         "h":  20,
-                         "var":  "FT"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  913,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "V.N°Ticket OD",
-                         "h":  20,
-                         "var":  "FU"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  913,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "V.N°Ticket Autres Moyen Paie",
-                         "h":  20,
-                         "var":  "FV"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  913,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "V.Num Cheque",
-                         "h":  20,
-                         "var":  "FW"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  913,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "V.SoldeResortCredit",
-                         "h":  20,
-                         "var":  "FX"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  913,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "V.Confirm Use Resort Credit",
-                         "h":  20,
-                         "var":  "FY"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  943,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "V.ConfirmeUseGP?",
-                         "h":  20,
-                         "var":  "FZ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  943,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "V.RC utilisé",
-                         "h":  20,
-                         "var":  "GA"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  943,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "v.Token Id",
-                         "h":  20,
-                         "var":  "GB"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  943,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "v.Transaction Id",
-                         "h":  20,
-                         "var":  "GC"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  943,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "v.Nb chambres /LCO",
-                         "h":  20,
-                         "var":  "GD"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  973,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "v.Flag exist Vte LCO",
-                         "h":  20,
-                         "var":  "GE"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  973,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "v.Flag abandon libération",
-                         "h":  20,
-                         "var":  "GF"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  973,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "v. pied stype?",
-                         "h":  20,
-                         "var":  "GG"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  973,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "v. pied type?",
-                         "h":  20,
-                         "var":  "GH"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  973,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "v. type a utiliser",
-                         "h":  20,
-                         "var":  "GI"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  1003,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "v. stype a utiliser",
-                         "h":  20,
-                         "var":  "GJ"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  1003,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "CHG_REASON_W0 libelle article",
-                         "h":  20,
-                         "var":  "GK"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  1003,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "CHG_PRV_W0 libelle article",
-                         "h":  20,
-                         "var":  "GL"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  1003,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P.Toute ligne",
-                         "h":  20,
-                         "var":  "GM"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  1003,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "CHG_REASON_W0 nbre articles",
-                         "h":  20,
-                         "var":  "GN"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  1033,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "CHG_PRV_W0 nbre articles",
-                         "h":  20,
-                         "var":  "GO"
+                         "w":  168,
+                         "parent":  null,
+                         "y":  257,
+                         "type":  "button",
+                         "x":  423,
+                         "label":  "Printer",
+                         "h":  18,
+                         "var":  ""
                      }
                  ],
     "type":  "Modal",
@@ -2553,189 +1193,37 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 167 champs</strong></summary>
+<summary><strong>Champs : 14 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | P0 societe | Alpha | **Saisie** |
-| B | P0 devise locale | Alpha | **Saisie** |
-| C | P0 masque montant | Alpha | **Saisie** |
-| D | P0 solde compte | Numeric | **Saisie** |
-| E | P0 code GM | Numeric | **Saisie** |
-| F | P0 filiation | Numeric | **Saisie** |
-| G | P0 date fin sejour | Date | **Saisie** |
-| H | P0 etat compte | Alpha | **Saisie** |
-| I | P0 date solde | Date | **Saisie** |
-| J | P0 garanti O/N | Alpha | **Saisie** |
-| K | P0 Nom & prenom | Alpha | **Saisie** |
-| L | P0 UNI/BI | Alpha | **Saisie** |
-| M | P0.Date debut sejour | Date | **Saisie** |
-| N | P0.Valide ? | Numeric | **Saisie** |
-| O | P0.Nb decimales | Numeric | **Saisie** |
-| R | W0 FIN SAISIE OD | Logical | **Saisie** |
-| T | W0 Cloture en cours | Logical | **Saisie** |
-| U | W0 code article | Numeric | **Saisie** |
-| V | v.SoldeGiftPass | Numeric | **Saisie** |
-| W | W0 imputation | Numeric | **Saisie** |
-| X | W0 sous-imput. | Numeric | **Saisie** |
-| Y | W0 date d'achat | Date | **Saisie** |
-| Z | W0 annulation | Alpha | **Saisie** |
-| BA | W0 service village | Alpha | **Saisie** |
-| BB | W0 libelle article | Alpha | **Saisie** |
-| BC | W0 article dernière minute | Logical | **Saisie** |
-| BD | W0 nbre articles | Numeric | **Saisie** |
-| BE | W0 prix unitaire | Numeric | **Saisie** |
-| BF | W0 Categorie de chambre | Alpha | **Saisie** |
-| BG | W0 Lieu sejour | Alpha | **Saisie** |
-| BH | W0 Code reduction | Alpha | **Saisie** |
-| BI | v Sens Transfert Global | Alpha | **Saisie** |
-| BJ | v.Date activité VAE | Date | **Saisie** |
-| BK | v.VAE pendant le séjour ? | Logical | **Saisie** |
-| BL | v.Matin/Après midi | Unicode | **Saisie** |
-| BM | W0 Sens du transfert Aller | Alpha | **Saisie** |
-| BN | W0 Date du transfert Aller | Date | **Saisie** |
-| BO | W0 Heure du transfert Aller | Time | **Saisie** |
-| BP | W0 b.Date du transfert | Alpha | **Saisie** |
-| BQ | W0 Type d'endroit Aller | Alpha | **Saisie** |
-| BR | W0 Code Gare/Aéroport Aller | Alpha | **Saisie** |
-| BS | W0 Numéro du vol Aller | Alpha | **Saisie** |
-| BT | W0 Compagnie Aller | Alpha | **Saisie** |
-| BU | W0 Commentaire Aller | Alpha | **Saisie** |
-| BV | W0 Sens du transfert Retour | Alpha | **Saisie** |
-| BW | W0 Date du transfert Retour | Date | **Saisie** |
-| BX | W0 Heure du transfert Retour | Time | **Saisie** |
-| BY | W0 Type d'endroit Retour | Alpha | **Saisie** |
-| BZ | W0 Code Gare/Aéroport Retour | Alpha | **Saisie** |
-| CA | W0 Numéro du vol Retour | Alpha | **Saisie** |
-| CB | W0 Compagnie Retour | Alpha | **Saisie** |
-| CC | W0 b.Saisie PAX | Alpha | **Saisie** |
-| CD | W0 Nbre de PAX enregistré | Numeric | **Saisie** |
-| CE | W0 Commentaire Retour | Alpha | **Saisie** |
-| CF | W0 montant avant reduction | Numeric | **Saisie** |
-| CG | W0 Pourcentage reduction | Numeric | **Saisie** |
-| CH | W0 Remise Obligatoire | Numeric | **Saisie** |
-| CI | W0 Montant reduction | Numeric | **Saisie** |
-| CJ | W0.Date consommation | Date | **Saisie** |
-| CK | W0.Date fin sejour | Date | **Saisie** |
-| CL | W0 Motif de non enreg NA | Numeric | **Saisie** |
-| CM | W0 Commentaire | Alpha | **Saisie** |
-| CN | W0 Motif annulation | Alpha | **Saisie** |
-| CO | W0 Titre | Alpha | **Saisie** |
-| CP | W0 Nom | Alpha | **Saisie** |
-| CQ | W0 Prenom | Alpha | **Saisie** |
-| CR | W0 Num rue | Alpha | **Saisie** |
-| CS | W0 Nom de la rue | Alpha | **Saisie** |
-| CT | W0 Commune | Alpha | **Saisie** |
-| CU | W0 CP | Alpha | **Saisie** |
-| CV | W0 Ville | Alpha | **Saisie** |
-| CW | W0 Nb Chambres | Numeric | **Saisie** |
-| CX | W0 Chambre | Unicode | **Saisie** |
-| CY | W0 PYR Valide | Logical | **Saisie** |
-| CZ | W0 Lib Bouton Chambre | Unicode | **Saisie** |
-| DA | W0 Vendeur | Unicode | **Saisie** |
-| DB | W0 libelle supplem | Alpha | **Saisie** |
-| DC | W0 libelle supplem pour édition | Alpha | **Saisie** |
-| DD | W0 article trouve | Logical | **Saisie** |
-| DE | W0 Stock produit | Numeric | **Saisie** |
-| DF | W0 montant | Numeric | **Saisie** |
-| DG | W0 mode de paiement | Alpha | **Saisie** |
-| DH | Existe mode de paiement | Logical | **Saisie** |
-| DI | W0 Libelle MOP | Alpha | **Saisie** |
-| DJ | WO Classe MOP | Alpha | **Saisie** |
-| DK | V0 memo-service | Alpha | **Saisie** |
-| DL | V0 memo-nom GM | Alpha | **Saisie** |
-| DM | V0 validation | Logical | **Saisie** |
-| DN | W0 reseau | Alpha | **Saisie** |
-| DO | W0 fin tache | Alpha | **Saisie** |
-| DP | W0 forfait (O/N) | Alpha | **Saisie** |
-| DQ | W0 effacement (O/N) | Alpha | **Saisie** |
-| DR | W0 forfait date(O/N) | Alpha | **Saisie** |
-| DS | W0 code forfait | Alpha | **Saisie** |
-| DT | W0 date debut | Date | **Saisie** |
-| DU | W0 date fin | Date | **Saisie** |
-| DV | W0 gratuite ? | Alpha | **Saisie** |
-| DW | W0 ret lien special | Numeric | **Saisie** |
-| DX | W0 Code Devise | Numeric | **Saisie** |
-| DY | W0 Retour Transmission TPE | Logical | **Saisie** |
-| DZ | W0 Forcer Transaction Manuelle | Logical | **Saisie** |
-| EA | W0 Message TPE | Alpha | **Saisie** |
-| EB | W0 Retour Lecture TPE | Logical | **Saisie** |
-| EC | W0 Fin Transaction TPE | Logical | **Saisie** |
-| ED | v. titre | Alpha | **Saisie** |
-| EE | W0 Total_Vente | Numeric | **Saisie** |
-| EF | W0 Total_GiftPass | Numeric | **Saisie** |
-| EG | W0 Annulation OD active | Logical | **Saisie** |
-| EH | W0 Compte garanti | Logical | **Saisie** |
-| EI | W0 confirmation si non garanti | Numeric | **Saisie** |
-| EJ | W0 Abandon | Logical | **Saisie** |
-| EK | W0 validation | Logical | **Saisie** |
-| EL | W0 choix personne absente | Numeric | **Saisie** |
-| EM | W0 choix transac manuelle | Numeric | **Saisie** |
-| EO | W0 Lien Logement Lieu Séjour | Logical | **Saisie** |
-| EP | V.VADA ? | Logical | **Saisie** |
-| EQ | V.VADV ? | Logical | **Saisie** |
-| ER | V.VAD ? | Logical | **Saisie** |
-| ES | Nbre ecriture | Numeric | **Saisie** |
-| ET | V.Reglement premier article | Alpha | **Saisie** |
-| EU | V.Type premier article | Alpha | **Saisie** |
-| EV | V.Premier article VSL NA ? | Logical | **Saisie** |
-| EW | V.Article VSL NA ? | Logical | **Saisie** |
-| EX | v.IncrémentTicket(VRL/VSL) OK | Logical | **Saisie** |
-| EY | v.IncrémentTicket(VTE) OK | Logical | **Saisie** |
-| EZ | v.NumeroTicket(VRL/VSL) | Numeric | **Saisie** |
-| FA | v.NumeroTicket(VTE) | Numeric | **Saisie** |
-| FB | v Réponse mode paiement | Numeric | **Saisie** |
-| FC | V Nbre de Ligne Saisies | Numeric | **Saisie** |
-| FD | v Nbre ligne de reglement Saisi | Numeric | **Saisie** |
-| FE | V.Num ligne vente | Numeric | **Saisie** |
-| FF | V.Total reglement ligne | Numeric | **Saisie** |
-| FG | V.Multi reglement ligne | Logical | **Saisie** |
-| FH | V.MOP TPE | Alpha | **Saisie** |
-| FI | V.Id transaction PMS | Alpha | **Saisie** |
-| FJ | V.Id transaction AXIS | Alpha | **Saisie** |
-| FK | V.Num Autorisation | Alpha | **Saisie** |
-| FL | V.Transaction TPE validee | Logical | **Saisie** |
-| FM | V.Message erreur transac TPE | Alpha | **Saisie** |
-| FN | V.Total carte | Numeric | **Saisie** |
-| FO | V.Transaction ok | Logical | **Saisie** |
-| FP | V.Nombre de carte | Numeric | **Saisie** |
-| FQ | b.type de transfert | Alpha | **Saisie** |
-| FR | v is the First time | Numeric | **Saisie** |
-| FS | v.Montant-giftPass | Numeric | **Saisie** |
-| FT | v.email GM pour VAD | Alpha | **Saisie** |
-| FU | V.N°Ticket OD | Numeric | **Saisie** |
-| FV | V.N°Ticket Autres Moyen Paie | Numeric | **Saisie** |
-| FW | V.Num Cheque | Unicode | **Saisie** |
-| FX | V.SoldeResortCredit | Numeric | **Saisie** |
-| FY | V.Confirm Use Resort Credit | Numeric | **Saisie** |
-| FZ | V.ConfirmeUseGP? | Numeric | **Saisie** |
-| GA | V.RC utilisé | Logical | **Saisie** |
-| GB | v.Token Id | Unicode | **Saisie** |
-| GC | v.Transaction Id | Unicode | **Saisie** |
-| GD | v.Nb chambres /LCO | Numeric | **Saisie** |
-| GE | v.Flag exist Vte LCO | Logical | **Saisie** |
-| GF | v.Flag abandon libération | Logical | **Saisie** |
-| GG | v. pied stype? | Logical | **Saisie** |
-| GH | v. pied type? | Logical | **Saisie** |
-| GI | v. type a utiliser | Unicode | **Saisie** |
-| GJ | v. stype a utiliser | Unicode | **Saisie** |
-| GK | CHG_REASON_W0 libelle article | Numeric | **Saisie** |
-| GL | CHG_PRV_W0 libelle article | Alpha | **Saisie** |
-| GM | P.Toute ligne | Logical | **Saisie** |
-| GN | CHG_REASON_W0 nbre articles | Numeric | **Saisie** |
-| GO | CHG_PRV_W0 nbre articles | Numeric | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 957,193 | (sans nom) | - | edit |
+| 396,35 | ##/##/####Z | - | edit |
+| 908,35 | W0 annulation | - | combobox |
+| 253,193 | W0 service village | - | edit |
+| 322,193 | W0 libelle article | - | edit |
+| 478,193 | W0 libelle supplem | - | edit |
+| 669,193 | W0 nbre articles | - | edit |
+| 760,193 | 15 | - | edit |
+| 760,205 | W0 montant | - | edit |
+| 669,219 | W0 mode de paiement | - | edit |
+| 8,6 | 20 | - | edit |
+| 833,6 | WWW DD MMM YYYYT | - | edit |
+| 235,23 | 60 | - | edit |
+| 760,219 | 20 | - | edit |
 
 </details>
 
 <details>
-<summary><strong>Boutons : 4 boutons</strong></summary>
+<summary><strong>Boutons : 5 boutons</strong></summary>
 
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| Bouton IDENTITE | P | Identification du client |
-| Bouton ABANDON | Q | Annule et retour au menu |
-| Bouton FIN SAISIE OD | S | Termine la saisie en cours |
-| Bouton Ok | EN | Valide la saisie et enregistre |
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| Bouton DETAIL | 631,257 | Affiche les details |
+| Bouton ABANDON | 215,257 | Annule et retour au menu |
+| Bouton FIN SAISIE OD | 841,257 | Termine la saisie en cours Ouvre la saisie |
+| Bouton Ok | 7,257 | Valide la saisie et enregistre |
+| Printer | 423,257 | Appel [Appel Print ticket vente PMS28 (IDE 233)](ADH-IDE-233.md) |
 
 </details>
 
@@ -2750,74 +1238,194 @@ Transfert de donnees entre modules.
     "width":  708,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "V.Existe MOP ?",
-                         "h":  20,
-                         "var":  "A"
+                         "w":  701,
+                         "parent":  null,
+                         "y":  2,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  17,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "V.Existe MOP ligne ?",
-                         "h":  20,
-                         "var":  "B"
+                         "w":  322,
+                         "parent":  null,
+                         "y":  22,
+                         "type":  "label",
+                         "x":  193,
+                         "label":  "Saisie des moyens règlements suite à refus TPE",
+                         "h":  15,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "V.Existe new VSL NA ?",
-                         "h":  20,
-                         "var":  "C"
+                         "w":  701,
+                         "parent":  null,
+                         "y":  227,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  23,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "V.Article VSL NA ?",
-                         "h":  20,
-                         "var":  "D"
+                         "w":  435,
+                         "parent":  null,
+                         "y":  45,
+                         "type":  "table",
+                         "x":  27,
+                         "label":  "",
+                         "h":  186,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "V.Plus de reglement ?",
-                         "h":  20,
-                         "var":  "E"
+                         "w":  196,
+                         "parent":  null,
+                         "y":  45,
+                         "type":  "label",
+                         "x":  475,
+                         "label":  "Ligne de vente",
+                         "h":  64,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "V.Ecart montant ?",
-                         "h":  20,
-                         "var":  "F"
+                         "w":  64,
+                         "parent":  16,
+                         "y":  61,
+                         "type":  "label",
+                         "x":  485,
+                         "label":  "Montant",
+                         "h":  12,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
+                         "w":  64,
+                         "parent":  16,
+                         "y":  83,
+                         "type":  "label",
+                         "x":  485,
+                         "label":  "Total règlement",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  101,
+                         "parent":  1,
+                         "y":  6,
                          "type":  "edit",
-                         "x":  150,
-                         "label":  "V.Ecart num ligne",
-                         "h":  20,
-                         "var":  "G"
+                         "x":  9,
+                         "label":  "VG.USER",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  141,
+                         "parent":  1,
+                         "y":  6,
+                         "type":  "edit",
+                         "x":  556,
+                         "label":  "WWW DD MMM YYYYT",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  60,
+                         "parent":  6,
+                         "y":  60,
+                         "type":  "edit",
+                         "x":  32,
+                         "label":  "Num_ligne_vente",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  62,
+                         "parent":  6,
+                         "y":  60,
+                         "type":  "edit",
+                         "x":  102,
+                         "label":  "sod_libelle_article",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  56,
+                         "parent":  6,
+                         "y":  60,
+                         "type":  "edit",
+                         "x":  170,
+                         "label":  "Mode_paiement",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  115,
+                         "parent":  6,
+                         "y":  60,
+                         "type":  "edit",
+                         "x":  233,
+                         "label":  "mop_libelle",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  85,
+                         "parent":  6,
+                         "y":  60,
+                         "type":  "edit",
+                         "x":  356,
+                         "label":  "Montant_0001",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  90,
+                         "parent":  16,
+                         "y":  61,
+                         "type":  "edit",
+                         "x":  545,
+                         "label":  "Montant",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  90,
+                         "parent":  16,
+                         "y":  83,
+                         "type":  "edit",
+                         "x":  545,
+                         "label":  "sod_montant_0001",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  83,
+                         "parent":  null,
+                         "y":  232,
+                         "type":  "button",
+                         "x":  437,
+                         "label":  "b.Abandonner",
+                         "h":  14,
+                         "var":  ""
+                     },
+                     {
+                         "w":  83,
+                         "parent":  null,
+                         "y":  232,
+                         "type":  "button",
+                         "x":  525,
+                         "label":  "b.Ajout paiement",
+                         "h":  14,
+                         "var":  ""
+                     },
+                     {
+                         "w":  83,
+                         "parent":  null,
+                         "y":  232,
+                         "type":  "button",
+                         "x":  613,
+                         "label":  "b.Valider",
+                         "h":  14,
+                         "var":  ""
                      }
                  ],
     "type":  "Type6",
@@ -2827,17 +1435,30 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 7 champs</strong></summary>
+<summary><strong>Champs : 9 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | V.Existe MOP ? | Logical | **Saisie** |
-| B | V.Existe MOP ligne ? | Logical | **Saisie** |
-| C | V.Existe new VSL NA ? | Logical | **Saisie** |
-| D | V.Article VSL NA ? | Logical | **Saisie** |
-| E | V.Plus de reglement ? | Logical | **Saisie** |
-| F | V.Ecart montant ? | Logical | **Saisie** |
-| G | V.Ecart num ligne | Numeric | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 9,6 | VG.USER | - | edit |
+| 556,6 | WWW DD MMM YYYYT | - | edit |
+| 32,60 | Num_ligne_vente | - | edit |
+| 102,60 | sod_libelle_article | - | edit |
+| 170,60 | Mode_paiement | - | edit |
+| 233,60 | mop_libelle | - | edit |
+| 356,60 | Montant_0001 | - | edit |
+| 545,61 | Montant | - | edit |
+| 545,83 | sod_montant_0001 | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 3 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| b.Abandonner | 437,232 | Annule et retour au menu |
+| b.Ajout paiement | 525,232 | Ajoute un element |
+| b.Valider | 613,232 | Valide la saisie et enregistre |
 
 </details>
 
@@ -2852,34 +1473,134 @@ Transfert de donnees entre modules.
     "width":  326,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  319,
+                         "parent":  null,
+                         "y":  2,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  17,
+                         "var":  ""
+                     },
+                     {
+                         "w":  194,
+                         "parent":  null,
+                         "y":  22,
+                         "type":  "label",
+                         "x":  69,
+                         "label":  "Saisie des moyens règlements",
+                         "h":  15,
+                         "var":  ""
+                     },
+                     {
+                         "w":  319,
+                         "parent":  null,
+                         "y":  205,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  17,
+                         "var":  ""
+                     },
+                     {
+                         "w":  72,
+                         "parent":  5,
+                         "y":  209,
+                         "type":  "label",
+                         "x":  130,
+                         "label":  "Montant cumulé",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  317,
+                         "parent":  null,
+                         "y":  40,
+                         "type":  "table",
+                         "x":  6,
+                         "label":  "",
+                         "h":  159,
+                         "var":  ""
+                     },
+                     {
+                         "w":  101,
+                         "parent":  1,
+                         "y":  6,
+                         "type":  "edit",
+                         "x":  9,
+                         "label":  "VG.USER",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  141,
+                         "parent":  1,
+                         "y":  6,
+                         "type":  "edit",
+                         "x":  170,
+                         "label":  "WWW DD MMM YYYYT",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  34,
+                         "parent":  8,
+                         "y":  55,
                          "type":  "edit",
                          "x":  10,
+                         "label":  "mor_mop",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  112,
+                         "parent":  8,
+                         "y":  55,
+                         "type":  "edit",
+                         "x":  94,
+                         "label":  "mop_libelle",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  85,
+                         "parent":  8,
+                         "y":  55,
+                         "type":  "edit",
+                         "x":  217,
+                         "label":  "Montant",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  85,
+                         "parent":  5,
+                         "y":  209,
+                         "type":  "edit",
+                         "x":  217,
                          "label":  "v Montant cumulé saisie",
-                         "h":  20,
-                         "var":  "A"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  150,
+                         "w":  68,
+                         "parent":  null,
+                         "y":  231,
+                         "type":  "button",
+                         "x":  179,
                          "label":  "b.abandonner",
-                         "h":  20,
-                         "var":  "B"
+                         "h":  14,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
+                         "w":  60,
+                         "parent":  null,
+                         "y":  231,
+                         "type":  "button",
+                         "x":  255,
                          "label":  "b.Valider",
-                         "h":  20,
-                         "var":  "C"
+                         "h":  14,
+                         "var":  ""
                      }
                  ],
     "type":  "Type6",
@@ -2889,13 +1610,26 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 3 champs</strong></summary>
+<summary><strong>Champs : 6 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | v Montant cumulé saisie | Numeric | **Saisie** |
-| B | b.abandonner | Alpha | **Saisie** |
-| C | b.Valider | Alpha | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 9,6 | VG.USER | - | edit |
+| 170,6 | WWW DD MMM YYYYT | - | edit |
+| 10,55 | mor_mop | - | edit |
+| 94,55 | mop_libelle | - | edit |
+| 217,55 | Montant | - | edit |
+| 217,209 | v Montant cumulé saisie | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 2 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| b.abandonner | 179,231 | Annule et retour au menu |
+| b.Valider | 255,231 | Valide la saisie et enregistre |
 
 </details>
 
@@ -2910,34 +1644,144 @@ Transfert de donnees entre modules.
     "width":  506,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "v Montant cumulé saisie",
-                         "h":  20,
-                         "var":  "A"
+                         "w":  503,
+                         "parent":  null,
+                         "y":  2,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  17,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  218,
+                         "parent":  null,
+                         "y":  23,
+                         "type":  "label",
+                         "x":  144,
+                         "label":  "Saisie des moyens de règlement",
+                         "h":  15,
+                         "var":  ""
+                     },
+                     {
+                         "w":  503,
+                         "parent":  null,
+                         "y":  202,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  17,
+                         "var":  ""
+                     },
+                     {
+                         "w":  82,
+                         "parent":  5,
+                         "y":  205,
+                         "type":  "label",
+                         "x":  95,
+                         "label":  "Montants cumulés",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  494,
+                         "parent":  null,
+                         "y":  45,
+                         "type":  "table",
+                         "x":  7,
+                         "label":  "",
+                         "h":  152,
+                         "var":  ""
+                     },
+                     {
+                         "w":  101,
+                         "parent":  1,
+                         "y":  6,
                          "type":  "edit",
-                         "x":  150,
+                         "x":  7,
+                         "label":  "VG.USER",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  141,
+                         "parent":  1,
+                         "y":  7,
+                         "type":  "edit",
+                         "x":  360,
+                         "label":  "WWW DD MMM YYYYT",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  34,
+                         "parent":  8,
+                         "y":  60,
+                         "type":  "edit",
+                         "x":  11,
+                         "label":  "mor_mop",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  115,
+                         "parent":  8,
+                         "y":  60,
+                         "type":  "edit",
+                         "x":  95,
+                         "label":  "mop_libelle",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  85,
+                         "parent":  8,
+                         "y":  60,
+                         "type":  "edit",
+                         "x":  217,
+                         "label":  "Montant",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  171,
+                         "parent":  8,
+                         "y":  60,
+                         "type":  "edit",
+                         "x":  311,
+                         "label":  "numero_cheque",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  85,
+                         "parent":  5,
+                         "y":  205,
+                         "type":  "edit",
+                         "x":  217,
+                         "label":  "V.Montant cumule saisi",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  83,
+                         "parent":  null,
+                         "y":  232,
+                         "type":  "button",
+                         "x":  330,
                          "label":  "b.Abandonner",
-                         "h":  20,
-                         "var":  "B"
+                         "h":  14,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
+                         "w":  83,
+                         "parent":  null,
+                         "y":  232,
+                         "type":  "button",
+                         "x":  418,
                          "label":  "b.Valider",
-                         "h":  20,
-                         "var":  "C"
+                         "h":  14,
+                         "var":  ""
                      }
                  ],
     "type":  "Type6",
@@ -2947,13 +1791,27 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 3 champs</strong></summary>
+<summary><strong>Champs : 7 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | v Montant cumulé saisie | Numeric | **Saisie** |
-| B | b.Abandonner | Alpha | **Saisie** |
-| C | b.Valider | Alpha | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 7,6 | VG.USER | - | edit |
+| 360,7 | WWW DD MMM YYYYT | - | edit |
+| 11,60 | mor_mop | - | edit |
+| 95,60 | mop_libelle | - | edit |
+| 217,60 | Montant | - | edit |
+| 311,60 | numero_cheque | - | edit |
+| 217,205 | V.Montant cumule saisi | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 2 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| b.Abandonner | 330,232 | Annule et retour au menu |
+| b.Valider | 418,232 | Valide la saisie et enregistre |
 
 </details>
 
@@ -2968,14 +1826,144 @@ Transfert de donnees entre modules.
     "width":  772,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  766,
+                         "parent":  null,
+                         "y":  1,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  17,
+                         "var":  ""
+                     },
+                     {
+                         "w":  296,
+                         "parent":  null,
+                         "y":  25,
+                         "type":  "label",
+                         "x":  238,
+                         "label":  "Saisie commentaires VSL NA Carte de crédit",
+                         "h":  15,
+                         "var":  ""
+                     },
+                     {
+                         "w":  766,
+                         "parent":  null,
+                         "y":  141,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  24,
+                         "var":  ""
+                     },
+                     {
+                         "w":  760,
+                         "parent":  null,
+                         "y":  49,
+                         "type":  "table",
+                         "x":  4,
+                         "label":  "",
+                         "h":  105,
+                         "var":  ""
+                     },
+                     {
+                         "w":  101,
+                         "parent":  1,
+                         "y":  6,
                          "type":  "edit",
-                         "x":  10,
+                         "x":  9,
+                         "label":  "VG.USER",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  141,
+                         "parent":  1,
+                         "y":  6,
+                         "type":  "edit",
+                         "x":  618,
+                         "label":  "WWW DD MMM YYYYT",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  62,
+                         "parent":  6,
+                         "y":  65,
+                         "type":  "edit",
+                         "x":  8,
+                         "label":  "sod_code_article",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  70,
+                         "parent":  6,
+                         "y":  65,
+                         "type":  "edit",
+                         "x":  77,
+                         "label":  "sod_libelle_article",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  46,
+                         "parent":  6,
+                         "y":  65,
+                         "type":  "edit",
+                         "x":  152,
+                         "label":  "sod_quantite",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  85,
+                         "parent":  6,
+                         "y":  65,
+                         "type":  "edit",
+                         "x":  206,
+                         "label":  "Montant",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  61,
+                         "parent":  6,
+                         "y":  65,
+                         "type":  "edit",
+                         "x":  300,
+                         "label":  "sod_date_conso ou deb sejour",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  61,
+                         "parent":  6,
+                         "y":  65,
+                         "type":  "edit",
+                         "x":  374,
+                         "label":  "sod_date_fin_sejour",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  300,
+                         "parent":  6,
+                         "y":  65,
+                         "type":  "edit",
+                         "x":  446,
+                         "label":  "sod_commentaire",
+                         "h":  21,
+                         "var":  ""
+                     },
+                     {
+                         "w":  84,
+                         "parent":  null,
+                         "y":  145,
+                         "type":  "button",
+                         "x":  344,
                          "label":  "b.Valider",
-                         "h":  20,
-                         "var":  "A"
+                         "h":  18,
+                         "var":  ""
                      }
                  ],
     "type":  "Type6",
@@ -2985,11 +1973,28 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 1 champs</strong></summary>
+<summary><strong>Champs : 9 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | b.Valider | Alpha | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 9,6 | VG.USER | - | edit |
+| 618,6 | WWW DD MMM YYYYT | - | edit |
+| 8,65 | sod_code_article | - | edit |
+| 77,65 | sod_libelle_article | - | edit |
+| 152,65 | sod_quantite | - | edit |
+| 206,65 | Montant | - | edit |
+| 300,65 | sod_date_conso ou deb sejour | - | edit |
+| 374,65 | sod_date_fin_sejour | - | edit |
+| 446,65 | sod_commentaire | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 1 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| b.Valider | 344,145 | Valide la saisie et enregistre |
 
 </details>
 
@@ -3004,104 +2009,204 @@ Transfert de donnees entre modules.
     "width":  699,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  689,
+                         "parent":  null,
+                         "y":  2,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  17,
+                         "var":  ""
+                     },
+                     {
+                         "w":  656,
+                         "parent":  null,
+                         "y":  26,
+                         "type":  "label",
+                         "x":  21,
+                         "label":  "",
+                         "h":  95,
+                         "var":  ""
+                     },
+                     {
+                         "w":  689,
+                         "parent":  null,
+                         "y":  130,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  24,
+                         "var":  ""
+                     },
+                     {
+                         "w":  639,
+                         "parent":  4,
+                         "y":  26,
+                         "type":  "label",
+                         "x":  29,
+                         "label":  "Identite",
+                         "h":  91,
+                         "var":  ""
+                     },
+                     {
+                         "w":  101,
+                         "parent":  6,
+                         "y":  37,
+                         "type":  "label",
+                         "x":  46,
+                         "label":  "Titre",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  101,
+                         "parent":  6,
+                         "y":  50,
+                         "type":  "label",
+                         "x":  46,
+                         "label":  "Nom",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  101,
+                         "parent":  6,
+                         "y":  63,
+                         "type":  "label",
+                         "x":  46,
+                         "label":  "Prénom",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  101,
+                         "parent":  6,
+                         "y":  76,
+                         "type":  "label",
+                         "x":  46,
+                         "label":  "Adresse",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  203,
+                         "parent":  1,
+                         "y":  6,
                          "type":  "edit",
-                         "x":  10,
+                         "x":  475,
+                         "label":  "WWW DD MMM YYYYT",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  267,
+                         "parent":  1,
+                         "y":  7,
+                         "type":  "edit",
+                         "x":  8,
+                         "label":  "20",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  112,
+                         "parent":  6,
+                         "y":  35,
+                         "type":  "combobox",
+                         "x":  154,
                          "label":  "W2 Titre",
-                         "h":  20,
-                         "var":  "A"
+                         "h":  12,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  342,
+                         "parent":  6,
+                         "y":  50,
                          "type":  "edit",
-                         "x":  150,
+                         "x":  154,
                          "label":  "W2 Nom",
-                         "h":  20,
-                         "var":  "B"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  342,
+                         "parent":  6,
+                         "y":  63,
                          "type":  "edit",
-                         "x":  290,
+                         "x":  154,
                          "label":  "W2 Prenom",
-                         "h":  20,
-                         "var":  "C"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  118,
+                         "parent":  6,
+                         "y":  76,
                          "type":  "edit",
-                         "x":  430,
+                         "x":  154,
                          "label":  "W2 Num rue",
-                         "h":  20,
-                         "var":  "D"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  342,
+                         "parent":  6,
+                         "y":  76,
                          "type":  "edit",
-                         "x":  570,
+                         "x":  277,
                          "label":  "W2 Nom rue",
-                         "h":  20,
-                         "var":  "E"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
+                         "w":  464,
+                         "parent":  6,
+                         "y":  89,
                          "type":  "edit",
-                         "x":  10,
+                         "x":  154,
                          "label":  "W2 Commune",
-                         "h":  20,
-                         "var":  "F"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
+                         "w":  118,
+                         "parent":  6,
+                         "y":  102,
                          "type":  "edit",
-                         "x":  150,
+                         "x":  154,
                          "label":  "W2 CP",
-                         "h":  20,
-                         "var":  "G"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
+                         "w":  342,
+                         "parent":  6,
+                         "y":  102,
                          "type":  "edit",
-                         "x":  290,
-                         "label":  "W2 Ville",
-                         "h":  20,
-                         "var":  "H"
+                         "x":  277,
+                         "label":  "W2 Nom rue",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  80,
-                         "readonly":  false,
-                         "y":  43,
+                         "w":  141,
+                         "parent":  null,
+                         "y":  133,
                          "type":  "button",
-                         "x":  430,
-                         "label":  "Bouton Ok",
-                         "h":  25,
-                         "var":  "I"
+                         "x":  10,
+                         "label":  "\u0026Ok",
+                         "h":  18,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "V.Chaine OK",
-                         "h":  20,
-                         "var":  "J"
+                         "w":  141,
+                         "parent":  null,
+                         "y":  133,
+                         "type":  "button",
+                         "x":  160,
+                         "label":  "A\u0026bandonner",
+                         "h":  18,
+                         "var":  ""
                      }
                  ],
     "type":  "MDI",
@@ -3111,28 +2216,30 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 9 champs</strong></summary>
+<summary><strong>Champs : 10 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | W2 Titre | Alpha | **Saisie** |
-| B | W2 Nom | Alpha | **Saisie** |
-| C | W2 Prenom | Alpha | **Saisie** |
-| D | W2 Num rue | Alpha | **Saisie** |
-| E | W2 Nom rue | Alpha | **Saisie** |
-| F | W2 Commune | Alpha | **Saisie** |
-| G | W2 CP | Alpha | **Saisie** |
-| H | W2 Ville | Alpha | **Saisie** |
-| J | V.Chaine OK | Alpha | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 475,6 | WWW DD MMM YYYYT | - | edit |
+| 8,7 | 20 | - | edit |
+| 154,35 | W2 Titre | - | combobox |
+| 154,50 | W2 Nom | - | edit |
+| 154,63 | W2 Prenom | - | edit |
+| 154,76 | W2 Num rue | - | edit |
+| 277,76 | W2 Nom rue | - | edit |
+| 154,89 | W2 Commune | - | edit |
+| 154,102 | W2 CP | - | edit |
+| 277,102 | W2 Nom rue | - | edit |
 
 </details>
 
 <details>
-<summary><strong>Boutons : 1 boutons</strong></summary>
+<summary><strong>Boutons : 2 boutons</strong></summary>
 
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| Bouton Ok | I | Valide la saisie et enregistre |
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| &Ok | 10,133 | Valide la saisie et enregistre |
+| A&bandonner | 160,133 | Bouton fonctionnel |
 
 </details>
 
@@ -3146,31 +2253,13 @@ Transfert de donnees entre modules.
 {
     "width":  116,
     "controls":  [
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W1 fin tâche",
-                         "h":  20,
-                         "var":  "A"
-                     }
+
                  ],
     "type":  "Modal",
     "height":  32,
     "taskId":  "237.12"
 }
 -->
-
-<details>
-<summary><strong>Champs : 1 champs</strong></summary>
-
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | W1 fin tâche | Alpha | **Saisie** |
-
-</details>
 
 ---
 
@@ -3183,34 +2272,124 @@ Transfert de donnees entre modules.
     "width":  528,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W2 date debut",
-                         "h":  20,
-                         "var":  "A"
+                         "w":  524,
+                         "parent":  null,
+                         "y":  2,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  17,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W2 date fin",
-                         "h":  20,
-                         "var":  "B"
+                         "w":  363,
+                         "parent":  null,
+                         "y":  25,
+                         "type":  "label",
+                         "x":  83,
+                         "label":  "",
+                         "h":  66,
+                         "var":  ""
                      },
                      {
-                         "w":  80,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  525,
+                         "parent":  null,
+                         "y":  97,
+                         "type":  "label",
+                         "x":  2,
+                         "label":  "",
+                         "h":  24,
+                         "var":  ""
+                     },
+                     {
+                         "w":  303,
+                         "parent":  4,
+                         "y":  32,
+                         "type":  "label",
+                         "x":  113,
+                         "label":  "Forfait",
+                         "h":  49,
+                         "var":  ""
+                     },
+                     {
+                         "w":  27,
+                         "parent":  6,
+                         "y":  46,
+                         "type":  "label",
+                         "x":  171,
+                         "label":  "du",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  27,
+                         "parent":  6,
+                         "y":  62,
+                         "type":  "label",
+                         "x":  171,
+                         "label":  "au",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  126,
+                         "parent":  6,
+                         "y":  44,
+                         "type":  "edit",
+                         "x":  232,
+                         "label":  "DD/MM/YYYYZ",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  126,
+                         "parent":  6,
+                         "y":  60,
+                         "type":  "edit",
+                         "x":  232,
+                         "label":  "DD/MM/YYYYZ",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  141,
+                         "parent":  null,
+                         "y":  100,
                          "type":  "button",
-                         "x":  290,
-                         "label":  "Bouton Ok",
-                         "h":  25,
-                         "var":  "C"
+                         "x":  10,
+                         "label":  "\u0026Ok",
+                         "h":  18,
+                         "var":  ""
+                     },
+                     {
+                         "w":  267,
+                         "parent":  1,
+                         "y":  7,
+                         "type":  "edit",
+                         "x":  8,
+                         "label":  "20",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  141,
+                         "parent":  null,
+                         "y":  100,
+                         "type":  "button",
+                         "x":  160,
+                         "label":  "A\u0026bandonner",
+                         "h":  18,
+                         "var":  ""
+                     },
+                     {
+                         "w":  203,
+                         "parent":  1,
+                         "y":  6,
+                         "type":  "edit",
+                         "x":  316,
+                         "label":  "WWW DD MMM YYYYT",
+                         "h":  8,
+                         "var":  ""
                      }
                  ],
     "type":  "MDI",
@@ -3220,21 +2399,24 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 2 champs</strong></summary>
+<summary><strong>Champs : 4 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | W2 date debut | Date | **Saisie** |
-| B | W2 date fin | Date | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 232,44 | DD/MM/YYYYZ | - | edit |
+| 232,60 | DD/MM/YYYYZ | - | edit |
+| 8,7 | 20 | - | edit |
+| 316,6 | WWW DD MMM YYYYT | - | edit |
 
 </details>
 
 <details>
-<summary><strong>Boutons : 1 boutons</strong></summary>
+<summary><strong>Boutons : 2 boutons</strong></summary>
 
-| Bouton | Variable | Action |
-|--------|----------|--------|
-| Bouton Ok | C | Valide la saisie et enregistre |
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| &Ok | 10,100 | Valide la saisie et enregistre |
+| A&bandonner | 160,100 | Bouton fonctionnel |
 
 </details>
 
@@ -3249,34 +2431,144 @@ Transfert de donnees entre modules.
     "width":  427,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "DETAIL",
-                         "h":  20,
-                         "var":  "A"
+                         "w":  426,
+                         "parent":  null,
+                         "y":  0,
+                         "type":  "label",
+                         "x":  0,
+                         "label":  "",
+                         "h":  122,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "QUITTER",
-                         "h":  20,
-                         "var":  "B"
+                         "w":  28,
+                         "parent":  null,
+                         "y":  108,
+                         "type":  "label",
+                         "x":  184,
+                         "label":  "Total",
+                         "h":  12,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  62,
+                         "parent":  null,
+                         "y":  110,
+                         "type":  "label",
+                         "x":  6,
+                         "label":  "Solde Gift Pass",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  421,
+                         "parent":  null,
+                         "y":  4,
+                         "type":  "table",
+                         "x":  2,
+                         "label":  "",
+                         "h":  104,
+                         "var":  ""
+                     },
+                     {
+                         "w":  30,
+                         "parent":  7,
+                         "y":  19,
                          "type":  "edit",
-                         "x":  290,
-                         "label":  "SUPPRIMER",
-                         "h":  20,
-                         "var":  "C"
+                         "x":  6,
+                         "label":  "SOD Service",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  74,
+                         "parent":  7,
+                         "y":  19,
+                         "type":  "edit",
+                         "x":  38,
+                         "label":  "",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  18,
+                         "parent":  7,
+                         "y":  19,
+                         "type":  "edit",
+                         "x":  118,
+                         "label":  "3Z",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  68,
+                         "parent":  7,
+                         "y":  19,
+                         "type":  "edit",
+                         "x":  142,
+                         "label":  "## ### ### ###.###Z",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  68,
+                         "parent":  7,
+                         "y":  19,
+                         "type":  "edit",
+                         "x":  219,
+                         "label":  "4",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  76,
+                         "parent":  null,
+                         "y":  108,
+                         "type":  "edit",
+                         "x":  214,
+                         "label":  "4",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  38,
+                         "parent":  7,
+                         "y":  19,
+                         "type":  "edit",
+                         "x":  368,
+                         "label":  "sod_mode_paiement",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  64,
+                         "parent":  7,
+                         "y":  19,
+                         "type":  "edit",
+                         "x":  295,
+                         "label":  "sod_montant_gift_pass",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  64,
+                         "parent":  null,
+                         "y":  108,
+                         "type":  "edit",
+                         "x":  295,
+                         "label":  "W0 Total_Vente",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  70,
+                         "parent":  null,
+                         "y":  110,
+                         "type":  "edit",
+                         "x":  70,
+                         "label":  "v.SoldeGiftPass",
+                         "h":  10,
+                         "var":  ""
                      }
                  ],
     "type":  "Modal",
@@ -3286,13 +2578,20 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 3 champs</strong></summary>
+<summary><strong>Champs : 10 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | DETAIL | Alpha | **Saisie** |
-| B | QUITTER | Alpha | **Saisie** |
-| C | SUPPRIMER | Alpha | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 6,19 | SOD Service | - | edit |
+| 38,19 | (sans nom) | - | edit |
+| 118,19 | 3Z | - | edit |
+| 142,19 | ## ### ### ###.###Z | - | edit |
+| 219,19 | 4 | - | edit |
+| 214,108 | 4 | - | edit |
+| 368,19 | sod_mode_paiement | - | edit |
+| 295,19 | sod_montant_gift_pass | - | edit |
+| 295,108 | W0 Total_Vente | - | edit |
+| 70,110 | v.SoldeGiftPass | - | edit |
 
 </details>
 
@@ -3307,74 +2606,114 @@ Transfert de donnees entre modules.
     "width":  722,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P Type transfert Global",
-                         "h":  20,
-                         "var":  "A"
+                         "w":  74,
+                         "parent":  null,
+                         "y":  8,
+                         "type":  "label",
+                         "x":  32,
+                         "label":  "Service",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
+                         "w":  146,
+                         "parent":  null,
+                         "y":  8,
+                         "type":  "label",
+                         "x":  136,
+                         "label":  "Article",
+                         "h":  9,
+                         "var":  ""
+                     },
+                     {
+                         "w":  104,
+                         "parent":  null,
+                         "y":  8,
+                         "type":  "label",
+                         "x":  427,
+                         "label":  "Nb  PAX",
+                         "h":  11,
+                         "var":  ""
+                     },
+                     {
+                         "w":  699,
+                         "parent":  null,
+                         "y":  36,
+                         "type":  "label",
+                         "x":  16,
+                         "label":  "Sélection transfert",
+                         "h":  32,
+                         "var":  ""
+                     },
+                     {
+                         "w":  134,
+                         "parent":  8,
+                         "y":  50,
+                         "type":  "label",
+                         "x":  161,
+                         "label":  "Type de transfert",
+                         "h":  9,
+                         "var":  ""
+                     },
+                     {
+                         "w":  175,
+                         "parent":  null,
                          "y":  13,
+                         "type":  "button",
+                         "x":  535,
+                         "label":  "W0 b.Saisie PAX",
+                         "h":  18,
+                         "var":  ""
+                     },
+                     {
+                         "w":  74,
+                         "parent":  null,
+                         "y":  20,
                          "type":  "edit",
-                         "x":  150,
+                         "x":  32,
+                         "label":  "W0 service village",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  277,
+                         "parent":  null,
+                         "y":  20,
+                         "type":  "edit",
+                         "x":  136,
+                         "label":  "W0 libelle article",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  82,
+                         "parent":  null,
+                         "y":  20,
+                         "type":  "edit",
+                         "x":  427,
                          "label":  "v Nbre PAX",
-                         "h":  20,
-                         "var":  "B"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "b.Annuler",
-                         "h":  20,
-                         "var":  "C"
+                         "w":  178,
+                         "parent":  8,
+                         "y":  49,
+                         "type":  "combobox",
+                         "x":  325,
+                         "label":  "P Type transfert Global",
+                         "h":  12,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "b Exit",
-                         "h":  20,
-                         "var":  "D"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "v.Controle saisie 1 3",
-                         "h":  20,
-                         "var":  "E"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "v.Controle saisie 2",
-                         "h":  20,
-                         "var":  "F"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "v.Fin de tache",
-                         "h":  20,
-                         "var":  "G"
+                         "w":  699,
+                         "parent":  null,
+                         "y":  70,
+                         "type":  "subform",
+                         "x":  18,
+                         "label":  "Transfert",
+                         "h":  220,
+                         "var":  ""
                      }
                  ],
     "type":  "Type6",
@@ -3384,17 +2723,23 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 7 champs</strong></summary>
+<summary><strong>Champs : 4 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | P Type transfert Global | Alpha | **Saisie** |
-| B | v Nbre PAX | Numeric | **Saisie** |
-| C | b.Annuler | Alpha | **Saisie** |
-| D | b Exit | Alpha | **Saisie** |
-| E | v.Controle saisie 1 3 | Numeric | **Saisie** |
-| F | v.Controle saisie 2 | Numeric | **Saisie** |
-| G | v.Fin de tache | Logical | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 32,20 | W0 service village | - | edit |
+| 136,20 | W0 libelle article | - | edit |
+| 427,20 | v Nbre PAX | - | edit |
+| 325,49 | P Type transfert Global | - | combobox |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 1 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| W0 b.Saisie PAX | 535,13 | Ouvre la saisie |
 
 </details>
 
@@ -3409,244 +2754,384 @@ Transfert de donnees entre modules.
     "width":  681,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P Type transfert Detail",
-                         "h":  20,
-                         "var":  "A"
+                         "w":  680,
+                         "parent":  null,
+                         "y":  0,
+                         "type":  "label",
+                         "x":  0,
+                         "label":  "Transfert Aller",
+                         "h":  90,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W1 Date transfert Aller",
-                         "h":  20,
-                         "var":  "B"
+                         "w":  136,
+                         "parent":  1,
+                         "y":  19,
+                         "type":  "label",
+                         "x":  14,
+                         "label":  "Date transfert",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W1 Heure transfert Aller",
-                         "h":  20,
-                         "var":  "C"
+                         "w":  156,
+                         "parent":  1,
+                         "y":  19,
+                         "type":  "label",
+                         "x":  342,
+                         "label":  "Code Aeroport/Gare",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W1 Type Endroit Aller",
-                         "h":  20,
-                         "var":  "D"
+                         "w":  136,
+                         "parent":  1,
+                         "y":  35,
+                         "type":  "label",
+                         "x":  14,
+                         "label":  "Heure transfert",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W1 Code Aeroport/Gare Aller",
-                         "h":  20,
-                         "var":  "E"
+                         "w":  156,
+                         "parent":  1,
+                         "y":  35,
+                         "type":  "label",
+                         "x":  342,
+                         "label":  "Num Vol/Train",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W1 Num Vol/Train Aller",
-                         "h":  20,
-                         "var":  "F"
+                         "w":  136,
+                         "parent":  1,
+                         "y":  52,
+                         "type":  "label",
+                         "x":  14,
+                         "label":  "Type Endroit",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W1 Compagnie Aller",
-                         "h":  20,
-                         "var":  "G"
+                         "w":  156,
+                         "parent":  1,
+                         "y":  52,
+                         "type":  "label",
+                         "x":  342,
+                         "label":  "Compagnie",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W1 Commentaire Aller",
-                         "h":  20,
-                         "var":  "H"
+                         "w":  136,
+                         "parent":  1,
+                         "y":  71,
+                         "type":  "label",
+                         "x":  14,
+                         "label":  "Commentaire",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W1 Date transfert Retour",
-                         "h":  20,
-                         "var":  "I"
+                         "w":  680,
+                         "parent":  null,
+                         "y":  93,
+                         "type":  "label",
+                         "x":  0,
+                         "label":  "Transfert Retour",
+                         "h":  90,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W1 Heure transfert Retour",
-                         "h":  20,
-                         "var":  "J"
+                         "w":  136,
+                         "parent":  19,
+                         "y":  112,
+                         "type":  "label",
+                         "x":  14,
+                         "label":  "Date transfert",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "W1 Type Endroit Retour",
-                         "h":  20,
-                         "var":  "K"
+                         "w":  156,
+                         "parent":  19,
+                         "y":  112,
+                         "type":  "label",
+                         "x":  342,
+                         "label":  "Code Aeroport/Gare",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W1 Code Aeroport/Gare Retour",
-                         "h":  20,
-                         "var":  "L"
+                         "w":  136,
+                         "parent":  19,
+                         "y":  128,
+                         "type":  "label",
+                         "x":  14,
+                         "label":  "Heure transfert",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W1 Num Vol/Train Retour",
-                         "h":  20,
-                         "var":  "M"
+                         "w":  156,
+                         "parent":  19,
+                         "y":  128,
+                         "type":  "label",
+                         "x":  342,
+                         "label":  "Num Vol/Train",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "W1 Compagnie Retour",
-                         "h":  20,
-                         "var":  "N"
+                         "w":  136,
+                         "parent":  19,
+                         "y":  145,
+                         "type":  "label",
+                         "x":  14,
+                         "label":  "Type Endroit",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "W1 Commentaire Retour",
-                         "h":  20,
-                         "var":  "O"
+                         "w":  156,
+                         "parent":  19,
+                         "y":  145,
+                         "type":  "label",
+                         "x":  342,
+                         "label":  "Compagnie",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  103,
+                         "w":  136,
+                         "parent":  19,
+                         "y":  164,
+                         "type":  "label",
+                         "x":  14,
+                         "label":  "Commentaire",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  122,
+                         "parent":  1,
+                         "y":  19,
                          "type":  "edit",
-                         "x":  10,
+                         "x":  156,
+                         "label":  "Date transfert",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  38,
+                         "parent":  null,
+                         "y":  19,
+                         "type":  "button",
+                         "x":  286,
+                         "label":  "...",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  74,
+                         "parent":  1,
+                         "y":  19,
+                         "type":  "edit",
+                         "x":  504,
+                         "label":  "Code Aeroport/Gare",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  38,
+                         "parent":  1,
+                         "y":  19,
+                         "type":  "button",
+                         "x":  583,
+                         "label":  "...",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  122,
+                         "parent":  1,
+                         "y":  35,
+                         "type":  "edit",
+                         "x":  156,
+                         "label":  "Heure transfert",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  118,
+                         "parent":  1,
+                         "y":  35,
+                         "type":  "edit",
+                         "x":  504,
+                         "label":  "Num Vol/Train",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  38,
+                         "parent":  1,
+                         "y":  35,
+                         "type":  "button",
+                         "x":  629,
+                         "label":  "...",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  161,
+                         "parent":  1,
+                         "y":  52,
+                         "type":  "combobox",
+                         "x":  156,
+                         "label":  "Type Endroit Aller",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  108,
+                         "parent":  1,
+                         "y":  52,
+                         "type":  "edit",
+                         "x":  504,
+                         "label":  "Compagnie",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  342,
+                         "parent":  1,
+                         "y":  71,
+                         "type":  "edit",
+                         "x":  156,
+                         "label":  "Commentaire Aller",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  122,
+                         "parent":  19,
+                         "y":  112,
+                         "type":  "edit",
+                         "x":  155,
+                         "label":  "Date transfert Retour",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  38,
+                         "parent":  null,
+                         "y":  112,
+                         "type":  "button",
+                         "x":  280,
+                         "label":  "...",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  74,
+                         "parent":  19,
+                         "y":  112,
+                         "type":  "edit",
+                         "x":  502,
+                         "label":  "Code Aeroport/Gare Retour",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  38,
+                         "parent":  19,
+                         "y":  112,
+                         "type":  "button",
+                         "x":  583,
+                         "label":  "...",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  122,
+                         "parent":  19,
+                         "y":  128,
+                         "type":  "edit",
+                         "x":  155,
+                         "label":  "Heure transfert Retour",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  118,
+                         "parent":  19,
+                         "y":  128,
+                         "type":  "edit",
+                         "x":  504,
+                         "label":  "Num Vol/Train Retour_0001",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  38,
+                         "parent":  19,
+                         "y":  128,
+                         "type":  "button",
+                         "x":  629,
+                         "label":  "...",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  161,
+                         "parent":  19,
+                         "y":  145,
+                         "type":  "combobox",
+                         "x":  155,
+                         "label":  "TR,PL,TE,AU",
+                         "h":  12,
+                         "var":  ""
+                     },
+                     {
+                         "w":  108,
+                         "parent":  19,
+                         "y":  145,
+                         "type":  "edit",
+                         "x":  504,
+                         "label":  "Compagnie Retour_0001",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  342,
+                         "parent":  19,
+                         "y":  164,
+                         "type":  "edit",
+                         "x":  155,
+                         "label":  "Commentaire Retour_0001",
+                         "h":  10,
+                         "var":  ""
+                     },
+                     {
+                         "w":  168,
+                         "parent":  null,
+                         "y":  187,
+                         "type":  "button",
+                         "x":  3,
+                         "label":  "b Exit",
+                         "h":  18,
+                         "var":  ""
+                     },
+                     {
+                         "w":  184,
+                         "parent":  null,
+                         "y":  187,
+                         "type":  "button",
+                         "x":  496,
                          "label":  "b.Abandon",
-                         "h":  20,
-                         "var":  "P"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "b Valider",
-                         "h":  20,
-                         "var":  "Q"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "b Affection",
-                         "h":  20,
-                         "var":  "R"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "v.Controle saisie 1 /  3",
-                         "h":  20,
-                         "var":  "S"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  103,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "v.Controle saisie 2",
-                         "h":  20,
-                         "var":  "T"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "v Erreur saisie 1 / 3 ?",
-                         "h":  20,
-                         "var":  "U"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "v Erreur saisie 2 ?",
-                         "h":  20,
-                         "var":  "V"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "v.Heure aller num",
-                         "h":  20,
-                         "var":  "W"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  133,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "v.Heure retour num",
-                         "h":  20,
-                         "var":  "X"
+                         "h":  18,
+                         "var":  ""
                      }
                  ],
     "type":  "Type6",
@@ -3656,34 +3141,40 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 24 champs</strong></summary>
+<summary><strong>Champs : 14 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | P Type transfert Detail | Alpha | **Saisie** |
-| B | W1 Date transfert Aller | Date | **Saisie** |
-| C | W1 Heure transfert Aller | Time | **Saisie** |
-| D | W1 Type Endroit Aller | Alpha | **Saisie** |
-| E | W1 Code Aeroport/Gare Aller | Unicode | **Saisie** |
-| F | W1 Num Vol/Train Aller | Alpha | **Saisie** |
-| G | W1 Compagnie Aller | Alpha | **Saisie** |
-| H | W1 Commentaire Aller | Alpha | **Saisie** |
-| I | W1 Date transfert Retour | Date | **Saisie** |
-| J | W1 Heure transfert Retour | Time | **Saisie** |
-| K | W1 Type Endroit Retour | Alpha | **Saisie** |
-| L | W1 Code Aeroport/Gare Retour | Unicode | **Saisie** |
-| M | W1 Num Vol/Train Retour | Alpha | **Saisie** |
-| N | W1 Compagnie Retour | Alpha | **Saisie** |
-| O | W1 Commentaire Retour | Alpha | **Saisie** |
-| P | b.Abandon | Alpha | **Saisie** |
-| Q | b Valider | Alpha | **Saisie** |
-| R | b Affection | Alpha | **Saisie** |
-| S | v.Controle saisie 1 /  3 | Numeric | **Saisie** |
-| T | v.Controle saisie 2 | Numeric | **Saisie** |
-| U | v Erreur saisie 1 / 3 ? | Logical | **Saisie** |
-| V | v Erreur saisie 2 ? | Logical | **Saisie** |
-| W | v.Heure aller num | Numeric | **Saisie** |
-| X | v.Heure retour num | Numeric | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 156,19 | Date transfert | - | edit |
+| 504,19 | Code Aeroport/Gare | - | edit |
+| 156,35 | Heure transfert | - | edit |
+| 504,35 | Num Vol/Train | - | edit |
+| 156,52 | Type Endroit Aller | - | combobox |
+| 504,52 | Compagnie | - | edit |
+| 156,71 | Commentaire Aller | - | edit |
+| 155,112 | Date transfert Retour | - | edit |
+| 502,112 | Code Aeroport/Gare Retour | - | edit |
+| 155,128 | Heure transfert Retour | - | edit |
+| 504,128 | Num Vol/Train Retour_0001 | - | edit |
+| 155,145 | TR,PL,TE,AU | - | combobox |
+| 504,145 | Compagnie Retour_0001 | - | edit |
+| 155,164 | Commentaire Retour_0001 | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 8 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| ... | 286,19 | Bouton fonctionnel |
+| ... | 583,19 | Bouton fonctionnel |
+| ... | 629,35 | Bouton fonctionnel |
+| ... | 280,112 | Bouton fonctionnel |
+| ... | 583,112 | Bouton fonctionnel |
+| ... | 629,128 | Bouton fonctionnel |
+| b Exit | 3,187 | Quitte le programme |
+| b.Abandon | 496,187 | Annule et retour au menu |
 
 </details>
 
@@ -3698,154 +3189,174 @@ Transfert de donnees entre modules.
     "width":  1056,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "v.Sélectionné ?",
-                         "h":  20,
-                         "var":  "A"
+                         "w":  1039,
+                         "parent":  null,
+                         "y":  1,
+                         "type":  "label",
+                         "x":  8,
+                         "label":  "",
+                         "h":  17,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  160,
+                         "parent":  null,
+                         "y":  24,
+                         "type":  "label",
+                         "x":  22,
+                         "label":  "Recherche Nom",
+                         "h":  9,
+                         "var":  ""
+                     },
+                     {
+                         "w":  1038,
+                         "parent":  null,
+                         "y":  45,
+                         "type":  "table",
+                         "x":  10,
+                         "label":  "",
+                         "h":  218,
+                         "var":  ""
+                     },
+                     {
+                         "w":  256,
+                         "parent":  1,
+                         "y":  5,
                          "type":  "edit",
-                         "x":  150,
+                         "x":  15,
+                         "label":  "VG.USER",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  231,
+                         "parent":  1,
+                         "y":  5,
+                         "type":  "edit",
+                         "x":  801,
+                         "label":  "WWW DD MMM YYYYT",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  342,
+                         "parent":  null,
+                         "y":  24,
+                         "type":  "edit",
+                         "x":  187,
                          "label":  "W1 V Nom recherche",
-                         "h":  20,
-                         "var":  "B"
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
+                         "w":  215,
+                         "parent":  null,
+                         "y":  24,
+                         "type":  "checkbox",
+                         "x":  550,
                          "label":  "W1 Afficher cochés",
-                         "h":  20,
-                         "var":  "C"
+                         "h":  12,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
+                         "w":  253,
+                         "parent":  null,
+                         "y":  24,
+                         "type":  "checkbox",
+                         "x":  779,
                          "label":  "W1 Afficher filiation",
-                         "h":  20,
-                         "var":  "D"
+                         "h":  12,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  27,
+                         "parent":  8,
+                         "y":  60,
+                         "type":  "checkbox",
+                         "x":  30,
+                         "label":  "aftr_affacter",
+                         "h":  9,
+                         "var":  ""
+                     },
+                     {
+                         "w":  77,
+                         "parent":  8,
+                         "y":  61,
                          "type":  "edit",
-                         "x":  570,
+                         "x":  98,
+                         "label":  "gmr_code_gm",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  29,
+                         "parent":  8,
+                         "y":  61,
+                         "type":  "edit",
+                         "x":  197,
+                         "label":  "gmr_filiation_villag",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  336,
+                         "parent":  8,
+                         "y":  61,
+                         "type":  "edit",
+                         "x":  261,
+                         "label":  "gmr_nom__30_",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  112,
+                         "parent":  8,
+                         "y":  61,
+                         "type":  "edit",
+                         "x":  614,
+                         "label":  "gmr_prenom__8_",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  115,
+                         "parent":  8,
+                         "y":  61,
+                         "type":  "edit",
+                         "x":  746,
+                         "label":  "gmr_debut_sejour",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  115,
+                         "parent":  8,
+                         "y":  61,
+                         "type":  "edit",
+                         "x":  886,
+                         "label":  "gmr_fin_sejour",
+                         "h":  8,
+                         "var":  ""
+                     },
+                     {
+                         "w":  192,
+                         "parent":  null,
+                         "y":  260,
+                         "type":  "button",
+                         "x":  16,
                          "label":  "W1 B.Exit",
-                         "h":  20,
-                         "var":  "E"
+                         "h":  18,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  10,
+                         "w":  192,
+                         "parent":  null,
+                         "y":  260,
+                         "type":  "button",
+                         "x":  852,
                          "label":  "W1 B.Tout décocher",
-                         "h":  20,
-                         "var":  "F"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "W1 Nbre de Pax Enregistrés",
-                         "h":  20,
-                         "var":  "G"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "W1 Names of non filiated ppl",
-                         "h":  20,
-                         "var":  "H"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "CHG_REASON_W1 V Nom recherche",
-                         "h":  20,
-                         "var":  "I"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  43,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "CHG_PRV_W1 V Nom recherche",
-                         "h":  20,
-                         "var":  "J"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "CHG_REASON_W1 Afficher cochés",
-                         "h":  20,
-                         "var":  "K"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "CHG_PRV_W1 Afficher cochés",
-                         "h":  20,
-                         "var":  "L"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "CHG_REASON_W1 Afficher filiati",
-                         "h":  20,
-                         "var":  "M"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "CHG_PRV_W1 Afficher filiation",
-                         "h":  20,
-                         "var":  "N"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  73,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "v. response",
-                         "h":  20,
-                         "var":  "O"
+                         "h":  18,
+                         "var":  ""
                      }
                  ],
     "type":  "Type0",
@@ -3855,25 +3366,32 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 15 champs</strong></summary>
+<summary><strong>Champs : 12 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | v.Sélectionné ? | Logical | **Saisie** |
-| B | W1 V Nom recherche | Alpha | **Saisie** |
-| C | W1 Afficher cochés | Logical | **Saisie** |
-| D | W1 Afficher filiation | Logical | **Saisie** |
-| E | W1 B.Exit | Alpha | **Saisie** |
-| F | W1 B.Tout décocher | Alpha | **Saisie** |
-| G | W1 Nbre de Pax Enregistrés | Numeric | **Saisie** |
-| H | W1 Names of non filiated ppl | Alpha | **Saisie** |
-| I | CHG_REASON_W1 V Nom recherche | Numeric | **Saisie** |
-| J | CHG_PRV_W1 V Nom recherche | Alpha | **Saisie** |
-| K | CHG_REASON_W1 Afficher cochés | Numeric | **Saisie** |
-| L | CHG_PRV_W1 Afficher cochés | Logical | **Saisie** |
-| M | CHG_REASON_W1 Afficher filiati | Numeric | **Saisie** |
-| N | CHG_PRV_W1 Afficher filiation | Logical | **Saisie** |
-| O | v. response | Numeric | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 15,5 | VG.USER | - | edit |
+| 801,5 | WWW DD MMM YYYYT | - | edit |
+| 187,24 | W1 V Nom recherche | - | edit |
+| 550,24 | W1 Afficher cochés | - | checkbox |
+| 779,24 | W1 Afficher filiation | - | checkbox |
+| 30,60 | aftr_affacter | - | checkbox |
+| 98,61 | gmr_code_gm | - | edit |
+| 197,61 | gmr_filiation_villag | - | edit |
+| 261,61 | gmr_nom__30_ | - | edit |
+| 614,61 | gmr_prenom__8_ | - | edit |
+| 746,61 | gmr_debut_sejour | - | edit |
+| 886,61 | gmr_fin_sejour | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 2 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| W1 B.Exit | 16,260 | Quitte le programme |
+| W1 B.Tout décocher | 852,260 | Bouton fonctionnel |
 
 </details>
 
@@ -3888,54 +3406,54 @@ Transfert de donnees entre modules.
     "width":  123,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "p.o.Abandon",
-                         "h":  20,
-                         "var":  "A"
+                         "w":  120,
+                         "parent":  null,
+                         "y":  1,
+                         "type":  "table",
+                         "x":  0,
+                         "label":  "",
+                         "h":  120,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  43,
+                         "parent":  1,
+                         "y":  16,
                          "type":  "edit",
-                         "x":  150,
-                         "label":  "v.Heb_nom_logement",
-                         "h":  20,
-                         "var":  "B"
+                         "x":  6,
+                         "label":  "heb_nom_logement",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  42,
+                         "parent":  1,
+                         "y":  16,
                          "type":  "edit",
-                         "x":  290,
-                         "label":  "v.Nb chambres saisies",
-                         "h":  20,
-                         "var":  "C"
+                         "x":  57,
+                         "label":  "heure_liberation",
+                         "h":  10,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "CHG_REASON_Heure_liberation",
-                         "h":  20,
-                         "var":  "D"
+                         "w":  120,
+                         "parent":  null,
+                         "y":  119,
+                         "type":  "button",
+                         "x":  0,
+                         "label":  "Abandon",
+                         "h":  16,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "CHG_PRV_Heure_liberation",
-                         "h":  20,
-                         "var":  "E"
+                         "w":  120,
+                         "parent":  null,
+                         "y":  133,
+                         "type":  "button",
+                         "x":  0,
+                         "label":  "Valider",
+                         "h":  16,
+                         "var":  ""
                      }
                  ],
     "type":  "Type0",
@@ -3945,15 +3463,22 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 5 champs</strong></summary>
+<summary><strong>Champs : 2 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | p.o.Abandon | Logical | **Saisie** |
-| B | v.Heb_nom_logement | Unicode | **Saisie** |
-| C | v.Nb chambres saisies | Numeric | **Saisie** |
-| D | CHG_REASON_Heure_liberation | Numeric | **Saisie** |
-| E | CHG_PRV_Heure_liberation | Time | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 6,16 | heb_nom_logement | - | edit |
+| 57,16 | heure_liberation | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 2 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| Abandon | 0,119 | Annule et retour au menu |
+| Valider | 0,133 | Valide la saisie et enregistre |
 
 </details>
 
@@ -3968,24 +3493,24 @@ Transfert de donnees entre modules.
     "width":  123,
     "controls":  [
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "p.o.Nb chambres/LCO",
-                         "h":  20,
-                         "var":  "A"
+                         "w":  14,
+                         "parent":  null,
+                         "y":  8,
+                         "type":  "label",
+                         "x":  4,
+                         "label":  "??:",
+                         "h":  9,
+                         "var":  ""
                      },
                      {
-                         "w":  130,
-                         "readonly":  false,
-                         "y":  13,
+                         "w":  56,
+                         "parent":  null,
+                         "y":  8,
                          "type":  "edit",
-                         "x":  150,
-                         "label":  "Nb chambres LCO",
-                         "h":  20,
-                         "var":  "B"
+                         "x":  22,
+                         "label":  "",
+                         "h":  10,
+                         "var":  ""
                      }
                  ],
     "type":  "Type0",
@@ -3995,12 +3520,11 @@ Transfert de donnees entre modules.
 -->
 
 <details>
-<summary><strong>Champs : 2 champs</strong></summary>
+<summary><strong>Champs : 1 champs</strong></summary>
 
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | p.o.Nb chambres/LCO | Numeric | **Saisie** |
-| B | Nb chambres LCO | Numeric | **Saisie** |
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 22,8 | (sans nom) | - | edit |
 
 </details>
 
@@ -5711,4 +5235,4 @@ graph LR
 | [Zoom services village (IDE 269)](ADH-IDE-269.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-01-31 11:40*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-01-31 23:34*

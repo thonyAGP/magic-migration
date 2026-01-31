@@ -34,7 +34,7 @@
                                      "check":  "V72_ANCHORS"
                                  },
                                  {
-                                     "detail":  "126 liens cliquables",
+                                     "detail":  "127 liens cliquables",
                                      "status":  "PASS",
                                      "check":  "V72_LINKS"
                                  },
@@ -74,8 +74,8 @@
                                      "check":  "GAP3_ENRICHED_RULES"
                                  },
                                  {
-                                     "detail":  "Actions boutons specifiques",
-                                     "status":  "PASS",
+                                     "detail":  "9 boutons fallback",
+                                     "status":  "WARN",
                                      "check":  "GAP4_BTN_ACTIONS"
                                  },
                                  {
@@ -94,9 +94,9 @@
                                      "check":  "GAP7_MIGRATION"
                                  }
                              ],
-                  "pass":  16,
+                  "pass":  15,
                   "fail":  0,
-                  "warn":  0,
+                  "warn":  3,
                   "all_passed":  true
               },
     "quality_score":  100,
@@ -112,14 +112,14 @@
                                    ]
                    },
     "pipeline_timing":  {
-                            "phases_start":  "2026-01-31 11:39:46",
-                            "assembly_end":  "2026-01-31 11:40:03",
-                            "assembly_start":  "2026-01-31 11:40:00",
-                            "phases_duration":  "13s",
-                            "phases_end":  "2026-01-31 11:39:59"
+                            "phases_start":  "2026-01-31 23:34:22",
+                            "assembly_end":  "2026-01-31 23:34:46",
+                            "assembly_start":  "2026-01-31 23:34:40",
+                            "phases_duration":  "17s",
+                            "phases_end":  "2026-01-31 23:34:40"
                         },
     "v72_features":  {
-                         "clickable_links":  126,
+                         "clickable_links":  127,
                          "variable_roles":  3,
                          "precise_expr_types":  37,
                          "anchors":  49,
@@ -127,9 +127,9 @@
                      },
     "metadata":  {
                      "pipeline_version":  "7.2",
-                     "generated_at":  "2026-01-31 11:40:03",
+                     "generated_at":  "2026-01-31 23:34:46",
                      "ide_position":  237,
-                     "duration_seconds":  3.3,
+                     "duration_seconds":  5.3,
                      "program_name":  "Transaction Nouv vente avec GP",
                      "project":  "ADH"
                  }

@@ -534,8 +534,10 @@ public class KnowledgeDb : IDisposable
     public void BulkInsertTaskForms(IEnumerable<DbTaskForm> forms, SqliteTransaction? tx = null)
     {
         const string sql = @"
-            INSERT OR IGNORE INTO task_forms (task_id, form_entry_id, form_name, position_x, position_y, width, height, window_type, font)
-            VALUES (@task_id, @form_entry_id, @form_name, @position_x, @position_y, @width, @height, @window_type, @font)";
+            INSERT OR IGNORE INTO task_forms (task_id, form_entry_id, form_name, position_x, position_y, width, height, window_type, font,
+                form_units, h_factor, v_factor, color, system_menu, minimize_box, maximize_box, properties_json)
+            VALUES (@task_id, @form_entry_id, @form_name, @position_x, @position_y, @width, @height, @window_type, @font,
+                @form_units, @h_factor, @v_factor, @color, @system_menu, @minimize_box, @maximize_box, @properties_json)";
 
         using var cmd = Connection.CreateCommand();
         cmd.CommandText = sql;
@@ -550,6 +552,14 @@ public class KnowledgeDb : IDisposable
         var pHeight = cmd.Parameters.Add("@height", SqliteType.Integer);
         var pWindowType = cmd.Parameters.Add("@window_type", SqliteType.Integer);
         var pFont = cmd.Parameters.Add("@font", SqliteType.Text);
+        var pFormUnits = cmd.Parameters.Add("@form_units", SqliteType.Integer);
+        var pHFactor = cmd.Parameters.Add("@h_factor", SqliteType.Integer);
+        var pVFactor = cmd.Parameters.Add("@v_factor", SqliteType.Integer);
+        var pColor = cmd.Parameters.Add("@color", SqliteType.Integer);
+        var pSystemMenu = cmd.Parameters.Add("@system_menu", SqliteType.Integer);
+        var pMinimizeBox = cmd.Parameters.Add("@minimize_box", SqliteType.Integer);
+        var pMaximizeBox = cmd.Parameters.Add("@maximize_box", SqliteType.Integer);
+        var pPropsJson = cmd.Parameters.Add("@properties_json", SqliteType.Text);
 
         foreach (var form in forms)
         {
@@ -562,8 +572,27 @@ public class KnowledgeDb : IDisposable
             pHeight.Value = form.Height ?? (object)DBNull.Value;
             pWindowType.Value = form.WindowType ?? (object)DBNull.Value;
             pFont.Value = form.Font ?? (object)DBNull.Value;
+            pFormUnits.Value = form.FormUnits ?? (object)DBNull.Value;
+            pHFactor.Value = form.HFactor ?? (object)DBNull.Value;
+            pVFactor.Value = form.VFactor ?? (object)DBNull.Value;
+            pColor.Value = form.Color ?? (object)DBNull.Value;
+            pSystemMenu.Value = form.SystemMenu ? 1 : 0;
+            pMinimizeBox.Value = form.MinimizeBox ? 1 : 0;
+            pMaximizeBox.Value = form.MaximizeBox ? 1 : 0;
+            pPropsJson.Value = form.PropertiesJson ?? (object)DBNull.Value;
             cmd.ExecuteNonQuery();
         }
+    }
+
+    public long GetTaskFormId(long taskId, int formEntryId, SqliteTransaction? tx = null)
+    {
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = "SELECT id FROM task_forms WHERE task_id = @task_id AND form_entry_id = @form_entry_id";
+        if (tx != null) cmd.Transaction = tx;
+        cmd.Parameters.AddWithValue("@task_id", taskId);
+        cmd.Parameters.AddWithValue("@form_entry_id", formEntryId);
+        var result = cmd.ExecuteScalar();
+        return result is long id ? id : 0;
     }
 
     // =========================================================================
@@ -770,9 +799,19 @@ public class KnowledgeDb : IDisposable
     {
         const string sql = @"
             INSERT OR IGNORE INTO form_controls (form_id, control_id, control_type, control_name, x, y, width, height,
-                visible, enabled, tab_order, linked_field_id, linked_variable, properties_json)
+                visible, enabled, tab_order, linked_field_id, linked_variable,
+                parent_id, style, color, font_id, text, format,
+                data_field_id, data_expression_id, raise_event_type, raise_event_id,
+                image_file, items_list, column_title, control_layer, h_alignment,
+                title_height, row_height, elements, allow_parking,
+                visible_expression, enabled_expression, properties_json)
             VALUES (@form_id, @control_id, @control_type, @control_name, @x, @y, @width, @height,
-                @visible, @enabled, @tab_order, @linked_field_id, @linked_variable, @properties_json)";
+                @visible, @enabled, @tab_order, @linked_field_id, @linked_variable,
+                @parent_id, @style, @color, @font_id, @text, @format,
+                @data_field_id, @data_expression_id, @raise_event_type, @raise_event_id,
+                @image_file, @items_list, @column_title, @control_layer, @h_alignment,
+                @title_height, @row_height, @elements, @allow_parking,
+                @visible_expression, @enabled_expression, @properties_json)";
 
         using var cmd = Connection.CreateCommand();
         cmd.CommandText = sql;
@@ -791,6 +830,27 @@ public class KnowledgeDb : IDisposable
         var pTabOrder = cmd.Parameters.Add("@tab_order", SqliteType.Integer);
         var pLinkedFieldId = cmd.Parameters.Add("@linked_field_id", SqliteType.Integer);
         var pLinkedVariable = cmd.Parameters.Add("@linked_variable", SqliteType.Text);
+        var pParentId = cmd.Parameters.Add("@parent_id", SqliteType.Integer);
+        var pStyle = cmd.Parameters.Add("@style", SqliteType.Integer);
+        var pColor = cmd.Parameters.Add("@color", SqliteType.Integer);
+        var pFontId = cmd.Parameters.Add("@font_id", SqliteType.Integer);
+        var pText = cmd.Parameters.Add("@text", SqliteType.Text);
+        var pFormat = cmd.Parameters.Add("@format", SqliteType.Text);
+        var pDataFieldId = cmd.Parameters.Add("@data_field_id", SqliteType.Integer);
+        var pDataExprId = cmd.Parameters.Add("@data_expression_id", SqliteType.Integer);
+        var pRaiseEventType = cmd.Parameters.Add("@raise_event_type", SqliteType.Text);
+        var pRaiseEventId = cmd.Parameters.Add("@raise_event_id", SqliteType.Integer);
+        var pImageFile = cmd.Parameters.Add("@image_file", SqliteType.Text);
+        var pItemsList = cmd.Parameters.Add("@items_list", SqliteType.Text);
+        var pColumnTitle = cmd.Parameters.Add("@column_title", SqliteType.Text);
+        var pControlLayer = cmd.Parameters.Add("@control_layer", SqliteType.Integer);
+        var pHAlignment = cmd.Parameters.Add("@h_alignment", SqliteType.Integer);
+        var pTitleHeight = cmd.Parameters.Add("@title_height", SqliteType.Integer);
+        var pRowHeight = cmd.Parameters.Add("@row_height", SqliteType.Integer);
+        var pElements = cmd.Parameters.Add("@elements", SqliteType.Integer);
+        var pAllowParking = cmd.Parameters.Add("@allow_parking", SqliteType.Integer);
+        var pVisibleExpr = cmd.Parameters.Add("@visible_expression", SqliteType.Integer);
+        var pEnabledExpr = cmd.Parameters.Add("@enabled_expression", SqliteType.Integer);
         var pPropertiesJson = cmd.Parameters.Add("@properties_json", SqliteType.Text);
 
         long count = 0;
@@ -809,6 +869,27 @@ public class KnowledgeDb : IDisposable
             pTabOrder.Value = c.TabOrder ?? (object)DBNull.Value;
             pLinkedFieldId.Value = c.LinkedFieldId ?? (object)DBNull.Value;
             pLinkedVariable.Value = c.LinkedVariable ?? (object)DBNull.Value;
+            pParentId.Value = c.ParentId ?? (object)DBNull.Value;
+            pStyle.Value = c.Style ?? (object)DBNull.Value;
+            pColor.Value = c.Color ?? (object)DBNull.Value;
+            pFontId.Value = c.FontId ?? (object)DBNull.Value;
+            pText.Value = c.Text ?? (object)DBNull.Value;
+            pFormat.Value = c.Format ?? (object)DBNull.Value;
+            pDataFieldId.Value = c.DataFieldId ?? (object)DBNull.Value;
+            pDataExprId.Value = c.DataExpressionId ?? (object)DBNull.Value;
+            pRaiseEventType.Value = c.RaiseEventType ?? (object)DBNull.Value;
+            pRaiseEventId.Value = c.RaiseEventId ?? (object)DBNull.Value;
+            pImageFile.Value = c.ImageFile ?? (object)DBNull.Value;
+            pItemsList.Value = c.ItemsList ?? (object)DBNull.Value;
+            pColumnTitle.Value = c.ColumnTitle ?? (object)DBNull.Value;
+            pControlLayer.Value = c.ControlLayer ?? (object)DBNull.Value;
+            pHAlignment.Value = c.HAlignment ?? (object)DBNull.Value;
+            pTitleHeight.Value = c.TitleHeight ?? (object)DBNull.Value;
+            pRowHeight.Value = c.RowHeight ?? (object)DBNull.Value;
+            pElements.Value = c.Elements ?? (object)DBNull.Value;
+            pAllowParking.Value = c.AllowParking ? 1 : 0;
+            pVisibleExpr.Value = c.VisibleExpression ?? (object)DBNull.Value;
+            pEnabledExpr.Value = c.EnabledExpression ?? (object)DBNull.Value;
             pPropertiesJson.Value = c.PropertiesJson ?? (object)DBNull.Value;
             cmd.ExecuteNonQuery();
             count++;
