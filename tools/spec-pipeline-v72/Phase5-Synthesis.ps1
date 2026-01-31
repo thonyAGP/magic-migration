@@ -1065,10 +1065,24 @@ if ($visibleForms.Count -gt 0) {
             $taskFormControls = @($formControlsData[$taskKey])
         }
 
-        # Map form_controls to FORM-DATA controls (only top-level, skip columns)
+        # Build COLUMN lookup: table_control_id → list of columns
+        $columnsByTable = @{}
+        foreach ($fc in $taskFormControls) {
+            if ($fc.control_type -eq 'COLUMN' -and $fc.visible -and $fc.parent_id) {
+                $tid = "$($fc.parent_id)"
+                if (-not $columnsByTable.ContainsKey($tid)) { $columnsByTable[$tid] = @() }
+                $colTitle = if ($fc.column_title) { $fc.column_title } else { '' }
+                $columnsByTable[$tid] += @{
+                    title = $colTitle
+                    w = [int]$fc.width
+                    layer = if ($fc.control_layer) { [int]$fc.control_layer } else { 0 }
+                }
+            }
+        }
+
+        # Map form_controls to FORM-DATA controls (skip COLUMNs, they go as cols on TABLE)
         foreach ($fc in $taskFormControls) {
             $ctrlType = $fc.control_type
-            # Skip table COLUMNs (they are children of TABLE) and invisible controls
             if ($ctrlType -eq 'COLUMN' -or -not $fc.visible) { continue }
 
             $ctrlName = if ($fc.control_name) { $fc.control_name } else { '' }
@@ -1092,7 +1106,7 @@ if ($visibleForms.Count -gt 0) {
                 default       { 'edit' }
             }
 
-            $controls += @{
+            $ctrlObj = @{
                 type = $mappedType
                 x = [int]$fc.x; y = [int]$fc.y
                 w = [int]$fc.width; h = [int]$fc.height
@@ -1101,6 +1115,21 @@ if ($visibleForms.Count -gt 0) {
                 fmt = $ctrlFmt; color = $ctrlColor
                 parent = $fc.parent_id
             }
+
+            # Enrich TABLE with columns and metadata
+            if ($ctrlType -eq 'TABLE') {
+                $tid = "$($fc.control_id)"
+                $cols = @()
+                if ($columnsByTable.ContainsKey($tid)) {
+                    $cols = @($columnsByTable[$tid] | Sort-Object { $_.layer })
+                }
+                $ctrlObj.cols = $cols
+                $ctrlObj.titleH = if ($fc.title_height) { [int]$fc.title_height } else { 12 }
+                $ctrlObj.rowH = if ($fc.row_height) { [int]$fc.row_height } else { 15 }
+                $ctrlObj.rows = if ($fc.elements) { [int]$fc.elements } else { 4 }
+            }
+
+            $controls += $ctrlObj
         }
 
         # Write FORM-DATA JSON block

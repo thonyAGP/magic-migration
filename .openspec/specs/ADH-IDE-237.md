@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: Phases 1-4 2026-01-31 23:58 -> 23:58 (24s) | Assemblage 23:58
+> **Analyse**: Phases 1-4 2026-02-01 00:32 -> 00:33 (23s) | Assemblage 00:33
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -1385,14 +1385,39 @@ Transfert de donnees entre modules.
                          "x":  27,
                          "type":  "table",
                          "var":  "",
-                         "y":  45,
-                         "w":  435,
-                         "fmt":  "",
                          "name":  "",
-                         "h":  186,
+                         "titleH":  12,
                          "color":  "",
+                         "w":  435,
+                         "y":  45,
+                         "fmt":  "",
+                         "parent":  null,
                          "text":  "",
-                         "parent":  null
+                         "rowH":  15,
+                         "h":  186,
+                         "cols":  [
+                                      {
+                                          "title":  "N° ligne vente",
+                                          "layer":  1,
+                                          "w":  70
+                                      },
+                                      {
+                                          "title":  "Article",
+                                          "layer":  2,
+                                          "w":  68
+                                      },
+                                      {
+                                          "title":  "Mode paiement",
+                                          "layer":  3,
+                                          "w":  186
+                                      },
+                                      {
+                                          "title":  "Montant",
+                                          "layer":  4,
+                                          "w":  92
+                                      }
+                                  ],
+                         "rows":  4
                      },
                      {
                          "x":  475,
@@ -1690,14 +1715,34 @@ Transfert de donnees entre modules.
                          "x":  6,
                          "type":  "table",
                          "var":  "",
-                         "y":  40,
-                         "w":  317,
-                         "fmt":  "",
                          "name":  "",
-                         "h":  159,
+                         "titleH":  12,
                          "color":  "",
+                         "w":  317,
+                         "y":  40,
+                         "fmt":  "",
+                         "parent":  null,
                          "text":  "",
-                         "parent":  null
+                         "rowH":  13,
+                         "h":  159,
+                         "cols":  [
+                                      {
+                                          "title":  "Moyen de paiement",
+                                          "layer":  1,
+                                          "w":  84
+                                      },
+                                      {
+                                          "title":  "Libellé",
+                                          "layer":  2,
+                                          "w":  122
+                                      },
+                                      {
+                                          "title":  "Montant",
+                                          "layer":  3,
+                                          "w":  92
+                                      }
+                                  ],
+                         "rows":  3
                      },
                      {
                          "x":  9,
@@ -1900,14 +1945,39 @@ Transfert de donnees entre modules.
                          "x":  7,
                          "type":  "table",
                          "var":  "",
-                         "y":  45,
-                         "w":  494,
-                         "fmt":  "",
                          "name":  "",
-                         "h":  152,
+                         "titleH":  12,
                          "color":  "",
+                         "w":  494,
+                         "y":  45,
+                         "fmt":  "",
+                         "parent":  null,
                          "text":  "",
-                         "parent":  null
+                         "rowH":  13,
+                         "h":  152,
+                         "cols":  [
+                                      {
+                                          "title":  "Moyen de paiement",
+                                          "layer":  1,
+                                          "w":  84
+                                      },
+                                      {
+                                          "title":  "Libellé",
+                                          "layer":  2,
+                                          "w":  122
+                                      },
+                                      {
+                                          "title":  "Montant",
+                                          "layer":  3,
+                                          "w":  94
+                                      },
+                                      {
+                                          "title":  "Numéro de chèque",
+                                          "layer":  4,
+                                          "w":  178
+                                      }
+                                  ],
+                         "rows":  4
                      },
                      {
                          "x":  7,
@@ -2111,14 +2181,54 @@ Transfert de donnees entre modules.
                          "x":  4,
                          "type":  "table",
                          "var":  "",
-                         "y":  49,
-                         "w":  760,
-                         "fmt":  "",
                          "name":  "",
-                         "h":  105,
+                         "titleH":  12,
                          "color":  "",
+                         "w":  760,
+                         "y":  49,
+                         "fmt":  "",
+                         "parent":  null,
                          "text":  "",
-                         "parent":  null
+                         "rowH":  24,
+                         "h":  105,
+                         "cols":  [
+                                      {
+                                          "title":  "Service",
+                                          "layer":  1,
+                                          "w":  68
+                                      },
+                                      {
+                                          "title":  "Libellé article",
+                                          "layer":  2,
+                                          "w":  77
+                                      },
+                                      {
+                                          "title":  "Quantité",
+                                          "layer":  3,
+                                          "w":  52
+                                      },
+                                      {
+                                          "title":  "Montant",
+                                          "layer":  4,
+                                          "w":  95
+                                      },
+                                      {
+                                          "title":  "Date début séjour",
+                                          "layer":  5,
+                                          "w":  72
+                                      },
+                                      {
+                                          "title":  "Date fin séjour",
+                                          "layer":  6,
+                                          "w":  74
+                                      },
+                                      {
+                                          "title":  "Commentaire",
+                                          "layer":  7,
+                                          "w":  305
+                                      }
+                                  ],
+                         "rows":  7
                      },
                      {
                          "x":  9,
@@ -2854,14 +2964,54 @@ Transfert de donnees entre modules.
                          "x":  2,
                          "type":  "table",
                          "var":  "",
-                         "y":  4,
-                         "w":  421,
-                         "fmt":  "",
                          "name":  "",
-                         "h":  104,
+                         "titleH":  12,
                          "color":  "110",
+                         "w":  421,
+                         "y":  4,
+                         "fmt":  "",
+                         "parent":  null,
                          "text":  "",
-                         "parent":  null
+                         "rowH":  13,
+                         "h":  104,
+                         "cols":  [
+                                      {
+                                          "title":  "Service",
+                                          "layer":  1,
+                                          "w":  33
+                                      },
+                                      {
+                                          "title":  "Article",
+                                          "layer":  2,
+                                          "w":  78
+                                      },
+                                      {
+                                          "title":  "Qté",
+                                          "layer":  3,
+                                          "w":  26
+                                      },
+                                      {
+                                          "title":  "Prix Unitaire",
+                                          "layer":  4,
+                                          "w":  74
+                                      },
+                                      {
+                                          "title":  "Montant",
+                                          "layer":  5,
+                                          "w":  78
+                                      },
+                                      {
+                                          "title":  "Gift Pass",
+                                          "layer":  6,
+                                          "w":  72
+                                      },
+                                      {
+                                          "title":  "Paiement",
+                                          "layer":  7,
+                                          "w":  40
+                                      }
+                                  ],
+                         "rows":  7
                      },
                      {
                          "x":  6,
@@ -3788,14 +3938,54 @@ Transfert de donnees entre modules.
                          "x":  10,
                          "type":  "table",
                          "var":  "",
-                         "y":  45,
-                         "w":  1038,
-                         "fmt":  "",
                          "name":  "",
-                         "h":  218,
+                         "titleH":  12,
                          "color":  "",
+                         "w":  1038,
+                         "y":  45,
+                         "fmt":  "",
+                         "parent":  null,
                          "text":  "",
-                         "parent":  null
+                         "rowH":  13,
+                         "h":  218,
+                         "cols":  [
+                                      {
+                                          "title":  "Choix ",
+                                          "layer":  1,
+                                          "w":  71
+                                      },
+                                      {
+                                          "title":  "Code GM",
+                                          "layer":  2,
+                                          "w":  103
+                                      },
+                                      {
+                                          "title":  "Filiation",
+                                          "layer":  3,
+                                          "w":  63
+                                      },
+                                      {
+                                          "title":  "Nom",
+                                          "layer":  4,
+                                          "w":  354
+                                      },
+                                      {
+                                          "title":  "Prénom",
+                                          "layer":  5,
+                                          "w":  138
+                                      },
+                                      {
+                                          "title":  "Début séjour",
+                                          "layer":  6,
+                                          "w":  141
+                                      },
+                                      {
+                                          "title":  "Fin séjour",
+                                          "layer":  7,
+                                          "w":  134
+                                      }
+                                  ],
+                         "rows":  7
                      },
                      {
                          "x":  15,
@@ -4030,14 +4220,29 @@ Transfert de donnees entre modules.
                          "x":  0,
                          "type":  "table",
                          "var":  "",
-                         "y":  1,
-                         "w":  120,
-                         "fmt":  "",
                          "name":  "",
-                         "h":  120,
+                         "titleH":  12,
                          "color":  "110",
+                         "w":  120,
+                         "y":  1,
+                         "fmt":  "",
+                         "parent":  null,
                          "text":  "",
-                         "parent":  null
+                         "rowH":  13,
+                         "h":  120,
+                         "cols":  [
+                                      {
+                                          "title":  "Logement",
+                                          "layer":  1,
+                                          "w":  55
+                                      },
+                                      {
+                                          "title":  "Libération",
+                                          "layer":  2,
+                                          "w":  46
+                                      }
+                                  ],
+                         "rows":  2
                      },
                      {
                          "x":  6,
@@ -5877,4 +6082,4 @@ graph LR
 | [Zoom services village (IDE 269)](ADH-IDE-269.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-01-31 23:58*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-01 00:33*
