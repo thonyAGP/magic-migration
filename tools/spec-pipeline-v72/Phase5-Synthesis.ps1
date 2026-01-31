@@ -1132,12 +1132,16 @@ if ($visibleForms.Count -gt 0) {
             $controls += $ctrlObj
         }
 
-        # Write FORM-DATA JSON block
+        # Write FORM-DATA JSON block (include DLU factors for correct proportions)
+        $hf = if ($form.h_factor) { [int]$form.h_factor } else { 4 }
+        $vf = if ($form.v_factor) { [int]$form.v_factor } else { 8 }
         $formData = @{
             taskId = $idePos
             type = $type
             width = [int]$w
             height = [int]$h
+            hFactor = $hf
+            vFactor = $vf
             controls = $controls
         }
         Add-Line "<!-- FORM-DATA:"

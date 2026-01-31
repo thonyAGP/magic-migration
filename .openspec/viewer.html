@@ -126,8 +126,21 @@
       return markdown.replace(/<!--\s*FORM-DATA:\s*\n([\s\S]*?)\n\s*-->/g, (match, jsonStr) => {
         try {
           const data = JSON.parse(jsonStr.trim());
-          const sx = 0.65, sy = 2.0; // DLU to px (calibrated: 939x178 DLU → 610x356 px)
           const ctrls = data.controls || [];
+
+          // Per-form DLU scaling using Magic Horizontal/Vertical factors
+          // Formula: px = dlu × factor / divisor (Windows DLU standard)
+          const hf = data.hFactor || 4;  // default Magic horizontal factor
+          const vf = data.vFactor || 8;  // default Magic vertical factor
+          const ratioX = hf / 4;  // horizontal DLU-to-logical-px
+          const ratioY = vf / 8;  // vertical DLU-to-logical-px
+          const logicalW = (data.width || 700) * ratioX;
+          const logicalH = (data.height || 400) * ratioY;
+          // Fit to viewer container with uniform scale (preserves proportions)
+          const maxContainerW = 700;
+          const fitScale = Math.min(maxContainerW / logicalW, 2.0);
+          const sx = ratioX * fitScale;
+          const sy = ratioY * fitScale;
           const w = Math.round((data.width || 700) * sx);
 
           let maxY = 100;

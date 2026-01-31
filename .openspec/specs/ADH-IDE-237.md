@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: Phases 1-4 2026-02-01 00:32 -> 00:33 (23s) | Assemblage 00:33
+> **Analyse**: Phases 1-4 2026-02-01 00:54 -> 00:55 (24s) | Assemblage 00:55
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -834,6 +834,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  1112,
+    "vFactor":  8,
+    "type":  "Modal",
+    "hFactor":  8,
     "controls":  [
                      {
                          "x":  2,
@@ -1291,9 +1294,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Modal",
-    "height":  279,
-    "taskId":  "237"
+    "taskId":  "237",
+    "height":  279
 }
 -->
 
@@ -1341,6 +1343,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  708,
+    "vFactor":  8,
+    "type":  "Type6",
+    "hFactor":  4,
     "controls":  [
                      {
                          "x":  2,
@@ -1615,9 +1620,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Type6",
-    "height":  256,
-    "taskId":  "237.1"
+    "taskId":  "237.1",
+    "height":  256
 }
 -->
 
@@ -1658,6 +1662,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  326,
+    "vFactor":  8,
+    "type":  "Type6",
+    "hFactor":  4,
     "controls":  [
                      {
                          "x":  2,
@@ -1849,9 +1856,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Type6",
-    "height":  249,
-    "taskId":  "237.3"
+    "taskId":  "237.3",
+    "height":  249
 }
 -->
 
@@ -1888,6 +1894,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  506,
+    "vFactor":  8,
+    "type":  "Type6",
+    "hFactor":  4,
     "controls":  [
                      {
                          "x":  2,
@@ -2097,9 +2106,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Type6",
-    "height":  250,
-    "taskId":  "237.4"
+    "taskId":  "237.4",
+    "height":  250
 }
 -->
 
@@ -2137,6 +2145,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  772,
+    "vFactor":  8,
+    "type":  "Type6",
+    "hFactor":  4,
     "controls":  [
                      {
                          "x":  2,
@@ -2361,9 +2372,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Type6",
-    "height":  169,
-    "taskId":  "237.6"
+    "taskId":  "237.6",
+    "height":  169
 }
 -->
 
@@ -2402,6 +2412,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  699,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
     "controls":  [
                      {
                          "x":  2,
@@ -2664,9 +2677,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "MDI",
-    "height":  157,
-    "taskId":  "237.7"
+    "taskId":  "237.7",
+    "height":  157
 }
 -->
 
@@ -2707,12 +2719,14 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  116,
+    "vFactor":  8,
+    "type":  "Modal",
+    "hFactor":  4,
     "controls":  [
 
                  ],
-    "type":  "Modal",
-    "height":  32,
-    "taskId":  "237.12"
+    "taskId":  "237.12",
+    "height":  32
 }
 -->
 
@@ -2725,6 +2739,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  528,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
     "controls":  [
                      {
                          "x":  2,
@@ -2883,9 +2900,8 @@ Transfert de donnees entre modules.
                          "parent":  1
                      }
                  ],
-    "type":  "MDI",
-    "height":  121,
-    "taskId":  "237.12.1"
+    "taskId":  "237.12.1",
+    "height":  121
 }
 -->
 
@@ -2920,6 +2936,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  427,
+    "vFactor":  8,
+    "type":  "Modal",
+    "hFactor":  4,
     "controls":  [
                      {
                          "x":  0,
@@ -3144,9 +3163,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Modal",
-    "height":  124,
-    "taskId":  "237.21"
+    "taskId":  "237.21",
+    "height":  124
 }
 -->
 
@@ -3177,6 +3195,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  722,
+    "vFactor":  8,
+    "type":  "Type6",
+    "hFactor":  8,
     "controls":  [
                      {
                          "x":  32,
@@ -3322,9 +3343,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Type6",
-    "height":  292,
-    "taskId":  "237.29"
+    "taskId":  "237.29",
+    "height":  292
 }
 -->
 
@@ -3358,6 +3378,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  681,
+    "vFactor":  8,
+    "type":  "Type6",
+    "hFactor":  8,
     "controls":  [
                      {
                          "x":  0,
@@ -3854,9 +3877,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Type6",
-    "height":  205,
-    "taskId":  "237.29.1"
+    "taskId":  "237.29.1",
+    "height":  205
 }
 -->
 
@@ -3907,6 +3929,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  1056,
+    "vFactor":  8,
+    "type":  "Type0",
+    "hFactor":  8,
     "controls":  [
                      {
                          "x":  8,
@@ -4170,9 +4195,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Type0",
-    "height":  281,
-    "taskId":  "237.30"
+    "taskId":  "237.30",
+    "height":  281
 }
 -->
 
@@ -4215,6 +4239,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  123,
+    "vFactor":  8,
+    "type":  "Type0",
+    "hFactor":  4,
     "controls":  [
                      {
                          "x":  0,
@@ -4297,9 +4324,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Type0",
-    "height":  149,
-    "taskId":  "237.33"
+    "taskId":  "237.33",
+    "height":  149
 }
 -->
 
@@ -4332,6 +4358,9 @@ Transfert de donnees entre modules.
 <!-- FORM-DATA:
 {
     "width":  123,
+    "vFactor":  8,
+    "type":  "Type0",
+    "hFactor":  4,
     "controls":  [
                      {
                          "x":  4,
@@ -4360,9 +4389,8 @@ Transfert de donnees entre modules.
                          "parent":  null
                      }
                  ],
-    "type":  "Type0",
-    "height":  89,
-    "taskId":  "237.36"
+    "taskId":  "237.36",
+    "height":  89
 }
 -->
 
@@ -6082,4 +6110,4 @@ graph LR
 | [Zoom services village (IDE 269)](ADH-IDE-269.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-01 00:33*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-01 00:55*
