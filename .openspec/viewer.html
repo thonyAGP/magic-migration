@@ -126,13 +126,13 @@
       return markdown.replace(/<!--\s*FORM-DATA:\s*\n([\s\S]*?)\n\s*-->/g, (match, jsonStr) => {
         try {
           const data = JSON.parse(jsonStr.trim());
-          const scale = 0.6;
+          const sx = 0.65, sy = 2.0; // DLU to px (calibrated: 939x178 DLU → 610x356 px)
           const ctrls = data.controls || [];
-          const w = Math.round((data.width || 700) * scale);
+          const w = Math.round((data.width || 700) * sx);
 
           let maxY = 100;
           ctrls.forEach(c => {
-            const bottom = (c.y + c.h) * scale;
+            const bottom = c.y * sy + c.h * sy;
             if (bottom > maxY) maxY = bottom;
           });
           maxY += 30;
@@ -145,10 +145,10 @@
 
           // Render group boxes first (behind other controls)
           ctrls.filter(c => isGroupBox(c)).forEach(c => {
-            const cx = Math.round(c.x * scale);
-            const cy = Math.round(c.y * scale);
-            const cw = Math.round(c.w * scale);
-            const ch = Math.round(c.h * scale);
+            const cx = Math.round(c.x * sx);
+            const cy = Math.round(c.y * sy);
+            const cw = Math.round(c.w * sx);
+            const ch = Math.round(c.h * sy);
             html += `<div class="magic-ctrl" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;z-index:0">`;
             html += `<div class="magic-ctrl-groupbox" style="width:100%;height:100%"><span class="groupbox-title">${c.text}</span></div>`;
             html += `</div>`;
@@ -158,10 +158,10 @@
           ctrls.forEach(c => {
             if (isGroupBox(c) || isBackground(c)) return;
 
-            const cx = Math.round(c.x * scale);
-            const cy = Math.round(c.y * scale);
-            const cw = Math.round(c.w * scale);
-            const ch = Math.round(c.h * scale);
+            const cx = Math.round(c.x * sx);
+            const cy = Math.round(c.y * sy);
+            const cw = Math.round(c.w * sx);
+            const ch = Math.round(c.h * sy);
             const varTag = c.var ? `<span class="magic-ctrl-var">${c.var}</span>` : '';
             const col = getColor(c.color);
             const colStyle = col ? `color:${col};` : '';
