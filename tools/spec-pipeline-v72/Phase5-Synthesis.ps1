@@ -351,7 +351,9 @@ $allForms = @()
 $visibleForms = @()
 if ($uiForms -and $uiForms.forms) {
     $allForms = @($uiForms.forms)
-    $visibleForms = @($uiForms.forms | Where-Object { $_.dimensions.width -gt 0 } | Sort-Object { $_.task_isn2 })
+    $visibleForms = @($uiForms.forms | Where-Object {
+        $_.dimensions.width -gt 0 -and $_.open_task_window -ne 'N'
+    } | Sort-Object { $_.task_isn2 })
 }
 
 # Functional blocks
@@ -1050,20 +1052,30 @@ if ($visibleForms.Count -gt 0) {
         $fBloc = Get-FunctionalBloc $form.name
         $idePos = if ($form.task_ide_position -and $form.task_ide_position.Trim()) { $form.task_ide_position } else { "$IdePosition.$fIdx2" }
 
-        Add-Line "---"
-        Add-Line
-        Add-Line "#### $(Format-Anchor "ecran-t$tNum")$idePos - $fName"
-        Add-Line "**Tache** : [T$tNum](#t$tNum) | **Type** : $type | **Dimensions** : $w x $h DLU"
-        Add-Line "**Bloc** : $fBloc | **Titre IDE** : $fName"
-        Add-Line
-
-        # V7.5: Build FORM-DATA from real form_controls (positioned UI elements)
+        # V7.5: Load form_controls for this task
         $controls = @()
         $taskKey = "$tNum"
         $taskFormControls = @()
         if ($formControlsData.ContainsKey($taskKey)) {
             $taskFormControls = @($formControlsData[$taskKey])
         }
+
+        # V7.6: Skip forms with no visible controls (excluding COLUMNs)
+        $hasVisibleControls = $false
+        foreach ($fc in $taskFormControls) {
+            if ($fc.visible -and $fc.control_type -ne 'COLUMN') {
+                $hasVisibleControls = $true
+                break
+            }
+        }
+        if (-not $hasVisibleControls) { continue }
+
+        Add-Line "---"
+        Add-Line
+        Add-Line "#### $(Format-Anchor "ecran-t$tNum")$idePos - $fName"
+        Add-Line "**Tache** : [T$tNum](#t$tNum) | **Type** : $type | **Dimensions** : $w x $h DLU"
+        Add-Line "**Bloc** : $fBloc | **Titre IDE** : $fName"
+        Add-Line
 
         # Build COLUMN lookup: table_control_id → list of columns
         $columnsByTable = @{}

@@ -774,7 +774,8 @@ public partial class ProgramParser
             SortCls = info.Element("SortCLS")?.Attribute("val")?.Value,
             BoxBottom = ParseInt(info.Element("BoxBottom")?.Attribute("val")?.Value),
             BoxRight = ParseInt(info.Element("BoxRight")?.Attribute("val")?.Value),
-            BoxDirection = info.Element("BoxDirection")?.Attribute("val")?.Value
+            BoxDirection = info.Element("BoxDirection")?.Attribute("val")?.Value,
+            OpenTaskWindow = info.Element("WIN")?.Element("OpenTaskWindow")?.Attribute("val")?.Value
         };
     }
 
@@ -1273,6 +1274,7 @@ public record ParsedTaskInformation
     public int? BoxBottom { get; init; }
     public int? BoxRight { get; init; }
     public string? BoxDirection { get; init; }
+    public string? OpenTaskWindow { get; init; }
 }
 
 public record ParsedTaskProperties

@@ -39,7 +39,7 @@
                                      "check":  "V72_LINKS"
                                  },
                                  {
-                                     "detail":  "14 blocs FORM-DATA",
+                                     "detail":  "12 blocs FORM-DATA",
                                      "status":  "PASS",
                                      "check":  "V72_FORMDATA"
                                  },
@@ -112,22 +112,22 @@
                                    ]
                    },
     "pipeline_timing":  {
-                            "phases_start":  "2026-02-01 10:35:24",
-                            "assembly_end":  "2026-02-01 10:35:41",
-                            "assembly_start":  "2026-02-01 10:35:38",
+                            "phases_start":  "2026-02-01 11:15:26",
+                            "assembly_end":  "2026-02-01 11:15:43",
+                            "assembly_start":  "2026-02-01 11:15:41",
                             "phases_duration":  "14s",
-                            "phases_end":  "2026-02-01 10:35:38"
+                            "phases_end":  "2026-02-01 11:15:41"
                         },
     "v72_features":  {
                          "clickable_links":  127,
                          "variable_roles":  3,
                          "precise_expr_types":  37,
                          "anchors":  49,
-                         "form_data_blocks":  14
+                         "form_data_blocks":  12
                      },
     "metadata":  {
                      "pipeline_version":  "7.2",
-                     "generated_at":  "2026-02-01 10:35:41",
+                     "generated_at":  "2026-02-01 11:15:43",
                      "ide_position":  237,
                      "duration_seconds":  2.4,
                      "program_name":  "Transaction Nouv vente avec GP",

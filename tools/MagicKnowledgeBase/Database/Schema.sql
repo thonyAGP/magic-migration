@@ -758,6 +758,7 @@ CREATE TABLE IF NOT EXISTS task_information (
     box_bottom INTEGER,
     box_right INTEGER,
     box_direction TEXT,
+    open_task_window TEXT,                -- Y/N - whether task opens its window
     UNIQUE(task_id)
 );
 

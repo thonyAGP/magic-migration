@@ -396,6 +396,7 @@ public record DbTaskInformation
     public int? BoxBottom { get; init; }
     public int? BoxRight { get; init; }
     public string? BoxDirection { get; init; }
+    public string? OpenTaskWindow { get; init; }
 }
 
 /// <summary>V9: Task properties block</summary>

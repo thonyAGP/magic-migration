@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: Phases 1-4 2026-02-01 10:35 -> 10:35 (14s) | Assemblage 10:35
+> **Analyse**: Phases 1-4 2026-02-01 11:15 -> 11:15 (14s) | Assemblage 11:15
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -15,7 +15,7 @@
 | Nom Programme | Transaction Nouv vente avec GP |
 | Fichier source | `Prg_237.xml` |
 | Domaine metier | Ventes |
-| Taches | 49 (14 ecrans visibles) |
+| Taches | 49 (12 ecrans visibles) |
 | Tables modifiees | 9 |
 | Programmes appeles | 20 |
 
@@ -804,7 +804,7 @@ Transfert de donnees entre modules.
 
 ## 8. ECRANS
 
-### 8.1 Forms visibles (14 / 49)
+### 8.1 Forms visibles (12 / 49)
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
@@ -814,14 +814,12 @@ Transfert de donnees entre modules.
 | 4 | 237.4 | T8 | Saisie mode de règlement | Type6 | 506 | 250 | Saisie |
 | 5 | 237.6 | T10 | Saisie Commentaires | Type6 | 772 | 169 | Saisie |
 | 6 | 237.7 | T11 | VRL : Saisie identité | MDI | 699 | 157 | Saisie |
-| 7 | 237.12 | T18 | (sans nom) | Modal | 116 | 32 | Traitement |
-| 8 | 237.12.1 | T19 | Saisie dates forfait | MDI | 528 | 121 | Saisie |
-| 9 | 237.21 | T30 | Affiche saisie | Modal | 427 | 124 | Saisie |
-| 10 | 237.29 | T38 | Type transfert | Type6 | 722 | 292 | Transfert |
-| 11 | 237.29.1 | T39 | Affiche Transfert A/R | Type6 | 681 | 205 | Transfert |
-| 12 | 237.30 | T40 | Affectation PAX / Transfert | Type0 | 1056 | 281 | Transfert |
-| 13 | 237.33 | T46 | Libération du logement | Type0 | 123 | 149 | Traitement |
-| 14 | 237.36 | T49 | Récup nb chambre /LCO | Type0 | 123 | 89 | Traitement |
+| 7 | 237.12.1 | T19 | Saisie dates forfait | MDI | 528 | 121 | Saisie |
+| 8 | 237.21 | T30 | Affiche saisie | Modal | 427 | 124 | Saisie |
+| 9 | 237.29 | T38 | Type transfert | Type6 | 722 | 292 | Transfert |
+| 10 | 237.29.1 | T39 | Affiche Transfert A/R | Type6 | 681 | 205 | Transfert |
+| 11 | 237.30 | T40 | Affectation PAX / Transfert | Type0 | 1056 | 281 | Transfert |
+| 12 | 237.33 | T46 | Libération du logement | Type0 | 123 | 149 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
@@ -2712,26 +2710,6 @@ Transfert de donnees entre modules.
 
 ---
 
-#### <a id="ecran-t18"></a>237.12 - (sans nom)
-**Tache** : [T18](#t18) | **Type** : Modal | **Dimensions** : 116 x 32 DLU
-**Bloc** : Traitement | **Titre IDE** : (sans nom)
-
-<!-- FORM-DATA:
-{
-    "width":  116,
-    "vFactor":  8,
-    "type":  "Modal",
-    "hFactor":  4,
-    "controls":  [
-
-                 ],
-    "taskId":  "237.12",
-    "height":  32
-}
--->
-
----
-
 #### <a id="ecran-t19"></a>237.12.1 - Saisie dates forfait
 **Tache** : [T19](#t19) | **Type** : MDI | **Dimensions** : 528 x 121 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie dates forfait
@@ -4349,60 +4327,6 @@ Transfert de donnees entre modules.
 
 </details>
 
----
-
-#### <a id="ecran-t49"></a>237.36 - Récup nb chambre /LCO
-**Tache** : [T49](#t49) | **Type** : Type0 | **Dimensions** : 123 x 89 DLU
-**Bloc** : Traitement | **Titre IDE** : Récup nb chambre /LCO
-
-<!-- FORM-DATA:
-{
-    "width":  123,
-    "vFactor":  8,
-    "type":  "Type0",
-    "hFactor":  4,
-    "controls":  [
-                     {
-                         "x":  4,
-                         "type":  "label",
-                         "var":  "",
-                         "y":  8,
-                         "w":  14,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  9,
-                         "color":  "",
-                         "text":  "??:",
-                         "parent":  null
-                     },
-                     {
-                         "x":  22,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  8,
-                         "w":  56,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  10,
-                         "color":  "",
-                         "text":  "",
-                         "parent":  null
-                     }
-                 ],
-    "taskId":  "237.36",
-    "height":  89
-}
--->
-
-<details>
-<summary><strong>Champs : 1 champs</strong></summary>
-
-| Pos (x,y) | Nom | Variable | Type |
-|-----------|-----|----------|------|
-| 22,8 | (sans nom) | - | edit |
-
-</details>
-
 ## 9. NAVIGATION
 
 ### 9.1 Enchainement des ecrans
@@ -4423,8 +4347,6 @@ flowchart TD
     style VF10 fill:#58a6ff
     VF11[T11 VRL : Saisie identité]
     style VF11 fill:#58a6ff
-    VF18[T18 sans nom]
-    style VF18 fill:#58a6ff
     VF19[T19 Saisie dates forfait]
     style VF19 fill:#58a6ff
     VF30[T30 Affiche saisie]
@@ -4437,8 +4359,6 @@ flowchart TD
     style VF40 fill:#58a6ff
     VF46[T46 Libération du loge...]
     style VF46 fill:#58a6ff
-    VF49[T49 Récup nb chambre LCO]
-    style VF49 fill:#58a6ff
     EXT152[IDE 152 Recup Classe e...]
     style EXT152 fill:#3fb950
     EXT84[IDE 84 SP Caractères I...]
@@ -6029,7 +5949,7 @@ graph LR
 | Expressions | 305 | Beaucoup de logique conditionnelle |
 | Tables WRITE | 9 | Fort impact donnees |
 | Sous-programmes | 20 | Forte dependance |
-| Ecrans visibles | 14 | Interface complexe multi-ecrans |
+| Ecrans visibles | 12 | Interface complexe multi-ecrans |
 | Code desactive | 0% (0 / 1818) | Code sain |
 | Regles metier | 17 | Logique metier riche |
 
@@ -6110,4 +6030,4 @@ graph LR
 | [Zoom services village (IDE 269)](ADH-IDE-269.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-01 10:35*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-01 11:15*

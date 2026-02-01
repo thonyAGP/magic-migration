@@ -1865,9 +1865,11 @@ if (args.Length > 1 && args[0] == "forms-json")
                 tf.system_menu,
                 tf.minimize_box,
                 tf.maximize_box,
-                tf.properties_json
+                tf.properties_json,
+                ti.open_task_window
             FROM task_forms tf
             JOIN tasks t ON tf.task_id = t.id
+            LEFT JOIN task_information ti ON ti.task_id = t.id
             WHERE t.program_id = @prog_id
             ORDER BY t.isn2, tf.form_entry_id";
         cmd.Parameters.AddWithValue("@prog_id", dbProgramId);
@@ -1897,7 +1899,8 @@ if (args.Length > 1 && args[0] == "forms-json")
                 system_menu = reader.IsDBNull(15) ? 0 : reader.GetInt32(15),
                 minimize_box = reader.IsDBNull(16) ? 0 : reader.GetInt32(16),
                 maximize_box = reader.IsDBNull(17) ? 0 : reader.GetInt32(17),
-                properties_json = reader.IsDBNull(18) ? "" : reader.GetString(18)
+                properties_json = reader.IsDBNull(18) ? "" : reader.GetString(18),
+                open_task_window = reader.IsDBNull(19) ? "Y" : reader.GetString(19)
             });
         }
     }

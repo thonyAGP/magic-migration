@@ -161,6 +161,7 @@ $uiForms = @{
             v_factor = $_.v_factor
             color = $_.color
             properties_json = $_.properties_json
+            open_task_window = $_.open_task_window
         }
     })
 

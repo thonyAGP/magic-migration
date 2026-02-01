@@ -629,10 +629,10 @@ public class KnowledgeDb : IDisposable
         ExecuteNonQuery(@"
             INSERT OR IGNORE INTO task_information (task_id, initial_mode, end_task_condition_expr, evaluate_end_condition,
                 force_record_delete, main_db_component, key_mode, range_direction, locate_direction, sort_cls,
-                box_bottom, box_right, box_direction)
+                box_bottom, box_right, box_direction, open_task_window)
             VALUES (@task_id, @initial_mode, @end_task_condition_expr, @evaluate_end_condition,
                 @force_record_delete, @main_db_component, @key_mode, @range_direction, @locate_direction, @sort_cls,
-                @box_bottom, @box_right, @box_direction)",
+                @box_bottom, @box_right, @box_direction, @open_task_window)",
             new Dictionary<string, object?>
             {
                 ["@task_id"] = info.TaskId,
@@ -647,7 +647,8 @@ public class KnowledgeDb : IDisposable
                 ["@sort_cls"] = info.SortCls,
                 ["@box_bottom"] = info.BoxBottom,
                 ["@box_right"] = info.BoxRight,
-                ["@box_direction"] = info.BoxDirection
+                ["@box_direction"] = info.BoxDirection,
+                ["@open_task_window"] = info.OpenTaskWindow
             }, tx);
     }
 

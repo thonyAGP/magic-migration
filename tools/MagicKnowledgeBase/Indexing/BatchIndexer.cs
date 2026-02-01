@@ -432,7 +432,8 @@ public class BatchIndexer
                                 SortCls = task.Information.SortCls,
                                 BoxBottom = task.Information.BoxBottom,
                                 BoxRight = task.Information.BoxRight,
-                                BoxDirection = task.Information.BoxDirection
+                                BoxDirection = task.Information.BoxDirection,
+                                OpenTaskWindow = task.Information.OpenTaskWindow
                             }, tx);
                         }
 
