@@ -517,3 +517,110 @@ public record DbFormControl
     public int? EnabledExpression { get; init; }
     public string? PropertiesJson { get; init; }
 }
+
+// =========================================================================
+// V9 OPERATION DETAIL RECORDS
+// =========================================================================
+
+/// <summary>V9: Select definition (DataView variable definition)</summary>
+public record DbSelectDefinition
+{
+    public long TaskId { get; init; }
+    public int LineNumber { get; init; }
+    public int FieldId { get; init; }
+    public int? SelectId { get; init; }
+    public int? ColumnRef { get; init; }
+    public string? SelectType { get; init; }
+    public bool IsParameter { get; init; }
+    public int? AssignmentExpr { get; init; }
+    public string? DiffUpdate { get; init; }
+    public int? LocateMinExpr { get; init; }
+    public int? LocateMaxExpr { get; init; }
+    public bool PartOfDataview { get; init; } = true;
+    public string? RealVarName { get; init; }
+    public int? ControlIndex { get; init; }
+    public int? FormIndex { get; init; }
+    public int? TabbingOrder { get; init; }
+    public int? RecomputeIndex { get; init; }
+}
+
+/// <summary>V9: Update operation (field assignment)</summary>
+public record DbUpdateOperation
+{
+    public long TaskId { get; init; }
+    public int LineNumber { get; init; }
+    public int FieldId { get; init; }
+    public int? WithValueExpr { get; init; }
+    public bool ForcedUpdate { get; init; }
+    public bool Incremental { get; init; }
+    public string? Direction { get; init; }
+}
+
+/// <summary>V9: Link operation (table join/query)</summary>
+public record DbLinkOperation
+{
+    public long TaskId { get; init; }
+    public int LineNumber { get; init; }
+    public int TableId { get; init; }
+    public int? KeyIndex { get; init; }
+    public string? LinkMode { get; init; }
+    public string? Direction { get; init; }
+    public string? SortType { get; init; }
+    public int? ViewNumber { get; init; }
+    public string? Views { get; init; }
+    public int? FieldId { get; init; }
+    public int? ConditionExpr { get; init; }
+    public string? EvalCondition { get; init; }
+    public bool IsExpanded { get; init; }
+}
+
+/// <summary>V9: Stop operation (message/error dialog)</summary>
+public record DbStopOperation
+{
+    public long TaskId { get; init; }
+    public int LineNumber { get; init; }
+    public string? Mode { get; init; }
+    public string? Buttons { get; init; }
+    public int? DefaultButton { get; init; }
+    public string? TitleText { get; init; }
+    public string? MessageText { get; init; }
+    public int? MessageExpr { get; init; }
+    public string? Image { get; init; }
+    public int? DisplayVar { get; init; }
+    public int? ReturnVar { get; init; }
+    public bool AppendToErrorLog { get; init; }
+}
+
+/// <summary>V9: Block operation (IF/ELSE/LOOP)</summary>
+public record DbBlockOperation
+{
+    public long TaskId { get; init; }
+    public int LineNumber { get; init; }
+    public string? BlockType { get; init; }
+    public int? ConditionExpr { get; init; }
+    public string? Modifier { get; init; }
+}
+
+/// <summary>V9: Evaluate operation (expression computation)</summary>
+public record DbEvaluateOperation
+{
+    public long TaskId { get; init; }
+    public int LineNumber { get; init; }
+    public int? ExpressionRef { get; init; }
+    public int? ConditionExpr { get; init; }
+    public string? Direction { get; init; }
+    public string? Modifier { get; init; }
+}
+
+/// <summary>V9: Raise event operation</summary>
+public record DbRaiseEventOperation
+{
+    public long TaskId { get; init; }
+    public int LineNumber { get; init; }
+    public string? EventType { get; init; }
+    public int? InternalEventId { get; init; }
+    public string? PublicObjectComp { get; init; }
+    public int? PublicObjectObj { get; init; }
+    public string? WaitMode { get; init; }
+    public string? Direction { get; init; }
+}

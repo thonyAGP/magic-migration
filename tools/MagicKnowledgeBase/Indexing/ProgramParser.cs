@@ -135,8 +135,9 @@ public partial class ProgramParser
             // Parse DataView
             var (columns, mainSourceTableId, mainSourceAccess, tableUsages) = ParseDataView(taskElement);
 
-            // Parse Logic
-            var (logicLines, programCalls) = ParseLogicLines(taskElement, projectName);
+            // Parse Logic (includes V9 operation details)
+            var (logicLines, programCalls, selectDefs, updateOps, linkOps, stopOps, blockOps, evaluateOps, raiseEventOps) =
+                ParseLogicLines(taskElement, projectName);
 
             // Parse TaskForms (UI screens)
             var forms = ParseTaskForms(taskElement);
@@ -170,7 +171,15 @@ public partial class ProgramParser
                 Properties = properties,
                 Permissions = permissions,
                 EventHandlers = eventHandlers,
-                FieldRanges = fieldRanges
+                FieldRanges = fieldRanges,
+                // V9 operation details
+                SelectDefinitions = selectDefs,
+                UpdateOperations = updateOps,
+                LinkOperations = linkOps,
+                StopOperations = stopOps,
+                BlockOperations = blockOps,
+                EvaluateOperations = evaluateOps,
+                RaiseEventOperations = raiseEventOps
             };
         }
 
@@ -479,14 +488,25 @@ public partial class ProgramParser
         return forms;
     }
 
-    private (List<ParsedLogicLine> lines, List<ParsedProgramCall> calls) ParseLogicLines(XElement taskElement, string projectName)
+    private (List<ParsedLogicLine> lines, List<ParsedProgramCall> calls,
+        List<ParsedSelectDefinition> selects, List<ParsedUpdateOperation> updates,
+        List<ParsedLinkOperation> links, List<ParsedStopOperation> stops,
+        List<ParsedBlockOperation> blocks, List<ParsedEvaluateOperation> evaluates,
+        List<ParsedRaiseEventOperation> raiseEvents) ParseLogicLines(XElement taskElement, string projectName)
     {
         var lines = new List<ParsedLogicLine>();
         var calls = new List<ParsedProgramCall>();
+        var selects = new List<ParsedSelectDefinition>();
+        var updates = new List<ParsedUpdateOperation>();
+        var links = new List<ParsedLinkOperation>();
+        var stops = new List<ParsedStopOperation>();
+        var blocks = new List<ParsedBlockOperation>();
+        var evaluates = new List<ParsedEvaluateOperation>();
+        var raiseEvents = new List<ParsedRaiseEventOperation>();
         int lineNum = 1;
 
         var taskLogic = taskElement.Element("TaskLogic");
-        if (taskLogic == null) return (lines, calls);
+        if (taskLogic == null) return (lines, calls, selects, updates, links, stops, blocks, evaluates, raiseEvents);
 
         foreach (var logicUnit in taskLogic.Elements("LogicUnit"))
         {
@@ -500,7 +520,8 @@ public partial class ProgramParser
                 if (operation == null) continue;
 
                 var opName = operation.Name.LocalName;
-                var isDisabled = operation.Attribute("Disabled")?.Value == "1";
+                var isDisabled = operation.Attribute("Disabled")?.Value == "1"
+                    || operation.Element("Disabled")?.Attribute("val")?.Value == "1";
 
                 var parameters = new Dictionary<string, string> { ["Handler"] = handlerType };
                 foreach (var attr in operation.Attributes())
@@ -510,46 +531,36 @@ public partial class ProgramParser
                 }
 
                 var conditionElement = operation.Element("Condition");
-                var condition = conditionElement?.Attribute("val")?.Value;
+                var condition = conditionElement?.Attribute("val")?.Value
+                    ?? conditionElement?.Attribute("Exp")?.Value;
 
-                // BUG FIX: Extract CallTask info - XML uses <CallTask> with <TaskID> and <OperationType>
-                if (opName == "CallTask")
+                // Extract operation-specific details
+                switch (opName)
                 {
-                    var opType = operation.Element("OperationType")?.Attribute("val")?.Value;
-                    // P = Program call, T = SubTask call - only track program calls
-                    if (opType == "P")
-                    {
-                        var taskId = operation.Element("TaskID");
-                        if (taskId != null)
-                        {
-                            var compAttr = taskId.Attribute("comp")?.Value ?? "-1";
-                            var objAttr = taskId.Attribute("obj")?.Value;
-
-                            if (objAttr != null && int.TryParse(objAttr, out int targetPrgId))
-                            {
-                                // comp="-1" means same project, otherwise it's a component reference
-                                var targetProject = compAttr == "-1" ? projectName : $"Comp{compAttr}";
-                                // BUG FIX: XML uses <Argument> not <Arg>
-                                var argCount = operation.Element("Arguments")?.Elements("Argument").Count() ?? 0;
-
-                                // V9: Parse call arguments
-                                var arguments = ParseCallArguments(operation);
-
-                                calls.Add(new ParsedProgramCall
-                                {
-                                    LineNumber = lineNum,
-                                    TargetProject = targetProject,
-                                    TargetProgramXmlId = targetPrgId,
-                                    ArgCount = argCount,
-                                    Arguments = arguments
-                                });
-
-                                parameters["TargetComp"] = targetProject;
-                                parameters["TargetPrg"] = targetPrgId.ToString();
-                                if (argCount > 0) parameters["ArgCount"] = argCount.ToString();
-                            }
-                        }
-                    }
+                    case "CallTask":
+                        ExtractCallTask(operation, lineNum, projectName, calls, parameters);
+                        break;
+                    case "Select":
+                        ExtractSelect(operation, lineNum, selects);
+                        break;
+                    case "Update":
+                        ExtractUpdate(operation, lineNum, updates);
+                        break;
+                    case "LNK":
+                        ExtractLink(operation, lineNum, links);
+                        break;
+                    case "STP":
+                        ExtractStop(operation, lineNum, stops);
+                        break;
+                    case "BLOCK":
+                        ExtractBlock(operation, lineNum, blocks);
+                        break;
+                    case "Evaluate":
+                        ExtractEvaluate(operation, lineNum, evaluates);
+                        break;
+                    case "RaiseEvent":
+                        ExtractRaiseEvent(operation, lineNum, raiseEvents);
+                        break;
                 }
 
                 lines.Add(new ParsedLogicLine
@@ -564,7 +575,193 @@ public partial class ProgramParser
             }
         }
 
-        return (lines, calls);
+        return (lines, calls, selects, updates, links, stops, blocks, evaluates, raiseEvents);
+    }
+
+    private static void ExtractCallTask(XElement operation, int lineNum, string projectName,
+        List<ParsedProgramCall> calls, Dictionary<string, string> parameters)
+    {
+        var opType = operation.Element("OperationType")?.Attribute("val")?.Value;
+        if (opType != "P") return;
+
+        var taskId = operation.Element("TaskID");
+        if (taskId == null) return;
+
+        var compAttr = taskId.Attribute("comp")?.Value ?? "-1";
+        var objAttr = taskId.Attribute("obj")?.Value;
+
+        if (objAttr != null && int.TryParse(objAttr, out int targetPrgId))
+        {
+            var targetProject = compAttr == "-1" ? projectName : $"Comp{compAttr}";
+            var argCount = operation.Element("Arguments")?.Elements("Argument").Count() ?? 0;
+            var arguments = ParseCallArguments(operation);
+
+            calls.Add(new ParsedProgramCall
+            {
+                LineNumber = lineNum,
+                TargetProject = targetProject,
+                TargetProgramXmlId = targetPrgId,
+                ArgCount = argCount,
+                Arguments = arguments
+            });
+
+            parameters["TargetComp"] = targetProject;
+            parameters["TargetPrg"] = targetPrgId.ToString();
+            if (argCount > 0) parameters["ArgCount"] = argCount.ToString();
+        }
+    }
+
+    private static void ExtractSelect(XElement operation, int lineNum, List<ParsedSelectDefinition> selects)
+    {
+        if (!int.TryParse(operation.Attribute("FieldID")?.Value, out int fieldId)) return;
+
+        int.TryParse(operation.Attribute("id")?.Value, out int selectId);
+        int? columnRef = int.TryParse(operation.Element("Column")?.Attribute("val")?.Value, out int col) ? col : null;
+        int? assignmentExpr = int.TryParse(operation.Element("ASS")?.Attribute("val")?.Value, out int ass) ? ass : null;
+        var locateElement = operation.Element("Locate");
+        int? locateMin = int.TryParse(locateElement?.Attribute("MIN")?.Value, out int lmin) ? lmin : null;
+        int? locateMax = int.TryParse(locateElement?.Attribute("MAX")?.Value, out int lmax) ? lmax : null;
+        int? controlIndex = int.TryParse(operation.Element("_ControlIndex")?.Attribute("val")?.Value, out int ci) ? ci : null;
+        int? formIndex = int.TryParse(operation.Element("_FormIndex")?.Attribute("val")?.Value, out int fi) ? fi : null;
+        int? tabbingOrder = int.TryParse(operation.Element("_TabbingOrderDspIndex")?.Attribute("val")?.Value, out int to) ? to : null;
+        int? recomputeIndex = int.TryParse(operation.Element("_RecomputeIndex")?.Attribute("val")?.Value, out int ri) ? ri : null;
+
+        selects.Add(new ParsedSelectDefinition
+        {
+            LineNumber = lineNum,
+            FieldId = fieldId,
+            SelectId = selectId,
+            ColumnRef = columnRef,
+            SelectType = operation.Element("Type")?.Attribute("val")?.Value,
+            IsParameter = operation.Element("IsParameter")?.Attribute("val")?.Value == "Y",
+            AssignmentExpr = assignmentExpr,
+            DiffUpdate = operation.Element("DIFF_UPDATE")?.Attribute("val")?.Value,
+            LocateMinExpr = locateMin,
+            LocateMaxExpr = locateMax,
+            PartOfDataview = operation.Element("PartOfDataview")?.Attribute("val")?.Value != "0",
+            RealVarName = operation.Element("REAL_VNAME_TXT")?.Attribute("val")?.Value,
+            ControlIndex = controlIndex,
+            FormIndex = formIndex,
+            TabbingOrder = tabbingOrder,
+            RecomputeIndex = recomputeIndex
+        });
+    }
+
+    private static void ExtractUpdate(XElement operation, int lineNum, List<ParsedUpdateOperation> updates)
+    {
+        int? fieldId = int.TryParse(operation.Element("FieldID")?.Attribute("val")?.Value, out int fid) ? fid : null;
+        if (fieldId == null) return;
+
+        int? withValue = int.TryParse(operation.Element("WithValue")?.Attribute("val")?.Value, out int wv) ? wv : null;
+
+        updates.Add(new ParsedUpdateOperation
+        {
+            LineNumber = lineNum,
+            FieldId = fieldId.Value,
+            WithValueExpr = withValue,
+            ForcedUpdate = operation.Element("ForcedUpdate")?.Attribute("val")?.Value == "Y",
+            Incremental = operation.Element("Incremental")?.Attribute("val")?.Value == "Y",
+            Direction = operation.Element("Direction")?.Attribute("val")?.Value
+        });
+    }
+
+    private static void ExtractLink(XElement operation, int lineNum, List<ParsedLinkOperation> linkOps)
+    {
+        var dbElement = operation.Element("DB");
+        if (!int.TryParse(dbElement?.Attribute("obj")?.Value, out int tableId)) return;
+
+        int? keyIndex = int.TryParse(operation.Attribute("Key")?.Value, out int k) ? k : null;
+        int? viewNumber = int.TryParse(operation.Attribute("VIEW")?.Value, out int vn) ? vn : null;
+        int? fieldId = int.TryParse(operation.Attribute("FieldID")?.Value, out int fid) ? fid : null;
+        var condElement = operation.Element("Condition");
+        int? condExpr = int.TryParse(condElement?.Attribute("Exp")?.Value, out int ce) ? ce : null;
+
+        linkOps.Add(new ParsedLinkOperation
+        {
+            LineNumber = lineNum,
+            TableId = tableId,
+            KeyIndex = keyIndex,
+            LinkMode = operation.Attribute("Mode")?.Value,
+            Direction = operation.Attribute("Direction")?.Value,
+            SortType = operation.Attribute("SortType")?.Value,
+            ViewNumber = viewNumber,
+            Views = operation.Attribute("VIEWS")?.Value,
+            FieldId = fieldId,
+            ConditionExpr = condExpr,
+            EvalCondition = operation.Attribute("EVL_CND")?.Value,
+            IsExpanded = operation.Element("Expanded")?.Attribute("val")?.Value == "1"
+        });
+    }
+
+    private static void ExtractStop(XElement operation, int lineNum, List<ParsedStopOperation> stops)
+    {
+        int? defaultButton = int.TryParse(operation.Attribute("DefaultButton")?.Value, out int db) ? db : null;
+        int? messageExpr = int.TryParse(operation.Attribute("Exp")?.Value, out int me) ? me : null;
+        int? displayVar = int.TryParse(operation.Attribute("VR_DISP")?.Value, out int dv) ? dv : null;
+        int? returnVar = int.TryParse(operation.Element("RetValVar")?.Attribute("val")?.Value, out int rv) ? rv : null;
+
+        stops.Add(new ParsedStopOperation
+        {
+            LineNumber = lineNum,
+            Mode = operation.Attribute("Mode")?.Value,
+            Buttons = operation.Attribute("Buttons")?.Value,
+            DefaultButton = defaultButton,
+            TitleText = operation.Attribute("TitleTxt")?.Value,
+            MessageText = operation.Attribute("TXT")?.Value,
+            MessageExpr = messageExpr,
+            Image = operation.Attribute("Image")?.Value,
+            DisplayVar = displayVar,
+            ReturnVar = returnVar,
+            AppendToErrorLog = operation.Element("AppendToErrorLog")?.Attribute("val")?.Value == "Y"
+        });
+    }
+
+    private static void ExtractBlock(XElement operation, int lineNum, List<ParsedBlockOperation> blockOps)
+    {
+        var condElement = operation.Element("Condition");
+        int? condExpr = int.TryParse(condElement?.Attribute("Exp")?.Value, out int ce) ? ce : null;
+
+        blockOps.Add(new ParsedBlockOperation
+        {
+            LineNumber = lineNum,
+            BlockType = operation.Attribute("Type")?.Value,
+            ConditionExpr = condExpr,
+            Modifier = operation.Element("Modifier")?.Attribute("val")?.Value
+        });
+    }
+
+    private static void ExtractEvaluate(XElement operation, int lineNum, List<ParsedEvaluateOperation> evaluates)
+    {
+        int? exprRef = int.TryParse(operation.Element("Expression")?.Attribute("val")?.Value, out int er) ? er : null;
+        var condElement = operation.Element("Condition");
+        int? condExpr = int.TryParse(condElement?.Attribute("Exp")?.Value, out int ce) ? ce : null;
+
+        evaluates.Add(new ParsedEvaluateOperation
+        {
+            LineNumber = lineNum,
+            ExpressionRef = exprRef,
+            ConditionExpr = condExpr,
+            Direction = operation.Element("Direction")?.Attribute("val")?.Value,
+            Modifier = operation.Element("Modifier")?.Attribute("val")?.Value
+        });
+    }
+
+    private static void ExtractRaiseEvent(XElement operation, int lineNum, List<ParsedRaiseEventOperation> raiseEvents)
+    {
+        var eventElement = operation.Element("Event");
+        int? internalEventId = int.TryParse(eventElement?.Element("InternalEventID")?.Attribute("val")?.Value, out int ie) ? ie : null;
+        int? publicObj = int.TryParse(eventElement?.Element("PublicObject")?.Attribute("obj")?.Value, out int po) ? po : null;
+
+        raiseEvents.Add(new ParsedRaiseEventOperation
+        {
+            LineNumber = lineNum,
+            EventType = eventElement?.Element("EventType")?.Attribute("val")?.Value,
+            InternalEventId = internalEventId,
+            PublicObjectComp = eventElement?.Element("PublicObject")?.Attribute("comp")?.Value,
+            PublicObjectObj = publicObj,
+            WaitMode = operation.Element("Wait")?.Attribute("val")?.Value,
+            Direction = operation.Element("Direction")?.Attribute("val")?.Value
+        });
     }
 
     private static string GetHandlerType(XElement logicUnit)
@@ -872,7 +1069,7 @@ public partial class ProgramParser
     }
 
     /// <summary>V9: Parse call arguments from CallTask</summary>
-    private List<ParsedCallArgument> ParseCallArguments(XElement callTaskElement)
+    private static List<ParsedCallArgument> ParseCallArguments(XElement callTaskElement)
     {
         var arguments = new List<ParsedCallArgument>();
         var argsElement = callTaskElement.Element("Arguments");
@@ -1324,6 +1521,7 @@ public record ParsedCallArgument
 
 public record ParsedSelectDefinition
 {
+    public int LineNumber { get; init; }
     public int FieldId { get; init; }
     public int? SelectId { get; init; }
     public int? ColumnRef { get; init; }

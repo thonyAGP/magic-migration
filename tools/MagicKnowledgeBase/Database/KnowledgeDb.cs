@@ -899,6 +899,289 @@ public class KnowledgeDb : IDisposable
     }
 
     // =========================================================================
+    // V9 OPERATION DETAIL INSERTS
+    // =========================================================================
+
+    public void BulkInsertSelectDefinitions(IEnumerable<DbSelectDefinition> defs, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO select_definitions (task_id, logic_line_id, field_id, select_id, column_ref,
+                select_type, is_parameter, assignment_expr, diff_update, locate_min_expr, locate_max_expr,
+                part_of_dataview, real_var_name, control_index, form_index, tabbing_order, recompute_index)
+            VALUES (@task_id,
+                (SELECT id FROM logic_lines WHERE task_id = @task_id AND line_number = @line_number),
+                @field_id, @select_id, @column_ref, @select_type, @is_parameter, @assignment_expr,
+                @diff_update, @locate_min_expr, @locate_max_expr, @part_of_dataview, @real_var_name,
+                @control_index, @form_index, @tabbing_order, @recompute_index)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pLineNum = cmd.Parameters.Add("@line_number", SqliteType.Integer);
+        var pFieldId = cmd.Parameters.Add("@field_id", SqliteType.Integer);
+        var pSelectId = cmd.Parameters.Add("@select_id", SqliteType.Integer);
+        var pColumnRef = cmd.Parameters.Add("@column_ref", SqliteType.Integer);
+        var pSelectType = cmd.Parameters.Add("@select_type", SqliteType.Text);
+        var pIsParam = cmd.Parameters.Add("@is_parameter", SqliteType.Integer);
+        var pAssignment = cmd.Parameters.Add("@assignment_expr", SqliteType.Integer);
+        var pDiffUpdate = cmd.Parameters.Add("@diff_update", SqliteType.Text);
+        var pLocateMin = cmd.Parameters.Add("@locate_min_expr", SqliteType.Integer);
+        var pLocateMax = cmd.Parameters.Add("@locate_max_expr", SqliteType.Integer);
+        var pPartOfDv = cmd.Parameters.Add("@part_of_dataview", SqliteType.Integer);
+        var pRealVarName = cmd.Parameters.Add("@real_var_name", SqliteType.Text);
+        var pControlIdx = cmd.Parameters.Add("@control_index", SqliteType.Integer);
+        var pFormIdx = cmd.Parameters.Add("@form_index", SqliteType.Integer);
+        var pTabbingOrder = cmd.Parameters.Add("@tabbing_order", SqliteType.Integer);
+        var pRecomputeIdx = cmd.Parameters.Add("@recompute_index", SqliteType.Integer);
+
+        foreach (var d in defs)
+        {
+            pTaskId.Value = d.TaskId;
+            pLineNum.Value = d.LineNumber;
+            pFieldId.Value = d.FieldId;
+            pSelectId.Value = d.SelectId ?? (object)DBNull.Value;
+            pColumnRef.Value = d.ColumnRef ?? (object)DBNull.Value;
+            pSelectType.Value = d.SelectType ?? (object)DBNull.Value;
+            pIsParam.Value = d.IsParameter ? 1 : 0;
+            pAssignment.Value = d.AssignmentExpr ?? (object)DBNull.Value;
+            pDiffUpdate.Value = d.DiffUpdate ?? (object)DBNull.Value;
+            pLocateMin.Value = d.LocateMinExpr ?? (object)DBNull.Value;
+            pLocateMax.Value = d.LocateMaxExpr ?? (object)DBNull.Value;
+            pPartOfDv.Value = d.PartOfDataview ? 1 : 0;
+            pRealVarName.Value = d.RealVarName ?? (object)DBNull.Value;
+            pControlIdx.Value = d.ControlIndex ?? (object)DBNull.Value;
+            pFormIdx.Value = d.FormIndex ?? (object)DBNull.Value;
+            pTabbingOrder.Value = d.TabbingOrder ?? (object)DBNull.Value;
+            pRecomputeIdx.Value = d.RecomputeIndex ?? (object)DBNull.Value;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void BulkInsertUpdateOperations(IEnumerable<DbUpdateOperation> ops, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO update_operations (logic_line_id, field_id, with_value_expr,
+                forced_update, incremental, direction)
+            VALUES (
+                (SELECT id FROM logic_lines WHERE task_id = @task_id AND line_number = @line_number),
+                @field_id, @with_value_expr, @forced_update, @incremental, @direction)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pLineNum = cmd.Parameters.Add("@line_number", SqliteType.Integer);
+        var pFieldId = cmd.Parameters.Add("@field_id", SqliteType.Integer);
+        var pWithValue = cmd.Parameters.Add("@with_value_expr", SqliteType.Integer);
+        var pForcedUpdate = cmd.Parameters.Add("@forced_update", SqliteType.Integer);
+        var pIncremental = cmd.Parameters.Add("@incremental", SqliteType.Integer);
+        var pDirection = cmd.Parameters.Add("@direction", SqliteType.Text);
+
+        foreach (var o in ops)
+        {
+            pTaskId.Value = o.TaskId;
+            pLineNum.Value = o.LineNumber;
+            pFieldId.Value = o.FieldId;
+            pWithValue.Value = o.WithValueExpr ?? (object)DBNull.Value;
+            pForcedUpdate.Value = o.ForcedUpdate ? 1 : 0;
+            pIncremental.Value = o.Incremental ? 1 : 0;
+            pDirection.Value = o.Direction ?? (object)DBNull.Value;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void BulkInsertLinkOperations(IEnumerable<DbLinkOperation> ops, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO link_operations (logic_line_id, table_id, key_index, link_mode,
+                direction, sort_type, view_number, views, field_id, condition_expr, eval_condition, is_expanded)
+            VALUES (
+                (SELECT id FROM logic_lines WHERE task_id = @task_id AND line_number = @line_number),
+                @table_id, @key_index, @link_mode, @direction, @sort_type, @view_number, @views,
+                @field_id, @condition_expr, @eval_condition, @is_expanded)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pLineNum = cmd.Parameters.Add("@line_number", SqliteType.Integer);
+        var pTableId = cmd.Parameters.Add("@table_id", SqliteType.Integer);
+        var pKeyIndex = cmd.Parameters.Add("@key_index", SqliteType.Integer);
+        var pLinkMode = cmd.Parameters.Add("@link_mode", SqliteType.Text);
+        var pDirection = cmd.Parameters.Add("@direction", SqliteType.Text);
+        var pSortType = cmd.Parameters.Add("@sort_type", SqliteType.Text);
+        var pViewNum = cmd.Parameters.Add("@view_number", SqliteType.Integer);
+        var pViews = cmd.Parameters.Add("@views", SqliteType.Text);
+        var pFieldId = cmd.Parameters.Add("@field_id", SqliteType.Integer);
+        var pCondExpr = cmd.Parameters.Add("@condition_expr", SqliteType.Integer);
+        var pEvalCond = cmd.Parameters.Add("@eval_condition", SqliteType.Text);
+        var pExpanded = cmd.Parameters.Add("@is_expanded", SqliteType.Integer);
+
+        foreach (var o in ops)
+        {
+            pTaskId.Value = o.TaskId;
+            pLineNum.Value = o.LineNumber;
+            pTableId.Value = o.TableId;
+            pKeyIndex.Value = o.KeyIndex ?? (object)DBNull.Value;
+            pLinkMode.Value = o.LinkMode ?? (object)DBNull.Value;
+            pDirection.Value = o.Direction ?? (object)DBNull.Value;
+            pSortType.Value = o.SortType ?? (object)DBNull.Value;
+            pViewNum.Value = o.ViewNumber ?? (object)DBNull.Value;
+            pViews.Value = o.Views ?? (object)DBNull.Value;
+            pFieldId.Value = o.FieldId ?? (object)DBNull.Value;
+            pCondExpr.Value = o.ConditionExpr ?? (object)DBNull.Value;
+            pEvalCond.Value = o.EvalCondition ?? (object)DBNull.Value;
+            pExpanded.Value = o.IsExpanded ? 1 : 0;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void BulkInsertStopOperations(IEnumerable<DbStopOperation> ops, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO stop_operations (logic_line_id, mode, buttons, default_button,
+                title_text, message_text, message_expr, image, display_var, return_var, append_to_error_log)
+            VALUES (
+                (SELECT id FROM logic_lines WHERE task_id = @task_id AND line_number = @line_number),
+                @mode, @buttons, @default_button, @title_text, @message_text, @message_expr,
+                @image, @display_var, @return_var, @append_to_error_log)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pLineNum = cmd.Parameters.Add("@line_number", SqliteType.Integer);
+        var pMode = cmd.Parameters.Add("@mode", SqliteType.Text);
+        var pButtons = cmd.Parameters.Add("@buttons", SqliteType.Text);
+        var pDefaultBtn = cmd.Parameters.Add("@default_button", SqliteType.Integer);
+        var pTitleText = cmd.Parameters.Add("@title_text", SqliteType.Text);
+        var pMsgText = cmd.Parameters.Add("@message_text", SqliteType.Text);
+        var pMsgExpr = cmd.Parameters.Add("@message_expr", SqliteType.Integer);
+        var pImage = cmd.Parameters.Add("@image", SqliteType.Text);
+        var pDisplayVar = cmd.Parameters.Add("@display_var", SqliteType.Integer);
+        var pReturnVar = cmd.Parameters.Add("@return_var", SqliteType.Integer);
+        var pAppendLog = cmd.Parameters.Add("@append_to_error_log", SqliteType.Integer);
+
+        foreach (var o in ops)
+        {
+            pTaskId.Value = o.TaskId;
+            pLineNum.Value = o.LineNumber;
+            pMode.Value = o.Mode ?? (object)DBNull.Value;
+            pButtons.Value = o.Buttons ?? (object)DBNull.Value;
+            pDefaultBtn.Value = o.DefaultButton ?? (object)DBNull.Value;
+            pTitleText.Value = o.TitleText ?? (object)DBNull.Value;
+            pMsgText.Value = o.MessageText ?? (object)DBNull.Value;
+            pMsgExpr.Value = o.MessageExpr ?? (object)DBNull.Value;
+            pImage.Value = o.Image ?? (object)DBNull.Value;
+            pDisplayVar.Value = o.DisplayVar ?? (object)DBNull.Value;
+            pReturnVar.Value = o.ReturnVar ?? (object)DBNull.Value;
+            pAppendLog.Value = o.AppendToErrorLog ? 1 : 0;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void BulkInsertBlockOperations(IEnumerable<DbBlockOperation> ops, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO block_operations (logic_line_id, block_type, condition_expr, modifier)
+            VALUES (
+                (SELECT id FROM logic_lines WHERE task_id = @task_id AND line_number = @line_number),
+                @block_type, @condition_expr, @modifier)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pLineNum = cmd.Parameters.Add("@line_number", SqliteType.Integer);
+        var pBlockType = cmd.Parameters.Add("@block_type", SqliteType.Text);
+        var pCondExpr = cmd.Parameters.Add("@condition_expr", SqliteType.Integer);
+        var pModifier = cmd.Parameters.Add("@modifier", SqliteType.Text);
+
+        foreach (var o in ops)
+        {
+            pTaskId.Value = o.TaskId;
+            pLineNum.Value = o.LineNumber;
+            pBlockType.Value = o.BlockType ?? (object)DBNull.Value;
+            pCondExpr.Value = o.ConditionExpr ?? (object)DBNull.Value;
+            pModifier.Value = o.Modifier ?? (object)DBNull.Value;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void BulkInsertEvaluateOperations(IEnumerable<DbEvaluateOperation> ops, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO evaluate_operations (logic_line_id, expression_ref, condition_expr, direction, modifier)
+            VALUES (
+                (SELECT id FROM logic_lines WHERE task_id = @task_id AND line_number = @line_number),
+                @expression_ref, @condition_expr, @direction, @modifier)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pLineNum = cmd.Parameters.Add("@line_number", SqliteType.Integer);
+        var pExprRef = cmd.Parameters.Add("@expression_ref", SqliteType.Integer);
+        var pCondExpr = cmd.Parameters.Add("@condition_expr", SqliteType.Integer);
+        var pDirection = cmd.Parameters.Add("@direction", SqliteType.Text);
+        var pModifier = cmd.Parameters.Add("@modifier", SqliteType.Text);
+
+        foreach (var o in ops)
+        {
+            pTaskId.Value = o.TaskId;
+            pLineNum.Value = o.LineNumber;
+            pExprRef.Value = o.ExpressionRef ?? (object)DBNull.Value;
+            pCondExpr.Value = o.ConditionExpr ?? (object)DBNull.Value;
+            pDirection.Value = o.Direction ?? (object)DBNull.Value;
+            pModifier.Value = o.Modifier ?? (object)DBNull.Value;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    public void BulkInsertRaiseEventOperations(IEnumerable<DbRaiseEventOperation> ops, SqliteTransaction? tx = null)
+    {
+        const string sql = @"
+            INSERT OR IGNORE INTO raise_event_operations (logic_line_id, event_type, internal_event_id,
+                public_object_comp, public_object_obj, wait_mode, direction)
+            VALUES (
+                (SELECT id FROM logic_lines WHERE task_id = @task_id AND line_number = @line_number),
+                @event_type, @internal_event_id, @public_object_comp, @public_object_obj, @wait_mode, @direction)";
+
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        if (tx != null) cmd.Transaction = tx;
+
+        var pTaskId = cmd.Parameters.Add("@task_id", SqliteType.Integer);
+        var pLineNum = cmd.Parameters.Add("@line_number", SqliteType.Integer);
+        var pEventType = cmd.Parameters.Add("@event_type", SqliteType.Text);
+        var pInternalEventId = cmd.Parameters.Add("@internal_event_id", SqliteType.Integer);
+        var pPublicComp = cmd.Parameters.Add("@public_object_comp", SqliteType.Text);
+        var pPublicObj = cmd.Parameters.Add("@public_object_obj", SqliteType.Integer);
+        var pWaitMode = cmd.Parameters.Add("@wait_mode", SqliteType.Text);
+        var pDirection = cmd.Parameters.Add("@direction", SqliteType.Text);
+
+        foreach (var o in ops)
+        {
+            pTaskId.Value = o.TaskId;
+            pLineNum.Value = o.LineNumber;
+            pEventType.Value = o.EventType ?? (object)DBNull.Value;
+            pInternalEventId.Value = o.InternalEventId ?? (object)DBNull.Value;
+            pPublicComp.Value = o.PublicObjectComp ?? (object)DBNull.Value;
+            pPublicObj.Value = o.PublicObjectObj ?? (object)DBNull.Value;
+            pWaitMode.Value = o.WaitMode ?? (object)DBNull.Value;
+            pDirection.Value = o.Direction ?? (object)DBNull.Value;
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    // =========================================================================
     // FILE HASH OPERATIONS
     // =========================================================================
 

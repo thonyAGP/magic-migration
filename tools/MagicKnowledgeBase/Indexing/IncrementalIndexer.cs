@@ -293,6 +293,65 @@ public class IncrementalIndexer
                             ArgCount = c.ArgCount
                         }), tx);
                     }
+
+                    // V9: Insert operation details
+                    if (task.SelectDefinitions.Count > 0)
+                        _db.BulkInsertSelectDefinitions(task.SelectDefinitions.Select(s => new DbSelectDefinition
+                        {
+                            TaskId = taskId, LineNumber = s.LineNumber, FieldId = s.FieldId,
+                            SelectId = s.SelectId, ColumnRef = s.ColumnRef, SelectType = s.SelectType,
+                            IsParameter = s.IsParameter, AssignmentExpr = s.AssignmentExpr,
+                            DiffUpdate = s.DiffUpdate, LocateMinExpr = s.LocateMinExpr,
+                            LocateMaxExpr = s.LocateMaxExpr, PartOfDataview = s.PartOfDataview,
+                            RealVarName = s.RealVarName, ControlIndex = s.ControlIndex,
+                            FormIndex = s.FormIndex, TabbingOrder = s.TabbingOrder,
+                            RecomputeIndex = s.RecomputeIndex
+                        }), tx);
+                    if (task.UpdateOperations.Count > 0)
+                        _db.BulkInsertUpdateOperations(task.UpdateOperations.Select(u => new DbUpdateOperation
+                        {
+                            TaskId = taskId, LineNumber = u.LineNumber, FieldId = u.FieldId,
+                            WithValueExpr = u.WithValueExpr, ForcedUpdate = u.ForcedUpdate,
+                            Incremental = u.Incremental, Direction = u.Direction
+                        }), tx);
+                    if (task.LinkOperations.Count > 0)
+                        _db.BulkInsertLinkOperations(task.LinkOperations.Select(l => new DbLinkOperation
+                        {
+                            TaskId = taskId, LineNumber = l.LineNumber, TableId = l.TableId,
+                            KeyIndex = l.KeyIndex, LinkMode = l.LinkMode, Direction = l.Direction,
+                            SortType = l.SortType, ViewNumber = l.ViewNumber, Views = l.Views,
+                            FieldId = l.FieldId, ConditionExpr = l.ConditionExpr,
+                            EvalCondition = l.EvalCondition, IsExpanded = l.IsExpanded
+                        }), tx);
+                    if (task.StopOperations.Count > 0)
+                        _db.BulkInsertStopOperations(task.StopOperations.Select(s => new DbStopOperation
+                        {
+                            TaskId = taskId, LineNumber = s.LineNumber, Mode = s.Mode,
+                            Buttons = s.Buttons, DefaultButton = s.DefaultButton,
+                            TitleText = s.TitleText, MessageText = s.MessageText,
+                            MessageExpr = s.MessageExpr, Image = s.Image,
+                            DisplayVar = s.DisplayVar, ReturnVar = s.ReturnVar,
+                            AppendToErrorLog = s.AppendToErrorLog
+                        }), tx);
+                    if (task.BlockOperations.Count > 0)
+                        _db.BulkInsertBlockOperations(task.BlockOperations.Select(b => new DbBlockOperation
+                        {
+                            TaskId = taskId, LineNumber = b.LineNumber, BlockType = b.BlockType,
+                            ConditionExpr = b.ConditionExpr, Modifier = b.Modifier
+                        }), tx);
+                    if (task.EvaluateOperations.Count > 0)
+                        _db.BulkInsertEvaluateOperations(task.EvaluateOperations.Select(e => new DbEvaluateOperation
+                        {
+                            TaskId = taskId, LineNumber = e.LineNumber, ExpressionRef = e.ExpressionRef,
+                            ConditionExpr = e.ConditionExpr, Direction = e.Direction, Modifier = e.Modifier
+                        }), tx);
+                    if (task.RaiseEventOperations.Count > 0)
+                        _db.BulkInsertRaiseEventOperations(task.RaiseEventOperations.Select(r => new DbRaiseEventOperation
+                        {
+                            TaskId = taskId, LineNumber = r.LineNumber, EventType = r.EventType,
+                            InternalEventId = r.InternalEventId, PublicObjectComp = r.PublicObjectComp,
+                            PublicObjectObj = r.PublicObjectObj, WaitMode = r.WaitMode, Direction = r.Direction
+                        }), tx);
                 }
 
                 // Insert expressions
