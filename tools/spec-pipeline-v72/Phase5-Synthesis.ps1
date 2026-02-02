@@ -2217,6 +2217,82 @@ Add-Line "*Spec DETAILED generee par Pipeline V7.2 - $(Get-Date -Format 'yyyy-MM
 $detailedSpec = $L -join "`n"
 
 # ============================================================
+# POST-PROCESSING: Replace T{ISN2} with ide_path + [ECRAN] links
+# ============================================================
+if ($pathOf -and $pathOf.Count -gt 0) {
+    Write-Host "  Post-processing: T{ISN2} -> ide_path ($($pathOf.Count) mappings)..." -ForegroundColor DarkGray
+
+    # Build set of ISN2s that have visible forms (for ECRAN links)
+    # Use allForms with dimensions.width > 0 (matches [ECRAN] marker logic in spec generation)
+    $ecranIsn2Set = @{}
+    foreach ($f in $allForms) {
+        if ($f.dimensions.width -gt 0) {
+            $ecranIsn2Set["$($f.task_isn2)"] = $true
+        }
+    }
+
+    # Process largest ISN2 first to avoid T1 matching T10, T11, etc.
+    $sortedIsn2s = @($pathOf.Keys | Sort-Object { -[int]$_ })
+
+    foreach ($isn2 in $sortedIsn2s) {
+        $idePath = $pathOf[$isn2]
+
+        # 1. Heading display: </a>T{N} - Name  →  </a>{ide_path} - Name
+        $detailedSpec = $detailedSpec.Replace("</a>T$isn2 - ", "</a>$idePath - ")
+
+        # 2. Bold bullet list: - **T{N}** - Name  →  - **{ide_path}** - Name
+        $detailedSpec = $detailedSpec.Replace("- **T$isn2** - ", "- **$idePath** - ")
+
+        # 3. Full link: [T{N}](#t{N})  →  [{ide_path}](#t{N})  (anchor unchanged)
+        $detailedSpec = $detailedSpec.Replace("[T$isn2](#t$isn2)", "[$idePath](#t$isn2)")
+
+        # 4. Link with name (impact): [T{N} - Name  →  [{ide_path} - Name
+        $detailedSpec = $detailedSpec.Replace("[T$isn2 - ", "[$idePath - ")
+
+        # 5. Table cell: | T{N} |  →  | {ide_path} |
+        $detailedSpec = $detailedSpec.Replace("| T$isn2 |", "| $idePath |")
+
+        # 6. Parenthetical ref in hierarchy: (T{N})  →  ({ide_path})
+        $detailedSpec = $detailedSpec.Replace("(T$isn2)", "($idePath)")
+
+        # 7. Mermaid node label: VF{N}[T{N} Name]  →  VF{N}[{ide_path} Name]
+        $detailedSpec = $detailedSpec.Replace("VF$($isn2)[T$isn2 ", "VF$($isn2)[$idePath ")
+    }
+
+    # --- Linkify [ECRAN] markers ---
+
+    # A. Heading pattern: <a id="t{N}"></a>{path} - Name [ECRAN]
+    foreach ($isn2 in $sortedIsn2s) {
+        if (-not $ecranIsn2Set.ContainsKey($isn2)) { continue }
+        $escapedPath = [regex]::Escape($pathOf[$isn2])
+        $pattern = "(<a id=`"t$isn2`"></a>$escapedPath - [^\r\n]*?) \[ECRAN\]"
+        $replacement = "`$1 [[ECRAN]](#ecran-t$isn2)"
+        $detailedSpec = [regex]::Replace($detailedSpec, $pattern, $replacement)
+    }
+
+    # B. Table cell pattern: (#t{N}) | Name **[ECRAN]**
+    foreach ($isn2 in $sortedIsn2s) {
+        if (-not $ecranIsn2Set.ContainsKey($isn2)) { continue }
+        $pattern = "\(#t$isn2\) \| ([^\|]*?)\*\*\[ECRAN\]\*\*"
+        $replacement = "(#t$isn2) | `$1**[[ECRAN]](#ecran-t$isn2)**"
+        $detailedSpec = [regex]::Replace($detailedSpec, $pattern, $replacement)
+    }
+
+    # C. Bullet list pattern: - **{path}** - Name **[ECRAN]**
+    foreach ($isn2 in $sortedIsn2s) {
+        if (-not $ecranIsn2Set.ContainsKey($isn2)) { continue }
+        $escapedPath = [regex]::Escape($pathOf[$isn2])
+        $pattern = "(- \*\*$escapedPath\*\* - [^\r\n]*?)\*\*\[ECRAN\]\*\*"
+        $replacement = "`$1**[[ECRAN]](#ecran-t$isn2)**"
+        $detailedSpec = [regex]::Replace($detailedSpec, $pattern, $replacement)
+    }
+
+    Write-Host "  Post-processing complete: $($pathOf.Count) T{ISN2}->ide_path, $($ecranIsn2Set.Count) ECRAN links" -ForegroundColor DarkGray
+} else {
+    Write-Host "  Post-processing skipped (no pathOf data)" -ForegroundColor DarkYellow
+}
+
+# ============================================================
 # GENERATE SUMMARY SPEC
 # ============================================================
 Write-Host "[4/7] Generating SUMMARY spec..." -ForegroundColor Yellow
@@ -2442,6 +2518,22 @@ if ($genericMigration -eq 0) {
 } else {
     $auditResults += @{ check = "GAP7_MIGRATION"; status = "FAIL"; detail = "$genericMigration blocs migration generiques" }
     $auditFailed = $true
+}
+
+# AUDIT 16: No remaining T{ISN2} display text (should all be ide_path)
+$remainingTisn2 = ([regex]::Matches($specContent, '(?<!</a>|id="|#)T\d+(?= - | \|)')).Count
+if ($remainingTisn2 -eq 0) {
+    $auditResults += @{ check = "NR_IDE_PATH"; status = "PASS"; detail = "All T{ISN2} replaced with ide_path" }
+} else {
+    $auditResults += @{ check = "NR_IDE_PATH"; status = "WARN"; detail = "$remainingTisn2 remaining T{ISN2} patterns" }
+}
+
+# AUDIT 17: No raw [ECRAN] without links (should all be [[ECRAN]](#ecran-tN))
+$rawEcran = ([regex]::Matches($specContent, '\[ECRAN\](?!.*#ecran-t)')).Count
+if ($rawEcran -eq 0) {
+    $auditResults += @{ check = "NR_ECRAN_LINKS"; status = "PASS"; detail = "All [ECRAN] are linked to mockups" }
+} else {
+    $auditResults += @{ check = "NR_ECRAN_LINKS"; status = "WARN"; detail = "$rawEcran raw [ECRAN] without links" }
 }
 
 # Display audit results
