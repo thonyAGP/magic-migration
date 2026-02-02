@@ -1,6 +1,6 @@
 ﻿# ADH IDE 237 - Transaction Nouv vente avec GP
 
-> **Analyse**: Phases 1-4 2026-02-01 11:15 -> 11:15 (14s) | Assemblage 11:15
+> **Analyse**: Phases 1-4 2026-02-02 01:30 -> 01:31 (17s) | Assemblage 01:31
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -4496,18 +4496,35 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    START([START 16 params])
-    INIT[Initialisation]
-    PROCESS[Traitement principal 49 taches]
-    CALLS[Appels sous programmes 20 callees]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Reglement suite a erre...]
+    DECISION{W0 code article}
+    BR1[Traitement VSL]
+    BR2[Traitement VRL]
+    BR3[Traitement TRF]
+    BR4[Traitement PYR]
+    VALID[Validation]
+    UPDATE[MAJ 9 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|VSL| BR1 --> VALID
+    DECISION -->|VRL| BR2 --> VALID
+    DECISION -->|TRF| BR3 --> VALID
+    DECISION -->|PYR| BR4 --> VALID
+    VALID --> UPDATE --> ENDOK
+    DECISION -->|KO| ENDKO
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
+
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -5950,7 +5967,7 @@ graph LR
 | Tables WRITE | 9 | Fort impact donnees |
 | Sous-programmes | 20 | Forte dependance |
 | Ecrans visibles | 12 | Interface complexe multi-ecrans |
-| Code desactive | 0% (0 / 1818) | Code sain |
+| Code desactive | 0.5% (9 / 1818) | Code sain |
 | Regles metier | 17 | Logique metier riche |
 
 ### 14.2 Plan de migration par bloc
@@ -6030,4 +6047,4 @@ graph LR
 | [Zoom services village (IDE 269)](ADH-IDE-269.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-01 11:15*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-02 01:31*
