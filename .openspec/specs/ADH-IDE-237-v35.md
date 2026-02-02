@@ -253,14 +253,14 @@ flowchart TD
 | Task | # | Expression brute | Decode |
 |------|---|------------------|--------|
 | 1 | 1 | `{0,0}=''` | `P0 societe=''` |
-| 1 | 2 | `{0,1}` | `P0 devise locale` |
-| 1 | 3 | `{0,2}` | `P0 masque montant` |
-| 1 | 4 | `{0,3}` | `P0 solde compte` |
-| 1 | 5 | `{0,4}` | `P0 code GM` |
-| 1 | 6 | `{0,5}` | `P0 filiation` |
-| 1 | 7 | `{32768,38}` | `VG38` |
-| 1 | 8 | `{32768,60}` | `VG60` |
-| 1 | 9 | `{32768,63}` | `VG63` |
+| 1 | 2 | `A` | `P0 devise locale` |
+| 1 | 3 | `B` | `P0 masque montant` |
+| 1 | 4 | `C` | `P0 solde compte` |
+| 1 | 5 | `D` | `P0 code GM` |
+| 1 | 6 | `E` | `P0 filiation` |
+| 1 | 7 | `VG38` | `VG38` |
+| 1 | 8 | `VG60` | `VG60` |
+| 1 | 9 | `VG63` | `VG63` |
 | 2 | 1 | `{1,1}` | `Variable A` |
 | 2 | 2 | `{1,2}` | `Variable B` |
 | 2 | 3 | `{1,3}*{1,4}` | `Variable C * Variable D` |

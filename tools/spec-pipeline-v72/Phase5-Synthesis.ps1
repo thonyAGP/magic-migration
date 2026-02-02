@@ -1360,29 +1360,193 @@ foreach ($blocName in $blocMap.Keys) {
 }
 Add-Line
 
-# V7.3: Algorigramme metier - V3.5 template style (synthetic, not data-driven)
-$paramCount = @($variableRows | Where-Object { $_.Category -eq "P0" }).Count
-$calleeCount = 0
-if ($discovery.call_graph -and $discovery.call_graph.callees) {
-    $calleeCount = @($discovery.call_graph.callees).Count
-}
-
+# V7.4: Algorigramme metier - data-driven via algo-data KbIndexRunner
 Add-Line "### 9.4 Algorigramme"
 Add-Line
-Add-Line '```mermaid'
-Add-Line "flowchart TD"
-Add-Line "    START([START $paramCount params])"
-Add-Line "    INIT[Initialisation]"
-Add-Line "    PROCESS[Traitement principal $taskCount taches]"
-Add-Line "    CALLS[Appels sous programmes $calleeCount callees]"
-Add-Line "    ENDOK([END])"
-Add-Line
-Add-Line "    START --> INIT --> PROCESS --> CALLS --> ENDOK"
-Add-Line
-Add-Line "    style START fill:#3fb950"
-Add-Line "    style ENDOK fill:#f85149"
-Add-Line "    style PROCESS fill:#58a6ff"
-Add-Line '```'
+
+$algoData = $null
+$kbRunnerPath = Join-Path $ProjectRoot "tools\KbIndexRunner"
+if (Test-Path (Join-Path $kbRunnerPath "KbIndexRunner.csproj")) {
+    try {
+        Push-Location $kbRunnerPath
+        $algoOutput = & dotnet run --no-build -- "algo-data" "$Project $IdePosition" 2>&1
+        Pop-Location
+        $algoJsonLine = $algoOutput | Where-Object { $_ -match '^\{' } | Select-Object -First 1
+        if ($algoJsonLine) {
+            $algoData = $algoJsonLine | ConvertFrom-Json
+            # Save algo.json for Claude /algorigramme skill
+            $algoJsonPath = Join-Path $OutputPath "algo.json"
+            $algoJsonFormatted = $algoData | ConvertTo-Json -Depth 10
+            [System.IO.File]::WriteAllText($algoJsonPath, $algoJsonFormatted, [System.Text.UTF8Encoding]::new($false))
+            Write-Host "  algo.json saved" -ForegroundColor DarkGray
+        }
+    } catch {
+        Write-Host "  algo-data extraction failed: $_" -ForegroundColor DarkYellow
+        Pop-Location -ErrorAction SilentlyContinue
+    }
+}
+
+if ($algoData -and $algoData.tasks) {
+    # --- S2: Extract root tasks (level 1) with Form or Write ---
+    $rootTasks = @($algoData.tasks | Where-Object { $_.level -eq 1 })
+    $formTasks = @($rootTasks | Where-Object { $_.has_form -eq $true })
+    $writeTasks = @($rootTasks | Where-Object { $_.source_access -in @('W','C','D') -and $_.has_form -ne $true })
+    $significantTasks = @($rootTasks | Where-Object {
+        $_.has_form -eq $true -or $_.source_access -in @('W','C','D') -or $_.logic_lines -gt 20
+    })
+
+    # --- S3: Find most frequent variable in conditions ---
+    $varCounts = @{}
+    foreach ($cond in $algoData.conditions) {
+        if (-not $cond.decoded) { continue }
+        $condMatches = [regex]::Matches($cond.decoded, '[\w.°]+\s+\[([A-Z]{1,3})\]')
+        foreach ($cm in $condMatches) {
+            $letter = $cm.Groups[1].Value
+            if ($varCounts.ContainsKey($letter)) { $varCounts[$letter]++ }
+            else { $varCounts[$letter] = 1 }
+        }
+    }
+    $topVar = $null
+    $topVarCount = 0
+    foreach ($kv in $varCounts.GetEnumerator()) {
+        if ($kv.Value -gt $topVarCount) { $topVar = $kv.Key; $topVarCount = $kv.Value }
+    }
+
+    # --- S3: Detect multi-voies values for top variable ---
+    $multiValues = @()
+    if ($topVar) {
+        foreach ($cond in $algoData.conditions) {
+            if (-not $cond.decoded) { continue }
+            if ($cond.decoded -notmatch "\[$topVar\]") { continue }
+            $valMatches = [regex]::Matches($cond.decoded, "'([A-Z]{2,5})'")
+            foreach ($vm in $valMatches) {
+                $val = $vm.Groups[1].Value
+                if ($val -notin $multiValues) { $multiValues += $val }
+            }
+        }
+    }
+
+    # --- S5+S6: Generate Mermaid ---
+    Add-Line '```mermaid'
+    Add-Line "flowchart TD"
+    Add-Line "    START([START])"
+
+    # Init node
+    Add-Line "    INIT[Init controles]"
+
+    # Main saisie (if forms exist)
+    if ($formTasks.Count -gt 0) {
+        $mainForm = $formTasks[0]
+        $formLabel = Clean-MermaidLabel $mainForm.name
+        Add-Line "    SAISIE[$formLabel]"
+    } else {
+        Add-Line "    SAISIE[Traitement principal]"
+    }
+
+    # Decision node (top variable)
+    $hasDecision = $false
+    if ($topVar -and $topVarCount -ge 3) {
+        $hasDecision = $true
+        # Find the variable name from decoded conditions
+        $decisionLabel = "Variable $topVar"
+        foreach ($cond in $algoData.conditions) {
+            if ($cond.decoded -match '([\w][\w\s.°]{2,20})\s*\[' + [regex]::Escape($topVar) + '\]') {
+                $rawName = $Matches[1].Trim()
+                if ($rawName.Length -gt 3 -and $rawName -notmatch '^\d') {
+                    $decisionLabel = Clean-MermaidLabel $rawName
+                    break
+                }
+            }
+        }
+        Add-Line "    DECISION{$decisionLabel}"
+    }
+
+    # Multi-voies branches or processing node
+    if ($hasDecision -and $multiValues.Count -ge 2) {
+        $branchIds = @()
+        $maxBranches = [math]::Min($multiValues.Count, 4)
+        for ($bi = 0; $bi -lt $maxBranches; $bi++) {
+            $bVal = $multiValues[$bi]
+            $bId = "BR$($bi+1)"
+            $branchIds += $bId
+            Add-Line "    $bId[Traitement $bVal]"
+        }
+        Add-Line "    VALID[Validation]"
+    } elseif ($hasDecision) {
+        Add-Line "    PROCESS[Traitement]"
+    }
+
+    # Write/finalization
+    $writeCount = $algoData.tables_write.Count
+    if ($writeCount -gt 0) {
+        Add-Line "    UPDATE[MAJ $writeCount tables]"
+    }
+    Add-Line "    ENDOK([END OK])"
+    if ($hasDecision) {
+        Add-Line "    ENDKO([END KO])"
+    }
+
+    # --- Connections ---
+    Add-Line
+    if ($hasDecision -and $multiValues.Count -ge 2) {
+        Add-Line "    START --> INIT --> SAISIE --> DECISION"
+        $maxBranches = [math]::Min($multiValues.Count, 4)
+        for ($bi = 0; $bi -lt $maxBranches; $bi++) {
+            $bVal = $multiValues[$bi]
+            $bId = "BR$($bi+1)"
+            Add-Line "    DECISION -->|$bVal| $bId --> VALID"
+        }
+        if ($writeCount -gt 0) {
+            Add-Line "    VALID --> UPDATE --> ENDOK"
+        } else {
+            Add-Line "    VALID --> ENDOK"
+        }
+        Add-Line "    DECISION -->|KO| ENDKO"
+    } elseif ($hasDecision) {
+        Add-Line "    START --> INIT --> SAISIE --> DECISION"
+        Add-Line "    DECISION -->|OUI| PROCESS"
+        Add-Line "    DECISION -->|NON| ENDKO"
+        if ($writeCount -gt 0) {
+            Add-Line "    PROCESS --> UPDATE --> ENDOK"
+        } else {
+            Add-Line "    PROCESS --> ENDOK"
+        }
+    } else {
+        Add-Line "    START --> INIT --> SAISIE"
+        if ($writeCount -gt 0) {
+            Add-Line "    SAISIE --> UPDATE --> ENDOK"
+        } else {
+            Add-Line "    SAISIE --> ENDOK"
+        }
+    }
+
+    # --- Styles ---
+    Add-Line
+    Add-Line "    style START fill:#3fb950,color:#000"
+    Add-Line "    style ENDOK fill:#3fb950,color:#000"
+    if ($hasDecision) {
+        Add-Line "    style ENDKO fill:#f85149,color:#fff"
+        Add-Line "    style DECISION fill:#58a6ff,color:#000"
+    }
+    Add-Line '```'
+    Add-Line
+    Add-Line "> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions"
+    Add-Line "> *Algorigramme auto-genere. Utiliser ``/algorigramme`` pour une synthese metier detaillee.*"
+} else {
+    # Fallback: minimal placeholder if algo-data failed
+    $paramCount = @($variableRows | Where-Object { $_.Category -eq "P0" }).Count
+    Add-Line '```mermaid'
+    Add-Line "flowchart TD"
+    Add-Line "    START([START])"
+    Add-Line "    PROCESS[Traitement $taskCount taches]"
+    Add-Line "    ENDOK([END])"
+    Add-Line "    START --> PROCESS --> ENDOK"
+    Add-Line "    style START fill:#3fb950,color:#000"
+    Add-Line "    style ENDOK fill:#3fb950,color:#000"
+    Add-Line '```'
+    Add-Line
+    Add-Line "> *algo-data indisponible. Utiliser ``/algorigramme`` pour generer.*"
+}
 Add-Line
 
 # ================================================================

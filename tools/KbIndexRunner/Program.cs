@@ -1262,6 +1262,350 @@ if (args.Length > 1 && args[0] == "spec-data")
 }
 
 // =====================================================================
+// ALGORIGRAMME DATA: Extract structured data for business flow diagram
+// =====================================================================
+if (args.Length > 1 && args[0] == "algo-data")
+{
+    var algoDb = new KnowledgeDb();
+    if (!algoDb.IsInitialized())
+    {
+        Console.WriteLine("{\"error\": \"Knowledge Base not initialized\"}");
+        return 1;
+    }
+
+    var algoParts = args[1].Split(' ');
+    var algoProject = algoParts[0];
+    var algoIde = algoParts.Length > 1 ? int.Parse(algoParts[1]) : 1;
+
+    using var algoConn = new SqliteConnection($"Data Source={algoDb.DbPath}");
+    algoConn.Open();
+
+    // Get program DB ID and info
+    long algoProgId = 0;
+    string? algoProgName = null;
+    string? algoPublicName = null;
+    using (var cmd = algoConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT p.id, p.name, p.public_name FROM programs p
+            JOIN projects pr ON p.project_id = pr.id
+            WHERE pr.name = @project AND p.ide_position = @ide";
+        cmd.Parameters.AddWithValue("@project", algoProject);
+        cmd.Parameters.AddWithValue("@ide", algoIde);
+
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
+        {
+            Console.WriteLine($"{{\"error\": \"Program {algoProject} IDE {algoIde} not found\"}}");
+            return 1;
+        }
+        algoProgId = reader.GetInt64(0);
+        algoProgName = reader.GetString(1);
+        algoPublicName = reader.IsDBNull(2) ? null : reader.GetString(2);
+    }
+
+    // 1. TASK TREE: hierarchical task structure
+    var algoTasks = new List<object>();
+    using (var cmd = algoConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT t.isn2, t.description, t.level, t.parent_isn2, t.task_type,
+                   t.logic_line_count, t.main_source_table_id, t.main_source_access,
+                   COALESCE(ti.open_task_window, '') as has_form,
+                   COALESCE(ti.initial_mode, '') as initial_mode
+            FROM tasks t
+            LEFT JOIN task_information ti ON ti.task_id = t.id
+            WHERE t.program_id = @prog_id
+            ORDER BY t.isn2";
+        cmd.Parameters.AddWithValue("@prog_id", algoProgId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            algoTasks.Add(new {
+                isn2 = reader.GetInt32(0),
+                name = reader.GetString(1),
+                level = reader.GetInt32(2),
+                parent_isn2 = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3),
+                task_type = reader.GetString(4),
+                logic_lines = reader.GetInt32(5),
+                source_table = reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
+                source_access = reader.IsDBNull(7) ? "" : reader.GetString(7),
+                has_form = reader.GetString(8) == "Y",
+                initial_mode = reader.GetString(9)
+            });
+        }
+    }
+
+    // 2a. VARIABLE MAPPING: Load DataView columns for decoding {N,Y} references
+    // Map: field_id (from {0,Y}) -> { letter, name }
+    var varMapping = new Dictionary<int, (string letter, string name)>();
+    using (var cmd = algoConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT dc.line_number, dc.variable, dc.name
+            FROM dataview_columns dc
+            JOIN tasks t ON dc.task_id = t.id
+            WHERE t.program_id = @prog_id AND t.isn2 = 1
+            ORDER BY dc.line_number";
+        cmd.Parameters.AddWithValue("@prog_id", algoProgId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var lineNum = reader.GetInt32(0);
+            var varLetter = reader.IsDBNull(1) ? "" : reader.GetString(1);
+            var varName = reader.IsDBNull(2) ? "" : reader.GetString(2);
+            varMapping[lineNum] = (varLetter, varName);
+        }
+    }
+
+    // Helper: Decode {N,Y} references in an expression
+    static string AlgoDecodeExpression(string expr, Dictionary<int, (string letter, string name)> mapping)
+    {
+        if (string.IsNullOrWhiteSpace(expr)) return expr;
+
+        // Replace {0,Y} -> name [LETTER] or [LETTER]
+        var decoded = System.Text.RegularExpressions.Regex.Replace(expr, @"\{0,(\d+)\}", m =>
+        {
+            var fieldId = int.Parse(m.Groups[1].Value);
+            var letter = FieldToLetter(fieldId);
+
+            if (mapping.TryGetValue(fieldId, out var info) && !string.IsNullOrEmpty(info.name))
+            {
+                var name = info.name.Length > 25 ? info.name[..22] + "..." : info.name;
+                return $"{name} [{letter}]";
+            }
+            return $"[{letter}]";
+        });
+
+        // Replace {32768,Y} -> VGY
+        decoded = System.Text.RegularExpressions.Regex.Replace(decoded, @"\{32768,(\d+)\}", m =>
+        {
+            return $"VG{m.Groups[1].Value}";
+        });
+
+        // Replace other {N,Y} (parent refs) -> [Parent.LETTER]
+        decoded = System.Text.RegularExpressions.Regex.Replace(decoded, @"\{(\d+),(\d+)\}", m =>
+        {
+            var level = int.Parse(m.Groups[1].Value);
+            var fieldId = int.Parse(m.Groups[2].Value);
+            if (level > 0 && level < 32768)
+            {
+                var letter = FieldToLetter(fieldId);
+                return $"[P{level}.{letter}]";
+            }
+            return m.Value; // keep as-is
+        });
+
+        return decoded;
+    }
+
+    // 2b. CONDITIONS: IF/CASE expressions (business decisions) - WITH DECODE
+    var algoConditions = new List<object>();
+    using (var cmd = algoConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT e.ide_position, e.content, COALESCE(e.comment, ''),
+                   COALESCE(e.exp_type, '')
+            FROM expressions e
+            WHERE e.program_id = @prog_id
+              AND (e.content LIKE 'IF(%' OR e.content LIKE 'CASE(%'
+                   OR e.exp_type = 'L')
+            ORDER BY e.ide_position";
+        cmd.Parameters.AddWithValue("@prog_id", algoProgId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var rawContent = reader.GetString(1);
+            algoConditions.Add(new {
+                ide = reader.GetInt32(0),
+                content = rawContent,
+                decoded = AlgoDecodeExpression(rawContent, varMapping),
+                comment = reader.GetString(2),
+                exp_type = reader.GetString(3)
+            });
+        }
+    }
+
+    // 3. TABLES WRITE: tables with side-effects (INSERT/UPDATE/DELETE)
+    // Source 1: table_usage entries with W/I/D access
+    // Source 2: task main_source_table with source_access W/C/D (C=Create=Insert)
+    var algoTablesWrite = new List<object>();
+    using (var cmd = algoConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT DISTINCT table_id, name, physical, access FROM (
+                -- From table_usage
+                SELECT
+                    tu.table_id,
+                    COALESCE(tbl.logical_name, tu.table_name, 'Table_' || tu.table_id) as name,
+                    COALESCE(tbl.physical_name, '') as physical,
+                    tu.usage_type as access
+                FROM table_usage tu
+                JOIN tasks t ON tu.task_id = t.id
+                LEFT JOIN tables tbl ON tbl.xml_id = tu.table_id
+                WHERE t.program_id = @prog_id AND tu.usage_type IN ('W', 'I', 'D')
+
+                UNION
+
+                -- From task source tables with write/create access
+                SELECT
+                    t.main_source_table_id as table_id,
+                    COALESCE(tbl.logical_name, 'Table_' || t.main_source_table_id) as name,
+                    COALESCE(tbl.physical_name, '') as physical,
+                    t.main_source_access as access
+                FROM tasks t
+                LEFT JOIN tables tbl ON tbl.xml_id = t.main_source_table_id
+                WHERE t.program_id = @prog_id
+                  AND t.main_source_table_id IS NOT NULL
+                  AND t.main_source_access IN ('W', 'C', 'D')
+            )
+            ORDER BY table_id";
+        cmd.Parameters.AddWithValue("@prog_id", algoProgId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            algoTablesWrite.Add(new {
+                id = reader.GetInt32(0),
+                name = reader.GetString(1),
+                physical = reader.GetString(2),
+                access = reader.GetString(3)
+            });
+        }
+    }
+
+    // 4. CALLEES: sub-programs called
+    var algoCallees = new List<object>();
+    using (var cmd = algoConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT p.ide_position, p.name, COALESCE(p.public_name, '') as public_name, COUNT(*)
+            FROM program_calls pc
+            JOIN tasks t ON pc.caller_task_id = t.id
+            JOIN programs p ON pc.callee_program_id = p.id
+            WHERE t.program_id = @prog_id
+            GROUP BY p.ide_position, p.name, p.public_name
+            ORDER BY COUNT(*) DESC";
+        cmd.Parameters.AddWithValue("@prog_id", algoProgId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            algoCallees.Add(new {
+                ide = reader.GetInt32(0),
+                name = reader.GetString(1),
+                public_name = reader.GetString(2),
+                count = reader.GetInt32(3)
+            });
+        }
+    }
+
+    // 5. PARAMETERS: IN/OUT parameters
+    var algoParams = new List<object>();
+    using (var cmd = algoConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT DISTINCT dc.variable, dc.name, dc.data_type, dc.picture
+            FROM dataview_columns dc
+            JOIN tasks t ON dc.task_id = t.id
+            WHERE t.program_id = @prog_id
+              AND t.isn2 = 1
+              AND dc.source LIKE '%Parameter%'
+            ORDER BY dc.line_number
+            LIMIT 30";
+        cmd.Parameters.AddWithValue("@prog_id", algoProgId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            algoParams.Add(new {
+                variable = reader.GetString(0),
+                name = reader.GetString(1),
+                type = reader.GetString(2),
+                picture = reader.IsDBNull(3) ? "" : reader.GetString(3)
+            });
+        }
+    }
+
+    // 6. DOMAIN KEYWORDS: extract from task names and program name
+    var keywordSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    var stopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "task", "tache", "traitement", "gestion", "programme", "main",
+        "init", "raz", "test", "verif", "debut", "fin", "the", "and",
+        "avec", "pour", "dans", "par", "les", "des", "une", "sur"
+    };
+
+    // From program name
+    if (algoProgName != null)
+    {
+        foreach (var word in algoProgName.Split(new[] { ' ', '_', '-', '/' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (word.Length > 2 && !stopWords.Contains(word))
+                keywordSet.Add(word);
+        }
+    }
+    if (algoPublicName != null)
+    {
+        foreach (var word in algoPublicName.Split(new[] { ' ', '_', '-', '/' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (word.Length > 2 && !stopWords.Contains(word))
+                keywordSet.Add(word);
+        }
+    }
+
+    // From task descriptions (root tasks = level 1,2)
+    using (var cmd = algoConn.CreateCommand())
+    {
+        cmd.CommandText = @"
+            SELECT DISTINCT t.description
+            FROM tasks t
+            WHERE t.program_id = @prog_id AND t.level <= 2";
+        cmd.Parameters.AddWithValue("@prog_id", algoProgId);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var desc = reader.GetString(0);
+            foreach (var word in desc.Split(new[] { ' ', '_', '-', '/' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (word.Length > 2 && !stopWords.Contains(word))
+                    keywordSet.Add(word);
+            }
+        }
+    }
+
+    // Output as JSON
+    var algoData = new
+    {
+        program = algoProgName,
+        public_name = algoPublicName ?? "",
+        project = algoProject,
+        ide = algoIde,
+        tasks = algoTasks,
+        conditions = algoConditions,
+        tables_write = algoTablesWrite,
+        callees = algoCallees,
+        parameters = algoParams,
+        domain_keywords = keywordSet.OrderBy(k => k).ToArray(),
+        statistics = new {
+            task_count = algoTasks.Count,
+            condition_count = algoConditions.Count,
+            tables_write_count = algoTablesWrite.Count,
+            callee_count = algoCallees.Count,
+            parameter_count = algoParams.Count
+        }
+    };
+
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(algoData,
+        new System.Text.Json.JsonSerializerOptions { WriteIndented = false }));
+    return 0;
+}
+
+// =====================================================================
 // PHASE 2 SUPPORT: Structural table-to-column mapping
 // =====================================================================
 if (args.Length > 1 && args[0] == "table-columns")
@@ -1302,38 +1646,6 @@ if (args.Length > 1 && args[0] == "table-columns")
         tcProgName = reader.GetString(1);
     }
 
-    // Helper: convert field ID to letter (same as variables command)
-    static string TcFieldToLetter(int fieldId)
-    {
-        if (fieldId <= 0) return $"Field{fieldId}";
-        var sb = new System.Text.StringBuilder();
-        int n = fieldId;
-        while (n > 0)
-        {
-            n--;
-            sb.Insert(0, (char)('A' + (n % 26)));
-            n /= 26;
-        }
-        return sb.ToString();
-    }
-
-    // Helper: convert {type,id} variable ref to letter
-    static string TcVarToLetter(string variable)
-    {
-        if (!variable.StartsWith("{") || !variable.Contains(","))
-            return variable;
-
-        var inner = variable.Trim('{', '}').Split(',');
-        if (inner.Length < 2) return variable;
-
-        int.TryParse(inner[0], out int varType);
-        int.TryParse(inner[1], out int fieldId);
-
-        if (varType == 32768) return $"VG{fieldId}";
-        if (varType == 0) return TcFieldToLetter(fieldId);
-        return variable;
-    }
-
     // Query: Real columns (definition='R') grouped by main_source_table_id
     var tableColumnsDict = new Dictionary<string, List<object>>();
     var seenPerTable = new Dictionary<string, HashSet<string>>();
@@ -1365,7 +1677,7 @@ if (args.Length > 1 && args[0] == "table-columns")
             var colName = reader.GetString(2);
             var dataType = reader.GetString(3);
             var picture = reader.IsDBNull(4) ? "" : reader.GetString(4);
-            var letter = TcVarToLetter(variable);
+            var letter = VarToLetter(variable);
 
             if (!seenPerTable.ContainsKey(tableId))
                 seenPerTable[tableId] = new HashSet<string>();
@@ -1417,7 +1729,7 @@ if (args.Length > 1 && args[0] == "table-columns")
             var colName = reader.GetString(2);
             var dataType = reader.GetString(3);
             var def = reader.GetString(4);
-            var letter = TcVarToLetter(variable);
+            var letter = VarToLetter(variable);
 
             if (!seenAllPerTable.ContainsKey(tableId))
                 seenAllPerTable[tableId] = new HashSet<string>();
@@ -1495,22 +1807,6 @@ if (args.Length > 1 && args[0] == "variables")
         }
         dbProgramId = reader.GetInt64(0);
         programName = reader.GetString(1);
-    }
-
-    // Helper function to convert field ID to letter
-    static string FieldToLetter(int fieldId)
-    {
-        if (fieldId <= 0) return $"Field{fieldId}";
-
-        var letters = new System.Text.StringBuilder();
-        int n = fieldId;
-        while (n > 0)
-        {
-            n--;
-            letters.Insert(0, (char)('A' + (n % 26)));
-            n /= 26;
-        }
-        return letters.ToString();
     }
 
     // Extract all variables from DataView columns
@@ -1812,35 +2108,6 @@ if (args.Length > 1 && args[0] == "forms-json")
         };
     }
 
-    // Helper: convert field ID to letter
-    static string FjFieldToLetter(int fieldId)
-    {
-        if (fieldId <= 0) return $"Field{fieldId}";
-        var sb = new System.Text.StringBuilder();
-        int n = fieldId;
-        while (n > 0)
-        {
-            n--;
-            sb.Insert(0, (char)('A' + (n % 26)));
-            n /= 26;
-        }
-        return sb.ToString();
-    }
-
-    // Helper: convert {type,id} variable ref to letter
-    static string FjVarToLetter(string variable)
-    {
-        if (!variable.StartsWith("{") || !variable.Contains(","))
-            return variable;
-        var inner = variable.Trim('{', '}').Split(',');
-        if (inner.Length < 2) return variable;
-        int.TryParse(inner[0], out int varType);
-        int.TryParse(inner[1], out int fieldId);
-        if (varType == 32768) return $"VG{fieldId}";
-        if (varType == 0) return FjFieldToLetter(fieldId);
-        return variable;
-    }
-
     // Extract forms with ide_position + all form properties
     var forms = new List<object>();
     using (var cmd = conn.CreateCommand())
@@ -1935,7 +2202,7 @@ if (args.Length > 1 && args[0] == "forms-json")
             var definition = reader.GetString(5);
             var guiControl = reader.IsDBNull(6) ? "" : reader.GetString(6);
 
-            var letter = FjVarToLetter(variable);
+            var letter = VarToLetter(variable);
             var isReadonly = definition == "P" || definition == "R";
 
             if (!taskColumns.ContainsKey(taskIsn2))
@@ -2004,7 +2271,7 @@ if (args.Length > 1 && args[0] == "forms-json")
             var taskIsn2 = reader.GetInt32(0);
             var linkedFieldId = reader.IsDBNull(11) ? (int?)null : reader.GetInt32(11);
             var linkedVar = reader.IsDBNull(12) ? "" : reader.GetString(12);
-            var letter = !string.IsNullOrEmpty(linkedVar) ? FjVarToLetter(linkedVar) : "";
+            var letter = !string.IsNullOrEmpty(linkedVar) ? VarToLetter(linkedVar) : "";
 
             if (!formControls.ContainsKey(taskIsn2))
                 formControls[taskIsn2] = new List<object>();
@@ -2162,3 +2429,32 @@ Console.WriteLine();
 Console.WriteLine($"Database path: {db.DbPath}");
 
 return 0;
+
+// Shared helper: convert 1-based FieldId to IDE letter (A=1, Z=26, AA=27, AZ=52, BA=53)
+static string FieldToLetter(int fieldId)
+{
+    if (fieldId <= 0) return "?";
+    var result = "";
+    var n = fieldId;
+    while (n > 0)
+    {
+        n--;
+        result = (char)('A' + (n % 26)) + result;
+        n /= 26;
+    }
+    return result;
+}
+
+// Shared helper: convert {type,id} variable ref to IDE letter
+static string VarToLetter(string variable)
+{
+    if (!variable.StartsWith("{") || !variable.Contains(","))
+        return variable;
+    var inner = variable.Trim('{', '}').Split(',');
+    if (inner.Length < 2) return variable;
+    int.TryParse(inner[0], out int varType);
+    int.TryParse(inner[1], out int fieldId);
+    if (varType == 32768) return $"VG{fieldId}";
+    if (varType == 0) return FieldToLetter(fieldId);
+    return variable;
+}

@@ -134,24 +134,19 @@ function Convert-IndexToVariable {
         return "VG$($Index - 32768)"
     }
 
-    $letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-    if ($Index -lt 0) { return "?" }
-    if ($Index -lt 26) { return $letters[$Index] }
-
-    # AA-ZZ encoding
-    $prefix = ""
-    $remaining = $Index
-
-    while ($remaining -ge 26) {
-        $prefixIndex = [math]::Floor($remaining / 26) - 1
-        if ($prefixIndex -ge 0 -and $prefixIndex -lt 26) {
-            $prefix = $letters[$prefixIndex]
-        }
-        $remaining = $remaining % 26
+    # 1-based Field ID to IDE letter (A=1, Z=26, AA=27, AZ=52, BA=53)
+    # Same algorithm as Convert-FieldToLetter in Phase3-Decode.ps1
+    if ($Index -le 0) { return "?" }
+    $result = ""
+    [int]$n = $Index
+    while ($n -gt 0) {
+        $n--
+        [int]$remainder = $n % 26
+        [int]$charCode = $remainder + 65  # 65 = 'A'
+        $result = [char]$charCode + $result
+        $n = [int][math]::Floor($n / 26)
     }
-
-    return "$prefix$($letters[$remaining])"
+    return $result
 }
 
 function Get-ShortName {
@@ -730,6 +725,110 @@ function Invoke-Phase4Synthesis {
 
     Write-Step "Assembling final spec..."
 
+    # V7.4: Generate algorigramme section from algo-data
+    $algoSection = ""
+    try {
+        $algoKbPath = Join-Path $ProjectRoot "tools\KbIndexRunner"
+        Push-Location $algoKbPath
+        $algoRaw = & dotnet run --no-build -- "algo-data" "$project $ide" 2>&1
+        Pop-Location
+        $algoJsonLine = $algoRaw | Where-Object { $_ -match '^\{' } | Select-Object -First 1
+        if ($algoJsonLine) {
+            $algoObj = $algoJsonLine | ConvertFrom-Json
+            $aRootTasks = @($algoObj.tasks | Where-Object { $_.level -eq 1 })
+            $aFormTasks = @($aRootTasks | Where-Object { $_.has_form -eq $true })
+            # Find most frequent variable in conditions
+            $aVarCounts = @{}
+            foreach ($ac in $algoObj.conditions) {
+                if (-not $ac.decoded) { continue }
+                $acm = [regex]::Matches($ac.decoded, '[\w.]+\s+\[([A-Z]{1,3})\]')
+                foreach ($am in $acm) {
+                    $al = $am.Groups[1].Value
+                    if ($aVarCounts.ContainsKey($al)) { $aVarCounts[$al]++ } else { $aVarCounts[$al] = 1 }
+                }
+            }
+            $aTopVar = $null; $aTopCount = 0
+            foreach ($akv in $aVarCounts.GetEnumerator()) {
+                if ($akv.Value -gt $aTopCount) { $aTopVar = $akv.Key; $aTopCount = $akv.Value }
+            }
+            # Detect multi-voies
+            $aMV = @()
+            if ($aTopVar) {
+                foreach ($ac in $algoObj.conditions) {
+                    if (-not $ac.decoded -or $ac.decoded -notmatch "\[$aTopVar\]") { continue }
+                    $avm = [regex]::Matches($ac.decoded, "'([A-Z]{2,5})'")
+                    foreach ($av in $avm) { $avl = $av.Groups[1].Value; if ($avl -notin $aMV) { $aMV += $avl } }
+                }
+            }
+            $wCount = $algoObj.tables_write.Count
+            # Build Mermaid lines
+            $ml = @()
+            $ml += "flowchart TD"
+            $ml += "    START([START])"
+            $ml += "    INIT[Init controles]"
+            if ($aFormTasks.Count -gt 0) {
+                $fLabel = ($aFormTasks[0].name -replace "['""`<>{}()\[\]/\\?!&]", '').Trim()
+                if ($fLabel.Length -gt 25) { $fLabel = $fLabel.Substring(0, 22) + "..." }
+                $ml += "    SAISIE[$fLabel]"
+            } else { $ml += "    SAISIE[Traitement principal]" }
+            $hasD = $false
+            if ($aTopVar -and $aTopCount -ge 3) {
+                $hasD = $true
+                $dLabel = "Variable $aTopVar"
+                foreach ($ac in $algoObj.conditions) {
+                    if ($ac.decoded -match '([\w][\w\s.]{2,20})\s*\[' + [regex]::Escape($aTopVar) + '\]') {
+                        $rn = $Matches[1].Trim()
+                        if ($rn.Length -gt 3 -and $rn -notmatch '^\d') { $dLabel = ($rn -replace "['""`<>{}()\[\]/\\?!&]", '').Trim(); if ($dLabel.Length -gt 25) { $dLabel = $dLabel.Substring(0,22)+"..." }; break }
+                    }
+                }
+                $ml += "    DECISION{$dLabel}"
+            }
+            if ($hasD -and $aMV.Count -ge 2) {
+                $mxB = [math]::Min($aMV.Count, 4)
+                for ($bi=0; $bi -lt $mxB; $bi++) { $ml += "    BR$($bi+1)[Traitement $($aMV[$bi])]" }
+                $ml += "    VALID[Validation]"
+            } elseif ($hasD) { $ml += "    PROCESS[Traitement]" }
+            if ($wCount -gt 0) { $ml += "    UPDATE[MAJ $wCount tables]" }
+            $ml += "    ENDOK([END OK])"
+            if ($hasD) { $ml += "    ENDKO([END KO])" }
+            $ml += ""
+            if ($hasD -and $aMV.Count -ge 2) {
+                $ml += "    START --> INIT --> SAISIE --> DECISION"
+                $mxB = [math]::Min($aMV.Count, 4)
+                for ($bi=0; $bi -lt $mxB; $bi++) { $ml += "    DECISION -->|$($aMV[$bi])| BR$($bi+1) --> VALID" }
+                if ($wCount -gt 0) { $ml += "    VALID --> UPDATE --> ENDOK" } else { $ml += "    VALID --> ENDOK" }
+                $ml += "    DECISION -->|KO| ENDKO"
+            } elseif ($hasD) {
+                $ml += "    START --> INIT --> SAISIE --> DECISION"
+                $ml += "    DECISION -->|OUI| PROCESS"
+                $ml += "    DECISION -->|NON| ENDKO"
+                if ($wCount -gt 0) { $ml += "    PROCESS --> UPDATE --> ENDOK" } else { $ml += "    PROCESS --> ENDOK" }
+            } else {
+                $ml += "    START --> INIT --> SAISIE"
+                if ($wCount -gt 0) { $ml += "    SAISIE --> UPDATE --> ENDOK" } else { $ml += "    SAISIE --> ENDOK" }
+            }
+            $ml += ""
+            $ml += "    style START fill:#3fb950,color:#000"
+            $ml += "    style ENDOK fill:#3fb950,color:#000"
+            if ($hasD) { $ml += "    style ENDKO fill:#f85149,color:#fff"; $ml += "    style DECISION fill:#58a6ff,color:#000" }
+            $algoSection = $ml -join "`n"
+        }
+    } catch {
+        Write-Step "algo-data failed: $_"
+        Pop-Location -ErrorAction SilentlyContinue
+    }
+    if (-not $algoSection) {
+        $algoSection = @"
+flowchart TD
+    START([START])
+    PROCESS[Traitement $taskCount taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+"@
+    }
+
     # Generate spec content
     $spec = @"
 # $project IDE $ide - $programName
@@ -817,18 +916,7 @@ $($paramsSection -join "`n")
 ### 2.4 Algorigramme
 
 ``````mermaid
-flowchart TD
-    START([START - $paramCount params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>$taskCount taches"]
-    CALLS["Appels sous-programmes<br/>$calleeCount callees"]
-    ENDOK([END])
-
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
-
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+$algoSection
 ``````
 
 ### 2.5 Expressions cles (selection)

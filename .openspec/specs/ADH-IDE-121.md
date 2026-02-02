@@ -1,4 +1,4 @@
-﻿# ADH IDE 121 - Gestion caisse
+# ADH IDE 121 - Gestion caisse
 
 > **Analyse**: Phases 1-4 2026-01-29 20:09 -> 20:09 (13s) | Assemblage 20:09
 > **Pipeline**: V7.1 Deep Analysis
@@ -340,26 +340,26 @@ flowchart LR
 
 | Cat | Lettre | Nom Variable | Type | Usages | Ref |
 |-----|--------|--------------|------|--------|-----|
-| Autre | **N** | Param VIL open sessions | Alpha | 1x | `{0,14}` |
-| Autre | **J** | Param Uni/Bi | Alpha | - | `{0,10}` |
-| Autre | **H** | Param nom village | Alpha | - | `{0,8}` |
-| Autre | **I** | Param masque cumul | Alpha | - | `{0,9}` |
-| Autre | **E** | Param nbre decimale | Numeric | - | `{0,5}` |
-| Autre | **D** | Param devise locale | Alpha | - | `{0,4}` |
-| Autre | **G** | Param code village | Alpha | - | `{0,7}` |
-| Autre | **F** | Param masque montant | Alpha | - | `{0,6}` |
-| Autre | **P** | p.i.Hostl coffre2 | Unicode | - | `{0,16}` |
-| Autre | **Q** | i.Host courant coffre 2 ? | Logical | - | `{0,17}` |
-| Autre | **BB** | COFFRE 2 est ouvert | Logical | - | `{0,54}` |
-| Autre | **O** | Param FROM_IMS | Alpha | - | `{0,15}` |
-| Autre | **K** | Param Village TAI | Alpha | - | `{0,11}` |
-| Autre | **L** | Param Mode consultation | Logical | - | `{0,12}` |
-| Autre | **M** | p.i.Terminal coffre2 | Numeric | - | `{0,13}` |
-| Autre | **C** | Param societe | Alpha | - | `{0,3}` |
-| V. | **V** | V Time ouverture | Time | - | `{0,22}` |
-| V. | **W** | V Date Fin session | Date | - | `{0,23}` |
-| V. | **X** | V Last Chrono | Numeric | - | `{0,24}` |
-| V. | **U** | V Date ouverture | Date | - | `{0,21}` |
+| Autre | **N** | Param VIL open sessions | Alpha | 1x | `N` |
+| Autre | **J** | Param Uni/Bi | Alpha | - | `J` |
+| Autre | **H** | Param nom village | Alpha | - | `H` |
+| Autre | **I** | Param masque cumul | Alpha | - | `I` |
+| Autre | **E** | Param nbre decimale | Numeric | - | `E` |
+| Autre | **D** | Param devise locale | Alpha | - | `D` |
+| Autre | **G** | Param code village | Alpha | - | `G` |
+| Autre | **F** | Param masque montant | Alpha | - | `F` |
+| Autre | **P** | p.i.Hostl coffre2 | Unicode | - | `P` |
+| Autre | **Q** | i.Host courant coffre 2 ? | Logical | - | `Q` |
+| Autre | **BB** | COFFRE 2 est ouvert | Logical | - | `BB` |
+| Autre | **O** | Param FROM_IMS | Alpha | - | `O` |
+| Autre | **K** | Param Village TAI | Alpha | - | `K` |
+| Autre | **L** | Param Mode consultation | Logical | - | `L` |
+| Autre | **M** | p.i.Terminal coffre2 | Numeric | - | `M` |
+| Autre | **C** | Param societe | Alpha | - | `C` |
+| V. | **V** | V Time ouverture | Time | - | `V` |
+| V. | **W** | V Date Fin session | Date | - | `W` |
+| V. | **X** | V Last Chrono | Numeric | - | `X` |
+| V. | **U** | V Date ouverture | Date | - | `U` |
 
 ### 11.2 Toutes les variables (31)
 
@@ -368,37 +368,37 @@ flowchart LR
 
 | Cat | Lettre | Nom Variable | Type | Ref |
 |-----|--------|--------------|------|-----|
-| Autre | **A** | Param Libelle caisse | Alpha | `{0,1}` |
-| Autre | **B** | Param Etat caisse | Alpha | `{0,2}` |
-| Autre | **C** | Param societe | Alpha | `{0,3}` |
-| Autre | **D** | Param devise locale | Alpha | `{0,4}` |
-| Autre | **E** | Param nbre decimale | Numeric | `{0,5}` |
-| Autre | **F** | Param masque montant | Alpha | `{0,6}` |
-| Autre | **G** | Param code village | Alpha | `{0,7}` |
-| Autre | **H** | Param nom village | Alpha | `{0,8}` |
-| Autre | **I** | Param masque cumul | Alpha | `{0,9}` |
-| Autre | **J** | Param Uni/Bi | Alpha | `{0,10}` |
-| Autre | **K** | Param Village TAI | Alpha | `{0,11}` |
-| Autre | **L** | Param Mode consultation | Logical | `{0,12}` |
-| Autre | **M** | p.i.Terminal coffre2 | Numeric | `{0,13}` |
-| Autre | **N** | Param VIL open sessions | Alpha | `{0,14}` |
-| Autre | **O** | Param FROM_IMS | Alpha | `{0,15}` |
-| Autre | **P** | p.i.Hostl coffre2 | Unicode | `{0,16}` |
-| Autre | **Q** | i.Host courant coffre 2 ? | Logical | `{0,17}` |
-| Autre | **BB** | COFFRE 2 est ouvert | Logical | `{0,54}` |
-| V. | **R** | V Date comptable | Date | `{0,18}` |
-| V. | **S** | V session active | Logical | `{0,19}` |
-| V. | **T** | V User ouverture | Alpha | `{0,20}` |
-| V. | **U** | V Date ouverture | Date | `{0,21}` |
-| V. | **V** | V Time ouverture | Time | `{0,22}` |
-| V. | **W** | V Date Fin session | Date | `{0,23}` |
-| V. | **X** | V Last Chrono | Numeric | `{0,24}` |
-| V. | **Y** | V N° caisse reception mini | Numeric | `{0,25}` |
-| V. | **Z** | V N° caisse reception maxi | Numeric | `{0,26}` |
-| V. | **BA** | V Cloture en cours | Logical | `{0,53}` |
-| V. | **BC** | V avec coffre 2 | Alpha | `{0,55}` |
-| V. | **BD** | V cloture auto | Alpha | `{0,56}` |
-| V. | **BE** | v.fin | Logical | `{0,57}` |
+| Autre | **A** | Param Libelle caisse | Alpha | `A` |
+| Autre | **B** | Param Etat caisse | Alpha | `B` |
+| Autre | **C** | Param societe | Alpha | `C` |
+| Autre | **D** | Param devise locale | Alpha | `D` |
+| Autre | **E** | Param nbre decimale | Numeric | `E` |
+| Autre | **F** | Param masque montant | Alpha | `F` |
+| Autre | **G** | Param code village | Alpha | `G` |
+| Autre | **H** | Param nom village | Alpha | `H` |
+| Autre | **I** | Param masque cumul | Alpha | `I` |
+| Autre | **J** | Param Uni/Bi | Alpha | `J` |
+| Autre | **K** | Param Village TAI | Alpha | `K` |
+| Autre | **L** | Param Mode consultation | Logical | `L` |
+| Autre | **M** | p.i.Terminal coffre2 | Numeric | `M` |
+| Autre | **N** | Param VIL open sessions | Alpha | `N` |
+| Autre | **O** | Param FROM_IMS | Alpha | `O` |
+| Autre | **P** | p.i.Hostl coffre2 | Unicode | `P` |
+| Autre | **Q** | i.Host courant coffre 2 ? | Logical | `Q` |
+| Autre | **BB** | COFFRE 2 est ouvert | Logical | `BB` |
+| V. | **R** | V Date comptable | Date | `R` |
+| V. | **S** | V session active | Logical | `S` |
+| V. | **T** | V User ouverture | Alpha | `T` |
+| V. | **U** | V Date ouverture | Date | `U` |
+| V. | **V** | V Time ouverture | Time | `V` |
+| V. | **W** | V Date Fin session | Date | `W` |
+| V. | **X** | V Last Chrono | Numeric | `X` |
+| V. | **Y** | V N° caisse reception mini | Numeric | `Y` |
+| V. | **Z** | V N° caisse reception maxi | Numeric | `Z` |
+| V. | **BA** | V Cloture en cours | Logical | `BA` |
+| V. | **BC** | V avec coffre 2 | Alpha | `BC` |
+| V. | **BD** | V cloture auto | Alpha | `BD` |
+| V. | **BE** | v.fin | Logical | `BE` |
 
 </details>
 
