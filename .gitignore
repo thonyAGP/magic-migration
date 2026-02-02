@@ -27,6 +27,9 @@ nul
 # Temp directories
 migration/caisse/temp_out2/
 
+# Pipeline output (auto-generated, regenerable)
+tools/spec-pipeline-v72/output/
+
 # Knowledge Base (local SQLite)
 .openspec/tickets/patterns.sqlite
 
