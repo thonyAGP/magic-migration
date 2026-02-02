@@ -494,6 +494,47 @@ foreach ($e in $allExprs) {
 Write-Host "  $($visibleForms.Count) visible forms, $($blocMap.Count) blocks, $($businessRules.Count) rules"
 
 # ============================================================
+# PRESERVE ENRICHED SECTIONS (from existing spec if Claude-enriched)
+# ============================================================
+$preservedSection2 = $null
+$preservedSection94 = $null
+$existingSpecPath = Join-Path $SpecsOutputPath "$Project-IDE-$IdePosition.md"
+
+if (Test-Path $existingSpecPath) {
+    Write-Host "  Checking existing spec for enriched content..." -ForegroundColor DarkGray
+    $existingContent = [System.IO.File]::ReadAllText($existingSpecPath)
+
+    # Detect enriched section 2 (has ### subsections = business domain grouping by Claude)
+    $s2Start = $existingContent.IndexOf("## 2. DESCRIPTION FONCTIONNELLE")
+    $s2EndMarker = [regex]::Match($existingContent.Substring([Math]::Max($s2Start, 0)), '(\r?\n)## 3\.')
+    if ($s2Start -ge 0 -and $s2EndMarker.Success) {
+        $s2Body = $existingContent.Substring($s2Start, $s2EndMarker.Index)
+        if ($s2Body -match '(?m)^### ') {
+            $preservedSection2 = $s2Body
+            $s2LineCount = ($s2Body -split '\r?\n').Count
+            Write-Host "  [PRESERVE] Section 2: enriched content detected ($s2LineCount lines, business domains)" -ForegroundColor Cyan
+        } else {
+            Write-Host "  Section 2: basic content (no business domains)" -ForegroundColor DarkGray
+        }
+    }
+
+    # Detect enriched section 9.4 (has justification table = Claude S1-S6 algorigramme)
+    $s94Start = $existingContent.IndexOf("### 9.4 Algorigramme")
+    $s94EndMarker = $existingContent.IndexOf("<!-- TAB:Donnees -->", [Math]::Max($s94Start, 0))
+    if ($s94Start -ge 0 -and $s94EndMarker -gt $s94Start) {
+        $s94Body = $existingContent.Substring($s94Start, $s94EndMarker - $s94Start)
+        if ($s94Body -match 'Justification') {
+            $preservedSection94 = $s94Body
+            Write-Host "  [PRESERVE] Section 9.4: enriched algorigramme detected (with justification table)" -ForegroundColor Cyan
+        } else {
+            Write-Host "  Section 9.4: basic algorigramme" -ForegroundColor DarkGray
+        }
+    }
+} else {
+    Write-Host "  No existing spec (first run)" -ForegroundColor DarkGray
+}
+
+# ============================================================
 # GENERATE DETAILED SPEC - V7.2 (4 TABS)
 # ============================================================
 Write-Host "[3/7] Generating DETAILED spec (V7.2 - 4 tabs)..." -ForegroundColor Yellow
@@ -2293,6 +2334,42 @@ if ($pathOf -and $pathOf.Count -gt 0) {
 }
 
 # ============================================================
+# RE-INJECT PRESERVED ENRICHED SECTIONS
+# ============================================================
+if ($preservedSection2 -or $preservedSection94) {
+    Write-Host "  Re-injecting preserved enriched sections..." -ForegroundColor Cyan
+
+    if ($preservedSection2) {
+        $s2StartIdx = $detailedSpec.IndexOf("## 2. DESCRIPTION FONCTIONNELLE")
+        $s2EndIdx = $detailedSpec.IndexOf("`n## 3.", $s2StartIdx)
+        if ($s2StartIdx -ge 0 -and $s2EndIdx -gt $s2StartIdx) {
+            $before = $detailedSpec.Substring(0, $s2StartIdx)
+            $after = $detailedSpec.Substring($s2EndIdx)
+            # Normalize line endings to LF (detailedSpec uses LF from ArrayList join)
+            $normalizedS2 = $preservedSection2 -replace '\r\n', "`n"
+            $detailedSpec = $before + $normalizedS2 + $after
+            Write-Host "  [PRESERVE] Section 2 re-injected (enriched business domains)" -ForegroundColor Cyan
+        } else {
+            Write-Host "  [PRESERVE] Section 2: could not find insertion point" -ForegroundColor DarkYellow
+        }
+    }
+
+    if ($preservedSection94) {
+        $s94StartIdx = $detailedSpec.IndexOf("### 9.4 Algorigramme")
+        $s94EndIdx = $detailedSpec.IndexOf("`n<!-- TAB:Donnees -->", $s94StartIdx)
+        if ($s94StartIdx -ge 0 -and $s94EndIdx -gt $s94StartIdx) {
+            $before = $detailedSpec.Substring(0, $s94StartIdx)
+            $after = $detailedSpec.Substring($s94EndIdx)
+            $normalizedS94 = $preservedSection94 -replace '\r\n', "`n"
+            $detailedSpec = $before + $normalizedS94 + $after
+            Write-Host "  [PRESERVE] Section 9.4 re-injected (enriched algorigramme)" -ForegroundColor Cyan
+        } else {
+            Write-Host "  [PRESERVE] Section 9.4: could not find insertion point" -ForegroundColor DarkYellow
+        }
+    }
+}
+
+# ============================================================
 # GENERATE SUMMARY SPEC
 # ============================================================
 Write-Host "[4/7] Generating SUMMARY spec..." -ForegroundColor Yellow
@@ -2534,6 +2611,24 @@ if ($rawEcran -eq 0) {
     $auditResults += @{ check = "NR_ECRAN_LINKS"; status = "PASS"; detail = "All [ECRAN] are linked to mockups" }
 } else {
     $auditResults += @{ check = "NR_ECRAN_LINKS"; status = "WARN"; detail = "$rawEcran raw [ECRAN] without links" }
+}
+
+# AUDIT 18: Enriched sections preserved across pipeline re-run
+if ($preservedSection2 -or $preservedSection94) {
+    $preserved = @()
+    if ($preservedSection2) { $preserved += "section 2" }
+    if ($preservedSection94) { $preserved += "section 9.4" }
+    # Verify the preserved content is actually in the final spec
+    $s2InFinal = if ($preservedSection2) { $specContent.Contains("### ") -and $specContent -match '(?s)## 2\. DESCRIPTION FONCTIONNELLE.*?### ' } else { $true }
+    $s94InFinal = if ($preservedSection94) { $specContent.Contains("Justification") } else { $true }
+    if ($s2InFinal -and $s94InFinal) {
+        $auditResults += @{ check = "NR_ENRICHED_PRESERVED"; status = "PASS"; detail = "Preserved: $($preserved -join ', ')" }
+    } else {
+        $auditResults += @{ check = "NR_ENRICHED_PRESERVED"; status = "FAIL"; detail = "Preservation failed for: $($preserved -join ', ')" }
+        $auditFailed = $true
+    }
+} else {
+    $auditResults += @{ check = "NR_ENRICHED_PRESERVED"; status = "PASS"; detail = "No enriched sections to preserve (first run or basic)" }
 }
 
 # Display audit results
