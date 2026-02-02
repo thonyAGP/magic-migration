@@ -1,7 +1,7 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: 2026-01-29 20:09
-> **Pipeline**: V7.1 Deep Analysis
+> **Analyse**: 2026-02-02 10:27
+> **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
@@ -11,22 +11,12 @@
 - **Statut**: NON_ORPHELIN
 - **Raison**: Appele par 2 programme(s): Menu caisse GM - scroll (IDE 163), Fermeture Sessions (IDE 281)
 
-## MOTS-CLES RECHERCHE
-
-Gestion, caisse
-
-## CE PROGRAMME EST CONCERNE SI...
-
-- Bug sur les tables: concurrence_sessions, saisie_approvisionnement, histo_sessions_caisse, sessions_coffre2
-- Probleme dans le flux depuis: Menu caisse GM - scroll (IDE 163), Fermeture Sessions (IDE 281)
-- Erreur dans les appels vers: Calcul concurrence sessions (IDE 116), Mise à jour detail session WS (IDE 134), Ticket appro remise (IDE 139), Contrôles - Integrite dates (IDE 48), Ouverture caisse (IDE 122)
-
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | Menu caisse GM - scroll (IDE 163), Fermeture Sessions (IDE 281) |
-| **Appelle** | Calcul concurrence sessions (IDE 116), Mise à jour detail session WS (IDE 134), Ticket appro remise (IDE 139), Contrôles - Integrite dates (IDE 48), Ouverture caisse (IDE 122), Fermeture caisse (IDE 131), Controle fermeture caisse WS (IDE 155), Recuperation du titre (IDE 43), Affichage sessions (IDE 119), Apport coffre (IDE 123), Apport articles (IDE 124), Remise en caisse (IDE 125), Historique session (IDE 132), Init apport article session WS (IDE 140), Init devise session WS (IDE 141), Reimpression tickets fermeture (IDE 151), Verif session caisse ouverte2 (IDE 156), Raisons utilisation ADH (IDE 231) |
+| **Appele par** | [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Fermeture Sessions (IDE 281)](ADH-IDE-281.md) |
+| **Appelle** | [Calcul concurrence sessions (IDE 116)](ADH-IDE-116.md), [Mise à jour detail session WS (IDE 134)](ADH-IDE-134.md), [Ticket appro remise (IDE 139)](ADH-IDE-139.md), [Contrôles - Integrite dates (IDE 48)](ADH-IDE-48.md), [Ouverture caisse (IDE 122)](ADH-IDE-122.md), [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Controle fermeture caisse WS (IDE 155)](ADH-IDE-155.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Affichage sessions (IDE 119)](ADH-IDE-119.md), [Apport coffre (IDE 123)](ADH-IDE-123.md), [Apport articles (IDE 124)](ADH-IDE-124.md), [Remise en caisse (IDE 125)](ADH-IDE-125.md), [Historique session (IDE 132)](ADH-IDE-132.md), [Init apport article session WS (IDE 140)](ADH-IDE-140.md), [Init devise session WS (IDE 141)](ADH-IDE-141.md), [Reimpression tickets fermeture (IDE 151)](ADH-IDE-151.md), [Verif session caisse ouverte2 (IDE 156)](ADH-IDE-156.md), [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md) |
 
 ## STATISTIQUES
 
@@ -38,4 +28,4 @@ Gestion, caisse
 | Tables | 12 |
 
 ---
-*Spec SUMMARY generee par Pipeline V7.1*
+*Spec SUMMARY generee par Pipeline V7.2*
