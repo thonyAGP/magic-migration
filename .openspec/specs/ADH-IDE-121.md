@@ -1,6 +1,6 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: Phases 1-4 2026-02-02 10:27 -> 10:27 (14s) | Assemblage 10:27
+> **Analyse**: Phases 1-4 2026-02-02 11:18 -> 11:18 (14s) | Assemblage 03:16
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 121 |
 | Nom Programme | Gestion caisse |
 | Fichier source | `Prg_121.xml` |
-| Domaine metier | Caisse |
+| Dossier IDE | Caisse |
 | Taches | 32 (2 ecrans visibles) |
 | Tables modifiees | 4 |
 | Programmes appeles | 18 |
@@ -1193,6 +1193,7 @@ flowchart TD
 | REIMP | Tache 121.6.9 | Reimpression tickets via IDE 139 et IDE 151 |
 | ENDOK | Fin normale | Session fermee et validee |
 
+
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
@@ -1676,4 +1677,4 @@ graph LR
 | [Reimpression tickets fermeture (IDE 151)](ADH-IDE-151.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-02 10:27*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:16*

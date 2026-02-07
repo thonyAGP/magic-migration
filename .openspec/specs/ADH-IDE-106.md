@@ -1,198 +1,259 @@
 ﻿# ADH IDE 106 - Maj lignes saisies archive V3
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:04
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_102.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:14 -> 03:15 (31s) | Assemblage 03:15
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Maj lignes saisies archive V3 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (4 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 106 |
-| **Fichier XML** | `Prg_102.xml` |
-| **Description** | Maj lignes saisies archive V3 |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 71 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 106 |
+| Nom Programme | Maj lignes saisies archive V3 |
+| Fichier source | `Prg_106.xml` |
+| Dossier IDE | General |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
+| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 746 | projet | version | WRITE | Ecriture |
-| 866 | maj_appli_tpe | maj_appli_tpe | LINK | Jointure |
-| 870 | Rayons_Boutique | rayons_boutique | LINK | Jointure |
-| 871 | Activite | activite | LINK | Jointure |
+**Maj lignes saisies archive V3** assure la gestion complete de ce processus.
 
-**Resume**: 4 tables accedees dont **1 en ecriture**
+**Donnees modifiees** : 1 tables en ecriture (projet).
 
-### 2.3 Parametres d'entree (0 parametres)
+**Logique metier** : 1 regles identifiees couvrant conditions metier.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition toujours vraie (flag actif)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P.i.Flague [C]` |
+| **Si vrai** | 'TRUE'LOG |
+| **Si faux** | 'FALSE'LOG) |
+| **Variables** | C (P.i.Flague) |
+| **Expression source** | Expression 10 : `IF(P.i.Flague [C],'TRUE'LOG,'FALSE'LOG)` |
+| **Exemple** | Si P.i.Flague [C] â†’ 'TRUE'LOG. Sinon â†’ 'FALSE'LOG) |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 4 (W:1 R:0 L:3) | **Taches**: 1 | **Expressions**: 18
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 71 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 4 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (4)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 746 | projet |  | DB |   | **W** |   | 1 |
+| 866 | maj_appli_tpe |  | DB |   |   | L | 1 |
+| 870 | Rayons_Boutique |  | DB |   |   | L | 1 |
+| 871 | Activite |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 746 - projet (**W**) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.i.Societe | W | Unicode |
+| B | P.i.Compte | W | Numeric |
+| C | P.i.Flague | W | Logical |
+| D | P.i.No_Facture | W | Numeric |
+| E | P.i.NomFichPDF | W | Alpha |
+| F | P.i.SelectionManuelle | W | Logical |
+| G | P.i.Date Purge | W | Date |
+| H | V retour Compta | W | Logical |
+| I | v Retour Vente | W | Logical |
+| J | v Trouvé Compta | W | Logical |
+| K | v Trouvé Vente | W | Logical |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (7)
+
+Variables recues en parametre.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P.i.Societe | Unicode | 1x parametre entrant |
+| B | P.i.Compte | Numeric | 1x parametre entrant |
+| C | P.i.Flague | Logical | 1x parametre entrant |
+| D | P.i.No_Facture | Numeric | 1x parametre entrant |
+| E | P.i.NomFichPDF | Alpha | 1x parametre entrant |
+| F | P.i.SelectionManuelle | Logical | 1x parametre entrant |
+| G | P.i.Date Purge | Date | 1x parametre entrant |
+
+### 11.2 Variables de session (4)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| H | V retour Compta | Logical | - |
+| I | v Retour Vente | Logical | - |
+| J | v Trouvé Compta | Logical | - |
+| K | v Trouvé Vente | Logical | - |
+
+## 12. EXPRESSIONS
+
+**18 / 18 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CAST_LOGIQUE | 1 | 5 |
+| DATE | 2 | 0 |
+| CONDITION | 3 | 0 |
+| OTHER | 12 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CAST_LOGIQUE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 10 | `IF(P.i.Flague [C],'TRUE'LOG,'FALSE'LOG)` | [RM-001](#rm-RM-001) |
+
+#### DATE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 9 | `Date()` | - |
+| DATE | 4 | `Date()` | - |
+
+#### CONDITION (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 16 | `[P]=0 OR [AC]=0` | - |
+| CONDITION | 2 | `[AM]=0` | - |
+| CONDITION | 1 | `[AC]=0` | - |
+
+#### OTHER (12 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 14 | `[M]` | - |
+| OTHER | 13 | `[AH]` | - |
+| OTHER | 12 | `[AA]` | - |
+| OTHER | 18 | `P.i.Date Purge [G]` | - |
+| OTHER | 17 | `P.i.SelectionManuelle [F]` | - |
+| ... | | *+7 autres* | |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[106 Maj lignes sais]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T106[106 Maj lignes saisies...]
+    style T106 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T106
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[106 Maj lignes sais]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T106[106 Maj lignes saisies...]
+    style T106 fill:#58a6ff
+    NONE[Aucun callee]
+    T106 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 71 | Programme compact |
+| Expressions | 18 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 71) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 4 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| projet | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:04 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:15*

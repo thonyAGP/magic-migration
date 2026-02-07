@@ -1,198 +1,333 @@
 ﻿# ADH IDE 105 - Maj des lignes saisies V3
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:04
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_101.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:14 -> 03:15 (31s) | Assemblage 03:15
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Maj des lignes saisies V3 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (4 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 105 |
-| **Fichier XML** | `Prg_101.xml` |
-| **Description** | Maj des lignes saisies V3 |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 81 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 105 |
+| Nom Programme | Maj des lignes saisies V3 |
+| Fichier source | `Prg_105.xml` |
+| Dossier IDE | General |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
+| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 40 | comptable________cte | cafil018_dat | WRITE | Ecriture |
-| 263 | vente | caisse_vente | LINK | Jointure |
-| 866 | maj_appli_tpe | maj_appli_tpe | LINK | Jointure |
-| 870 | Rayons_Boutique | rayons_boutique | LINK | Jointure |
+**Maj des lignes saisies V3** assure la gestion complete de ce processus.
 
-**Resume**: 4 tables accedees dont **1 en ecriture**
+**Donnees modifiees** : 1 tables en ecriture (comptable________cte).
 
-### 2.3 Parametres d'entree (0 parametres)
+**Logique metier** : 2 regles identifiees couvrant conditions metier, valeurs par defaut.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+2 regles identifiees:
+
+### Autres (2 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Valeur par defaut si Trim(P.i.TypeReglement [G]) est vide
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim(P.i.TypeReglement [G])=''` |
+| **Si vrai** | 'TRUE'LOG |
+| **Si faux** | IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ])) |
+| **Variables** | G (P.i.TypeReglement) |
+| **Expression source** | Expression 17 : `IF(Trim(P.i.TypeReglement [G])='','TRUE'LOG,IF(Trim(P.i.Type` |
+| **Exemple** | Si Trim(P.i.TypeReglement [G])='' â†’ 'TRUE'LOG. Sinon â†’ IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ])) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Si Trim(P.i.TypeReglement [G])='I' alors [AC] sinon [AJ])
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim(P.i.TypeReglement [G])='I'` |
+| **Si vrai** | [AC] |
+| **Si faux** | [AJ]) |
+| **Variables** | G (P.i.TypeReglement) |
+| **Expression source** | Expression 18 : `IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ])` |
+| **Exemple** | Si Trim(P.i.TypeReglement [G])='I' â†’ [AC]. Sinon â†’ [AJ]) |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 4 (W:1 R:0 L:3) | **Taches**: 1 | **Expressions**: 23
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{P.i.TypeReglement}
+    PROCESS[Traitement]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 81 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 4 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (4)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 40 | comptable________cte |  | DB |   | **W** |   | 1 |
+| 263 | vente | Donnees de ventes | DB |   |   | L | 1 |
+| 866 | maj_appli_tpe |  | DB |   |   | L | 1 |
+| 870 | Rayons_Boutique |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (2 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 40 - comptable________cte (**W**) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.i.Societe | W | Unicode |
+| B | P.i.Compte | W | Numeric |
+| C | P.i.Flague | W | Logical |
+| D | P.i.NumFac | W | Numeric |
+| E | P.i.NomFacPDF | W | Alpha |
+| F | P.i.SelectionManulle | W | Logical |
+| G | P.i.TypeReglement | W | Unicode |
+| H | P.i.Facture ECO | W | Logical |
+| I | V retour Compta | W | Logical |
+| J | v Retour Vente | W | Logical |
+| K | v Trouvé Compta | W | Logical |
+| L | v Trouvé Vente | W | Logical |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (8)
+
+Variables recues en parametre.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P.i.Societe | Unicode | 1x parametre entrant |
+| B | P.i.Compte | Numeric | 1x parametre entrant |
+| C | P.i.Flague | Logical | - |
+| D | P.i.NumFac | Numeric | 1x parametre entrant |
+| E | P.i.NomFacPDF | Alpha | 1x parametre entrant |
+| F | P.i.SelectionManulle | Logical | 2x parametre entrant |
+| G | P.i.TypeReglement | Unicode | 5x parametre entrant |
+| H | P.i.Facture ECO | Logical | 2x parametre entrant |
+
+### 11.2 Variables de session (4)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| I | V retour Compta | Logical | - |
+| J | v Retour Vente | Logical | - |
+| K | v Trouvé Compta | Logical | - |
+| L | v Trouvé Vente | Logical | 1x session |
+
+## 12. EXPRESSIONS
+
+**23 / 23 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CAST_LOGIQUE | 2 | 5 |
+| CONDITION | 7 | 5 |
+| DATE | 2 | 0 |
+| OTHER | 12 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CAST_LOGIQUE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 17 | `IF(Trim(P.i.TypeReglement [G])='','TRUE'LOG,IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ]))` | [RM-001](#rm-RM-001) |
+| CAST_LOGIQUE | 20 | `'FALSE'LOG` | - |
+
+#### CONDITION (7 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 18 | `IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ])` | [RM-002](#rm-RM-002) |
+| CONDITION | 11 | `[AC] AND Trim(P.i.TypeReglement [G])<>'D'` | - |
+| CONDITION | 12 | `[AJ] AND Trim(P.i.TypeReglement [G])<>'I'` | - |
+| CONDITION | 21 | `CndRange(Trim(P.i.TypeReglement [G])='',P.i.SelectionManulle [F])` | - |
+| CONDITION | 1 | `[AE]=0 AND NOT P.i.Facture ECO [H]` | - |
+| ... | | *+2 autres* | |
+
+#### DATE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 9 | `Date()` | - |
+| DATE | 4 | `Date()` | - |
+
+#### OTHER (12 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 16 | `P.i.SelectionManulle [F]` | - |
+| OTHER | 14 | `[V]` | - |
+| OTHER | 13 | `[N]` | - |
+| OTHER | 23 | `[AO]` | - |
+| OTHER | 22 | `[AI]` | - |
+| ... | | *+7 autres* | |
+
+### 12.3 Toutes les expressions (23)
+
+<details>
+<summary>Voir les 23 expressions</summary>
+
+#### CAST_LOGIQUE (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 17 | `IF(Trim(P.i.TypeReglement [G])='','TRUE'LOG,IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ]))` |
+| 20 | `'FALSE'LOG` |
+
+#### CONDITION (7)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 18 | `IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ])` |
+| 1 | `[AE]=0 AND NOT P.i.Facture ECO [H]` |
+| 2 | `[AP]=0 AND NOT P.i.Facture ECO [H]` |
+| 15 | `[Q] = 0 OR [AE] = 0` |
+| 11 | `[AC] AND Trim(P.i.TypeReglement [G])<>'D'` |
+| 12 | `[AJ] AND Trim(P.i.TypeReglement [G])<>'I'` |
+| 21 | `CndRange(Trim(P.i.TypeReglement [G])='',P.i.SelectionManulle [F])` |
+
+#### DATE (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 4 | `Date()` |
+| 9 | `Date()` |
+
+#### OTHER (12)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 3 | `P.i.NumFac [D]` |
+| 5 | `Time()` |
+| 6 | `P.i.NomFacPDF [E]` |
+| 7 | `P.i.Societe [A]` |
+| 8 | `P.i.Compte [B]` |
+| 10 | `[N]` |
+| 13 | `[N]` |
+| 14 | `[V]` |
+| 16 | `P.i.SelectionManulle [F]` |
+| 19 | `v Trouvé Vente [L]` |
+| 22 | `[AI]` |
+| 23 | `[AO]` |
+
+</details>
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[105 Maj des lignes ]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T105[105 Maj des lignes sai...]
+    style T105 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T105
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[105 Maj des lignes ]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T105[105 Maj des lignes sai...]
+    style T105 fill:#58a6ff
+    NONE[Aucun callee]
+    T105 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 81 | Programme compact |
+| Expressions | 23 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 81) | Code sain |
+| Regles metier | 2 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 4 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| comptable________cte | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:04 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:15*

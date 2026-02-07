@@ -1,6 +1,6 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: 2026-02-02 11:18
+> **Analyse**: 2026-02-07 03:16
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

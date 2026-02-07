@@ -1,195 +1,252 @@
-﻿# ADH IDE 85 -     Determine Age Debut Sejour
+﻿# ADH IDE 85 - Determine Age Debut Sejour
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:03
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_81.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:12 -> 03:13 (31s) | Assemblage 03:13
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** |     Determine Age Debut Sejour |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (0 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 85 |
-| **Fichier XML** | `Prg_81.xml` |
-| **Description** |     Determine Age Debut Sejour |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 30 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 85 |
+| Nom Programme | Determine Age Debut Sejour |
+| Fichier source | `Prg_85.xml` |
+| Dossier IDE | General |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
+| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| - | Aucune table | - | - | - |
+**Determine Age Debut Sejour** assure la gestion complete de ce processus.
 
-**Resume**: 0 tables accedees dont **0 en ecriture**
+**Logique metier** : 3 regles identifiees couvrant conditions metier.
 
-### 2.3 Parametres d'entree (0 parametres)
+## 3. BLOCS FONCTIONNELS
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 5. REGLES METIER
 
-### 2.4 Algorigramme
+3 regles identifiees:
+
+### Autres (3 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Si P0-Date debut Sejour [B]='00/00/0000'DATE alors Date () sinon P0-Date debut Sejour [B])
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P0-Date debut Sejour [B]='00/00/0000'DATE` |
+| **Si vrai** | Date () |
+| **Si faux** | P0-Date debut Sejour [B]) |
+| **Variables** | B (P0-Date debut Sejour) |
+| **Expression source** | Expression 1 : `IF (P0-Date debut Sejour [B]='00/00/0000'DATE,Date (),P0-Dat` |
+| **Exemple** | Si P0-Date debut Sejour [B]='00/00/0000'DATE â†’ Date (). Sinon â†’ P0-Date debut Sejour [B]) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Si P0-Age [C]>100 alors ASCIIChr (200) sinon ASCIIChr (P0-Age [C]+100))
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P0-Age [C]>100` |
+| **Si vrai** | ASCIIChr (200) |
+| **Si faux** | ASCIIChr (P0-Age [C]+100)) |
+| **Variables** | C (P0-Age) |
+| **Expression source** | Expression 8 : `IF (P0-Age [C]>100,ASCIIChr (200),ASCIIChr (P0-Age [C]+100))` |
+| **Exemple** | Si P0-Age [C]>100 â†’ ASCIIChr (200). Sinon â†’ ASCIIChr (P0-Age [C]+100)) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Si Month (W0 Date debut sejour [F])<=Month (P0-Date de Naissance [A]) alors Month (W0 Date debut sejour [F])+12-Month (P0-Date de Naissance [A]) sinon Month (W0 Date debut sejour [F])-Month (P0-Date de Naissance [A]))
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Month (W0 Date debut sejour [F])<=Month (P0-Date de Naissance [A])` |
+| **Si vrai** | Month (W0 Date debut sejour [F])+12-Month (P0-Date de Naissance [A]) |
+| **Si faux** | Month (W0 Date debut sejour [F])-Month (P0-Date de Naissance [A])) |
+| **Variables** | F (W0 Date debut sejour), A (P0-Date de Naissance) |
+| **Expression source** | Expression 10 : `IF (Month (W0 Date debut sejour [F])<=Month (P0-Date de Nais` |
+| **Exemple** | Si Month (W0 Date debut sejour [F])<=Month (P0-Date de Naissance [A]) â†’ Month (W0 Date debut sejour [F])+12-Month (P0-Date de Naissance [A]) |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 19
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 30 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 0 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (0)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (0 / 0 tables avec colonnes identifiees)
+
+## 11. VARIABLES
+
+### 11.1 Variables de travail (2)
+
+Variables internes au programme.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| F | W0 Date debut sejour | Date | 5x calcul interne |
+| G | W0 Nb de Mois | Numeric | 4x calcul interne |
+
+### 11.2 Autres (5)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P0-Date de Naissance | Date | 7x refs |
+| B | P0-Date debut Sejour | Date | 1x refs |
+| C | P0-Age | Numeric | 4x refs |
+| D | P0-Age Codifie | Alpha | - |
+| E | P0-Nb mois | Numeric | - |
+
+## 12. EXPRESSIONS
+
+**19 / 19 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CALCULATION | 4 | 0 |
+| CONDITION | 11 | 3 |
+| CONSTANTE | 2 | 0 |
+| OTHER | 2 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CALCULATION (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CALCULATION | 12 | `W0 Nb de Mois [G]-1` | - |
+| CALCULATION | 15 | `ASCIIChr (80+W0 Nb de Mois [G])` | - |
+| CALCULATION | 3 | `Year (W0 Date debut sejour [F])-Year (P0-Date de Naissance [A])` | - |
+| CALCULATION | 5 | `P0-Age [C]-1` | - |
+
+#### CONDITION (11 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 10 | `IF (Month (W0 Date debut sejour [F])<=Month (P0-Date de Naissance [A]),Month (W0 Date debut sejour [F])+12-Month (P0-Date de Naissance [A]),Month (W0 Date debut sejour [F])-Month (P0-Date de Naissance [A]))` | [RM-003](#rm-RM-003) |
+| CONDITION | 8 | `IF (P0-Age [C]>100,ASCIIChr (200),ASCIIChr (P0-Age [C]+100))` | [RM-002](#rm-RM-002) |
+| CONDITION | 1 | `IF (P0-Date debut Sejour [B]='00/00/0000'DATE,Date (),P0-Date debut Sejour [B])` | [RM-001](#rm-RM-001) |
+| CONDITION | 11 | `Day (W0 Date debut sejour [F])<Day (P0-Date de Naissance [A])` | - |
+| CONDITION | 9 | `P0-Age [C]=0` | - |
+| ... | | *+6 autres* | |
+
+#### CONSTANTE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 17 | `0` | - |
+| CONSTANTE | 14 | `1` | - |
+
+#### OTHER (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 19 | `W0 Nb de Mois [G]` | - |
+| OTHER | 18 | `ASCIIChr (80)` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[85     Determine A]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T85[85 Determine Age Debut...]
+    style T85 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T85
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[85     Determine A]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T85[85 Determine Age Debut...]
+    style T85 fill:#58a6ff
+    NONE[Aucun callee]
+    T85 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 30 | Programme compact |
+| Expressions | 19 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 30) | Code sain |
+| Regles metier | 3 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 0 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:03 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:13*
