@@ -25,17 +25,53 @@ if (-not (Test-Path $OutputPath)) {
     New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
 }
 
-# V7.2: Main offsets per project (number of variables in Main Prg_1)
-# These offsets determine the starting letter for called programs
-# See OFFSET-SYSTEM.md for documentation
-# Values verified against IndexCache.cs in MagicMcp
-$MainOffsets = @{
-    "ADH" = 117   # First local var = EN
-    "VIL" = 52    # First local var = CA
-    "PVE" = 143   # First local var = FN
-    "REF" = 107   # First local var = EF
-    "PBP" = 88    # First local var = DK
-    "PBG" = 91    # First local var = DN
+# V7.2: Function to calculate main_offset dynamically
+# Counts columns in Main task (ISN_2=1) of first program (Prg_1.xml)
+# Returns columnCount - 1 because offset is the 0-based index, not the count
+# Example: ADH has 118 columns (indices 0-117), so offset = 117 -> first local var = EN
+function Get-MainOffset {
+    param([string]$ProjectName)
+
+    $projectsBasePath = "D:\Data\Migration\XPA\PMS"
+    $sourcePath = Join-Path (Join-Path $projectsBasePath $ProjectName) "Source"
+    $progsPath = Join-Path $sourcePath "Progs.xml"
+
+    if (-not (Test-Path $progsPath)) {
+        Write-Host "  Warning: Progs.xml not found for $ProjectName, using offset 0" -ForegroundColor Yellow
+        return 0
+    }
+
+    try {
+        # Get first program ID from Progs.xml
+        $progsContent = Get-Content $progsPath -Raw
+        if ($progsContent -match '<Program id="(\d+)"') {
+            $mainPrgId = $Matches[1]
+        } else {
+            return 0
+        }
+
+        $mainPrgPath = Join-Path $sourcePath "Prg_$mainPrgId.xml"
+        if (-not (Test-Path $mainPrgPath)) { return 0 }
+
+        # Clean and parse XML
+        $content = Get-Content $mainPrgPath -Raw -Encoding UTF8
+        $content = $content -replace '&#x[0-9A-Fa-f]+;', ''
+        $content = $content -replace '&#\d+;', ''
+        [xml]$doc = $content
+
+        # Find Main task (ISN_2=1) and count columns
+        $mainTask = $doc.SelectSingleNode("//Header[@ISN_2='1']/..")
+        if ($mainTask -and $mainTask.Resource -and $mainTask.Resource.Columns) {
+            $columnCount = $mainTask.Resource.Columns.Column.Count
+            # Offset = columnCount - 1 (0-based index of last column = start of local vars)
+            return [Math]::Max(0, $columnCount - 1)
+        }
+        return 0
+    }
+    catch {
+        Write-Host "  Warning: Failed to calculate offset for $ProjectName : $_" -ForegroundColor Yellow
+        return 0
+    }
 }
 
 Write-Host "=== Phase 1: DISCOVERY (V7.2) ===" -ForegroundColor Cyan
@@ -80,8 +116,8 @@ $discovery = @{
         program_name = $specData.program
         generated_at = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
         pipeline_version = "7.2"
-        # V7.2: Main offset for computing global variable letters
-        main_offset = if ($MainOffsets.ContainsKey($Project)) { $MainOffsets[$Project] } else { 0 }
+        # V7.2: Main offset for computing global variable letters (calculated dynamically)
+        main_offset = (Get-MainOffset -ProjectName $Project)
     }
 
     call_graph = @{

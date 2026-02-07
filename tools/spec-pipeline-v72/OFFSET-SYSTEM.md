@@ -35,16 +35,29 @@ Ou :
 - `Selects des ancetres` = variables dans chaque tache parente jusqu'a la cible
 - `Index_Local` = position de la variable dans la tache (0-based)
 
-## Main Offsets par Projet
+## Calcul Dynamique de l'Offset
 
-| Projet | Main_Offset | Premiere Lettre | Source |
-|--------|-------------|-----------------|--------|
-| ADH | 117 | EN | IndexCache.cs / Magic IDE |
-| VIL | 52 | CA | IndexCache.cs |
-| PVE | 143 | FN | IndexCache.cs |
-| REF | 107 | EF | IndexCache.cs |
-| PBP | 88 | DK | IndexCache.cs |
-| PBG | 91 | DN | IndexCache.cs |
+L'offset est calcule dynamiquement en comptant les colonnes du Main task (ISN_2=1)
+du premier programme (Prg_1.xml) de chaque projet.
+
+**Source des projets** : `D:\Data\Migration\XPA\PMS\{PROJECT}\Source\`
+
+**Algorithme** :
+1. Lire `Progs.xml` pour obtenir l'ID du premier programme
+2. Ouvrir `Prg_{ID}.xml`
+3. Trouver le task avec `ISN_2="1"` (Main task)
+4. Compter les elements `<Column>` dans `Resource/Columns`
+
+**Exemples de valeurs calculees** (a titre indicatif) :
+
+| Projet | Main_Offset | Premiere Lettre |
+|--------|-------------|-----------------|
+| ADH | 117 | EN |
+| VIL | 52 | CA |
+| PVE | 143 | FN |
+
+> **Note** : Ces valeurs sont calculees dynamiquement, pas hardcodees.
+> Il y a 38+ projets sous PMS, pas seulement ces exemples.
 
 ## Exemple Concret : ADH IDE 70
 
@@ -94,7 +107,7 @@ Calcule l'offset global pour une tache en parcourant la chaine d'ancetres.
 ```csharp
 public OffsetResult CalculateOffset(string project, int programId, int taskIsn2)
 {
-    result.Offset = GetMainOffset(project);  // Ex: 143 pour ADH
+    result.Offset = GetMainOffset(project);  // Calcule dynamiquement
 
     foreach (var ancestor in ancestorChain)
     {
@@ -105,19 +118,20 @@ public OffsetResult CalculateOffset(string project, int programId, int taskIsn2)
 }
 ```
 
-### 3. IndexCache.GetMainOffset() (C#)
+### 3. IndexCache.CalculateMainOffsetForProject() (C#)
 **Fichier** : `MagicMcp/Services/IndexCache.cs`
 
-Recupere le main_offset d'un projet (calcule ou hardcode).
+Calcule le main_offset dynamiquement en comptant les colonnes du Main task.
 
 ```csharp
-private static readonly Dictionary<string, int> HardcodedOffsets = new()
+private int CalculateMainOffsetForProject(string projectName)
 {
-    ["ADH"] = 143,
-    ["VIL"] = 131,
-    ["PVE"] = 174,
-    ["REF"] = 107
-};
+    // 1. Lire Progs.xml pour trouver le premier programme
+    // 2. Ouvrir Prg_{id}.xml
+    // 3. Trouver Header[@ISN_2='1'] (Main task)
+    // 4. Compter les Column dans Resource/Columns
+    return columns?.Elements("Column").Count() ?? 0;
+}
 ```
 
 ### 4. Convert-FieldToLetter (PowerShell)
@@ -144,17 +158,22 @@ function Convert-FieldToLetter {
 ## Integration Pipeline V7.2
 
 ### Phase 1 : Discovery
-Recuperer le `main_offset` du projet via KbIndexRunner CLI.
-
-### Phase 5 : Synthesis
-Appliquer l'offset aux lettres des variables :
+Calcule le `main_offset` dynamiquement via `Get-MainOffset` (PowerShell).
 
 ```powershell
-$mainOffset = $discovery.main_offset  # Ex: 143
-foreach ($var in $variables) {
-    $globalIndex = $mainOffset + $var.LocalIndex
-    $var.Letter = Convert-IndexToLetter $globalIndex
-}
+# Phase1-Discovery.ps1
+$mainOffset = Get-MainOffset -ProjectName $Project
+# Compte les colonnes du Main task dans Prg_1.xml
+```
+
+### Phase 2 : Mapping
+Applique l'offset aux lettres des variables :
+
+```powershell
+# Phase2-Mapping.ps1
+$mainOffset = $discovery.metadata.main_offset
+$globalIndex = $mainOffset + ($localFieldId - 1)
+$globalLetter = Convert-IndexToLetter -Index $globalIndex
 ```
 
 ## Scripts de Debug
