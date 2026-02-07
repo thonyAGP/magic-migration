@@ -62,12 +62,42 @@ if (-not $discovery) {
 $programName = $discovery.metadata.program_name.Trim()
 $startTime = Get-Date
 
-# Pipeline timing from phase file modification dates
-$phaseFiles = @($discoveryPath, $mappingPath, $decodedPath, $uiFormsPath) | Where-Object { Test-Path $_ }
-$phaseTimestamps = @($phaseFiles | ForEach-Object { (Get-Item $_).LastWriteTime })
-$pipelineFirstPhase = if ($phaseTimestamps.Count -gt 0) { ($phaseTimestamps | Measure-Object -Minimum).Minimum } else { $startTime }
-$pipelineLastPhase = if ($phaseTimestamps.Count -gt 0) { ($phaseTimestamps | Measure-Object -Maximum).Maximum } else { $startTime }
+# V7.3 FIX: Use stored analysis timestamps from discovery.json if available
+# Otherwise fall back to file modification dates
+$pipelineFirstPhase = $startTime
+$pipelineLastPhase = $startTime
+$pipelineDurationStr = "0s"
+
+if ($discovery.metadata.analysis_start_time) {
+    try {
+        $pipelineFirstPhase = [DateTime]::Parse($discovery.metadata.analysis_start_time)
+        $pipelineLastPhase = if ($discovery.metadata.analysis_end_time) {
+            [DateTime]::Parse($discovery.metadata.analysis_end_time)
+        } else { $startTime }
+    } catch {
+        # Fallback to file dates
+        $phaseFiles = @($discoveryPath, $mappingPath, $decodedPath, $uiFormsPath) | Where-Object { Test-Path $_ }
+        $phaseTimestamps = @($phaseFiles | ForEach-Object { (Get-Item $_).LastWriteTime })
+        if ($phaseTimestamps.Count -gt 0) {
+            $pipelineFirstPhase = ($phaseTimestamps | Measure-Object -Minimum).Minimum
+            $pipelineLastPhase = ($phaseTimestamps | Measure-Object -Maximum).Maximum
+        }
+    }
+} else {
+    # Fallback to file modification dates
+    $phaseFiles = @($discoveryPath, $mappingPath, $decodedPath, $uiFormsPath) | Where-Object { Test-Path $_ }
+    $phaseTimestamps = @($phaseFiles | ForEach-Object { (Get-Item $_).LastWriteTime })
+    if ($phaseTimestamps.Count -gt 0) {
+        $pipelineFirstPhase = ($phaseTimestamps | Measure-Object -Minimum).Minimum
+        $pipelineLastPhase = ($phaseTimestamps | Measure-Object -Maximum).Maximum
+    }
+}
+
 $pipelineDuration = $pipelineLastPhase - $pipelineFirstPhase
+# Ensure minimum 1 second if same timestamp (V7.3 fix)
+if ($pipelineDuration.TotalSeconds -lt 1) {
+    $pipelineDuration = [TimeSpan]::FromSeconds(1)
+}
 $pipelineDurationStr = if ($pipelineDuration.TotalHours -ge 1) {
     "$([math]::Floor($pipelineDuration.TotalHours))h$($pipelineDuration.Minutes.ToString('00'))min"
 } elseif ($pipelineDuration.TotalMinutes -ge 1) {
@@ -575,6 +605,52 @@ if ($mapping -and $mapping.variable_mapping) {
 $businessRules = @()
 if ($decoded -and $decoded.business_rules -and $decoded.business_rules.all) {
     $businessRules = @($decoded.business_rules.all)
+}
+
+# V7.3 FIX: If no business rules but we have CONDITION expressions, use them as fallback rules
+if ($businessRules.Count -eq 0 -and $decoded -and $decoded.expressions -and $decoded.expressions.by_type) {
+    $condExprs = @()
+    if ($decoded.expressions.by_type.CONDITION) {
+        $condExprs = @($decoded.expressions.by_type.CONDITION)
+    }
+    # Also check OTHER expressions that might be conditions (GetParam comparisons, etc.)
+    if ($decoded.expressions.by_type.OTHER) {
+        foreach ($expr in $decoded.expressions.by_type.OTHER) {
+            $d = if ($expr.decoded) { $expr.decoded } else { $expr.raw }
+            if ($d -match 'GetParam.*=|IsComponent|AND\s|OR\s|NOT\s|[<>=]\s*\d+') {
+                $condExprs += $expr
+            }
+        }
+    }
+
+    $ruleIdx = 1
+    foreach ($cExpr in $condExprs) {
+        $dText = if ($cExpr.decoded) { $cExpr.decoded } else { $cExpr.raw }
+        # Generate natural language for condition
+        $nlText = $dText
+        if ($dText -match "GetParam\s*\('([^']+)'\)\s*(=|<>|>=|<=|>|<)\s*(\d+)") {
+            $paramName = $Matches[1]; $op = $Matches[2]; $val = $Matches[3]
+            $opText = switch ($op) { "=" { "egale" } "<>" { "different de" } default { $op } }
+            $nlText = "Condition: parametre $paramName $opText $val"
+        } elseif ($dText -match '\sAND\s|\sOR\s') {
+            $nlText = "Condition composite: $dText"
+        }
+
+        $businessRules += @{
+            id = "RM-{0:D3}" -f $ruleIdx
+            type = "CONDITION"
+            condition = $dText
+            true_value = "Action conditionnelle"
+            false_value = ""
+            natural_language = $nlText
+            expression_ide = $cExpr.ide_position
+            decoded_expression = $dText
+        }
+        $ruleIdx++
+    }
+    if ($businessRules.Count -gt 0) {
+        Write-Host "  V7.3: Extracted $($businessRules.Count) rules from CONDITION expressions (fallback)" -ForegroundColor DarkYellow
+    }
 }
 
 # Expression by type
@@ -1727,6 +1803,49 @@ if ($algoData -and $algoData.tasks) {
         }
     }
 
+    # V7.3 FIX: When algo-data has no conditions but Phase 3 found conditions, use those
+    if ($algoData.conditions.Count -eq 0 -and $decoded -and $decoded.expressions -and $decoded.expressions.by_type) {
+        $decodedConditions = @()
+        if ($decoded.expressions.by_type.CONDITION) {
+            $decodedConditions += @($decoded.expressions.by_type.CONDITION)
+        }
+        # Also check NEGATION type (NOT expressions)
+        if ($decoded.expressions.by_type.NEGATION) {
+            $decodedConditions += @($decoded.expressions.by_type.NEGATION)
+        }
+        if ($decodedConditions.Count -gt 0) {
+            # Extract variable counts from decoded conditions
+            foreach ($cond in $decodedConditions) {
+                $condText = if ($cond.decoded) { $cond.decoded } else { $cond.raw }
+                $condMatches = [regex]::Matches($condText, '[\w.°]+\s+\[([A-Z]{1,3})\]')
+                foreach ($cm in $condMatches) {
+                    $letter = $cm.Groups[1].Value
+                    if ($varCounts.ContainsKey($letter)) { $varCounts[$letter]++ }
+                    else { $varCounts[$letter] = 1 }
+                }
+            }
+            # Recalculate top variable
+            foreach ($kv in $varCounts.GetEnumerator()) {
+                if ($kv.Value -gt $topVarCount) { $topVar = $kv.Key; $topVarCount = $kv.Value }
+            }
+            # Lower threshold for Phase 3 conditions (they're already filtered)
+            if ($topVar -and $topVarCount -ge 1) {
+                # Find variable name from decoded conditions
+                foreach ($cond in $decodedConditions) {
+                    $condText = if ($cond.decoded) { $cond.decoded } else { $cond.raw }
+                    if ($condText -match '([\w][\w\s.°-]{2,20})\s*\[' + [regex]::Escape($topVar) + '\]') {
+                        $rawName = $Matches[1].Trim()
+                        if ($rawName.Length -gt 2 -and $rawName -notmatch '^\d') {
+                            # Store for later use in decision label
+                            $Script:decodedConditionLabel = Clean-MermaidLabel $rawName
+                            break
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     # --- S5+S6: Generate Mermaid ---
     Add-Line '```mermaid'
     Add-Line "flowchart TD"
@@ -1745,17 +1864,26 @@ if ($algoData -and $algoData.tasks) {
     }
 
     # Decision node (top variable)
+    # V7.3 FIX: Lower threshold to 1 when using decoded conditions (from Phase 3)
     $hasDecision = $false
-    if ($topVar -and $topVarCount -ge 3) {
+    $useDecodedConditions = ($algoData.conditions.Count -eq 0 -and $Script:decodedConditionLabel)
+    $minThreshold = if ($useDecodedConditions) { 1 } else { 3 }
+
+    if ($topVar -and $topVarCount -ge $minThreshold) {
         $hasDecision = $true
-        # Find the variable name from decoded conditions
+        # Find the variable name from decoded conditions or algo-data
         $decisionLabel = "Variable $topVar"
-        foreach ($cond in $algoData.conditions) {
-            if ($cond.decoded -match '([\w][\w\s.°]{2,20})\s*\[' + [regex]::Escape($topVar) + '\]') {
-                $rawName = $Matches[1].Trim()
-                if ($rawName.Length -gt 3 -and $rawName -notmatch '^\d') {
-                    $decisionLabel = Clean-MermaidLabel $rawName
-                    break
+
+        if ($Script:decodedConditionLabel) {
+            $decisionLabel = $Script:decodedConditionLabel
+        } else {
+            foreach ($cond in $algoData.conditions) {
+                if ($cond.decoded -match '([\w][\w\s.°]{2,20})\s*\[' + [regex]::Escape($topVar) + '\]') {
+                    $rawName = $Matches[1].Trim()
+                    if ($rawName.Length -gt 3 -and $rawName -notmatch '^\d') {
+                        $decisionLabel = Clean-MermaidLabel $rawName
+                        break
+                    }
                 }
             }
         }
@@ -1834,20 +1962,68 @@ if ($algoData -and $algoData.tasks) {
     Add-Line "> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions"
     Add-Line "> *Algorigramme auto-genere. Utiliser ``/algorigramme`` pour une synthese metier detaillee.*"
 } else {
-    # V7.3 Enhanced fallback: use available bloc/table data when algo-data fails
+    # V7.3 Enhanced fallback: use available bloc/table data AND condition expressions when algo-data fails
     $paramCount = @($variableRows | Where-Object { $_.Category -eq "P0" }).Count
     # Calculate write tables from tableUnified (usedTables not yet defined at this point)
     $writeTableCount = @($tableUnified.Values | Where-Object { $_.W }).Count
     $blocNames = @($blocMap.Keys | Where-Object { $blocMap[$_].Count -gt 0 })
 
+    # V7.3 FIX: Extract decision conditions from CONDITION expressions
+    $conditionExprs = @()
+    if ($decoded -and $decoded.expressions -and $decoded.expressions.by_type -and $decoded.expressions.by_type.CONDITION) {
+        $conditionExprs = @($decoded.expressions.by_type.CONDITION)
+    }
+    # Also check business rules for conditions
+    $hasConditions = ($conditionExprs.Count -gt 0) -or ($businessRules.Count -gt 0)
+
+    # Find main decision variable from conditions
+    $mainDecisionLabel = ""
+    $decisionValues = @()
+    if ($hasConditions) {
+        # Analyze conditions to find main variable
+        $varCounts = @{}
+        foreach ($cond in $conditionExprs) {
+            $condText = if ($cond.decoded) { $cond.decoded } else { $cond.raw }
+            # Extract variable letters [X] or names from conditions
+            if ($condText -match '(\w[\w\s.°-]{2,20})\s*\[([A-Z]+)\]') {
+                $varName = $Matches[1].Trim()
+                $varLetter = $Matches[2]
+                $key = "$varName|$varLetter"
+                if (-not $varCounts.ContainsKey($key)) { $varCounts[$key] = 0 }
+                $varCounts[$key]++
+            }
+            # Extract GetParam names
+            elseif ($condText -match "GetParam\s*\('([^']+)'\)") {
+                $paramName = $Matches[1]
+                if (-not $varCounts.ContainsKey($paramName)) { $varCounts[$paramName] = 0 }
+                $varCounts[$paramName]++
+            }
+        }
+        # Find most frequent variable
+        if ($varCounts.Count -gt 0) {
+            $topVar = $varCounts.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First 1
+            $mainDecisionLabel = Clean-MermaidLabel ($topVar.Key -split '\|')[0]
+        }
+        # Extract distinct values from conditions (for multi-way branching)
+        foreach ($cond in $conditionExprs) {
+            $condText = if ($cond.decoded) { $cond.decoded } else { $cond.raw }
+            if ($condText -match '=\s*(\d+)') {
+                $val = $Matches[1]
+                if ($decisionValues -notcontains $val) { $decisionValues += $val }
+            }
+        }
+    }
+
     Add-Line '```mermaid'
     Add-Line "flowchart TD"
     Add-Line "    START([START])"
+    Add-Line "    INIT[Init controles]"
 
-    # Build flowchart based on blocs fonctionnels
+    # Build flowchart based on blocs fonctionnels with decision nodes
     if ($blocNames.Count -ge 2) {
         # Multi-bloc program: show bloc sequence
-        $prevNode = "START"
+        Add-Line "    START --> INIT"
+        $prevNode = "INIT"
         $nodeIdx = 1
         foreach ($bName in $blocNames) {
             $bTasks = $blocMap[$bName]
@@ -1860,6 +2036,31 @@ if ($algoData -and $algoData.tasks) {
             $nodeIdx++
         }
 
+        # Add decision if conditions found
+        if ($hasConditions -and $mainDecisionLabel) {
+            Add-Line "    DECISION{$mainDecisionLabel}"
+            Add-Line "    $prevNode --> DECISION"
+            $prevNode = "DECISION"
+
+            if ($decisionValues.Count -ge 2) {
+                # Multi-way branching
+                Add-Line "    VALID[Validation]"
+                $maxBranches = [math]::Min($decisionValues.Count, 3)
+                for ($bi = 0; $bi -lt $maxBranches; $bi++) {
+                    $bVal = $decisionValues[$bi]
+                    Add-Line "    DECISION -->|$bVal| VALID"
+                }
+                Add-Line "    DECISION -->|Autre| ENDKO"
+                $prevNode = "VALID"
+            } else {
+                Add-Line "    DECISION -->|OUI| PROCESS"
+                Add-Line "    DECISION -->|NON| ENDKO"
+                Add-Line "    PROCESS[Traitement]"
+                $prevNode = "PROCESS"
+            }
+            Add-Line "    ENDKO([END KO])"
+        }
+
         # Add write operation if tables modified
         if ($writeTableCount -gt 0) {
             Add-Line "    WRITE[MAJ $writeTableCount tables]"
@@ -1867,42 +2068,76 @@ if ($algoData -and $algoData.tasks) {
             $prevNode = "WRITE"
         }
 
-        Add-Line "    ENDOK([END])"
+        Add-Line "    ENDOK([END OK])"
         Add-Line "    $prevNode --> ENDOK"
     } elseif ($visibleForms.Count -gt 0) {
-        # Screen-based program
+        # Screen-based program with potential decision
         $mainForm = $visibleForms[0]
         $formLabel = Clean-MermaidLabel (if ($mainForm.name) { $mainForm.name } else { "Ecran principal" })
         Add-Line "    SAISIE[$formLabel]"
-        Add-Line "    START --> SAISIE"
+        Add-Line "    START --> INIT --> SAISIE"
 
-        if ($writeTableCount -gt 0) {
+        if ($hasConditions -and $mainDecisionLabel) {
+            Add-Line "    DECISION{$mainDecisionLabel}"
+            Add-Line "    SAISIE --> DECISION"
+            Add-Line "    DECISION -->|OUI| PROCESS"
+            Add-Line "    DECISION -->|NON| ENDKO"
+            Add-Line "    PROCESS[Traitement]"
+            Add-Line "    ENDKO([END KO])"
+            if ($writeTableCount -gt 0) {
+                Add-Line "    WRITE[MAJ $writeTableCount tables]"
+                Add-Line "    PROCESS --> WRITE --> ENDOK"
+            } else {
+                Add-Line "    PROCESS --> ENDOK"
+            }
+        } elseif ($writeTableCount -gt 0) {
             Add-Line "    WRITE[MAJ $writeTableCount tables]"
             Add-Line "    SAISIE --> WRITE --> ENDOK"
         } else {
             Add-Line "    SAISIE --> ENDOK"
         }
-        Add-Line "    ENDOK([END])"
+        Add-Line "    ENDOK([END OK])"
     } else {
         # Minimal fallback for batch/utility programs
-        Add-Line "    PROCESS[Traitement $taskCount taches]"
-        if ($writeTableCount -gt 0) {
+        Add-Line "    SAISIE[Traitement principal]"
+        Add-Line "    START --> INIT --> SAISIE"
+
+        if ($hasConditions -and $mainDecisionLabel) {
+            Add-Line "    DECISION{$mainDecisionLabel}"
+            Add-Line "    SAISIE --> DECISION"
+            Add-Line "    DECISION -->|OUI| PROCESS"
+            Add-Line "    DECISION -->|NON| ENDKO"
+            Add-Line "    PROCESS[Traitement]"
+            Add-Line "    ENDKO([END KO])"
+            if ($writeTableCount -gt 0) {
+                Add-Line "    WRITE[MAJ $writeTableCount tables]"
+                Add-Line "    PROCESS --> WRITE --> ENDOK"
+            } else {
+                Add-Line "    PROCESS --> ENDOK"
+            }
+        } elseif ($writeTableCount -gt 0) {
             Add-Line "    WRITE[MAJ $writeTableCount tables]"
-            Add-Line "    START --> PROCESS --> WRITE --> ENDOK"
+            Add-Line "    SAISIE --> WRITE --> ENDOK"
         } else {
-            Add-Line "    START --> PROCESS --> ENDOK"
+            Add-Line "    SAISIE --> ENDOK"
         }
-        Add-Line "    ENDOK([END])"
+        Add-Line "    ENDOK([END OK])"
     }
 
+    Add-Line
     Add-Line "    style START fill:#3fb950,color:#000"
     Add-Line "    style ENDOK fill:#3fb950,color:#000"
+    if ($hasConditions -and $mainDecisionLabel) {
+        Add-Line "    style ENDKO fill:#f85149,color:#fff"
+        Add-Line "    style DECISION fill:#58a6ff,color:#000"
+    }
     if ($writeTableCount -gt 0) {
         Add-Line "    style WRITE fill:#ffeb3b,color:#000"
     }
     Add-Line '```'
     Add-Line
-    Add-Line "> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser ``/algorigramme`` pour une synthese metier detaillee.*"
+    Add-Line "> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions"
+    Add-Line "> *Algorigramme genere depuis les expressions CONDITION. Utiliser ``/algorigramme`` pour une synthese metier detaillee.*"
 }
 Add-Line
 
