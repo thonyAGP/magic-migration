@@ -1,6 +1,6 @@
 ﻿# ADH IDE 70 - Print extrait compte /Nom
 
-> **Analyse**: Phases 1-4 2026-02-07 17:36 -> 17:36 (6s) | Assemblage 17:36
+> **Analyse**: Phases 1-4 2026-02-07 18:06 -> 18:07 (11s) | Assemblage 18:07
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme **ADH IDE 70** prépare et imprime l'extrait de compte d'un adhérent, en passant par une séquence d'initialisation de l'imprimante et de récupération des données critiques. Il commence par afficher un message "Veuillez patienter..." pour indiquer à l'utilisateur que le traitement est en cours, puis récupère le nom de l'adhérent à partir des tables de référence. Une fois les données compilées, il initialise le périphérique d'impression (IDE 179) et configure le numéro de listing courant (IDE 181).
+# ADH IDE 70 - Print Extrait Compte
 
-L'édition de l'extrait compte constitue le cœur du programme : il formate et imprime l'ensemble des mouvements du compte (débits/crédits) avec les soldes progressifs, en utilisant la devise locale obtenue via IDE 21. Cette phase se termine par l'édition du pied de facture (IDE 75), qui ajoute les informations résumées (totaux, soldes finaux) au bas du document. Chaque étape d'impression met à jour la table **log_maj_tpe** pour tracer l'action dans les logs du système.
+Le programme IDE 70 assure l'impression de l'extrait de compte avec le nom de l'adhérent. Appelé depuis l'écran d'extraction (IDE 69), il orchestrate le processus complet d'édition en gérant l'initialisation de l'imprimante, la récupération des données adhérent et devise, et la génération du document formaté. La tâche initiale affiche un message "Veuillez patienter..." pour informer l'utilisateur que le traitement est en cours.
 
-L'édition récapitulative "Free Etra" (probablement un récapitulatif libre) conclut le processus avant de nettoyer l'imprimante via IDE 182 (RAZ Current Printer). Ce programme est appelé depuis IDE 69 (Extrait de compte), formant un duo imprimante/affichage où IDE 69 gère l'écran de consultation et IDE 70 génère le document papier associé.
+La récupération du nom adhérent constitue la première étape fonctionnelle, essentiellement pour personnaliser l'en-tête du document. En parallèle, le programme initialise l'imprimante via IDE 179 (Get Printer) et configure le numéro de listing via IDE 181 (Set Listing Number), préparant ainsi l'appareil pour l'édition. L'édition principale de l'extrait compte s'effectue au cœur du programme, suivi de la génération du pied de facture via IDE 75 (Creation Pied Facture) et du récapitulatif "Free Extra" si applicable.
+
+L'enregistrement de la transaction dans la table `log_maj_tpe` finalise le processus, documentant l'édition de l'extrait pour traçabilité. Le programme effectue également un nettoyage final via IDE 182 (Raz Current Printer) pour réinitialiser l'état de l'imprimante, garantissant que les ressources sont correctement libérées pour les opérations suivantes.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -59,7 +61,7 @@ Traitements internes.
 #### <a id="t2"></a>70.1 - recup nom adherent
 
 **Role** : Consultation/chargement : recup nom adherent.
-**Variables liees** : B (P0 code adherent), S (W0 n° adherent)
+**Variables liees** : FO (P0 code adherent), GF (W0 n° adherent)
 **Delegue a** : [Recupere devise local (IDE 21)](ADH-IDE-21.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md)
 
 ---
@@ -104,21 +106,21 @@ Generation des documents et tickets.
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t4)
-**Variables liees** : BC (W0 masque extrait), BA (v. Libelle edition)
+**Variables liees** : GP (W0 masque extrait), GN (v. Libelle edition)
 
 ---
 
 #### <a id="t5"></a>70.2.1.1 - Edition du pied
 
 **Role** : Generation du document : Edition du pied.
-**Variables liees** : BA (v. Libelle edition)
+**Variables liees** : GN (v. Libelle edition)
 
 ---
 
 #### <a id="t6"></a>70.2.1.2 - Edition recap Free Etra
 
 **Role** : Generation du document : Edition recap Free Etra.
-**Variables liees** : BA (v. Libelle edition)
+**Variables liees** : GN (v. Libelle edition)
 
 ---
 
@@ -126,21 +128,21 @@ Generation des documents et tickets.
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t7)
-**Variables liees** : BC (W0 masque extrait), BA (v. Libelle edition)
+**Variables liees** : GP (W0 masque extrait), GN (v. Libelle edition)
 
 ---
 
 #### <a id="t8"></a>70.2.2.1 - Edition du pied
 
 **Role** : Generation du document : Edition du pied.
-**Variables liees** : BA (v. Libelle edition)
+**Variables liees** : GN (v. Libelle edition)
 
 ---
 
 #### <a id="t9"></a>70.2.2.2 - Edition recap Free Etra
 
 **Role** : Generation du document : Edition recap Free Etra.
-**Variables liees** : BA (v. Libelle edition)
+**Variables liees** : GN (v. Libelle edition)
 
 ---
 
@@ -161,14 +163,14 @@ Generation des documents et tickets.
 #### <a id="t14"></a>70.4.1.1 - Edition du pied
 
 **Role** : Generation du document : Edition du pied.
-**Variables liees** : BA (v. Libelle edition)
+**Variables liees** : GN (v. Libelle edition)
 
 ---
 
 #### <a id="t15"></a>70.4.1.2 - Edition recap Free Etra
 
 **Role** : Generation du document : Edition recap Free Etra.
-**Variables liees** : BA (v. Libelle edition)
+**Variables liees** : GN (v. Libelle edition)
 
 ---
 
@@ -182,14 +184,14 @@ Generation des documents et tickets.
 #### <a id="t18"></a>70.5.1.1 - Edition du pied
 
 **Role** : Generation du document : Edition du pied.
-**Variables liees** : BA (v. Libelle edition)
+**Variables liees** : GN (v. Libelle edition)
 
 ---
 
 #### <a id="t19"></a>70.5.1.2 - Edition recap Gift Pass
 
 **Role** : Generation du document : Edition recap Gift Pass.
-**Variables liees** : M (P.Print GIFT PASS), BA (v. Libelle edition)
+**Variables liees** : FZ (P.Print GIFT PASS), GN (v. Libelle edition)
 
 
 ## 5. REGLES METIER
@@ -246,7 +248,7 @@ Generation des documents et tickets.
 |---------|--------|
 | **Condition** | `IsComponent () AND NOT(P.Appel Direct [N])` |
 | **Si vrai** | Action si vrai |
-| **Variables** | N (P.Appel Direct) |
+| **Variables** | GA (P.Appel Direct) |
 | **Expression source** | Expression 2 : `IsComponent () AND NOT(P.Appel Direct [N])` |
 | **Exemple** | Si IsComponent () AND NOT(P.Appel Direct [N]) â†’ Action si vrai |
 
@@ -383,21 +385,21 @@ Variables recues du programme appelant ([Extrait de compte (IDE 69)](ADH-IDE-69.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Alpha | - |
-| B | P0 code adherent | Numeric | - |
-| C | P0 filiation | Numeric | - |
-| D | P0 masque montant | Alpha | 1x parametre entrant |
-| E | P0 nom village | Alpha | - |
-| F | P0 Fictif | Logical | - |
-| G | P0 date comptable | Date | - |
-| H | P0 Affichage Tva ? | Logical | - |
-| I | P.FormatPDF | Logical | - |
-| J | P.Chemin | Alpha | - |
-| K | p.NomFichierPDF | Alpha | - |
-| L | P.Print or Mail | Alpha | - |
-| M | P.Print GIFT PASS | Logical | - |
-| N | P.Appel Direct | Logical | 1x parametre entrant |
-| O | P. Sans annulations ? | Logical | - |
+| FN | P0 societe | Alpha | - |
+| FO | P0 code adherent | Numeric | - |
+| FP | P0 filiation | Numeric | - |
+| FQ | P0 masque montant | Alpha | 1x parametre entrant |
+| FR | P0 nom village | Alpha | - |
+| FS | P0 Fictif | Logical | - |
+| FT | P0 date comptable | Date | - |
+| FU | P0 Affichage Tva ? | Logical | - |
+| FV | P.FormatPDF | Logical | - |
+| FW | P.Chemin | Alpha | - |
+| FX | p.NomFichierPDF | Alpha | - |
+| FY | P.Print or Mail | Alpha | - |
+| FZ | P.Print GIFT PASS | Logical | - |
+| GA | P.Appel Direct | Logical | 1x parametre entrant |
+| GB | P. Sans annulations ? | Logical | - |
 
 ### 11.2 Variables de session (2)
 
@@ -405,8 +407,8 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| BA | v. Libelle edition | Alpha | - |
-| BB | v. Libelle Categ | Alpha | - |
+| GN | v. Libelle edition | Alpha | - |
+| GO | v. Libelle Categ | Alpha | - |
 
 ### 11.3 Variables de travail (14)
 
@@ -414,57 +416,57 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| P | W0 nom | Alpha | - |
-| Q | W0 prenom | Alpha | - |
-| R | W0 titre | Alpha | - |
-| S | W0 n° adherent | Numeric | - |
-| T | W0 lettre contrôle | Alpha | - |
-| U | W0 filiation | Numeric | - |
-| V | W0 langue parlee | Alpha | - |
-| W | W0 chambre | Alpha | - |
-| X | W0 D.Sejour Debut | Date | - |
-| Y | W0 D.Sejour Fin | Date | - |
-| Z | W0 code inscription | Unicode | - |
-| BC | W0 masque extrait | Alpha | - |
-| BD | W0 devise locale | Alpha | - |
-| BE | W0.Nombre de copies | Numeric | - |
+| GC | W0 nom | Alpha | - |
+| GD | W0 prenom | Alpha | - |
+| GE | W0 titre | Alpha | - |
+| GF | W0 n° adherent | Numeric | - |
+| GG | W0 lettre contrôle | Alpha | - |
+| GH | W0 filiation | Numeric | - |
+| GI | W0 langue parlee | Alpha | - |
+| GJ | W0 chambre | Alpha | - |
+| GK | W0 D.Sejour Debut | Date | - |
+| GL | W0 D.Sejour Fin | Date | - |
+| GM | W0 code inscription | Unicode | - |
+| GP | W0 masque extrait | Alpha | - |
+| GQ | W0 devise locale | Alpha | - |
+| GR | W0.Nombre de copies | Numeric | - |
 
 <details>
 <summary>Toutes les 31 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P0 societe | Alpha |
-| P0 | **B** | P0 code adherent | Numeric |
-| P0 | **C** | P0 filiation | Numeric |
-| P0 | **D** | P0 masque montant | Alpha |
-| P0 | **E** | P0 nom village | Alpha |
-| P0 | **F** | P0 Fictif | Logical |
-| P0 | **G** | P0 date comptable | Date |
-| P0 | **H** | P0 Affichage Tva ? | Logical |
-| P0 | **I** | P.FormatPDF | Logical |
-| P0 | **J** | P.Chemin | Alpha |
-| P0 | **K** | p.NomFichierPDF | Alpha |
-| P0 | **L** | P.Print or Mail | Alpha |
-| P0 | **M** | P.Print GIFT PASS | Logical |
-| P0 | **N** | P.Appel Direct | Logical |
-| P0 | **O** | P. Sans annulations ? | Logical |
-| W0 | **P** | W0 nom | Alpha |
-| W0 | **Q** | W0 prenom | Alpha |
-| W0 | **R** | W0 titre | Alpha |
-| W0 | **S** | W0 n° adherent | Numeric |
-| W0 | **T** | W0 lettre contrôle | Alpha |
-| W0 | **U** | W0 filiation | Numeric |
-| W0 | **V** | W0 langue parlee | Alpha |
-| W0 | **W** | W0 chambre | Alpha |
-| W0 | **X** | W0 D.Sejour Debut | Date |
-| W0 | **Y** | W0 D.Sejour Fin | Date |
-| W0 | **Z** | W0 code inscription | Unicode |
-| W0 | **BC** | W0 masque extrait | Alpha |
-| W0 | **BD** | W0 devise locale | Alpha |
-| W0 | **BE** | W0.Nombre de copies | Numeric |
-| V. | **BA** | v. Libelle edition | Alpha |
-| V. | **BB** | v. Libelle Categ | Alpha |
+| P0 | **FN** | P0 societe | Alpha |
+| P0 | **FO** | P0 code adherent | Numeric |
+| P0 | **FP** | P0 filiation | Numeric |
+| P0 | **FQ** | P0 masque montant | Alpha |
+| P0 | **FR** | P0 nom village | Alpha |
+| P0 | **FS** | P0 Fictif | Logical |
+| P0 | **FT** | P0 date comptable | Date |
+| P0 | **FU** | P0 Affichage Tva ? | Logical |
+| P0 | **FV** | P.FormatPDF | Logical |
+| P0 | **FW** | P.Chemin | Alpha |
+| P0 | **FX** | p.NomFichierPDF | Alpha |
+| P0 | **FY** | P.Print or Mail | Alpha |
+| P0 | **FZ** | P.Print GIFT PASS | Logical |
+| P0 | **GA** | P.Appel Direct | Logical |
+| P0 | **GB** | P. Sans annulations ? | Logical |
+| W0 | **GC** | W0 nom | Alpha |
+| W0 | **GD** | W0 prenom | Alpha |
+| W0 | **GE** | W0 titre | Alpha |
+| W0 | **GF** | W0 n° adherent | Numeric |
+| W0 | **GG** | W0 lettre contrôle | Alpha |
+| W0 | **GH** | W0 filiation | Numeric |
+| W0 | **GI** | W0 langue parlee | Alpha |
+| W0 | **GJ** | W0 chambre | Alpha |
+| W0 | **GK** | W0 D.Sejour Debut | Date |
+| W0 | **GL** | W0 D.Sejour Fin | Date |
+| W0 | **GM** | W0 code inscription | Unicode |
+| W0 | **GP** | W0 masque extrait | Alpha |
+| W0 | **GQ** | W0 devise locale | Alpha |
+| W0 | **GR** | W0.Nombre de copies | Numeric |
+| V. | **GN** | v. Libelle edition | Alpha |
+| V. | **GO** | v. Libelle Categ | Alpha |
 
 </details>
 
@@ -625,4 +627,4 @@ graph LR
 | [Get Printer (IDE 179)](ADH-IDE-179.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 17:36*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 18:07*

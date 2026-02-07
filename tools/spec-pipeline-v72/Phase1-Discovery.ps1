@@ -1,6 +1,7 @@
-# Phase1-Discovery.ps1 - V7.1 Pipeline
+# Phase1-Discovery.ps1 - V7.2 Pipeline
 # Utilise KbIndexRunner CLI "spec-data" pour extraire les donnees depuis la KB
 # Objectif: Resoudre les regressions V5.0 (callers/callees vides)
+# V7.2: Ajout main_offset pour calcul correct des lettres de variables globales
 
 param(
     [Parameter(Mandatory=$true)]
@@ -24,7 +25,19 @@ if (-not (Test-Path $OutputPath)) {
     New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
 }
 
-Write-Host "=== Phase 1: DISCOVERY (V7.1) ===" -ForegroundColor Cyan
+# V7.2: Main offsets per project (number of variables in Main Prg_1)
+# These offsets determine the starting letter for called programs
+# See OFFSET-SYSTEM.md for documentation
+$MainOffsets = @{
+    "ADH" = 143
+    "VIL" = 131
+    "PVE" = 174
+    "REF" = 107
+    "PBP" = 88
+    "PBG" = 91
+}
+
+Write-Host "=== Phase 1: DISCOVERY (V7.2) ===" -ForegroundColor Cyan
 Write-Host "Project: $Project"
 Write-Host "IDE Position: $IdePosition"
 Write-Host ""
@@ -65,7 +78,9 @@ $discovery = @{
         ide_position = $IdePosition
         program_name = $specData.program
         generated_at = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
-        pipeline_version = "7.1"
+        pipeline_version = "7.2"
+        # V7.2: Main offset for computing global variable letters
+        main_offset = if ($MainOffsets.ContainsKey($Project)) { $MainOffsets[$Project] } else { 0 }
     }
 
     call_graph = @{

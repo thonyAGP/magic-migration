@@ -1,5 +1,7 @@
-# Phase2-Mapping.ps1 - V7.1 Pipeline
+# Phase2-Mapping.ps1 - V7.2 Pipeline
 # Extraction des variables avec conversion FieldID -> Lettres via CLI
+# V7.2: Applique main_offset pour calculer les lettres globales
+# Voir OFFSET-SYSTEM.md pour documentation
 
 param(
     [Parameter(Mandatory=$true)]
@@ -23,7 +25,33 @@ if (-not (Test-Path $OutputPath)) {
     New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
 }
 
-Write-Host "=== Phase 2: MAPPING (V7.1) ===" -ForegroundColor Cyan
+# V7.2: Function to convert 0-based index to Magic letter
+# Magic convention: A-Z (0-25), BA-BZ (26-51), CA-CZ (52-77), etc.
+# NOTE: After Z comes BA, not AA (Magic style, not Excel)
+function Convert-IndexToLetter {
+    param([int]$Index)  # 0-based index
+
+    if ($Index -lt 0) { return "?" }
+    if ($Index -lt 26) {
+        return [string][char](65 + $Index)  # A-Z
+    }
+    elseif ($Index -lt 702) {
+        $first = [int][math]::Floor($Index / 26)   # 1=B, 2=C, 3=D...
+        $second = $Index % 26                       # 0=A, 1=B, 2=C...
+        return [string][char](65 + $first) + [string][char](65 + $second)
+    }
+    elseif ($Index -lt 18278) {
+        # 3-letter case (BAA onwards)
+        $first = [int][math]::Floor(($Index - 702) / 676) + 1
+        $remaining = ($Index - 702) % 676
+        $second = [int][math]::Floor($remaining / 26)
+        $third = $remaining % 26
+        return [string][char](65 + $first) + [string][char](65 + $second) + [string][char](65 + $third)
+    }
+    return "???"
+}
+
+Write-Host "=== Phase 2: MAPPING (V7.2) ===" -ForegroundColor Cyan
 Write-Host "Project: $Project"
 Write-Host "IDE Position: $IdePosition"
 Write-Host ""
@@ -56,8 +84,22 @@ Write-Host "  - Global: $($varData.statistics.global)"
 Write-Host "  - Parameters: $($varData.statistics.parameters)"
 Write-Host ""
 
-# Step 2: Build variable mapping dictionary (for expression decoding)
-Write-Host "[2/3] Building variable mapping dictionary..." -ForegroundColor Yellow
+# Step 2: Load main_offset from discovery.json (V7.2)
+Write-Host "[2/5] Loading main_offset from discovery..." -ForegroundColor Yellow
+
+$discoveryPath = Join-Path $OutputPath "discovery.json"
+$mainOffset = 0
+if (Test-Path $discoveryPath) {
+    $discovery = Get-Content $discoveryPath -Raw | ConvertFrom-Json
+    if ($discovery.metadata.main_offset) {
+        $mainOffset = [int]$discovery.metadata.main_offset
+    }
+}
+Write-Host "  Main offset: $mainOffset" -ForegroundColor $(if ($mainOffset -gt 0) { "Green" } else { "Yellow" })
+Write-Host ""
+
+# Step 3: Build variable mapping dictionary (for expression decoding)
+Write-Host "[3/5] Building variable mapping dictionary..." -ForegroundColor Yellow
 
 # Function: Convert Letter to Field ID (inverse of FieldToLetter)
 function Convert-LetterToField {
@@ -95,16 +137,23 @@ function Convert-LetterToField {
 $variableMapping = @{}
 
 foreach ($v in $varData.variables.local) {
-    # Use the letter to compute field_id
-    $letter = $v.letter
-    $computedFieldId = Convert-LetterToField -Letter $letter
+    # Use the letter to compute local field_id
+    $localLetter = $v.letter
+    $localFieldId = Convert-LetterToField -Letter $localLetter
 
-    if ($computedFieldId -gt 0) {
-        $key = "{0,$computedFieldId}"
+    if ($localFieldId -gt 0) {
+        # V7.2: Apply main_offset to get global letter
+        # Global index = main_offset + (local_field_id - 1)
+        # local_field_id is 1-based, main_offset is 0-based count
+        $globalIndex = $mainOffset + ($localFieldId - 1)
+        $globalLetter = Convert-IndexToLetter -Index $globalIndex
+
+        $key = "{0,$localFieldId}"
         # Only add if not already present (first occurrence wins)
         if (-not $variableMapping.ContainsKey($key)) {
             $variableMapping[$key] = @{
-                letter = $letter
+                letter = $globalLetter        # V7.2: Use global letter for display
+                local_letter = $localLetter   # V7.2: Keep local letter for reference
                 name = $v.name
                 type = "local"
             }
@@ -131,15 +180,12 @@ foreach ($v in $varData.variables.global) {
 Write-Host "  Mapping entries: $($variableMapping.Count)"
 Write-Host ""
 
-# Step 3: Load discovery.json for table info
-Write-Host "[3/4] Loading table info from discovery..." -ForegroundColor Yellow
+# Step 4: Load table info from discovery (already loaded in step 2)
+Write-Host "[4/5] Loading table info from discovery..." -ForegroundColor Yellow
 
-$discoveryPath = Join-Path $OutputPath "discovery.json"
 $tableColumns = @{}
 
-if (Test-Path $discoveryPath) {
-    $discovery = Get-Content $discoveryPath -Raw | ConvertFrom-Json
-
+if ($discovery) {
     # Tables are in discovery.tables.all array with logical_name, physical_name, access_mode properties
     $tablesArray = $discovery.tables.all
     if ($tablesArray) {
@@ -160,8 +206,8 @@ if (Test-Path $discoveryPath) {
 }
 Write-Host ""
 
-# Step 4: Structural table-to-column mapping via KB
-Write-Host "[4/4] Fetching structural table-column mapping via CLI..." -ForegroundColor Yellow
+# Step 5: Structural table-to-column mapping via KB
+Write-Host "[5/5] Fetching structural table-column mapping via CLI..." -ForegroundColor Yellow
 
 $tableColMapping = @{}
 $tableOtherVars = @{}
@@ -195,6 +241,29 @@ try {
 }
 Write-Host ""
 
+# V7.2: Update variables.local with global letters before output
+$updatedLocalVars = @()
+foreach ($v in $varData.variables.local) {
+    $localLetter = $v.letter
+    $localFieldId = Convert-LetterToField -Letter $localLetter
+    if ($localFieldId -gt 0) {
+        $globalIndex = $mainOffset + ($localFieldId - 1)
+        $globalLetter = Convert-IndexToLetter -Index $globalIndex
+    } else {
+        $globalLetter = $localLetter
+    }
+
+    $updatedLocalVars += @{
+        field_id = $v.field_id
+        letter = $globalLetter          # V7.2: Global letter for display
+        local_letter = $localLetter     # V7.2: Keep local for reference
+        name = $v.name
+        data_type = $v.data_type
+        picture = $v.picture
+        source = $v.source
+    }
+}
+
 # Build mapping.json
 $mapping = @{
     metadata = @{
@@ -203,9 +272,15 @@ $mapping = @{
         program_name = $varData.program
         generated_at = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
         pipeline_version = "7.2"
+        main_offset = $mainOffset  # V7.2: Include offset for reference
     }
 
-    variables = $varData.variables
+    variables = @{
+        local = $updatedLocalVars       # V7.2: Use updated variables with global letters
+        virtual = $varData.variables.virtual
+        global = $varData.variables.global
+        parameters = $varData.variables.parameters
+    }
 
     variable_mapping = $variableMapping
 
@@ -237,6 +312,7 @@ Write-Host ""
 
 # Summary
 Write-Host "MAPPING SUMMARY:" -ForegroundColor Cyan
+Write-Host "  - Main offset: $mainOffset (first local var = $(Convert-IndexToLetter -Index $mainOffset))"
 Write-Host "  - Total variables: $($varData.statistics.total)"
 Write-Host "  - Mapping entries: $($variableMapping.Count)"
 Write-Host "  - Input parameters: $($varData.statistics.parameters)"
