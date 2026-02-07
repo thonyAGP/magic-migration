@@ -1,22 +1,22 @@
 ﻿# ADH IDE 5 - Alimentation Combos NATION P
 
-> **Analyse**: 2026-02-07 03:07
+> **Analyse**: 2026-02-07 03:38
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
 - **Fonction**: Alimentation Combos NATION P
 - **Tables modifiees**: 0
-- **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Complexite**: **BASSE** (5/100)
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 1 programme(s): Menu Data Catching (IDE 7)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
-| **Appelle** | (aucun) |
+| **Appele par** | [Menu Data Catching (IDE 7)](ADH-IDE-7.md) |
+| **Appelle** | [    Suppression Carac interdit (IDE 6)](ADH-IDE-6.md) |
 
 ## STATISTIQUES
 

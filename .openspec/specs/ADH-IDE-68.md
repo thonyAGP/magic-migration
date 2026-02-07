@@ -1,6 +1,6 @@
 ﻿# ADH IDE 68 - Saisie date
 
-> **Analyse**: Phases 1-4 2026-02-07 03:10 -> 03:10 (30s) | Assemblage 03:10
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 03:43 (26s) | Assemblage 03:43
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -15,16 +15,31 @@
 | Nom Programme | Saisie date |
 | Fichier source | `Prg_68.xml` |
 | Dossier IDE | General |
-| Taches | 1 (0 ecrans visibles) |
+| Taches | 1 (1 ecrans visibles) |
 | Tables modifiees | 0 |
-| Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Programmes appeles | 1 |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Saisie date** assure la gestion complete de ce processus.
+**Saisie date** assure la gestion complete de ce processus, accessible depuis [Print extrait DateImp /O (IDE 74)](ADH-IDE-74.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Saisie (1 tache)
+
+L'operateur saisit les donnees de la transaction via 1 ecran (Saisie dates).
+
+---
+
+#### <a id="t1"></a>68 - Saisie dates [[ECRAN]](#ecran-t1)
+
+**Role** : Saisie des donnees : Saisie dates.
+**Ecran** : 533 x 92 DLU (MDI) | [Voir mockup](#ecran-t1)
+
 
 ## 5. REGLES METIER
 
@@ -32,21 +47,214 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
-- **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 10
+- **Appele par**: [Print extrait DateImp /O (IDE 74)](ADH-IDE-74.md)
+- **Appelle**: 1 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 10
 
 <!-- TAB:Ecrans -->
 
 ## 8. ECRANS
 
-*(Programme sans ecran visible)*
+### 8.1 Forms visibles (1 / 1)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 68 | 68 | Saisie dates | MDI | 533 | 92 | Saisie |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>68 - Saisie dates
+**Tache** : [68](#t1) | **Type** : MDI | **Dimensions** : 533 x 92 DLU
+**Bloc** : Saisie | **Titre IDE** : Saisie dates
+
+<!-- FORM-DATA:
+{
+    "width":  533,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  0,
+                         "w":  533,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  158,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  28,
+                         "w":  127,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "4",
+                         "text":  "Du",
+                         "parent":  null
+                     },
+                     {
+                         "x":  157,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  46,
+                         "w":  127,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "4",
+                         "text":  "Au",
+                         "parent":  null
+                     },
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  68,
+                         "w":  531,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  24,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  306,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  27,
+                         "w":  126,
+                         "fmt":  "DD/MM/YYYYA",
+                         "name":  "v.date Min",
+                         "h":  10,
+                         "color":  "6",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  305,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  45,
+                         "w":  126,
+                         "fmt":  "DD/MM/YYYYA",
+                         "name":  "v.date Max",
+                         "h":  10,
+                         "color":  "6",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  6,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  72,
+                         "w":  154,
+                         "fmt":  "\u0026Ok",
+                         "name":  "Bouton Ok",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  9
+                     },
+                     {
+                         "x":  7,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  4,
+                         "w":  267,
+                         "fmt":  "20",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  269,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  5,
+                         "w":  256,
+                         "fmt":  "WWW DD MMM YYYYT",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  7,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  21,
+                         "w":  128,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  45,
+                         "color":  "4",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  173,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  72,
+                         "w":  154,
+                         "fmt":  "A\u0026bandonner",
+                         "name":  "",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "68",
+    "height":  92
+}
+-->
+
+<details>
+<summary><strong>Champs : 4 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 306,27 | v.date Min | - | edit |
+| 305,45 | v.date Max | - | edit |
+| 7,4 | 20 | - | edit |
+| 269,5 | WWW DD MMM YYYYT | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 2 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| Ok | 6,72 | Valide la saisie et enregistre |
+| Abandonner | 173,72 | Annule et retour au menu |
+
+</details>
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+Ecran unique: **Saisie dates**
+
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **68.1** | [**Saisie dates** (68)](#t1) [mockup](#ecran-t1) | MDI | 533x92 | Saisie |
 
 ### 9.4 Algorigramme
 
@@ -97,7 +305,7 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > date comptable | Date | 1x refs |
+| A | > date comptable | Date | [68](#t1) |
 | B | < date min | Date | - |
 | C | < date max | Date | - |
 | G | Bouton Ok | Alpha | - |
@@ -183,22 +391,31 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Print extrait DateImp /O (IDE 74)](ADH-IDE-74.md) -> **Saisie date (IDE 68)**
 
 ```mermaid
 graph LR
     T68[68 Saisie date]
     style T68 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T68
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC69[69 Extrait de compte]
+    style CC69 fill:#f59e0b
+    CC74[74 Print extrait DateI...]
+    style CC74 fill:#3fb950
+    CC69 --> CC74
+    CC163 --> CC69
+    CC1 --> CC163
+    CC74 --> T68
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [74](ADH-IDE-74.md) | Print extrait DateImp /O | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -206,16 +423,16 @@ graph LR
 graph LR
     T68[68 Saisie date]
     style T68 fill:#58a6ff
-    NONE[Aucun callee]
-    T68 -.-> NONE
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    C43[43 Recuperation du titre]
+    T68 --> C43
+    style C43 fill:#3fb950
 ```
 
 ### 13.4 Detail Callees avec contexte
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| - | (aucun) | - | - |
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -226,17 +443,24 @@ graph LR
 | Lignes de logique | 23 | Programme compact |
 | Expressions | 10 | Peu de logique |
 | Tables WRITE | 0 | Impact faible |
-| Sous-programmes | 0 | Peu de dependances |
-| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 23) | Code sain |
 | Regles metier | 0 | Pas de regle identifiee |
 
 ### 14.2 Plan de migration par bloc
 
+#### Saisie (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : Formulaire React/Blazor avec validation Zod/FluentValidation.
+- Reproduire 1 ecran : Saisie dates
+- Validation temps reel cote client + serveur
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:10*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:43*

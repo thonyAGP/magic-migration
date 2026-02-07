@@ -1,197 +1,852 @@
-﻿# ADH IDE 82 -    Select affilies
+﻿# ADH IDE 82 - Select affilies
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:03
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_78.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (26s) | Assemblage 03:45
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** |    Select affilies |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (3 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (2 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 82 |
-| **Fichier XML** | `Prg_78.xml` |
-| **Description** |    Select affilies |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 2 |
-| **Lignes logique** | 61 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 82 |
+| Nom Programme | Select affilies |
+| Fichier source | `Prg_82.xml` |
+| Dossier IDE | General |
+| Taches | 2 (1 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
-| 47 | compte_gm________cgm | cafil025_dat | READ | Lecture |
-| 312 | ez_card | ezcard | LINK | Jointure |
+**Select affilies** assure la gestion complete de ce processus, accessible depuis [Club Med Pass menu (IDE 77)](ADH-IDE-77.md).
 
-**Resume**: 3 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
+- **Traitement** (1 tache) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Logique metier** : 3 regles identifiees couvrant conditions metier.
 
-### 2.4 Algorigramme
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Traitement (1 tache)
+
+- **82** - Ecran **[[ECRAN]](#ecran-t1)**
+
+Delegue a : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
+
+#### Phase 2 : Calcul (1 tache)
+
+- **82.1** - Reaffichage infos compte
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>82 - Ecran [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : Ecran.
+**Ecran** : 1010 x 227 DLU (MDI) | [Voir mockup](#ecran-t1)
+**Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
+
+
+### 3.2 Calcul (1 tache)
+
+Calculs metier : montants, stocks, compteurs.
+
+---
+
+#### <a id="t2"></a>82.1 - Reaffichage infos compte
+
+**Role** : Reinitialisation : Reaffichage infos compte.
+**Variables liees** : E (< solde compte), F (< etat compte)
+
+
+## 5. REGLES METIER
+
+3 regles identifiees:
+
+### Autres (3 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Si [Y] alors 143 sinon 110)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[Y]` |
+| **Si vrai** | 143 |
+| **Si faux** | 110) |
+| **Expression source** | Expression 1 : `IF ([Y],143,110)` |
+| **Exemple** | Si [Y] â†’ 143. Sinon â†’ 110) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Traitement conditionnel si [W]>0,Str ([W],'###'),IF ([X] est a zero
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[W]>0` |
+| **Si vrai** | Str ([W] |
+| **Si faux** | '###'),IF ([X]=0,'',Str ([W],'##'))) |
+| **Expression source** | Expression 18 : `IF ([W]>0,Str ([W],'###'),IF ([X]=0,'',Str ([W],'##')))` |
+| **Exemple** | Si [W]>0 â†’ Str ([W]. Sinon â†’ '###'),IF ([X]=0,'',Str ([W],'##'))) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Si [V]<Date () alors MlsTrans ('dernier sejour :') sinon IF ([U]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[V]<Date ()` |
+| **Si vrai** | MlsTrans ('dernier sejour :') |
+| **Si faux** | IF ([U]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours'))) |
+| **Expression source** | Expression 21 : `IF ([V]<Date (),MlsTrans ('dernier sejour :'),IF ([U]>Date (` |
+| **Exemple** | Si [V]<Date () â†’ MlsTrans ('dernier sejour :') |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Club Med Pass menu (IDE 77)](ADH-IDE-77.md)
+- **Appelle**: 1 programmes | **Tables**: 3 (W:0 R:2 L:1) | **Taches**: 2 | **Expressions**: 27
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 2)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 82 | 82 | Ecran | MDI | 1010 | 227 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>82 - Ecran
+**Tache** : [82](#t1) | **Type** : MDI | **Dimensions** : 1010 x 227 DLU
+**Bloc** : Traitement | **Titre IDE** : Ecran
+
+<!-- FORM-DATA:
+{
+    "width":  1010,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  0,
+                         "w":  1010,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  203,
+                         "w":  1008,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  24,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  22,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  15,
+                         "color":  "110",
+                         "w":  971,
+                         "y":  27,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  31,
+                         "h":  171,
+                         "cols":  [
+                                      {
+                                          "title":  "Nom / Prénom",
+                                          "layer":  1,
+                                          "w":  361
+                                      },
+                                      {
+                                          "title":  "Sexe",
+                                          "layer":  2,
+                                          "w":  69
+                                      },
+                                      {
+                                          "title":  "Age",
+                                          "layer":  3,
+                                          "w":  125
+                                      },
+                                      {
+                                          "title":  "Numéro",
+                                          "layer":  4,
+                                          "w":  255
+                                      },
+                                      {
+                                          "title":  "EZ Card ?",
+                                          "layer":  5,
+                                          "w":  129
+                                      }
+                                  ],
+                         "rows":  5
+                     },
+                     {
+                         "x":  760,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  57,
+                         "w":  20,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  12,
+                         "color":  "110",
+                         "text":  "m",
+                         "parent":  5
+                     },
+                     {
+                         "x":  34,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  46,
+                         "w":  295,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  586,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  46,
+                         "w":  120,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  725,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  46,
+                         "w":  20,
+                         "fmt":  "1",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  765,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  46,
+                         "w":  42,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  258,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  61,
+                         "w":  132,
+                         "fmt":  "WWW DD MMMMZ",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  546,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  61,
+                         "w":  132,
+                         "fmt":  "WWW DD MMMMZ",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  893,
+                         "type":  "checkbox",
+                         "var":  "",
+                         "y":  53,
+                         "w":  42,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  14,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  6,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  4,
+                         "w":  267,
+                         "fmt":  "20",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  800,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  4,
+                         "w":  203,
+                         "fmt":  "WWW DD MMM YYYYT",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  407,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  46,
+                         "w":  30,
+                         "fmt":  "2",
+                         "name":  "gmr_sexe",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  466,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  46,
+                         "w":  34,
+                         "fmt":  "3",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  517,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  46,
+                         "w":  52,
+                         "fmt":  "4",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  742,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  46,
+                         "w":  20,
+                         "fmt":  "1",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  34,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  61,
+                         "w":  169,
+                         "fmt":  "17",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  203,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  61,
+                         "w":  53,
+                         "fmt":  "4",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  498,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  61,
+                         "w":  52,
+                         "fmt":  "4",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  9,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  206,
+                         "w":  168,
+                         "fmt":  "\u0026Quitter",
+                         "name":  "",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  192,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  206,
+                         "w":  168,
+                         "fmt":  "\u0026Select",
+                         "name":  "",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "82",
+    "height":  227
+}
+-->
+
+<details>
+<summary><strong>Champs : 16 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 34,46 | (sans nom) | - | edit |
+| 586,46 | (sans nom) | - | edit |
+| 725,46 | 1 | - | edit |
+| 765,46 | (sans nom) | - | edit |
+| 258,61 | WWW DD MMMMZ | - | edit |
+| 546,61 | WWW DD MMMMZ | - | edit |
+| 893,53 | (sans nom) | - | checkbox |
+| 6,4 | 20 | - | edit |
+| 800,4 | WWW DD MMM YYYYT | - | edit |
+| 407,46 | gmr_sexe | - | edit |
+| 466,46 | 3 | - | edit |
+| 517,46 | 4 | - | edit |
+| 742,46 | 1 | - | edit |
+| 34,61 | 17 | - | edit |
+| 203,61 | 4 | - | edit |
+| 498,61 | 4 | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 2 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| Quitter | 9,206 | Quitte le programme |
+| Select | 192,206 | Ouvre la selection |
+
+</details>
+
+## 9. NAVIGATION
+
+Ecran unique: **Ecran**
+
+### 9.3 Structure hierarchique (2 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **82.1** | [**Ecran** (82)](#t1) [mockup](#ecran-t1) | MDI | 1010x227 | Traitement |
+| **82.2** | [**Reaffichage infos compte** (82.1)](#t2) | MDI | - | Calcul |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>2 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 2 |
-| **Lignes logique** | 61 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 3 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (3)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB | R |   |   | 1 |
+| 312 | ez_card |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (3 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | p. societe | R | Alpha |
+| B | p. code adherent | R | Numeric |
+| C | p. filiation | R | Numeric |
+| D | p.flag ok | R | Logical |
+| E | < solde compte | R | Numeric |
+| F | < etat compte | R | Alpha |
+| G | < date solde | R | Date |
+| H | < garanti O/N | R | Alpha |
+| I | v. titre | R | Alpha |
+| J | v. nom & prenom | R | Alpha |
+| K | r.EZ card | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 47 - compte_gm________cgm (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| E | < solde compte | R | Numeric |
+| F | < etat compte | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (4)
+
+Variables recues du programme appelant ([Club Med Pass menu (IDE 77)](ADH-IDE-77.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | p. societe | Alpha | 2x parametre entrant |
+| B | p. code adherent | Numeric | 1x parametre entrant |
+| C | p. filiation | Numeric | - |
+| D | p.flag ok | Logical | - |
+
+### 11.2 Variables de session (2)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| I | v. titre | Alpha | 1x session |
+| J | v. nom & prenom | Alpha | - |
+
+### 11.3 Autres (5)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| E | < solde compte | Numeric | - |
+| F | < etat compte | Alpha | - |
+| G | < date solde | Date | - |
+| H | < garanti O/N | Alpha | - |
+| K | r.EZ card | Logical | - |
+
+## 12. EXPRESSIONS
+
+**27 / 27 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 6 | 3 |
+| CONSTANTE | 4 | 0 |
+| DATE | 1 | 0 |
+| NEGATION | 2 | 0 |
+| OTHER | 9 | 0 |
+| CAST_LOGIQUE | 2 | 0 |
+| REFERENCE_VG | 1 | 0 |
+| STRING | 1 | 0 |
+| CONCATENATION | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 21 | `IF ([V]<Date (),MlsTrans ('dernier sejour :'),IF ([U]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))` | [RM-003](#rm-RM-003) |
+| CONDITION | 18 | `IF ([W]>0,Str ([W],'###'),IF ([X]=0,'',Str ([W],'##')))` | [RM-002](#rm-RM-002) |
+| CONDITION | 1 | `IF ([Y],143,110)` | [RM-001](#rm-RM-001) |
+| CONDITION | 25 | `[R]=0` | - |
+| CONDITION | 7 | `p. societe [A]=''` | - |
+| ... | | *+1 autres* | |
+
+#### CONSTANTE (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 20 | `'-'` | - |
+| CONSTANTE | 24 | `1` | - |
+| CONSTANTE | 8 | `'C'` | - |
+| CONSTANTE | 15 | `'V'` | - |
+
+#### DATE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 10 | `Date ()` | - |
+
+#### NEGATION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 3 | `NOT ([Y])` | - |
+| NEGATION | 2 | `NOT ([Y])` | - |
+
+#### OTHER (9 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 22 | `MlsTrans ('du')` | - |
+| OTHER | 16 | `Stat (0,'C'MODE)` | - |
+| OTHER | 27 | `NOT(Stat(0,'M'MODE))` | - |
+| OTHER | 23 | `MlsTrans ('au')` | - |
+| OTHER | 14 | `[R]` | - |
+| ... | | *+4 autres* | |
+
+#### CAST_LOGIQUE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 26 | `'FALSE'LOG` | - |
+| CAST_LOGIQUE | 6 | `'TRUE'LOG` | - |
+
+#### REFERENCE_VG (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 11 | `VG2` | - |
+
+#### STRING (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 9 | `Trim (v. titre [I])` | - |
+
+#### CONCATENATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 17 | `Trim ([L])&' '&[M]` | - |
+
+### 12.3 Toutes les expressions (27)
+
+<details>
+<summary>Voir les 27 expressions</summary>
+
+#### CONDITION (6)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 1 | `IF ([Y],143,110)` |
+| 18 | `IF ([W]>0,Str ([W],'###'),IF ([X]=0,'',Str ([W],'##')))` |
+| 19 | `IF ([W]>0,'ans',IF ([X]=0,'','mois'))` |
+| 21 | `IF ([V]<Date (),MlsTrans ('dernier sejour :'),IF ([U]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))` |
+| 7 | `p. societe [A]=''` |
+| 25 | `[R]=0` |
+
+#### CONSTANTE (4)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 8 | `'C'` |
+| 15 | `'V'` |
+| 20 | `'-'` |
+| 24 | `1` |
+
+#### DATE (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 10 | `Date ()` |
+
+#### NEGATION (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 2 | `NOT ([Y])` |
+| 3 | `NOT ([Y])` |
+
+#### OTHER (9)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 4 | `[Y]` |
+| 5 | `[R]` |
+| 12 | `p. societe [A]` |
+| 13 | `p. code adherent [B]` |
+| 14 | `[R]` |
+| 16 | `Stat (0,'C'MODE)` |
+| 22 | `MlsTrans ('du')` |
+| 23 | `MlsTrans ('au')` |
+| 27 | `NOT(Stat(0,'M'MODE))` |
+
+#### CAST_LOGIQUE (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 6 | `'TRUE'LOG` |
+| 26 | `'FALSE'LOG` |
+
+#### REFERENCE_VG (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 11 | `VG2` |
+
+#### STRING (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 9 | `Trim (v. titre [I])` |
+
+#### CONCATENATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 17 | `Trim ([L])&' '&[M]` |
+
+</details>
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Club Med Pass menu (IDE 77)](ADH-IDE-77.md) -> **Select affilies (IDE 82)**
 
 ```mermaid
 graph LR
-    T[82    Select affil]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T82[82 Select affilies]
+    style T82 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC77[77 Club Med Pass menu]
+    style CC77 fill:#3fb950
+    CC163 --> CC77
+    CC1 --> CC163
+    CC77 --> T82
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [77](ADH-IDE-77.md) | Club Med Pass menu | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[82    Select affil]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T82[82 Select affilies]
+    style T82 fill:#58a6ff
+    C43[43 Recuperation du titre]
+    T82 --> C43
+    style C43 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 61 | Programme compact |
+| Expressions | 27 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 61) | Code sain |
+| Regles metier | 3 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (1 tache: 1 ecran, 0 traitement)
 
-### Complexite
+- **Strategie** : 1 composant(s) UI (Razor/React) avec formulaires et validation.
+- 1 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 2 | Simple |
-| Tables | 3 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+#### Calcul (1 tache: 0 ecran, 1 traitement)
 
-### Points d'attention migration
+- **Strategie** : Services de calcul purs (Domain Services).
+- Migrer la logique de calcul (stock, compteurs, montants)
 
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+### 14.3 Dependances critiques
+
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:03 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:45*

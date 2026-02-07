@@ -1,197 +1,345 @@
 ﻿# ADH IDE 152 - Recup Classe et Lib du MOP
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:07
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_148.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:51 (28s) | Assemblage 03:51
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Recup Classe et Lib du MOP |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (3 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (3 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 152 |
-| **Fichier XML** | `Prg_148.xml` |
-| **Description** | Recup Classe et Lib du MOP |
-| **Module** | ADH |
-| **Public Name** | RECUP_CLASSE_MOP |
-| **Nombre taches** | 3 |
-| **Lignes logique** | 29 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 152 |
+| Nom Programme | Recup Classe et Lib du MOP |
+| Fichier source | `Prg_152.xml` |
+| Dossier IDE | General |
+| Taches | 3 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 50 | moyens_reglement_mor | cafil028_dat | READ | Lecture |
-| 89 | moyen_paiement___mop | cafil067_dat | LINK | Jointure |
-| 140 | moyen_paiement___mop | cafil118_dat | READ | Lecture |
+**Recup Classe et Lib du MOP** assure la gestion complete de ce processus, accessible depuis [ Print ticket vente (IDE 234)](ADH-IDE-234.md), [ Print ticket vente LEX (IDE 235)](ADH-IDE-235.md), [ Print ticket vente PMS-584 (IDE 236)](ADH-IDE-236.md), [ Print ticket vente LEX (IDE 285)](ADH-IDE-285.md), [ Print ticket vente (IDE 323)](ADH-IDE-323.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Saisie transaction 154  N.U (IDE 307)](ADH-IDE-307.md), [Saisie transaction Nouv vente (IDE 310)](ADH-IDE-310.md), [Saisie transaction Nouv vente (IDE 316)](ADH-IDE-316.md), [Controle fermeture caisse WS (IDE 155)](ADH-IDE-155.md), [Saisie transaction 154 N.U (IDE 300)](ADH-IDE-300.md), [Print ticket vente/OD N.U (IDE 306)](ADH-IDE-306.md).
 
-**Resume**: 3 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (3 taches) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+### 3.1 Traitement (3 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>152 - (sans nom)
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t2"></a>152.1 - UNI
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t3"></a>152.2 - BI
+
+**Role** : Traitement interne.
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [ Print ticket vente (IDE 234)](ADH-IDE-234.md), [ Print ticket vente LEX (IDE 235)](ADH-IDE-235.md), [ Print ticket vente PMS-584 (IDE 236)](ADH-IDE-236.md), [ Print ticket vente LEX (IDE 285)](ADH-IDE-285.md), [ Print ticket vente (IDE 323)](ADH-IDE-323.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Saisie transaction 154  N.U (IDE 307)](ADH-IDE-307.md), [Saisie transaction Nouv vente (IDE 310)](ADH-IDE-310.md), [Saisie transaction Nouv vente (IDE 316)](ADH-IDE-316.md), [Controle fermeture caisse WS (IDE 155)](ADH-IDE-155.md), [Saisie transaction 154 N.U (IDE 300)](ADH-IDE-300.md), [Print ticket vente/OD N.U (IDE 306)](ADH-IDE-306.md)
+- **Appelle**: 0 programmes | **Tables**: 3 (W:0 R:2 L:1) | **Taches**: 3 | **Expressions**: 2
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (3 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **152.1** | [**(sans nom)** (152)](#t1) | MDI | - | Traitement |
+| 152.1.1 | [UNI (152.1)](#t2) | MDI | - | |
+| 152.1.2 | [BI (152.2)](#t3) | MDI | - | |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>3 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 3 |
-| **Lignes logique** | 29 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 3 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (3)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 50 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 1 |
+| 89 | moyen_paiement___mop |  | DB |   |   | L | 1 |
+| 140 | moyen_paiement___mop |  | DB | R |   |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (0 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 50 - moyens_reglement_mor (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 140 - moyen_paiement___mop (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Autres (6)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | Param societe | Alpha | - |
+| B | Param MOP | Alpha | - |
+| C | Param Classe MOP | Alpha | - |
+| D | Param UNI/BI | Alpha | 2x refs |
+| E | Param Libelle MOP | Alpha | - |
+| F | Param existence MOP | Logical | - |
+
+## 12. EXPRESSIONS
+
+**2 / 2 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 2 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 2 | `Param UNI/BI [D]='B'` | - |
+| CONDITION | 1 | `Param UNI/BI [D]<>'B'` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [ Print ticket vente (IDE 234)](ADH-IDE-234.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [ Print ticket vente LEX (IDE 235)](ADH-IDE-235.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [ Print ticket vente PMS-584 (IDE 236)](ADH-IDE-236.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [ Print ticket vente LEX (IDE 285)](ADH-IDE-285.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [ Print ticket vente (IDE 323)](ADH-IDE-323.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [Saisie transaction 154  N.U (IDE 307)](ADH-IDE-307.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [Saisie transaction Nouv vente (IDE 310)](ADH-IDE-310.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [Saisie transaction Nouv vente (IDE 316)](ADH-IDE-316.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [Controle fermeture caisse WS (IDE 155)](ADH-IDE-155.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [Saisie transaction 154 N.U (IDE 300)](ADH-IDE-300.md) -> **Recup Classe et Lib du MOP (IDE 152)**
+
+Main -> ... -> [Print ticket vente/OD N.U (IDE 306)](ADH-IDE-306.md) -> **Recup Classe et Lib du MOP (IDE 152)**
 
 ```mermaid
 graph LR
-    T[152 Recup Classe et]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T152[152 Recup Classe et Li...]
+    style T152 fill:#58a6ff
+    CC233[233 Appel Print ticket...]
+    style CC233 fill:#8b5cf6
+    CC299[299 Fermeture caisse 144]
+    style CC299 fill:#8b5cf6
+    CC298[298 Gestion caisse 142]
+    style CC298 fill:#8b5cf6
+    CC316[316 Saisie transaction...]
+    style CC316 fill:#8b5cf6
+    CC310[310 Saisie transaction...]
+    style CC310 fill:#8b5cf6
+    CC307[307 Saisie transaction...]
+    style CC307 fill:#8b5cf6
+    CC318[318 Historique des ven...]
+    style CC318 fill:#8b5cf6
+    CC131[131 Fermeture caisse]
+    style CC131 fill:#8b5cf6
+    CC121[121 Gestion caisse]
+    style CC121 fill:#8b5cf6
+    CC234[234 Print ticket vente]
+    style CC234 fill:#3fb950
+    CC155[155 Controle fermeture...]
+    style CC155 fill:#3fb950
+    CC237[237 Transaction Nouv v...]
+    style CC237 fill:#3fb950
+    CC236[236 Print ticket vente...]
+    style CC236 fill:#3fb950
+    CC235[235 Print ticket vente...]
+    style CC235 fill:#3fb950
+    CC121 --> CC155
+    CC131 --> CC155
+    CC298 --> CC155
+    CC299 --> CC155
+    CC233 --> CC155
+    CC307 --> CC155
+    CC310 --> CC155
+    CC316 --> CC155
+    CC318 --> CC155
+    CC121 --> CC234
+    CC131 --> CC234
+    CC298 --> CC234
+    CC299 --> CC234
+    CC233 --> CC234
+    CC307 --> CC234
+    CC310 --> CC234
+    CC316 --> CC234
+    CC318 --> CC234
+    CC121 --> CC235
+    CC131 --> CC235
+    CC298 --> CC235
+    CC299 --> CC235
+    CC233 --> CC235
+    CC307 --> CC235
+    CC310 --> CC235
+    CC316 --> CC235
+    CC318 --> CC235
+    CC121 --> CC236
+    CC131 --> CC236
+    CC298 --> CC236
+    CC299 --> CC236
+    CC233 --> CC236
+    CC307 --> CC236
+    CC310 --> CC236
+    CC316 --> CC236
+    CC318 --> CC236
+    CC121 --> CC237
+    CC131 --> CC237
+    CC298 --> CC237
+    CC299 --> CC237
+    CC233 --> CC237
+    CC307 --> CC237
+    CC310 --> CC237
+    CC316 --> CC237
+    CC318 --> CC237
+    CC155 --> T152
+    CC234 --> T152
+    CC235 --> T152
+    CC236 --> T152
+    CC237 --> T152
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ECF partage - appels cross-projet | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [234](ADH-IDE-234.md) |  Print ticket vente | 5 |
+| [235](ADH-IDE-235.md) |  Print ticket vente LEX | 5 |
+| [236](ADH-IDE-236.md) |  Print ticket vente PMS-584 | 5 |
+| [285](ADH-IDE-285.md) |  Print ticket vente LEX | 5 |
+| [323](ADH-IDE-323.md) |  Print ticket vente | 5 |
+| [237](ADH-IDE-237.md) | Transaction Nouv vente avec GP | 4 |
+| [238](ADH-IDE-238.md) | Transaction Nouv vente PMS-584 | 4 |
+| [239](ADH-IDE-239.md) | Transaction Nouv vente PMS-721 | 4 |
+| [240](ADH-IDE-240.md) | Transaction Nouv vente PMS-710 | 4 |
+| [307](ADH-IDE-307.md) | Saisie transaction 154  N.U | 4 |
+| [310](ADH-IDE-310.md) | Saisie transaction Nouv vente | 4 |
+| [316](ADH-IDE-316.md) | Saisie transaction Nouv vente | 4 |
+| [155](ADH-IDE-155.md) | Controle fermeture caisse WS | 3 |
+| [300](ADH-IDE-300.md) | Saisie transaction 154 N.U | 2 |
+| [306](ADH-IDE-306.md) | Print ticket vente/OD N.U | 2 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[152 Recup Classe et]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T152[152 Recup Classe et Li...]
+    style T152 fill:#58a6ff
+    NONE[Aucun callee]
+    T152 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| ADH.ecf | 152 | RECUP_CLASSE_MOP | Sessions_Reprises |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Defini: RECUP_CLASSE_MOP |
-| ECF partage | OUI - ADH.ecf |
-| **Conclusion** | **NON ORPHELIN** - Composant ECF partage |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 29 | Programme compact |
+| Expressions | 2 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 29) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (3 taches: 0 ecran, 3 traitements)
 
-### Complexite
+- **Strategie** : 3 service(s) backend injectable(s) (Domain Services).
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 3 | Simple |
-| Tables | 3 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+### 14.3 Dependances critiques
 
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:07 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:51*

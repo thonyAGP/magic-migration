@@ -1,6 +1,6 @@
 ﻿# ADH IDE 5 - Alimentation Combos NATION P
 
-> **Analyse**: Phases 1-4 2026-02-07 03:02 -> 03:07 (5min) | Assemblage 03:07
+> **Analyse**: Phases 1-4 2026-02-07 03:37 -> 03:38 (33s) | Assemblage 03:38
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -17,14 +17,30 @@
 | Dossier IDE | General |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
-| Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Programmes appeles | 1 |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Alimentation Combos NATION P** assure la gestion complete de ce processus.
+**Alimentation Combos NATION P** assure la gestion complete de ce processus, accessible depuis [Menu Data Catching (IDE 7)](ADH-IDE-7.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Traitement** (1 tache) : traitements metier divers
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>5 - Sélection Nationalité [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : Sélection Nationalité.
+**Ecran** : 310 x 152 DLU (MDI) | [Voir mockup](#ecran-t1)
+**Delegue a** : [    Suppression Carac interdit (IDE 6)](ADH-IDE-6.md)
+
 
 ## 5. REGLES METIER
 
@@ -32,8 +48,8 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
-- **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 2
+- **Appele par**: [Menu Data Catching (IDE 7)](ADH-IDE-7.md)
+- **Appelle**: 1 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 2
 
 <!-- TAB:Ecrans -->
 
@@ -43,10 +59,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **5.1** | [**Sélection Nationalité** (5)](#t1) [mockup](#ecran-t1) | MDI | 310x152 | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -107,13 +124,13 @@ flowchart TD
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 2 | `SetParam ('NATIONALITEP',[A])` | - |
+| OTHER | 2 | `SetParam ('NATIONALITEP',v.Chaine [A])` | - |
 
 #### CONCATENATION (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONCATENATION | 1 | `Trim ([A])&Trim (IF (Counter (0)=1,'',',')&[D]&' '&[C])` | - |
+| CONCATENATION | 1 | `Trim (v.Chaine [A])&Trim (IF (Counter (0)=1,'',',')&[D]&' '&[C])` | - |
 
 <!-- TAB:Connexions -->
 
@@ -121,22 +138,22 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Menu Data Catching (IDE 7)](ADH-IDE-7.md) -> **Alimentation Combos NATION P (IDE 5)**
 
 ```mermaid
 graph LR
     T5[5 Alimentation Combos ...]
     style T5 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T5
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC7[7 Menu Data Catching]
+    style CC7 fill:#8b5cf6
+    CC7 --> T5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [7](ADH-IDE-7.md) | Menu Data Catching | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -144,16 +161,16 @@ graph LR
 graph LR
     T5[5 Alimentation Combos ...]
     style T5 fill:#58a6ff
-    NONE[Aucun callee]
-    T5 -.-> NONE
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    C6[6 Suppression Carac in...]
+    T5 --> C6
+    style C6 fill:#3fb950
 ```
 
 ### 13.4 Detail Callees avec contexte
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| - | (aucun) | - | - |
+| [6](ADH-IDE-6.md) |     Suppression Carac interdit | 1 | Validation saisie |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -164,17 +181,24 @@ graph LR
 | Lignes de logique | 10 | Programme compact |
 | Expressions | 2 | Peu de logique |
 | Tables WRITE | 0 | Impact faible |
-| Sous-programmes | 0 | Peu de dependances |
+| Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 10) | Code sain |
 | Regles metier | 0 | Pas de regle identifiee |
 
 ### 14.2 Plan de migration par bloc
 
+#### Traitement (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : 1 composant(s) UI (Razor/React) avec formulaires et validation.
+- 1 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
+| [    Suppression Carac interdit (IDE 6)](ADH-IDE-6.md) | Sous-programme | 1x | Normale - Validation saisie |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:07*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:38*

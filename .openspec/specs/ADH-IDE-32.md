@@ -1,6 +1,6 @@
 ﻿# ADH IDE 32 - Write histo_Fus_Sep_Saisie
 
-> **Analyse**: Phases 1-4 2026-02-07 03:08 -> 03:09 (29s) | Assemblage 03:09
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (26s) | Assemblage 03:42
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,15 +18,29 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Write histo_Fus_Sep_Saisie** assure la gestion complete de ce processus.
+**Write histo_Fus_Sep_Saisie** assure la gestion complete de ce processus, accessible depuis [Fusion (IDE 28)](ADH-IDE-28.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Traitement** (1 tache) : traitements metier divers
 
 **Donnees modifiees** : 1 tables en ecriture (histo_fusionseparation_saisie).
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>32 - (sans nom)
+
+**Role** : Traitement interne.
+
 
 ## 5. REGLES METIER
 
@@ -34,7 +48,7 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Fusion (IDE 28)](ADH-IDE-28.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 12
 
 <!-- TAB:Ecrans -->
@@ -45,10 +59,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **32.1** | [**(sans nom)** (32)](#t1) | MDI | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -157,22 +172,31 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Fusion (IDE 28)](ADH-IDE-28.md) -> **Write histo_Fus_Sep_Saisie (IDE 32)**
 
 ```mermaid
 graph LR
     T32[32 Write histo_Fus_Sep...]
     style T32 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T32
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC37[37 Menu changement compte]
+    style CC37 fill:#f59e0b
+    CC28[28 Fusion]
+    style CC28 fill:#3fb950
+    CC37 --> CC28
+    CC163 --> CC37
+    CC1 --> CC163
+    CC28 --> T32
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [28](ADH-IDE-28.md) | Fusion | 4 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -207,6 +231,11 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Traitement (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
+- Decomposer les taches en services unitaires testables.
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
@@ -214,4 +243,4 @@ graph LR
 | histo_fusionseparation_saisie | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:09*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:42*

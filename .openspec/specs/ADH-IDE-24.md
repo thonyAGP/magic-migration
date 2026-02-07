@@ -1,199 +1,706 @@
 ﻿# ADH IDE 24 - Print reçu change vente
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 22:59
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_20.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 03:41 (27s) | Assemblage 03:41
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print reçu change vente |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (6 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (14 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 24 |
-| **Fichier XML** | `Prg_20.xml` |
-| **Description** | Print reçu change vente |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 14 |
-| **Lignes logique** | 417 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 24 |
+| Nom Programme | Print reçu change vente |
+| Fichier source | `Prg_24.xml` |
+| Dossier IDE | Ventes |
+| Taches | 14 (1 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 2 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
-| 31 | gm-complet_______gmc | cafil009_dat | READ | Lecture |
-| 34 | hebergement______heb | cafil012_dat | LINK | Jointure |
-| 147 | change_vente_____chg | cafil125_dat | LINK/READ | Jointure+Lecture |
-| 368 | pms_village | pmsvillage | LINK | Jointure |
+**Print reçu change vente** assure la gestion complete de ce processus, accessible depuis [Change GM (IDE 25)](ADH-IDE-25.md), [Versement/Retrait (IDE 174)](ADH-IDE-174.md).
 
-**Resume**: 6 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (8 taches) : traitements metier divers
+- **Impression** (6 taches) : generation de tickets et documents
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Logique metier** : 1 regles identifiees couvrant conditions metier.
 
-### 2.4 Algorigramme
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Traitement (8 taches)
+
+- **24** - Veuillez patienter ... **[[ECRAN]](#ecran-t1)**
+- **24.1.1** - Impression reçu change **[[ECRAN]](#ecran-t3)**
+- **24.1.2** - Impression reçu change **[[ECRAN]](#ecran-t4)**
+- **24.2.1** - Impression reçu change **[[ECRAN]](#ecran-t6)**
+- **24.2.2** - Impression reçu change **[[ECRAN]](#ecran-t7)**
+- **24.4.1** - Impression reçu change **[[ECRAN]](#ecran-t11)**
+- **24.5.1** - Impression reçu change **[[ECRAN]](#ecran-t13)**
+- **24.6** - Impression reçu change **[[ECRAN]](#ecran-t16)**
+
+#### Phase 2 : Impression (6 taches)
+
+- **24.1** - Printer 1 **[[ECRAN]](#ecran-t2)**
+- **24.2** - Printer 4 **[[ECRAN]](#ecran-t5)**
+- **24.3** - Printer 5 **[[ECRAN]](#ecran-t8)**
+- **24.3.1** - Impression reçu change ticket **[[ECRAN]](#ecran-t9)**
+- **24.4** - Printer 8 **[[ECRAN]](#ecran-t10)**
+- **24.5** - Printer 9 **[[ECRAN]](#ecran-t12)**
+
+Delegue a : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (8 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>24 - Veuillez patienter ... [[ECRAN]](#ecran-t1)
+
+**Role** : Tache d'orchestration : point d'entree du programme (8 sous-taches). Coordonne l'enchainement des traitements.
+**Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
+
+<details>
+<summary>7 sous-taches directes</summary>
+
+| Tache | Nom | Bloc |
+|-------|-----|------|
+| [24.1.1](#t3) | Impression reçu change **[[ECRAN]](#ecran-t3)** | Traitement |
+| [24.1.2](#t4) | Impression reçu change **[[ECRAN]](#ecran-t4)** | Traitement |
+| [24.2.1](#t6) | Impression reçu change **[[ECRAN]](#ecran-t6)** | Traitement |
+| [24.2.2](#t7) | Impression reçu change **[[ECRAN]](#ecran-t7)** | Traitement |
+| [24.4.1](#t11) | Impression reçu change **[[ECRAN]](#ecran-t11)** | Traitement |
+| [24.5.1](#t13) | Impression reçu change **[[ECRAN]](#ecran-t13)** | Traitement |
+| [24.6](#t16) | Impression reçu change **[[ECRAN]](#ecran-t16)** | Traitement |
+
+</details>
+
+---
+
+#### <a id="t3"></a>24.1.1 - Impression reçu change [[ECRAN]](#ecran-t3)
+
+**Role** : Generation du document : Impression reçu change.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t3)
+
+---
+
+#### <a id="t4"></a>24.1.2 - Impression reçu change [[ECRAN]](#ecran-t4)
+
+**Role** : Generation du document : Impression reçu change.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t4)
+
+---
+
+#### <a id="t6"></a>24.2.1 - Impression reçu change [[ECRAN]](#ecran-t6)
+
+**Role** : Generation du document : Impression reçu change.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t6)
+
+---
+
+#### <a id="t7"></a>24.2.2 - Impression reçu change [[ECRAN]](#ecran-t7)
+
+**Role** : Generation du document : Impression reçu change.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t7)
+
+---
+
+#### <a id="t11"></a>24.4.1 - Impression reçu change [[ECRAN]](#ecran-t11)
+
+**Role** : Generation du document : Impression reçu change.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t11)
+
+---
+
+#### <a id="t13"></a>24.5.1 - Impression reçu change [[ECRAN]](#ecran-t13)
+
+**Role** : Generation du document : Impression reçu change.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t13)
+
+---
+
+#### <a id="t16"></a>24.6 - Impression reçu change [[ECRAN]](#ecran-t16)
+
+**Role** : Generation du document : Impression reçu change.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t16)
+
+
+### 3.2 Impression (6 taches)
+
+Generation des documents et tickets.
+
+---
+
+#### <a id="t2"></a>24.1 - Printer 1 [[ECRAN]](#ecran-t2)
+
+**Role** : Generation du document : Printer 1.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t2)
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+---
+
+#### <a id="t5"></a>24.2 - Printer 4 [[ECRAN]](#ecran-t5)
+
+**Role** : Generation du document : Printer 4.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t5)
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+---
+
+#### <a id="t8"></a>24.3 - Printer 5 [[ECRAN]](#ecran-t8)
+
+**Role** : Generation du document : Printer 5.
+**Ecran** : 357 x 103 DLU (MDI) | [Voir mockup](#ecran-t8)
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+---
+
+#### <a id="t9"></a>24.3.1 - Impression reçu change ticket [[ECRAN]](#ecran-t9)
+
+**Role** : Generation du document : Impression reçu change ticket.
+**Ecran** : 357 x 103 DLU (MDI) | [Voir mockup](#ecran-t9)
+**Variables liees** : L (PI.N° Ticket)
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+---
+
+#### <a id="t10"></a>24.4 - Printer 8 [[ECRAN]](#ecran-t10)
+
+**Role** : Generation du document : Printer 8.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t10)
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+---
+
+#### <a id="t12"></a>24.5 - Printer 9 [[ECRAN]](#ecran-t12)
+
+**Role** : Generation du document : Printer 9.
+**Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t12)
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Si [AB]='010' alors 'Opération N°' sinon 'Transaction N°')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[AB]='010'` |
+| **Si vrai** | 'Opération N°' |
+| **Si faux** | 'Transaction N°') |
+| **Expression source** | Expression 13 : `IF ([AB]='010','Opération N°','Transaction N°')` |
+| **Exemple** | Si [AB]='010' â†’ 'Opération N°'. Sinon â†’ 'Transaction N°') |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Change GM (IDE 25)](ADH-IDE-25.md), [Versement/Retrait (IDE 174)](ADH-IDE-174.md)
+- **Appelle**: 2 programmes | **Tables**: 5 (W:0 R:3 L:3) | **Taches**: 14 | **Expressions**: 22
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 14)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 24 | 24 | Veuillez patienter ... | MDI | 424 | 56 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>24 - Veuillez patienter ...
+**Tache** : [24](#t1) | **Type** : MDI | **Dimensions** : 424 x 56 DLU
+**Bloc** : Traitement | **Titre IDE** : Veuillez patienter ...
+
+<!-- FORM-DATA:
+{
+    "width":  424,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  0,
+                         "w":  423,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  120,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  10,
+                         "w":  221,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "Impression en cours ...",
+                         "parent":  null
+                     },
+                     {
+                         "x":  1,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  29,
+                         "w":  423,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  27,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  73,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  38,
+                         "w":  290,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "Edition du reçu change vente",
+                         "parent":  null
+                     },
+                     {
+                         "x":  4,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  2,
+                         "w":  72,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  25,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "24",
+    "height":  56
+}
+-->
+
+## 9. NAVIGATION
+
+Ecran unique: **Veuillez patienter ...**
+
+### 9.3 Structure hierarchique (14 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **24.1** | [**Veuillez patienter ...** (24)](#t1) [mockup](#ecran-t1) | MDI | 424x56 | Traitement |
+| 24.1.1 | [Impression reçu change (24.1.1)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | |
+| 24.1.2 | [Impression reçu change (24.1.2)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
+| 24.1.3 | [Impression reçu change (24.2.1)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
+| 24.1.4 | [Impression reçu change (24.2.2)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
+| 24.1.5 | [Impression reçu change (24.4.1)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
+| 24.1.6 | [Impression reçu change (24.5.1)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
+| 24.1.7 | [Impression reçu change (24.6)](#t16) [mockup](#ecran-t16) | MDI | 1058x791 | |
+| **24.2** | [**Printer 1** (24.1)](#t2) [mockup](#ecran-t2) | MDI | 1058x791 | Impression |
+| 24.2.1 | [Printer 4 (24.2)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
+| 24.2.2 | [Printer 5 (24.3)](#t8) [mockup](#ecran-t8) | MDI | 357x103 | |
+| 24.2.3 | [Impression reçu change ticket (24.3.1)](#t9) [mockup](#ecran-t9) | MDI | 357x103 | |
+| 24.2.4 | [Printer 8 (24.4)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
+| 24.2.5 | [Printer 9 (24.5)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>14 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 14 |
-| **Lignes logique** | 417 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 6 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (5)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 7 |
+| 31 | gm-complet_______gmc |  | DB | R |   |   | 1 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 1 |
+| 147 | change_vente_____chg | Donnees de ventes | DB | R |   | L | 8 |
+| 368 | pms_village |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (4 / 3 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R) - 7 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 config imp | R | Alpha |
+| B | W1 equivalant | R | Numeric |
+| C | W1 normal | R | Alpha |
+| D | W1 condense | R | Alpha |
+| E | W1 detecteur | R | Alpha |
+| F | W1 inhibe Panel | R | Alpha |
+| G | W1 massicot | R | Alpha |
+| H | W1 selection feuille | R | Alpha |
+| I | W1 selection rouleau | R | Alpha |
+| J | W1 ejection feuille | R | Alpha |
+| K | W1 equivalent | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 31 - gm-complet_______gmc (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P0 societe | R | Alpha |
+| B | P0 n° adherent | R | Numeric |
+| C | P0 filiation | R | Numeric |
+| D | P0 date | R | Date |
+| E | P0 heure | R | Time |
+| F | P0 devise locale | R | Alpha |
+| G | P0 nb decimale | R | Numeric |
+| H | P0 masque montant | R | Alpha |
+| I | P0 nom village | R | Alpha |
+| J | P0 telephone | R | Alpha |
+| K | P0 fax | R | Alpha |
+| L | PI.N° Ticket | R | Numeric |
+| M | Pi.id_transaction | R | Unicode |
+| N | Pi.id_acceptation | R | Unicode |
+| O | W0 en-tête ? | R | Alpha |
+| P | W0 fin tâche | R | Alpha |
+| Q | v. Operation (Libelle) | R | Alpha |
+| R | v. Mode paiement (Libelle) | R | Alpha |
+| S | v. Taux (Libelle) | R | Alpha |
+| T | v. Montant Devise Local Libelle | R | Alpha |
+| U | v. Vente de devise (Libelle) | R | Alpha |
+| V | v.Message (Libelle) | R | Alpha |
+| W | v. Paiement (Libelle) | R | Alpha |
+| X | v. Devise (Libelle) | R | Alpha |
+| Y | v.Existe ligne? | R | Logical |
+| Z | v.Montant Product | R | Numeric |
+| BA | v.Nombre de copies | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 147 - change_vente_____chg (R/L) - 8 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| U | v. Vente de devise (Libelle) | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (14)
+
+Variables recues du programme appelant ([Change GM (IDE 25)](ADH-IDE-25.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P0 societe | Alpha | 1x parametre entrant |
+| B | P0 n° adherent | Numeric | 1x parametre entrant |
+| C | P0 filiation | Numeric | 1x parametre entrant |
+| D | P0 date | Date | - |
+| E | P0 heure | Time | - |
+| F | P0 devise locale | Alpha | - |
+| G | P0 nb decimale | Numeric | - |
+| H | P0 masque montant | Alpha | - |
+| I | P0 nom village | Alpha | - |
+| J | P0 telephone | Alpha | - |
+| K | P0 fax | Alpha | - |
+| L | PI.N° Ticket | Numeric | - |
+| M | Pi.id_transaction | Unicode | - |
+| N | Pi.id_acceptation | Unicode | - |
+
+### 11.2 Variables de session (11)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| Q | v. Operation (Libelle) | Alpha | - |
+| R | v. Mode paiement (Libelle) | Alpha | - |
+| S | v. Taux (Libelle) | Alpha | - |
+| T | v. Montant Devise Local Libelle | Alpha | - |
+| U | v. Vente de devise (Libelle) | Alpha | - |
+| V | v.Message (Libelle) | Alpha | - |
+| W | v. Paiement (Libelle) | Alpha | - |
+| X | v. Devise (Libelle) | Alpha | - |
+| Y | v.Existe ligne? | Logical | - |
+| Z | v.Montant Product | Numeric | - |
+| BA | v.Nombre de copies | Numeric | - |
+
+### 11.3 Variables de travail (2)
+
+Variables internes au programme.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| O | W0 en-tête ? | Alpha | - |
+| P | W0 fin tâche | Alpha | - |
+
+<details>
+<summary>Toutes les 27 variables (liste complete)</summary>
+
+| Cat | Lettre | Nom Variable | Type |
+|-----|--------|--------------|------|
+| P0 | **A** | P0 societe | Alpha |
+| P0 | **B** | P0 n° adherent | Numeric |
+| P0 | **C** | P0 filiation | Numeric |
+| P0 | **D** | P0 date | Date |
+| P0 | **E** | P0 heure | Time |
+| P0 | **F** | P0 devise locale | Alpha |
+| P0 | **G** | P0 nb decimale | Numeric |
+| P0 | **H** | P0 masque montant | Alpha |
+| P0 | **I** | P0 nom village | Alpha |
+| P0 | **J** | P0 telephone | Alpha |
+| P0 | **K** | P0 fax | Alpha |
+| P0 | **L** | PI.N° Ticket | Numeric |
+| P0 | **M** | Pi.id_transaction | Unicode |
+| P0 | **N** | Pi.id_acceptation | Unicode |
+| W0 | **O** | W0 en-tête ? | Alpha |
+| W0 | **P** | W0 fin tâche | Alpha |
+| V. | **Q** | v. Operation (Libelle) | Alpha |
+| V. | **R** | v. Mode paiement (Libelle) | Alpha |
+| V. | **S** | v. Taux (Libelle) | Alpha |
+| V. | **T** | v. Montant Devise Local Libelle | Alpha |
+| V. | **U** | v. Vente de devise (Libelle) | Alpha |
+| V. | **V** | v.Message (Libelle) | Alpha |
+| V. | **W** | v. Paiement (Libelle) | Alpha |
+| V. | **X** | v. Devise (Libelle) | Alpha |
+| V. | **Y** | v.Existe ligne? | Logical |
+| V. | **Z** | v.Montant Product | Numeric |
+| V. | **BA** | v.Nombre de copies | Numeric |
+
+</details>
+
+## 12. EXPRESSIONS
+
+**22 / 22 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 13 | 5 |
+| CONSTANTE | 2 | 0 |
+| OTHER | 6 | 0 |
+| CAST_LOGIQUE | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (13 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 13 | `IF ([AB]='010','Opération N°','Transaction N°')` | [RM-001](#rm-RM-001) |
+| CONDITION | 4 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
+| CONDITION | 3 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| CONDITION | 20 | `IF ([AB]='010','Devise','Currency')` | - |
+| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
+| ... | | *+8 autres* | |
+
+#### CONSTANTE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 12 | `'Z'` | - |
+| CONSTANTE | 11 | `'A'` | - |
+
+#### OTHER (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 9 | `P0 n° adherent [B]` | - |
+| OTHER | 10 | `P0 filiation [C]` | - |
+| OTHER | 22 | `GetParam ('NUMBERCOPIES')` | - |
+| OTHER | 1 | `SetCrsr (2)` | - |
+| OTHER | 2 | `SetCrsr (1)` | - |
+| ... | | *+1 autres* | |
+
+#### CAST_LOGIQUE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 21 | `'TRUE'LOG` | - |
+
+### 12.3 Toutes les expressions (22)
+
+<details>
+<summary>Voir les 22 expressions</summary>
+
+#### CONDITION (13)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 13 | `IF ([AB]='010','Opération N°','Transaction N°')` |
+| 14 | `IF ([AB]='010','Mode de paiement','Payment method')` |
+| 15 | `IF ([AB]='010','Taux','Rate')` |
+| 16 | `IF ([AB]='010','Montant devise locale','Amount local currency')` |
+| 17 | `IF ([AB]='010','VENTE DE DEVISES','CURRENCY SALES')` |
+| 18 | `IF ([AB]='010','Merci de votre visite','Thank you for your visit')` |
+| 19 | `IF ([AB]='010','Paiement','Payment')` |
+| 20 | `IF ([AB]='010','Devise','Currency')` |
+| 3 | `GetParam ('CURRENTPRINTERNUM')=1` |
+| 4 | `GetParam ('CURRENTPRINTERNUM')=4` |
+| 5 | `GetParam ('CURRENTPRINTERNUM')=5` |
+| 6 | `GetParam ('CURRENTPRINTERNUM')=8` |
+| 7 | `GetParam ('CURRENTPRINTERNUM')=9` |
+
+#### CONSTANTE (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 11 | `'A'` |
+| 12 | `'Z'` |
+
+#### OTHER (6)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 1 | `SetCrsr (2)` |
+| 2 | `SetCrsr (1)` |
+| 8 | `P0 societe [A]` |
+| 9 | `P0 n° adherent [B]` |
+| 10 | `P0 filiation [C]` |
+| 22 | `GetParam ('NUMBERCOPIES')` |
+
+#### CAST_LOGIQUE (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 21 | `'TRUE'LOG` |
+
+</details>
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Change GM (IDE 25)](ADH-IDE-25.md) -> **Print reçu change vente (IDE 24)**
+
+Main -> ... -> [Versement/Retrait (IDE 174)](ADH-IDE-174.md) -> **Print reçu change vente (IDE 24)**
 
 ```mermaid
 graph LR
-    T[24 Print reçu chan]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T24[24 Print reçu change v...]
+    style T24 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC25[25 Change GM]
+    style CC25 fill:#3fb950
+    CC174[174 VersementRetrait]
+    style CC174 fill:#3fb950
+    CC163 --> CC25
+    CC163 --> CC174
+    CC1 --> CC163
+    CC25 --> T24
+    CC174 --> T24
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [25](ADH-IDE-25.md) | Change GM | 1 |
+| [174](ADH-IDE-174.md) | Versement/Retrait | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[24 Print reçu chan]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T24[24 Print reçu change v...]
+    style T24 fill:#58a6ff
+    C22[22 Calcul equivalent]
+    T24 --> C22
+    style C22 fill:#3fb950
+    C182[182 Raz Current Printer]
+    T24 --> C182
+    style C182 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [22](ADH-IDE-22.md) | Calcul equivalent | 7 | Calcul de donnees |
+| [182](ADH-IDE-182.md) | Raz Current Printer | 1 | Impression ticket/document |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 417 | Taille moyenne |
+| Expressions | 22 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 2 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 417) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (8 taches: 8 ecrans, 0 traitement)
 
-### Complexite
+- **Strategie** : 8 composant(s) UI (Razor/React) avec formulaires et validation.
+- 2 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 14 | Moyen |
-| Tables | 6 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **MOYENNE** | - |
+#### Impression (6 taches: 6 ecrans, 0 traitement)
 
-### Points d'attention migration
+- **Strategie** : Templates HTML -> PDF via wkhtmltopdf ou Puppeteer.
+- `PrintService` injectable avec choix imprimante
 
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+### 14.3 Dependances critiques
 
----
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 22:59 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Calcul equivalent (IDE 22)](ADH-IDE-22.md) | Sous-programme | 7x | **CRITIQUE** - Calcul de donnees |
+| [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:41*

@@ -1,202 +1,590 @@
 ﻿# ADH IDE 166 - Start
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:08
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_162.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:52 (29s) | Assemblage 03:52
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Start |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (9 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (7 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 166 |
-| **Fichier XML** | `Prg_162.xml` |
-| **Description** | Start |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 7 |
-| **Lignes logique** | 123 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 166 |
+| Nom Programme | Start |
+| Fichier source | `Prg_166.xml` |
+| Dossier IDE | General |
+| Taches | 7 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 6 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 67 | tables___________tab | cafil045_dat | READ | Lecture |
-| 69 | initialisation___ini | cafil047_dat | LINK | Jointure |
-| 81 | societe__________soc | cafil059_dat | READ | Lecture |
-| 118 | tables_imports | cafil096_dat | LINK | Jointure |
-| 219 | communication_ims | caisse_com_ims | READ | Lecture |
-| 728 | arc_cc_total | arc_cctotal | LINK | Jointure |
-| 740 | pv_stock_movements | pv_stockmvt_dat | READ | Lecture |
-| 878 | categorie_operation_mw | categorie_operation_mw | READ/WRITE | Lecture+Ecriture |
+**Start** assure la gestion complete de ce processus, accessible depuis [VAD validés à imprimer (IDE 0)](ADH-IDE-0.md), [Histo ventes Gratuités (IDE 0)](ADH-IDE-0.md), [Histo ventes IGR (IDE 0)](ADH-IDE-0.md), [Histo ventes payantes /PMS-605 (IDE 0)](ADH-IDE-0.md), [Histo ventes payantes /PMS-623 (IDE 0)](ADH-IDE-0.md), [Print extrait compte /Service (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transferts (IDE 0)](ADH-IDE-0.md), [Main Program (IDE 1)](ADH-IDE-1.md).
 
-**Resume**: 9 tables accedees dont **1 en ecriture**
+Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (5 taches) : traitements metier divers
+- **Initialisation** (1 tache) : reinitialisation d'etats et de variables de travail
+- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Donnees modifiees** : 1 tables en ecriture (categorie_operation_mw).
 
-### 2.4 Algorigramme
+**Logique metier** : 1 regles identifiees couvrant conditions metier.
+
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Traitement (5 taches)
+
+- **166** - Start
+- **166.1** - read FROM_IMS
+- **166.3** - Recup Logins avec matricule
+- **166.4** - read FROM_IMS
+- **166.5** - read FROM_IMS
+
+Delegue a : [Recuperation langue (IDE 45)](ADH-IDE-45.md), [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md), [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md)
+
+#### Phase 2 : Calcul (1 tache)
+
+- **166.2** - comptage lieu sejour
+
+#### Phase 3 : Initialisation (1 tache)
+
+- **166.4.1** - reset log_initialisation_tpe
+
+Delegue a : [  Initialistaion Easy Arrival (IDE 50)](ADH-IDE-50.md)
+
+#### Tables impactees
+
+| Table | Operations | Role metier |
+|-------|-----------|-------------|
+| categorie_operation_mw | R/**W** (2 usages) | Operations comptables |
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (5 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>166 - Start
+
+**Role** : Traitement : Start.
+
+<details>
+<summary>4 sous-taches directes</summary>
+
+| Tache | Nom | Bloc |
+|-------|-----|------|
+| [166.1](#t2) | read FROM_IMS | Traitement |
+| [166.3](#t4) | Recup Logins avec matricule | Traitement |
+| [166.4](#t5) | read FROM_IMS | Traitement |
+| [166.5](#t6) | read FROM_IMS | Traitement |
+
+</details>
+**Delegue a** : [Recuperation langue (IDE 45)](ADH-IDE-45.md), [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md), [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md)
+
+---
+
+#### <a id="t2"></a>166.1 - read FROM_IMS
+
+**Role** : Traitement : read FROM_IMS.
+**Variables liees** : B (FROM_IMS)
+**Delegue a** : [Recuperation langue (IDE 45)](ADH-IDE-45.md), [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md), [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md)
+
+---
+
+#### <a id="t4"></a>166.3 - Recup Logins avec matricule
+
+**Role** : Consultation/chargement : Recup Logins avec matricule.
+**Delegue a** : [Recuperation langue (IDE 45)](ADH-IDE-45.md), [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md), [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md)
+
+---
+
+#### <a id="t5"></a>166.4 - read FROM_IMS
+
+**Role** : Traitement : read FROM_IMS.
+**Variables liees** : B (FROM_IMS)
+**Delegue a** : [Recuperation langue (IDE 45)](ADH-IDE-45.md), [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md), [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md)
+
+---
+
+#### <a id="t6"></a>166.5 - read FROM_IMS
+
+**Role** : Traitement : read FROM_IMS.
+**Variables liees** : B (FROM_IMS)
+**Delegue a** : [Recuperation langue (IDE 45)](ADH-IDE-45.md), [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md), [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md)
+
+
+### 3.2 Calcul (1 tache)
+
+Calculs metier : montants, stocks, compteurs.
+
+---
+
+#### <a id="t3"></a>166.2 - comptage lieu sejour
+
+**Role** : Traitement : comptage lieu sejour.
+
+
+### 3.3 Initialisation (1 tache)
+
+Reinitialisation d'etats et variables de travail.
+
+---
+
+#### <a id="t7"></a>166.4.1 - reset log_initialisation_tpe
+
+**Role** : Reinitialisation : reset log_initialisation_tpe.
+**Delegue a** : [  Initialistaion Easy Arrival (IDE 50)](ADH-IDE-50.md)
+
+
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Traitement si [H] est non nul
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[H]<>0` |
+| **Si vrai** | 'N11.'&Trim(Str([H] |
+| **Si faux** | '#'))&'CZ','N13CZ') |
+| **Expression source** | Expression 3 : `IF([H]<>0,'N11.'&Trim(Str([H],'#'))&'CZ','N13CZ')` |
+| **Exemple** | Si [H]<>0 â†’ 'N11.'&Trim(Str([H]. Sinon â†’ '#'))&'CZ','N13CZ') |
+
+## 6. CONTEXTE
+
+- **Appele par**: [VAD validés à imprimer (IDE 0)](ADH-IDE-0.md), [Histo ventes Gratuités (IDE 0)](ADH-IDE-0.md), [Histo ventes IGR (IDE 0)](ADH-IDE-0.md), [Histo ventes payantes /PMS-605 (IDE 0)](ADH-IDE-0.md), [Histo ventes payantes /PMS-623 (IDE 0)](ADH-IDE-0.md), [Print extrait compte /Service (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transferts (IDE 0)](ADH-IDE-0.md), [Main Program (IDE 1)](ADH-IDE-1.md)
+- **Appelle**: 6 programmes | **Tables**: 8 (W:1 R:5 L:3) | **Taches**: 7 | **Expressions**: 30
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (7 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **166.1** | [**Start** (166)](#t1) | MDI | - | Traitement |
+| 166.1.1 | [read FROM_IMS (166.1)](#t2) | MDI | - | |
+| 166.1.2 | [Recup Logins avec matricule (166.3)](#t4) | - | - | |
+| 166.1.3 | [read FROM_IMS (166.4)](#t5) | MDI | - | |
+| 166.1.4 | [read FROM_IMS (166.5)](#t6) | MDI | - | |
+| **166.2** | [**comptage lieu sejour** (166.2)](#t3) | - | - | Calcul |
+| **166.3** | [**reset log_initialisation_tpe** (166.4.1)](#t7) | - | - | Initialisation |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>7 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 7 |
-| **Lignes logique** | 123 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 9 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (8)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 67 | tables___________tab |  | DB | R |   |   | 1 |
+| 69 | initialisation___ini |  | DB |   |   | L | 1 |
+| 81 | societe__________soc |  | DB | R |   |   | 1 |
+| 118 | tables_imports |  | DB |   |   | L | 1 |
+| 219 | communication_ims |  | DB | R |   |   | 1 |
+| 728 | arc_cc_total |  | DB |   |   | L | 1 |
+| 740 | pv_stock_movements | Articles et stock | DB | R |   |   | 1 |
+| 878 | categorie_operation_mw | Operations comptables | DB | R | **W** |   | 2 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (2 / 5 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 67 - tables___________tab (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W0 connection ? | R | Logical |
+| B | FROM_IMS | R | Alpha |
+| C | L Contrôle date OK | R | Logical |
+| D | v.Tpt_interface ? | R | Logical |
+| E | v.Code TPE | R | Unicode |
+
+</details>
+
+<details>
+<summary>Table 81 - societe__________soc (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | V.Cpt lieu sejour | R | Numeric |
+| B | v Retour Lieu sejour defaut | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 219 - communication_ims (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 740 - pv_stock_movements (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 878 - categorie_operation_mw (R/**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (2)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| D | v.Tpt_interface ? | Logical | 1x session |
+| E | v.Code TPE | Unicode | 1x session |
+
+### 11.2 Variables de travail (1)
+
+Variables internes au programme.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | W0 connection ? | Logical | 2x calcul interne |
+
+### 11.3 Autres (2)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| B | FROM_IMS | Alpha | - |
+| C | L Contrôle date OK | Logical | - |
+
+## 12. EXPRESSIONS
+
+**30 / 30 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONCATENATION | 1 | 0 |
+| CONDITION | 2 | 5 |
+| CONSTANTE | 2 | 0 |
+| OTHER | 15 | 0 |
+| NEGATION | 3 | 0 |
+| REFERENCE_VG | 4 | 0 |
+| STRING | 2 | 0 |
+| FORMAT | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONCATENATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 21 | `'cmd /c mkdir '&Translate('%club_exportdata%')&'Easy_Check_Out'` | - |
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 3 | `IF([H]<>0,'N11.'&Trim(Str([H],'#'))&'CZ','N13CZ')` | [RM-001](#rm-RM-001) |
+| CONDITION | 12 | `Trim(INIGet('[MAGIC_LOGICAL_NAMES]RunMode'))<>'B'` | - |
+
+#### CONSTANTE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 27 | `'BDEV'` | - |
+| CONSTANTE | 13 | `'CA'` | - |
+
+#### OTHER (15 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 20 | `NOT(IsComponent()) AND VG111 AND Range(Term(),430,450)` | - |
+| OTHER | 19 | `NOT(IsComponent())` | - |
+| OTHER | 16 | `v.Tpt_interface ? [D]` | - |
+| OTHER | 22 | `NOT(FileExist(Translate('%club_exportdata%')&'Easy_Check_Out'))` | - |
+| OTHER | 30 | `[F]` | - |
+| ... | | *+10 autres* | |
+
+#### NEGATION (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 25 | `NOT VG78` | - |
+| NEGATION | 11 | `NOT (VG4 OR IsComponent() OR INIGet ('[MAGIC_LOGICAL_NAMES]RunMode')='B')` | - |
+| NEGATION | 4 | `NOT (W0 connection ? [A]) AND NOT(IsComponent())` | - |
+
+#### REFERENCE_VG (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 18 | `VG8` | - |
+| REFERENCE_VG | 26 | `VG78` | - |
+| REFERENCE_VG | 14 | `VG17` | - |
+| REFERENCE_VG | 15 | `VG23` | - |
+
+#### STRING (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 24 | `Val([J], '3')` | - |
+| STRING | 17 | `Trim(v.Code TPE [E])` | - |
+
+#### FORMAT (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 29 | `Str([M],'3')` | - |
+
+### 12.3 Toutes les expressions (30)
+
+<details>
+<summary>Voir les 30 expressions</summary>
+
+#### CONCATENATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 21 | `'cmd /c mkdir '&Translate('%club_exportdata%')&'Easy_Check_Out'` |
+
+#### CONDITION (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 3 | `IF([H]<>0,'N11.'&Trim(Str([H],'#'))&'CZ','N13CZ')` |
+| 12 | `Trim(INIGet('[MAGIC_LOGICAL_NAMES]RunMode'))<>'B'` |
+
+#### CONSTANTE (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 13 | `'CA'` |
+| 27 | `'BDEV'` |
+
+#### OTHER (15)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 1 | `SetParam ('VERIF_USERB','O')` |
+| 2 | `W0 connection ? [A]` |
+| 5 | `SetParam ('SPECIFICPRINT','VOID')` |
+| 6 | `SetParam ('CURRENTPRINTERNUM',0)` |
+| 7 | `SetParam ('CURRENTPRINTERNAME','VOID')` |
+| 8 | `SetParam ('NUMBERCOPIES',0)` |
+| 9 | `SetParam ('LISTINGNUMPRINTERCHOICE',0)` |
+| 10 | `SetParam ('CHAINEDLISTING','NO')` |
+| 16 | `v.Tpt_interface ? [D]` |
+| 19 | `NOT(IsComponent())` |
+| 20 | `NOT(IsComponent()) AND VG111 AND Range(Term(),430,450)` |
+| 22 | `NOT(FileExist(Translate('%club_exportdata%')&'Easy_Check_Out'))` |
+| 23 | `MnuShow('ID_CMP',VG3 OR VG74)` |
+| 28 | `[G]` |
+| 30 | `[F]` |
+
+#### NEGATION (3)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 4 | `NOT (W0 connection ? [A]) AND NOT(IsComponent())` |
+| 11 | `NOT (VG4 OR IsComponent() OR INIGet ('[MAGIC_LOGICAL_NAMES]RunMode')='B')` |
+| 25 | `NOT VG78` |
+
+#### REFERENCE_VG (4)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 14 | `VG17` |
+| 15 | `VG23` |
+| 18 | `VG8` |
+| 26 | `VG78` |
+
+#### STRING (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 17 | `Trim(v.Code TPE [E])` |
+| 24 | `Val([J], '3')` |
+
+#### FORMAT (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 29 | `Str([M],'3')` |
+
+</details>
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [VAD validés à imprimer (IDE 0)](ADH-IDE-0.md) -> **Start (IDE 166)**
+
+Main -> ... -> [Histo ventes Gratuités (IDE 0)](ADH-IDE-0.md) -> **Start (IDE 166)**
+
+Main -> ... -> [Histo ventes IGR (IDE 0)](ADH-IDE-0.md) -> **Start (IDE 166)**
+
+Main -> ... -> [Histo ventes payantes /PMS-605 (IDE 0)](ADH-IDE-0.md) -> **Start (IDE 166)**
+
+Main -> ... -> [Histo ventes payantes /PMS-623 (IDE 0)](ADH-IDE-0.md) -> **Start (IDE 166)**
+
+Main -> ... -> [Print extrait compte /Service (IDE 0)](ADH-IDE-0.md) -> **Start (IDE 166)**
+
+Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Start (IDE 166)**
+
+Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md) -> **Start (IDE 166)**
+
+Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md) -> **Start (IDE 166)**
+
+Main -> ... -> [Transferts (IDE 0)](ADH-IDE-0.md) -> **Start (IDE 166)**
+
+Main -> ... -> [Main Program (IDE 1)](ADH-IDE-1.md) -> **Start (IDE 166)**
 
 ```mermaid
 graph LR
-    T[166 Start]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T166[166 Start]
+    style T166 fill:#58a6ff
+    CALLER1[1 Main Program]
+    CALLER1 --> T166
+    style CALLER1 fill:#3fb950
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [0](ADH-IDE-0.md) | VAD validés à imprimer | 2 |
+| [0](ADH-IDE-0.md) | Histo ventes Gratuités | 1 |
+| [0](ADH-IDE-0.md) | Histo ventes IGR | 1 |
+| [0](ADH-IDE-0.md) | Histo ventes payantes /PMS-605 | 1 |
+| [0](ADH-IDE-0.md) | Histo ventes payantes /PMS-623 | 1 |
+| [0](ADH-IDE-0.md) | Print extrait compte /Service | 1 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-584 | 1 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-710 | 1 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-721 | 1 |
+| [0](ADH-IDE-0.md) | Transferts | 1 |
+| [1](ADH-IDE-1.md) | Main Program | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[166 Start]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T166[166 Start]
+    style T166 fill:#58a6ff
+    C45[45 Recuperation langue]
+    T166 --> C45
+    style C45 fill:#3fb950
+    C50[50 Initialistaion Easy...]
+    T166 --> C50
+    style C50 fill:#3fb950
+    C52[52 Creation adresse_vi...]
+    T166 --> C52
+    style C52 fill:#3fb950
+    C200[200 Verification si cl...]
+    T166 --> C200
+    style C200 fill:#3fb950
+    C224[224 Alimentation Combo...]
+    T166 --> C224
+    style C224 fill:#3fb950
+    C231[231 Raisons utilisatio...]
+    T166 --> C231
+    style C231 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [45](ADH-IDE-45.md) | Recuperation langue | 1 | Recuperation donnees |
+| [50](ADH-IDE-50.md) |   Initialistaion Easy Arrival | 1 | Reinitialisation |
+| [52](ADH-IDE-52.md) | Creation adresse_village | 1 | Sous-programme |
+| [200](ADH-IDE-200.md) | Verification si client/serveur | 1 | Controle/validation |
+| [224](ADH-IDE-224.md) | Alimentation Combos LIEU SEJ | 1 | Sous-programme |
+| [231](ADH-IDE-231.md) | Raisons utilisation ADH | 1 | Parametrage |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 123 | Programme compact |
+| Expressions | 30 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 6 | Dependances moderees |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0.8% (1 / 123) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
+
+### 14.2 Plan de migration par bloc
+
+#### Traitement (5 taches: 0 ecran, 5 traitements)
+
+- **Strategie** : 5 service(s) backend injectable(s) (Domain Services).
+- 6 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
+
+#### Calcul (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : Services de calcul purs (Domain Services).
+- Migrer la logique de calcul (stock, compteurs, montants)
+
+#### Initialisation (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : Constructeur/methode `InitAsync()` dans l'orchestrateur.
+
+### 14.3 Dependances critiques
+
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| categorie_operation_mw | Table WRITE (Database) | 1x | Schema + repository |
+| [Verification si client/serveur (IDE 200)](ADH-IDE-200.md) | Sous-programme | 1x | Normale - Controle/validation |
+| [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md) | Sous-programme | 1x | Normale - Parametrage |
+| [Recuperation langue (IDE 45)](ADH-IDE-45.md) | Sous-programme | 1x | Normale - Recuperation donnees |
+| [  Initialistaion Easy Arrival (IDE 50)](ADH-IDE-50.md) | Sous-programme | 1x | Normale - Reinitialisation |
+| [Creation adresse_village (IDE 52)](ADH-IDE-52.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-
-## NOTES MIGRATION
-
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 7 | Moyen |
-| Tables | 9 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
-
----
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:08 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:52*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 229 - Ventilation Lignes Ventes
 
-> **Analyse**: Phases 1-4 2026-01-30 09:42 -> 09:42 (8s) | Assemblage 09:42
+> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:54 (30s) | Assemblage 03:54
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,8 +14,8 @@
 | IDE Position | 229 |
 | Nom Programme | Ventilation Lignes Ventes |
 | Fichier source | `Prg_229.xml` |
-| Domaine metier | Ventes |
-| Taches | 7 (4 ecrans visibles) |
+| Dossier IDE | Ventes |
+| Taches | 7 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
 
@@ -37,22 +37,22 @@ Le flux de traitement s'organise en **4 blocs fonctionnels** :
 
 #### Phase 1 : Saisie (1 tache)
 
-- **T1** - Maj lignes de ventes\Multi Reg
+- **229** - Maj lignes de ventes\Multi Reg
 
 #### Phase 2 : Traitement (2 taches)
 
-- **T2** - Creaion Temp Fac
-- **T7** - Efface
+- **229.1** - Creaion Temp Fac
+- **229.3.2** - Efface
 
 #### Phase 3 : Reglement (3 taches)
 
-- **T3** - Lecture Fact/Reglement **[ECRAN]**
-- **T4** - Nb Lg Reglement < Nb LgFacture **[ECRAN]**
-- **T5** - REcherche reglement **[ECRAN]**
+- **229.2** - Lecture Fact/Reglement **[[ECRAN]](#ecran-t3)**
+- **229.3** - Nb Lg Reglement < Nb LgFacture **[[ECRAN]](#ecran-t4)**
+- **229.3.1** - REcherche reglement **[[ECRAN]](#ecran-t5)**
 
 #### Phase 4 : Creation (1 tache)
 
-- **T6** - Creation **[ECRAN]**
+- **229.3.1.1** - Creation **[[ECRAN]](#ecran-t6)**
 
 #### Tables impactees
 
@@ -70,9 +70,9 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t1"></a>T1 - Maj lignes de ventes\Multi Reg
+#### <a id="t1"></a>229 - Maj lignes de ventes\Multi Reg
 
-**Role** : Ecran de saisie pour la transaction.
+**Role** : Saisie des donnees : Maj lignes de ventes\Multi Reg.
 
 
 ### 3.2 Traitement (2 taches)
@@ -81,15 +81,15 @@ Traitements internes.
 
 ---
 
-#### <a id="t2"></a>T2 - Creaion Temp Fac
+#### <a id="t2"></a>229.1 - Creaion Temp Fac
 
-**Role** : Traitement interne.
+**Role** : Traitement : Creaion Temp Fac.
 
 ---
 
-#### <a id="t7"></a>T7 - Efface
+#### <a id="t7"></a>229.3.2 - Efface
 
-**Role** : Traitement interne.
+**Role** : Traitement : Efface.
 
 
 ### 3.3 Reglement (3 taches)
@@ -98,24 +98,27 @@ Gestion des moyens de paiement : 3 taches de reglement.
 
 ---
 
-#### <a id="t3"></a>T3 - Lecture Fact/Reglement [ECRAN]
+#### <a id="t3"></a>229.2 - Lecture Fact/Reglement [[ECRAN]](#ecran-t3)
 
-**Role** : Gestion du reglement et moyens de paiement.
+**Role** : Gestion du reglement : Lecture Fact/Reglement.
 **Ecran** : 467 x 0 DLU | [Voir mockup](#ecran-t3)
+**Variables liees** : G (V.Nb ligne Fact/Reglement)
 
 ---
 
-#### <a id="t4"></a>T4 - Nb Lg Reglement < Nb LgFacture [ECRAN]
+#### <a id="t4"></a>229.3 - Nb Lg Reglement < Nb LgFacture [[ECRAN]](#ecran-t4)
 
-**Role** : Gestion du reglement et moyens de paiement.
+**Role** : Gestion du reglement : Nb Lg Reglement < Nb LgFacture.
 **Ecran** : 612 x 169 DLU | [Voir mockup](#ecran-t4)
+**Variables liees** : G (V.Nb ligne Fact/Reglement)
 
 ---
 
-#### <a id="t5"></a>T5 - REcherche reglement [ECRAN]
+#### <a id="t5"></a>229.3.1 - REcherche reglement [[ECRAN]](#ecran-t5)
 
-**Role** : Gestion du reglement et moyens de paiement.
+**Role** : Gestion du reglement : REcherche reglement.
 **Ecran** : 502 x 192 DLU | [Voir mockup](#ecran-t5)
+**Variables liees** : G (V.Nb ligne Fact/Reglement)
 
 
 ### 3.4 Creation (1 tache)
@@ -124,9 +127,9 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t6"></a>T6 - Creation [ECRAN]
+#### <a id="t6"></a>229.3.1.1 - Creation [[ECRAN]](#ecran-t6)
 
-**Role** : Insertion de donnees en base.
+**Role** : Creation d'enregistrement : Creation.
 **Ecran** : 143 x 138 DLU | [Voir mockup](#ecran-t6)
 
 
@@ -143,125 +146,41 @@ Insertion de nouveaux enregistrements en base.
 
 ## 8. ECRANS
 
-### 8.1 Forms visibles (4 / 7)
-
-| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
-|---|----------|-------|-----|------|---------|---------|------|
-| 1 | 229.1 | T3 | Lecture Fact/Reglement | Type0 | 467 | 0 | Reglement |
-| 2 | 229.2 | T4 | Nb Lg Reglement < Nb LgFacture | Type0 | 612 | 169 | Reglement |
-| 3 | 229.3 | T5 | REcherche reglement | Type0 | 502 | 192 | Reglement |
-| 4 | 229.4 | T6 | Creation | Type0 | 143 | 138 | Creation |
-
-### 8.2 Mockups Ecrans
-
----
-
-#### <a id="ecran-t3"></a>229.1 - Lecture Fact/Reglement
-**Tache** : [T3](#t3) | **Type** : Type0 | **Dimensions** : 467 x 0 DLU
-**Bloc** : Reglement | **Titre IDE** : Lecture Fact/Reglement
-
-<!-- FORM-DATA:
-{
-    "width":  467,
-    "controls":  [
-
-                 ],
-    "type":  "Type0",
-    "height":  0,
-    "taskId":  3
-}
--->
-
----
-
-#### <a id="ecran-t4"></a>229.2 - Nb Lg Reglement < Nb LgFacture
-**Tache** : [T4](#t4) | **Type** : Type0 | **Dimensions** : 612 x 169 DLU
-**Bloc** : Reglement | **Titre IDE** : Nb Lg Reglement < Nb LgFacture
-
-<!-- FORM-DATA:
-{
-    "width":  612,
-    "controls":  [
-
-                 ],
-    "type":  "Type0",
-    "height":  169,
-    "taskId":  4
-}
--->
-
----
-
-#### <a id="ecran-t5"></a>229.3 - REcherche reglement
-**Tache** : [T5](#t5) | **Type** : Type0 | **Dimensions** : 502 x 192 DLU
-**Bloc** : Reglement | **Titre IDE** : REcherche reglement
-
-<!-- FORM-DATA:
-{
-    "width":  502,
-    "controls":  [
-
-                 ],
-    "type":  "Type0",
-    "height":  192,
-    "taskId":  5
-}
--->
-
----
-
-#### <a id="ecran-t6"></a>229.4 - Creation
-**Tache** : [T6](#t6) | **Type** : Type0 | **Dimensions** : 143 x 138 DLU
-**Bloc** : Creation | **Titre IDE** : Creation
-
-<!-- FORM-DATA:
-{
-    "width":  143,
-    "controls":  [
-
-                 ],
-    "type":  "Type0",
-    "height":  138,
-    "taskId":  6
-}
--->
+*(Programme sans ecran visible)*
 
 ## 9. NAVIGATION
 
-### 9.1 Enchainement des ecrans
+### 9.3 Structure hierarchique (7 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **229.1** | [**Maj lignes de ventes\Multi Reg** (229)](#t1) | - | - | Saisie |
+| **229.2** | [**Creaion Temp Fac** (229.1)](#t2) | - | - | Traitement |
+| 229.2.1 | [Efface (229.3.2)](#t7) | - | - | |
+| **229.3** | [**Lecture Fact/Reglement** (229.2)](#t3) [mockup](#ecran-t3) | - | 467x0 | Reglement |
+| 229.3.1 | [Nb Lg Reglement < Nb LgFacture (229.3)](#t4) [mockup](#ecran-t4) | - | 612x169 | |
+| 229.3.2 | [REcherche reglement (229.3.1)](#t5) [mockup](#ecran-t5) | - | 502x192 | |
+| **229.4** | [**Creation** (229.3.1.1)](#t6) [mockup](#ecran-t6) | - | 143x138 | Creation |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([Entree])
-    style START fill:#3fb950
-    VF3[T3 Lecture FactReglement]
-    style VF3 fill:#58a6ff
-    VF4[T4 Nb Lg Reglement Nb ...]
-    style VF4 fill:#58a6ff
-    VF5[T5 REcherche reglement]
-    style VF5 fill:#58a6ff
-    VF6[T6 Creation]
-    style VF6 fill:#58a6ff
-    FIN([Sortie])
-    style FIN fill:#f85149
-    START --> VF3
-    VF3 --> FIN
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-**Detail par enchainement :**
-
-| Depuis | Action | Vers | Retour |
-|--------|--------|------|--------|
-
-### 9.3 Structure hierarchique (7 taches)
-
-- **229.1** [Maj lignes de ventes\Multi Reg (T1)](#t1)   *[Saisie]*
-- **229.2** [Creaion Temp Fac (T2)](#t2)   *[Traitement]*
-  - **229.2.1** [Efface (T7)](#t7)  
-- **229.3** [Lecture Fact/Reglement (T3)](#t3) **[ECRAN]**  467x0 -> [mockup](#ecran-t3) *[Reglement]*
-  - **229.3.1** [Nb Lg Reglement < Nb LgFacture (T4)](#t4) **[ECRAN]**  612x169 -> [mockup](#ecran-t4)
-  - **229.3.2** [REcherche reglement (T5)](#t5) **[ECRAN]**  502x192 -> [mockup](#ecran-t5)
-- **229.4** [Creation (T6)](#t6) **[ECRAN]**  143x138 -> [mockup](#ecran-t6) *[Creation]*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -275,21 +194,34 @@ flowchart TD
 | 847 | stat_lieu_vente_date | Statistiques point de vente | TMP |   |   | L | 1 |
 | 864 | type_mail_a_traiter |  | DB |   | **W** |   | 6 |
 
-### Colonnes par table
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
 
 <details>
 <summary>Table 864 - type_mail_a_traiter (**W**) - 6 usages</summary>
 
-| Lettre | Variable | Acces | Type | Utilisee |
-|--------|----------|-------|------|----------|
-| C | V.type Payment | W | Alpha | **OUI** |
-| D | P.type d'enregistrement créé | W | Alpha | **OUI** |
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v Montant Restant | W | Numeric |
+| B | v Montant de la ligne a creer | W | Numeric |
+| C | V.type Payment | W | Alpha |
+| D | v Compteur | W | Numeric |
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Variables de session (5)
+### 11.1 Parametres entrants (4)
+
+Variables recues en parametre.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P.Societe | Alpha | - |
+| B | P.Compte | Numeric | - |
+| C | P.Filiation | Numeric | - |
+| D | P.type d'enregistrement créé | Alpha | - |
+
+### 11.2 Variables de session (5)
 
 Variables persistantes pendant toute la session.
 
@@ -300,17 +232,6 @@ Variables persistantes pendant toute la session.
 | G | V.Nb ligne Fact/Reglement | Numeric | - |
 | H | V.Mtt Ligne regle | Numeric | - |
 | I | V.Dernier Article Lu | Numeric | - |
-
-### 11.2 Autres (4)
-
-Variables diverses.
-
-| Lettre | Nom | Type | Usage dans |
-|--------|-----|------|-----------|
-| A | P.Societe | Alpha | - |
-| B | P.Compte | Numeric | - |
-| C | P.Filiation | Numeric | - |
-| D | P.type d'enregistrement créé | Alpha | - |
 
 ## 12. EXPRESSIONS
 
@@ -387,7 +308,7 @@ graph LR
 | Expressions | 2 | Peu de logique |
 | Tables WRITE | 1 | Impact faible |
 | Sous-programmes | 0 | Peu de dependances |
-| Ecrans visibles | 4 | Quelques ecrans |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 161) | Code sain |
 | Regles metier | 0 | Pas de regle identifiee |
 
@@ -400,7 +321,8 @@ graph LR
 
 #### Traitement (2 taches: 0 ecran, 2 traitements)
 
-- Traitement standard a migrer
+- **Strategie** : 2 service(s) backend injectable(s) (Domain Services).
+- Decomposer les taches en services unitaires testables.
 
 #### Reglement (3 taches: 3 ecrans, 0 traitement)
 
@@ -419,4 +341,4 @@ graph LR
 | type_mail_a_traiter | Table WRITE (Database) | 6x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-01-30 09:42*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:54*

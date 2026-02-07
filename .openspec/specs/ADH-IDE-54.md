@@ -1,202 +1,1827 @@
 ﻿# ADH IDE 54 - Factures_Check_Out
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:01
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_50.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (28s) | Assemblage 03:43
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Factures_Check_Out |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (13 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (13 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 54 |
-| **Fichier XML** | `Prg_50.xml` |
-| **Description** | Factures_Check_Out |
-| **Module** | ADH |
-| **Public Name** | FACTURES_CHECK_OUT |
-| **Nombre taches** | 13 |
-| **Lignes logique** | 460 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 54 |
+| Nom Programme | Factures_Check_Out |
+| Fichier source | `Prg_54.xml` |
+| Dossier IDE | Facturation |
+| Taches | 13 (2 ecrans visibles) |
+| Tables modifiees | 3 |
+| Programmes appeles | 12 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | cafil008_dat | LINK | Jointure |
-| 31 | gm-complet_______gmc | cafil009_dat | LINK | Jointure |
-| 372 | pv_budget | pv_budget_dat | LINK | Jointure |
-| 866 | maj_appli_tpe | maj_appli_tpe | LINK/READ/WRITE | Jointure+R/W |
-| 867 | log_maj_tpe | log_maj_tpe | READ | Lecture |
-| 868 | Affectation_Gift_Pass | affectation_gift_pass | READ | Lecture |
-| 870 | Rayons_Boutique | rayons_boutique | LINK/READ/WRITE | Jointure+R/W |
-| 932 | taxe_add_param | taxe_add_param | LINK/WRITE | Jointure+Ecriture |
+**Factures_Check_Out** assure la gestion complete de ce processus, accessible depuis [Easy Check-Out === V2.00 (IDE 283)](ADH-IDE-283.md), [Solde Easy Check Out (IDE 64)](ADH-IDE-64.md), [Lanceur Facture (IDE 280)](ADH-IDE-280.md), [Solde Easy Check Out (IDE 287)](ADH-IDE-287.md), [Easy Check-Out === V2.00 (IDE 313)](ADH-IDE-313.md).
 
-**Resume**: 13 tables accedees dont **3 en ecriture**
+Le flux de traitement s'organise en **5 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (6 taches) : traitements metier divers
+- **Validation** (3 taches) : controles et verifications de coherence
+- **Initialisation** (2 taches) : reinitialisation d'etats et de variables de travail
+- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
+- **Consultation** (1 tache) : ecrans de recherche, selection et consultation
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Donnees modifiees** : 3 tables en ecriture (maj_appli_tpe, Rayons_Boutique, taxe_add_param).
 
-### 2.4 Algorigramme
+**Logique metier** : 3 regles identifiees couvrant conditions metier.
+
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Saisie (1 tache)
+
+- **54** - Factures Bis(Ventes) **[[ECRAN]](#ecran-t1)**
+
+Delegue a : [Maj des lignes saisies (IDE 61)](ADH-IDE-61.md), [Maj des lignes saisies V3 (IDE 105)](ADH-IDE-105.md)
+
+#### Phase 2 : Validation (3 taches)
+
+- **54.1** - verif non flaguee
+- **54.2.2** - verif boutique
+- **54.4** - verif non flaguee
+
+Delegue a : [Verif boutique (IDE 91)](ADH-IDE-91.md)
+
+#### Phase 3 : Traitement (6 taches)
+
+- **54.2** - Hebergement **[[ECRAN]](#ecran-t3)**
+- **54.2.1** - Flag All **[[ECRAN]](#ecran-t4)**
+- **54.5** - chargement boutique
+- **54.6** - SQL parcourt facture **[[ECRAN]](#ecran-t9)**
+- **54.7** - Browse Fac TVA Pro **[[ECRAN]](#ecran-t10)**
+- **54.8** - Browse Fact Tempo **[[ECRAN]](#ecran-t11)**
+
+Delegue a : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md), [Maj Hebergement Tempo (IDE 62)](ADH-IDE-62.md), [flag ligne boutique (IDE 92)](ADH-IDE-92.md)
+
+#### Phase 4 : Consultation (1 tache)
+
+- **54.3** - Recherche si Fact déjà éditée
+
+#### Phase 5 : Initialisation (2 taches)
+
+- **54.9** - RAZ facture ECO
+- **54.9.1** - Raz détail facture
+
+#### Tables impactees
+
+| Table | Operations | Role metier |
+|-------|-----------|-------------|
+| maj_appli_tpe | R/**W**/L (8 usages) |  |
+| Rayons_Boutique | R/**W**/L (5 usages) |  |
+| taxe_add_param | **W**/L (2 usages) |  |
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Saisie (1 tache)
+
+L'operateur saisit les donnees de la transaction via 1 ecran (Factures Bis(Ventes)).
+
+---
+
+#### <a id="t1"></a>54 - Factures Bis(Ventes) [[ECRAN]](#ecran-t1)
+
+**Role** : Saisie des donnees : Factures Bis(Ventes).
+**Ecran** : 881 x 411 DLU | [Voir mockup](#ecran-t1)
+**Delegue a** : [Maj des lignes saisies (IDE 61)](ADH-IDE-61.md), [Maj des lignes saisies V3 (IDE 105)](ADH-IDE-105.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md)
+
+
+### 3.2 Validation (3 taches)
+
+Controles de coherence : 3 taches verifient les donnees et conditions.
+
+---
+
+#### <a id="t2"></a>54.1 - verif non flaguee
+
+**Role** : Verification : verif non flaguee.
+**Variables liees** : BB (V.Existe flaguee ?)
+**Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
+
+---
+
+#### <a id="t5"></a>54.2.2 - verif boutique
+
+**Role** : Verification : verif boutique.
+**Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
+
+---
+
+#### <a id="t7"></a>54.4 - verif non flaguee
+
+**Role** : Verification : verif non flaguee.
+**Variables liees** : BB (V.Existe flaguee ?)
+**Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
+
+
+### 3.3 Traitement (6 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t3"></a>54.2 - Hebergement [[ECRAN]](#ecran-t3)
+
+**Role** : Traitement : Hebergement.
+**Ecran** : 866 x 250 DLU | [Voir mockup](#ecran-t3)
+**Variables liees** : Y (V.Date Début Hebergement), Z (V.Date Fin Hebergement)
+**Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
+
+---
+
+#### <a id="t4"></a>54.2.1 - Flag All [[ECRAN]](#ecran-t4)
+
+**Role** : Traitement : Flag All.
+**Ecran** : 541 x 291 DLU | [Voir mockup](#ecran-t4)
+**Variables liees** : BB (V.Existe flaguee ?)
+**Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
+
+---
+
+#### <a id="t8"></a>54.5 - chargement boutique
+
+**Role** : Traitement : chargement boutique.
+**Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
+
+---
+
+#### <a id="t9"></a>54.6 - SQL parcourt facture [[ECRAN]](#ecran-t9)
+
+**Role** : Traitement : SQL parcourt facture.
+**Ecran** : 609 x 195 DLU | [Voir mockup](#ecran-t9)
+**Variables liees** : H (P.i.Facture ECO), J (V.Lien Pied de facture), K (V.Existe facture ?), R (V.Facture Sans Nom), S (V.Facture Sans Adresse)
+**Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
+
+---
+
+#### <a id="t10"></a>54.7 - Browse Fac TVA Pro [[ECRAN]](#ecran-t10)
+
+**Role** : Traitement : Browse Fac TVA Pro.
+**Ecran** : 1111 x 0 DLU | [Voir mockup](#ecran-t10)
+**Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
+
+---
+
+#### <a id="t11"></a>54.8 - Browse Fact Tempo [[ECRAN]](#ecran-t11)
+
+**Role** : Traitement : Browse Fact Tempo.
+**Ecran** : 798 x 316 DLU | [Voir mockup](#ecran-t11)
+**Variables liees** : H (P.i.Facture ECO), J (V.Lien Pied de facture), K (V.Existe facture ?), R (V.Facture Sans Nom), S (V.Facture Sans Adresse)
+**Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
+
+
+### 3.4 Consultation (1 tache)
+
+Ecrans de recherche et consultation.
+
+---
+
+#### <a id="t6"></a>54.3 - Recherche si Fact déjà éditée
+
+**Role** : Traitement : Recherche si Fact déjà éditée.
+**Variables liees** : H (P.i.Facture ECO), J (V.Lien Pied de facture), K (V.Existe facture ?), R (V.Facture Sans Nom), S (V.Facture Sans Adresse)
+
+
+### 3.5 Initialisation (2 taches)
+
+Reinitialisation d'etats et variables de travail.
+
+---
+
+#### <a id="t12"></a>54.9 - RAZ facture ECO
+
+**Role** : Reinitialisation : RAZ facture ECO.
+**Variables liees** : H (P.i.Facture ECO), J (V.Lien Pied de facture), K (V.Existe facture ?), R (V.Facture Sans Nom), S (V.Facture Sans Adresse)
+
+---
+
+#### <a id="t13"></a>54.9.1 - Raz détail facture
+
+**Role** : Reinitialisation : Raz détail facture.
+**Variables liees** : H (P.i.Facture ECO), J (V.Lien Pied de facture), K (V.Existe facture ?), R (V.Facture Sans Nom), S (V.Facture Sans Adresse)
+
+
+## 5. REGLES METIER
+
+3 regles identifiees:
+
+### Autres (3 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Si [AP] alors Trim([AS]) sinon Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X]))
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[AP]` |
+| **Si vrai** | Trim([AS]) |
+| **Si faux** | Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X])) |
+| **Variables** | W (V.Service), X (V.Fact déjà editée) |
+| **Expression source** | Expression 6 : `IF([AP],Trim([AS]),Trim(V.Service [W])&' '&Trim(V.Fact déjà ` |
+| **Exemple** | Si [AP] â†’ Trim([AS]). Sinon â†’ Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X])) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Si Trim(P.i.chemin [F]) <> '' alors Trim(P.i.chemin [F]) & Trim([BG]) sinon Translate ('%club_exportdata%')&'PDF\'&Trim([BG]))
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim(P.i.chemin [F]) <> ''` |
+| **Si vrai** | Trim(P.i.chemin [F]) & Trim([BG]) |
+| **Si faux** | Translate ('%club_exportdata%')&'PDF\'&Trim([BG])) |
+| **Variables** | F (P.i.chemin) |
+| **Expression source** | Expression 23 : `IF(Trim(P.i.chemin [F]) <> '',Trim(P.i.chemin [F]) & Trim([B` |
+| **Exemple** | Si Trim(P.i.chemin [F]) <> '' â†’ Trim(P.i.chemin [F]) & Trim([BG]). Sinon â†’ Translate ('%club_exportdata%')&'PDF\'&Trim([BG])) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Si Trim(P.i.TypeReglement [G]) vaut 'I' alors 'D', sinon 'I'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim(P.i.TypeReglement [G])='I'` |
+| **Si vrai** | 'D' |
+| **Si faux** | 'I') |
+| **Variables** | G (P.i.TypeReglement) |
+| **Expression source** | Expression 34 : `IF(Trim(P.i.TypeReglement [G])='I','D','I')` |
+| **Exemple** | Si Trim(P.i.TypeReglement [G])='I' â†’ 'D'. Sinon â†’ 'I') |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Easy Check-Out === V2.00 (IDE 283)](ADH-IDE-283.md), [Solde Easy Check Out (IDE 64)](ADH-IDE-64.md), [Lanceur Facture (IDE 280)](ADH-IDE-280.md), [Solde Easy Check Out (IDE 287)](ADH-IDE-287.md), [Easy Check-Out === V2.00 (IDE 313)](ADH-IDE-313.md)
+- **Appelle**: 12 programmes | **Tables**: 8 (W:3 R:4 L:6) | **Taches**: 13 | **Expressions**: 40
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (2 / 13)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 54.7 | 54.7 | Browse Fac TVA Pro | Type0 | 1111 | 0 | Traitement |
+| 2 | 54.8 | 54.8 | Browse Fact Tempo | Type0 | 798 | 316 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t10"></a>54.7 - Browse Fac TVA Pro
+**Tache** : [54.7](#t10) | **Type** : Type0 | **Dimensions** : 1111 x 0 DLU
+**Bloc** : Traitement | **Titre IDE** : Browse Fac TVA Pro
+
+<!-- FORM-DATA:
+{
+    "width":  1111,
+    "vFactor":  8,
+    "type":  "Type0",
+    "hFactor":  4,
+    "controls":  [
+                     {
+                         "x":  8,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  12,
+                         "color":  "",
+                         "w":  3378,
+                         "y":  8,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  13,
+                         "h":  182,
+                         "cols":  [
+                                      {
+                                          "title":  "societe",
+                                          "layer":  1,
+                                          "w":  30
+                                      },
+                                      {
+                                          "title":  "service",
+                                          "layer":  2,
+                                          "w":  122
+                                      },
+                                      {
+                                          "title":  "compte_gm",
+                                          "layer":  3,
+                                          "w":  49
+                                      },
+                                      {
+                                          "title":  "filiation",
+                                          "layer":  4,
+                                          "w":  29
+                                      },
+                                      {
+                                          "title":  "date",
+                                          "layer":  5,
+                                          "w":  68
+                                      },
+                                      {
+                                          "title":  "row_id_vente",
+                                          "layer":  6,
+                                          "w":  54
+                                      },
+                                      {
+                                          "title":  "Article",
+                                          "layer":  7,
+                                          "w":  49
+                                      },
+                                      {
+                                          "title":  "flag",
+                                          "layer":  8,
+                                          "w":  38
+                                      },
+                                      {
+                                          "title":  "utilisateur",
+                                          "layer":  9,
+                                          "w":  66
+                                      },
+                                      {
+                                          "title":  "num_facture",
+                                          "layer":  10,
+                                          "w":  58
+                                      },
+                                      {
+                                          "title":  "date_edition",
+                                          "layer":  11,
+                                          "w":  68
+                                      },
+                                      {
+                                          "title":  "nom_fichier_facture",
+                                          "layer":  12,
+                                          "w":  570
+                                      },
+                                      {
+                                          "title":  "avec_nom",
+                                          "layer":  13,
+                                          "w":  43
+                                      },
+                                      {
+                                          "title":  "avec_adresse",
+                                          "layer":  14,
+                                          "w":  57
+                                      },
+                                      {
+                                          "title":  "pu_ttc",
+                                          "layer":  15,
+                                          "w":  92
+                                      },
+                                      {
+                                          "title":  "montant_remise",
+                                          "layer":  16,
+                                          "w":  92
+                                      },
+                                      {
+                                          "title":  "pu_net",
+                                          "layer":  17,
+                                          "w":  92
+                                      },
+                                      {
+                                          "title":  "pu_ht",
+                                          "layer":  18,
+                                          "w":  92
+                                      },
+                                      {
+                                          "title":  "tva",
+                                          "layer":  19,
+                                          "w":  44
+                                      },
+                                      {
+                                          "title":  "total_ht",
+                                          "layer":  20,
+                                          "w":  92
+                                      },
+                                      {
+                                          "title":  "total_ttc",
+                                          "layer":  21,
+                                          "w":  92
+                                      },
+                                      {
+                                          "title":  "qte",
+                                          "layer":  22,
+                                          "w":  25
+                                      },
+                                      {
+                                          "title":  "designation",
+                                          "layer":  23,
+                                          "w":  850
+                                      },
+                                      {
+                                          "title":  "date_vente",
+                                          "layer":  24,
+                                          "w":  68
+                                      },
+                                      {
+                                          "title":  "date_debut_sejour",
+                                          "layer":  25,
+                                          "w":  74
+                                      },
+                                      {
+                                          "title":  "date_fin_sejour",
+                                          "layer":  26,
+                                          "w":  68
+                                      },
+                                      {
+                                          "title":  "row_id_bout",
+                                          "layer":  27,
+                                          "w":  53
+                                      },
+                                      {
+                                          "title":  "code_application",
+                                          "layer":  28,
+                                          "w":  68
+                                      },
+                                      {
+                                          "title":  "pourcent_remise",
+                                          "layer":  29,
+                                          "w":  66
+                                      },
+                                      {
+                                          "title":  "time_edition",
+                                          "layer":  30,
+                                          "w":  53
+                                      },
+                                      {
+                                          "title":  "Flag_selection_manuelle",
+                                          "layer":  31,
+                                          "w":  96
+                                      },
+                                      {
+                                          "title":  "code_type",
+                                          "layer":  32,
+                                          "w":  43
+                                      }
+                                  ],
+                         "rows":  32
+                     },
+                     {
+                         "x":  12,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  9,
+                         "fmt":  "",
+                         "name":  "societe",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  42,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  115,
+                         "fmt":  "",
+                         "name":  "service",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  164,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  42,
+                         "fmt":  "",
+                         "name":  "compte_gm",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  213,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  18,
+                         "fmt":  "",
+                         "name":  "filiation",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  242,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  61,
+                         "fmt":  "",
+                         "name":  "date",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  310,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  46,
+                         "fmt":  "",
+                         "name":  "row_id_vente",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  364,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  42,
+                         "fmt":  "",
+                         "name":  "Article",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  413,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  31,
+                         "fmt":  "",
+                         "name":  "flag",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  451,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  59,
+                         "fmt":  "",
+                         "name":  "utilisateur",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  517,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  51,
+                         "fmt":  "",
+                         "name":  "num_facture",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  575,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  61,
+                         "fmt":  "",
+                         "name":  "date_edition",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  643,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  563,
+                         "fmt":  "",
+                         "name":  "nom_fichier_facture",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1213,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  31,
+                         "fmt":  "",
+                         "name":  "avec_nom",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1256,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  31,
+                         "fmt":  "",
+                         "name":  "avec_adresse",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1313,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  85,
+                         "fmt":  "",
+                         "name":  "pu_ttc",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1405,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  85,
+                         "fmt":  "",
+                         "name":  "montant_remise",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1497,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  85,
+                         "fmt":  "",
+                         "name":  "pu_net",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1589,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  85,
+                         "fmt":  "",
+                         "name":  "pu_ht",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1681,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  37,
+                         "fmt":  "",
+                         "name":  "tva",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1725,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  85,
+                         "fmt":  "",
+                         "name":  "total_ht",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1817,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  85,
+                         "fmt":  "",
+                         "name":  "total_ttc",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1909,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  18,
+                         "fmt":  "",
+                         "name":  "qte",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  1934,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  843,
+                         "fmt":  "",
+                         "name":  "designation",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  2784,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  61,
+                         "fmt":  "",
+                         "name":  "date_vente",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  2852,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  61,
+                         "fmt":  "",
+                         "name":  "date_debut_sejour",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  2926,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  61,
+                         "fmt":  "",
+                         "name":  "date_fin_sejour",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  2994,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  46,
+                         "fmt":  "",
+                         "name":  "row_id_bout",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  3047,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  9,
+                         "fmt":  "",
+                         "name":  "code_application",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  3115,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  37,
+                         "fmt":  "",
+                         "name":  "pourcent_remise",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  3181,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  46,
+                         "fmt":  "",
+                         "name":  "time_edition",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  3234,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  31,
+                         "fmt":  "",
+                         "name":  "Flag_selection_manuelle",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  3330,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  9,
+                         "fmt":  "",
+                         "name":  "code_type",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     }
+                 ],
+    "taskId":  "54.7",
+    "height":  0
+}
+-->
+
+<details>
+<summary><strong>Champs : 32 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 12,23 | societe | - | edit |
+| 42,23 | service | - | edit |
+| 164,23 | compte_gm | - | edit |
+| 213,23 | filiation | - | edit |
+| 242,23 | date | - | edit |
+| 310,23 | row_id_vente | - | edit |
+| 364,23 | Article | - | edit |
+| 413,23 | flag | - | edit |
+| 451,23 | utilisateur | - | edit |
+| 517,23 | num_facture | - | edit |
+| 575,23 | date_edition | - | edit |
+| 643,23 | nom_fichier_facture | - | edit |
+| 1213,23 | avec_nom | - | edit |
+| 1256,23 | avec_adresse | - | edit |
+| 1313,23 | pu_ttc | - | edit |
+| 1405,23 | montant_remise | - | edit |
+| 1497,23 | pu_net | - | edit |
+| 1589,23 | pu_ht | - | edit |
+| 1681,23 | tva | - | edit |
+| 1725,23 | total_ht | - | edit |
+| 1817,23 | total_ttc | - | edit |
+| 1909,23 | qte | - | edit |
+| 1934,23 | designation | - | edit |
+| 2784,23 | date_vente | - | edit |
+| 2852,23 | date_debut_sejour | - | edit |
+| 2926,23 | date_fin_sejour | - | edit |
+| 2994,23 | row_id_bout | - | edit |
+| 3047,23 | code_application | - | edit |
+| 3115,23 | pourcent_remise | - | edit |
+| 3181,23 | time_edition | - | edit |
+| 3234,23 | Flag_selection_manuelle | - | edit |
+| 3330,23 | code_type | - | edit |
+
+</details>
+
+---
+
+#### <a id="ecran-t11"></a>54.8 - Browse Fact Tempo
+**Tache** : [54.8](#t11) | **Type** : Type0 | **Dimensions** : 798 x 316 DLU
+**Bloc** : Traitement | **Titre IDE** : Browse Fact Tempo
+
+<!-- FORM-DATA:
+{
+    "width":  798,
+    "vFactor":  8,
+    "type":  "Type0",
+    "hFactor":  4,
+    "controls":  [
+                     {
+                         "x":  4,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  12,
+                         "color":  "",
+                         "w":  970,
+                         "y":  8,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  13,
+                         "h":  184,
+                         "cols":  [
+                                      {
+                                          "title":  "lg_ven_compte_gm",
+                                          "layer":  1,
+                                          "w":  78
+                                      },
+                                      {
+                                          "title":  "lg_ven_filiation",
+                                          "layer":  2,
+                                          "w":  59
+                                      },
+                                      {
+                                          "title":  "lg_ven_imputation",
+                                          "layer":  3,
+                                          "w":  72
+                                      },
+                                      {
+                                          "title":  "lg_ven_sous_imputation",
+                                          "layer":  4,
+                                          "w":  94
+                                      },
+                                      {
+                                          "title":  "lg_ven_libelle",
+                                          "layer":  5,
+                                          "w":  191
+                                      },
+                                      {
+                                          "title":  "lg_ven_libelle_supplem_",
+                                          "layer":  6,
+                                          "w":  95
+                                      },
+                                      {
+                                          "title":  "lg_ven_mode_de_paiement",
+                                          "layer":  7,
+                                          "w":  108
+                                      },
+                                      {
+                                          "title":  "lg_ven_montant",
+                                          "layer":  8,
+                                          "w":  101
+                                      },
+                                      {
+                                          "title":  "lg_ven_date_comptable",
+                                          "layer":  9,
+                                          "w":  94
+                                      },
+                                      {
+                                          "title":  "lg_ven_service",
+                                          "layer":  10,
+                                          "w":  61
+                                      }
+                                  ],
+                         "rows":  10
+                     },
+                     {
+                         "x":  8,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  42,
+                         "fmt":  "",
+                         "name":  "lg_ven_compte_gm",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  86,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  18,
+                         "fmt":  "",
+                         "name":  "lg_ven_filiation",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  145,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  51,
+                         "fmt":  "",
+                         "name":  "lg_ven_imputation",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  217,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  18,
+                         "fmt":  "",
+                         "name":  "lg_ven_sous_imputation",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  311,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  188,
+                         "fmt":  "",
+                         "name":  "lg_ven_libelle",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  502,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  87,
+                         "fmt":  "",
+                         "name":  "lg_ven_libelle_supplem_",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  597,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  26,
+                         "fmt":  "",
+                         "name":  "lg_ven_mode_de_paiement",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  705,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  94,
+                         "fmt":  "",
+                         "name":  "lg_ven_montant",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  806,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  61,
+                         "fmt":  "",
+                         "name":  "lg_ven_date_comptable",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  900,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  26,
+                         "fmt":  "",
+                         "name":  "lg_ven_service",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     }
+                 ],
+    "taskId":  "54.8",
+    "height":  316
+}
+-->
+
+<details>
+<summary><strong>Champs : 10 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 8,23 | lg_ven_compte_gm | - | edit |
+| 86,23 | lg_ven_filiation | - | edit |
+| 145,23 | lg_ven_imputation | - | edit |
+| 217,23 | lg_ven_sous_imputation | - | edit |
+| 311,23 | lg_ven_libelle | - | edit |
+| 502,23 | lg_ven_libelle_supplem_ | - | edit |
+| 597,23 | lg_ven_mode_de_paiement | - | edit |
+| 705,23 | lg_ven_montant | - | edit |
+| 806,23 | lg_ven_date_comptable | - | edit |
+| 900,23 | lg_ven_service | - | edit |
+
+</details>
+
+## 9. NAVIGATION
+
+### 9.1 Enchainement des ecrans
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>13 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
-
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
-
+    START([Entree])
     style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    VF10[54.7 Browse Fac TVA Pro]
+    style VF10 fill:#58a6ff
+    VF11[54.8 Browse Fact Tempo]
+    style VF11 fill:#58a6ff
+    EXT58[IDE 58 Incremente N° d...]
+    style EXT58 fill:#3fb950
+    EXT60[IDE 60 Creation entete...]
+    style EXT60 fill:#3fb950
+    EXT61[IDE 61 Maj des lignes ...]
+    style EXT61 fill:#3fb950
+    EXT90[IDE 90 Edition Facture...]
+    style EXT90 fill:#3fb950
+    EXT93[IDE 93 Creation Pied F...]
+    style EXT93 fill:#3fb950
+    EXT98[IDE 98 EditFactureTvaC...]
+    style EXT98 fill:#3fb950
+    EXT105[IDE 105 Maj des lignes...]
+    style EXT105 fill:#3fb950
+    EXT57[IDE 57 Factures_Sejour]
+    style EXT57 fill:#3fb950
+    EXT59[IDE 59 Facture - charg...]
+    style EXT59 fill:#3fb950
+    EXT62[IDE 62 Maj Hebergement...]
+    style EXT62 fill:#3fb950
+    EXT91[IDE 91 Verif boutique]
+    style EXT91 fill:#3fb950
+    EXT92[IDE 92 flag ligne bout...]
+    style EXT92 fill:#3fb950
+    FIN([Sortie])
+    style FIN fill:#f85149
+    START --> VF10
+    VF10 -->|Sous-programme| EXT58
+    VF10 -->|Sous-programme| EXT60
+    VF10 -->|Mise a jour donnees| EXT61
+    VF10 -->|Impression ticket/document| EXT90
+    VF10 -->|Sous-programme| EXT93
+    VF10 -->|Sous-programme| EXT98
+    VF10 -->|Mise a jour donnees| EXT105
+    VF10 -->|Sous-programme| EXT57
+    EXT92 --> FIN
 ```
 
-### 2.5 Statistiques
+**Detail par enchainement :**
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 13 |
-| **Lignes logique** | 460 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 13 |
-| **Tables en ecriture** | 3 |
-| **Callees niveau 1** | 0 |
+| Depuis | Action | Vers | Retour |
+|--------|--------|------|--------|
+| Browse Fac TVA Pro | Sous-programme | [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md) | Retour ecran |
+| Browse Fac TVA Pro | Sous-programme | [Creation entete facture (IDE 60)](ADH-IDE-60.md) | Retour ecran |
+| Browse Fac TVA Pro | Mise a jour donnees | [Maj des lignes saisies (IDE 61)](ADH-IDE-61.md) | Retour ecran |
+| Browse Fac TVA Pro | Impression ticket/document | [Edition Facture Tva(Compta&Ve) (IDE 90)](ADH-IDE-90.md) | Retour ecran |
+| Browse Fac TVA Pro | Sous-programme | [Creation Pied Facture (IDE 93)](ADH-IDE-93.md) | Retour ecran |
+| Browse Fac TVA Pro | Sous-programme | [EditFactureTva(Compta&Ve) V3 (IDE 98)](ADH-IDE-98.md) | Retour ecran |
+| Browse Fac TVA Pro | Mise a jour donnees | [Maj des lignes saisies V3 (IDE 105)](ADH-IDE-105.md) | Retour ecran |
+| Browse Fac TVA Pro | Sous-programme | [Factures_Sejour (IDE 57)](ADH-IDE-57.md) | Retour ecran |
+| Browse Fac TVA Pro | Sous-programme | [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md) | Retour ecran |
+| Browse Fac TVA Pro | Mise a jour donnees | [Maj Hebergement Tempo (IDE 62)](ADH-IDE-62.md) | Retour ecran |
+| Browse Fac TVA Pro | Controle/validation | [Verif boutique (IDE 91)](ADH-IDE-91.md) | Retour ecran |
+| Browse Fac TVA Pro | Sous-programme | [flag ligne boutique (IDE 92)](ADH-IDE-92.md) | Retour ecran |
 
----
+### 9.3 Structure hierarchique (13 taches)
 
-<!-- TAB:Cartographie -->
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **54.1** | [**Factures Bis(Ventes)** (54)](#t1) [mockup](#ecran-t1) | - | 881x411 | Saisie |
+| **54.2** | [**verif non flaguee** (54.1)](#t2) | - | - | Validation |
+| 54.2.1 | [verif boutique (54.2.2)](#t5) | - | - | |
+| 54.2.2 | [verif non flaguee (54.4)](#t7) | - | - | |
+| **54.3** | [**Hebergement** (54.2)](#t3) [mockup](#ecran-t3) | - | 866x250 | Traitement |
+| 54.3.1 | [Flag All (54.2.1)](#t4) [mockup](#ecran-t4) | - | 541x291 | |
+| 54.3.2 | [chargement boutique (54.5)](#t8) | - | - | |
+| 54.3.3 | [SQL parcourt facture (54.6)](#t9) [mockup](#ecran-t9) | - | 609x195 | |
+| 54.3.4 | [Browse Fac TVA Pro (54.7)](#t10) [mockup](#ecran-t10) | - | 1111x0 | |
+| 54.3.5 | [Browse Fact Tempo (54.8)](#t11) [mockup](#ecran-t11) | - | 798x316 | |
+| **54.4** | [**Recherche si Fact déjà éditée** (54.3)](#t6) | - | - | Consultation |
+| **54.5** | [**RAZ facture ECO** (54.9)](#t12) | - | - | Initialisation |
+| 54.5.1 | [Raz détail facture (54.9.1)](#t13) | - | - | |
 
-## CARTOGRAPHIE APPLICATIVE
+### 9.4 Algorigramme
 
-### 3.1 Chaine d'appels depuis Main
+```mermaid
+flowchart TD
+    START([START])
+    INIT[Init controles]
+    SAISIE[Browse Fac TVA Pro]
+    UPDATE[MAJ 3 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+```
+
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+
+<!-- TAB:Donnees -->
+
+## 10. TABLES
+
+### Tables utilisees (8)
+
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 30 | gm-recherche_____gmr | Index de recherche | DB |   |   | L | 1 |
+| 31 | gm-complet_______gmc |  | DB |   |   | L | 1 |
+| 372 | pv_budget |  | DB |   |   | L | 1 |
+| 866 | maj_appli_tpe |  | DB | R | **W** | L | 8 |
+| 867 | log_maj_tpe |  | DB | R |   |   | 1 |
+| 868 | Affectation_Gift_Pass |  | DB | R |   |   | 1 |
+| 870 | Rayons_Boutique |  | DB | R | **W** | L | 5 |
+| 932 | taxe_add_param |  | DB |   | **W** | L | 2 |
+
+### Colonnes par table (4 / 5 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 866 - maj_appli_tpe (R/**W**/L) - 8 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | V.Pu TTC | W | Numeric |
+| B | V.Montant Remise | W | Numeric |
+| C | V.Pu Net | W | Numeric |
+| D | V.Pu HT | W | Numeric |
+| E | V.Tva | W | Numeric |
+| F | v.Total Tva | W | Numeric |
+| G | V.Total HT | W | Numeric |
+| H | V.Total TTC | W | Numeric |
+
+</details>
+
+<details>
+<summary>Table 867 - log_maj_tpe (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.i.Societe | R | Alpha |
+| B | P.i.Code_Gm | R | Numeric |
+| C | P.i.Filiation | R | Numeric |
+| D | P.i.Application | R | Alpha |
+| E | P.o.NomsPDF | R | Alpha |
+| F | P.i.chemin | R | Alpha |
+| G | P.i.TypeReglement | R | Unicode |
+| H | P.i.Facture ECO | R | Logical |
+| I | V.Lien Gm_Complet | R | Logical |
+| J | V.Lien Pied de facture | R | Logical |
+| K | V.Existe facture ? | R | Logical |
+| L | V.Nom | R | Alpha |
+| M | V.Adresse | R | Alpha |
+| N | V.CP | R | Alpha |
+| O | V.Ville | R | Alpha |
+| P | V.Pays | R | Unicode |
+| Q | V.Telephone | R | Alpha |
+| R | V.Facture Sans Nom | R | Logical |
+| S | V.Facture Sans Adresse | R | Logical |
+| T | V.No Facture | R | Numeric |
+| U | V.Nom Fichier PDF | R | Alpha |
+| V | V.Pos , | R | Numeric |
+| W | V.Service | R | Alpha |
+| X | V.Fact déjà editée | R | Logical |
+| Y | V.Date Début Hebergement | R | Date |
+| Z | V.Date Fin Hebergement | R | Date |
+| BA | V.Existe non facturee ? | R | Logical |
+| BB | V.Existe flaguee ? | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 868 - Affectation_Gift_Pass (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.Société | R | Alpha |
+| B | P.Num compte | R | Numeric |
+| C | P.Fliliation | R | Numeric |
+| D | V Flag | R | Logical |
+| E | V.Boutique manquante ? | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 870 - Rayons_Boutique (R/**W**/L) - 5 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v.Existe ligne boutique ? | W | Logical |
+| E | V.Boutique manquante ? | W | Logical |
+
+</details>
+
+<details>
+<summary>Table 932 - taxe_add_param (**W**/L) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (8)
+
+Variables recues du programme appelant ([Easy Check-Out === V2.00 (IDE 283)](ADH-IDE-283.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P.i.Societe | Alpha | 1x parametre entrant |
+| B | P.i.Code_Gm | Numeric | 3x parametre entrant |
+| C | P.i.Filiation | Numeric | 3x parametre entrant |
+| D | P.i.Application | Alpha | - |
+| E | P.o.NomsPDF | Alpha | 1x parametre entrant |
+| F | P.i.chemin | Alpha | 1x parametre entrant |
+| G | P.i.TypeReglement | Unicode | 1x parametre entrant |
+| H | P.i.Facture ECO | Logical | - |
+
+### 11.2 Variables de session (20)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| I | V.Lien Gm_Complet | Logical | - |
+| J | V.Lien Pied de facture | Logical | [54](#t1), [54.6](#t9), [54.9](#t12) |
+| K | V.Existe facture ? | Logical | [54](#t1), [54.6](#t9), [54.9](#t12) |
+| L | V.Nom | Alpha | 1x session |
+| M | V.Adresse | Alpha | - |
+| N | V.CP | Alpha | 1x session |
+| O | V.Ville | Alpha | - |
+| P | V.Pays | Unicode | - |
+| Q | V.Telephone | Alpha | - |
+| R | V.Facture Sans Nom | Logical | - |
+| S | V.Facture Sans Adresse | Logical | 1x session |
+| T | V.No Facture | Numeric | [54](#t1), [54.6](#t9), [54.9](#t12) |
+| U | V.Nom Fichier PDF | Alpha | 1x session |
+| V | V.Pos , | Numeric | 1x session |
+| W | V.Service | Alpha | 1x session |
+| X | V.Fact déjà editée | Logical | [54.3](#t6) |
+| Y | V.Date Début Hebergement | Date | [54.2](#t3) |
+| Z | V.Date Fin Hebergement | Date | - |
+| BA | V.Existe non facturee ? | Logical | - |
+| BB | V.Existe flaguee ? | Logical | - |
+
+<details>
+<summary>Toutes les 28 variables (liste complete)</summary>
+
+| Cat | Lettre | Nom Variable | Type |
+|-----|--------|--------------|------|
+| P0 | **A** | P.i.Societe | Alpha |
+| P0 | **B** | P.i.Code_Gm | Numeric |
+| P0 | **C** | P.i.Filiation | Numeric |
+| P0 | **D** | P.i.Application | Alpha |
+| P0 | **E** | P.o.NomsPDF | Alpha |
+| P0 | **F** | P.i.chemin | Alpha |
+| P0 | **G** | P.i.TypeReglement | Unicode |
+| P0 | **H** | P.i.Facture ECO | Logical |
+| V. | **I** | V.Lien Gm_Complet | Logical |
+| V. | **J** | V.Lien Pied de facture | Logical |
+| V. | **K** | V.Existe facture ? | Logical |
+| V. | **L** | V.Nom | Alpha |
+| V. | **M** | V.Adresse | Alpha |
+| V. | **N** | V.CP | Alpha |
+| V. | **O** | V.Ville | Alpha |
+| V. | **P** | V.Pays | Unicode |
+| V. | **Q** | V.Telephone | Alpha |
+| V. | **R** | V.Facture Sans Nom | Logical |
+| V. | **S** | V.Facture Sans Adresse | Logical |
+| V. | **T** | V.No Facture | Numeric |
+| V. | **U** | V.Nom Fichier PDF | Alpha |
+| V. | **V** | V.Pos , | Numeric |
+| V. | **W** | V.Service | Alpha |
+| V. | **X** | V.Fact déjà editée | Logical |
+| V. | **Y** | V.Date Début Hebergement | Date |
+| V. | **Z** | V.Date Fin Hebergement | Date |
+| V. | **BA** | V.Existe non facturee ? | Logical |
+| V. | **BB** | V.Existe flaguee ? | Logical |
+
+</details>
+
+## 12. EXPRESSIONS
+
+**40 / 40 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CALCULATION | 1 | 0 |
+| CONDITION | 9 | 3 |
+| CONSTANTE | 2 | 0 |
+| FORMAT | 5 | 0 |
+| DATE | 1 | 0 |
+| OTHER | 15 | 0 |
+| REFERENCE_VG | 2 | 0 |
+| CAST_LOGIQUE | 3 | 0 |
+| NEGATION | 1 | 0 |
+| CONCATENATION | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CALCULATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CALCULATION | 16 | `MID(GetParam('SERVICE'),4,[BH]-4)` | - |
+
+#### CONDITION (9 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 23 | `IF(Trim(P.i.chemin [F]) <> '',Trim(P.i.chemin [F]) & Trim([BG]), Translate ('%club_exportdata%')&'PDF\'&Trim([BG]))` | [RM-002](#rm-RM-002) |
+| CONDITION | 34 | `IF(Trim(P.i.TypeReglement [G])='I','D','I')` | [RM-003](#rm-RM-003) |
+| CONDITION | 6 | `IF([AP],Trim([AS]),Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X]))` | [RM-001](#rm-RM-001) |
+| CONDITION | 38 | `[AN]<>0` | - |
+| CONDITION | 27 | `Trim([AX])<>''` | - |
+| ... | | *+4 autres* | |
+
+#### CONSTANTE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 37 | `'RELEVÉ DE DÉPENSES DEJA PAYÉES / ALREADY PAID ACCOUNT STATEMENT'` | - |
+| CONSTANTE | 36 | `'RELEVÉ DE DÉPENSES CLUB MED PASS / CLUB MED PASS ACCOUNT STATEMENT'` | - |
+
+#### FORMAT (5 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 11 | `'Numéro d''adhérent'&' '&Trim(Str(V.Pos , [V],'10Z'))` | - |
+| FORMAT | 17 | `InStr(GetParam('SERVICE'),',')` | - |
+| FORMAT | 40 | `DStr(Date(),'YY')&'99'` | - |
+| FORMAT | 12 | `Trim([AE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BF],'8P0'))&'_'&Str(P.i.Code_Gm [B],'8P0')&'_'&Str(P.i.Filiation [C],'#')&'_F.pdf'` | - |
+| FORMAT | 13 | `Trim([AE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BF],'8P0'))&
+'_'&Str(P.i.Code_Gm [B],'8P0')&'_'&Str(P.i.Filiation [C],'#')&'_NF.pdf'` | - |
+
+#### DATE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 19 | `Date()` | - |
+
+#### OTHER (15 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 28 | `[AN]` | - |
+| OTHER | 26 | `[BN]` | - |
+| OTHER | 25 | `[BM]` | - |
+| OTHER | 29 | `[AV]` | - |
+| OTHER | 39 | `V.CP [N]` | - |
+| ... | | *+10 autres* | |
+
+#### REFERENCE_VG (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 33 | `VG53` | - |
+| REFERENCE_VG | 18 | `VG2` | - |
+
+#### CAST_LOGIQUE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 24 | `'FALSE'LOG` | - |
+| CAST_LOGIQUE | 22 | `'FALSE'LOG` | - |
+| CAST_LOGIQUE | 21 | `'TRUE'LOG` | - |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 30 | `NOT [AP]` | - |
+
+#### CONCATENATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 35 | `Trim(P.o.NomsPDF [E])&','&Trim([BG])` | - |
+
+### 12.3 Toutes les expressions (40)
+
+<details>
+<summary>Voir les 40 expressions</summary>
+
+#### CALCULATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 16 | `MID(GetParam('SERVICE'),4,[BH]-4)` |
+
+#### CONDITION (9)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 6 | `IF([AP],Trim([AS]),Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X]))` |
+| 7 | `IF([AP],Trim([AR]),Trim(V.Facture Sans Adresse [S])&' '&Trim(V.Nom Fichier PDF [U])&' '&Trim(V.No Facture [T]))` |
+| 8 | `IF([AP],Trim([AT]),Trim(V.Date Début Hebergement [Y]))` |
+| 9 | `IF([AP],Trim([AU]),Trim([AA]))` |
+| 10 | `IF([AP],Trim([AW]),Trim([AC]))` |
+| 23 | `IF(Trim(P.i.chemin [F]) <> '',Trim(P.i.chemin [F]) & Trim([BG]), Translate ('%club_exportdata%')&'PDF\'&Trim([BG]))` |
+| 34 | `IF(Trim(P.i.TypeReglement [G])='I','D','I')` |
+| 38 | `[AN]<>0` |
+| 27 | `Trim([AX])<>''` |
+
+#### CONSTANTE (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 36 | `'RELEVÉ DE DÉPENSES CLUB MED PASS / CLUB MED PASS ACCOUNT STATEMENT'` |
+| 37 | `'RELEVÉ DE DÉPENSES DEJA PAYÉES / ALREADY PAID ACCOUNT STATEMENT'` |
+
+#### FORMAT (5)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 12 | `Trim([AE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BF],'8P0'))&'_'&Str(P.i.Code_Gm [B],'8P0')&'_'&Str(P.i.Filiation [C],'#')&'_F.pdf'` |
+| 13 | `Trim([AE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BF],'8P0'))&
+'_'&Str(P.i.Code_Gm [B],'8P0')&'_'&Str(P.i.Filiation [C],'#')&'_NF.pdf'` |
+| 40 | `DStr(Date(),'YY')&'99'` |
+| 11 | `'Numéro d''adhérent'&' '&Trim(Str(V.Pos , [V],'10Z'))` |
+| 17 | `InStr(GetParam('SERVICE'),',')` |
+
+#### DATE (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 19 | `Date()` |
+
+#### OTHER (15)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 1 | `P.i.Societe [A]` |
+| 2 | `P.i.Code_Gm [B]` |
+| 3 | `P.i.Filiation [C]` |
+| 4 | `V.Lien Pied de facture [J]` |
+| 5 | `V.Existe facture ? [K]` |
+| 14 | `NOT([BJ])` |
+| 15 | `[BJ]` |
+| 20 | `[BF]` |
+| 25 | `[BM]` |
+| 26 | `[BN]` |
+| 28 | `[AN]` |
+| 29 | `[AV]` |
+| 31 | `[BG]` |
+| 32 | `NOT(VG53)` |
+| 39 | `V.CP [N]` |
+
+#### REFERENCE_VG (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 18 | `VG2` |
+| 33 | `VG53` |
+
+#### CAST_LOGIQUE (3)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 21 | `'TRUE'LOG` |
+| 22 | `'FALSE'LOG` |
+| 24 | `'FALSE'LOG` |
+
+#### NEGATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 30 | `NOT [AP]` |
+
+#### CONCATENATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 35 | `Trim(P.o.NomsPDF [E])&','&Trim([BG])` |
+
+</details>
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Easy Check-Out === V2.00 (IDE 283)](ADH-IDE-283.md) -> **Factures_Check_Out (IDE 54)**
+
+Main -> ... -> [Solde Easy Check Out (IDE 64)](ADH-IDE-64.md) -> **Factures_Check_Out (IDE 54)**
+
+Main -> ... -> [Lanceur Facture (IDE 280)](ADH-IDE-280.md) -> **Factures_Check_Out (IDE 54)**
+
+Main -> ... -> [Solde Easy Check Out (IDE 287)](ADH-IDE-287.md) -> **Factures_Check_Out (IDE 54)**
+
+Main -> ... -> [Easy Check-Out === V2.00 (IDE 313)](ADH-IDE-313.md) -> **Factures_Check_Out (IDE 54)**
 
 ```mermaid
 graph LR
-    T[54 Factures_Check_]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T54[54 Factures_Check_Out]
+    style T54 fill:#58a6ff
+    CC55[55 Easy Check-Out === ...]
+    style CC55 fill:#8b5cf6
+    CC66[66 Lancement Solde ECO]
+    style CC66 fill:#8b5cf6
+    CC313[313 Easy Check-Out ===...]
+    style CC313 fill:#3fb950
+    CC64[64 Solde Easy Check Out]
+    style CC64 fill:#3fb950
+    CC280[280 Lanceur Facture]
+    style CC280 fill:#3fb950
+    CC283[283 Easy Check-Out ===...]
+    style CC283 fill:#3fb950
+    CC287[287 Solde Easy Check Out]
+    style CC287 fill:#3fb950
+    CC55 --> CC64
+    CC66 --> CC64
+    CC55 --> CC280
+    CC66 --> CC280
+    CC55 --> CC283
+    CC66 --> CC283
+    CC55 --> CC287
+    CC66 --> CC287
+    CC55 --> CC313
+    CC66 --> CC313
+    CC64 --> T54
+    CC280 --> T54
+    CC283 --> T54
+    CC287 --> T54
+    CC313 --> T54
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ECF partage - appels cross-projet | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [283](ADH-IDE-283.md) | Easy Check-Out === V2.00 | 2 |
+| [64](ADH-IDE-64.md) | Solde Easy Check Out | 1 |
+| [280](ADH-IDE-280.md) | Lanceur Facture | 1 |
+| [287](ADH-IDE-287.md) | Solde Easy Check Out | 1 |
+| [313](ADH-IDE-313.md) | Easy Check-Out === V2.00 | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[54 Factures_Check_]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T54[54 Factures_Check_Out]
+    style T54 fill:#58a6ff
+    C58[58 Incremente N° de Fa...]
+    T54 --> C58
+    style C58 fill:#3fb950
+    C60[60 Creation entete fac...]
+    T54 --> C60
+    style C60 fill:#3fb950
+    C61[61 Maj des lignes saisies]
+    T54 --> C61
+    style C61 fill:#3fb950
+    C90[90 Edition Facture Tva...]
+    T54 --> C90
+    style C90 fill:#3fb950
+    C93[93 Creation Pied Facture]
+    T54 --> C93
+    style C93 fill:#3fb950
+    C98[98 EditFactureTvaCompt...]
+    T54 --> C98
+    style C98 fill:#3fb950
+    C105[105 Maj des lignes sai...]
+    T54 --> C105
+    style C105 fill:#3fb950
+    C57[57 Factures_Sejour]
+    T54 --> C57
+    style C57 fill:#3fb950
+    C59[59 Facture - chargemen...]
+    T54 --> C59
+    style C59 fill:#3fb950
+    C62[62 Maj Hebergement Tempo]
+    T54 --> C62
+    style C62 fill:#3fb950
+    C91[91 Verif boutique]
+    T54 --> C91
+    style C91 fill:#3fb950
+    C92[92 flag ligne boutique]
+    T54 --> C92
+    style C92 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [58](ADH-IDE-58.md) | Incremente N° de Facture | 2 | Sous-programme |
+| [60](ADH-IDE-60.md) | Creation entete facture | 2 | Sous-programme |
+| [61](ADH-IDE-61.md) | Maj des lignes saisies | 2 | Mise a jour donnees |
+| [90](ADH-IDE-90.md) | Edition Facture Tva(Compta&Ve) | 2 | Impression ticket/document |
+| [93](ADH-IDE-93.md) | Creation Pied Facture | 2 | Sous-programme |
+| [98](ADH-IDE-98.md) | EditFactureTva(Compta&Ve) V3 | 2 | Sous-programme |
+| [105](ADH-IDE-105.md) | Maj des lignes saisies V3 | 2 | Mise a jour donnees |
+| [57](ADH-IDE-57.md) | Factures_Sejour | 1 | Sous-programme |
+| [59](ADH-IDE-59.md) | Facture - chargement boutique | 1 | Sous-programme |
+| [62](ADH-IDE-62.md) | Maj Hebergement Tempo | 1 | Mise a jour donnees |
+| [91](ADH-IDE-91.md) | Verif boutique | 1 | Controle/validation |
+| [92](ADH-IDE-92.md) | flag ligne boutique | 1 | Sous-programme |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| ADH.ecf | 54 | FACTURES_CHECK_OUT | Sessions_Reprises |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Defini: FACTURES_CHECK_OUT |
-| ECF partage | OUI - ADH.ecf |
-| **Conclusion** | **NON ORPHELIN** - Composant ECF partage |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 460 | Taille moyenne |
+| Expressions | 40 | Peu de logique |
+| Tables WRITE | 3 | Impact modere |
+| Sous-programmes | 12 | Forte dependance |
+| Ecrans visibles | 2 | Quelques ecrans |
+| Code desactive | 1.7% (8 / 460) | Code sain |
+| Regles metier | 3 | Quelques regles a preserver |
+
+### 14.2 Plan de migration par bloc
+
+#### Saisie (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : Formulaire React/Blazor avec validation Zod/FluentValidation.
+- Reproduire 1 ecran : Factures Bis(Ventes)
+- Validation temps reel cote client + serveur
+
+#### Validation (3 taches: 0 ecran, 3 traitements)
+
+- **Strategie** : FluentValidation avec validators specifiques.
+- Chaque tache de validation -> un validator injectable
+
+#### Traitement (6 taches: 5 ecrans, 1 traitement)
+
+- **Strategie** : Orchestrateur avec 5 ecrans (Razor/React) et 1 traitements backend (services).
+- Les ecrans deviennent des composants UI, les traitements invisibles deviennent des services injectables.
+- 12 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
+
+#### Consultation (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : Composants de recherche/selection en modales.
+
+#### Initialisation (2 taches: 0 ecran, 2 traitements)
+
+- **Strategie** : Constructeur/methode `InitAsync()` dans l'orchestrateur.
+
+### 14.3 Dependances critiques
+
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| maj_appli_tpe | Table WRITE (Database) | 3x | Schema + repository |
+| Rayons_Boutique | Table WRITE (Database) | 1x | Schema + repository |
+| taxe_add_param | Table WRITE (Database) | 1x | Schema + repository |
+| [Creation Pied Facture (IDE 93)](ADH-IDE-93.md) | Sous-programme | 2x | Haute - Sous-programme |
+| [EditFactureTva(Compta&Ve) V3 (IDE 98)](ADH-IDE-98.md) | Sous-programme | 2x | Haute - Sous-programme |
+| [Maj des lignes saisies V3 (IDE 105)](ADH-IDE-105.md) | Sous-programme | 2x | Haute - Mise a jour donnees |
+| [Edition Facture Tva(Compta&Ve) (IDE 90)](ADH-IDE-90.md) | Sous-programme | 2x | Haute - Impression ticket/document |
+| [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md) | Sous-programme | 2x | Haute - Sous-programme |
+| [Creation entete facture (IDE 60)](ADH-IDE-60.md) | Sous-programme | 2x | Haute - Sous-programme |
+| [Maj des lignes saisies (IDE 61)](ADH-IDE-61.md) | Sous-programme | 2x | Haute - Mise a jour donnees |
+| [Verif boutique (IDE 91)](ADH-IDE-91.md) | Sous-programme | 1x | Normale - Controle/validation |
+| [flag ligne boutique (IDE 92)](ADH-IDE-92.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [Maj Hebergement Tempo (IDE 62)](ADH-IDE-62.md) | Sous-programme | 1x | Normale - Mise a jour donnees |
 
 ---
-
-## NOTES MIGRATION
-
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 13 | Moyen |
-| Tables | 13 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **MOYENNE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
-
----
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:01 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:43*

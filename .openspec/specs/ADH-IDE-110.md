@@ -1,202 +1,656 @@
 ﻿# ADH IDE 110 - Print creation garanti PMS-584
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:04
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_106.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:49 (28s) | Assemblage 03:49
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print creation garanti PMS-584 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (8 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (16 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 110 |
-| **Fichier XML** | `Prg_106.xml` |
-| **Description** | Print creation garanti PMS-584 |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 16 |
-| **Lignes logique** | 305 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 110 |
+| Nom Programme | Print creation garanti PMS-584 |
+| Fichier source | `Prg_110.xml` |
+| Dossier IDE | Impression |
+| Taches | 16 (1 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
-| 31 | gm-complet_______gmc | cafil009_dat | LINK | Jointure |
-| 34 | hebergement______heb | cafil012_dat | LINK | Jointure |
-| 39 | depot_garantie___dga | cafil017_dat | READ | Lecture |
-| 91 | garantie_________gar | cafil069_dat | LINK | Jointure |
-| 368 | pms_village | pmsvillage | READ | Lecture |
-| 818 | Circuit supprime | zcircafil146 | LINK | Jointure |
-| 878 | categorie_operation_mw | categorie_operation_mw | READ | Lecture |
+**Print creation garanti PMS-584** assure la gestion complete de ce processus, accessible depuis [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md).
 
-**Resume**: 8 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Impression** (11 taches) : generation de tickets et documents
+- **Traitement** (5 taches) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+<details>
+<summary>Detail : phases du traitement</summary>
 
-### 2.4 Algorigramme
+#### Phase 1 : Impression (11 taches)
+
+- **110** - Print creation garantie TIK V1
+- **110.1** - Printer 1
+- **110.1.1** - edition extrait compte
+- **110.1.2** - edition extrait compte
+- **110.2** - Printer 4
+- **110.2.1** - edition extrait compte
+- **110.2.2** - edition extrait compte
+- **110.5** - Printer 8
+- **110.5.1** - edition extrait compte
+- **110.6** - Printer 9
+- **110.6.1** - edition extrait compte
+
+Delegue a : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+#### Phase 2 : Traitement (5 taches)
+
+- **110.3** - Iteration **[[ECRAN]](#ecran-t8)**
+- **110.3.1** - Veuillez patienter... **[[ECRAN]](#ecran-t9)**
+- **110.4** - recup nom adherent
+- **110.7** - recup terminal
+- **110.8** - recup terminal
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Impression (11 taches)
+
+Generation des documents et tickets.
+
+---
+
+#### <a id="t1"></a>110 - Print creation garantie TIK V1
+
+**Role** : Tache d'orchestration : point d'entree du programme (11 sous-taches). Coordonne l'enchainement des traitements.
+
+<details>
+<summary>10 sous-taches directes</summary>
+
+| Tache | Nom | Bloc |
+|-------|-----|------|
+| [110.1](#t2) | Printer 1 | Impression |
+| [110.1.1](#t3) | edition extrait compte | Impression |
+| [110.1.2](#t4) | edition extrait compte | Impression |
+| [110.2](#t5) | Printer 4 | Impression |
+| [110.2.1](#t6) | edition extrait compte | Impression |
+| [110.2.2](#t7) | edition extrait compte | Impression |
+| [110.5](#t11) | Printer 8 | Impression |
+| [110.5.1](#t12) | edition extrait compte | Impression |
+| [110.6](#t13) | Printer 9 | Impression |
+| [110.6.1](#t14) | edition extrait compte | Impression |
+
+</details>
+
+---
+
+#### <a id="t2"></a>110.1 - Printer 1
+
+**Role** : Generation du document : Printer 1.
+
+---
+
+#### <a id="t3"></a>110.1.1 - edition extrait compte
+
+**Role** : Generation du document : edition extrait compte.
+
+---
+
+#### <a id="t4"></a>110.1.2 - edition extrait compte
+
+**Role** : Generation du document : edition extrait compte.
+
+---
+
+#### <a id="t5"></a>110.2 - Printer 4
+
+**Role** : Generation du document : Printer 4.
+
+---
+
+#### <a id="t6"></a>110.2.1 - edition extrait compte
+
+**Role** : Generation du document : edition extrait compte.
+
+---
+
+#### <a id="t7"></a>110.2.2 - edition extrait compte
+
+**Role** : Generation du document : edition extrait compte.
+
+---
+
+#### <a id="t11"></a>110.5 - Printer 8
+
+**Role** : Generation du document : Printer 8.
+
+---
+
+#### <a id="t12"></a>110.5.1 - edition extrait compte
+
+**Role** : Generation du document : edition extrait compte.
+
+---
+
+#### <a id="t13"></a>110.6 - Printer 9
+
+**Role** : Generation du document : Printer 9.
+
+---
+
+#### <a id="t14"></a>110.6.1 - edition extrait compte
+
+**Role** : Generation du document : edition extrait compte.
+
+
+### 3.2 Traitement (5 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t8"></a>110.3 - Iteration [[ECRAN]](#ecran-t8)
+
+**Role** : Traitement : Iteration.
+**Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t8)
+
+---
+
+#### <a id="t9"></a>110.3.1 - Veuillez patienter... [[ECRAN]](#ecran-t9)
+
+**Role** : Traitement : Veuillez patienter....
+**Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t9)
+
+---
+
+#### <a id="t10"></a>110.4 - recup nom adherent
+
+**Role** : Consultation/chargement : recup nom adherent.
+**Variables liees** : B (P0 code adherent), L (W0 n° adherent)
+
+---
+
+#### <a id="t15"></a>110.7 - recup terminal
+
+**Role** : Consultation/chargement : recup terminal.
+
+---
+
+#### <a id="t16"></a>110.8 - recup terminal
+
+**Role** : Consultation/chargement : recup terminal.
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md)
+- **Appelle**: 1 programmes | **Tables**: 8 (W:0 R:4 L:4) | **Taches**: 16 | **Expressions**: 16
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 16)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 110.3.1 | 110.3.1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t9"></a>110.3.1 - Veuillez patienter...
+**Tache** : [110.3.1](#t9) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
+
+<!-- FORM-DATA:
+{
+    "width":  422,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  0,
+                         "w":  423,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  120,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  10,
+                         "w":  221,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "Impression en cours ...",
+                         "parent":  null
+                     },
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  29,
+                         "w":  423,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  27,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  50,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  38,
+                         "w":  323,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "Edition de la creation de garantie",
+                         "parent":  null
+                     },
+                     {
+                         "x":  4,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  2,
+                         "w":  72,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  25,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "110.3.1",
+    "height":  56
+}
+-->
+
+## 9. NAVIGATION
+
+Ecran unique: **Veuillez patienter...**
+
+### 9.3 Structure hierarchique (16 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **110.1** | [**Print creation garantie TIK V1** (110)](#t1) | MDI | - | Impression |
+| 110.1.1 | [Printer 1 (110.1)](#t2) | MDI | - | |
+| 110.1.2 | [edition extrait compte (110.1.1)](#t3) | MDI | - | |
+| 110.1.3 | [edition extrait compte (110.1.2)](#t4) | MDI | - | |
+| 110.1.4 | [Printer 4 (110.2)](#t5) | MDI | - | |
+| 110.1.5 | [edition extrait compte (110.2.1)](#t6) | MDI | - | |
+| 110.1.6 | [edition extrait compte (110.2.2)](#t7) | MDI | - | |
+| 110.1.7 | [Printer 8 (110.5)](#t11) | MDI | - | |
+| 110.1.8 | [edition extrait compte (110.5.1)](#t12) | MDI | - | |
+| 110.1.9 | [Printer 9 (110.6)](#t13) | MDI | - | |
+| 110.1.10 | [edition extrait compte (110.6.1)](#t14) | MDI | - | |
+| **110.2** | [**Iteration** (110.3)](#t8) [mockup](#ecran-t8) | MDI | 422x56 | Traitement |
+| 110.2.1 | [Veuillez patienter... (110.3.1)](#t9) [mockup](#ecran-t9) | MDI | 422x56 | |
+| 110.2.2 | [recup nom adherent (110.4)](#t10) | MDI | - | |
+| 110.2.3 | [recup terminal (110.7)](#t15) | - | - | |
+| 110.2.4 | [recup terminal (110.8)](#t16) | - | - | |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>16 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 16 |
-| **Lignes logique** | 305 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 8 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (8)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
+| 31 | gm-complet_______gmc |  | DB |   |   | L | 1 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 1 |
+| 39 | depot_garantie___dga | Depots et garanties | DB | R |   |   | 7 |
+| 91 | garantie_________gar | Depots et garanties | DB |   |   | L | 7 |
+| 368 | pms_village |  | DB | R |   |   | 1 |
+| 818 | Circuit supprime |  | DB |   |   | L | 1 |
+| 878 | categorie_operation_mw | Operations comptables | DB | R |   |   | 2 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (2 / 4 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 39 - depot_garantie___dga (R) - 7 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 config imp | R | Alpha |
+| B | W1 large | R | Alpha |
+| C | W1 normal | R | Alpha |
+| D | W1 condense | R | Alpha |
+| E | W1 detecteur papier | R | Alpha |
+| F | W1 inhibe panel | R | Alpha |
+| G | W1 massicot | R | Alpha |
+| H | W1 selection feuille | R | Alpha |
+| I | W1 selection rouleau | R | Alpha |
+
+</details>
+
+<details>
+<summary>Table 368 - pms_village (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P0 societe | R | Alpha |
+| B | P0 code adherent | R | Numeric |
+| C | P0 filiation | R | Numeric |
+| D | P0 nom village | R | Alpha |
+| E | P0 masque montant | R | Alpha |
+| F | P0 N° Dossier | R | Alpha |
+| G | P0 N° autorisation | R | Alpha |
+| H | P0 Fichier édition pdf | R | Alpha |
+| I | P0 fichier signature | R | Alpha |
+| J | W0 nom | R | Alpha |
+| K | W0 prenom | R | Alpha |
+| L | W0 n° adherent | R | Numeric |
+| M | W0 lettre contrôle | R | Alpha |
+| N | W0 filiation | R | Numeric |
+| O | W0 Chambre | R | Alpha |
+| P | W0 date de debut | R | Date |
+| Q | W0 date de fin | R | Date |
+| R | W0 TPE ICMP | R | Logical |
+| S | v.comment | R | Alpha |
+
+</details>
+
+<details>
+<summary>Table 878 - categorie_operation_mw (R) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (9)
+
+Variables recues du programme appelant ([Garantie sur compte (IDE 111)](ADH-IDE-111.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P0 societe | Alpha | - |
+| B | P0 code adherent | Numeric | [110.4](#t10) |
+| C | P0 filiation | Numeric | 1x parametre entrant |
+| D | P0 nom village | Alpha | - |
+| E | P0 masque montant | Alpha | - |
+| F | P0 N° Dossier | Alpha | - |
+| G | P0 N° autorisation | Alpha | - |
+| H | P0 Fichier édition pdf | Alpha | 1x parametre entrant |
+| I | P0 fichier signature | Alpha | - |
+
+### 11.2 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| S | v.comment | Alpha | - |
+
+### 11.3 Variables de travail (9)
+
+Variables internes au programme.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| J | W0 nom | Alpha | - |
+| K | W0 prenom | Alpha | - |
+| L | W0 n° adherent | Numeric | - |
+| M | W0 lettre contrôle | Alpha | - |
+| N | W0 filiation | Numeric | - |
+| O | W0 Chambre | Alpha | - |
+| P | W0 date de debut | Date | - |
+| Q | W0 date de fin | Date | - |
+| R | W0 TPE ICMP | Logical | - |
+
+<details>
+<summary>Toutes les 19 variables (liste complete)</summary>
+
+| Cat | Lettre | Nom Variable | Type |
+|-----|--------|--------------|------|
+| P0 | **A** | P0 societe | Alpha |
+| P0 | **B** | P0 code adherent | Numeric |
+| P0 | **C** | P0 filiation | Numeric |
+| P0 | **D** | P0 nom village | Alpha |
+| P0 | **E** | P0 masque montant | Alpha |
+| P0 | **F** | P0 N° Dossier | Alpha |
+| P0 | **G** | P0 N° autorisation | Alpha |
+| P0 | **H** | P0 Fichier édition pdf | Alpha |
+| P0 | **I** | P0 fichier signature | Alpha |
+| W0 | **J** | W0 nom | Alpha |
+| W0 | **K** | W0 prenom | Alpha |
+| W0 | **L** | W0 n° adherent | Numeric |
+| W0 | **M** | W0 lettre contrôle | Alpha |
+| W0 | **N** | W0 filiation | Numeric |
+| W0 | **O** | W0 Chambre | Alpha |
+| W0 | **P** | W0 date de debut | Date |
+| W0 | **Q** | W0 date de fin | Date |
+| W0 | **R** | W0 TPE ICMP | Logical |
+| V. | **S** | v.comment | Alpha |
+
+</details>
+
+## 12. EXPRESSIONS
+
+**16 / 16 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONSTANTE | 2 | 0 |
+| FORMAT | 1 | 0 |
+| OTHER | 3 | 0 |
+| CONDITION | 6 | 0 |
+| CAST_LOGIQUE | 1 | 0 |
+| REFERENCE_VG | 1 | 0 |
+| NEGATION | 1 | 0 |
+| CONCATENATION | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONSTANTE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 11 | `'GL2'` | - |
+| CONSTANTE | 10 | `'GL1'` | - |
+
+#### FORMAT (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 13 | `Translate ('%TempDir%ticket_garant_'&Str(P0 code adherent [B],'8P0')&
+'_'&Trim(Str(P0 filiation [C],'3P0'))&'_'&DStr(Date(),'YYMMDD')&
+TStr(Time(),'HHMMSS')&'.pdf')` | - |
+
+#### OTHER (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 4 | `SetCrsr (1)` | - |
+| OTHER | 2 | `GetParam ('CURRENTLISTINGNUM')` | - |
+| OTHER | 1 | `SetCrsr (2)` | - |
+
+#### CONDITION (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 8 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
+| CONDITION | 9 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
+| CONDITION | 14 | `P0 Fichier édition pdf [H]=''` | - |
+| CONDITION | 5 | `GetParam ('CURRENTPRINTERNUM')=1 OR VG82='TB'` | - |
+| CONDITION | 6 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
+| ... | | *+1 autres* | |
+
+#### CAST_LOGIQUE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 12 | `'TRUE'LOG` | - |
+
+#### REFERENCE_VG (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 15 | `VG78` | - |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 16 | `NOT VG78` | - |
+
+#### CONCATENATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 3 | `Trim ([T])&' '&Trim ([U])&' '&Trim ([V])` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Garantie sur compte (IDE 111)](ADH-IDE-111.md) -> **Print creation garanti PMS-584 (IDE 110)**
+
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md) -> **Print creation garanti PMS-584 (IDE 110)**
+
+Main -> ... -> [Garantie sur compte (IDE 288)](ADH-IDE-288.md) -> **Print creation garanti PMS-584 (IDE 110)**
 
 ```mermaid
 graph LR
-    T[110 Print creation ]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T110[110 Print creation gar...]
+    style T110 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC111[111 Garantie sur compte]
+    style CC111 fill:#3fb950
+    CC112[112 Garantie sur compt...]
+    style CC112 fill:#3fb950
+    CC288[288 Garantie sur compte]
+    style CC288 fill:#3fb950
+    CC163 --> CC111
+    CC163 --> CC112
+    CC163 --> CC288
+    CC1 --> CC163
+    CC111 --> T110
+    CC112 --> T110
+    CC288 --> T110
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [111](ADH-IDE-111.md) | Garantie sur compte | 1 |
+| [112](ADH-IDE-112.md) | Garantie sur compte PMS-584 | 1 |
+| [288](ADH-IDE-288.md) | Garantie sur compte | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[110 Print creation ]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T110[110 Print creation gar...]
+    style T110 fill:#58a6ff
+    C182[182 Raz Current Printer]
+    T110 --> C182
+    style C182 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [182](ADH-IDE-182.md) | Raz Current Printer | 1 | Impression ticket/document |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 305 | Taille moyenne |
+| Expressions | 16 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 305) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Impression (11 taches: 0 ecran, 11 traitements)
 
-### Complexite
+- **Strategie** : Templates HTML -> PDF via wkhtmltopdf ou Puppeteer.
+- `PrintService` injectable avec choix imprimante
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 16 | Moyen |
-| Tables | 8 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **MOYENNE** | - |
+#### Traitement (5 taches: 2 ecrans, 3 traitements)
 
-### Points d'attention migration
+- **Strategie** : Orchestrateur avec 2 ecrans (Razor/React) et 3 traitements backend (services).
+- Les ecrans deviennent des composants UI, les traitements invisibles deviennent des services injectables.
+- 1 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
 
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+### 14.3 Dependances critiques
 
----
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:04 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:49*

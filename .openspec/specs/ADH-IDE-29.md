@@ -1,6 +1,6 @@
 ﻿# ADH IDE 29 - Write histo Fus_Sep
 
-> **Analyse**: Phases 1-4 2026-02-07 03:08 -> 03:08 (30s) | Assemblage 03:08
+> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (27s) | Assemblage 03:41
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,15 +18,29 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Write histo Fus_Sep** assure la gestion complete de ce processus.
+**Write histo Fus_Sep** assure la gestion complete de ce processus, accessible depuis [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Impression** (1 tache) : generation de tickets et documents
 
 **Donnees modifiees** : 1 tables en ecriture (histo_fusionseparation).
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Impression (1 tache)
+
+Generation des documents et tickets.
+
+---
+
+#### <a id="t1"></a>29 - --> Printer Management
+
+**Role** : Generation du document : --> Printer Management.
+
 
 ## 5. REGLES METIER
 
@@ -34,7 +48,7 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 13
 
 <!-- TAB:Ecrans -->
@@ -45,10 +59,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **29.1** | [**--> Printer Management** (29)](#t1) | MDI | - | Impression |
 
 ### 9.4 Algorigramme
 
@@ -163,22 +178,38 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Separation (IDE 27)](ADH-IDE-27.md) -> **Write histo Fus_Sep (IDE 29)**
+
+Main -> ... -> [Fusion (IDE 28)](ADH-IDE-28.md) -> **Write histo Fus_Sep (IDE 29)**
 
 ```mermaid
 graph LR
     T29[29 Write histo Fus_Sep]
     style T29 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T29
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC37[37 Menu changement compte]
+    style CC37 fill:#f59e0b
+    CC27[27 Separation]
+    style CC27 fill:#3fb950
+    CC28[28 Fusion]
+    style CC28 fill:#3fb950
+    CC37 --> CC27
+    CC37 --> CC28
+    CC163 --> CC37
+    CC1 --> CC163
+    CC27 --> T29
+    CC28 --> T29
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [27](ADH-IDE-27.md) | Separation | 6 |
+| [28](ADH-IDE-28.md) | Fusion | 6 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -213,6 +244,11 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Impression (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : Templates HTML -> PDF via wkhtmltopdf ou Puppeteer.
+- `PrintService` injectable avec choix imprimante
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
@@ -220,4 +256,4 @@ graph LR
 | histo_fusionseparation | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:08*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:41*

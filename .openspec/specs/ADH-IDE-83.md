@@ -1,6 +1,6 @@
 ﻿# ADH IDE 83 - Deactivate all cards
 
-> **Analyse**: Phases 1-4 2026-02-07 03:11 -> 03:12 (36s) | Assemblage 03:12
+> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (27s) | Assemblage 03:45
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,15 +18,29 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Deactivate all cards** assure la gestion complete de ce processus.
+**Deactivate all cards** assure la gestion complete de ce processus, accessible depuis [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md), [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Traitement** (1 tache) : traitements metier divers
 
 **Donnees modifiees** : 1 tables en ecriture (ez_card).
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>83 - Deactivate all cards
+
+**Role** : Traitement : Deactivate all cards.
+
 
 ## 5. REGLES METIER
 
@@ -34,7 +48,7 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md), [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 8
 
 <!-- TAB:Ecrans -->
@@ -45,10 +59,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **83.1** | [**Deactivate all cards** (83)](#t1) | MDI | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -97,7 +112,7 @@ flowchart TD
 
 ### 11.1 Parametres entrants (3)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Garantie sur compte (IDE 111)](ADH-IDE-111.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
@@ -160,22 +175,63 @@ Variables recues en parametre.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Garantie sur compte (IDE 111)](ADH-IDE-111.md) -> **Deactivate all cards (IDE 83)**
+
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md) -> **Deactivate all cards (IDE 83)**
+
+Main -> ... -> [Garantie sur compte (IDE 288)](ADH-IDE-288.md) -> **Deactivate all cards (IDE 83)**
+
+Main -> ... -> [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md) -> **Deactivate all cards (IDE 83)**
 
 ```mermaid
 graph LR
     T83[83 Deactivate all cards]
     style T83 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T83
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC174[174 VersementRetrait]
+    style CC174 fill:#f59e0b
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#f59e0b
+    CC111[111 Garantie sur compte]
+    style CC111 fill:#3fb950
+    CC112[112 Garantie sur compt...]
+    style CC112 fill:#3fb950
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#3fb950
+    CC288[288 Garantie sur compte]
+    style CC288 fill:#3fb950
+    CC163 --> CC111
+    CC174 --> CC111
+    CC190 --> CC111
+    CC163 --> CC112
+    CC174 --> CC112
+    CC190 --> CC112
+    CC163 --> CC193
+    CC174 --> CC193
+    CC190 --> CC193
+    CC163 --> CC288
+    CC174 --> CC288
+    CC190 --> CC288
+    CC1 --> CC163
+    CC1 --> CC174
+    CC1 --> CC190
+    CC111 --> T83
+    CC112 --> T83
+    CC193 --> T83
+    CC288 --> T83
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [111](ADH-IDE-111.md) | Garantie sur compte | 2 |
+| [112](ADH-IDE-112.md) | Garantie sur compte PMS-584 | 2 |
+| [288](ADH-IDE-288.md) | Garantie sur compte | 2 |
+| [193](ADH-IDE-193.md) | Solde compte fin sejour | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -210,6 +266,11 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Traitement (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
+- Decomposer les taches en services unitaires testables.
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
@@ -217,4 +278,4 @@ graph LR
 | ez_card | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:12*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:45*

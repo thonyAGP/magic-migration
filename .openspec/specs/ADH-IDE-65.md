@@ -1,201 +1,375 @@
 ﻿# ADH IDE 65 - Edition & Mail Easy Check Out
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:02
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_61.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (26s) | Assemblage 03:43
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Edition & Mail Easy Check Out |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (8 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (4 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 65 |
-| **Fichier XML** | `Prg_61.xml` |
-| **Description** | Edition & Mail Easy Check Out |
-| **Module** | ADH |
-| **Public Name** | EDITION_EASY_CHECK_OUT |
-| **Nombre taches** | 4 |
-| **Lignes logique** | 116 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 65 |
+| Nom Programme | Edition & Mail Easy Check Out |
+| Fichier source | `Prg_65.xml` |
+| Dossier IDE | Impression |
+| Taches | 4 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 34 | hebergement______heb | cafil012_dat | READ | Lecture |
-| 39 | depot_garantie___dga | cafil017_dat | LINK | Jointure |
-| 47 | compte_gm________cgm | cafil025_dat | LINK | Jointure |
-| 48 | lignes_de_solde__sld | cafil026_dat | LINK | Jointure |
-| 372 | pv_budget | pv_budget_dat | LINK/READ | Jointure+Lecture |
-| 911 | log_booker | log_booker | WRITE | Ecriture |
-| 934 | selection enregistrement diver | selection_enregistrement_div | LINK | Jointure |
+**Edition & Mail Easy Check Out** assure la gestion complete de ce processus, accessible depuis [Récap Trait Easy Check-Out (IDE 56)](ADH-IDE-56.md), [Solde Easy Check Out (IDE 64)](ADH-IDE-64.md), [Reedition Recap Easy Check Out (IDE 67)](ADH-IDE-67.md), [Solde Easy Check Out (IDE 287)](ADH-IDE-287.md).
 
-**Resume**: 8 tables accedees dont **1 en ecriture**
+Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (2 taches) : traitements metier divers
+- **Creation** (1 tache) : insertion d'enregistrements en base (mouvements, prestations)
+- **Impression** (1 tache) : generation de tickets et documents
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Donnees modifiees** : 1 tables en ecriture (log_booker).
 
-### 2.4 Algorigramme
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Impression (1 tache)
+
+- **65** - Edition & Mail Easy Check Out
+
+#### Phase 2 : Traitement (2 taches)
+
+- **65.1** - Express Check-Out **[[ECRAN]](#ecran-t2)**
+- **65.1.1** - Annulation ECO
+
+#### Phase 3 : Creation (1 tache)
+
+- **65.2** - Creation Envoi Mail
+
+#### Tables impactees
+
+| Table | Operations | Role metier |
+|-------|-----------|-------------|
+| log_booker | **W** (1 usages) |  |
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Impression (1 tache)
+
+Generation des documents et tickets.
+
+---
+
+#### <a id="t1"></a>65 - Edition & Mail Easy Check Out
+
+**Role** : Generation du document : Edition & Mail Easy Check Out.
+**Variables liees** : B (P.i.Edition Auto), D (P.i.Date Edition)
+
+
+### 3.2 Traitement (2 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t2"></a>65.1 - Express Check-Out [[ECRAN]](#ecran-t2)
+
+**Role** : Traitement : Express Check-Out.
+**Ecran** : 218 x 66 DLU | [Voir mockup](#ecran-t2)
+
+---
+
+#### <a id="t4"></a>65.1.1 - Annulation ECO
+
+**Role** : Traitement : Annulation ECO.
+
+
+### 3.3 Creation (1 tache)
+
+Insertion de nouveaux enregistrements en base.
+
+---
+
+#### <a id="t3"></a>65.2 - Creation Envoi Mail
+
+**Role** : Creation d'enregistrement : Creation Envoi Mail.
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Récap Trait Easy Check-Out (IDE 56)](ADH-IDE-56.md), [Solde Easy Check Out (IDE 64)](ADH-IDE-64.md), [Reedition Recap Easy Check Out (IDE 67)](ADH-IDE-67.md), [Solde Easy Check Out (IDE 287)](ADH-IDE-287.md)
+- **Appelle**: 0 programmes | **Tables**: 7 (W:1 R:2 L:5) | **Taches**: 4 | **Expressions**: 4
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (4 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **65.1** | [**Edition & Mail Easy Check Out** (65)](#t1) | - | - | Impression |
+| **65.2** | [**Express Check-Out** (65.1)](#t2) [mockup](#ecran-t2) | - | 218x66 | Traitement |
+| 65.2.1 | [Annulation ECO (65.1.1)](#t4) | - | - | |
+| **65.3** | [**Creation Envoi Mail** (65.2)](#t3) | - | - | Creation |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>4 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 4 |
-| **Lignes logique** | 116 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 8 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (7)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 34 | hebergement______heb | Hebergement (chambres) | DB | R |   |   | 1 |
+| 39 | depot_garantie___dga | Depots et garanties | DB |   |   | L | 1 |
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   |   | L | 1 |
+| 48 | lignes_de_solde__sld |  | DB |   |   | L | 1 |
+| 372 | pv_budget |  | DB | R |   | L | 2 |
+| 911 | log_booker |  | DB |   | **W** |   | 1 |
+| 934 | selection enregistrement diver |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (2 / 3 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 34 - hebergement______heb (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v.Total_VISA | R | Numeric |
+| B | v.Total_AMEX | R | Numeric |
+| C | v.Message Erreur Test | R | Unicode |
+
+</details>
+
+<details>
+<summary>Table 372 - pv_budget (R/L) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.i.Erreurs Seules | R | Logical |
+| B | P.i.Edition Auto | R | Logical |
+| C | P.i.Test PES | R | Logical |
+| D | P.i.Date Edition | R | Date |
+| E | v.Date | R | Date |
+| F | v.Time | R | Time |
+| G | v.Piece Jointe | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 911 - log_booker (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (4)
+
+Variables recues du programme appelant ([Récap Trait Easy Check-Out (IDE 56)](ADH-IDE-56.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P.i.Erreurs Seules | Logical | - |
+| B | P.i.Edition Auto | Logical | 2x parametre entrant |
+| C | P.i.Test PES | Logical | 1x parametre entrant |
+| D | P.i.Date Edition | Date | - |
+
+### 11.2 Variables de session (3)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| E | v.Date | Date | - |
+| F | v.Time | Time | - |
+| G | v.Piece Jointe | Logical | - |
+
+## 12. EXPRESSIONS
+
+**4 / 4 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| DATE | 1 | 0 |
+| OTHER | 3 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### DATE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 1 | `Date()` | - |
+
+#### OTHER (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 4 | `P.i.Edition Auto [B] AND NOT(P.i.Test PES [C])` | - |
+| OTHER | 3 | `P.i.Edition Auto [B]` | - |
+| OTHER | 2 | `Time()` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Récap Trait Easy Check-Out (IDE 56)](ADH-IDE-56.md) -> **Edition & Mail Easy Check Out (IDE 65)**
+
+Main -> ... -> [Solde Easy Check Out (IDE 64)](ADH-IDE-64.md) -> **Edition & Mail Easy Check Out (IDE 65)**
+
+Main -> ... -> [Reedition Recap Easy Check Out (IDE 67)](ADH-IDE-67.md) -> **Edition & Mail Easy Check Out (IDE 65)**
+
+Main -> ... -> [Solde Easy Check Out (IDE 287)](ADH-IDE-287.md) -> **Edition & Mail Easy Check Out (IDE 65)**
 
 ```mermaid
 graph LR
-    T[65 Edition & Mail ]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T65[65 Edition Mail Easy C...]
+    style T65 fill:#58a6ff
+    CC63[63 Test Easy Check-Out...]
+    style CC63 fill:#8b5cf6
+    CC66[66 Lancement Solde ECO]
+    style CC66 fill:#8b5cf6
+    CC313[313 Easy Check-Out ===...]
+    style CC313 fill:#8b5cf6
+    CC283[283 Easy Check-Out ===...]
+    style CC283 fill:#8b5cf6
+    CC55[55 Easy Check-Out === ...]
+    style CC55 fill:#8b5cf6
+    CC56[56 Récap Trait Easy Ch...]
+    style CC56 fill:#3fb950
+    CC64[64 Solde Easy Check Out]
+    style CC64 fill:#3fb950
+    CC287[287 Solde Easy Check Out]
+    style CC287 fill:#3fb950
+    CC67[67 Reedition Recap Eas...]
+    style CC67 fill:#3fb950
+    CC55 --> CC56
+    CC63 --> CC56
+    CC283 --> CC56
+    CC313 --> CC56
+    CC66 --> CC56
+    CC55 --> CC64
+    CC63 --> CC64
+    CC283 --> CC64
+    CC313 --> CC64
+    CC66 --> CC64
+    CC55 --> CC67
+    CC63 --> CC67
+    CC283 --> CC67
+    CC313 --> CC67
+    CC66 --> CC67
+    CC55 --> CC287
+    CC63 --> CC287
+    CC283 --> CC287
+    CC313 --> CC287
+    CC66 --> CC287
+    CC56 --> T65
+    CC64 --> T65
+    CC67 --> T65
+    CC287 --> T65
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ECF partage - appels cross-projet | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [56](ADH-IDE-56.md) | Récap Trait Easy Check-Out | 1 |
+| [64](ADH-IDE-64.md) | Solde Easy Check Out | 1 |
+| [67](ADH-IDE-67.md) | Reedition Recap Easy Check Out | 1 |
+| [287](ADH-IDE-287.md) | Solde Easy Check Out | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[65 Edition & Mail ]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T65[65 Edition Mail Easy C...]
+    style T65 fill:#58a6ff
+    NONE[Aucun callee]
+    T65 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| ADH.ecf | 65 | EDITION_EASY_CHECK_OUT | Sessions_Reprises |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Defini: EDITION_EASY_CHECK_OUT |
-| ECF partage | OUI - ADH.ecf |
-| **Conclusion** | **NON ORPHELIN** - Composant ECF partage |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 116 | Programme compact |
+| Expressions | 4 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 116) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Impression (1 tache: 0 ecran, 1 traitement)
 
-### Complexite
+- **Strategie** : Templates HTML -> PDF via wkhtmltopdf ou Puppeteer.
+- `PrintService` injectable avec choix imprimante
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 4 | Simple |
-| Tables | 8 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+#### Traitement (2 taches: 1 ecran, 1 traitement)
 
-### Points d'attention migration
+- **Strategie** : Orchestrateur avec 1 ecrans (Razor/React) et 1 traitements backend (services).
+- Les ecrans deviennent des composants UI, les traitements invisibles deviennent des services injectables.
+- Decomposer les taches en services unitaires testables.
 
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+#### Creation (1 tache: 0 ecran, 1 traitement)
 
----
+- **Strategie** : Repository pattern avec Entity Framework Core.
+- Insertion via `IRepository<T>.CreateAsync()`
 
-## HISTORIQUE
+### 14.3 Dependances critiques
 
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:02 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| log_booker | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:43*

@@ -1,13 +1,13 @@
 ﻿# ADH IDE 295 - Menu change bilateral
 
-> **Analyse**: 2026-02-07 03:20
+> **Analyse**: 2026-02-07 03:55
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
 - **Fonction**: Menu change bilateral
 - **Tables modifiees**: 0
-- **Complexite**: **BASSE** (0/100)
+- **Complexite**: **BASSE** (5/100)
 - **Statut**: ORPHELIN_POTENTIEL
 - **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
@@ -16,7 +16,7 @@
 | Direction | Programmes |
 |-----------|------------|
 | **Appele par** | (aucun) |
-| **Appelle** | (aucun) |
+| **Appelle** | [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Bi  Change GM Achat (IDE 293)](ADH-IDE-293.md), [Bi  Change GM Vente (IDE 294)](ADH-IDE-294.md) |
 
 ## STATISTIQUES
 

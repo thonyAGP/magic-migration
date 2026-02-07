@@ -1,6 +1,6 @@
 ﻿# ADH IDE 37 - Menu changement compte
 
-> **Analyse**: Phases 1-4 2026-02-07 03:09 -> 03:10 (33s) | Assemblage 03:10
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (27s) | Assemblage 03:43
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -15,18 +15,33 @@
 | Nom Programme | Menu changement compte |
 | Fichier source | `Prg_37.xml` |
 | Dossier IDE | Change |
-| Taches | 1 (0 ecrans visibles) |
+| Taches | 1 (1 ecrans visibles) |
 | Tables modifiees | 0 |
-| Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Programmes appeles | 4 |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Menu changement compte** assure la gestion complete de ce processus.
+**Menu changement compte** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
 
 **Logique metier** : 1 regles identifiees couvrant conditions metier.
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Calcul (1 tache)
+
+Calculs metier : montants, stocks, compteurs.
+
+---
+
+#### <a id="t1"></a>37 - OCA  Menu changement compte [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : OCA  Menu changement compte.
+**Ecran** : 858 x 179 DLU (MDI) | [Voir mockup](#ecran-t1)
+
 
 ## 5. REGLES METIER
 
@@ -47,21 +62,279 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
-- **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 10
+- **Appele par**: [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)
+- **Appelle**: 4 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 10
 
 <!-- TAB:Ecrans -->
 
 ## 8. ECRANS
 
-*(Programme sans ecran visible)*
+### 8.1 Forms visibles (1 / 1)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 37 | 37 | OCA  Menu changement compte | MDI | 858 | 179 | Calcul |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>37 - OCA  Menu changement compte
+**Tache** : [37](#t1) | **Type** : MDI | **Dimensions** : 858 x 179 DLU
+**Bloc** : Calcul | **Titre IDE** : OCA  Menu changement compte
+
+<!-- FORM-DATA:
+{
+    "width":  858,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  0,
+                         "w":  856,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  19,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  127,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  48,
+                         "w":  602,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  91,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  130,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  49,
+                         "w":  597,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  89,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  351,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  59,
+                         "w":  336,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  60,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  354,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  60,
+                         "w":  53,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  58,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  415,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  65,
+                         "w":  229,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "Séparation de comptes",
+                         "parent":  null
+                     },
+                     {
+                         "x":  415,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  92,
+                         "w":  262,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "Regroupement de comptes",
+                         "parent":  null
+                     },
+                     {
+                         "x":  431,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  124,
+                         "w":  120,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  9,
+                         "color":  "",
+                         "text":  "Votre choix",
+                         "parent":  null
+                     },
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  155,
+                         "w":  856,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  24,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  570,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  124,
+                         "w":  26,
+                         "fmt":  "UA",
+                         "name":  "W0 choix action",
+                         "h":  10,
+                         "color":  "6",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  5,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  4,
+                         "w":  232,
+                         "fmt":  "20",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  646,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  6,
+                         "w":  203,
+                         "fmt":  "WWW DD MMM YYYYT",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  164,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  58,
+                         "w":  144,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  62,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  5
+                     },
+                     {
+                         "x":  367,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  65,
+                         "w":  26,
+                         "fmt":  "1",
+                         "name":  "1",
+                         "h":  9,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  367,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  92,
+                         "w":  26,
+                         "fmt":  "2",
+                         "name":  "2",
+                         "h":  9,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  8,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  158,
+                         "w":  152,
+                         "fmt":  "\u0026Quitter",
+                         "name":  "",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "37",
+    "height":  179
+}
+-->
+
+<details>
+<summary><strong>Champs : 3 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 570,124 | W0 choix action | - | edit |
+| 5,4 | 20 | - | edit |
+| 646,6 | WWW DD MMM YYYYT | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 3 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| 1 | 367,65 | Bouton fonctionnel |
+| 2 | 367,92 | Bouton fonctionnel |
+| Quitter | 8,158 | Quitte le programme |
+
+</details>
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+Ecran unique: **OCA  Menu changement compte**
+
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **37.1** | [**OCA  Menu changement compte** (37)](#t1) [mockup](#ecran-t1) | MDI | 858x179 | Calcul |
 
 ### 9.4 Algorigramme
 
@@ -185,22 +458,25 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Menu changement compte (IDE 37)**
 
 ```mermaid
 graph LR
     T37[37 Menu changement compte]
     style T37 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T37
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#3fb950
+    CC1 --> CC163
+    CC163 --> T37
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -208,16 +484,28 @@ graph LR
 graph LR
     T37[37 Menu changement compte]
     style T37 fill:#58a6ff
-    NONE[Aucun callee]
-    T37 -.-> NONE
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    C27[27 Separation]
+    T37 --> C27
+    style C27 fill:#3fb950
+    C28[28 Fusion]
+    T37 --> C28
+    style C28 fill:#3fb950
+    C43[43 Recuperation du titre]
+    T37 --> C43
+    style C43 fill:#3fb950
+    C44[44 Appel programme]
+    T37 --> C44
+    style C44 fill:#3fb950
 ```
 
 ### 13.4 Detail Callees avec contexte
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| - | (aucun) | - | - |
+| [27](ADH-IDE-27.md) | Separation | 1 | Sous-programme |
+| [28](ADH-IDE-28.md) | Fusion | 1 | Sous-programme |
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
+| [44](ADH-IDE-44.md) | Appel programme | 1 | Sous-programme |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -228,17 +516,26 @@ graph LR
 | Lignes de logique | 32 | Programme compact |
 | Expressions | 10 | Peu de logique |
 | Tables WRITE | 0 | Impact faible |
-| Sous-programmes | 0 | Peu de dependances |
-| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Sous-programmes | 4 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 32) | Code sain |
 | Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
+#### Calcul (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : Services de calcul purs (Domain Services).
+- Migrer la logique de calcul (stock, compteurs, montants)
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
+| [Appel programme (IDE 44)](ADH-IDE-44.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [Separation (IDE 27)](ADH-IDE-27.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [Fusion (IDE 28)](ADH-IDE-28.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:10*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:43*

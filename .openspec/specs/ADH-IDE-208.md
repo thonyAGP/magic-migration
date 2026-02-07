@@ -1,196 +1,486 @@
 ﻿# ADH IDE 208 - Print Reçu code autocom
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:10
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_204.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:53 (28s) | Assemblage 03:53
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print Reçu code autocom |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (2 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (13 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 208 |
-| **Fichier XML** | `Prg_204.xml` |
-| **Description** | Print Reçu code autocom |
-| **Module** | ADH |
-| **Public Name** | OPEN_PHONE_LINE |
-| **Nombre taches** | 13 |
-| **Lignes logique** | 177 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 208 |
+| Nom Programme | Print Reçu code autocom |
+| Fichier source | `Prg_208.xml` |
+| Dossier IDE | Impression |
+| Taches | 13 (1 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
-| 80 | codes_autocom____aut | cafil058_dat | LINK | Jointure |
+**Print Reçu code autocom** assure la gestion complete de ce processus, accessible depuis [Affectation code autocom (IDE 209)](ADH-IDE-209.md), [Menu telephone (IDE 217)](ADH-IDE-217.md).
 
-**Resume**: 2 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (8 taches) : traitements metier divers
+- **Impression** (5 taches) : generation de tickets et documents
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+<details>
+<summary>Detail : phases du traitement</summary>
 
-### 2.4 Algorigramme
+#### Phase 1 : Traitement (8 taches)
+
+- **208** - (sans nom)
+- **208.1.1** - Impression reçu code auto
+- **208.1.2** - Impression reçu code auto
+- **208.2.1** - Impression reçu code auto
+- **208.2.2** - Impression reçu code auto
+- **208.3.1** - Veuillez patienter... **[[ECRAN]](#ecran-t9)**
+- **208.4.1** - Impression reçu code auto
+- **208.5.1** - Impression reçu code auto
+
+#### Phase 2 : Impression (5 taches)
+
+- **208.1** - Printer 1
+- **208.2** - Printer 4
+- **208.3** - Printer 6 **[[ECRAN]](#ecran-t8)**
+- **208.4** - Printer 8
+- **208.5** - Printer 9
+
+Delegue a : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (8 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>208 - (sans nom)
+
+**Role** : Tache d'orchestration : point d'entree du programme (8 sous-taches). Coordonne l'enchainement des traitements.
+
+<details>
+<summary>7 sous-taches directes</summary>
+
+| Tache | Nom | Bloc |
+|-------|-----|------|
+| [208.1.1](#t3) | Impression reçu code auto | Traitement |
+| [208.1.2](#t4) | Impression reçu code auto | Traitement |
+| [208.2.1](#t6) | Impression reçu code auto | Traitement |
+| [208.2.2](#t7) | Impression reçu code auto | Traitement |
+| [208.3.1](#t9) | Veuillez patienter... **[[ECRAN]](#ecran-t9)** | Traitement |
+| [208.4.1](#t11) | Impression reçu code auto | Traitement |
+| [208.5.1](#t13) | Impression reçu code auto | Traitement |
+
+</details>
+
+---
+
+#### <a id="t3"></a>208.1.1 - Impression reçu code auto
+
+**Role** : Generation du document : Impression reçu code auto.
+**Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
+
+---
+
+#### <a id="t4"></a>208.1.2 - Impression reçu code auto
+
+**Role** : Generation du document : Impression reçu code auto.
+**Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
+
+---
+
+#### <a id="t6"></a>208.2.1 - Impression reçu code auto
+
+**Role** : Generation du document : Impression reçu code auto.
+**Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
+
+---
+
+#### <a id="t7"></a>208.2.2 - Impression reçu code auto
+
+**Role** : Generation du document : Impression reçu code auto.
+**Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
+
+---
+
+#### <a id="t9"></a>208.3.1 - Veuillez patienter... [[ECRAN]](#ecran-t9)
+
+**Role** : Traitement : Veuillez patienter....
+**Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t9)
+
+---
+
+#### <a id="t11"></a>208.4.1 - Impression reçu code auto
+
+**Role** : Generation du document : Impression reçu code auto.
+**Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
+
+---
+
+#### <a id="t13"></a>208.5.1 - Impression reçu code auto
+
+**Role** : Generation du document : Impression reçu code auto.
+**Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
+
+
+### 3.2 Impression (5 taches)
+
+Generation des documents et tickets.
+
+---
+
+#### <a id="t2"></a>208.1 - Printer 1
+
+**Role** : Generation du document : Printer 1.
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+---
+
+#### <a id="t5"></a>208.2 - Printer 4
+
+**Role** : Generation du document : Printer 4.
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+---
+
+#### <a id="t8"></a>208.3 - Printer 6 [[ECRAN]](#ecran-t8)
+
+**Role** : Generation du document : Printer 6.
+**Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t8)
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+---
+
+#### <a id="t10"></a>208.4 - Printer 8
+
+**Role** : Generation du document : Printer 8.
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+---
+
+#### <a id="t12"></a>208.5 - Printer 9
+
+**Role** : Generation du document : Printer 9.
+**Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Affectation code autocom (IDE 209)](ADH-IDE-209.md), [Menu telephone (IDE 217)](ADH-IDE-217.md)
+- **Appelle**: 1 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 13 | **Expressions**: 6
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 13)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 208.3.1 | 208.3.1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t9"></a>208.3.1 - Veuillez patienter...
+**Tache** : [208.3.1](#t9) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
+
+<!-- FORM-DATA:
+{
+    "width":  422,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  0,
+                         "w":  423,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  120,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  10,
+                         "w":  221,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "Impression en cours ...",
+                         "parent":  null
+                     },
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  29,
+                         "w":  423,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  27,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  71,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  38,
+                         "w":  280,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "Edition du reçu code autocom",
+                         "parent":  null
+                     },
+                     {
+                         "x":  4,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  2,
+                         "w":  72,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  25,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "208.3.1",
+    "height":  56
+}
+-->
+
+## 9. NAVIGATION
+
+Ecran unique: **Veuillez patienter...**
+
+### 9.3 Structure hierarchique (13 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **208.1** | [**(sans nom)** (208)](#t1) | MDI | - | Traitement |
+| 208.1.1 | [Impression reçu code auto (208.1.1)](#t3) | MDI | - | |
+| 208.1.2 | [Impression reçu code auto (208.1.2)](#t4) | MDI | - | |
+| 208.1.3 | [Impression reçu code auto (208.2.1)](#t6) | MDI | - | |
+| 208.1.4 | [Impression reçu code auto (208.2.2)](#t7) | MDI | - | |
+| 208.1.5 | [Veuillez patienter... (208.3.1)](#t9) [mockup](#ecran-t9) | MDI | 422x56 | |
+| 208.1.6 | [Impression reçu code auto (208.4.1)](#t11) | MDI | - | |
+| 208.1.7 | [Impression reçu code auto (208.5.1)](#t13) | MDI | - | |
+| **208.2** | [**Printer 1** (208.1)](#t2) | MDI | - | Impression |
+| 208.2.1 | [Printer 4 (208.2)](#t5) | MDI | - | |
+| 208.2.2 | [Printer 6 (208.3)](#t8) [mockup](#ecran-t8) | MDI | 422x56 | |
+| 208.2.3 | [Printer 8 (208.4)](#t10) | MDI | - | |
+| 208.2.4 | [Printer 9 (208.5)](#t12) | MDI | - | |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>13 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 13 |
-| **Lignes logique** | 177 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 2 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (2)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 7 |
+| 80 | codes_autocom____aut |  | DB |   |   | L | 7 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (2 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R) - 7 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 initialisation | R | Alpha |
+| B | W1 large | R | Alpha |
+| C | W1 normal | R | Alpha |
+| D | W1 condense | R | Alpha |
+| E | W1 detecteur papier | R | Alpha |
+| F | W1 inhibe panel | R | Alpha |
+| G | W1 massicot | R | Alpha |
+| H | W1 selection feuille | R | Alpha |
+| I | W1 selection rouleau | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (9)
+
+Variables recues du programme appelant ([Affectation code autocom (IDE 209)](ADH-IDE-209.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P0 societe | Alpha | - |
+| B | P0 code adherent | Numeric | - |
+| C | P0 filiation | Numeric | - |
+| D | P0 nom village | Alpha | - |
+| E | P0 longueur code | Numeric | - |
+| F | P0 code autocom | Numeric | - |
+| G | P0 n° ligne | Numeric | - |
+| H | P0 salle seminaire | Alpha | - |
+| I | P0 telephone direct | Alpha | - |
+
+## 12. EXPRESSIONS
+
+**6 / 6 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 5 | 0 |
+| CAST_LOGIQUE | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (5 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 4 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
+| CONDITION | 5 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
+| CONDITION | 3 | `GetParam ('CURRENTPRINTERNUM')=6` | - |
+| CONDITION | 1 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
+| CONDITION | 2 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
+
+#### CAST_LOGIQUE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 6 | `'TRUE'LOG` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Affectation code autocom (IDE 209)](ADH-IDE-209.md) -> **Print Reçu code autocom (IDE 208)**
+
+Main -> ... -> [Menu telephone (IDE 217)](ADH-IDE-217.md) -> **Print Reçu code autocom (IDE 208)**
 
 ```mermaid
 graph LR
-    T[208 Print Reçu code]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T208[208 Print Reçu code au...]
+    style T208 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC209[209 Affectation code a...]
+    style CC209 fill:#3fb950
+    CC217[217 Menu telephone]
+    style CC217 fill:#3fb950
+    CC163 --> CC209
+    CC163 --> CC217
+    CC1 --> CC163
+    CC209 --> T208
+    CC217 --> T208
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ECF partage - appels cross-projet | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [209](ADH-IDE-209.md) | Affectation code autocom | 1 |
+| [217](ADH-IDE-217.md) | Menu telephone | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[208 Print Reçu code]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T208[208 Print Reçu code au...]
+    style T208 fill:#58a6ff
+    C182[182 Raz Current Printer]
+    T208 --> C182
+    style C182 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [182](ADH-IDE-182.md) | Raz Current Printer | 1 | Impression ticket/document |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| ADH.ecf | 208 | OPEN_PHONE_LINE | Sessions_Reprises |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Defini: OPEN_PHONE_LINE |
-| ECF partage | OUI - ADH.ecf |
-| **Conclusion** | **NON ORPHELIN** - Composant ECF partage |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 177 | Programme compact |
+| Expressions | 6 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 177) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (8 taches: 1 ecran, 7 traitements)
 
-### Complexite
+- **Strategie** : Orchestrateur avec 1 ecrans (Razor/React) et 7 traitements backend (services).
+- Les ecrans deviennent des composants UI, les traitements invisibles deviennent des services injectables.
+- 1 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 13 | Moyen |
-| Tables | 2 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **MOYENNE** | - |
+#### Impression (5 taches: 1 ecran, 4 traitements)
 
-### Points d'attention migration
+- **Strategie** : Templates HTML -> PDF via wkhtmltopdf ou Puppeteer.
+- `PrintService` injectable avec choix imprimante
 
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+### 14.3 Dependances critiques
 
----
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:10 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:53*

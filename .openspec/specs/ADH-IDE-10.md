@@ -1,195 +1,334 @@
 ﻿# ADH IDE 10 - Print list Checkout (shift F9)
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 22:58
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_6.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 03:39
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print list Checkout (shift F9) |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (3 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 10 |
-| **Fichier XML** | `Prg_6.xml` |
-| **Description** | Print list Checkout (shift F9) |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 3 |
-| **Lignes logique** | 26 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 10 |
+| Nom Programme | Print list Checkout (shift F9) |
+| Fichier source | `Prg_10.xml` |
+| Dossier IDE | Impression |
+| Taches | 3 (1 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 47 | compte_gm________cgm | cafil025_dat | READ | Lecture |
+**Print list Checkout (shift F9)** assure la gestion complete de ce processus, accessible depuis [Menu Data Catching (IDE 7)](ADH-IDE-7.md).
 
-**Resume**: 1 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Impression** (2 taches) : generation de tickets et documents
+- **Traitement** (1 tache) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+<details>
+<summary>Detail : phases du traitement</summary>
 
-### 2.4 Algorigramme
+#### Phase 1 : Traitement (1 tache)
+
+- **10** - Veuillez patienter... **[[ECRAN]](#ecran-t1)**
+
+Delegue a : [Export - address (IDE 11)](ADH-IDE-11.md)
+
+#### Phase 2 : Impression (2 taches)
+
+- **10.1** - Printer 1
+- **10.1.1** - edition extrait compte
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>10 - Veuillez patienter... [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : Veuillez patienter....
+**Ecran** : 424 x 57 DLU (MDI) | [Voir mockup](#ecran-t1)
+**Delegue a** : [Export - address (IDE 11)](ADH-IDE-11.md)
+
+
+### 3.2 Impression (2 taches)
+
+Generation des documents et tickets.
+
+---
+
+#### <a id="t2"></a>10.1 - Printer 1
+
+**Role** : Generation du document : Printer 1.
+
+---
+
+#### <a id="t3"></a>10.1.1 - edition extrait compte
+
+**Role** : Generation du document : edition extrait compte.
+**Variables liees** : A (W1 solde compte)
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Menu Data Catching (IDE 7)](ADH-IDE-7.md)
+- **Appelle**: 1 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 3 | **Expressions**: 2
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 3)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 10 | 10 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>10 - Veuillez patienter...
+**Tache** : [10](#t1) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
+**Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
+
+<!-- FORM-DATA:
+{
+    "width":  424,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  0,
+                         "w":  423,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  120,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  10,
+                         "w":  221,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "Impression en cours ...",
+                         "parent":  null
+                     },
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  29,
+                         "w":  423,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  27,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  52,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  38,
+                         "w":  318,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "Impression de l\u0027extrait de compte",
+                         "parent":  null
+                     },
+                     {
+                         "x":  4,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  2,
+                         "w":  72,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  25,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "10",
+    "height":  57
+}
+-->
+
+## 9. NAVIGATION
+
+Ecran unique: **Veuillez patienter...**
+
+### 9.3 Structure hierarchique (3 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **10.1** | [**Veuillez patienter...** (10)](#t1) [mockup](#ecran-t1) | MDI | 424x57 | Traitement |
+| **10.2** | [**Printer 1** (10.1)](#t2) | MDI | - | Impression |
+| 10.2.1 | [edition extrait compte (10.1.1)](#t3) | MDI | - | |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>3 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 3 |
-| **Lignes logique** | 26 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (1)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB | R |   |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 47 - compte_gm________cgm (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 solde compte | R | Numeric |
+
+</details>
+
+## 11. VARIABLES
+
+*(Programme sans variables locales mappees)*
+
+## 12. EXPRESSIONS
+
+**2 / 2 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| OTHER | 2 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### OTHER (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 2 | `SetCrsr (2)` | - |
+| OTHER | 1 | `SetCrsr (1)` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Menu Data Catching (IDE 7)](ADH-IDE-7.md) -> **Print list Checkout (shift F9) (IDE 10)**
 
 ```mermaid
 graph LR
-    T[10 Print list Chec]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T10[10 Print list Checkout...]
+    style T10 fill:#58a6ff
+    CC7[7 Menu Data Catching]
+    style CC7 fill:#8b5cf6
+    CC7 --> T10
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [7](ADH-IDE-7.md) | Menu Data Catching | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[10 Print list Chec]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T10[10 Print list Checkout...]
+    style T10 fill:#58a6ff
+    C11[11 Export - address]
+    T10 --> C11
+    style C11 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [11](ADH-IDE-11.md) | Export - address | 1 | Sous-programme |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 26 | Programme compact |
+| Expressions | 2 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 26) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (1 tache: 1 ecran, 0 traitement)
 
-### Complexite
+- **Strategie** : 1 composant(s) UI (Razor/React) avec formulaires et validation.
+- 1 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 3 | Simple |
-| Tables | 1 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+#### Impression (2 taches: 0 ecran, 2 traitements)
 
-### Points d'attention migration
+- **Strategie** : Templates HTML -> PDF via wkhtmltopdf ou Puppeteer.
+- `PrintService` injectable avec choix imprimante
 
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+### 14.3 Dependances critiques
+
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Export - address (IDE 11)](ADH-IDE-11.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 22:58 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*
