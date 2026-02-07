@@ -21,7 +21,27 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Ecart fermeture caisse** assure la gestion complete de ce processus, accessible depuis [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md).
+**Ecart fermeture caisse** est le **controleur de caisse** qui compare les montants **comptes physiquement** par l'operateur avec les montants **calcules par le systeme** lors de la fermeture de session.
+
+**Objectif metier** : Detecter et documenter les ecarts entre la caisse reelle et la caisse theorique, permettant d'identifier les erreurs de manipulation ou les anomalies.
+
+**Principe de calcul** :
+- **Caisse comptee** (F-L) : Montants saisis manuellement par l'operateur apres comptage physique
+- **Caisse calculee** (M-S) : Montants theoriques calcules par le systeme depuis les operations
+- **Ecart** (T-Z) : Difference = Comptee - Calculee (positif = excedent, negatif = deficit)
+
+**Modes de paiement analyses** :
+| Variable Comptee | Variable Calculee | Variable Ecart | Mode |
+|------------------|-------------------|----------------|------|
+| F | M | T | **Total general** |
+| G | N | U | Monnaie (especes) |
+| H | O | V | Produits |
+| I | P | W | Cartes bancaires |
+| J | Q | X | Cheques |
+| K | R | Y | Operations diverses (OD) |
+| L | S | Z | Nombre de devises |
+
+Appele depuis [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md).
 
 Le flux de traitement s'organise en **5 blocs fonctionnels** :
 
@@ -167,7 +187,31 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+### 5.1 Calcul des ecarts
+
+| Regle | Formule | Description |
+|-------|---------|-------------|
+| **RM-130-01** | `T = F - M` | Ecart total = Total compte - Total calcule |
+| **RM-130-02** | `U = G - N` | Ecart monnaie = Monnaie comptee - Monnaie calculee |
+| **RM-130-03** | `V = H - O` | Ecart produits = Produits comptes - Produits calcules |
+| **RM-130-04** | `W = I - P` | Ecart cartes = Cartes comptees - Cartes calculees |
+| **RM-130-05** | `X = J - Q` | Ecart cheques = Cheques comptes - Cheques calcules |
+| **RM-130-06** | `Y = K - R` | Ecart OD = OD comptes - OD calcules |
+| **RM-130-07** | `Z = L - S` | Ecart nb devises = Nb devises compte - Nb devises calcule |
+
+### 5.2 Interpretation des ecarts
+
+| Valeur ecart | Signification | Action |
+|--------------|---------------|--------|
+| `= 0` | Caisse equilibree | OK - Pas d'action |
+| `> 0` | Excedent de caisse | Investiguer source du surplus |
+| `< 0` | Deficit de caisse | Investiguer manque (erreur, vol, oubli) |
+
+### 5.3 Commentaires obligatoires
+
+- **BA** : Commentaire general sur les ecarts (obligatoire si ecart > 0)
+- **BB** : Commentaire specifique aux ecarts devises etrangeres
+- **BC** : Flag pour editer le ticket recapitulatif
 
 ## 6. CONTEXTE
 
@@ -1574,20 +1618,43 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    START([START])
-    INIT[Init controles]
-    SAISIE[Saisie commentaire]
-    ENDOK([END OK])
+    START([START Fermeture])
+    INIT[Charger montants comptes F-L]
+    CALC[Charger montants calcules M-S]
+    ECART[Calculer ecarts T-Z]
+    DECECART{Ecart T != 0 ?}
+    AFFICHE[Afficher ecarts par mode]
+    DECDEVISE{Devises etrangeres ?}
+    CALCDEV[Calcul ecart devises]
+    AFFDEV[Afficher devises en ecart]
+    SAISIECOM[Saisie commentaire BA]
+    DECTICKET{Editer ticket BC ?}
+    TICKET[Impression ticket recap]
+    VALID[Validation fermeture]
+    ENDOK([END Fermeture validee])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT --> CALC --> ECART
+    ECART --> DECECART
+    DECECART -->|OUI| AFFICHE
+    DECECART -->|NON equilibre| VALID
+    AFFICHE --> DECDEVISE
+    DECDEVISE -->|OUI| CALCDEV --> AFFDEV --> SAISIECOM
+    DECDEVISE -->|NON| SAISIECOM
+    SAISIECOM --> DECTICKET
+    DECTICKET -->|OUI| TICKET --> VALID
+    DECTICKET -->|NON| VALID
+    VALID --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style DECECART fill:#58a6ff,color:#000
+    style DECDEVISE fill:#58a6ff,color:#000
+    style DECTICKET fill:#58a6ff,color:#000
+    style AFFICHE fill:#ffeb3b,color:#000
+    style SAISIECOM fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END | Bleu = Decisions | Jaune = Actions cles
 
 <!-- TAB:Donnees -->
 

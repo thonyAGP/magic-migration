@@ -5,7 +5,8 @@
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Ecart fermeture caisse
+- **Fonction**: Controleur de caisse - Compare montants comptes vs calcules, detecte et documente les ecarts
+- **Formule cle**: `Ecart = Compte - Calcule` (T=F-M pour total, U=G-N pour monnaie, etc.)
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (12/100)
 - **Statut**: NON_ORPHELIN
