@@ -317,7 +317,6 @@ CREATE TABLE IF NOT EXISTS kb_metadata (
     value TEXT NOT NULL
 );
 
-INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('schema_version', '10');
 INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('created_at', datetime('now'));
 
 -- ============================================================================
@@ -1076,5 +1075,106 @@ CREATE TABLE IF NOT EXISTS logic_remarks (
 CREATE INDEX IF NOT EXISTS idx_logic_remarks_line ON logic_remarks(logic_line_id);
 
 -- =========================================================================
--- END OF SCHEMA V10
+-- SQL SERVER METADATA (Schema v11 - Real Database Documentation)
+-- Physical SQL Server columns, types, sizes, FK, indexes, sample values
+-- Separate from Magic XML tables (tables/table_columns above)
+-- =========================================================================
+
+-- SQL Server tables metadata
+CREATE TABLE IF NOT EXISTS sql_tables (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    database_name TEXT NOT NULL,          -- 'CSK0912'
+    table_name TEXT NOT NULL,             -- 'cafil008_dat'
+    logical_name TEXT,                    -- Magic logical name from table-mapping.json
+    row_count INTEGER DEFAULT 0,
+    column_count INTEGER DEFAULT 0,
+    primary_key_json TEXT,               -- JSON array of PK column names
+    imported_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(database_name, table_name)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sql_tables_db ON sql_tables(database_name);
+CREATE INDEX IF NOT EXISTS idx_sql_tables_name ON sql_tables(table_name);
+CREATE INDEX IF NOT EXISTS idx_sql_tables_logical ON sql_tables(logical_name);
+
+-- SQL Server columns metadata
+CREATE TABLE IF NOT EXISTS sql_columns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sql_table_id INTEGER NOT NULL REFERENCES sql_tables(id) ON DELETE CASCADE,
+    column_name TEXT NOT NULL,
+    ordinal_position INTEGER NOT NULL,
+    sql_type TEXT NOT NULL,              -- 'nvarchar', 'int', 'decimal', etc.
+    max_length INTEGER,                  -- NULL for non-string types
+    numeric_precision INTEGER,
+    numeric_scale INTEGER,
+    is_nullable INTEGER NOT NULL DEFAULT 1,
+    is_primary_key INTEGER NOT NULL DEFAULT 0,
+    distinct_count INTEGER DEFAULT -1,   -- -1 = not sampled
+    sample_values_json TEXT,             -- JSON array of distinct values (if <= 50)
+    UNIQUE(sql_table_id, column_name)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sql_columns_table ON sql_columns(sql_table_id);
+CREATE INDEX IF NOT EXISTS idx_sql_columns_name ON sql_columns(column_name);
+CREATE INDEX IF NOT EXISTS idx_sql_columns_type ON sql_columns(sql_type);
+
+-- SQL Server foreign keys
+CREATE TABLE IF NOT EXISTS sql_foreign_keys (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sql_table_id INTEGER NOT NULL REFERENCES sql_tables(id) ON DELETE CASCADE,
+    fk_name TEXT NOT NULL,
+    columns_json TEXT NOT NULL,           -- JSON array of child column names
+    referenced_table TEXT NOT NULL,
+    referenced_columns_json TEXT NOT NULL -- JSON array of parent column names
+);
+
+CREATE INDEX IF NOT EXISTS idx_sql_fk_table ON sql_foreign_keys(sql_table_id);
+CREATE INDEX IF NOT EXISTS idx_sql_fk_ref ON sql_foreign_keys(referenced_table);
+
+-- SQL Server indexes
+CREATE TABLE IF NOT EXISTS sql_indexes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sql_table_id INTEGER NOT NULL REFERENCES sql_tables(id) ON DELETE CASCADE,
+    index_name TEXT NOT NULL,
+    index_type TEXT,                      -- 'CLUSTERED', 'NONCLUSTERED', etc.
+    is_unique INTEGER NOT NULL DEFAULT 0,
+    columns_json TEXT NOT NULL            -- JSON array of column names
+);
+
+CREATE INDEX IF NOT EXISTS idx_sql_idx_table ON sql_indexes(sql_table_id);
+
+-- FTS for SQL column search
+CREATE VIRTUAL TABLE IF NOT EXISTS sql_columns_fts USING fts5(
+    column_name,
+    sample_values_text,                  -- Flattened sample values for search
+    content='sql_columns',
+    content_rowid='id'
+);
+
+-- Triggers for SQL columns FTS sync
+CREATE TRIGGER IF NOT EXISTS sql_columns_ai AFTER INSERT ON sql_columns BEGIN
+    INSERT INTO sql_columns_fts(rowid, column_name, sample_values_text)
+    VALUES (new.id, new.column_name,
+        COALESCE((SELECT group_concat(value, ' ') FROM json_each(new.sample_values_json)), ''));
+END;
+
+CREATE TRIGGER IF NOT EXISTS sql_columns_ad AFTER DELETE ON sql_columns BEGIN
+    INSERT INTO sql_columns_fts(sql_columns_fts, rowid, column_name, sample_values_text)
+    VALUES('delete', old.id, old.column_name,
+        COALESCE((SELECT group_concat(value, ' ') FROM json_each(old.sample_values_json)), ''));
+END;
+
+CREATE TRIGGER IF NOT EXISTS sql_columns_au AFTER UPDATE ON sql_columns BEGIN
+    INSERT INTO sql_columns_fts(sql_columns_fts, rowid, column_name, sample_values_text)
+    VALUES('delete', old.id, old.column_name,
+        COALESCE((SELECT group_concat(value, ' ') FROM json_each(old.sample_values_json)), ''));
+    INSERT INTO sql_columns_fts(rowid, column_name, sample_values_text)
+    VALUES (new.id, new.column_name,
+        COALESCE((SELECT group_concat(value, ' ') FROM json_each(new.sample_values_json)), ''));
+END;
+
+INSERT OR REPLACE INTO kb_metadata (key, value) VALUES ('schema_version', '11');
+
+-- =========================================================================
+-- END OF SCHEMA V11
 -- =========================================================================

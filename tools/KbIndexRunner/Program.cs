@@ -2352,6 +2352,204 @@ if (args.Length > 1 && args[0] == "forms-json")
     return 0;
 }
 
+// Import SQL Server metadata from JSON (produced by Extract-SqlMetadata.ps1)
+if (args.Length > 0 && args[0] == "import-sql-metadata")
+{
+    var jsonPath = args.Length > 1 ? args[1] : @"D:\Projects\Lecteur_Magic\tools\db-metadata\PHU2512-metadata.json";
+    var importDb = new KnowledgeDb();
+
+    if (!importDb.IsInitialized())
+    {
+        Console.WriteLine("ERROR: Knowledge Base not initialized");
+        return 1;
+    }
+
+    Console.WriteLine("Ensuring schema v11 tables exist...");
+    importDb.InitializeSchema();
+
+    Console.WriteLine("=== Import SQL Server Metadata ===");
+    Console.WriteLine($"Source: {jsonPath}");
+    Console.WriteLine();
+
+    if (!File.Exists(jsonPath))
+    {
+        Console.WriteLine($"ERROR: JSON file not found: {jsonPath}");
+        Console.WriteLine("Run Extract-SqlMetadata.ps1 first to generate the metadata JSON.");
+        return 1;
+    }
+
+    var jsonContent = File.ReadAllText(jsonPath);
+    var metadata = System.Text.Json.JsonDocument.Parse(jsonContent);
+    var root = metadata.RootElement;
+
+    var databaseName = root.GetProperty("database").GetString() ?? "unknown";
+    Console.WriteLine($"Database: {databaseName}");
+
+    var tablesElement = root.GetProperty("tables");
+    int tableCount = 0, columnCount = 0, fkCount = 0, indexCount = 0;
+
+    // Clear existing data for this database
+    using (var delCmd = importDb.Connection.CreateCommand())
+    {
+        delCmd.CommandText = "DELETE FROM sql_tables WHERE database_name = @db";
+        delCmd.Parameters.AddWithValue("@db", databaseName);
+        var deleted = delCmd.ExecuteNonQuery();
+        if (deleted > 0) Console.WriteLine($"Cleared {deleted} existing table(s) for {databaseName}");
+    }
+
+    using var transaction = importDb.Connection.BeginTransaction();
+    try
+    {
+        foreach (var tableProp in tablesElement.EnumerateObject())
+        {
+            var tableName = tableProp.Name;
+            var tableObj = tableProp.Value;
+            tableCount++;
+
+            var logicalName = tableObj.TryGetProperty("logicalName", out var ln) ? ln.GetString() : null;
+            var rowCount = tableObj.TryGetProperty("rowCount", out var rc) ? rc.GetInt32() : 0;
+            var colCount = tableObj.TryGetProperty("columnCount", out var cc) ? cc.GetInt32() : 0;
+
+            // Primary key
+            string? pkJson = null;
+            if (tableObj.TryGetProperty("primaryKey", out var pk) && pk.ValueKind == System.Text.Json.JsonValueKind.Array && pk.GetArrayLength() > 0)
+            {
+                pkJson = pk.GetRawText();
+            }
+
+            // Insert table
+            using var tblCmd = importDb.Connection.CreateCommand();
+            tblCmd.Transaction = transaction;
+            tblCmd.CommandText = @"
+                INSERT INTO sql_tables (database_name, table_name, logical_name, row_count, column_count, primary_key_json)
+                VALUES (@db, @name, @logical, @rows, @cols, @pk)";
+            tblCmd.Parameters.AddWithValue("@db", databaseName);
+            tblCmd.Parameters.AddWithValue("@name", tableName);
+            tblCmd.Parameters.AddWithValue("@logical", (object?)logicalName ?? DBNull.Value);
+            tblCmd.Parameters.AddWithValue("@rows", rowCount);
+            tblCmd.Parameters.AddWithValue("@cols", colCount);
+            tblCmd.Parameters.AddWithValue("@pk", (object?)pkJson ?? DBNull.Value);
+            tblCmd.ExecuteNonQuery();
+
+            var tableId = importDb.LastInsertRowId();
+
+            // Insert columns
+            if (tableObj.TryGetProperty("columns", out var columns))
+            {
+                foreach (var col in columns.EnumerateArray())
+                {
+                    var colName = col.GetProperty("name").GetString()!;
+                    var position = col.GetProperty("position").GetInt32();
+                    var sqlType = col.GetProperty("sqlType").GetString()!;
+                    var nullable = col.TryGetProperty("nullable", out var n) && n.GetBoolean();
+                    var isPK = col.TryGetProperty("isPrimaryKey", out var ipk) && ipk.GetBoolean();
+                    var distinctCnt = col.TryGetProperty("distinctCount", out var dc) ? dc.GetInt32() : -1;
+
+                    int? maxLen = col.TryGetProperty("maxLength", out var ml) ? ml.GetInt32() : null;
+                    int? numPrec = col.TryGetProperty("numericPrecision", out var np) ? np.GetInt32() : null;
+                    int? numScale = col.TryGetProperty("numericScale", out var ns) ? ns.GetInt32() : null;
+
+                    string? sampleJson = null;
+                    if (col.TryGetProperty("sampleValues", out var sv) && sv.ValueKind == System.Text.Json.JsonValueKind.Array && sv.GetArrayLength() > 0)
+                    {
+                        sampleJson = sv.GetRawText();
+                    }
+
+                    using var colCmd = importDb.Connection.CreateCommand();
+                    colCmd.Transaction = transaction;
+                    colCmd.CommandText = @"
+                        INSERT INTO sql_columns (sql_table_id, column_name, ordinal_position, sql_type,
+                            max_length, numeric_precision, numeric_scale, is_nullable, is_primary_key,
+                            distinct_count, sample_values_json)
+                        VALUES (@tid, @name, @pos, @type, @maxlen, @prec, @scale, @null, @pk, @dc, @sv)";
+                    colCmd.Parameters.AddWithValue("@tid", tableId);
+                    colCmd.Parameters.AddWithValue("@name", colName);
+                    colCmd.Parameters.AddWithValue("@pos", position);
+                    colCmd.Parameters.AddWithValue("@type", sqlType);
+                    colCmd.Parameters.AddWithValue("@maxlen", (object?)maxLen ?? DBNull.Value);
+                    colCmd.Parameters.AddWithValue("@prec", (object?)numPrec ?? DBNull.Value);
+                    colCmd.Parameters.AddWithValue("@scale", (object?)numScale ?? DBNull.Value);
+                    colCmd.Parameters.AddWithValue("@null", nullable ? 1 : 0);
+                    colCmd.Parameters.AddWithValue("@pk", isPK ? 1 : 0);
+                    colCmd.Parameters.AddWithValue("@dc", distinctCnt);
+                    colCmd.Parameters.AddWithValue("@sv", (object?)sampleJson ?? DBNull.Value);
+                    colCmd.ExecuteNonQuery();
+                    columnCount++;
+                }
+            }
+
+            // Insert foreign keys
+            if (tableObj.TryGetProperty("foreignKeys", out var fks))
+            {
+                foreach (var fk in fks.EnumerateArray())
+                {
+                    var fkName = fk.GetProperty("name").GetString()!;
+                    var fkCols = fk.GetProperty("columns").GetRawText();
+                    var refTable = fk.GetProperty("referencedTable").GetString()!;
+                    var refCols = fk.GetProperty("referencedColumns").GetRawText();
+
+                    using var fkCmd = importDb.Connection.CreateCommand();
+                    fkCmd.Transaction = transaction;
+                    fkCmd.CommandText = @"
+                        INSERT INTO sql_foreign_keys (sql_table_id, fk_name, columns_json, referenced_table, referenced_columns_json)
+                        VALUES (@tid, @name, @cols, @ref, @refcols)";
+                    fkCmd.Parameters.AddWithValue("@tid", tableId);
+                    fkCmd.Parameters.AddWithValue("@name", fkName);
+                    fkCmd.Parameters.AddWithValue("@cols", fkCols);
+                    fkCmd.Parameters.AddWithValue("@ref", refTable);
+                    fkCmd.Parameters.AddWithValue("@refcols", refCols);
+                    fkCmd.ExecuteNonQuery();
+                    fkCount++;
+                }
+            }
+
+            // Insert indexes
+            if (tableObj.TryGetProperty("indexes", out var idxs))
+            {
+                foreach (var idx in idxs.EnumerateArray())
+                {
+                    var idxName = idx.GetProperty("name").GetString()!;
+                    var idxType = idx.TryGetProperty("type", out var it) ? it.GetString() : null;
+                    var isUnique = idx.TryGetProperty("isUnique", out var iu) && iu.GetBoolean();
+                    var idxCols = idx.GetProperty("columns").GetRawText();
+
+                    using var idxCmd = importDb.Connection.CreateCommand();
+                    idxCmd.Transaction = transaction;
+                    idxCmd.CommandText = @"
+                        INSERT INTO sql_indexes (sql_table_id, index_name, index_type, is_unique, columns_json)
+                        VALUES (@tid, @name, @type, @unique, @cols)";
+                    idxCmd.Parameters.AddWithValue("@tid", tableId);
+                    idxCmd.Parameters.AddWithValue("@name", idxName);
+                    idxCmd.Parameters.AddWithValue("@type", (object?)idxType ?? DBNull.Value);
+                    idxCmd.Parameters.AddWithValue("@unique", isUnique ? 1 : 0);
+                    idxCmd.Parameters.AddWithValue("@cols", idxCols);
+                    idxCmd.ExecuteNonQuery();
+                    indexCount++;
+                }
+            }
+
+            if (tableCount % 50 == 0) Console.Write(".");
+        }
+
+        transaction.Commit();
+    }
+    catch (Exception ex)
+    {
+        transaction.Rollback();
+        Console.WriteLine($"ERROR: {ex.Message}");
+        return 1;
+    }
+
+    Console.WriteLine();
+    Console.WriteLine();
+    Console.WriteLine("=== Import Complete ===");
+    Console.WriteLine($"Tables:      {tableCount}");
+    Console.WriteLine($"Columns:     {columnCount}");
+    Console.WriteLine($"Foreign Keys:{fkCount}");
+    Console.WriteLine($"Indexes:     {indexCount}");
+    return 0;
+}
+
 var projectsBasePath = args.Length > 0 ? args[0] : @"D:\Data\Migration\XPA\PMS";
 
 Console.WriteLine("=== Magic Knowledge Base Indexer ===");
