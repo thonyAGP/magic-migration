@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Devises finales F/F Qte WS** est le **composant de calcul des quantites monetaires par devise** qui **determine les montants totaux en valeur pour le fond de caisse final (F/F = Fond Final)**.
+
+**Objectif metier** : Calculer la quantite totale (montant en valeur) de chaque devise a conserver dans le fond de caisse lors de la cloture de session. Contrairement au programme 144 qui compte les coupures, ce programme calcule les valeurs monetaires totales par devise. Les donnees sont exposees via Web Service (WS) pour le reporting et la consolidation.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Devises finales F/F Qte WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse / Responsable fermeture |
+| **Quoi** | Calcul des montants totaux par devise pour le fond de caisse final |
+| **Pourquoi** | Determiner la valeur monetaire du fond de caisse pour le reporting WS |
+| **Declencheur** | Processus de fermeture de caisse ou appel WS |
+| **Resultat** | Montants totaux par devise calcules et exposes |
 
 ### 1.2 Regles metier
 

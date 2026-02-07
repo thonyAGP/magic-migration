@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print transferts** est le **module d'impression des operations de transfert** qui **genere un justificatif papier ou PDF des transferts effectues entre hebergements**.
+
+**Objectif metier** : Produire une trace imprimee des operations de transfert pour documentation, validation par le client ou archivage comptable. Le justificatif reprend les informations des hebergements source et destination ainsi que les montants transferes.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print transferts |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de reception ou caisse ayant effectue un transfert |
+| **Quoi** | Generation et impression d'un justificatif de transfert inter-hebergements |
+| **Pourquoi** | Fournir une trace papier pour le client ou les archives comptables |
+| **Declencheur** | Appel automatique apres un transfert ou demande explicite d'impression |
+| **Resultat** | Document imprime contenant les details du transfert (GM source, GM destination, montants, date) |
 
 ### 1.2 Regles metier
 

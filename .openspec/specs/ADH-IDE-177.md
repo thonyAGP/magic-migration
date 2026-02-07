@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Program_176** est un **programme shell/placeholder** qui **ne contient aucune logique metier active**.
+
+**Objectif metier** : Ce programme est un emplacement reserve (shell vide) sans fonctionnalite implementee. Il peut s'agir d'un programme en cours de developpement abandonne, d'un placeholder pour une future fonctionnalite ou d'un programme desactive. Avec 0 tables et 1 seule ligne de logique, il n'effectue aucun traitement.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Program_176 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | N/A - Programme sans utilisateur cible |
+| **Quoi** | Programme vide sans fonctionnalite (shell/placeholder) |
+| **Pourquoi** | Emplacement reserve ou programme abandonne/desactive |
+| **Declencheur** | Aucun - Programme probablement non appele |
+| **Resultat** | Aucun traitement effectue |
 
 ### 1.2 Regles metier
 

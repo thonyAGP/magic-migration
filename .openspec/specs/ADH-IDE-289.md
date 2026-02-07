@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Calcul equivalent BI locale** est le **module de conversion monetaire** qui **calcule l'equivalent en monnaie locale des billets de banque (BI) etrangers**.
+
+**Objectif metier** : Lors des operations de change, ce programme determine la valeur en monnaie locale d'un billet etranger en consultant la table des moyens de reglement (moyens_reglement_mor) pour appliquer le taux de conversion approprie. Ceci permet d'afficher au client et d'enregistrer comptablement la contre-valeur locale des devises etrangeres.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Calcul equivalent BI locale |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Caissier effectuant une operation de change |
+| **Quoi** | Conversion de la valeur d'un billet etranger en equivalent monnaie locale |
+| **Pourquoi** | Affichage client et enregistrement comptable des operations de change |
+| **Declencheur** | Saisie d'un billet etranger lors d'une operation de change |
+| **Resultat** | Montant equivalent en monnaie locale calcule et disponible |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Mise en Opposition Autocom** est le **programme de blocage telephonique** qui **desactive l'acces au systeme de telecommunication (autocommutateur) pour un adherent**.
+
+**Objectif metier** : Bloquer l'acces telephonique d'un adherent via le systeme AUTOCOM (autocommutateur telephonique). Cette mise en opposition est utilisee en cas de depart anticipe, impaye, ou a la demande de l'adherent pour empecher les appels sortants depuis sa chambre. Le programme consulte les codes AUTOCOM pour appliquer le blocage approprie.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Mise en opposition autocom |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception/caisse |
+| **Quoi** | Blocage de la ligne telephonique adherent |
+| **Pourquoi** | Controler l'acces aux communications telephoniques |
+| **Declencheur** | Demande de blocage (depart, impaye, demande client) |
+| **Resultat** | Ligne telephonique de la chambre bloquee pour appels sortants |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Verification Pooling** est le **programme de controle de ressources mutualisees** qui **verifie et gere l'affectation des comptes lors d'un changement d'activite**.
+
+**Objectif metier** : Controler la disponibilite et la coherence des ressources partagees (pooling) lors des changements d'activite d'un adherent. Le pooling permet de mutualiser certains equipements ou services entre adherents. Ce programme verifie les parametres de configuration et met a jour la table des comptes pour le changement d'activite, assurant que les ressources sont correctement repartageables.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Verification pooling |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (verification automatique) |
+| **Quoi** | Controle des ressources mutualisees et comptes |
+| **Pourquoi** | Assurer la coherence du partage de ressources lors des changements |
+| **Declencheur** | Changement d'activite d'un adherent |
+| **Resultat** | Comptes verifies et mis a jour pour le nouveau contexte d'activite |
 
 ### 1.2 Regles metier
 

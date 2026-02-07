@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Versement/Retrait** est le **gestionnaire des mouvements de caisse** qui **enregistre les operations d'encaissement et de decaissement dans le systeme comptable**.
+
+**Objectif metier** : Permettre a l'operateur de caisse d'effectuer des versements (entrees de fonds) ou des retraits (sorties de fonds) en les tracant dans les tables comptables, de change et de depot de garantie. Ce programme gere les flux financiers entre la caisse physique et les comptes clients/fournisseurs.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Versement/Retrait |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de caisse (utilisateur connecte au module ADH) |
+| **Quoi** | Enregistrement des versements (encaissements) et retraits (decaissements) de caisse |
+| **Pourquoi** | Assurer la tracabilite comptable de tous les mouvements de fonds et maintenir la coherence entre caisse physique et soldes comptables |
+| **Declencheur** | Selection d'une operation versement ou retrait depuis le menu caisse |
+| **Resultat** | Ecriture comptable generee, mise a jour des compteurs de caisse et des tables de change si devise etrangere |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom articles TAI** est le **selecteur des articles TAI (Taxes Aeriennes Internationales)** qui **permet a l'operateur de consulter et selectionner un article lie aux taxes aeriennes**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les articles lies aux taxes aeriennes internationales (TAI) et permettre leur selection lors de la facturation des transports aeriens ou des frais associes aux vols.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom articles TAI |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou gestionnaire transport |
+| **Quoi** | Fenetre de selection des articles de taxes aeriennes |
+| **Pourquoi** | Permettre la facturation correcte des taxes liees aux transports aeriens |
+| **Declencheur** | Clic sur zoom depuis un champ article en contexte transport aerien |
+| **Resultat** | Retour du code article TAI selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

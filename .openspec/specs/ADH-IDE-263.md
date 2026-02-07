@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom modes de paiement** est le **selecteur des modes de paiement avec devises en depot** qui **permet a l'operateur de consulter et selectionner un mode de paiement pour les operations de depot en devises**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les modes de paiement disponibles en lien avec les depots de devises, permettant la selection lors d'une operation de depot ou de retrait de devises par un adherent.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom modes de paiement |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou gestionnaire devises |
+| **Quoi** | Fenetre de selection des modes de paiement pour depots devises |
+| **Pourquoi** | Permettre le choix du mode de paiement adapte aux operations de depot en devises |
+| **Declencheur** | Clic sur zoom depuis un champ mode de paiement dans un ecran de depot devises |
+| **Resultat** | Retour du mode de paiement selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

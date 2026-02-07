@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Opposition code autocom** est le **gestionnaire de blocage des codes telephoniques** qui **met en opposition les codes d'autocommutateur pour empecher les appels sortants**.
+
+**Objectif metier** : Bloquer l'acces telephonique d'un hebergement en mettant le code autocom en opposition. Cette fonction est utilisee lors du depart d'un client, en cas de non-paiement, ou sur demande explicite. Le programme desactive les lignes telephoniques associees et met a jour l'historique des stations.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Opposition code autocom |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception ou systeme de check-out automatique |
+| **Quoi** | Mise en opposition des codes d'autocommutateur telephonique |
+| **Pourquoi** | Empecher les appels sortants non autorises apres depart ou sur demande |
+| **Declencheur** | Depart client, demande de blocage, ou non-paiement |
+| **Resultat** | Code autocom bloque avec mise a jour des tables de telephonie et historique |
 
 ### 1.2 Regles metier
 

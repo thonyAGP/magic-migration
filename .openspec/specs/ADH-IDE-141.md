@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Init devise session WS** est le **service d'initialisation des devises** qui **configure les devises et moyens de paiement acceptes pour une nouvelle session de caisse depuis un poste de travail ou service web**.
+
+**Objectif metier** : Initialiser la table des devises et moyens de reglement pour une session de caisse en recuperant depuis le referentiel central la liste des devises acceptees, leurs taux de change du jour, et les moyens de paiement autorises (especes, CB, cheques, etc.). Ce programme technique (WS = WorkStation/WebService) est appele lors de l'ouverture d'une session pour garantir que la caisse dispose des parametres monetaires a jour. Il permet de gerer les caisses multi-devises courantes dans les environnements touristiques internationaux.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Init devise session WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (declenchement automatique) ou operateur via interface |
+| **Quoi** | Initialisation des devises et moyens de paiement pour la session de caisse |
+| **Pourquoi** | Configurer les devises acceptees avec leurs taux et les modes de paiement autorises |
+| **Declencheur** | Ouverture de session caisse ou appel service (API/WebService) |
+| **Resultat** | Table gestion_devise_session alimentee avec les devises, taux et moyens de reglement |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Program_186** est un **programme stub/placeholder** qui **ne contient aucune logique metier active**.
+
+**Objectif metier** : Programme vide ou reserve. Avec seulement 1 ligne de logique, aucune table et aucun parametre, ce programme semble etre soit un placeholder pour une fonctionnalite future, soit un ancien programme dont le code a ete desactive. Il ne remplit actuellement aucune fonction metier.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Program_186 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | N/A (programme inactif) |
+| **Quoi** | Programme stub sans implementation |
+| **Pourquoi** | Placeholder reserve ou code historique desactive |
+| **Declencheur** | Aucun (programme orphelin) |
+| **Resultat** | Aucun traitement (programme vide) |
 
 ### 1.2 Regles metier
 

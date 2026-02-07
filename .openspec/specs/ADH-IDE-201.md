@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Mise en Synchro Date/Time** est le **programme de synchronisation temporelle** qui **harmonise les dates et heures entre le poste client et le serveur**.
+
+**Objectif metier** : Assurer la coherence des horodatages dans l'ensemble du systeme en synchronisant la date et l'heure du poste de travail avec la reference serveur. Cette synchronisation est critique pour les operations sensibles au temps (reservations, check-in/out, facturations) afin d'eviter les incoherences de donnees liees aux decalages horaires entre postes.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** |   Mise en synchro date/time |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (execution automatique) |
+| **Quoi** | Synchronisation date/heure poste client avec serveur |
+| **Pourquoi** | Garantir la coherence temporelle des transactions |
+| **Declencheur** | Demarrage application ou appel periodique |
+| **Resultat** | Date/heure du poste alignee sur la reference serveur |
 
 ### 1.2 Regles metier
 

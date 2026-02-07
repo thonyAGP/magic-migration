@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Fermeture caisse 144** est le **module de cloture de session** qui **effectue le pointage final et la fermeture comptable de la caisse**.
+
+**Objectif metier** : Ce programme cloture une session de caisse en effectuant les operations de pointage obligatoires. Il ecrit dans les tables de pointage (pointage_appro_remise, pointage_article, pointage_devise) pour enregistrer l'etat final de la caisse. Il consulte les moyens de reglement, les tables de configuration, les devises de session et les devises parametrees pour valider la coherence. Le pointage compare les montants theoriques aux montants reels et enregistre les eventuels ecarts. Le numero 144 correspond a un identifiant de version/type de cloture.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Fermeture caisse 144 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Caissier en fin de service |
+| **Quoi** | Pointage et fermeture comptable de la session de caisse |
+| **Pourquoi** | Valider la coherence des operations du jour et cloturer la session |
+| **Declencheur** | Fin de service du caissier ou cloture journaliere |
+| **Resultat** | Session cloturee avec pointages enregistres et ecarts documentes |
 
 ### 1.2 Regles metier
 

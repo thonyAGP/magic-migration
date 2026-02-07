@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Alimentation Combos LIEU SEJ** est le **chargeur de listes deroulantes** qui **alimente les combos de selection des lieux de sejour a partir des tables d'import**.
+
+**Objectif metier** : Charger dynamiquement les listes deroulantes (combos) permettant de selectionner les lieux de sejour dans les formulaires. Ce programme lit les donnees des tables d'import pour alimenter les controles de selection utilisateur.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Alimentation Combos LIEU SEJ |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme d'interface utilisateur |
+| **Quoi** | Chargement des listes de lieux de sejour pour les combos |
+| **Pourquoi** | Permettre la selection des lieux de sejour dans les formulaires |
+| **Declencheur** | Ouverture de formulaire ou rafraichissement de liste |
+| **Resultat** | Combo alimente avec les lieux de sejour disponibles |
 
 ### 1.2 Regles metier
 

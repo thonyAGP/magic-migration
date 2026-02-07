@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Menu telephone** est le **point d'entree principal du module telephonie** qui **centralise l'acces a toutes les fonctions de gestion telephonique du village**.
+
+**Objectif metier** : Fournir le menu principal de gestion de la telephonie permettant d'acceder aux fonctions d'affectation de codes, consultation des appels, parametrage PABX, editions et statistiques. Ce programme est le hub central de navigation du module telephonie.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Menu telephone |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception ou responsable telephonie |
+| **Quoi** | Menu principal des fonctions telephoniques |
+| **Pourquoi** | Centraliser l'acces a toutes les fonctionnalites de telephonie |
+| **Declencheur** | Selection du module telephonie depuis le menu principal |
+| **Resultat** | Affichage du menu avec acces aux sous-fonctions telephoniques |
 
 ### 1.2 Regles metier
 

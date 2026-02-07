@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom mode paiement change GM** est le **selecteur de mode de paiement pour les operations de change GM (Gestion Monetaire)** qui **permet a l'operateur de choisir un moyen de reglement lors d'une operation de change**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour consulter et choisir parmi les modes de paiement disponibles pour les operations de change dans le module de gestion monetaire, en lecture sur la table des moyens de reglement.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom mode paiement change GM |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou comptable effectuant une operation de change |
+| **Quoi** | Fenetre de selection des modes de paiement pour change GM |
+| **Pourquoi** | Permettre le choix du moyen de reglement adapte lors d'une operation de change monetaire |
+| **Declencheur** | Clic sur zoom depuis un champ mode de paiement dans un ecran de change |
+| **Resultat** | Retour du mode de paiement selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

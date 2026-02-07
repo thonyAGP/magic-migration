@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Menu impression des appels** est le **point d'entree des etats d'impression telephoniques** qui **propose les differentes options d'edition des appels telephoniques**.
+
+**Objectif metier** : Fournir un menu centralise pour acceder aux differentes impressions liees a la telephonie : releves d'appels par chambre, syntheses par periode, factures detaillees, statistiques d'utilisation. Ce programme est le hub de navigation pour les editions telephoniques.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Menu impression des appels |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception ou responsable telephonie |
+| **Quoi** | Menu de selection des etats d'impression telephoniques |
+| **Pourquoi** | Centraliser l'acces aux differents types d'editions telephoniques |
+| **Declencheur** | Acces depuis le menu telephonie ou demande d'impression |
+| **Resultat** | Affichage du menu avec les options d'impression disponibles |
 
 ### 1.2 Regles metier
 

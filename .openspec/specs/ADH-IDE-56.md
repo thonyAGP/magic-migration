@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Recap Trait Easy Check-Out** est l'**ecran de consultation du recapitulatif des traitements Easy Check-Out** qui permet de **visualiser et verifier les resultats des traitements effectues**.
+
+**Objectif metier** : Afficher un recapitulatif detaille des traitements Easy Check-Out effectues en croisant les informations d'hebergement, de depot de garantie, de comptes GM et de lignes de solde. L'operateur peut filtrer pour afficher uniquement les erreurs et imprimer le recapitulatif.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Récap Trait Easy Check-Out |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse/reception ou superviseur |
+| **Quoi** | Consultation et impression du recapitulatif des traitements Easy Check-Out |
+| **Pourquoi** | Verifier les resultats des traitements et identifier les erreurs eventuelles |
+| **Declencheur** | Apres execution du traitement Easy Check-Out ou consultation historique |
+| **Resultat** | Affichage du recapitulatif avec option d'impression et filtrage des erreurs |
 
 ### 1.2 Regles metier
 

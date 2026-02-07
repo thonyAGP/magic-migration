@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Visualisation Stat telephone** est l'**analyseur de statistiques telephoniques** qui **affiche les indicateurs de consommation et d'utilisation de la telephonie**.
+
+**Objectif metier** : Presenter les statistiques d'utilisation de la telephonie du village : volume d'appels, recettes generees, taux d'utilisation par periode, comparatifs. Ce programme permet le suivi de la performance du service telephonique.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Visualisation Stat telephone |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Responsable telephonie ou direction |
+| **Quoi** | Consultation des statistiques de telephonie |
+| **Pourquoi** | Analyser les performances et revenus du service telephonique |
+| **Declencheur** | Demande de reporting ou analyse periodique |
+| **Resultat** | Affichage des indicateurs statistiques de telephonie |
 
 ### 1.2 Regles metier
 

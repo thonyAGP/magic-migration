@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Menu solde d'un compte** est le **point d'entree menu** qui **permet a l'operateur d'acceder aux differentes operations de solde de compte client**.
+
+**Objectif metier** : Fournir un menu centralise pour gerer les operations de solde des comptes GM (Gentils Membres). Ce programme consulte les tables comptable (cte) et compte_gm (cgm) pour afficher les informations du compte et proposer les actions disponibles (consultation solde, paiement, annulation).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Menu solde d'un compte |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou receptionniste |
+| **Quoi** | Menu d'acces aux operations de solde de compte client |
+| **Pourquoi** | Centraliser l'acces aux fonctions de gestion des soldes GM |
+| **Declencheur** | Selection depuis le menu principal caisse ou acces direct |
+| **Resultat** | Navigation vers la fonction de solde choisie par l'operateur |
 
 ### 1.2 Regles metier
 

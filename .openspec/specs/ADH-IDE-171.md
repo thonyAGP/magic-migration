@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print versement retrait** est le **module d'impression** qui permet de **generer les recus de versements et retraits d'especes pour les adherents**.
+
+**Objectif metier** : Editer les justificatifs de mouvements d'especes (versements/retraits) sur le compte GM de l'adherent. Le programme consulte les donnees GM (gm-recherche, gm-complet), l'hebergement et les ecritures comptables pour produire un recu detaille conforme aux exigences de tracabilite financiere.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print versement retrait |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou reception effectuant des operations especes |
+| **Quoi** | Edition de recu/justificatif pour versement ou retrait d'especes |
+| **Pourquoi** | Fournir une preuve ecrite de l'operation financiere a l'adherent et pour audit |
+| **Declencheur** | Fin d'une operation de versement ou retrait sur compte GM |
+| **Resultat** | Impression d'un recu detaillant montant, date, adherent et solde resultant |
 
 ### 1.2 Regles metier
 

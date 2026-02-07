@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Histo ventes IGR** est le **gestionnaire d'historique des ventes IGR** qui **permet de consulter et gerer les ventes de type IGR (Inter-Gestion Reseau) entre villages**.
+
+**Objectif metier** : Fournir un ecran de consultation et de gestion de l'historique des ventes IGR. Les ventes IGR sont des transactions inter-villages dans le reseau Club Med, permettant de facturer des prestations consommees dans un autre village. Ce programme (14 taches, 551 lignes, 17 tables dont 4 en ecriture) gere les specificites de ces transactions cross-village, incluant la gestion des taxes additionnelles et des credits bar.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Histo ventes IGR |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de caisse ou gestionnaire comptable |
+| **Quoi** | Consultation et gestion des ventes IGR (inter-villages) |
+| **Pourquoi** | Tracer et gerer les transactions entre differents villages du reseau |
+| **Declencheur** | Acces depuis le menu historique ou gestion inter-villages |
+| **Resultat** | Affichage historique IGR, modifications si applicable |
 
 ### 1.2 Regles metier
 

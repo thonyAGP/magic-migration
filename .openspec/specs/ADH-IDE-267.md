@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom devises** est le **selecteur des devises avec informations de moyens de reglement** qui **permet a l'operateur de consulter et selectionner une devise avec ses caracteristiques de reglement**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les devises disponibles enrichies des informations de moyens de reglement associes, permettant une selection contextuelle lors d'operations de change ou de paiement en devises etrangeres.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom devises |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou gestionnaire change |
+| **Quoi** | Fenetre de selection des devises avec moyens de reglement |
+| **Pourquoi** | Associer devise et mode de reglement pour les operations de change |
+| **Declencheur** | Clic sur zoom depuis un champ devise dans un contexte de reglement |
+| **Resultat** | Retour de la devise et informations associees au programme appelant |
 
 ### 1.2 Regles metier
 

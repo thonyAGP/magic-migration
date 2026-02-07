@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom services village** est le **selecteur des services disponibles dans le village** qui **permet a l'operateur de consulter et selectionner un service propose aux adherents**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher la liste des services disponibles dans le village (restaurant, spa, activites sportives, excursions, etc.) et permettre leur selection lors de la reservation ou facturation d'un service pour un adherent.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom services village |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur accueil, animation ou caisse |
+| **Quoi** | Fenetre de selection des services du village |
+| **Pourquoi** | Permettre la selection standardisee des services pour reservation ou facturation |
+| **Declencheur** | Clic sur zoom depuis un champ service |
+| **Resultat** | Retour du code service selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Reinit Aff PYR** est le **reinitialiser d'affectation PYR** qui **remet a zero les affectations de paiement sur chambre (PYR) dans la table hebergement**.
+
+**Objectif metier** : Reinitialiser les indicateurs d'affectation PYR dans la table hebergement apres un deversement de transaction. Ce programme compact (12 lignes de logique) nettoie les marqueurs temporaires utilises lors du processus de paiement PYR, permettant ainsi de preparer les donnees pour la prochaine transaction. Il est appele automatiquement par le programme de deversement (IDE 247).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Reinit Aff PYR |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appel automatique depuis Deversement Transaction) |
+| **Quoi** | Remise a zero des flags d'affectation PYR |
+| **Pourquoi** | Nettoyer les donnees temporaires apres comptabilisation |
+| **Declencheur** | Appel depuis Deversement Transaction (IDE 247) |
+| **Resultat** | Table hebergement nettoyee, prete pour nouvelle transaction |
 
 ### 1.2 Regles metier
 

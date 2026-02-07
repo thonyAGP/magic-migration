@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print Depot Obj/Dev/Sce** est le **module d'impression** qui permet de **generer les recus de depots d'objets de valeur, devises et coffres-forts**.
+
+**Objectif metier** : Editer les justificatifs pour les depots securises des adherents : objets de valeur (bijoux, documents), devises etrangeres et acces coffre-fort. Programme complexe (63 taches, 972 lignes) qui consulte les tables depot_objets, depot_devises et solde_devises pour produire des recus detailles avec inventaire complet.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print Depot Obj/Dev/Sce |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception ou securite gerant les depots de valeur |
+| **Quoi** | Edition de recus pour depots objets, devises etrangeres ou coffre-fort |
+| **Pourquoi** | Fournir une preuve documentee du depot et de l'inventaire pour securite et responsabilite |
+| **Declencheur** | Enregistrement d'un depot d'objet, devise ou attribution de coffre |
+| **Resultat** | Impression d'un recu detaillant les elements deposes, leur description et les conditions |
 
 ### 1.2 Regles metier
 

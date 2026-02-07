@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Apport coffre** est le **module d'approvisionnement de caisse** qui **permet de transferer des fonds du coffre vers la caisse operationnelle**.
+
+**Objectif metier** : Gerer les apports de fonds depuis le coffre central vers la caisse de l'operateur. Ce programme permet de saisir les montants en differentes devises a transferer, met a jour les soldes de la session de caisse (table `caisse_devise`) et enregistre l'historique des approvisionnements par devise. Il assure la tracabilite des mouvements coffre-caisse.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Apport coffre |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Responsable caisse / Operateur habilite |
+| **Quoi** | Saisie d'un approvisionnement de caisse depuis le coffre |
+| **Pourquoi** | Alimenter la caisse en numeraire pour les operations courantes |
+| **Declencheur** | Besoin de fonds supplementaires en caisse (debut de journee ou reapprovisionnement) |
+| **Resultat** | Mise a jour du solde caisse par devise, historisation du mouvement coffre |
 
 ### 1.2 Regles metier
 

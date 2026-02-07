@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom nationalite** est le **selecteur des nationalites** qui **permet a l'operateur de consulter et selectionner une nationalite pour un adherent**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher la liste des nationalites disponibles (avec codes pays et indicatifs telephoniques) et permettre leur selection lors de la creation ou modification de la fiche d'un adherent.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom nationalite |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur accueil ou reception |
+| **Quoi** | Fenetre de selection des nationalites |
+| **Pourquoi** | Standardiser la saisie de la nationalite des adherents avec codes valides |
+| **Declencheur** | Clic sur zoom depuis un champ nationalite |
+| **Resultat** | Retour du code nationalite selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

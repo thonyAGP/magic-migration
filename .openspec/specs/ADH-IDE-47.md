@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Recuperation du titre** est le **service de traduction des libelles d'ecran** qui **recupere le nom localise d'un ecran a partir de son code numerique et du parametre CODELANGUE**.
+
+**Objectif metier** : Fournir les titres d'ecran dans la langue appropriee pour l'internationalisation de l'interface utilisateur. Recherche dans la table des ecrans le libelle correspondant au code demande, avec support multi-modules (CA par defaut).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Date/Heure session user |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appele automatiquement lors de l'affichage d'un ecran) |
+| **Quoi** | Recuperation du libelle d'ecran localise |
+| **Pourquoi** | Afficher les titres de fenetre dans la langue de l'utilisateur |
+| **Declencheur** | Ouverture d'un ecran necessitant un titre traduit |
+| **Resultat** | Chaine formatee "Nom_ecran - Description" dans la langue selectionnee |
 
 ### 1.2 Regles metier
 

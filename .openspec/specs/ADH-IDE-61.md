@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Maj des lignes saisies** est le **sous-programme de facturation** qui **met a jour les ecritures comptables des lignes de vente saisies**.
+
+**Objectif metier** : Finaliser l'enregistrement comptable des lignes de vente en mettant a jour la table comptable (cafil018_dat) avec les informations de vente, de rayon boutique et de terminal de paiement (TPE). Ce traitement assure la coherence entre les ventes saisies et les ecritures comptables.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Maj des lignes saisies |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Processus de facturation (appele automatiquement) |
+| **Quoi** | Mise a jour des ecritures comptables pour les lignes de vente |
+| **Pourquoi** | Synchroniser les ventes avec la comptabilite et les rayons boutique |
+| **Declencheur** | Appel depuis le processus de cloture de facture |
+| **Resultat** | Ecritures comptables mises a jour dans cafil018_dat |
 
 ### 1.2 Regles metier
 

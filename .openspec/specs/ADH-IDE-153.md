@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Calcul du stock devise** est le **moteur de calcul des stocks de devises etrangeres** qui **determine les quantites disponibles de chaque devise en caisse a un instant donne**.
+
+**Objectif metier** : Calculer le stock theorique et reel de chaque devise etrangere en caisse, en tenant compte des operations de change (achat/vente), des mouvements de fonds et de l'historique des sessions. Ce calcul croise les taux de change, les operations de vente de devises et les details de sessions pour fournir un etat precis du stock multi-devises.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Calcul du stock devise |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur change / Responsable caisse |
+| **Quoi** | Calcul de l'etat des stocks de devises etrangeres |
+| **Pourquoi** | Connaitre les disponibilites en devises pour les operations de change |
+| **Declencheur** | Consultation stock, operation de change, cloture session |
+| **Resultat** | Etat des stocks par devise calcule (quantites et valeurs) |
 
 ### 1.2 Regles metier
 

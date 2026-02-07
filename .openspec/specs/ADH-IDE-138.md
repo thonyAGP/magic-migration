@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Ticket fermeture session** est le **generateur de ticket de cloture** qui **imprime le recapitulatif financier d'une session de caisse lors de sa fermeture**.
+
+**Objectif metier** : Produire un ticket papier documentant la fermeture d'une session de caisse, incluant le detail des operations effectuees, les totaux par mode de paiement, les ecarts eventuels et les informations comptables necessaires a la reconciliation. Ce ticket constitue une piece justificative pour la comptabilite et permet a l'operateur de valider les montants avant cloture definitive.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Ticket fermeture session |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse (caissier, responsable) |
+| **Quoi** | Generation et impression du ticket de fermeture de session |
+| **Pourquoi** | Fournir un recapitulatif imprime des operations de la session pour controle et archivage comptable |
+| **Declencheur** | Cloture de session caisse (manuelle ou automatique en fin de journee) |
+| **Resultat** | Ticket imprime avec totaux, details par mode de paiement et informations de la session |
 
 ### 1.2 Regles metier
 

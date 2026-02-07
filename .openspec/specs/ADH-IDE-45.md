@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Recuperation langue** est un **programme placeholder/vide** qui **n'a pas de logique implementee (ISEMPTY_TSK)**.
+
+**Objectif metier** : Programme reserve pour une future fonctionnalite de recuperation de la langue de l'interface utilisateur. Actuellement non implemente.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Recuperation langue |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | N/A (programme vide) |
+| **Quoi** | Recuperation de la langue utilisateur (non implemente) |
+| **Pourquoi** | Reserve pour internationalisation future |
+| **Declencheur** | N/A |
+| **Resultat** | Aucun traitement (programme vide) |
 
 ### 1.2 Regles metier
 

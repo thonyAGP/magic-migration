@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Program_156** est un **programme shell/stub** qui sert de **conteneur ou point d'entree minimal**.
+
+**Objectif metier** : Programme generique sans logique metier apparente (1 seule tache, 0 tables, 0 callees). Probablement un template non utilise ou un programme reserve pour extension future.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Program_156 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (aucune interaction utilisateur directe) |
+| **Quoi** | Programme shell minimal sans traitement actif |
+| **Pourquoi** | Conteneur reserve ou template non implemente |
+| **Declencheur** | Aucun declencheur identifie (programme orphelin) |
+| **Resultat** | Aucun traitement effectif - programme vide |
 
 ### 1.2 Regles metier
 

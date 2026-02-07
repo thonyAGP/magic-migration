@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Suppression Carac interdit** est le **nettoyeur de caracteres speciaux** qui **retire les caracteres interdits ou non conformes des donnees textuelles**.
+
+**Objectif metier** : Nettoyer les chaines de caracteres en supprimant les caracteres speciaux interdits qui pourraient causer des problemes dans les interfaces (PABX, exports, impressions). Ce programme assure la conformite des donnees textuelles avec les contraintes techniques.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Suppression Carac interdit |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme automatique ou operateur saisie |
+| **Quoi** | Suppression des caracteres speciaux non autorises |
+| **Pourquoi** | Garantir la compatibilite des donnees avec les systemes externes |
+| **Declencheur** | Validation de saisie ou traitement batch de nettoyage |
+| **Resultat** | Chaine de caracteres nettoyee sans caracteres interdits |
 
 ### 1.2 Regles metier
 

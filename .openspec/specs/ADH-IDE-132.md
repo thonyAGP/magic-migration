@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Historique session** est le **programme de consultation** qui **affiche l'historique complet des sessions de caisse cloturees avec leurs details et devises**.
+
+**Objectif metier** : Permettre aux operateurs de consulter les sessions de caisse passees pour verification, audit ou recherche d'informations. Ce programme accede aux tables d'historique (histo_sessions_caisse, histo_sessions_caisse_detail, histo_sessions_caisse_devise) en lecture seule pour afficher les donnees archivees des sessions precedentes, incluant les montants par devise.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Historique session |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse, responsable, auditeur |
+| **Quoi** | Consultation de l'historique des sessions de caisse cloturees |
+| **Pourquoi** | Audit, verification, recherche de transactions passees |
+| **Declencheur** | Acces depuis le menu de gestion caisse ou recherche |
+| **Resultat** | Affichage des sessions archivees avec details et devises |
 
 ### 1.2 Regles metier
 

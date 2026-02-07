@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom type depot garantie** est le **selecteur des types de depot de garantie** qui **permet a l'operateur de consulter et selectionner un type de garantie pour les operations de depot**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les differents types de garanties disponibles (caution ski, caution vehicule, depot de garantie chambre, etc.) et permettre leur selection lors de l'enregistrement d'une garantie pour un adherent.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom type depot garantie |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou accueil |
+| **Quoi** | Fenetre de selection des types de depot de garantie |
+| **Pourquoi** | Categoriser les garanties pour une meilleure gestion des cautions et depots |
+| **Declencheur** | Clic sur zoom depuis un champ type de garantie |
+| **Resultat** | Retour du type de garantie selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

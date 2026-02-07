@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Histo ventes Gratuites** est le **gestionnaire d'historique des ventes gratuites** qui **permet de consulter, modifier et annuler les ventes gratuites accordees aux clients (GM)**.
+
+**Objectif metier** : Fournir un ecran de consultation et de gestion de l'historique des ventes gratuites. Les ventes gratuites sont des prestations offertes aux clients (remises 100%, gestes commerciaux, etc.). Ce programme (17 taches, 652 lignes, 23 tables dont 4 en ecriture) permet de visualiser ces transactions, d'effectuer des corrections ou annulations, et de gerer les reemissions de tickets. Il accede aux tables de ventes gratuites specifiques et aux tables de gratuites pour la categorisation.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Histo ventes Gratuités |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de caisse ou responsable (avec droits) |
+| **Quoi** | Consultation et gestion de l'historique des ventes gratuites |
+| **Pourquoi** | Tracer et controler les gratuites accordees aux clients |
+| **Declencheur** | Acces depuis le menu caisse ou historique gratuites |
+| **Resultat** | Affichage historique gratuites, modifications si applicable |
 
 ### 1.2 Regles metier
 

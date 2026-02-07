@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Deversement Transaction PMS14** est le **programme de deversement des transactions vers le format PMS14** qui **permet de transferer les ventes et transactions vers le systeme comptable au format PMS14**.
+
+**Objectif metier** : Effectuer le deversement des transactions de vente (ventes, gratuites, paiements) depuis les tables de caisse vers les tables comptables et de reporting au format PMS14, permettant l'integration avec le systeme de gestion central.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Deversement Transaction /PMS14 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Processus automatique ou superviseur comptable |
+| **Quoi** | Transfert des transactions vers le format PMS14 |
+| **Pourquoi** | Assurer l'integration comptable et le reporting des ventes |
+| **Declencheur** | Cloture de caisse ou traitement batch |
+| **Resultat** | Transactions deversees dans les tables comptables au format PMS14 |
 
 ### 1.2 Regles metier
 

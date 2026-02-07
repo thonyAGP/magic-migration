@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Program_242** est un **programme coquille vide ou en developpement** qui **ne contient actuellement aucune logique metier implementee**.
+
+**Objectif metier** : Ce programme minimaliste (1 ligne de logique, 0 table, 0 parametre) semble etre une reserve de slot programme non encore utilise ou un programme en attente de developpement. Il est marque comme orphelin et ne presente aucune fonctionnalite active. Il pourrait s'agir d'un placeholder reserve pour une future fonctionnalite ou d'un programme desactive.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Program_242 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | N/A (programme non operationnel) |
+| **Quoi** | Programme coquille vide |
+| **Pourquoi** | Reserve ou developpement futur |
+| **Declencheur** | Aucun (orphelin) |
+| **Resultat** | Aucun traitement |
 
 ### 1.2 Regles metier
 

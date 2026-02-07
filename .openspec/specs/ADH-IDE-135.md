@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Generation tableau recap WS** est le **programme de generation Web Service** qui **produit un tableau recapitulatif des remises et devises pour une session de caisse**.
+
+**Objectif metier** : Generer un tableau de synthese recapitulatif pour la cloture de session via Web Service. Ce programme accede aux tables de remises (pv_discounts) et devises (devise_in) pour construire un resume structure des operations de la session. Le tableau recapitulatif est utilise pour le reporting et la validation des totaux de session.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Generation tableau recap WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme Web Service (appel automatise) |
+| **Quoi** | Generation du tableau recapitulatif de session |
+| **Pourquoi** | Synthese des operations pour validation et reporting |
+| **Declencheur** | Appel Web Service lors de la cloture de session |
+| **Resultat** | Tableau recapitulatif genere avec totaux par devise et remises |
 
 ### 1.2 Regles metier
 

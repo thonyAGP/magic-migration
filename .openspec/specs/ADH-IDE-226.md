@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Recherche Adresse Mail** est le **gestionnaire d'adresses email** qui **recherche, consulte et gere les adresses email associees aux clients et GM**.
+
+**Objectif metier** : Permettre la recherche et la gestion des adresses email des clients dans le systeme. Ce programme offre une interface de recherche multi-criteres et permet l'ajout, la modification ou la suppression des adresses email associees aux fiches GM.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Recherche Adresse Mail |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception ou marketing |
+| **Quoi** | Recherche et gestion des adresses email clients |
+| **Pourquoi** | Maintenir les coordonnees email pour les communications clients |
+| **Declencheur** | Recherche client, mise a jour email, ou campagne marketing |
+| **Resultat** | Adresse email trouvee, creee ou modifiee selon l'action |
 
 ### 1.2 Regles metier
 

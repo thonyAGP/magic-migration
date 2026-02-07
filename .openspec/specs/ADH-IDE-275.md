@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom mode de paiement TPE** est le **selecteur des modes de paiement compatibles TPE (Terminal de Paiement Electronique)** qui **permet a l'operateur de choisir un mode de paiement pour transaction par carte bancaire**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les modes de paiement compatibles avec le terminal de paiement electronique (cartes bancaires Visa, Mastercard, etc.) et permettre leur selection lors d'un encaissement par TPE.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom mode de paiement TPE |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse |
+| **Quoi** | Fenetre de selection des modes de paiement TPE |
+| **Pourquoi** | Filtrer les moyens de reglement compatibles avec le terminal de paiement |
+| **Declencheur** | Clic sur zoom lors d'un paiement par carte bancaire |
+| **Resultat** | Retour du mode de paiement TPE selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print ticket vente** est le **generateur de tickets de caisse standard** qui **produit l'impression du ticket de vente au format standard pour le client**.
+
+**Objectif metier** : Generer et imprimer le ticket de caisse suite a une vente. Ce programme compose le ticket avec toutes les informations requises : article vendu, quantite, prix unitaire, total, mode de paiement, coordonnees client, numero de ticket. Il accede a de nombreuses tables de reference (articles, initialisation, statistiques) pour formater correctement le document selon les normes d'affichage definies.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** |  Print ticket vente |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme d'impression (appel automatique apres validation de vente) |
+| **Quoi** | Generation et impression du ticket de vente format standard |
+| **Pourquoi** | Fournir au client une preuve d'achat conforme aux obligations legales |
+| **Declencheur** | Appel depuis le dispatcher d'impression (IDE 233) apres une vente |
+| **Resultat** | Ticket de caisse imprime ou genere en PDF selon configuration |
 
 ### 1.2 Regles metier
 

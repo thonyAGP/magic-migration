@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Creation adresse_village** est un **module de gestion des adresses** qui **cree ou met a jour les adresses associees aux villages de vacances**.
+
+**Objectif metier** : Gerer le referentiel des adresses des villages en croisant plusieurs sources de donnees. Le programme lit la table de configuration `cafil045_dat`, utilise les informations budgetaires (`pv_budget`) et met a jour la table des employes disponibles (`Boo_AvailibleEmployees`). Cela permet d'associer correctement les adresses aux structures operationnelles du village.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Creation adresse_village |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Administrateur systeme ou processus d'initialisation village |
+| **Quoi** | Creer et associer les adresses aux entites du village |
+| **Pourquoi** | Maintenir un referentiel d'adresses coherent pour les villages |
+| **Declencheur** | Creation d'un nouveau village ou mise a jour de configuration |
+| **Resultat** | Adresses village creees et associees aux structures (employes, budgets) |
 
 ### 1.2 Regles metier
 

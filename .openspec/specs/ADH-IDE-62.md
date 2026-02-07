@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Maj Hebergement Tempo** est le **sous-programme de gestion des sejours** qui **met a jour les donnees d'hebergement temporaire en lien avec les Gift Pass**.
+
+**Objectif metier** : Synchroniser les informations d'hebergement temporaire avec les affectations de Gift Pass et les mises a jour TPE. Ce traitement permet de maintenir la coherence entre le sejour du client, son hebergement temporaire et les avantages Gift Pass qui lui sont attribues.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Maj Hebergement Tempo |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Processus de gestion sejour (appele automatiquement) |
+| **Quoi** | Mise a jour des donnees d'hebergement temporaire |
+| **Pourquoi** | Synchroniser hebergement, Gift Pass et informations TPE |
+| **Declencheur** | Appel lors de modifications de sejour ou affectation Gift Pass |
+| **Resultat** | Donnees hebergement temporaire mises a jour |
 
 ### 1.2 Regles metier
 

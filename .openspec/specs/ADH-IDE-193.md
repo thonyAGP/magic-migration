@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Solde compte fin sejour** est le **processus principal de cloture financiere** qui **effectue le reglement complet du compte GM lors du depart du client**.
+
+**Objectif metier** : Gerer la cloture financiere complete d'un sejour Club Med. C'est un programme critique (89 taches, 2272 lignes) qui orchestre le paiement final, la gestion des depots de garantie, la cloture des lignes de telephone, l'archivage des totaux carte de credit, la generation des fichiers d'echange et la mise a jour de l'hebergement. Il accede a 49 tables dont 18 en ecriture pour assurer la coherence complete des donnees financieres.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Solde compte fin sejour |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception lors du check-out |
+| **Quoi** | Cloture financiere complete du compte client en fin de sejour |
+| **Pourquoi** | Finaliser toutes les operations financieres avant le depart du GM |
+| **Declencheur** | Procedure de check-out ou solde definitif du compte |
+| **Resultat** | Compte solde, ecritures comptables cloturees, depot de garantie restitue, ticket de solde imprime |
 
 ### 1.2 Regles metier
 

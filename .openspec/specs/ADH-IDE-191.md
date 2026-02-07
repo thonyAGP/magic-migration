@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Annulation solde** est le **programme de contre-passation comptable** qui **annule une operation de solde precedemment enregistree**.
+
+**Objectif metier** : Permettre l'annulation complete d'un solde de compte GM deja effectue. Ce programme inverse les ecritures comptables, met a jour les totaux par type de paiement (cc_total_par_type), reajuste les compteurs et restaure l'etat du compte avant le solde. Il gere 19 tables dont les ecritures de change, les moyens de paiement et les totaux carte de credit.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Annulation solde |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse avec droits d'annulation |
+| **Quoi** | Annulation complete d'une operation de solde de compte |
+| **Pourquoi** | Corriger une erreur de solde ou annuler a la demande du client |
+| **Declencheur** | Demande d'annulation depuis le menu solde ou la consultation compte |
+| **Resultat** | Contre-passation des ecritures, restauration du solde anterieur, mise a jour des totaux |
 
 ### 1.2 Regles metier
 

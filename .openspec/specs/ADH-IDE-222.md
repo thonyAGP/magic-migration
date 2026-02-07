@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Program_221** est un **programme utilitaire technique** qui **effectue un traitement interne lie au module telephonie ou adherent**.
+
+**Objectif metier** : Programme technique sans description explicite, probablement utilise pour des operations internes de maintenance ou de traitement batch. Le nom generique suggere un programme de support ou un stub pour developpement futur.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Program_221 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme ou processus automatique |
+| **Quoi** | Traitement technique interne |
+| **Pourquoi** | Operation de maintenance ou traitement batch |
+| **Declencheur** | Appel systeme ou maintenance planifiee |
+| **Resultat** | Traitement technique effectue |
 
 ### 1.2 Regles metier
 

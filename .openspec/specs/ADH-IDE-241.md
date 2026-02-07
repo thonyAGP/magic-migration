@@ -21,7 +21,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Solde Gift Pass** assure la gestion complete de ce processus, accessible depuis [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md).
+**Solde Gift Pass** est le **calculateur de solde de cartes cadeaux** qui **recupere et calcule le solde disponible sur un Gift Pass (carte cadeau prepayee) pour un client**.
+
+**Objectif metier** : Interroger le solde credit consommable d'un Gift Pass a partir du numero de societe et de compte client. Ce programme compact (12 lignes de logique) est appele systematiquement lors des transactions de vente pour verifier si le client dispose d'un credit Gift Pass utilisable. Il accede a la table cc_total_par_type pour recuperer les totaux de credit par type de compte.
+
+Ce programme est accessible depuis [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md).
 
 Le flux de traitement s'organise en **1 blocs fonctionnels** :
 

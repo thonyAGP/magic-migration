@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Verification Client/Serveur** est le **programme de detection d'environnement** qui **determine si l'application s'execute en mode client local ou serveur**.
+
+**Objectif metier** : Detecter le mode d'execution de l'application (standalone client ou architecture client/serveur) afin d'adapter le comportement des traitements. Cette verification est necessaire pour gerer les differences de configuration entre un poste autonome et un environnement reseau partage (chemins fichiers, acces base de donnees, verrouillages).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Verification si client/serveur |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appel automatique) |
+| **Quoi** | Detection du mode d'execution client/serveur |
+| **Pourquoi** | Adapter le comportement selon l'architecture deployee |
+| **Declencheur** | Appel interne lors de l'initialisation ou traitement specifique |
+| **Resultat** | Indicateur du mode d'execution (client local ou serveur) |
 
 ### 1.2 Regles metier
 

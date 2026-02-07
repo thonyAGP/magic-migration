@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Easy Check-Out V2.00** est le **programme de depart rapide (check-out simplifie)** qui **permet de realiser le depart complet d'un adherent avec tous les traitements associes en une seule operation**.
+
+**Objectif metier** : Fournir une fonctionnalite de check-out rapide permettant de cloturer le sejour d'un adherent en une seule operation : solde du compte GM, liberation du logement, cloture des services telephoniques, mise a jour des compteurs, generation des echanges et envoi d'email de confirmation. Version 2.00 amelioree du processus.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Easy Check-Out === V2.00 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur accueil ou reception |
+| **Quoi** | Check-out rapide et complet d'un adherent |
+| **Pourquoi** | Accelerer le processus de depart en automatisant toutes les etapes |
+| **Declencheur** | Demande de depart rapide pour un adherent |
+| **Resultat** | Adherent sorti, compte solde, services clos, confirmations envoyees |
 
 ### 1.2 Regles metier
 

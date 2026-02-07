@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Verif session caisse ouverte2** est le **verificateur d'etat de session de caisse** qui **controle si une session de caisse est actuellement ouverte et met a jour les details de session en consequence**.
+
+**Objectif metier** : Verifier l'existence d'une session de caisse ouverte pour l'utilisateur ou le poste courant, et mettre a jour les informations de detail de session. Ce programme simple (1 tache, 1 table en ecriture) sert de garde-fou avant les operations de caisse, garantissant qu'une session est active avant d'autoriser les transactions. Le suffixe "2" suggere une variante ou version alternative du controle standard.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Verif session caisse ouverte2 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme / Operateur caisse |
+| **Quoi** | Verification et mise a jour de l'etat de session ouverte |
+| **Pourquoi** | S'assurer qu'une session est active avant operations de caisse |
+| **Declencheur** | Debut d'operation de caisse ou controle periodique |
+| **Resultat** | Confirmation session ouverte et detail de session mis a jour |
 
 ### 1.2 Regles metier
 

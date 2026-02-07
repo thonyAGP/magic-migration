@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Lancement Edition Facture** est le **declencheur du processus d'edition de facture** qui **permet de lancer l'impression ou la generation d'une facture**.
+
+**Objectif metier** : Fournir un point d'entree pour declencher le processus d'edition (impression ou generation PDF) d'une facture, servant de lanceur intermediaire avant l'appel du programme d'edition proprement dit.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Lancement Edition Facture |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou comptable |
+| **Quoi** | Lanceur du processus d'edition de facture |
+| **Pourquoi** | Centraliser le declenchement de l'edition de factures depuis differents contextes |
+| **Declencheur** | Demande d'impression facture depuis un ecran de caisse ou de gestion |
+| **Resultat** | Lancement du processus d'edition et retour au programme appelant |
 
 ### 1.2 Regles metier
 

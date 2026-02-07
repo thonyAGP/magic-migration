@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Messagerie** est le **systeme de communication interne** qui permet de **gerer les messages entre operateurs et vers les adherents**.
+
+**Objectif metier** : Gerer la messagerie interne du village Club Med. Ce programme complexe (27 taches, 11 tables) permet la creation, consultation, validation et archivage des messages. Il integre l'historique station, les fichiers d'echanges et le systeme de validation pour assurer la tracabilite des communications.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Messagerie |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateurs reception, responsables service, direction |
+| **Quoi** | Systeme complet de gestion de messagerie interne (creation, lecture, validation, archivage) |
+| **Pourquoi** | Assurer la communication interne entre services et la tracabilite des echanges |
+| **Declencheur** | Notification de nouveau message ou acces au menu messagerie |
+| **Resultat** | Messages crees/lus/valides, historique mis a jour dans fichier_messagerie et fichier_echanges |
 
 ### 1.2 Regles metier
 

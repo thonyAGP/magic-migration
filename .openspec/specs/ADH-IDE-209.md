@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Affectation code autocom** est le **gestionnaire d'attribution des codes d'autocommutateur telephonique** qui **affecte les codes d'acces telephonique aux hebergements et postes du village**.
+
+**Objectif metier** : Automatiser l'attribution des codes d'autocommutateur (PABX) aux chambres et postes telephoniques lors de l'arrivee des clients ou de la configuration du systeme telephonique. Ce programme gere les series de lignes telephoniques, les codes d'acces et leur liaison avec les hebergements pour permettre la facturation des appels.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Affectation code autocom |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception ou systeme automatique |
+| **Quoi** | Attribution des codes d'autocommutateur telephonique aux hebergements |
+| **Pourquoi** | Permettre l'identification des appels telephoniques pour la facturation et le suivi des communications |
+| **Declencheur** | Arrivee client, configuration telephone, ou demande d'activation de ligne |
+| **Resultat** | Code autocom affecte a l'hebergement avec mise a jour des tables de telephonie |
 
 ### 1.2 Regles metier
 

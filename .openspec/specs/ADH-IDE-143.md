@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Devises calcul ecart WS** est le **calculateur d'ecarts de change** qui **determine les differences entre les montants theoriques et reels par devise lors du controle de caisse**.
+
+**Objectif metier** : Calculer les ecarts de caisse par devise en comparant les montants attendus (cumul des encaissements par devise selon les operations enregistrees) aux montants reellement comptes dans le tiroir-caisse. Ce programme technique (WS = WorkStation/WebService) est appele lors du controle de fermeture de session pour identifier les surplus ou manquants par devise et mode de paiement. Les ecarts detectes sont essentiels pour la reconciliation comptable et l'audit des caisses multi-devises.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Devises calcul ecart WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (calcul automatique) ou operateur via interface de controle |
+| **Quoi** | Calcul des ecarts entre montants theoriques et comptes par devise |
+| **Pourquoi** | Identifier les surplus/manquants par devise pour controle et reconciliation comptable |
+| **Declencheur** | Controle de caisse ou fermeture de session avec saisie des montants reels |
+| **Resultat** | Ecarts calcules par devise et moyen de reglement pour validation ou investigation |
 
 ### 1.2 Regles metier
 

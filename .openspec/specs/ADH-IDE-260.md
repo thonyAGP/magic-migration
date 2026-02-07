@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom moyen de reglement** est le **selecteur des moyens de reglement** qui **permet a l'operateur de consulter et choisir un moyen de reglement pour une operation financiere**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les moyens de reglement disponibles et permettre leur selection lors de la saisie d'un encaissement, d'une facture ou d'une operation comptable.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom moyen de règlement |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou comptable |
+| **Quoi** | Fenetre de selection des moyens de reglement |
+| **Pourquoi** | Standardiser la selection des moyens de reglement dans les operations financieres |
+| **Declencheur** | Clic sur zoom depuis un champ moyen de reglement |
+| **Resultat** | Retour du moyen de reglement selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

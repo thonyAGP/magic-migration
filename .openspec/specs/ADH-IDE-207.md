@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Suppression Demande Verif Pool** est le **programme d'annulation de demande** qui **supprime une demande de verification de pooling en attente**.
+
+**Objectif metier** : Permettre l'annulation d'une demande de verification de pooling (changement d'activite) qui n'est plus necessaire. Ce programme fait partie de la suite de gestion du pooling (avec IDE 205 Verification et IDE 206 Visualisation). Il supprime l'enregistrement correspondant dans la table des comptes de changement d'activite, liberant ainsi les ressources associees et annulant le processus de transfert.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Suppression demande verif pool |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur gestion |
+| **Quoi** | Annulation d'une demande de verification de pooling |
+| **Pourquoi** | Permettre l'annulation de changements d'activite non finalises |
+| **Declencheur** | Action utilisateur depuis la visualisation (IDE 206) |
+| **Resultat** | Demande de verification supprimee de la table |
 
 ### 1.2 Regles metier
 

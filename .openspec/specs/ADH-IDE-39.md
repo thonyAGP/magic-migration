@@ -11,15 +11,19 @@
 
 ## SPECIFICATION FONCTIONNELLE
 
+**Print extrait ObjDevSce** est le **module d'impression d'extrait** qui **genere un releve des objets, devises et scelles deposes par un adherent**.
+
+**Objectif metier** : Permettre l'edition d'un extrait detaille des depots d'un adherent, incluant les objets de valeur, les devises etrangeres et les scelles. Ce programme supporte plusieurs formats d'impression (A4, A5, tickets thermiques) selon le type d'imprimante configuree (Printer 1, 4, 5, 8, 9). Il verifie l'existence de chaque type de depot avant impression.
+
 ### 1.1 Objectif metier
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print extrait ObjDevSce |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou back-office |
+| **Quoi** | Impression d'un extrait des depots (Objets, Devises, Scelles) |
+| **Pourquoi** | Fournir un justificatif papier des depots d'un adherent |
+| **Declencheur** | Demande d'extrait depuis l'interface de gestion des depots |
+| **Resultat** | Document imprime listant les objets, devises et scelles de l'adherent |
 
 ### 1.2 Regles metier
 

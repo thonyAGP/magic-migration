@@ -21,6 +21,12 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
+### 1.1 Objectif metier
+
+**Print reçu change vente** est le **programme d'impression des recus pour les operations de vente de devises** qui **genere les tickets de confirmation pour les clients ayant vendu leurs devises etrangeres**.
+
+**Objectif metier** : Ce programme produit le recu imprime remis au client lorsqu'il vend ses devises etrangeres au bureau de change du village (operation inverse de l'achat). Typiquement utilise en fin de sejour quand le client souhaite reconvertir ses devises non utilisees. Le ticket affiche le numero d'operation, le mode de paiement, le taux applique, le montant de la devise vendue et l'equivalent recu en devise locale. Le programme gere l'impression multi-imprimantes et le multilinguisme comme son pendant "Print reçu change achat".
+
 **Print reçu change vente** assure la gestion complete de ce processus, accessible depuis [Change GM (IDE 25)](ADH-IDE-25.md), [Versement/Retrait (IDE 174)](ADH-IDE-174.md).
 
 Le flux de traitement s'organise en **2 blocs fonctionnels** :

@@ -11,15 +11,19 @@
 
 ## SPECIFICATION FONCTIONNELLE
 
+**Controle Login Informaticien** est le **module de securite** qui **verifie si l'utilisateur connecte possede les droits d'acces informaticien/administrateur**.
+
+**Objectif metier** : Controler l'identite et les privileges de l'utilisateur avant d'autoriser l'acces aux fonctions sensibles reservees aux informaticiens. Ce programme consulte la table des mouvements de stock (pv_stock_movements) pour valider les credentials et retourne un flag d'autorisation. Il est appele comme garde-fou avant les operations d'administration systeme, de parametrage avance ou de maintenance technique.
+
 ### 1.1 Objectif metier
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Controle Login Informaticien |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Utilisateur demandant un acces administrateur |
+| **Quoi** | Verification des droits d'acces informaticien |
+| **Pourquoi** | Securiser l'acces aux fonctions d'administration et parametrage |
+| **Declencheur** | Tentative d'acces a une fonction reservee aux informaticiens |
+| **Resultat** | Autorisation accordee ou refusee selon les credentials |
 
 ### 1.2 Regles metier
 

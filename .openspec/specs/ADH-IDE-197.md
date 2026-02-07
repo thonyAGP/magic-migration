@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Prepare edition notas fiscais** est le **preparateur d'edition fiscale** qui **initialise les donnees pour l'impression des notes fiscales bresiliennes**.
+
+**Objectif metier** : Preparer l'edition des "Notas Fiscais" (factures fiscales obligatoires au Bresil). Ce programme leger (7 lignes, 1 tache, aucune table) sert de point d'entree pour initialiser le contexte avant la generation des documents fiscaux conformes a la legislation bresilienne. Il s'agit d'un programme specifique aux villages Club Med situes au Bresil.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | perpare edition notas fiscais |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme ou operateur comptabilite (villages Bresil) |
+| **Quoi** | Preparation de l'edition des notes fiscales bresiliennes |
+| **Pourquoi** | Respecter les obligations fiscales bresiliennes (Nota Fiscal) |
+| **Declencheur** | Demande d'edition de notes fiscales ou traitement batch |
+| **Resultat** | Contexte initialise pour la generation des documents fiscaux |
 
 ### 1.2 Regles metier
 

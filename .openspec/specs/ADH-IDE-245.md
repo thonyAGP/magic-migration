@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Histo ventes payantes /PMS-623** est le **gestionnaire d'historique des ventes payantes version PMS-623** qui **permet de consulter, modifier et annuler les ventes payantes effectuees, avec les specificites de la version 623 du PMS**.
+
+**Objectif metier** : Fournir un ecran de consultation et de gestion de l'historique des ventes payantes. Ce programme complexe (31 taches, 2059 lignes, 34 tables dont 8 en ecriture) est une evolution de la version 605, incluant des fonctionnalites supplementaires comme la gestion des ventes gratuites associees (table vente_gratuite) et la gestion des valeurs credit bar par defaut. Il permet les corrections, annulations et reemissions de tickets.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Histo ventes payantes /PMS-623 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de caisse ou responsable (avec droits de modification) |
+| **Quoi** | Consultation et gestion de l'historique des ventes payantes |
+| **Pourquoi** | Permettre les corrections, annulations et reimpressions de ventes |
+| **Declencheur** | Acces depuis le menu caisse ou historique ventes |
+| **Resultat** | Affichage historique, modifications enregistrees si applicable |
 
 ### 1.2 Regles metier
 

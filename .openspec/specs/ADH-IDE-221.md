@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Verif automatic pooling Tic** est le **controleur de taxation automatique** qui **verifie la reception des tickets de taxation telephonique depuis le systeme de pooling**.
+
+**Objectif metier** : Controler automatiquement la bonne reception des tickets de taxation (TIC) depuis le PABX via le systeme de pooling. Ce programme detecte les interruptions de communication et alerte en cas de perte de donnees de taxation.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Verif automatic pooling Tic |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Processus automatique ou operateur supervision |
+| **Quoi** | Verification de la reception des tickets de taxation PABX |
+| **Pourquoi** | Garantir la completude des donnees de facturation telephonique |
+| **Declencheur** | Verification periodique automatique ou controle manuel |
+| **Resultat** | Statut de reception des tickets avec alerte si anomalie detectee |
 
 ### 1.2 Regles metier
 

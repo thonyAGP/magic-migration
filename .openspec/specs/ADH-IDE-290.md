@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print recu change** est le **module d'edition** qui **genere et imprime le recu client pour une operation de change (achat de devises)**.
+
+**Objectif metier** : Apres une operation de change ou le client achete des devises etrangeres contre de la monnaie locale, ce programme genere un recu detaillant la transaction. Il consulte les tables de change, recherche GM, frais de change, village PMS et comptage caisse devise pour produire un document complet avec les montants, taux appliques, frais eventuels et informations du village. Ce recu sert de justificatif client et de trace comptable.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print reçu change |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Caissier apres une operation de change |
+| **Quoi** | Generation et impression du recu de change pour le client |
+| **Pourquoi** | Fourniture d'un justificatif client et trace comptable de l'operation |
+| **Declencheur** | Fin d'une operation de change (achat de devises par le client) |
+| **Resultat** | Recu imprime avec details de la transaction de change |
 
 ### 1.2 Regles metier
 

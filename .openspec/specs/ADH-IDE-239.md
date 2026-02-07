@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Transaction Nouv vente PMS-721** est le **moteur de transaction de vente version PMS-721** qui **gere l'ensemble du processus de vente en caisse avec les fonctionnalites specifiques de la version 721 du PMS**.
+
+**Objectif metier** : Enregistrer une nouvelle vente complete avec toutes les operations comptables associees. Ce programme tres complexe (60 taches, 2207 lignes, 42 tables dont 9 en ecriture) gere la selection d'articles, le calcul des prix, la gestion des modes de paiement, la mise a jour des prestations, des comptes GM, des compteurs et des statistiques. Il integre les specificites de la version 721 du PMS (gestion des budgets, reservations horaires, circuits).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Transaction Nouv vente PMS-721 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de caisse (vendeur point de vente) |
+| **Quoi** | Enregistrement complet d'une transaction de vente |
+| **Pourquoi** | Realiser une vente avec tracabilite complete et mise a jour comptable |
+| **Declencheur** | Selection depuis le menu de saisie transaction ou caisse GM |
+| **Resultat** | Vente enregistree, compte client debite, statistiques mises a jour |
 
 ### 1.2 Regles metier
 

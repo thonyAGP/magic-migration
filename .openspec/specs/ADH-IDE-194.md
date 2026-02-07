@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Update CC type** est l'**utilitaire de mise a jour des totaux carte de credit** qui **recalcule et synchronise les montants par type de carte**.
+
+**Objectif metier** : Maintenir la coherence des totaux par type de carte de credit (Visa, Mastercard, Amex, etc.). Ce programme met a jour la table cc_total_par_type en se basant sur les donnees de cc_total et cc_type_detail. Il est appele apres les operations de paiement par carte pour garantir l'exactitude des totaux par type de moyen de paiement.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Update CC type |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appel automatique) ou operateur caisse |
+| **Quoi** | Mise a jour des totaux cumules par type de carte de credit |
+| **Pourquoi** | Maintenir la coherence des totaux pour le reporting et la cloture de caisse |
+| **Declencheur** | Fin d'operation de paiement carte ou batch de mise a jour |
+| **Resultat** | Totaux par type de CC synchronises avec les details des transactions |
 
 ### 1.2 Regles metier
 

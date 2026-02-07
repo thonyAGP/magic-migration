@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Get Printer** est le **service de recuperation des parametres d'imprimante** qui **determine l'imprimante a utiliser selon le contexte (poste, type de document, date comptable)**.
+
+**Objectif metier** : Centraliser la logique de selection d'imprimante pour les differents types d'impressions du module ADH. Ce programme consulte la table des parametres d'impression par defaut (pms_print_param_default) pour retourner l'imprimante appropriee selon le contexte d'appel.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Get Printer |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Appele par d'autres programmes necessitant une impression (tickets, factures, transferts) |
+| **Quoi** | Recuperation du nom/chemin de l'imprimante a utiliser selon le contexte |
+| **Pourquoi** | Centraliser la configuration des imprimantes et permettre une gestion flexible par poste/type de document |
+| **Declencheur** | Appel depuis un programme d'impression (Print transferts, Edition facture, etc.) |
+| **Resultat** | Retourne le nom de l'imprimante configuree pour le contexte demande |
 
 ### 1.2 Regles metier
 

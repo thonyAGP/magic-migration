@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Transaction Nouv vente PMS-710** est le **moteur de transaction de vente version PMS-710** qui **gere l'ensemble du processus de vente en caisse avec les fonctionnalites specifiques de la version 710 du PMS**.
+
+**Objectif metier** : Enregistrer une nouvelle vente complete avec toutes les operations comptables associees. Ce programme tres complexe (64 taches, 2315 lignes, 43 tables dont 10 en ecriture) represente une version anterieure ou alternative du moteur de vente. Il gere les memes fonctionnalites que la version 721 avec des adaptations specifiques a la version 710 du PMS, incluant la gestion des articles, prix, modes de paiement et mises a jour comptables.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Transaction Nouv vente PMS-710 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de caisse (vendeur point de vente) |
+| **Quoi** | Enregistrement complet d'une transaction de vente version 710 |
+| **Pourquoi** | Realiser une vente avec tracabilite complete selon specifications PMS-710 |
+| **Declencheur** | Selection depuis le menu de saisie transaction ou caisse GM |
+| **Resultat** | Vente enregistree, compte client debite, statistiques mises a jour |
 
 ### 1.2 Regles metier
 

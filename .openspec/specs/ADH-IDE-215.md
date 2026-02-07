@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Visu du contenu d'un poste** est le **visualiseur de configuration telephonique** qui **affiche les codes autocom et parametres associes a un poste telephonique**.
+
+**Objectif metier** : Permettre la consultation rapide de la configuration telephonique d'un poste : codes autocom affectes, droits d'appel, restrictions, liaison avec l'hebergement. Ce programme est un outil de diagnostic et de verification pour le support telephonique.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Visu du contenu d'un poste |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception ou technicien telephonie |
+| **Quoi** | Consultation de la configuration d'un poste telephonique |
+| **Pourquoi** | Verifier les parametres telephoniques et diagnostiquer les problemes |
+| **Declencheur** | Demande de verification ou incident telephonique |
+| **Resultat** | Affichage de la configuration complete du poste avec codes autocom |
 
 ### 1.2 Regles metier
 

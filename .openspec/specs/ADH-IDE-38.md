@@ -1,4 +1,4 @@
-﻿# ADH IDE 38 - Program_38
+﻿# ADH IDE 38 - Read histo_Fus_Sep_Log
 
 > **Version spec**: 4.0
 > **Analyse**: 2026-01-27 23:00
@@ -11,15 +11,19 @@
 
 ## SPECIFICATION FONCTIONNELLE
 
+**Read histo_Fus_Sep_Log** est le **service de lecture d'historique** qui **verifie l'existence d'un enregistrement dans le journal des operations de fusion/separation de comptes adherents**.
+
+**Objectif metier** : Permettre aux programmes de fusion et separation de comptes de consulter l'historique des operations passees. Ce programme est appele avant toute operation de fusion/separation pour verifier si une operation similaire a deja ete effectuee sur le compte concerne.
+
 ### 1.1 Objectif metier
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Program_38 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Programmes de gestion des comptes (fusion/separation) |
+| **Quoi** | Lecture et verification dans l'historique des fusions/separations |
+| **Pourquoi** | Controler si un compte a deja fait l'objet d'une operation de fusion ou separation |
+| **Declencheur** | Appel depuis les programmes de fusion (IDE 27) ou separation (IDE 28) |
+| **Resultat** | Retourne un flag indiquant si l'enregistrement existe (o code existe) |
 
 ### 1.2 Regles metier
 

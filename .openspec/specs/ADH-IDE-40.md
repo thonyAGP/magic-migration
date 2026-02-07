@@ -1,4 +1,4 @@
-﻿# ADH IDE 40 - Comptes de depôt
+﻿# ADH IDE 40 - Comptes de depot
 
 > **Version spec**: 4.0
 > **Analyse**: 2026-01-27 23:00
@@ -11,15 +11,19 @@
 
 ## SPECIFICATION FONCTIONNELLE
 
+**Comptes de depot** est le **module de gestion des comptes de depot** qui **permet de consulter, creer et gerer les depots d'objets de valeur des adherents**.
+
+**Objectif metier** : Gerer l'ensemble des operations liees aux depots d'objets de valeur (coffres, objets precieux, devises). Ce programme est le point d'entree principal pour la gestion des depots, permettant de visualiser les comptes de depot existants, d'en creer de nouveaux, et de suivre l'historique des mouvements. Il accede a 9 tables et comprend 25 taches pour couvrir l'ensemble des operations CRUD sur les depots.
+
 ### 1.1 Objectif metier
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Comptes de depôt |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou gestionnaire back-office |
+| **Quoi** | Gestion complete des comptes de depot d'objets de valeur |
+| **Pourquoi** | Permettre le suivi et la gestion des objets deposes par les adherents |
+| **Declencheur** | Acces depuis le menu de gestion des adherents ou selection d'un adherent |
+| **Resultat** | Affichage, creation ou modification des comptes de depot |
 
 ### 1.2 Regles metier
 

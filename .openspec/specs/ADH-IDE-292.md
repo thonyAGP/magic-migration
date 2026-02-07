@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Test Prepa Mecano** est un **programme de test/developpement** qui **permet de valider la preparation des donnees pour le systeme mecanographique**.
+
+**Objectif metier** : Ce programme semble etre un utilitaire de test ou de developpement (1 tache, 2 lignes de logique, aucune table, aucun parametre). Son nom suggere qu'il servait a tester la preparation des donnees pour les editions mecanographiques (impression de documents formattes). En l'absence de tables et de logique significative, il s'agit probablement d'un shell de test non utilise en production.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Test Prepa Mecano |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Developpeur ou testeur |
+| **Quoi** | Test de preparation des donnees mecanographiques |
+| **Pourquoi** | Validation des mecanismes de preparation d'edition |
+| **Declencheur** | Execution manuelle en mode developpement/test |
+| **Resultat** | Verification du fonctionnement (programme orphelin) |
 
 ### 1.2 Regles metier
 

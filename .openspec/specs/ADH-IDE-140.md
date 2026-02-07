@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Init apport article session WS** est le **service d'initialisation des articles** qui **prepare le stock d'articles disponibles pour une nouvelle session de caisse depuis un poste de travail ou service web**.
+
+**Objectif metier** : Initialiser la liste des articles vendables pour une session de caisse en copiant les references articles et leurs stocks disponibles depuis le referentiel central vers la table de session. Ce programme technique (WS = WorkStation/WebService) est appele lors de l'ouverture d'une session pour alimenter la caisse avec le catalogue produits a jour et les quantites en stock. Il constitue un prerequis a la vente d'articles physiques (boutique, minibar, produits derives).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Init apport article session WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (declenchement automatique) ou operateur via interface |
+| **Quoi** | Initialisation du stock articles pour la session de caisse courante |
+| **Pourquoi** | Permettre la vente d'articles en caisse avec un stock a jour et coherent |
+| **Declencheur** | Ouverture de session caisse ou appel service (API/WebService) |
+| **Resultat** | Table gestion_article_session alimentee avec les articles et stocks disponibles |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Affichage sessions** est le **module de consultation des sessions de caisse** qui **permet de visualiser l'historique des sessions de caisse avec leurs details**.
+
+**Objectif metier** : Fournir une interface de consultation permettant aux operateurs de consulter les sessions de caisse passees, incluant les informations de session (table `caisse_session`) et les details associes (table `caisse_session_detail`), avec liaison aux budgets et packages clients.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Affichage sessions |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse / Responsable comptabilite |
+| **Quoi** | Consultation de l'historique des sessions de caisse |
+| **Pourquoi** | Controle et audit des operations de caisse, verification des encaissements |
+| **Declencheur** | Acces depuis le menu de gestion de caisse |
+| **Resultat** | Affichage des sessions avec details, budgets et packages associes |
 
 ### 1.2 Regles metier
 

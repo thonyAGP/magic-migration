@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**BI Change GM Achat** est le **module de traitement bilateral** qui **enregistre une operation de change achat sur le compte GM (Grand Membre) avec mise a jour complete des compteurs**.
+
+**Objectif metier** : Ce programme gere l'enregistrement comptable complet d'une operation de change ou le client achete des devises. Il effectue une ecriture bilaterale (debit/credit) impactant le reseau cloture, la table change, le compte GM, les compteurs, les moyens de reglement et le comptage caisse devise. Il applique le type de taux de change approprie et met a jour la date comptable. C'est le coeur transactionnel des operations de change achat avec 6 tables en ecriture pour garantir la coherence comptable.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Bi  Change GM Achat |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Caissier lors d'une vente de devises au client |
+| **Quoi** | Enregistrement comptable bilateral de l'operation de change achat |
+| **Pourquoi** | Garantir l'integrite comptable et la tracabilite complete de l'operation |
+| **Declencheur** | Validation d'une operation de change achat par le caissier |
+| **Resultat** | Ecritures comptables creees, compteurs mis a jour, solde caisse ajuste |
 
 ### 1.2 Regles metier
 

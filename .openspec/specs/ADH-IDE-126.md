@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Calcul solde initial WS** est le **Web Service de calcul du solde initial** qui **determine le solde de depart d'une session de caisse**.
+
+**Objectif metier** : Fournir via Web Service le calcul du solde initial de caisse en aggregeant les donnees des sessions precedentes (articles, devises, details) et des moyens de reglement disponibles. Ce service est utilise pour initialiser une nouvelle session avec le solde theorique attendu, base sur l'historique des comptages de caisse.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Calcul solde initial WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Application cliente (via Web Service) ou systeme de caisse |
+| **Quoi** | Calcul du solde initial theorique de session |
+| **Pourquoi** | Determiner le montant de depart attendu pour une nouvelle session de caisse |
+| **Declencheur** | Appel Web Service avant ouverture de caisse |
+| **Resultat** | Retour du solde initial calcule par moyen de reglement et devise |
 
 ### 1.2 Regles metier
 

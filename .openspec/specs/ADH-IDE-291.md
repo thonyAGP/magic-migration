@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print recu change vente** est le **module d'edition** qui **genere et imprime le recu client pour une operation de vente de devises (rachat)**.
+
+**Objectif metier** : Ce programme genere le recu pour l'operation inverse du change classique : le client vend des devises etrangeres contre de la monnaie locale. Il consulte la table change_vente, la recherche GM et le village PMS pour produire un justificatif detaillant les devises rachetees, le taux de rachat applique et le montant verse au client en monnaie locale. Ce recu complete le cycle de tracabilite des operations de change bidirectionnelles.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print reçu change vente |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Caissier apres une operation de rachat de devises |
+| **Quoi** | Generation et impression du recu de vente/rachat de devises |
+| **Pourquoi** | Justificatif client pour le rachat de ses devises etrangeres |
+| **Declencheur** | Fin d'une operation de vente de devises (rachat par la caisse) |
+| **Resultat** | Recu imprime avec details du rachat de devises |
 
 ### 1.2 Regles metier
 

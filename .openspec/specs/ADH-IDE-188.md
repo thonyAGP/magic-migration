@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print solde garantie** est un **generateur d'edition** qui **imprime l'etat des depots de garantie des adherents**.
+
+**Objectif metier** : Produire un document d'impression recapitulant les soldes des depots de garantie pour les adherents. Le programme collecte les informations sur les garanties versees (cautions, depots) en croisant les donnees des adherents (gm-recherche, gm-complet), des hebergements et des tables de garanties (depot_garantie, garantie). L'edition permet un suivi comptable des montants detenus en garantie.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print solde garantie |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur comptable ou gestionnaire adherents |
+| **Quoi** | Impression d'un etat recapitulatif des soldes de garantie |
+| **Pourquoi** | Suivi comptable des depots de garantie, controle des montants detenus |
+| **Declencheur** | Demande d'edition depuis le menu ou programme parent |
+| **Resultat** | Document imprime listant les adherents et leurs soldes de garantie |
 
 ### 1.2 Regles metier
 

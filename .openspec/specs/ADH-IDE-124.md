@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Apport articles** est le **gestionnaire d'articles de session** qui **enregistre les articles apportes lors d'une session de caisse**.
+
+**Objectif metier** : Permettre l'enregistrement des articles physiques (bons, tickets, vouchers) apportes par le caissier lors d'une session. Ce programme trace les mouvements d'articles entre le coffre et la caisse, en s'appuyant sur l'historique des sessions et des comptages pour maintenir la coherence du stock d'articles en circulation.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Apport articles |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Caissier ou responsable de caisse |
+| **Quoi** | Enregistrement des articles apportes en session |
+| **Pourquoi** | Tracer les mouvements d'articles entre coffre et caisse pour le controle de gestion |
+| **Declencheur** | Ouverture de session caisse ou approvisionnement en cours de journee |
+| **Resultat** | Articles enregistres dans la session avec mise a jour des historiques de comptage |
 
 ### 1.2 Regles metier
 

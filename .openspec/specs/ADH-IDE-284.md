@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Ajoute Paiement** est le **programme d'ajout de paiement dans l'historique de caisse** qui **permet d'enregistrer un paiement dans la table de comptage des montants**.
+
+**Objectif metier** : Permettre l'enregistrement d'un paiement dans l'historique de comptage de caisse, alimentant la table comptage_caisse_montant_histo pour le suivi des encaissements et la reconciliation comptable.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Ajoute Paiement |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse |
+| **Quoi** | Enregistrement d'un paiement dans l'historique de caisse |
+| **Pourquoi** | Assurer la tracabilite des paiements pour le comptage et la reconciliation |
+| **Declencheur** | Validation d'un paiement lors d'une operation de caisse |
+| **Resultat** | Paiement enregistre dans l'historique de comptage caisse |
 
 ### 1.2 Regles metier
 
