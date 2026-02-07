@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Transferts** est le **gestionnaire des transferts inter-hebergements** qui **permet de deplacer des soldes ou des imputations entre differents comptes d'hebergement**.
+
+**Objectif metier** : Permettre le transfert de charges ou de credits entre deux hebergements (chambres, appartements) lors d'un changement de chambre, d'une erreur d'imputation ou d'un regroupement de factures. Ce programme consulte les donnees GM et hebergement pour valider et executer le transfert.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Transferts |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de reception ou caisse (utilisateur connecte au module ADH) |
+| **Quoi** | Transfert de soldes ou imputations entre deux hebergements |
+| **Pourquoi** | Corriger des erreurs d'imputation, gerer les changements de chambre ou regrouper des factures sur un compte payeur |
+| **Declencheur** | Demande de transfert depuis la gestion des hebergements ou la caisse |
+| **Resultat** | Imputations transferees du compte source vers le compte destination, comptage caisse mis a jour |
 
 ### 1.2 Regles metier
 

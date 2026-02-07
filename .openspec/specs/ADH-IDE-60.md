@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Creation entete facture** est le **sous-programme de facturation** qui **initialise les parametres de taxe additionnelle pour une nouvelle facture**.
+
+**Objectif metier** : Creer l'enregistrement d'entete contenant les parametres de taxe (TVA, taxes locales) necessaires avant la generation des lignes de facture. Ce programme prepare la structure fiscale de la facture en ecrivant dans la table `taxe_add_param`.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Creation entete facture |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Processus de facturation (appele automatiquement) |
+| **Quoi** | Initialisation des parametres de taxe pour l'entete de facture |
+| **Pourquoi** | Preparer la structure fiscale avant ajout des lignes de detail |
+| **Declencheur** | Appel depuis le processus de creation de facture (Factures_Sejour, etc.) |
+| **Resultat** | Enregistrement taxe_add_param cree avec les parametres fiscaux |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Verif session caisse ouverte** est le **controleur de validation de session** qui **verifie qu'une session de caisse est bien ouverte avant d'autoriser des operations de vente**.
+
+**Objectif metier** : Valider de maniere securisee qu'une session de caisse est active pour l'operateur courant. Ce programme est un prerequis obligatoire avant toute transaction, garantissant que les ventes sont rattachees a une session de caisse identifiee et ouverte, conformement aux exigences de tracabilite comptable.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Verif session caisse ouverte |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appel automatique) ou Operateur de caisse |
+| **Quoi** | Validation de l'existence d'une session de caisse ouverte |
+| **Pourquoi** | Bloquer les operations de vente si aucune session n'est active |
+| **Declencheur** | Appel prealable a toute operation de vente en caisse |
+| **Resultat** | Autorisation ou refus de poursuivre l'operation selon l'etat de la session |
 
 ### 1.2 Regles metier
 

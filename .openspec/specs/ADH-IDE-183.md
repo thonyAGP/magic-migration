@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Other Listing** est un **gestionnaire de parametres d'impression** qui **charge les parametres par defaut pour les listings de type "Autre"**.
+
+**Objectif metier** : Recuperer et appliquer les parametres d'impression par defaut (imprimante, format, orientation, etc.) pour les editions qui ne correspondent pas aux categories standard (factures, extraits, etc.). Fait partie du systeme de gestion des impressions chainees du module ADH.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Other Listing |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appele automatiquement lors d'une demande d'impression) |
+| **Quoi** | Chargement des parametres d'impression par defaut depuis la table pms_print_param_default |
+| **Pourquoi** | Preconfigurer l'impression pour les editions de type "Autre" sans intervention utilisateur |
+| **Declencheur** | Appel depuis un programme d'impression avant lancement d'un listing non-standard |
+| **Resultat** | Variables d'impression initialisees avec les valeurs par defaut du type "Other" |
 
 ### 1.2 Regles metier
 

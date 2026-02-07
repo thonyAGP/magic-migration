@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Ouverture caisse 143** est le **module d'initialisation de session** qui **prepare l'ouverture d'une caisse avec gestion des devises multiples**.
+
+**Objectif metier** : Ce programme gere le processus d'ouverture d'une session de caisse. Il consulte les tables de configuration (tables, devise_in) et la gestion des devises de session pour initialiser les parametres de fonctionnement de la caisse. L'ouverture de caisse est une etape obligatoire avant toute operation de vente ou de change, permettant de definir le caissier, la date comptable et les devises autorisees pour la session. Le numero 143 correspond a un identifiant de version/type de caisse.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Ouverture caisse 143 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Caissier en debut de service |
+| **Quoi** | Initialisation de la session de caisse avec parametres devises |
+| **Pourquoi** | Preparer la caisse pour les operations du jour avec multi-devises |
+| **Declencheur** | Debut de service du caissier ou reprise apres interruption |
+| **Resultat** | Session de caisse ouverte et prete a recevoir des operations |
 
 ### 1.2 Regles metier
 

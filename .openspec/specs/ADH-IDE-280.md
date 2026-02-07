@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Lanceur Facture** est le **programme de lancement de l'edition de facture** qui **permet d'initialiser et de declencher la generation d'une facture**.
+
+**Objectif metier** : Servir de point d'entree simplifie pour lancer la generation ou l'impression d'une facture, preparant le contexte necessaire avant d'appeler le programme d'edition detaille.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Lanceur Facture |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou comptable |
+| **Quoi** | Lanceur simplifie pour edition de facture |
+| **Pourquoi** | Fournir un acces rapide a la generation de factures |
+| **Declencheur** | Action utilisateur demandant une facture |
+| **Resultat** | Initialisation et lancement du processus de facturation |
 
 ### 1.2 Regles metier
 

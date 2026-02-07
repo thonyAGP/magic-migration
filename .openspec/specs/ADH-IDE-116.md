@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Calcul concurrence sessions** est le **programme de detection des conflits de sessions caisse** qui **identifie et gere les situations ou plusieurs caisses accedent simultanement aux memes ressources**.
+
+**Objectif metier** : Detecter et resoudre les conflits de concurrence lorsque plusieurs sessions de caisse tentent d'acceder simultanement au meme dossier client ou a la meme transaction. Ce mecanisme garantit l'integrite des donnees financieres en evitant les doublons de facturation ou les modifications concurrentes non autorisees.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Calcul concurrence sessions |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme automatique de gestion des verrous |
+| **Quoi** | Detection et resolution des acces concurrents aux sessions caisse |
+| **Pourquoi** | Garantir l'integrite des transactions et eviter les conflits de donnees |
+| **Declencheur** | Ouverture de session caisse ou tentative d'acces a un dossier |
+| **Resultat** | Enregistrement des conflits dans caisse_concurrences et resolution |
 
 ### 1.2 Regles metier
 

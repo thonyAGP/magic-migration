@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Verif boutique V3** est le **programme de verification de compatibilite des terminaux de paiement boutique** qui **controle la version applicative des TPE avant autorisation des transactions**.
+
+**Objectif metier** : Verifier que les terminaux de paiement electronique (TPE) des boutiques Club Med disposent de la version logicielle requise (V3) pour garantir la compatibilite avec le systeme central de caisse et assurer la securite des transactions.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Verif boutique V3 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme automatique lors de la connexion TPE |
+| **Quoi** | Controle de version applicative des terminaux boutique |
+| **Pourquoi** | Garantir la compatibilite et la securite des transactions de paiement |
+| **Declencheur** | Connexion ou initialisation d'un terminal de paiement boutique |
+| **Resultat** | Validation ou rejet du terminal selon conformite version |
 
 ### 1.2 Regles metier
 

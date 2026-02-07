@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom articles** est le **visualiseur de la table de reference des articles** qui **affiche le catalogue des articles disponibles a la vente**.
+
+**Objectif metier** : Fournir un ecran de consultation de type "zoom" sur la table de reference des articles (articles_________art). Ce programme simple (1 tache, 35 lignes de logique) permet aux operateurs de visualiser la liste des articles vendables, leurs codes, libelles, prix et caracteristiques. C'est un outil d'aide a la saisie utilise lors de la creation de ventes pour selectionner le bon article.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom articles |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur lors de la saisie d'une vente |
+| **Quoi** | Consultation du catalogue des articles |
+| **Pourquoi** | Aide a la selection du bon article a vendre |
+| **Declencheur** | Appel via zoom (F5) depuis un champ de saisie d'article |
+| **Resultat** | Liste des articles affichee, selection possible |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Choix PYR (plusieurs chambres)** est le **selecteur de chambre pour paiement PYR** qui **permet de choisir la chambre a debiter quand un client (GM) est associe a plusieurs chambres**.
+
+**Objectif metier** : Gerer le cas specifique ou un client est heberge dans plusieurs chambres et doit effectuer un paiement PYR (paiement sur chambre). Le programme affiche la liste des chambres associees au client, permet la selection de la chambre cible, et met a jour la table hebergement en consequence. PYR = "Pay Your Room" (facturation sur chambre).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Choix PYR (plusieurs chambres) |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de caisse lors d'un paiement PYR |
+| **Quoi** | Selection de la chambre pour imputation du paiement |
+| **Pourquoi** | Resoudre l'ambiguite quand un GM a plusieurs chambres |
+| **Declencheur** | Appel lors d'une vente avec mode de paiement PYR et client multi-chambres |
+| **Resultat** | Chambre selectionnee, hebergement mis a jour pour imputation |
 
 ### 1.2 Regles metier
 

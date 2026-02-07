@@ -1,4 +1,4 @@
-﻿# ADH IDE 41 - Program_41
+﻿# ADH IDE 41 - Menu changement compte
 
 > **Version spec**: 4.0
 > **Analyse**: 2026-01-27 23:00
@@ -11,15 +11,19 @@
 
 ## SPECIFICATION FONCTIONNELLE
 
+**Menu changement compte** est le **menu de navigation** qui **presente les options de modification et transfert de comptes adherents**.
+
+**Objectif metier** : Offrir un point d'acces centralise aux operations de changement de compte : fusion de comptes, separation de comptes, transfert d'operations entre comptes. Ce menu permet a l'operateur de choisir le type d'operation a effectuer avant de lancer les programmes specialises correspondants (fusion IDE 27, separation IDE 28, etc.).
+
 ### 1.1 Objectif metier
 
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Program_41 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur habilite aux modifications de comptes |
+| **Quoi** | Menu de selection des operations de changement de compte |
+| **Pourquoi** | Centraliser l'acces aux fonctions de fusion, separation et transfert |
+| **Declencheur** | Selection depuis le menu principal de gestion des adherents |
+| **Resultat** | Lancement du programme correspondant a l'option choisie |
 
 ### 1.2 Regles metier
 

@@ -21,6 +21,12 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
+### 1.1 Objectif metier
+
+**Recupere devise local** est le **programme utilitaire de recuperation de la devise locale** qui **fournit le code devise aux programmes d'impression et d'affichage**.
+
+**Objectif metier** : Ce programme est un service reutilisable appele par 14 programmes d'impression (extraits de compte, confirmations check-out, plafonds). Il consulte la table d'initialisation pour recuperer le code de la devise locale du village et le retourne via la variable A. Cette information est indispensable pour formater correctement les montants sur les tickets et documents imprimes dans la monnaie locale du pays d'implantation du village.
+
 **Recupere devise local** assure la gestion complete de ce processus, accessible depuis [Print extrait compte /Service (IDE 0)](ADH-IDE-0.md), [Print C/O confirmation (IDE 17)](ADH-IDE-17.md), [Print extrait compte (IDE 18)](ADH-IDE-18.md), [Print extrait compte /Nom (IDE 70)](ADH-IDE-70.md), [Print extrait compte /Date (IDE 71)](ADH-IDE-71.md), [Print extrait compte /Cum (IDE 72)](ADH-IDE-72.md), [Print extrait compte /Imp (IDE 73)](ADH-IDE-73.md), [Print extrait DateImp /O (IDE 74)](ADH-IDE-74.md), [Print extrait compte /Service (IDE 76)](ADH-IDE-76.md), [    Print Plafonds alloués (IDE 87)](ADH-IDE-87.md), [Extrait Compte (IDE 301)](ADH-IDE-301.md), [Print extrait compte /Date (IDE 302)](ADH-IDE-302.md), [Print extrait compte /Cum (IDE 303)](ADH-IDE-303.md), [Print extrait compte /Imp (IDE 304)](ADH-IDE-304.md).
 
 Le flux de traitement s'organise en **1 blocs fonctionnels** :

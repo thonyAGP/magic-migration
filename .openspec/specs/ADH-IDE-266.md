@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom des all devises** est le **selecteur de toutes les devises du systeme** qui **permet a l'operateur de consulter et selectionner une devise parmi l'ensemble complet des devises**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher la liste complete de toutes les devises du systeme (y compris les devises inactives ou historiques) depuis la table des tables, permettant une selection exhaustive pour les besoins de configuration ou de reporting.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom des all devises |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Administrateur ou gestionnaire financier |
+| **Quoi** | Fenetre de selection de toutes les devises du referentiel |
+| **Pourquoi** | Permettre l'acces a l'ensemble des devises pour configuration ou historique |
+| **Declencheur** | Clic sur zoom depuis un champ devise en mode administration |
+| **Resultat** | Retour du code devise selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

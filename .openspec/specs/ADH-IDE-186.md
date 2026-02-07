@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Chained Listing Load Default** est un **initialiseur de configuration** qui **charge les parametres par defaut pour les impressions chainees**.
+
+**Objectif metier** : Initialiser la table temporaire de travail avec les valeurs par defaut necessaires avant le lancement d'une sequence d'impressions chainees. Ce programme prepare le contexte d'impression en ecrivant les parametres par defaut (imprimante, format, nombre de copies, etc.) dans la table temporaire, permettant ainsi une execution coherente de la sequence complete.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Chained Listing Load Default |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appele automatiquement avant une impression chainee) |
+| **Quoi** | Initialisation de la table temporaire avec les parametres par defaut d'impression |
+| **Pourquoi** | Preparer un contexte d'impression coherent pour une sequence de documents |
+| **Declencheur** | Debut d'un processus d'impression chainee (avant le premier document) |
+| **Resultat** | Table temporaire initialisee avec les valeurs par defaut, prete pour la sequence |
 
 ### 1.2 Regles metier
 

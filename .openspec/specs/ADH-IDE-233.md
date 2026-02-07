@@ -21,7 +21,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Appel Print ticket vente PMS28** assure la gestion complete de ce processus, accessible depuis [Historique des ventes - Gratui (IDE 312)](ADH-IDE-312.md), [Annulation Ventes Gratuites (IDE 319)](ADH-IDE-319.md), [Histo ventes payantes /PMS-623 (IDE 245)](ADH-IDE-245.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Histo ventes payantes (IDE 243)](ADH-IDE-243.md), [Histo ventes payantes /PMS-605 (IDE 244)](ADH-IDE-244.md), [Histo ventes IGR (IDE 252)](ADH-IDE-252.md), [Histo ventes Gratuités (IDE 253)](ADH-IDE-253.md), [VAD validés à imprimer (IDE 255)](ADH-IDE-255.md).
+**Appel Print ticket vente PMS28** est le **dispatcher d'impression de tickets** qui **orchestre l'appel au bon programme d'impression selon le format requis (standard ou LEX)**.
+
+**Objectif metier** : Centraliser la logique d'appel des programmes d'impression de tickets de vente. Ce programme agit comme un aiguilleur qui recoit les donnees de la vente (article, prix, client, mode de paiement) et decide quel programme d'impression invoquer selon le contexte (Print ticket vente standard ou Print ticket vente LEX pour les formats specifiques).
+
+Ce programme est accessible depuis [Historique des ventes - Gratui (IDE 312)](ADH-IDE-312.md), [Annulation Ventes Gratuites (IDE 319)](ADH-IDE-319.md), [Histo ventes payantes /PMS-623 (IDE 245)](ADH-IDE-245.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Histo ventes payantes (IDE 243)](ADH-IDE-243.md), [Histo ventes payantes /PMS-605 (IDE 244)](ADH-IDE-244.md), [Histo ventes IGR (IDE 252)](ADH-IDE-252.md), [Histo ventes Gratuités (IDE 253)](ADH-IDE-253.md), [VAD validés à imprimer (IDE 255)](ADH-IDE-255.md).
 
 Le flux de traitement s'organise en **1 blocs fonctionnels** :
 

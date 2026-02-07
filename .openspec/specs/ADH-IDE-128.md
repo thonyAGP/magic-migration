@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Controle ouverture caisse WS** est le **Web Service de verification d'ouverture** qui **controle les conditions prealables a l'ouverture d'une caisse**.
+
+**Objectif metier** : Fournir via Web Service un controle de coherence avant l'ouverture de caisse. Ce service verifie que les moyens de reglement sont correctement configures, que les devises sont disponibles et que la session precedente a ete correctement cloturee. Il agit comme un garde-fou pour eviter les ouvertures de caisse dans un etat incoherent.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Controle ouverture caisse WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Application cliente (via Web Service) ou systeme de caisse |
+| **Quoi** | Verification des prerequis d'ouverture de caisse |
+| **Pourquoi** | S'assurer que toutes les conditions sont reunies avant d'autoriser l'ouverture |
+| **Declencheur** | Appel Web Service avant la procedure d'ouverture de caisse |
+| **Resultat** | Validation OK ou liste des anomalies bloquantes |
 
 ### 1.2 Regles metier
 

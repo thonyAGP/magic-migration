@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Remise en caisse** est le **gestionnaire de remises de fonds** qui **enregistre les remises d'especes et autres moyens de paiement dans la caisse**.
+
+**Objectif metier** : Gerer les operations de remise de fonds en caisse, incluant les especes multi-devises, les articles, et les approvisionnements. Ce programme complexe (33 taches, 5 tables en ecriture) permet de tracer tous les mouvements financiers entrants, de gerer les PV comptables et d'envoyer des notifications email pour les reprises de session.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Remise en caisse |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Caissier ou responsable de caisse |
+| **Quoi** | Enregistrement des remises de fonds multi-devises |
+| **Pourquoi** | Tracer les entrees de fonds pour le controle comptable et la gestion de tresorerie |
+| **Declencheur** | Approvisionnement caisse, remise de fonds, reprise de session |
+| **Resultat** | Mise a jour des soldes devises, articles, approvisionnements avec generation de PV comptable |
 
 ### 1.2 Regles metier
 

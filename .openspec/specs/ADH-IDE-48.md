@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Appel programme dynamique** est le **gestionnaire d'evenements de navigation** qui **capture le dernier element clique par l'utilisateur et declenche l'appel du programme correspondant via un evenement interne**.
+
+**Objectif metier** : Permettre la navigation dynamique dans l'application en capturant les clics utilisateur sur les menus ou boutons et en declenchant l'execution du programme associe. Utilise la fonction LastClicked() pour identifier l'element selectionne et RaiseEvent pour propager l'appel.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Contrôles - Integrite dates |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Utilisateur naviguant dans les menus ou ecrans |
+| **Quoi** | Routage dynamique vers le programme demande |
+| **Pourquoi** | Centraliser la gestion des appels de programmes depuis l'interface |
+| **Declencheur** | Clic sur un element de menu ou bouton d'action |
+| **Resultat** | Execution du programme associe a l'element clique |
 
 ### 1.2 Regles metier
 

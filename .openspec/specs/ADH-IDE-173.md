@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Gestion forfait TAI LOCAL** est le **module de gestion des forfaits** qui permet de **gerer les forfaits TAI (Tout A l'Interieur) locaux pour les adherents**.
+
+**Objectif metier** : Administrer les forfaits TAI locaux incluant la vente, le suivi et la comptabilisation. Programme complexe (27 taches, 918 lignes, 15 tables) qui gere le cycle complet : verification de l'hebergement, creation des ecritures comptables (compte_gm, intermed_compta), mise a jour des clotures reseau et suivi des passages (heure_de_passage).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Gestion forfait TAI LOCAL |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou responsable forfaits |
+| **Quoi** | Gestion complete des forfaits TAI locaux (vente, modification, suivi, comptabilisation) |
+| **Pourquoi** | Permettre aux adherents d'acceder aux prestations incluses via un forfait prepaye local |
+| **Declencheur** | Demande de forfait TAI par un adherent heberge |
+| **Resultat** | Forfait cree, compte_gm debite, ecritures comptables generees, passage enregistre |
 
 ### 1.2 Regles metier
 

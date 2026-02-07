@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Lancement Solde ECO** est le **programme de declenchement du calcul de solde Easy Check-Out** qui **initie le processus de regularisation automatique des comptes clients en fin de sejour**.
+
+**Objectif metier** : Lancer le traitement de solde ECO (Easy Check-Out) permettant aux clients de quitter le village Club Med sans passer physiquement a la caisse, en calculant automatiquement leur solde final et en declenchant le prelevement sur le moyen de paiement enregistre.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Lancement Solde ECO |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme automatique ou operateur caisse |
+| **Quoi** | Declenchement du calcul de solde Easy Check-Out |
+| **Pourquoi** | Permettre un depart simplifie des clients sans file d'attente caisse |
+| **Declencheur** | Batch journalier de fin de sejour ou action manuelle operateur |
+| **Resultat** | Initialisation du processus de regularisation automatique des comptes |
 
 ### 1.2 Regles metier
 

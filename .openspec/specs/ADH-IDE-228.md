@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Gestion Cheque** est le **gestionnaire de paiements par cheque** qui **gere les encaissements et le suivi des cheques clients**.
+
+**Objectif metier** : Permettre l'enregistrement et le suivi des paiements par cheque : saisie des informations cheque, validation, remise en banque, suivi des impayees. Ce programme integre les cheques dans le flux de tresorerie du village.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Gestion Chèque |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou comptabilite |
+| **Quoi** | Gestion des paiements par cheque |
+| **Pourquoi** | Enregistrer et suivre les encaissements par cheque |
+| **Declencheur** | Paiement client par cheque ou suivi de tresorerie |
+| **Resultat** | Cheque enregistre avec statut de traitement mis a jour |
 
 ### 1.2 Regles metier
 

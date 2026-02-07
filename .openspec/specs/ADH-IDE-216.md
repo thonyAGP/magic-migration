@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Suppression ligne blanche f30** est l'**utilitaire de nettoyage des series de lignes telephoniques** qui **supprime les enregistrements vides ou invalides de la table serie_ligne**.
+
+**Objectif metier** : Maintenir l'integrite de la table des series de lignes telephoniques (cafil030) en supprimant les lignes blanches ou les enregistrements corrompus. Ce programme de maintenance garantit la coherence des donnees telephoniques.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Suppression ligne blanche f30 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Administrateur systeme ou processus de maintenance |
+| **Quoi** | Nettoyage des lignes vides dans la table des series telephoniques |
+| **Pourquoi** | Maintenir l'integrite et les performances de la base telephonique |
+| **Declencheur** | Maintenance planifiee ou detection d'anomalies |
+| **Resultat** | Lignes blanches supprimees de la table serie_ligne |
 
 ### 1.2 Regles metier
 

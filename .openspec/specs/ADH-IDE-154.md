@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Tableau recap fermeture** est le **generateur principal du tableau de bord de fermeture de caisse** qui **consolide l'ensemble des donnees financieres de la session pour produire le recapitulatif complet de cloture**.
+
+**Objectif metier** : Generer le tableau recapitulatif exhaustif de fermeture de caisse, incluant: les ventes par article, les moyens de reglement, les devises, les remises, les operations de change, les donnees comptables et les ecarts de caisse. Ce programme majeur (93 taches, 33 tables) est le point central de la cloture de session, produisant toutes les donnees necessaires au controle comptable et a l'edition des etats de fermeture.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Tableau recap fermeture |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Responsable caisse / Controleur comptable |
+| **Quoi** | Generation du recapitulatif complet de fermeture de session |
+| **Pourquoi** | Produire l'etat final de caisse pour controle et archivage comptable |
+| **Declencheur** | Processus de fermeture de caisse |
+| **Resultat** | Tableau de bord complet: ventes, reglements, devises, ecarts, comptabilite |
 
 ### 1.2 Regles metier
 

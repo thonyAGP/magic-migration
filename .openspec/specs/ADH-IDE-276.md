@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Selection Vols** est le **selecteur des vols pour groupes d'arrivee/depart** qui **permet a l'operateur de consulter et selectionner un vol pour associer aux transferts adherents**.
+
+**Objectif metier** : Fournir une fenetre de selection pour afficher les vols disponibles (arrivees et departs) et permettre leur selection lors de la gestion des transferts aeriens des adherents, avec mise a jour de la table groupe_arr_dep.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Selection Vols |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur accueil ou gestionnaire transferts |
+| **Quoi** | Fenetre de selection des vols arrivee/depart |
+| **Pourquoi** | Associer les adherents aux vols pour organiser les transferts aeroport |
+| **Declencheur** | Clic sur zoom depuis un champ vol ou transfert |
+| **Resultat** | Enregistrement du vol selectionne et retour au programme appelant |
 
 ### 1.2 Regles metier
 

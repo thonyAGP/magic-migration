@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Creation des Club Med Pass** est le **programme de generation des cartes d'identification client** qui **cree les supports de paiement et d'acces personnalises pour chaque membre du sejour**.
+
+**Objectif metier** : Generer les Club Med Pass (cartes EZ Card) pour les clients a leur arrivee au village, permettant l'identification, l'acces aux installations et le paiement sans numeraire dans toutes les boutiques et points de vente du resort. Le programme associe chaque carte au dossier client (GM) et initialise le compte de depenses.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Création des Club Med Pass |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception ou systeme automatique check-in |
+| **Quoi** | Generation et association des cartes Club Med Pass (EZ Card) |
+| **Pourquoi** | Permettre identification, acces et paiement cashless pendant le sejour |
+| **Declencheur** | Check-in client ou demande de carte supplementaire |
+| **Resultat** | Carte EZ activee et liee au compte client dans la table tempo_caisses |
 
 ### 1.2 Regles metier
 

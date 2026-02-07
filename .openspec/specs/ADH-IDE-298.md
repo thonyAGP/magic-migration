@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Gestion caisse 142** est le **module central de gestion de caisse** qui **orchestre l'ensemble des operations de caisse : ventes, approvisionnements, sessions et concurrences**.
+
+**Objectif metier** : Ce programme est le coeur du systeme de caisse avec 44 taches et 1100 lignes de logique. Il gere le cycle de vie complet d'une session de caisse : suivi des ventes par moyen de paiement (ventes_par_mop), gestion des articles en stock, approvisionnements (saisie_appro), sessions coffre, historique des sessions, communications IMS, et gestion des concurrences d'acces. Il consulte les coupures de monnaie locale, les moyens de reglement et les droits utilisateur. C'est le programme principal qui coordonne toutes les operations de caisse au quotidien avec 6 tables en ecriture pour la tracabilite complete.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Gestion caisse 142 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Caissier pendant sa session de travail |
+| **Quoi** | Gestion complete des operations de caisse (ventes, stocks, approvisionnements) |
+| **Pourquoi** | Centraliser le pilotage de toutes les operations de caisse en temps reel |
+| **Declencheur** | Chaque operation de caisse (vente, approvisionnement, consultation) |
+| **Resultat** | Operations enregistrees, stocks mis a jour, sessions tracees |
 
 ### 1.2 Regles metier
 

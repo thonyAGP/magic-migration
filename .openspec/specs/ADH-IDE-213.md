@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Recu fiscal grec** est le **generateur de recus fiscaux conformes a la legislation grecque** qui **produit les justificatifs fiscaux des communications telephoniques**.
+
+**Objectif metier** : Generer des recus fiscaux conformes aux exigences de la legislation fiscale grecque pour les communications telephoniques facturees aux clients. Ce programme formate les donnees de telephonie selon les normes locales et produit les documents fiscaux requis.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Reçu fiscal grec |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur comptabilite ou systeme de facturation |
+| **Quoi** | Generation de recus fiscaux grecs pour les appels telephoniques |
+| **Pourquoi** | Conformite avec la legislation fiscale grecque pour les prestations telephoniques |
+| **Declencheur** | Facturation client ou demande de recu fiscal |
+| **Resultat** | Recu fiscal grec genere et pret a imprimer ou archiver |
 
 ### 1.2 Regles metier
 

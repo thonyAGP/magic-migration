@@ -21,6 +21,12 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
+### 1.1 Objectif metier
+
+**Definition monnaie** est le **programme de configuration de la devise locale** qui **initialise les parametres monetaires du systeme de caisse**.
+
+**Objectif metier** : Ce programme permet de definir et configurer la devise locale utilisee dans le village Club Med. Il charge les parametres de devise depuis la table d'initialisation et configure le systeme via `SetParam` pour indiquer si la devise locale est active ('DEVISELOCAL_IN') et quel est son code ('CODEDEVISELOCAL'). Cette configuration est essentielle pour tous les calculs de change et les operations financieres du systeme de caisse.
+
 **Definition monnaie** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md).
 
 Le flux de traitement s'organise en **1 blocs fonctionnels** :

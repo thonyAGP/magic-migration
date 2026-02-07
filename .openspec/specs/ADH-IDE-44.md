@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Comptes de depot** est le **service de consultation des comptes de depot adherent** qui **recupere et affiche les informations financieres d'un adherent pour une societe donnee**.
+
+**Objectif metier** : Permettre la consultation des comptes de depot des adherents en fonction de leur societe, code adherent et filiation, avec gestion multi-devises et formatage des montants selon la devise locale.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Appel programme |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou gestionnaire adherent |
+| **Quoi** | Consultation des comptes de depot adherent |
+| **Pourquoi** | Visualiser les soldes et mouvements financiers d'un adherent |
+| **Declencheur** | Selection d'un adherent depuis un ecran de gestion ou caisse |
+| **Resultat** | Affichage des informations de depot avec formatage devise adapte |
 
 ### 1.2 Regles metier
 

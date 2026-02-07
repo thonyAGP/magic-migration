@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Test Easy Check-Out Online** est le **programme de verification** qui **controle l'eligibilite d'un client au processus de check-out en ligne (ECO)**.
+
+**Objectif metier** : Verifier que toutes les conditions sont reunies pour permettre a un client d'effectuer son check-out en ligne. Le programme controle le compte GM, les depots de garantie, le solde du compte, les imputations en cours, les dates comptables et la disponibilite d'une adresse email valide. C'est un programme de pre-validation avant le lancement du processus ECO.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Test Easy Check-Out Online |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme Easy Check-Out (verification automatique) |
+| **Quoi** | Controle d'eligibilite au check-out en ligne |
+| **Pourquoi** | S'assurer que le client remplit toutes les conditions pour l'ECO |
+| **Declencheur** | Demande de check-out en ligne ou verification batch |
+| **Resultat** | Statut d'eligibilite (OK/KO) avec eventuels blocages identifies |
 
 ### 1.2 Regles metier
 

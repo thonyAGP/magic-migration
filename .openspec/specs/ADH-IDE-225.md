@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Get Fidelisation et Remise** est le **recuperateur d'avantages client** qui **calcule et retourne les taux de fidelisation et remises applicables a un dossier**.
+
+**Objectif metier** : Determiner les avantages commerciaux (fidelisation, remises) applicables a un client en fonction de son historique et de son statut. Ce programme consulte les tables de fidelite et de disponibilite pour calculer les reductions accordees.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Get Fidelisation et Remise |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme de reservation ou operateur vente |
+| **Quoi** | Calcul des taux de fidelisation et remises pour un dossier |
+| **Pourquoi** | Appliquer les avantages commerciaux lies a la fidelite client |
+| **Declencheur** | Creation ou modification de dossier, calcul de tarif |
+| **Resultat** | Taux de fidelisation et montants de remise retournes |
 
 ### 1.2 Regles metier
 

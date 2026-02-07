@@ -21,7 +21,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Deversement Transaction** assure la gestion complete de ce processus, accessible depuis [Histo ventes payantes /PMS-623 (IDE 245)](ADH-IDE-245.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Histo ventes payantes (IDE 243)](ADH-IDE-243.md), [Histo ventes payantes /PMS-605 (IDE 244)](ADH-IDE-244.md), [Histo ventes Gratuités (IDE 253)](ADH-IDE-253.md), [Ventes Gratuites (IDE 305)](ADH-IDE-305.md), [Saisie transaction 154  N.U (IDE 307)](ADH-IDE-307.md), [Saisie transaction Nouv vente (IDE 310)](ADH-IDE-310.md), [Historique des ventes - Gratui (IDE 312)](ADH-IDE-312.md), [Ventes Gratuites (IDE 315)](ADH-IDE-315.md), [Historique des ventes P247 (IDE 318)](ADH-IDE-318.md), [Annulation Ventes Gratuites (IDE 319)](ADH-IDE-319.md).
+**Deversement Transaction** est le **moteur de comptabilisation des ventes** qui **transforme une vente validee en ecritures comptables et met a jour toutes les tables transactionnelles**.
+
+**Objectif metier** : Effectuer le deversement comptable apres validation d'une vente. Ce programme critique (25 taches, 1467 lignes, 30 tables dont 11 en ecriture) cree les OD (operations diverses), met a jour les comptes GM, l'hebergement, les ventes, les statistiques et les compteurs. Il gere egalement les cas d'annulation, les ventes VRL/VSL, les affectations de transfert et les complements biking. C'est le coeur du traitement comptable post-vente.
+
+Ce programme est accessible depuis [Histo ventes payantes /PMS-623 (IDE 245)](ADH-IDE-245.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Histo ventes payantes (IDE 243)](ADH-IDE-243.md), [Histo ventes payantes /PMS-605 (IDE 244)](ADH-IDE-244.md), [Histo ventes Gratuités (IDE 253)](ADH-IDE-253.md), [Ventes Gratuites (IDE 305)](ADH-IDE-305.md), [Saisie transaction 154  N.U (IDE 307)](ADH-IDE-307.md), [Saisie transaction Nouv vente (IDE 310)](ADH-IDE-310.md), [Historique des ventes - Gratui (IDE 312)](ADH-IDE-312.md), [Ventes Gratuites (IDE 315)](ADH-IDE-315.md), [Historique des ventes P247 (IDE 318)](ADH-IDE-318.md), [Annulation Ventes Gratuites (IDE 319)](ADH-IDE-319.md).
 
 Le flux de traitement s'organise en **5 blocs fonctionnels** :
 

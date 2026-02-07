@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Envoi table autocom PABX** est le **synchroniseur de configuration telephonique** qui **transmet les tables de codes autocom au systeme PABX**.
+
+**Objectif metier** : Synchroniser les tables de codes d'autocommutateur entre le PMS et le systeme telephonique PABX. Ce programme genere et envoie les commandes de configuration au PABX pour activer, modifier ou desactiver les codes telephoniques selon les parametres definis.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** |    Envoi table autocom PABX |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception ou systeme automatique |
+| **Quoi** | Transmission des configurations de codes autocom au PABX |
+| **Pourquoi** | Maintenir la coherence entre le PMS et le systeme telephonique |
+| **Declencheur** | Modification de configuration ou synchronisation periodique |
+| **Resultat** | Tables autocom transmises au PABX avec confirmation de mise a jour |
 
 ### 1.2 Regles metier
 

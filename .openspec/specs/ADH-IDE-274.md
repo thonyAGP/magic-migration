@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom Logements** est le **selecteur des logements disponibles** qui **permet a l'operateur de consulter et selectionner un logement pour un adherent**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les logements disponibles (hebergements avec informations client et complements) et permettre leur selection lors de l'affectation ou du changement de chambre d'un adherent.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom Logements |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur accueil, reception ou hebergement |
+| **Quoi** | Fenetre de selection des logements avec details |
+| **Pourquoi** | Permettre l'affectation ou le transfert de logement pour les adherents |
+| **Declencheur** | Clic sur zoom depuis un champ logement |
+| **Resultat** | Retour du logement selectionne avec ses informations au programme appelant |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Factures_Sejour** est le **traitement de generation des factures liees aux sejours des adherents** qui permet de **produire les factures pour un compte et une filiation donnees**.
+
+**Objectif metier** : Generer les factures de sejour pour un adherent identifie par son numero de compte et sa filiation. Le programme gere les affectations de Gift Pass et le lien avec les hebergements professionnels. Il peut produire des factures dans le cadre du processus Easy Check-Out (ECO).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Factures_Sejour |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appel automatique depuis traitement batch) |
+| **Quoi** | Generation des factures de sejour pour un compte adherent |
+| **Pourquoi** | Produire les documents de facturation lies aux consommations du sejour |
+| **Declencheur** | Appel parametrise avec Societe, NumCompte, Filiation et flag FactureECO |
+| **Resultat** | Creation des factures et mise a jour des affectations Gift Pass |
 
 ### 1.2 Regles metier
 

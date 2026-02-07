@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom des types de taux** est le **selecteur des types de taux de change** qui **permet a l'operateur de consulter et selectionner un type de taux pour les operations de change**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les differents types de taux de change disponibles (taux achat, taux vente, taux moyen, etc.) et permettre leur selection lors de la configuration ou de l'execution d'operations de change monetaire.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom des types de taux |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou gestionnaire change |
+| **Quoi** | Fenetre de selection des types de taux de change |
+| **Pourquoi** | Permettre le choix du type de taux adapte pour les operations de change |
+| **Declencheur** | Clic sur zoom depuis un champ type de taux |
+| **Resultat** | Retour du type de taux selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

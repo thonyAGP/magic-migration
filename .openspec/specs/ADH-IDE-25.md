@@ -21,6 +21,12 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
+### 1.1 Objectif metier
+
+**Change GM** est le **programme principal de gestion des operations de change** qui **permet aux caissiers d'effectuer des achats et ventes de devises pour les clients GM**.
+
+**Objectif metier** : Ce programme est le coeur du bureau de change du village Club Med. Il permet de realiser les operations d'achat de devises (le client achete des devises etrangeres) et de vente de devises (le client vend ses devises etrangeres). L'ecran principal affiche les scrolls des operations de vente et d'achat, permet la saisie des nouvelles transactions avec selection de devise, mode de paiement et taux, calcule les equivalents, gere le stock de devises en caisse, verrouille les operations pendant la cloture, et declenche l'impression des recus. Le programme impacte 7 tables critiques dont les tables de change, compteurs et sessions de caisse.
+
 **Change GM** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md).
 
 Le flux de traitement s'organise en **6 blocs fonctionnels** :

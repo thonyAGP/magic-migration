@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom sur modes de paiement a/v** est le **selecteur des modes de paiement pour operations achat/vente** qui **permet a l'operateur de choisir un mode de paiement specifique aux transactions d'achat ou de vente**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les modes de paiement disponibles pour les operations d'achat ou de vente (a/v), permettant de distinguer les moyens de reglement selon le sens de la transaction (encaissement client vs paiement fournisseur).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom sur modes de paiement a/v |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou comptable |
+| **Quoi** | Fenetre de selection des modes de paiement achat/vente |
+| **Pourquoi** | Distinguer les moyens de reglement selon le type de transaction |
+| **Declencheur** | Clic sur zoom depuis un champ mode de paiement en contexte achat/vente |
+| **Resultat** | Retour du mode de paiement selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

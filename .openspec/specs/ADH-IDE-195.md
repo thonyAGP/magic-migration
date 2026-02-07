@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print solde compte TIK V1** est le **generateur d'impression de ticket** qui **produit le justificatif papier du solde de compte client**.
+
+**Objectif metier** : Imprimer le ticket de solde de compte au format TIK (ticket thermique). Ce programme collecte les informations du GM (gm-recherche, gm-complet), de l'hebergement, des ecritures comptables et des lignes de solde pour generer un ticket detaille. Il inclut le recap par moyen de paiement et met a jour le comptage nationalite pour les statistiques.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print solde compte TIK V1 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou reception |
+| **Quoi** | Impression du ticket de solde de compte (version 1) |
+| **Pourquoi** | Fournir un justificatif papier au client lors du reglement |
+| **Declencheur** | Fin d'operation de solde ou demande de reimpression |
+| **Resultat** | Ticket de solde imprime avec detail des lignes et moyens de paiement |
 
 ### 1.2 Regles metier
 

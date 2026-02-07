@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Saisie contenu caisse** est le **module de comptage de caisse** qui **permet de saisir et enregistrer le contenu physique de la caisse lors des operations de cloture ou de controle**.
+
+**Objectif metier** : Permettre a l'operateur de saisir le comptage physique de la caisse incluant les coupures en monnaie locale (billets/pieces), les devises etrangeres, les moyens de paiement (cheques, cartes, etc.), et de comparer avec le solde theorique pour detecter les ecarts. Ce programme gere egalement l'historisation des comptages et l'edition des tickets recapitulatifs.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Saisie contenu caisse |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse / Responsable de caisse |
+| **Quoi** | Saisie du comptage physique de la caisse (coupures, devises, moyens de paiement) |
+| **Pourquoi** | Controle de caisse, detection des ecarts, cloture de session |
+| **Declencheur** | Fin de session caisse ou controle intermediaire |
+| **Resultat** | Enregistrement du comptage, calcul des ecarts, edition ticket recapitulatif |
 
 ### 1.2 Regles metier
 

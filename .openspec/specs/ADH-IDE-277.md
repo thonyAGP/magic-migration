@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Selection Vols avec Ville a cote** est le **selecteur des vols avec affichage de la ville de destination/origine** qui **permet a l'operateur de consulter et selectionner un vol avec sa ville associee**.
+
+**Objectif metier** : Fournir une fenetre de selection pour afficher les vols disponibles avec l'information de la ville (origine ou destination) affichee a cote, facilitant le choix du bon vol lors de la gestion des transferts aeriens.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Selection Vols /t Ville à côté |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur accueil ou gestionnaire transferts |
+| **Quoi** | Fenetre de selection des vols avec ville affichee |
+| **Pourquoi** | Faciliter l'identification du vol correct grace a l'affichage de la ville |
+| **Declencheur** | Clic sur zoom depuis un champ vol necessitant la ville |
+| **Resultat** | Enregistrement du vol selectionne et retour au programme appelant |
 
 ### 1.2 Regles metier
 

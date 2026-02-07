@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Easy Check-Out === V2.00** est l'**interface principale de lancement du processus Easy Check-Out** qui permet de **declencher le traitement automatise des check-outs pour les adherents**.
+
+**Objectif metier** : Permettre a l'operateur de lancer le traitement Easy Check-Out en specifiant une date de traitement et une option pour traiter tous les comptes insoldes. Ce programme affiche une interface avec des boutons "Lancer" et "Quitter" et collecte les parametres necessaires avant de declencher le traitement batch.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Easy Check-Out === V2.00 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse/reception (utilisateur connecte) |
+| **Quoi** | Interface de saisie des parametres Easy Check-Out V2.00 |
+| **Pourquoi** | Lancer le traitement automatise des check-outs pour les adherents |
+| **Declencheur** | Selection depuis le menu Easy Check-Out |
+| **Resultat** | Lancement du traitement batch Easy Check-Out avec les parametres saisis |
 
 ### 1.2 Regles metier
 

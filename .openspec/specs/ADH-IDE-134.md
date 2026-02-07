@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Mise a jour detail session WS** est le **programme d'archivage Web Service** qui **sauvegarde les details complets d'une session de caisse (articles, devises, remises) dans les tables d'historique**.
+
+**Objectif metier** : Archiver l'ensemble des details d'une session de caisse lors de sa cloture via Web Service. Ce programme lit les donnees des tables de session active (gestion_article_session, gestion_devise_session, saisie_approvisionnement, moyens_reglement) et les ecrit dans les tables d'historique correspondantes (histo_sessions_caisse_article, histo_sessions_caisse_detail, histo_sessions_caisse_devise, histo_sessions_caisse_remise). Avec 18 taches et 294 lignes de logique, c'est un programme complexe qui gere la preservation complete des donnees de session.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Mise à jour detail session WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme Web Service (appel automatise) |
+| **Quoi** | Archivage complet des details de session (articles, devises, remises) |
+| **Pourquoi** | Conservation des donnees de session pour audit et tracabilite |
+| **Declencheur** | Appel Web Service lors de la cloture de session |
+| **Resultat** | Tous les details de session archives dans 4 tables historique |
 
 ### 1.2 Regles metier
 

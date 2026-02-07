@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Caisse ouverte** est le **verificateur d'etat de session de caisse** qui **determine si une session de caisse est actuellement active/ouverte pour l'operateur**.
+
+**Objectif metier** : Controler l'etat d'ouverture d'une session de caisse en consultant la table des historiques de sessions. Ce programme permet de savoir si l'operateur a bien ouvert sa caisse avant d'effectuer des operations de vente, garantissant ainsi la tracabilite des transactions.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Caisse ouverte |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de caisse (vendeur, receptionniste) |
+| **Quoi** | Verification de l'etat d'ouverture de la session de caisse |
+| **Pourquoi** | Garantir qu'une session de caisse est active avant toute operation de vente |
+| **Declencheur** | Appel automatique lors de l'acces aux fonctions de vente |
+| **Resultat** | Indicateur booleen confirmant si la caisse est ouverte ou fermee |
 
 ### 1.2 Regles metier
 

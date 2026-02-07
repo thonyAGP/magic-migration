@@ -21,6 +21,12 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
+### 1.1 Objectif metier
+
+**Print reçu change achat** est le **programme d'impression des recus pour les operations d'achat de devises** qui **genere les tickets de confirmation pour les clients ayant achete des devises etrangeres**.
+
+**Objectif metier** : Ce programme produit le recu imprime remis au client lorsqu'il achete des devises etrangeres au bureau de change du village. Le ticket contient toutes les informations de la transaction : numero d'operation, mode de paiement, taux applique, montant en devise locale, frais de change eventuels et equivalent en devise achetee. Le programme gere l'impression sur plusieurs types d'imprimantes (1, 4, 5, 8, 9) selon la configuration du village et supporte le multilinguisme (francais/anglais selon le code langue).
+
 **Print reçu change achat** assure la gestion complete de ce processus, accessible depuis [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md), [Change GM (IDE 25)](ADH-IDE-25.md), [Versement/Retrait (IDE 174)](ADH-IDE-174.md).
 
 Le flux de traitement s'organise en **2 blocs fonctionnels** :

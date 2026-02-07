@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Selection Identification** est le **module de selection et filtrage** qui permet d'**identifier et selectionner des vendeurs ou services selon des criteres**.
+
+**Objectif metier** : Permettre la selection d'un vendeur ou d'un service parmi une liste filtree. Ce programme alimente une table temporaire (tempo_liste_service) avec les resultats de la selection et s'appuie sur les statistiques vendeur pour afficher des informations pertinentes.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Selection Identification |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou responsable commercial |
+| **Quoi** | Ecran de selection/identification de vendeurs ou services |
+| **Pourquoi** | Permettre la recherche et selection rapide d'un vendeur/service pour operations ulterieures |
+| **Declencheur** | Besoin de selectionner un vendeur ou service dans un processus metier |
+| **Resultat** | Vendeur/service identifie et stocke dans tempo_liste_service pour traitement suivant |
 
 ### 1.2 Regles metier
 

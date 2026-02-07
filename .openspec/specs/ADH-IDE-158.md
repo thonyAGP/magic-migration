@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Menu Great Member** est le **menu de navigation** qui permet d'**acceder aux fonctionnalites du programme de fidelite Great Member**.
+
+**Objectif metier** : Fournir un point d'entree centralise pour la gestion des adherents du programme de fidelite "Great Member" du Club Med. Ce menu regroupe les options de consultation, modification et suivi des membres fidelises.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Menu Great Member |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception/accueil gerant les membres fidelite |
+| **Quoi** | Menu d'acces aux fonctions Great Member (programme fidelite) |
+| **Pourquoi** | Centraliser la navigation vers les operations de gestion des membres fidelises |
+| **Declencheur** | Selection depuis le menu principal ou raccourci clavier |
+| **Resultat** | Affichage du menu avec options Great Member et lancement du sous-programme choisi |
 
 ### 1.2 Regles metier
 

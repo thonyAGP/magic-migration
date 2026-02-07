@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Histo ventes payantes /PMS-605** est le **gestionnaire d'historique des ventes payantes version PMS-605** qui **permet de consulter, modifier et annuler les ventes payantes effectuees, avec les specificites de la version 605 du PMS**.
+
+**Objectif metier** : Fournir un ecran de consultation et de gestion de l'historique des ventes payantes. Ce programme complexe (30 taches, 1841 lignes, 33 tables dont 7 en ecriture) permet aux operateurs de visualiser les ventes realisees, d'effectuer des corrections ou annulations si necessaire, et de gerer les reemissions de tickets. Il integre les fonctionnalites de gestion des taxes, locations, emails et logs.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Histo ventes payantes /PMS-605 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de caisse ou responsable (avec droits de modification) |
+| **Quoi** | Consultation et gestion de l'historique des ventes payantes |
+| **Pourquoi** | Permettre les corrections, annulations et reimpressions de ventes |
+| **Declencheur** | Acces depuis le menu caisse ou historique ventes |
+| **Resultat** | Affichage historique, modifications enregistrees si applicable |
 
 ### 1.2 Regles metier
 

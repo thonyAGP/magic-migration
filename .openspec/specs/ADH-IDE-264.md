@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom devise solde compte** est le **selecteur des devises pour consultation de solde de compte** qui **permet a l'operateur de choisir une devise pour afficher le solde d'un compte adherent**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les devises disponibles et permettre leur selection lors de la consultation du solde d'un compte adherent, afin d'afficher le montant dans la devise souhaitee.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom devise solde compte |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou comptable |
+| **Quoi** | Fenetre de selection des devises pour affichage solde |
+| **Pourquoi** | Permettre la consultation du solde dans une devise specifique |
+| **Declencheur** | Clic sur zoom depuis un champ devise dans un ecran de solde compte |
+| **Resultat** | Retour de la devise selectionnee au programme appelant |
 
 ### 1.2 Regles metier
 

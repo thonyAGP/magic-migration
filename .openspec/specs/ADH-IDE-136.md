@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Generation ticket WS** est le **programme de generation Web Service** qui **produit les donnees de ticket de caisse pour affichage et historisation**.
+
+**Objectif metier** : Generer les informations necessaires a la creation d'un ticket de caisse via Web Service. Ce programme lit les articles de la session (gestion_article_session) et ecrit les donnees formatees dans les tables d'affichage et d'historique equipement (pv_invoicedisplaytmp, pv_equip_histo). Ces donnees servent a l'impression du ticket client et a la tracabilite des operations sur les equipements.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Generation ticket WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme Web Service (appel automatise) |
+| **Quoi** | Generation des donnees de ticket de caisse |
+| **Pourquoi** | Impression ticket client, historisation equipements |
+| **Declencheur** | Appel Web Service lors d'une vente ou cloture |
+| **Resultat** | Donnees ticket preparees pour affichage et archivage equipement |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom sur table des gratuites** est le **visualiseur de la table de reference des gratuites** qui **affiche le detail des types de gratuites disponibles dans le systeme**.
+
+**Objectif metier** : Fournir un ecran de consultation de type "zoom" sur la table de reference des gratuites (tables_gratuites_tgr). Ce programme simple (1 tache, 23 lignes de logique) permet aux operateurs de visualiser les differents codes de gratuites disponibles, leurs libelles et conditions d'application. C'est un outil d'aide a la saisie utilise lors de la creation de ventes gratuites.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom sur table des gratuites |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur lors de la saisie d'une vente gratuite |
+| **Quoi** | Consultation de la table de reference des gratuites |
+| **Pourquoi** | Aide a la selection du bon code de gratuite |
+| **Declencheur** | Appel via zoom (F5) depuis un champ de saisie de gratuite |
+| **Resultat** | Liste des gratuites affichee, selection possible |
 
 ### 1.2 Regles metier
 

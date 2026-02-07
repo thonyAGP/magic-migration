@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Program_198** est un **programme reserve/stub** qui **n'a pas d'implementation metier active**.
+
+**Objectif metier** : Ce programme ne contient aucune logique metier (0 tables, 1 seule ligne de code). Il s'agit vraisemblablement d'un emplacement reserve pour un developpement futur ou d'un programme desactive. Le nom generique "Program_198" confirme l'absence de fonction metier definie.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Program_198 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | N/A (programme non actif) |
+| **Quoi** | Programme reserve sans implementation |
+| **Pourquoi** | Emplacement reserve ou programme abandonne |
+| **Declencheur** | Aucun (orphelin) |
+| **Resultat** | Aucun traitement effectif |
 
 ### 1.2 Regles metier
 

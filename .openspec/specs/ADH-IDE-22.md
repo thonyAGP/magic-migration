@@ -21,6 +21,12 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
+### 1.1 Objectif metier
+
+**Calcul equivalent** est le **programme de conversion monetaire** qui **calcule l'equivalent en devise locale d'un montant en devise etrangere**.
+
+**Objectif metier** : Ce programme est le moteur de calcul de change du systeme. Il recoit un montant en devise etrangere avec son mode de paiement et son type d'operation (achat/vente), puis calcule l'equivalent en devise locale en appliquant le taux de change approprie. Il gere les specificites bilaterales (Uni/BI) et les differents types d'operations. Ce programme est appele massivement (20 appels) par les programmes d'impression de recus de change et le tableau recapitulatif de fermeture de caisse.
+
 **Calcul equivalent** assure la gestion complete de ce processus, accessible depuis [Print reçu change achat (IDE 23)](ADH-IDE-23.md), [Print reçu change vente (IDE 24)](ADH-IDE-24.md), [Tableau recap fermeture (IDE 154)](ADH-IDE-154.md).
 
 Le flux de traitement s'organise en **1 blocs fonctionnels** :

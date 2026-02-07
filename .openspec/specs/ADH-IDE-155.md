@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Controle fermeture caisse WS** est le **moteur de validation et controle de fermeture de caisse** qui **execute l'ensemble des verifications et mises a jour necessaires a la cloture officielle d'une session de caisse via Web Service**.
+
+**Objectif metier** : Controler et valider la fermeture d'une session de caisse en verifiant la coherence des donnees (ecarts, pointages, soldes). Ce programme critique (147 taches, 32 tables, 7 en ecriture) met a jour les statuts de session, enregistre les pointages d'articles, devises et remises, genere les ecritures comptables provisoires et controle les droits utilisateur. Il est appele via Web Service pour permettre la fermeture depuis des interfaces externes.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Controle fermeture caisse WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Responsable caisse / Systeme externe via WS |
+| **Quoi** | Validation complete et enregistrement de la fermeture de session |
+| **Pourquoi** | Garantir l'integrite des donnees et officialiser la cloture de caisse |
+| **Declencheur** | Demande de fermeture via Web Service |
+| **Resultat** | Session cloturee, pointages enregistres, ecritures comptables generees |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Truncate table SQL** est un **utilitaire de maintenance base de donnees** qui **vide completement une table SQL via la commande TRUNCATE**.
+
+**Objectif metier** : Permettre la purge rapide et complete des donnees d'une table temporaire ou de travail, typiquement utilisee avant un import massif ou une reinitialisation de donnees. La commande TRUNCATE est plus performante que DELETE car elle ne genere pas de log de transaction ligne par ligne.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Truncate table SQL |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Processus batch ou administrateur systeme |
+| **Quoi** | Vider completement une table SQL via TRUNCATE |
+| **Pourquoi** | Reinitialiser une table temporaire avant traitement batch ou import |
+| **Declencheur** | Appel automatique depuis un processus d'import ou de purge |
+| **Resultat** | Table videe, prete a recevoir de nouvelles donnees |
 
 ### 1.2 Regles metier
 

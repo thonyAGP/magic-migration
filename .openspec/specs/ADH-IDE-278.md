@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom Pays Vente** est le **selecteur des pays de vente** qui **permet a l'operateur de consulter et selectionner un pays pour la configuration des ventes**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les pays de vente autorises et permettre leur selection lors de la configuration commerciale, la tarification par zone geographique ou l'affectation d'un pays de vente a un adherent ou une reservation.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom Pays Vente |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur commercial ou gestionnaire |
+| **Quoi** | Fenetre de selection des pays de vente |
+| **Pourquoi** | Permettre l'association d'un pays de vente pour la tarification et le reporting |
+| **Declencheur** | Clic sur zoom depuis un champ pays de vente |
+| **Resultat** | Retour du code pays de vente selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

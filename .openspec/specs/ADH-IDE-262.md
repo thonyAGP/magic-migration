@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom des types d'objets** est le **selecteur des types d'objets en depot** qui **permet a l'operateur de consulter et selectionner un type d'objet pour la gestion des depots**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les differents types d'objets pouvant etre mis en depot (cles, bagages, coffre-fort, etc.) et permettre leur selection lors de l'enregistrement d'un depot d'objet par un adherent.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom  des types d'objets |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur accueil ou reception |
+| **Quoi** | Fenetre de selection des types d'objets en depot |
+| **Pourquoi** | Categoriser les objets deposes pour une meilleure gestion des depots |
+| **Declencheur** | Clic sur zoom depuis un champ type d'objet |
+| **Resultat** | Retour du type d'objet selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

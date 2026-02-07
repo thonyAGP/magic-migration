@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**VAD valides a imprimer** est le **gestionnaire des ventes a distance en attente d'impression** qui **affiche et permet l'impression des tickets pour les ventes VAD (Vente A Distance) validees mais pas encore imprimees**.
+
+**Objectif metier** : Fournir un ecran de suivi des ventes effectuees a distance (VAD) qui ont ete validees mais dont le ticket n'a pas encore ete imprime. Ce programme (4 taches, 451 lignes, 16 tables en lecture) permet aux operateurs de consulter la liste des VAD en attente et de declencher l'impression des tickets correspondants. Il accede aux donnees clients, hebergement, comptables et articles pour reconstituer les informations necessaires a l'impression.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | VAD validés à imprimer |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur de caisse ou back-office |
+| **Quoi** | Liste et impression des tickets VAD en attente |
+| **Pourquoi** | Assurer que chaque vente a distance dispose de son ticket imprime |
+| **Declencheur** | Acces depuis le menu des ventes ou impression tickets |
+| **Resultat** | Liste des VAD affichee, tickets imprimes sur demande |
 
 ### 1.2 Regles metier
 

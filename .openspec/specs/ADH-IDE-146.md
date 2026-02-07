@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Devises tableau recap WS** est le **generateur de tableau recapitulatif des devises** qui **consolide l'ensemble des operations de change et mouvements devises pour le reporting Web Service**.
+
+**Objectif metier** : Produire un tableau recapitulatif complet des mouvements de devises de la session de caisse. Ce tableau synthetise les entrees, sorties, stocks initiaux et finaux par devise, et genere les donnees pour l'historique des sessions. Les informations sont ecrites dans une table temporaire de filiation pour le reporting WS.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Devises tableau recap WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Responsable caisse / Systeme de reporting |
+| **Quoi** | Generation du tableau recapitulatif multi-devises de la session |
+| **Pourquoi** | Consolider les mouvements devises pour le controle et l'historique |
+| **Declencheur** | Processus de cloture ou demande de recapitulatif WS |
+| **Resultat** | Tableau synthetique des devises genere et stocke pour reporting |
 
 ### 1.2 Regles metier
 

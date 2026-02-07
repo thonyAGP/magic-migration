@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Choix Articles Gift Pass** est l'**interface de selection d'articles** qui **permet de choisir les produits eligibles au paiement par Gift Pass**.
+
+**Objectif metier** : Gerer la selection des articles pouvant etre regles avec un Gift Pass (cheque cadeau Club Med). Ce programme permet a l'operateur de selectionner parmi les articles de la vente ceux qui sont eligibles au Gift Pass, selon les regles d'utilisation definies. La selection est enregistree dans la table temporaire (Table_979) pour traitement ulterieur.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Choix Articles Gift Pass |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur boutique ou caisse |
+| **Quoi** | Selection des articles eligibles au paiement par Gift Pass |
+| **Pourquoi** | Appliquer les regles d'utilisation des Gift Pass aux achats |
+| **Declencheur** | Choix du moyen de paiement Gift Pass lors d'une vente |
+| **Resultat** | Liste des articles selectionnes pour le paiement Gift Pass |
 
 ### 1.2 Regles metier
 

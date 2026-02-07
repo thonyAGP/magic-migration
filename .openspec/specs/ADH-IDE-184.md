@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Get Printer for chained list** est un **selecteur d'imprimante** qui **determine l'imprimante a utiliser pour une sequence d'impressions chainees**.
+
+**Objectif metier** : Dans le contexte des impressions multiples (listings enchaines), ce programme recupere et definit l'imprimante appropriee pour l'ensemble de la sequence. Il consulte les donnees temporaires de comptage pour determiner le contexte d'impression et selectionner l'imprimante correspondante. Evite de demander une nouvelle selection d'imprimante a chaque document d'une serie.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Get Printer for chained list |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appele automatiquement lors d'impressions chainees) |
+| **Quoi** | Recuperation de l'imprimante a utiliser pour une serie d'impressions |
+| **Pourquoi** | Maintenir une imprimante coherente sur toute une sequence de documents |
+| **Declencheur** | Lancement d'une impression chainee (plusieurs documents consecutifs) |
+| **Resultat** | Imprimante selectionnee et stockee pour la sequence complete |
 
 ### 1.2 Regles metier
 

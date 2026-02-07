@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Test Conversion PDF** est le **programme de test de la conversion en PDF** qui **permet de verifier le bon fonctionnement de la generation de documents PDF**.
+
+**Objectif metier** : Fournir un outil de test pour valider la capacite du systeme a convertir des documents en format PDF, utilisant des donnees de depot de garantie comme exemple de contenu a convertir.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Test Conversion PDF |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Administrateur ou equipe technique |
+| **Quoi** | Test de la fonctionnalite de conversion PDF |
+| **Pourquoi** | Valider que la generation PDF fonctionne correctement avant utilisation en production |
+| **Declencheur** | Demande de test manuelle ou verification technique |
+| **Resultat** | Document PDF genere si la conversion fonctionne correctement |
 
 ### 1.2 Regles metier
 

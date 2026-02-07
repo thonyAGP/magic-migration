@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Mise a jour comptage caisse WS** est le **programme d'archivage Web Service** qui **sauvegarde les comptages de caisse (devises et montants) dans les tables d'historique**.
+
+**Objectif metier** : Archiver les donnees de comptage de caisse lors de la cloture de session via un appel Web Service. Ce programme ecrit dans les tables d'historique (comptage_caisse_devise_histo, comptage_caisse_histo) les informations de comptage provenant des tables temporaires (soldes_par_mop, edition_tableau_recap, edition_ticket). Il assure la tracabilite des comptages pour audit et reporting.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Mise a jour comptage caisse WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme Web Service (appel automatise) |
+| **Quoi** | Archivage des comptages de caisse en historique |
+| **Pourquoi** | Tracabilite des comptages, audit, reporting financier |
+| **Declencheur** | Appel Web Service lors de la cloture de session |
+| **Resultat** | Donnees de comptage archivees dans tables historique |
 
 ### 1.2 Regles metier
 

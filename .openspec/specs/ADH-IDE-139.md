@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Ticket appro remise** est le **generateur de justificatifs de mouvements de fonds** qui **imprime les tickets d'approvisionnement et de remise en banque de la caisse**.
+
+**Objectif metier** : Produire les tickets papier documentant les mouvements de tresorerie de la caisse : les approvisionnements (apports de fonds pour alimenter la caisse) et les remises (retraits de fonds vers la banque ou le coffre). Ces tickets detaillent les montants par devise, les taux de change appliques, et constituent les pieces justificatives obligatoires pour la comptabilite et le suivi des flux de tresorerie. Le programme gere la multi-devise et les conversions associees.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Ticket appro remise |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse, comptable, responsable tresorerie |
+| **Quoi** | Generation et impression des tickets d'approvisionnement et de remise |
+| **Pourquoi** | Tracer les mouvements de fonds (entrees/sorties caisse) avec justificatifs pour audit et comptabilite |
+| **Declencheur** | Saisie d'un approvisionnement ou d'une remise en banque |
+| **Resultat** | Ticket imprime detaillant les montants, devises et taux de change du mouvement |
 
 ### 1.2 Regles metier
 

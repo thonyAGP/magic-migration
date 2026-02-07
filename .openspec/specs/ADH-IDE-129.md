@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Ecart ouverture caisse** est le **gestionnaire des ecarts d'ouverture** qui **detecte et enregistre les differences entre le solde theorique et le solde reel a l'ouverture**.
+
+**Objectif metier** : Identifier et tracer les ecarts constates entre le solde theorique (calcule par le systeme) et le solde reel (compte par le caissier) lors de l'ouverture de caisse. Ce programme compare les montants par moyen de reglement et devise, genere un tableau recapitulatif des ecarts et peut declencher des alertes si les ecarts depassent les seuils autorises. Il est essentiel pour le controle de gestion et la detection d'anomalies.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Ecart ouverture caisse |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Caissier lors de l'ouverture, controle par le responsable de caisse |
+| **Quoi** | Detection et enregistrement des ecarts de caisse a l'ouverture |
+| **Pourquoi** | Tracer les differences pour le controle comptable et la detection de fraudes |
+| **Declencheur** | Saisie du comptage reel a l'ouverture de caisse |
+| **Resultat** | Tableau recapitulatif des ecarts par devise et moyen de paiement |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Devises finales F/F Nbre WS** est le **composant de calcul des nombres de billets/pieces par devise** qui **determine les quantites finales de chaque coupure pour le fond de caisse (F/F = Fond Final)**.
+
+**Objectif metier** : Calculer le nombre de billets et pieces par devise a conserver dans le fond de caisse lors de la cloture de session. Ce programme alimente un Web Service (WS) avec les donnees de comptage final, permettant de determiner combien de coupures de chaque type restent en caisse apres les operations de la journee.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Devises finales F/F Nbre WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse / Responsable fermeture |
+| **Quoi** | Calcul du nombre de coupures par devise pour le fond de caisse final |
+| **Pourquoi** | Preparer les donnees de comptage pour la cloture et le reporting WS |
+| **Declencheur** | Processus de fermeture de caisse ou appel WS |
+| **Resultat** | Nombre de billets/pieces par type de moyen de reglement et devise calcule |
 
 ### 1.2 Regles metier
 

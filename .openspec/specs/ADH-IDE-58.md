@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Incremente N de Facture** est l'**utilitaire de generation sequentielle des numeros de factures** qui permet d'**obtenir le prochain numero de facture disponible pour un compteur donne**.
+
+**Objectif metier** : Gerer la numerotation sequentielle des factures en incrementant le compteur specifie et en retournant le nouveau numero. Ce programme garantit l'unicite et la sequence des numeros de factures conformement aux exigences legales et comptables.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Incremente N° de Facture |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appel automatique depuis programmes de facturation) |
+| **Quoi** | Incrementation du compteur de factures et retour du nouveau numero |
+| **Pourquoi** | Garantir la numerotation sequentielle et unique des factures |
+| **Declencheur** | Appel parametrise avec le code compteur a incrementer |
+| **Resultat** | Nouveau numero de facture genere et compteur mis a jour |
 
 ### 1.2 Regles metier
 

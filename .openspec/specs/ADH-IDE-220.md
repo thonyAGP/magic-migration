@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Creation Connect.dat / pooling** est le **generateur de fichier de connexion** qui **cree le fichier de configuration pour la connexion au systeme de pooling telephonique**.
+
+**Objectif metier** : Generer le fichier Connect.dat necessaire a la connexion entre le PMS et le systeme de pooling telephonique. Ce fichier contient les parametres de connexion pour l'echange de donnees de taxation telephonique avec le PABX.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Creation Connect.dat / pooling |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Administrateur systeme ou processus d'initialisation |
+| **Quoi** | Generation du fichier de configuration Connect.dat |
+| **Pourquoi** | Configurer la connexion avec le systeme de taxation telephonique |
+| **Declencheur** | Installation, reconfiguration ou reparation de connexion |
+| **Resultat** | Fichier Connect.dat cree avec les parametres de connexion pooling |
 
 ### 1.2 Regles metier
 

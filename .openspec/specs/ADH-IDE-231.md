@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Raisons utilisation ADH** est le **gestionnaire de motifs d'utilisation** qui **permet de consulter et gerer les raisons pour lesquelles le module ADH (Adhesion) est utilise**.
+
+**Objectif metier** : Fournir une table de reference des motifs d'utilisation du module ADH. Ces raisons peuvent inclure les differents contextes d'adhesion, de renouvellement, de modification ou d'annulation d'abonnement, permettant une categorisation fine des operations effectuees sur les adherents.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Raisons utilisation ADH |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur (gestionnaire d'adhesions, responsable club) |
+| **Quoi** | Consultation et gestion des motifs d'utilisation ADH |
+| **Pourquoi** | Categoriser et justifier les operations sur les adhesions |
+| **Declencheur** | Appel depuis les ecrans de gestion d'adhesions ou parametrage |
+| **Resultat** | Liste des raisons disponibles pour qualifier une operation d'adhesion |
 
 ### 1.2 Regles metier
 

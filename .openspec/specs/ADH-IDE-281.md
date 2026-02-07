@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Fermeture Sessions** est le **gestionnaire de fermeture des sessions de caisse** qui **permet de cloturer les sessions de travail unilaterales ou bilaterales**.
+
+**Objectif metier** : Gerer le processus de fermeture des sessions de caisse en verifiant les parametres d'initialisation et le type de session (unilaterale ou bilaterale), permettant la cloture correcte en fin de journee ou lors d'un changement d'operateur.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Fermeture Sessions |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou superviseur |
+| **Quoi** | Fermeture et cloture des sessions de travail |
+| **Pourquoi** | Assurer la cloture propre des sessions pour la comptabilite journaliere |
+| **Declencheur** | Fin de journee ou changement d'operateur |
+| **Resultat** | Session fermee et prete pour le prochain cycle |
 
 ### 1.2 Regles metier
 

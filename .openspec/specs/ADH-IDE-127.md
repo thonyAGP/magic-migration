@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Calcul solde ouverture WS** est le **Web Service de calcul du solde d'ouverture** qui **determine le solde attendu au moment de l'ouverture de caisse**.
+
+**Objectif metier** : Fournir via Web Service le calcul du solde d'ouverture de caisse en fonction des moyens de reglement et des devises en cours de session. Ce service consulte les tables de gestion de devises et l'historique des sessions pour retourner le solde theorique que le caissier devrait trouver dans son tiroir-caisse a l'ouverture.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Calcul solde ouverture WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Application cliente (via Web Service) ou systeme de caisse |
+| **Quoi** | Calcul du solde d'ouverture attendu |
+| **Pourquoi** | Valider que le solde physique correspond au solde theorique a l'ouverture |
+| **Declencheur** | Appel Web Service lors de la procedure d'ouverture de caisse |
+| **Resultat** | Retour du solde d'ouverture par moyen de reglement et devise |
 
 ### 1.2 Regles metier
 

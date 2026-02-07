@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print ticket vente LEX** est le **generateur de tickets de caisse format LEX** qui **produit l'impression du ticket de vente dans un format etendu specifique aux besoins Club Med**.
+
+**Objectif metier** : Generer et imprimer le ticket de caisse dans le format LEX (format enrichi specifique). Ce programme, plus complexe que le format standard (38 taches, 1507 lignes), inclut des informations supplementaires comme les donnees d'hebergement, les budgets, les poids (pv_weight), et d'autres donnees specifiques au contexte Club Med. Il accede a 23 tables pour composer un ticket complet repondant aux exigences particulieres de reporting et de tracabilite.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** |  Print ticket vente LEX |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme d'impression (appel automatique selon contexte LEX) |
+| **Quoi** | Generation et impression du ticket de vente format LEX enrichi |
+| **Pourquoi** | Produire un ticket detaille incluant informations hebergement, budget et donnees specifiques |
+| **Declencheur** | Appel depuis le dispatcher d'impression (IDE 233) pour contexte LEX |
+| **Resultat** | Ticket de caisse format LEX imprime ou genere en PDF |
 
 ### 1.2 Regles metier
 

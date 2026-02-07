@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Raz Current Printer** est un **utilitaire de reinitialisation** qui **remet a zero la variable de l'imprimante courante**.
+
+**Objectif metier** : Reinitialiser le pointeur vers l'imprimante selectionnee pour forcer une nouvelle selection lors de la prochaine impression. Utilise dans le contexte des impressions chainees ou lors d'un changement de contexte d'impression.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Raz Current Printer |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appele automatiquement par d'autres programmes) |
+| **Quoi** | Reinitialisation (RAZ) de la variable globale contenant l'imprimante courante |
+| **Pourquoi** | Permettre une nouvelle selection d'imprimante lors du prochain job d'impression |
+| **Declencheur** | Appel depuis un programme parent avant une nouvelle serie d'impressions |
+| **Resultat** | Variable imprimante courante remise a zero |
 
 ### 1.2 Regles metier
 

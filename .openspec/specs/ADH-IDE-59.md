@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Facture - chargement boutique** est le **module de chargement des donnees boutique pour la facturation** qui permet de **preparer les rayons boutique associes a un compte pour la generation de facture**.
+
+**Objectif metier** : Charger les donnees des rayons boutique associes a un compte adherent en vue de la facturation. Le programme lit les informations de mise a jour applicative TPE et alimente la table des rayons boutique avec les elements necessaires a la facturation des achats en boutique.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Facture - chargement boutique |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme (appel automatique depuis processus de facturation) |
+| **Quoi** | Chargement des rayons boutique pour un compte donne |
+| **Pourquoi** | Preparer les donnees boutique necessaires a la facturation |
+| **Declencheur** | Appel parametrise avec Societe et NumeroCompte |
+| **Resultat** | Table Rayons_Boutique alimentee avec les donnees du compte |
 
 ### 1.2 Regles metier
 

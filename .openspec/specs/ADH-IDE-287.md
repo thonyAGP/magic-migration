@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Solde Easy Check Out** est le **programme de solde de compte pour le depart rapide** qui **permet de solder le compte d'un adherent dans le cadre d'un Easy Check-Out**.
+
+**Objectif metier** : Gerer le solde complet du compte GM d'un adherent lors d'un depart rapide, incluant la cloture des depots de garantie, le traitement des lignes comptables, la liberation des services telephoniques, la mise a jour des compteurs et l'envoi des notifications. Ce programme est le complement fonctionnel du Easy Check-Out V2.00.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Solde Easy Check Out |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur accueil ou reception |
+| **Quoi** | Solde complet du compte pour depart rapide |
+| **Pourquoi** | Assurer la cloture financiere complete lors d'un Easy Check-Out |
+| **Declencheur** | Appel depuis le programme Easy Check-Out ou directement |
+| **Resultat** | Compte solde, garanties restituees, services clos, notifications envoyees |
 
 ### 1.2 Regles metier
 

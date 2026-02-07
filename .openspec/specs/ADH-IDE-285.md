@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print ticket vente LEX** est le **programme d'impression de ticket de vente format LEX** qui **permet de generer et imprimer un ticket de vente selon le format LEX (Lexmark ou format etendu)**.
+
+**Objectif metier** : Fournir la fonctionnalite d'impression de ticket de vente au format LEX, rassemblant les informations de vente (articles, adherent, hebergement, budget, statistiques) pour produire un ticket detaille conforme aux exigences du point de vente.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** |  Print ticket vente LEX |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse ou point de vente |
+| **Quoi** | Generation et impression de ticket de vente format LEX |
+| **Pourquoi** | Fournir un justificatif de vente detaille au client |
+| **Declencheur** | Validation d'une vente necessitant l'impression d'un ticket |
+| **Resultat** | Ticket de vente imprime au format LEX avec tous les details |
 
 ### 1.2 Regles metier
 

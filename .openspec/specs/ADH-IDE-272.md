@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom modes de paiement** est le **selecteur avance des modes de paiement avec jointures moyens** qui **permet a l'operateur de consulter et selectionner un mode de paiement avec ses informations detaillees**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) enrichie pour afficher les modes de paiement avec leurs moyens de paiement associes (tables moyens_reglement et moyen_paiement en jointure), permettant une selection contextuelle avec toutes les informations necessaires a la transaction.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom modes de paiement |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse, comptable ou gestionnaire |
+| **Quoi** | Fenetre de selection avancee des modes de paiement |
+| **Pourquoi** | Offrir une vue complete des modes et moyens de paiement pour les operations complexes |
+| **Declencheur** | Clic sur zoom depuis un champ mode de paiement necessitant les informations moyens |
+| **Resultat** | Retour du mode de paiement et informations moyens au programme appelant |
 
 ### 1.2 Regles metier
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom devise** est le **selecteur generique des devises** qui **permet a l'operateur de consulter et selectionner une devise parmi la liste des devises disponibles**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher toutes les devises configurees dans le systeme (EUR, USD, GBP, CHF, etc.) et permettre leur selection lors de diverses operations financieres ou de configuration.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom devise |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse, comptable ou gestionnaire |
+| **Quoi** | Fenetre de selection des devises disponibles |
+| **Pourquoi** | Standardiser la selection des devises dans les operations financieres |
+| **Declencheur** | Clic sur zoom depuis un champ devise |
+| **Resultat** | Retour du code devise selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

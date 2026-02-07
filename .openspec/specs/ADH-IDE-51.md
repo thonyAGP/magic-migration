@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Recherche Droit Solde Free Ext** est un **module de verification des droits et soldes** qui **recherche les droits de consommation gratuite (Free) pour les extensions de sejour**.
+
+**Objectif metier** : Determiner si un client dispose de droits a des prestations gratuites dans le cadre d'une extension de son sejour. Le programme consulte la table `pv_stock_movements` (mouvements de stock point de vente) pour verifier les soldes de droits Free attribues. Ces droits peuvent concerner des boissons, repas ou activites inclus dans certaines formules.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Recherche Droit Solde Free Ext |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme de gestion des sejours ou caissier point de vente |
+| **Quoi** | Rechercher les droits de consommation gratuite pour une extension de sejour |
+| **Pourquoi** | Verifier si le client a encore des prestations gratuites disponibles |
+| **Declencheur** | Demande d'extension de sejour ou consommation au point de vente |
+| **Resultat** | Solde des droits Free disponibles pour l'extension |
 
 ### 1.2 Regles metier
 

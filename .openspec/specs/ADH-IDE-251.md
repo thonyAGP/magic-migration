@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Creation pied Ticket** est le **generateur de pied de ticket** qui **cree la partie inferieure du ticket de caisse contenant les informations TPE et les signatures**.
+
+**Objectif metier** : Generer le contenu du pied de ticket (footer) incluant les informations de paiement par carte bancaire (TPE), les logs de mise a jour TPE, et eventuellement les zones de signature. Ce programme (50 lignes de logique) ecrit dans la table log_maj_tpe pour tracer les operations de terminal de paiement associees au ticket.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Creation pied Ticket |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme d'impression (appel automatique lors impression ticket) |
+| **Quoi** | Generation du pied de ticket avec infos TPE |
+| **Pourquoi** | Completer le ticket avec les informations de paiement electronique |
+| **Declencheur** | Appel depuis les programmes d'impression de ticket |
+| **Resultat** | Pied de ticket genere, log TPE enregistre |
 
 ### 1.2 Regles metier
 

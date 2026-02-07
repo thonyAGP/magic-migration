@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Print solde compte** est un **generateur d'edition comptable** qui **imprime l'etat des soldes de comptes des adherents**.
+
+**Objectif metier** : Produire un document d'impression detaille des soldes comptables des adherents. Ce programme est le plus complet du module d'impression ADH, croisant les donnees de 10 tables pour etablir une situation comptable complete : identification adherent (gm-recherche, gm-complet), hebergement, ecritures comptables, lignes de solde, moyens de paiement. Le programme utilise une table temporaire (tempo_comptage_nation) pour les calculs intermediaires et le cumul des soldes.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Print solde compte |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur comptable, responsable administratif |
+| **Quoi** | Impression d'un etat detaille des soldes de comptes adherents |
+| **Pourquoi** | Suivi comptable, controle des creances/dettes, relance clients |
+| **Declencheur** | Demande d'edition depuis le menu comptable ou en fin de periode |
+| **Resultat** | Document imprime avec solde par adherent, detail des ecritures et moyens de paiement |
 
 ### 1.2 Regles metier
 

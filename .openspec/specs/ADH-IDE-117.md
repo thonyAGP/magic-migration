@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Historique session** est le **programme de consultation de l'historique des sessions de caisse** qui **affiche le detail des operations effectuees lors des sessions precedentes**.
+
+**Objectif metier** : Permettre aux operateurs et responsables de consulter l'historique complet des sessions de caisse (ouverture, cloture, montants, operations). Ce programme offre une vue detaillee des transactions passees pour le controle de gestion, l'audit financier et la resolution des litiges, avec conversion des montants selon les devises parametrees.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Historique session |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Responsable caisse, controleur de gestion, auditeur |
+| **Quoi** | Consultation de l'historique des sessions et operations de caisse |
+| **Pourquoi** | Controle de gestion, audit et tracabilite des operations financieres |
+| **Declencheur** | Demande de consultation via menu ou recherche specifique |
+| **Resultat** | Affichage des sessions avec detail des operations et montants par devise |
 
 ### 1.2 Regles metier
 

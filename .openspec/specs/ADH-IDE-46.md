@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Controle Login Informaticien** est le **service de controle d'acces** qui **verifie si l'utilisateur connecte possede le role INFORMATICIEN pour autoriser l'acces a des fonctionnalites sensibles**.
+
+**Objectif metier** : Proteger les fonctionnalites d'administration et de parametrage technique en verifiant que seuls les utilisateurs avec le role "INFORMATICIEN" peuvent y acceder. Affiche un message "Non autorise" si l'acces est refuse.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Affichage Version |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Tout utilisateur tentant d'acceder a une fonction protegee |
+| **Quoi** | Verification du role INFORMATICIEN |
+| **Pourquoi** | Securiser l'acces aux fonctionnalites d'administration |
+| **Declencheur** | Appel avant l'acces a une fonction technique sensible |
+| **Resultat** | Booleen Acces OK (TRUE si autorise, FALSE sinon) + message si refuse |
 
 ### 1.2 Regles metier
 

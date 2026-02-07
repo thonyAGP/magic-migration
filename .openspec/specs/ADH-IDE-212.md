@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Detail appels autocom** est le **visualiseur de l'historique des communications telephoniques** qui **affiche le detail des appels telephoniques effectues via l'autocommutateur**.
+
+**Objectif metier** : Permettre la consultation du detail des appels telephoniques enregistres par le PABX pour un code d'acces donne. Ce programme affiche l'historique des communications (numeros appeles, duree, cout) pour la verification des facturations ou la resolution de litiges clients.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Detail appels autocom |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur reception ou responsable facturation |
+| **Quoi** | Consultation du detail des appels telephoniques par code d'acces |
+| **Pourquoi** | Verifier les communications facturees et resoudre les contestations clients |
+| **Declencheur** | Demande client, verification facture, ou audit telephonie |
+| **Resultat** | Affichage de la liste detaillee des appels avec numeros, durees et couts |
 
 ### 1.2 Regles metier
 

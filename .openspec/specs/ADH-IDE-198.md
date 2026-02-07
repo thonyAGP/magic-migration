@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Edit Carte Blanche** est le **programme d'edition** qui **genere et imprime les cartes blanches des adherents heberges**.
+
+**Objectif metier** : Produire une carte blanche (document d'identification temporaire) pour un adherent dans le cadre de son hebergement. Cette carte permet l'identification de l'adherent sur site et l'acces aux services associes a son sejour.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | edit carte blanche |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur accueil/reception |
+| **Quoi** | Edition de carte blanche adherent |
+| **Pourquoi** | Fournir un document d'identification temporaire pour l'hebergement |
+| **Declencheur** | Demande de carte lors du check-in ou renouvellement |
+| **Resultat** | Carte blanche imprimee avec donnees adherent et hebergement |
 
 ### 1.2 Regles metier
 

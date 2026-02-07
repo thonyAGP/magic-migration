@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Get Matricule** est le **recuperateur de matricule employe** qui **retourne le matricule associe a un mouvement de stock ou une operation**.
+
+**Objectif metier** : Identifier l'employe responsable d'une operation en retrouvant son matricule a partir des donnees de mouvements de stock. Ce programme est utilise pour la tracabilite des operations et l'audit des actions effectuees.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Get Matricule |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme de tracabilite ou audit |
+| **Quoi** | Recuperation du matricule employe lie a une operation |
+| **Pourquoi** | Assurer la tracabilite et l'imputabilite des operations |
+| **Declencheur** | Consultation d'historique ou audit d'operation |
+| **Resultat** | Matricule employe retourne pour l'operation concernee |
 
 ### 1.2 Regles metier
 

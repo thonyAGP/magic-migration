@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Zoom modes de paiement** est le **selecteur generique des modes de paiement** qui **permet a l'operateur de consulter et selectionner un moyen de reglement parmi la liste disponible**.
+
+**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher tous les modes de paiement actifs (especes, cheque, carte bancaire, virement, etc.) et permettre a l'utilisateur d'en choisir un pour completer une operation de caisse ou de facturation.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Zoom modes de paiement |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur caisse, comptable ou gestionnaire |
+| **Quoi** | Fenetre de selection des modes de paiement disponibles |
+| **Pourquoi** | Permettre le choix standardise d'un moyen de reglement lors des encaissements |
+| **Declencheur** | Clic sur zoom depuis un champ mode de paiement |
+| **Resultat** | Retour du code mode de paiement selectionne au programme appelant |
 
 ### 1.2 Regles metier
 

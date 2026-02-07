@@ -22,7 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Program_2** assure la gestion complete de ce processus.
+### 1.1 Objectif metier
+
+**Program_2** est un **programme placeholder/reserve** qui **ne contient aucune logique metier active**.
+
+**Objectif metier** : Ce programme est un emplacement vide reserve dans la structure du projet ADH. Il n'est appele par aucun autre programme (orphelin) et ne contient aucune table, expression ou traitement. Il pourrait avoir ete utilise historiquement ou reserve pour un usage futur qui n'a jamais ete implemente.
 
 Le flux de traitement s'organise en **1 blocs fonctionnels** :
 

@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Visualisation Pooling** est le **programme d'affichage des ressources mutualisees** qui **presente l'etat des comptes de changement d'activite**.
+
+**Objectif metier** : Afficher a l'utilisateur l'etat actuel du pooling (ressources mutualisees) en consultant la table des comptes de changement d'activite. Cette visualisation permet a l'operateur de voir quels comptes sont en cours de transfert ou de changement, et de verifier la coherence des affectations avant validation. C'est l'interface de consultation associee au programme de verification (IDE 205).
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Visualisation pooling |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Operateur gestion |
+| **Quoi** | Consultation de l'etat des ressources partagees |
+| **Pourquoi** | Permettre le suivi visuel des changements d'activite en cours |
+| **Declencheur** | Demande de consultation par l'operateur |
+| **Resultat** | Affichage de la liste des comptes en changement d'activite |
 
 ### 1.2 Regles metier
 

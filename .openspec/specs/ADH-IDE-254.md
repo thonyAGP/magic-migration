@@ -21,7 +21,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Solde Resort Credit** assure la gestion complete de ce processus, accessible depuis [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md).
+**Solde Resort Credit** est le **calculateur de solde de credit resort** qui **recupere et calcule le solde de Resort Credit disponible pour un client sur un service donne**.
+
+**Objectif metier** : Interroger le solde de Resort Credit (credit pre-paye utilisable dans le village) a partir du numero de societe, compte client, filiation et code service. Ce programme compact (18 lignes de logique) est appele lors des transactions de vente pour determiner si le client peut utiliser son Resort Credit comme moyen de paiement. La regle metier principale calcule le solde disponible : si le credit est superieur aux depenses, retourne la difference, sinon retourne 0.
+
+Ce programme est accessible depuis [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md).
 
 Le flux de traitement s'organise en **1 blocs fonctionnels** :
 

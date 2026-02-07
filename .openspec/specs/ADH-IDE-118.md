@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Sessions ouvertes WS** est le **service web de consultation des sessions de caisse actives** qui **expose la liste des sessions en cours pour les applications tierces**.
+
+**Objectif metier** : Fournir un Web Service (WS) permettant aux applications externes (tableaux de bord, applications mobiles, systemes de supervision) de consulter en temps reel la liste des sessions de caisse actuellement ouvertes dans le village. Ce service facilite le monitoring a distance et l'integration avec d'autres systemes du groupe.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Sessions ouvertes WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Applications tierces, systemes de supervision, tableaux de bord |
+| **Quoi** | Exposition Web Service des sessions de caisse ouvertes |
+| **Pourquoi** | Permettre le monitoring temps reel et l'integration inter-applications |
+| **Declencheur** | Appel API/Web Service depuis application externe |
+| **Resultat** | Liste des sessions actives au format exploitable (XML/JSON) |
 
 ### 1.2 Regles metier
 

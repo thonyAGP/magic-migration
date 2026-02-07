@@ -22,7 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Program_26** assure la gestion complete de ce processus.
+### 1.1 Objectif metier
+
+**Program_26** est un **programme placeholder/reserve** qui **ne contient aucune logique metier active**.
+
+**Objectif metier** : Ce programme est un emplacement vide reserve dans la structure du projet ADH, situe dans le dossier "General". Il n'est appele par aucun autre programme (orphelin) et ne contient aucune table, expression ou traitement. Comme Program_2, il pourrait avoir ete utilise historiquement pour des tests ou reserve pour un usage futur jamais implemente. Ce type de programme "vide" est courant dans les applications Magic pour conserver la numerotation des IDE.
 
 Le flux de traitement s'organise en **1 blocs fonctionnels** :
 

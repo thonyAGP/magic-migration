@@ -13,13 +13,17 @@
 
 ### 1.1 Objectif metier
 
+**Initialisation Easy Arrival** est un **module de preparation des arrivees simplifiees** qui **initialise les donnees necessaires au processus d'accueil rapide des clients**.
+
+**Objectif metier** : Preparer l'environnement pour le check-in accelere (Easy Arrival) en lisant les evenements temporaires programes. Ce processus permet de pre-charger les informations des clients attendus afin d'accelerer leur enregistrement a l'arrivee au village. La table `evenement_temp` contient les reservations et evenements planifies.
+
 | Element | Description |
 |---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** |   Initialistaion Easy Arrival |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
+| **Qui** | Systeme automatique ou receptionniste preparant les arrivees |
+| **Quoi** | Initialiser les donnees pour le processus Easy Arrival (check-in rapide) |
+| **Pourquoi** | Accelerer l'accueil des clients en pre-chargeant leurs informations |
+| **Declencheur** | Lancement quotidien avant ouverture reception ou a la demande |
+| **Resultat** | Donnees d'arrivees preparees, pret pour check-in accelere |
 
 ### 1.2 Regles metier
 
