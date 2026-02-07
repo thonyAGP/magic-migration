@@ -1,6 +1,6 @@
 ﻿# ADH IDE 70 - Print extrait compte /Nom
 
-> **Analyse**: Phases 1-4 2026-02-07 16:28 -> 16:29 (7s) | Assemblage 16:29
+> **Analyse**: Phases 1-4 2026-02-07 17:36 -> 17:36 (6s) | Assemblage 17:36
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 70 assure l'édition imprimée d'un extrait de compte client en générant un document formaté avec en-têtes, détails et pied de page. Le programme orchestre l'ensemble du processus d'impression : récupération des informations du membre (nom, devise locale), configuration de l'imprimante, et composition progressive du document sur plusieurs tâches.
+Le programme **ADH IDE 70** prépare et imprime l'extrait de compte d'un adhérent, en passant par une séquence d'initialisation de l'imprimante et de récupération des données critiques. Il commence par afficher un message "Veuillez patienter..." pour indiquer à l'utilisateur que le traitement est en cours, puis récupère le nom de l'adhérent à partir des tables de référence. Une fois les données compilées, il initialise le périphérique d'impression (IDE 179) et configure le numéro de listing courant (IDE 181).
 
-Le flux démarre par l'affichage d'une tâche d'attente utilisateur, suivie de la récupération du nom de l'adhérent et de la configuration matérielle (sélection imprimante via IDE 179, numérotation listage via IDE 181). Les tâches centrales génèrent le corps du document (extrait compte) puis le pied de page (via IDE 75), en appliquant les règles de formatage spécifiques à la devise locale.
+L'édition de l'extrait compte constitue le cœur du programme : il formate et imprime l'ensemble des mouvements du compte (débits/crédits) avec les soldes progressifs, en utilisant la devise locale obtenue via IDE 21. Cette phase se termine par l'édition du pied de facture (IDE 75), qui ajoute les informations résumées (totaux, soldes finaux) au bas du document. Chaque étape d'impression met à jour la table **log_maj_tpe** pour tracer l'action dans les logs du système.
 
-La finalisation inclut un recap synthétique (free extrait), la réinitialisation de l'imprimante (IDE 182) et l'enregistrement de la trace dans la table `log_maj_tpe`. Ce programme garantit une sortie papier cohérente et traçable, intégrant les préférences d'impression et les paramètres client.
+L'édition récapitulative "Free Etra" (probablement un récapitulatif libre) conclut le processus avant de nettoyer l'imprimante via IDE 182 (RAZ Current Printer). Ce programme est appelé depuis IDE 69 (Extrait de compte), formant un duo imprimante/affichage où IDE 69 gère l'écran de consultation et IDE 70 génère le document papier associé.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -625,4 +625,4 @@ graph LR
 | [Get Printer (IDE 179)](ADH-IDE-179.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 16:29*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 17:36*
