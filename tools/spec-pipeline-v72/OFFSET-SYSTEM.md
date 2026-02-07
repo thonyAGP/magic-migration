@@ -37,30 +37,32 @@ Ou :
 
 ## Main Offsets par Projet
 
-| Projet | Main_Offset | Source |
-|--------|-------------|--------|
-| ADH | 143 | Calcule depuis Prg_1.xml |
-| VIL | 131 | Calcule depuis Prg_1.xml |
-| PVE | 174 | Calcule depuis Prg_1.xml |
-| REF | 107 | Calcule depuis Prg_1.xml |
+| Projet | Main_Offset | Premiere Lettre | Source |
+|--------|-------------|-----------------|--------|
+| ADH | 117 | EN | IndexCache.cs / Magic IDE |
+| VIL | 52 | CA | IndexCache.cs |
+| PVE | 143 | FN | IndexCache.cs |
+| REF | 107 | EF | IndexCache.cs |
+| PBP | 88 | DK | IndexCache.cs |
+| PBG | 91 | DN | IndexCache.cs |
 
 ## Exemple Concret : ADH IDE 70
 
 IDE 70 est appele depuis IDE 69. Pour calculer les lettres globales :
 
 ```
-Main_Offset (ADH) = 143
-+ Variables IDE 69 = X (a calculer)
-= Offset pour IDE 70
-
-1ere variable IDE 70 = IndexToVariable(Offset)
+Main_Offset (ADH) = 117
+1ere variable IDE 70 = IndexToVariable(117) = EN
 ```
 
-Si Offset = 143, alors :
-- Index 143 = FN (143 / 26 = 5 = F, 143 % 26 = 13 = N)
-- Index 144 = FO
-- Index 145 = FP
+Verification avec Magic IDE :
+- Index 117 = EN (117 / 26 = 4 = E, 117 % 26 = 13 = N)
+- Index 118 = EO (P0 code adherent)
+- Index 119 = EP (P0 filiation)
+- Index 120 = EQ (P0 masque montant)
 - etc.
+
+**Note**: L'offset 117 correspond aux variables VG (EA-EK) plus le header du programme.
 
 ## Composants Implementes
 
@@ -173,7 +175,8 @@ foreach ($var in $variables) {
 [InlineData(25, "Z")]
 [InlineData(26, "BA")]   // Apres Z vient BA, pas AA!
 [InlineData(52, "CA")]
-[InlineData(143, "FN")]  // ADH main_offset
+[InlineData(117, "EN")]  // ADH main_offset - premiere variable locale
+[InlineData(143, "FN")]  // PVE main_offset
 ```
 
 ## Historique

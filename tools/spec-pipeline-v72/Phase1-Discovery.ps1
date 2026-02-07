@@ -28,13 +28,14 @@ if (-not (Test-Path $OutputPath)) {
 # V7.2: Main offsets per project (number of variables in Main Prg_1)
 # These offsets determine the starting letter for called programs
 # See OFFSET-SYSTEM.md for documentation
+# Values verified against IndexCache.cs in MagicMcp
 $MainOffsets = @{
-    "ADH" = 143
-    "VIL" = 131
-    "PVE" = 174
-    "REF" = 107
-    "PBP" = 88
-    "PBG" = 91
+    "ADH" = 117   # First local var = EN
+    "VIL" = 52    # First local var = CA
+    "PVE" = 143   # First local var = FN
+    "REF" = 107   # First local var = EF
+    "PBP" = 88    # First local var = DK
+    "PBG" = 91    # First local var = DN
 }
 
 Write-Host "=== Phase 1: DISCOVERY (V7.2) ===" -ForegroundColor Cyan
