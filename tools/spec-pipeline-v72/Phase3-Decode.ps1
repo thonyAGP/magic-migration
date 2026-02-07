@@ -113,7 +113,26 @@ function Decode-Expression {
 function Get-ExpressionType {
     param([string]$Expression)
 
+    # IF/CASE are conditions
     if ($Expression -match '^IF\s*\(' -or $Expression -match 'CASE\s*\(') {
+        return "CONDITION"
+    }
+    # Comparison operators are conditions (=, <>, >, <, >=, <=)
+    # But not simple assignments like "='value'" - need comparison context
+    if ($Expression -match '\s*(=|<>|>=|<=|>|<)\s*\d+' -or
+        $Expression -match '\s*(=|<>|>=|<=|>|<)\s*''') {
+        return "CONDITION"
+    }
+    # Boolean operators are conditions
+    if ($Expression -match '\sAND\s|\sOR\s|^NOT\s|\sNOT\s') {
+        return "CONDITION"
+    }
+    # GetParam with comparison is a condition
+    if ($Expression -match 'GetParam\s*\([^)]+\)\s*(=|<>|>=|<=|>|<)') {
+        return "CONDITION"
+    }
+    # IsComponent, IsNull, IsEmpty checks are conditions
+    if ($Expression -match '^(IsComponent|IsNull|IsEmpty)\s*\(') {
         return "CONDITION"
     }
     if ($Expression -match 'Date\s*\(' -or $Expression -match 'DStr\s*\(' -or $Expression -match 'DVal\s*\(') {
@@ -131,9 +150,9 @@ function Get-ExpressionType {
     return "OTHER"
 }
 
-# Function: Extract business rule from IF expression
+# Function: Extract business rule from expression (IF, comparisons, boolean)
 function Extract-BusinessRule {
-    param([string]$DecodedExpr)
+    param([string]$DecodedExpr, [string]$RawExpr = "")
 
     $rule = @{
         has_rule = $false
@@ -157,6 +176,47 @@ function Extract-BusinessRule {
         # Generate natural language description
         $cond = $rule.condition -replace "Var_(\w+)\(([^)]+)\)", '$2' -replace "Var_(\w+)", "Variable $1"
         $rule.natural_language = "Si $cond alors $($rule.true_value) sinon $($rule.false_value)"
+    }
+    # Match GetParam comparisons: GetParam('X')=N
+    elseif ($DecodedExpr -match "GetParam\s*\('([^']+)'\)\s*(=|<>|>=|<=|>|<)\s*(\d+|'[^']*')") {
+        $paramName = $Matches[1]
+        $operator = $Matches[2]
+        $value = $Matches[3]
+        $rule.has_rule = $true
+        $rule.type = "CONFIGURATION"
+        $rule.condition = $DecodedExpr
+        $rule.true_value = "Action si $paramName $operator $value"
+        $opText = switch ($operator) { "=" { "egale" } "<>" { "different de" } ">" { "superieur a" } "<" { "inferieur a" } default { $operator } }
+        $rule.natural_language = "Condition: parametre $paramName $opText $value"
+    }
+    # Match simple comparisons: Variable [X] = 'value' or Variable [X] = N
+    elseif ($DecodedExpr -match "(.+?)\s*(=|<>|>=|<=|>|<)\s*('([^']*)'|(\d+))$") {
+        $leftSide = $Matches[1].Trim()
+        $operator = $Matches[2]
+        $value = if ($Matches[4]) { "'$($Matches[4])'" } else { $Matches[5] }
+        $rule.has_rule = $true
+        $rule.type = "COMPARAISON"
+        $rule.condition = $DecodedExpr
+        $rule.true_value = "Action si vrai"
+        $opText = switch ($operator) { "=" { "egale" } "<>" { "different de" } ">" { "superieur a" } "<" { "inferieur a" } default { $operator } }
+        $rule.natural_language = "Condition: $leftSide $opText $value"
+    }
+    # Match boolean operators: X AND Y, X OR Y, NOT X
+    elseif ($DecodedExpr -match '\sAND\s|\sOR\s|^NOT\s') {
+        $rule.has_rule = $true
+        $rule.type = "LOGIQUE"
+        $rule.condition = $DecodedExpr
+        $rule.true_value = "Action si vrai"
+        $rule.natural_language = "Condition composite: $DecodedExpr"
+    }
+    # Match IsComponent/IsNull/IsEmpty
+    elseif ($DecodedExpr -match '^(IsComponent|IsNull|IsEmpty)\s*\(') {
+        $funcName = $Matches[1]
+        $rule.has_rule = $true
+        $rule.type = "VERIFICATION"
+        $rule.condition = $DecodedExpr
+        $rule.true_value = "Action si vrai"
+        $rule.natural_language = "Verification: $funcName"
     }
 
     return $rule
