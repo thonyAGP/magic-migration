@@ -21,16 +21,80 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Fermeture caisse** assure la gestion complete de ce processus, accessible depuis [Gestion caisse (IDE 121)](ADH-IDE-121.md), [Gestion caisse 142 (IDE 298)](ADH-IDE-298.md).
+### 2.1 Objectif metier
 
-Le flux de traitement s'organise en **4 blocs fonctionnels** :
+**Fermeture caisse** cloture une session de caisse en comparant les montants COMPTES physiquement par le caissier aux montants CALCULES theoriquement par le systeme. Le processus:
 
-- **Traitement** (19 taches) : traitements metier divers
-- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
-- **Validation** (1 tache) : controles et verifications de coherence
-- **Initialisation** (1 tache) : reinitialisation d'etats et de variables de travail
+1. **Affiche un tableau recapitulatif** avec 6 colonnes de moyens de paiement (Cash, Cartes, Cheques, Produits, OD, Devises)
+2. **Compare 4 lignes de valeurs** pour chaque moyen:
+   - Solde ouverture (montant initial)
+   - Montant compte (saisi par le caissier)
+   - Montant calcule (theorique systeme)
+   - Ecart (difference compte - calcule)
+3. **Detecte les ecarts** et oblige le caissier a les justifier via commentaire
+4. **Calcule le solde final** = Montant compte - Versement au coffre
+5. **Genere les tickets de fermeture** (fermeture session, remises/appros, tableau recap)
+6. **Met a jour l'historique** dans les tables pointage_*
 
-**Donnees modifiees** : 3 tables en ecriture (pointage_appro_remise, pointage_article, pointage_devise).
+### 2.2 Flux utilisateur principal
+
+```
+DEBUT
+  |
+  v
+[Affichage ecran principal 131.1]
+  - Tableau 6 colonnes x 4 lignes
+  - Boutons: Saisie, Apport coffre, Apport articles, Remise, Ecart, Valider
+  |
+  v
+[Caissier saisit les montants comptes]
+  -> Appelle IDE 120 (Saisie contenu caisse)
+  |
+  v
+[Systeme calcule ecarts]
+  Ecart = Montant_compte - Montant_calcule
+  |
+  +-- Si Ecart <> 0 --> [Justification obligatoire]
+  |                      -> Appelle IDE 130 (Ecart fermeture caisse)
+  |                      -> Saisie commentaire ecart
+  v
+[Caissier effectue versement au coffre]
+  -> Appelle IDE 123 (Apport coffre)
+  -> Appelle IDE 125 (Remise en caisse)
+  |
+  v
+[Validation fermeture - IDE 155]
+  - Controle: tous les moyens ont ete pointes
+  - Controle: ecarts justifies si existants
+  |
+  v
+[Generation tickets]
+  -> IDE 138 (Ticket fermeture session)
+  -> IDE 136 (Generation ticket WS) pour remises/appros
+  -> IDE 154 (Tableau recap fermeture)
+  |
+  v
+[Mise a jour tables historique]
+  -> IDE 134 (MAJ detail session WS)
+  -> pointage_devise, pointage_article, pointage_appro_remise
+  |
+  v
+FIN
+```
+
+### 2.3 Acces au programme
+
+Appele depuis:
+- [Gestion caisse (IDE 121)](ADH-IDE-121.md) - Mode standard
+- [Gestion caisse 142 (IDE 298)](ADH-IDE-298.md) - Mode 142
+
+### 2.4 Donnees modifiees
+
+| Table | Role | Operations |
+|-------|------|------------|
+| pointage_devise | Enregistre les comptages par devise | WRITE - Maj montants et ecarts |
+| pointage_article | Enregistre les comptages produits | WRITE - Maj stocks produits |
+| pointage_appro_remise | Enregistre les mouvements coffre | WRITE - Flag edition ticket |
 
 <details>
 <summary>Detail : phases du traitement</summary>
@@ -282,7 +346,62 @@ Calculs metier : montants, stocks, compteurs.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+### 5.1 Formules de calcul principales
+
+| Formule | Calcul | Variables IDE |
+|---------|--------|---------------|
+| **Ecart** | Montant_compte - Montant_calcule | BP = BB - BI |
+| **Solde final** | Montant_compte - Versement | CI = BB - BY |
+| **Solde final monnaie** | Compte_monnaie - Versement_monnaie | CJ = BC - BZ |
+| **Solde final produits** | Compte_produits - Versement_produits | CK = BD - CA |
+| **Solde final cartes** | Compte_cartes - Versement_cartes | CL = BE - CB |
+| **Solde final cheques** | Compte_cheques - Versement_cheques | CM = BF - CC |
+| **Solde final OD** | Compte_od - Versement_od | CN = BG - CD |
+
+### 5.2 Conditions de declenchement
+
+| Condition | Expression IDE 9 | Action declenchee |
+|-----------|------------------|-------------------|
+| **Edition ticket remise/appro** | `BF<>0 OR BG<>0 OR BB<>0 OR BC<>0 OR BE<>0 OR BH<>0 OR BD<>0` | Appel IDE 136 (Generation ticket WS) si au moins un montant compte est non nul |
+| **Mode UNI/BI** | Variable H (Param Uni/Bi) | Branchement vers tache 9 (UNI) ou tache 10 (BI) pour traitement devises |
+| **Session VIL ouverte** | NOT Q (Expression 12) | Bloque validation si sessions villages encore ouvertes |
+
+### 5.3 Regles de validation (IDE 155)
+
+| Regle | Description | Consequence si echec |
+|-------|-------------|---------------------|
+| **R1** | Tous les moyens de paiement doivent etre pointes | Bouton Valider desactive |
+| **R2** | Ecarts non nuls doivent avoir un commentaire | Blocage validation |
+| **R3** | Session VIL fermee obligatoire | Affichage message d'erreur |
+
+### 5.4 Logique de mise a jour tables
+
+**Tache 12 - Update devises (131.1.2.2.1)**:
+- Copie les valeurs comptees de `gestion_devise_session` vers `pointage_devise`
+- Colonnes: BA, BH, BO, BV, BX, CE, CH, CO, CP, CW
+
+**Tache 13 - Update produits (131.1.2.2.2)**:
+- Met a jour les quantites produits dans `pointage_article`
+- Formule: Montant_ecart_produits = Montant_compte_produits - Montant_calcule_produits (BR = BD - BK)
+
+### 5.5 Gestion multi-devises
+
+Le programme supporte 2 modes:
+- **Mode UNI** (taches 9, 16): Devise unique, traitement simplifie
+- **Mode BI** (taches 10, 17): Multi-devises, iteration sur toutes les devises actives via IDE 144/145
+
+Les devises sont traitees par:
+- IDE 144 (Devises finales F/F Nbre WS) - Calcul nombre devises
+- IDE 145 (Devises finales F/F Qte WS) - Calcul quantite devises
+- IDE 142 (Devise update session WS) - Mise a jour session
+
+### 5.6 Edition des tickets
+
+| Ticket | Programme | Condition |
+|--------|-----------|-----------|
+| Ticket fermeture session | IDE 138 | Toujours a la validation |
+| Ticket remises/appros | IDE 136 | Si montants <> 0 (Expression 9) |
+| Tableau recapitulatif | IDE 154 | Si demande utilisateur ou ecart |
 
 ## 6. CONTEXTE
 
@@ -2295,25 +2414,97 @@ flowchart TD
 | **131.3** | [**Validation** (131.1.1.2)](#t5) | MDI | - | Validation |
 | **131.4** | [**Maj devises comptees** (131.1.1.3)](#t6) | - | - | Calcul |
 
-### 9.4 Algorigramme
+### 9.4 Algorigramme Metier
 
 ```mermaid
 flowchart TD
-    START([START])
-    INIT[Init controles]
-    SAISIE[Fermeture caisse]
-    UPDATE[MAJ 3 tables]
-    ENDOK([END OK])
+    START([DEBUT Fermeture])
+    INIT[Tache 4: RAZ variables<br/>IDE 148]
+    AFFICHE[Ecran principal 131.1<br/>Tableau 6 colonnes]
 
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
+    ACTION{Action utilisateur?}
+
+    SAISIE[Saisie montants<br/>IDE 120]
+    APPORT_C[Apport coffre<br/>IDE 123]
+    APPORT_A[Apport articles<br/>IDE 124]
+    REMISE[Remise caisse<br/>IDE 125]
+
+    CALC[Calcul ecarts<br/>Ecart = Compte - Calcule]
+
+    ECART{Ecart <> 0?}
+    JUSTIF[Justification ecart<br/>IDE 130]
+
+    VALID{Validation?}
+    CTRL[Controle fermeture<br/>IDE 155]
+
+    CTRLOK{Controles OK?}
+
+    UNIBI{Mode UNI/BI?}
+    UNI[Taches 9,16: UNI<br/>Devise unique]
+    BI[Taches 10,17: BI<br/>Multi-devises<br/>IDE 144, 145, 142]
+
+    UPDATE[MAJ tables<br/>pointage_devise<br/>pointage_article<br/>pointage_appro_remise]
+
+    TICKET{Montants <> 0?}
+    EDIT_T[Generation tickets<br/>IDE 136, 138, 154]
+
+    MAJ[MAJ session<br/>IDE 134]
+
+    ENDOK([FIN OK])
+    ENDKO([FIN KO])
+
+    START --> INIT --> AFFICHE --> ACTION
+
+    ACTION -->|Saisie| SAISIE --> CALC
+    ACTION -->|Apport coffre| APPORT_C --> CALC
+    ACTION -->|Apport articles| APPORT_A --> CALC
+    ACTION -->|Remise| REMISE --> CALC
+    ACTION -->|Valider| VALID
+
+    CALC --> ECART
+    ECART -->|OUI| JUSTIF --> AFFICHE
+    ECART -->|NON| AFFICHE
+
+    VALID --> CTRL --> CTRLOK
+    CTRLOK -->|NON| ENDKO
+    CTRLOK -->|OUI| UNIBI
+
+    UNIBI -->|UNI| UNI --> UPDATE
+    UNIBI -->|BI| BI --> UPDATE
+
+    UPDATE --> TICKET
+    TICKET -->|OUI| EDIT_T --> MAJ
+    TICKET -->|NON| MAJ
+
+    MAJ --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#000
+    style ACTION fill:#58a6ff,color:#000
+    style ECART fill:#58a6ff,color:#000
+    style VALID fill:#58a6ff,color:#000
+    style CTRLOK fill:#58a6ff,color:#000
+    style UNIBI fill:#58a6ff,color:#000
+    style TICKET fill:#58a6ff,color:#000
+    style UPDATE fill:#ffeb3b,color:#000
+    style EDIT_T fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions | Jaune = Actions cles
+
+#### Resume du flux
+
+1. **Initialisation**: RAZ des variables de travail (IDE 148)
+2. **Ecran principal**: Affichage tableau recapitulatif 6 colonnes (Cash, Cartes, Cheques, Produits, OD, Devises)
+3. **Boucle saisie**: L'utilisateur peut saisir, apporter au coffre, remettre en caisse
+4. **Calcul ecarts**: Automatique apres chaque saisie
+5. **Justification**: Obligatoire si ecart <> 0
+6. **Validation**: Controles IDE 155 (tous moyens pointes, ecarts justifies, sessions VIL fermees)
+7. **Traitement devises**: UNI (devise unique) ou BI (multi-devises)
+8. **Mise a jour tables**: pointage_devise, pointage_article, pointage_appro_remise
+9. **Edition tickets**: Si montants non nuls
+10. **Cloture session**: MAJ historique via IDE 134
 
 <!-- TAB:Donnees -->
 

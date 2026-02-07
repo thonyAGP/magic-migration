@@ -21,15 +21,65 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Extrait de compte** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md).
+### 2.1 Objectif metier
 
-Le flux de traitement s'organise en **5 blocs fonctionnels** :
+**Extrait de compte** permet a l'operateur caisse de **consulter et imprimer l'historique des transactions** d'un adherent Club Med (compte GM). Le programme affiche la liste chronologique des debits/credits avec leurs details (date, heure, libelle, montant, Gift Pass) et propose **6 formats d'impression differents** selon le critere de tri souhaite.
 
-- **Calcul** (5 taches) : calculs de montants, stocks ou compteurs
-- **Traitement** (4 taches) : traitements metier divers
-- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
-- **Consultation** (1 tache) : ecrans de recherche, selection et consultation
-- **Impression** (1 tache) : generation de tickets et documents
+### 2.2 Contexte d'appel
+
+- **Appelant** : [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)
+- **Parametres d'entree** (12) :
+  - A : societe (Alpha)
+  - B : code_retour (Alpha)
+  - C : code_adherent (Numeric) - identifiant unique du GM
+  - D : filiation (Numeric) - lien familial
+  - E : masque_mtt (Alpha) - format affichage montants
+  - F : nom_village (Alpha)
+  - G : solde_compte (Numeric) - **RETOUR** : solde recalcule
+  - H : etat_compte (Alpha) - **RETOUR** : etat du compte
+  - I : date_solde (Date) - **RETOUR** : date du dernier calcul
+  - J : garanti_O/N (Alpha)
+  - K : P_FormatPDF (Logical) - mode PDF ou impression directe
+  - L : ViensDe (Alpha) - contexte d'appel
+
+### 2.3 Flux principal
+
+1. **Chargement** : Lecture du compte GM (table 47) + ecritures comptables (table 40)
+2. **Recalcul solde** : Somme des debits/credits depuis la table comptable
+3. **Affichage scroll** : Liste des operations avec tri par date decroissant
+4. **Actions utilisateur** : Boutons C/D/I/N/O/L/S pour choisir le format d'edition
+5. **Impression/Email** : Generation du document selon le format choisi
+
+### 2.4 Formats d'edition disponibles
+
+| Bouton | Code | Programme | Description |
+|--------|------|-----------|-------------|
+| **C** | 12 | [IDE 72](ADH-IDE-72.md) | Edition par **Cumule** |
+| **D** | 10 | [IDE 71](ADH-IDE-71.md) | Edition par **Date** |
+| **I** | 14 | [IDE 73](ADH-IDE-73.md) | Edition par **Imputation** |
+| **N** | 8 | [IDE 70](ADH-IDE-70.md) | Edition par **Nom** |
+| **O** | 16 | [IDE 74](ADH-IDE-74.md) | Edition par **Date/Imputation ordonnee** |
+| **L** | - | [IDE 226](ADH-IDE-226.md) | **Zoom Listing** (detail ligne) |
+| **S** | 16 | [IDE 76](ADH-IDE-76.md) | Edition par **Service** |
+
+### 2.5 Expressions cles
+
+| IDE | Expression | Signification |
+|-----|------------|---------------|
+| 4 | `{0,5}+{0,3}` | Solde = cumul debits + credits precedents |
+| 11 | `IF({0,16}>0,'x','')` | Marqueur si montant Gift Pass present |
+| 12 | `IF({0,13}='X',141,IF({0,13}='A',143,7))` | Couleur ligne selon etat (X=rouge, A=orange, autre=noir) |
+| 51 | `{0,65} OR ({0,24} AND NOT ISNULL({0,25}) AND isVenteODSignature()) OR ({32768,86} AND Exist_recu_detail())` | Condition affichage bouton detail recu |
+
+### 2.6 Variables importantes
+
+| Lettre | Nom | Role |
+|--------|-----|------|
+| E (tache 5) | W1 Choix_action | Stocke le choix utilisateur (C/D/I/N/O/L/S) |
+| L (tache 5) | W1 Impr Recap Free Extra | Flag impression recapitulatif Gift Pass |
+| M (tache 0) | W0 Presence Recap Free Extra | Indique si des Gift Pass existent sur le compte |
+| N (tache 0) | W0 Print Recap Free Extra | Demande d'impression du recap Gift Pass |
+| O (tache 0) | W0 Mail Existe | Indique si l'adherent a une adresse email |
 
 **Donnees modifiees** : 4 tables en ecriture (comptable________cte, compte_gm________cgm, pms_print_param_default, log_booker).
 
@@ -215,7 +265,72 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+### 5.1 Calcul du solde
+
+Le solde du compte GM est recalcule a chaque ouverture du programme :
+
+```
+Solde = SUM(cte_montant)
+WHERE cte_societe = societe
+  AND cte_code_adherent = code_adherent
+  AND (cte_debit + cte_credit) <> 0
+```
+
+**Formule expression 4** : `solde_cumule = solde_precedent + montant_operation`
+
+### 5.2 Filtrage des ecritures
+
+Les ecritures affichees doivent satisfaire la condition SQL :
+```sql
+WHERE (cte_debit + cte_credit) <> 0
+```
+
+Cela exclut les ecritures a zero (annulations, corrections).
+
+### 5.3 Codification couleur des lignes
+
+| Etat ligne (col 13) | Couleur | Code couleur |
+|---------------------|---------|--------------|
+| `X` | Rouge | 141 |
+| `A` | Orange | 143 |
+| Autre | Noir | 7 |
+
+### 5.4 Gestion des recus detailles
+
+Une ligne affiche le bouton "detail recu" si :
+- La ligne a un lien vers un ticket de vente mobilite (v.Lien ticket Vte mobilite = TRUE)
+- **OU** la vente a une signature electronique (`isVenteODSignature() = TRUE` ET champ blob non null)
+- **OU** un recu detaille existe en base (`Exist_recu_detail() = TRUE`)
+
+### 5.5 Parametrage des listings
+
+Le choix du format d'edition utilise le systeme de parametres globaux :
+```
+SetParam('ASKEDLISTINGNUM', [8|10|12|14|16])
+```
+
+Verification avant impression :
+```
+SI GetParam('ASKEDLISTINGNUM') <> GetParam('LISTINGNUMPRINTERCHOICE')
+   ET GetParam('LISTINGNUMPRINTERCHOICE') <> 0
+ALORS demander confirmation changement imprimante
+```
+
+### 5.6 Edition partielle
+
+Le programme supporte l'edition partielle (impression d'une periode specifique) via la variable `v.Edition partielle ?` :
+- **0** : Edition complete (tout l'historique)
+- **1** : Edition partielle (plage de dates)
+
+Les dates de filtre sont calculees par :
+- Date debut : `IF(v.Edition partielle, date_filtre, '01/01/1900')`
+- Date fin : `IF(v.Edition partielle, date_filtre, '01/01/2900')`
+
+### 5.7 Gestion Gift Pass
+
+- Le programme detecte la presence de Gift Pass sur le compte (`W0 Presence Recap Free Extra`)
+- L'operateur peut demander l'impression d'un recapitulatif Gift Pass (`W0 Print Recap Free Extra`)
+- La checkbox "Edition recapitulatif GIFT PASS" est affichee si des Gift Pass existent
 
 ## 6. CONTEXTE
 
@@ -1209,20 +1324,90 @@ flowchart TD
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[scroll sur compte]
-    UPDATE[MAJ 4 tables]
-    ENDOK([END OK])
+    LOAD_CGM[Charger compte GM table 47]
+    CALC_SOLDE[Recalcul solde tache 69.1]
+    LOAD_CTE[Charger ecritures table 40]
+    DISPLAY[Afficher scroll ecritures]
 
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
+    WAIT_ACTION{Attente action utilisateur}
+
+    CHK_N{Bouton N?}
+    CHK_D{Bouton D?}
+    CHK_C{Bouton C?}
+    CHK_I{Bouton I?}
+    CHK_O{Bouton O?}
+    CHK_S{Bouton S?}
+    CHK_L{Bouton L?}
+    CHK_QUIT{Quitter?}
+
+    PRINT_N[IDE 70 Edition par Nom]
+    PRINT_D[IDE 71 Edition par Date]
+    PRINT_C[IDE 72 Edition par Cumule]
+    PRINT_I[IDE 73 Edition par Imputation]
+    PRINT_O[IDE 74 Edition Date Imp]
+    PRINT_S[IDE 76 Edition par Service]
+    ZOOM[IDE 226 Zoom Listing]
+
+    MAJ_SOLDE[MAJ solde dans cgm]
+    ENDOK([END])
+
+    START --> LOAD_CGM
+    LOAD_CGM --> CALC_SOLDE
+    CALC_SOLDE --> LOAD_CTE
+    LOAD_CTE --> DISPLAY
+    DISPLAY --> WAIT_ACTION
+
+    WAIT_ACTION --> CHK_N
+    CHK_N -->|OUI| PRINT_N --> WAIT_ACTION
+    CHK_N -->|NON| CHK_D
+
+    CHK_D -->|OUI| PRINT_D --> WAIT_ACTION
+    CHK_D -->|NON| CHK_C
+
+    CHK_C -->|OUI| PRINT_C --> WAIT_ACTION
+    CHK_C -->|NON| CHK_I
+
+    CHK_I -->|OUI| PRINT_I --> WAIT_ACTION
+    CHK_I -->|NON| CHK_O
+
+    CHK_O -->|OUI| PRINT_O --> WAIT_ACTION
+    CHK_O -->|NON| CHK_S
+
+    CHK_S -->|OUI| PRINT_S --> WAIT_ACTION
+    CHK_S -->|NON| CHK_L
+
+    CHK_L -->|OUI| ZOOM --> WAIT_ACTION
+    CHK_L -->|NON| CHK_QUIT
+
+    CHK_QUIT -->|NON| WAIT_ACTION
+    CHK_QUIT -->|OUI| MAJ_SOLDE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WAIT_ACTION fill:#58a6ff,color:#000
+    style CHK_N fill:#58a6ff,color:#000
+    style CHK_D fill:#58a6ff,color:#000
+    style CHK_C fill:#58a6ff,color:#000
+    style CHK_I fill:#58a6ff,color:#000
+    style CHK_O fill:#58a6ff,color:#000
+    style CHK_S fill:#58a6ff,color:#000
+    style CHK_L fill:#58a6ff,color:#000
+    style CHK_QUIT fill:#58a6ff,color:#000
+    style CALC_SOLDE fill:#ffeb3b,color:#000
+    style MAJ_SOLDE fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+**Legende** :
+- Vert : START / END
+- Bleu : Decisions (choix utilisateur)
+- Jaune : Actions cles (calcul solde, MAJ)
+
+**Resume du flux** :
+1. Chargement du compte GM et recalcul du solde
+2. Affichage des ecritures comptables en scroll
+3. Boucle d'attente des actions utilisateur (boutons C/D/I/N/O/L/S)
+4. Chaque bouton appelle le programme d'edition correspondant
+5. Bouton Quitter : sauvegarde du solde et fin
 
 <!-- TAB:Donnees -->
 
