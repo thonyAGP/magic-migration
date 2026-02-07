@@ -1,6 +1,6 @@
 ﻿# ADH IDE 14 - e-mail list
 
-> **Analyse**: Phases 1-4 2026-02-07 03:05 -> 03:05 (28s) | Assemblage 03:05
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:39 (28s) | Assemblage 03:39
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -15,18 +15,33 @@
 | Nom Programme | e-mail list |
 | Fichier source | `Prg_14.xml` |
 | Dossier IDE | General |
-| Taches | 1 (0 ecrans visibles) |
+| Taches | 1 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**e-mail list** assure la gestion complete de ce processus.
+**e-mail list** assure la gestion complete de ce processus, accessible depuis [Catching stats (IDE 12)](ADH-IDE-12.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Traitement** (1 tache) : traitements metier divers
 
 **Donnees modifiees** : 1 tables en ecriture (quadriga_chambre).
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>14 - E-mail List [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : E-mail List.
+**Ecran** : 698 x 293 DLU (MDI) | [Voir mockup](#ecran-t1)
+
 
 ## 5. REGLES METIER
 
@@ -34,21 +49,199 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Catching stats (IDE 12)](ADH-IDE-12.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 0
 
 <!-- TAB:Ecrans -->
 
 ## 8. ECRANS
 
-*(Programme sans ecran visible)*
+### 8.1 Forms visibles (1 / 1)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 14 | 14 | E-mail List | MDI | 698 | 293 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>14 - E-mail List
+**Tache** : [14](#t1) | **Type** : MDI | **Dimensions** : 698 x 293 DLU
+**Bloc** : Traitement | **Titre IDE** : E-mail List
+
+<!-- FORM-DATA:
+{
+    "width":  698,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  4,
+    "controls":  [
+                     {
+                         "x":  9,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  8,
+                         "w":  265,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  15,
+                         "color":  "201",
+                         "text":  "Express Counter Statistics",
+                         "parent":  null
+                     },
+                     {
+                         "x":  36,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  34,
+                         "w":  265,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  15,
+                         "color":  "201",
+                         "text":  "List of recipients",
+                         "parent":  null
+                     },
+                     {
+                         "x":  36,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  12,
+                         "color":  "110",
+                         "w":  633,
+                         "y":  55,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  15,
+                         "h":  205,
+                         "cols":  [
+                                      {
+                                          "title":  "Name",
+                                          "layer":  1,
+                                          "w":  124
+                                      },
+                                      {
+                                          "title":  "First name",
+                                          "layer":  2,
+                                          "w":  124
+                                      },
+                                      {
+                                          "title":  "Email address",
+                                          "layer":  3,
+                                          "w":  292
+                                      },
+                                      {
+                                          "title":  "Send ?",
+                                          "layer":  4,
+                                          "w":  75
+                                      }
+                                  ],
+                         "rows":  4
+                     },
+                     {
+                         "x":  40,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  70,
+                         "w":  116,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  10,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  3
+                     },
+                     {
+                         "x":  164,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  70,
+                         "w":  116,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  10,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  3
+                     },
+                     {
+                         "x":  288,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  70,
+                         "w":  284,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  10,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  3
+                     },
+                     {
+                         "x":  587,
+                         "type":  "combobox",
+                         "var":  "",
+                         "y":  69,
+                         "w":  56,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  12,
+                         "color":  "110",
+                         "text":  "Yes,No",
+                         "parent":  3
+                     },
+                     {
+                         "x":  617,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  274,
+                         "w":  79,
+                         "fmt":  "Exit",
+                         "name":  "",
+                         "h":  17,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "14",
+    "height":  293
+}
+-->
+
+<details>
+<summary><strong>Champs : 4 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 40,70 | (sans nom) | - | edit |
+| 164,70 | (sans nom) | - | edit |
+| 288,70 | (sans nom) | - | edit |
+| 587,69 | Yes,No | - | combobox |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 1 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| Exit | 617,274 | Quitte le programme |
+
+</details>
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+Ecran unique: **E-mail List**
+
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **14.1** | [**E-mail List** (14)](#t1) [mockup](#ecran-t1) | MDI | 698x293 | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -110,22 +303,25 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Catching stats (IDE 12)](ADH-IDE-12.md) -> **e-mail list (IDE 14)**
 
 ```mermaid
 graph LR
     T14[14 e-mail list]
     style T14 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T14
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC7[7 Menu Data Catching]
+    style CC7 fill:#8b5cf6
+    CC12[12 Catching stats]
+    style CC12 fill:#3fb950
+    CC7 --> CC12
+    CC12 --> T14
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [12](ADH-IDE-12.md) | Catching stats | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -154,11 +350,16 @@ graph LR
 | Expressions | 0 | Peu de logique |
 | Tables WRITE | 1 | Impact faible |
 | Sous-programmes | 0 | Peu de dependances |
-| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 5) | Code sain |
 | Regles metier | 0 | Pas de regle identifiee |
 
 ### 14.2 Plan de migration par bloc
+
+#### Traitement (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : 1 composant(s) UI (Razor/React) avec formulaires et validation.
+- Decomposer les taches en services unitaires testables.
 
 ### 14.3 Dependances critiques
 
@@ -167,4 +368,4 @@ graph LR
 | quadriga_chambre | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:05*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*

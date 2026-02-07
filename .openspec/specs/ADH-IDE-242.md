@@ -1,6 +1,6 @@
 ﻿# ADH IDE 242 - Menu Choix Saisie/Annul vente
 
-> **Analyse**: Phases 1-4 2026-01-30 09:43 -> 09:43 (8s) | Assemblage 09:43
+> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 03:54 (34s) | Assemblage 03:54
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 242 |
 | Nom Programme | Menu Choix Saisie/Annul vente |
 | Fichier source | `Prg_242.xml` |
-| Domaine metier | Ventes |
+| Dossier IDE | Ventes |
 | Taches | 3 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 10 |
@@ -37,14 +37,14 @@ Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
 #### Phase 1 : Saisie (2 taches)
 
-- **T1** - Saisie/Annulation vente **[ECRAN]**
-- **T2** - Existe vente gratuite ou IGR ?
+- **242** - Saisie/Annulation vente **[[ECRAN]](#ecran-t1)**
+- **242.1** - Existe vente gratuite ou IGR ?
 
 Delegue a : [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Histo ventes payantes (IDE 243)](ADH-IDE-243.md), [Histo ventes payantes /PMS-605 (IDE 244)](ADH-IDE-244.md), [Histo ventes payantes /PMS-623 (IDE 245)](ADH-IDE-245.md), [Histo ventes IGR (IDE 252)](ADH-IDE-252.md), [Histo ventes Gratuités (IDE 253)](ADH-IDE-253.md)
 
 #### Phase 2 : Traitement (1 tache)
 
-- **T3** - (sans nom)
+- **242.1.1** - (sans nom)
 
 Delegue a : [Appel programme (IDE 44)](ADH-IDE-44.md)
 
@@ -64,17 +64,18 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Saisie/Annulation 
 
 ---
 
-#### <a id="t1"></a>T1 - Saisie/Annulation vente [ECRAN]
+#### <a id="t1"></a>242 - Saisie/Annulation vente [[ECRAN]](#ecran-t1)
 
-**Role** : Ecran de saisie pour la transaction.
+**Role** : Saisie des donnees : Saisie/Annulation vente.
 **Ecran** : 600 x 143 DLU (MDI) | [Voir mockup](#ecran-t1)
 **Delegue a** : [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md)
 
 ---
 
-#### <a id="t2"></a>T2 - Existe vente gratuite ou IGR ?
+#### <a id="t2"></a>242.1 - Existe vente gratuite ou IGR ?
 
-**Role** : Ecran de saisie pour la transaction.
+**Role** : Saisie des donnees : Existe vente gratuite ou IGR ?.
+**Variables liees** : S (V.Existe IGR ?), T (V.Existe Gratuité ?)
 **Delegue a** : [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md)
 
 
@@ -84,7 +85,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t3"></a>T3 - (sans nom)
+#### <a id="t3"></a>242.1.1 - (sans nom)
 
 **Role** : Traitement interne.
 **Delegue a** : [Appel programme (IDE 44)](ADH-IDE-44.md)
@@ -100,8 +101,12 @@ Traitements internes.
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `IF(Trim(VG115)<>'',Trim(VG115)&'|','')&'VENTE'` |
-| **Action** | Traitement si Trim(VG115) est renseigne |
+| **Condition** | `Trim(VG115)<>''` |
+| **Si vrai** | Trim(VG115)&'/' |
+| **Si faux** | '')&'VENTE' |
+| **Expression source** | Expression 25 : `IF(Trim(VG115)<>'',Trim(VG115)&'|','')&'VENTE'` |
+| **Exemple** | Si Trim(VG115)<>'' â†’ Trim(VG115)&'/'. Sinon â†’ '')&'VENTE' |
+| **Impact** | Bloc Saisie |
 
 ## 6. CONTEXTE
 
@@ -116,27 +121,312 @@ Traitements internes.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 242.1 | T1 | Saisie/Annulation vente | MDI | 600 | 143 | Saisie |
+| 1 | 242 | 242 | Saisie/Annulation vente | MDI | 600 | 143 | Saisie |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
-#### <a id="ecran-t1"></a>242.1 - Saisie/Annulation vente
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 600 x 143 DLU
+#### <a id="ecran-t1"></a>242 - Saisie/Annulation vente
+**Tache** : [242](#t1) | **Type** : MDI | **Dimensions** : 600 x 143 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie/Annulation vente
 
 <!-- FORM-DATA:
 {
     "width":  600,
-    "controls":  [
-
-                 ],
+    "vFactor":  8,
     "type":  "MDI",
-    "height":  143,
-    "taskId":  1
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  1,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  2,
+                         "w":  591,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  51,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  32,
+                         "w":  499,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  77,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  51,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  32,
+                         "w":  499,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  77,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  182,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  42,
+                         "w":  329,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  48,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  186,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  43,
+                         "w":  50,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  45,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  244,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  47,
+                         "w":  259,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  9,
+                         "color":  "142",
+                         "text":  "Ventes",
+                         "parent":  null
+                     },
+                     {
+                         "x":  244,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  56,
+                         "w":  259,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  10,
+                         "color":  "142",
+                         "text":  "Historique des ventes",
+                         "parent":  null
+                     },
+                     {
+                         "x":  244,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  66,
+                         "w":  259,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  10,
+                         "color":  "142",
+                         "text":  "Annulation des IGR",
+                         "parent":  null
+                     },
+                     {
+                         "x":  244,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  76,
+                         "w":  259,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  10,
+                         "color":  "142",
+                         "text":  "Annulation des Gratuités",
+                         "parent":  null
+                     },
+                     {
+                         "x":  346,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  96,
+                         "w":  123,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "Votre choix",
+                         "parent":  null
+                     },
+                     {
+                         "x":  1,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  118,
+                         "w":  591,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  24,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  485,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  96,
+                         "w":  26,
+                         "fmt":  "UA",
+                         "name":  "W0 choix action",
+                         "h":  10,
+                         "color":  "6",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  15,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  6,
+                         "w":  267,
+                         "fmt":  "20",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  307,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  6,
+                         "w":  268,
+                         "fmt":  "WWW DD MMM YYYYT",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  75,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  43,
+                         "w":  88,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  45,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  204,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  47,
+                         "w":  26,
+                         "fmt":  "1",
+                         "name":  "1",
+                         "h":  9,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  204,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  56,
+                         "w":  26,
+                         "fmt":  "2",
+                         "name":  "2",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  9,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  121,
+                         "w":  154,
+                         "fmt":  "\u0026Quitter",
+                         "name":  "",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  15
+                     },
+                     {
+                         "x":  204,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  66,
+                         "w":  26,
+                         "fmt":  "3",
+                         "name":  "3",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  204,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  76,
+                         "w":  26,
+                         "fmt":  "4",
+                         "name":  "4",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "242",
+    "height":  143
 }
 -->
+
+<details>
+<summary><strong>Champs : 3 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 485,96 | W0 choix action | - | edit |
+| 15,6 | 20 | - | edit |
+| 307,6 | WWW DD MMM YYYYT | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 5 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| 1 | 204,47 | Bouton fonctionnel |
+| 2 | 204,56 | Bouton fonctionnel |
+| Quitter | 9,121 | Quitte le programme |
+| 3 | 204,66 | Bouton fonctionnel |
+| 4 | 204,76 | Bouton fonctionnel |
+
+</details>
 
 ## 9. NAVIGATION
 
@@ -144,9 +434,31 @@ Ecran unique: **Saisie/Annulation vente**
 
 ### 9.3 Structure hierarchique (3 taches)
 
-- **242.1** [Saisie/Annulation vente (T1)](#t1) **[ECRAN]** (MDI) 600x143 -> [mockup](#ecran-t1) *[Saisie]*
-  - **242.1.1** [Existe vente gratuite ou IGR ? (T2)](#t2)  
-- **242.2** [(sans nom) (T3)](#t3)   *[Traitement]*
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **242.1** | [**Saisie/Annulation vente** (242)](#t1) [mockup](#ecran-t1) | MDI | 600x143 | Saisie |
+| 242.1.1 | [Existe vente gratuite ou IGR ? (242.1)](#t2) | - | - | |
+| **242.2** | [**(sans nom)** (242.1.1)](#t3) | - | - | Traitement |
+
+### 9.4 Algorigramme
+
+```mermaid
+flowchart TD
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+```
+
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -161,41 +473,24 @@ Ecran unique: **Saisie/Annulation vente**
 | 400 | pv_cust_rentals |  | DB |   |   | L | 1 |
 | 804 | valeur_credit_bar_defaut |  | DB |   |   | L | 1 |
 
-### Colonnes par table
+### Colonnes par table (2 / 1 tables avec colonnes identifiees)
 
 <details>
 <summary>Table 38 - comptable_gratuite (R/**W**) - 2 usages</summary>
 
-| Lettre | Variable | Acces | Type | Utilisee |
-|--------|----------|-------|------|----------|
-| C | v.Existe Comptable Gratuite | W | Logical | **OUI** |
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v.Existe IGR ? | W | Logical |
+| B | v.Existe Vente GRATUITE ? | W | Logical |
+| C | v.Existe Comptable Gratuite | W | Logical |
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Variables de session (4)
+### 11.1 Parametres entrants (16)
 
-Variables persistantes pendant toute la session.
-
-| Lettre | Nom | Type | Usage dans |
-|--------|-----|------|-----------|
-| R | v.fin | Logical | 1x refs |
-| S | V.Existe IGR ? | Logical | 1x refs |
-| T | V.Existe Gratuité ? | Logical | 1x refs |
-| U | V.Session ouverte ? | Logical | 1x refs |
-
-### 11.2 Variables de travail (1)
-
-Variables internes au programme.
-
-| Lettre | Nom | Type | Usage dans |
-|--------|-----|------|-----------|
-| Q | W0 choix action | Alpha | 5x refs |
-
-### 11.3 Autres (16)
-
-Variables diverses.
+Variables recues du programme appelant ([Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
@@ -214,34 +509,53 @@ Variables diverses.
 | M | P.Date debut sejour | Date | - |
 | N | P.Valide ? | Numeric | - |
 | O | P.Nb decimales | Numeric | - |
-| P | P.Mode consultation | Logical | 1x refs |
+| P | P.Mode consultation | Logical | 1x parametre entrant |
+
+### 11.2 Variables de session (4)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| R | v.fin | Logical | 1x session |
+| S | V.Existe IGR ? | Logical | 1x session |
+| T | V.Existe Gratuité ? | Logical | 1x session |
+| U | V.Session ouverte ? | Logical | 1x session |
+
+### 11.3 Variables de travail (1)
+
+Variables internes au programme.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| Q | W0 choix action | Alpha | 5x calcul interne |
 
 <details>
 <summary>Toutes les 21 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
+| P0 | **A** | P.Societe | Alpha |
+| P0 | **B** | P.Devise locale | Alpha |
+| P0 | **C** | P.Masque montant | Alpha |
+| P0 | **D** | P.Solde compte | Numeric |
+| P0 | **E** | P.Code GM | Numeric |
+| P0 | **F** | P.Filiation | Numeric |
+| P0 | **G** | P.Date fin sejour | Date |
+| P0 | **H** | P.Etat compte | Alpha |
+| P0 | **I** | P.Date solde | Date |
+| P0 | **J** | P.Garanti O/N | Alpha |
+| P0 | **K** | P.Nom & prénom | Alpha |
+| P0 | **L** | P.UNI/BI | Alpha |
+| P0 | **M** | P.Date debut sejour | Date |
+| P0 | **N** | P.Valide ? | Numeric |
+| P0 | **O** | P.Nb decimales | Numeric |
+| P0 | **P** | P.Mode consultation | Logical |
 | W0 | **Q** | W0 choix action | Alpha |
 | V. | **R** | v.fin | Logical |
 | V. | **S** | V.Existe IGR ? | Logical |
 | V. | **T** | V.Existe Gratuité ? | Logical |
 | V. | **U** | V.Session ouverte ? | Logical |
-| Autre | **A** | P.Societe | Alpha |
-| Autre | **B** | P.Devise locale | Alpha |
-| Autre | **C** | P.Masque montant | Alpha |
-| Autre | **D** | P.Solde compte | Numeric |
-| Autre | **E** | P.Code GM | Numeric |
-| Autre | **F** | P.Filiation | Numeric |
-| Autre | **G** | P.Date fin sejour | Date |
-| Autre | **H** | P.Etat compte | Alpha |
-| Autre | **I** | P.Date solde | Date |
-| Autre | **J** | P.Garanti O/N | Alpha |
-| Autre | **K** | P.Nom & prénom | Alpha |
-| Autre | **L** | P.UNI/BI | Alpha |
-| Autre | **M** | P.Date debut sejour | Date |
-| Autre | **N** | P.Valide ? | Numeric |
-| Autre | **O** | P.Nb decimales | Numeric |
-| Autre | **P** | P.Mode consultation | Logical |
 
 </details>
 
@@ -500,7 +814,7 @@ graph LR
 | Tables WRITE | 1 | Impact faible |
 | Sous-programmes | 10 | Dependances moderees |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
-| Code desactive | 0% (0 / 133) | Code sain |
+| Code desactive | 4.5% (6 / 133) | Code sain |
 | Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
@@ -513,7 +827,9 @@ graph LR
 
 #### Traitement (1 tache: 0 ecran, 1 traitement)
 
-- Traitement standard a migrer
+- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
+- 10 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
 
 ### 14.3 Dependances critiques
 
@@ -532,4 +848,4 @@ graph LR
 | [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-01-30 09:43*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:54*

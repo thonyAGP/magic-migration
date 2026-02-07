@@ -1,6 +1,6 @@
 ﻿# ADH IDE 13 - calculate week #
 
-> **Analyse**: Phases 1-4 2026-02-07 03:04 -> 03:05 (28s) | Assemblage 03:05
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:39 (29s) | Assemblage 03:39
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,13 +18,28 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**calculate week #** assure la gestion complete de ce processus.
+**calculate week #** assure la gestion complete de ce processus, accessible depuis [Catching stats (IDE 12)](ADH-IDE-12.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Calcul (1 tache)
+
+Calculs metier : montants, stocks, compteurs.
+
+---
+
+#### <a id="t1"></a>13 - calculate week #
+
+**Role** : Calcul : calculate week #.
+**Variables liees** : B (<.week #), F (EOF 1st week), H (weeks between)
+
 
 ## 5. REGLES METIER
 
@@ -32,7 +47,7 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Catching stats (IDE 12)](ADH-IDE-12.md)
 - **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 7
 
 <!-- TAB:Ecrans -->
@@ -43,10 +58,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **13.1** | [**calculate week #** (13)](#t1) | MDI | - | Calcul |
 
 ### 9.4 Algorigramme
 
@@ -91,7 +107,7 @@ Variables diverses.
 | C | BOY pdate | Date | 2x refs |
 | D | DOW(BOY pdate) | Numeric | 1x refs |
 | E | #days from BOY | Numeric | 1x refs |
-| F | EOF 1st week | Date | 1x refs |
+| F | EOF 1st week | Date | [13](#t1) |
 | G | Days between | Numeric | 1x refs |
 | H | weeks between | Numeric | 1x refs |
 
@@ -137,22 +153,25 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Catching stats (IDE 12)](ADH-IDE-12.md) -> **calculate week # (IDE 13)**
 
 ```mermaid
 graph LR
     T13[13 calculate week #]
     style T13 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T13
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC7[7 Menu Data Catching]
+    style CC7 fill:#8b5cf6
+    CC12[12 Catching stats]
+    style CC12 fill:#3fb950
+    CC7 --> CC12
+    CC12 --> T13
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [12](ADH-IDE-12.md) | Catching stats | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -187,10 +206,15 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Calcul (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : Services de calcul purs (Domain Services).
+- Migrer la logique de calcul (stock, compteurs, montants)
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:05*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*

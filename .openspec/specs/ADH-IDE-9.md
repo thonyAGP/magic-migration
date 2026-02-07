@@ -1,6 +1,6 @@
 ﻿# ADH IDE 9 - System avail (top left corner
 
-> **Analyse**: Phases 1-4 2026-02-07 03:03 -> 03:04 (32s) | Assemblage 03:04
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 03:39
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,15 +18,29 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**System avail (top left corner** assure la gestion complete de ce processus.
+**System avail (top left corner** assure la gestion complete de ce processus, accessible depuis [Menu Data Catching (IDE 7)](ADH-IDE-7.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Traitement** (1 tache) : traitements metier divers
 
 **Donnees modifiees** : 1 tables en ecriture (log_affec_auto_detail).
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>9 - System avail (top left corner
+
+**Role** : Traitement : System avail (top left corner.
+
 
 ## 5. REGLES METIER
 
@@ -34,7 +48,7 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Menu Data Catching (IDE 7)](ADH-IDE-7.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 3
 
 <!-- TAB:Ecrans -->
@@ -45,10 +59,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **9.1** | [**System avail (top left corner** (9)](#t1) | MDI | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -131,22 +146,22 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Menu Data Catching (IDE 7)](ADH-IDE-7.md) -> **System avail (top left corner (IDE 9)**
 
 ```mermaid
 graph LR
     T9[9 System avail top lef...]
     style T9 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T9
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC7[7 Menu Data Catching]
+    style CC7 fill:#8b5cf6
+    CC7 --> T9
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [7](ADH-IDE-7.md) | Menu Data Catching | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -181,6 +196,11 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Traitement (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
+- Decomposer les taches en services unitaires testables.
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
@@ -188,4 +208,4 @@ graph LR
 | log_affec_auto_detail | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:04*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*

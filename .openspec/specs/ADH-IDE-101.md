@@ -1,196 +1,309 @@
 ﻿# ADH IDE 101 - Creation Pied Facture V3
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:04
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_97.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 03:48 (27s) | Assemblage 03:48
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Creation Pied Facture V3 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (3 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (2 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 101 |
-| **Fichier XML** | `Prg_97.xml` |
-| **Description** | Creation Pied Facture V3 |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 2 |
-| **Lignes logique** | 76 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 101 |
+| Nom Programme | Creation Pied Facture V3 |
+| Fichier source | `Prg_101.xml` |
+| Dossier IDE | Facturation |
+| Taches | 2 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 866 | maj_appli_tpe | maj_appli_tpe | READ | Lecture |
-| 867 | log_maj_tpe | log_maj_tpe | LINK/WRITE | Jointure+Ecriture |
+**Creation Pied Facture V3** assure la gestion complete de ce processus, accessible depuis [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md).
 
-**Resume**: 3 tables accedees dont **1 en ecriture**
+Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Initialisation** (1 tache) : reinitialisation d'etats et de variables de travail
+- **Creation** (1 tache) : insertion d'enregistrements en base (mouvements, prestations)
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Donnees modifiees** : 1 tables en ecriture (log_maj_tpe).
 
-### 2.4 Algorigramme
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Creation (1 tache)
+
+- **101** - Creation Pied Facture V3 **[[ECRAN]](#ecran-t1)**
+
+#### Phase 2 : Initialisation (1 tache)
+
+- **101.1** - RAZ Pied Facture
+
+#### Tables impactees
+
+| Table | Operations | Role metier |
+|-------|-----------|-------------|
+| log_maj_tpe | **W**/L (2 usages) |  |
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Creation (1 tache)
+
+Insertion de nouveaux enregistrements en base.
+
+---
+
+#### <a id="t1"></a>101 - Creation Pied Facture V3 [[ECRAN]](#ecran-t1)
+
+**Role** : Creation d'enregistrement : Creation Pied Facture V3.
+**Ecran** : 1269 x 0 DLU | [Voir mockup](#ecran-t1)
+
+
+### 3.2 Initialisation (1 tache)
+
+Reinitialisation d'etats et variables de travail.
+
+---
+
+#### <a id="t2"></a>101.1 - RAZ Pied Facture
+
+**Role** : Reinitialisation : RAZ Pied Facture.
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)
+- **Appelle**: 0 programmes | **Tables**: 2 (W:1 R:1 L:1) | **Taches**: 2 | **Expressions**: 15
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (2 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **101.1** | [**Creation Pied Facture V3** (101)](#t1) [mockup](#ecran-t1) | - | 1269x0 | Creation |
+| **101.2** | [**RAZ Pied Facture** (101.1)](#t2) | - | - | Initialisation |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>2 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 2 |
-| **Lignes logique** | 76 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 3 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (2)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 866 | maj_appli_tpe |  | DB | R |   |   | 1 |
+| 867 | log_maj_tpe |  | DB |   | **W** | L | 2 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 866 - maj_appli_tpe (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | p.Societe | R | Unicode |
+| B | p.Compte | R | Numeric |
+| C | p.Filiation | R | Numeric |
+| D | p.NumFac | R | Numeric |
+| E | P.Flaguee | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 867 - log_maj_tpe (**W**/L) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (5)
+
+Variables recues du programme appelant ([Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | p.Societe | Unicode | 1x parametre entrant |
+| B | p.Compte | Numeric | 1x parametre entrant |
+| C | p.Filiation | Numeric | 1x parametre entrant |
+| D | p.NumFac | Numeric | 1x parametre entrant |
+| E | P.Flaguee | Logical | - |
+
+## 12. EXPRESSIONS
+
+**15 / 15 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CALCULATION | 4 | 0 |
+| CALCUL | 2 | 0 |
+| CONSTANTE | 3 | 0 |
+| OTHER | 6 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CALCULATION (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CALCULATION | 12 | `[AN]+[Z]` | - |
+| CALCULATION | 13 | `[AW]+[Z]` | - |
+| CALCULATION | 8 | `[AL]+[Y]` | - |
+| CALCULATION | 9 | `[AU]+[Y]` | - |
+
+#### CALCUL (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CALCUL | 11 | `[AV]+Round(([Z]/(1+[X]/100)*[X]/100),12,2)` | - |
+| CALCUL | 10 | `[AM]+Round(([Z]/(1+[X]/100)*[X]/100),12,2)` | - |
+
+#### CONSTANTE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 14 | `'O'` | - |
+| CONSTANTE | 7 | `0` | - |
+| CONSTANTE | 4 | `999` | - |
+
+#### OTHER (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 5 | `p.Compte [B]` | - |
+| OTHER | 6 | `p.Filiation [C]` | - |
+| OTHER | 15 | `IsFirstRecordCycle(0)` | - |
+| OTHER | 1 | `p.Societe [A]` | - |
+| OTHER | 2 | `p.NumFac [D]` | - |
+| ... | | *+1 autres* | |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) -> **Creation Pied Facture V3 (IDE 101)**
 
 ```mermaid
 graph LR
-    T[101 Creation Pied F]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T101[101 Creation Pied Fact...]
+    style T101 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC174[174 VersementRetrait]
+    style CC174 fill:#8b5cf6
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#f59e0b
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#f59e0b
+    CC97[97 Factures Tble Compt...]
+    style CC97 fill:#3fb950
+    CC163 --> CC97
+    CC190 --> CC97
+    CC193 --> CC97
+    CC1 --> CC163
+    CC174 --> CC163
+    CC1 --> CC190
+    CC174 --> CC190
+    CC1 --> CC193
+    CC174 --> CC193
+    CC97 --> T101
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [97](ADH-IDE-97.md) | Factures (Tble Compta&Vent) V3 | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[101 Creation Pied F]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T101[101 Creation Pied Fact...]
+    style T101 fill:#58a6ff
+    NONE[Aucun callee]
+    T101 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 76 | Programme compact |
+| Expressions | 15 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 76) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Creation (1 tache: 1 ecran, 0 traitement)
 
-### Complexite
+- **Strategie** : Repository pattern avec Entity Framework Core.
+- Insertion via `IRepository<T>.CreateAsync()`
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 2 | Simple |
-| Tables | 3 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+#### Initialisation (1 tache: 0 ecran, 1 traitement)
 
-### Points d'attention migration
+- **Strategie** : Constructeur/methode `InitAsync()` dans l'orchestrateur.
 
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+### 14.3 Dependances critiques
+
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| log_maj_tpe | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:04 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:48*

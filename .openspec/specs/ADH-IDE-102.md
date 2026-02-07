@@ -1,6 +1,6 @@
 ﻿# ADH IDE 102 - Maj lignes saisies archive V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:14 -> 03:14 (30s) | Assemblage 03:14
+> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 03:48 (27s) | Assemblage 03:48
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,17 +18,32 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Maj lignes saisies archive V3** assure la gestion complete de ce processus.
+**Maj lignes saisies archive V3** assure la gestion complete de ce processus, accessible depuis [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
 
 **Donnees modifiees** : 1 tables en ecriture (projet).
 
 **Logique metier** : 1 regles identifiees couvrant conditions metier.
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Saisie (1 tache)
+
+L'operateur saisit les donnees de la transaction via 1 ecran (Maj des lignes saisies).
+
+---
+
+#### <a id="t1"></a>102 - Maj des lignes saisies [[ECRAN]](#ecran-t1)
+
+**Role** : Saisie des donnees : Maj des lignes saisies.
+**Ecran** : 562 x 0 DLU | [Voir mockup](#ecran-t1)
+
 
 ## 5. REGLES METIER
 
@@ -49,7 +64,7 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md)
 - **Appelle**: 0 programmes | **Tables**: 4 (W:1 R:0 L:3) | **Taches**: 1 | **Expressions**: 14
 
 <!-- TAB:Ecrans -->
@@ -60,10 +75,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **102.1** | [**Maj des lignes saisies** (102)](#t1) [mockup](#ecran-t1) | - | 562x0 | Saisie |
 
 ### 9.4 Algorigramme
 
@@ -121,7 +137,7 @@ flowchart TD
 
 ### 11.1 Parametres entrants (5)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
@@ -194,22 +210,19 @@ Variables persistantes pendant toute la session.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Maj lignes saisies archive V3 (IDE 102)**
 
 ```mermaid
 graph LR
     T102[102 Maj lignes saisies...]
     style T102 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T102
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [0](ADH-IDE-0.md) | Garantie sur compte PMS-584 | 2 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -244,6 +257,12 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Saisie (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : Formulaire React/Blazor avec validation Zod/FluentValidation.
+- Reproduire 1 ecran : Maj des lignes saisies
+- Validation temps reel cote client + serveur
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
@@ -251,4 +270,4 @@ graph LR
 | projet | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:14*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:48*

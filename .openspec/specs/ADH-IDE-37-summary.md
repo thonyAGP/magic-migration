@@ -1,22 +1,22 @@
 ﻿# ADH IDE 37 - Menu changement compte
 
-> **Analyse**: 2026-02-07 03:10
+> **Analyse**: 2026-02-07 03:43
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
 - **Fonction**: Menu changement compte
 - **Tables modifiees**: 0
-- **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Complexite**: **BASSE** (5/100)
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 1 programme(s): Menu caisse GM - scroll (IDE 163)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
-| **Appelle** | (aucun) |
+| **Appele par** | [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) |
+| **Appelle** | [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md) |
 
 ## STATISTIQUES
 

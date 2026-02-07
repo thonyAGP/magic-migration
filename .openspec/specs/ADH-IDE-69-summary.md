@@ -1,6 +1,6 @@
 ﻿# ADH IDE 69 - Extrait de compte
 
-> **Analyse**: 2026-02-07 03:10
+> **Analyse**: 2026-02-07 03:43
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

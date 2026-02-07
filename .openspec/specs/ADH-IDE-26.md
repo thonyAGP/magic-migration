@@ -1,6 +1,6 @@
 ﻿# ADH IDE 26 - Program_26
 
-> **Analyse**: Phases 1-4 2026-02-07 03:08 -> 03:08 (29s) | Assemblage 03:08
+> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 03:41 (27s) | Assemblage 03:41
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -24,7 +24,22 @@
 
 **Program_26** assure la gestion complete de ce processus.
 
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Traitement** (1 tache) : traitements metier divers
+
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>26 - (sans nom)
+
+**Role** : Traitement interne.
+
 
 ## 5. REGLES METIER
 
@@ -43,10 +58,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **26.1** | [**(sans nom)** (26)](#t1) | - | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -149,10 +165,15 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Traitement (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
+- Decomposer les taches en services unitaires testables.
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:08*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:41*

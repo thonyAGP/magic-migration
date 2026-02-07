@@ -1,195 +1,254 @@
 ﻿# ADH IDE 35 - Write histo_Fus_Sep_Log
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:00
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_31.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (27s) | Assemblage 03:42
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Write histo_Fus_Sep_Log |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (3 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 35 |
-| **Fichier XML** | `Prg_31.xml` |
-| **Description** | Write histo_Fus_Sep_Log |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 3 |
-| **Lignes logique** | 72 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 35 |
+| Nom Programme | Write histo_Fus_Sep_Log |
+| Fichier source | `Prg_35.xml` |
+| Dossier IDE | General |
+| Taches | 3 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 342 | histo__fusionseparation_log | histo_fus_sep_log | WRITE | Ecriture |
+**Write histo_Fus_Sep_Log** assure la gestion complete de ce processus, accessible depuis [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md).
 
-**Resume**: 1 tables accedees dont **1 en ecriture**
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (3 taches) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Donnees modifiees** : 1 tables en ecriture (histo__fusionseparation_log).
 
-### 2.4 Algorigramme
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (3 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>35 - (sans nom)
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t2"></a>35.1 - (sans nom)
+
+**Role** : Traitement interne.
+
+---
+
+#### <a id="t3"></a>35.2 - (sans nom)
+
+**Role** : Traitement interne.
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md)
+- **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 3 | **Expressions**: 2
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (3 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **35.1** | [**(sans nom)** (35)](#t1) | MDI | - | Traitement |
+| 35.1.1 | [(sans nom) (35.1)](#t2) | MDI | - | |
+| 35.1.2 | [(sans nom) (35.2)](#t3) | MDI | - | |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>3 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 3 |
-| **Lignes logique** | 72 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (1)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 342 | histo__fusionseparation_log | Historique / journal | DB |   | **W** |   | 2 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 342 - histo__fusionseparation_log (**W**) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | i.mode Reprise | W | Logical |
+| B | i.chrono F/E | W | Numeric |
+| C | i.chrono LOG | W | Numeric |
+| D | i.code | W | Alpha |
+| E | i.texte | W | Alpha |
+| F | i.status | W | Alpha |
+| G | i.type F/E | W | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Autres (7)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | i.mode Reprise | Logical | - |
+| B | i.chrono F/E | Numeric | - |
+| C | i.chrono LOG | Numeric | - |
+| D | i.code | Alpha | - |
+| E | i.texte | Alpha | - |
+| F | i.status | Alpha | - |
+| G | i.type F/E | Alpha | - |
+
+## 12. EXPRESSIONS
+
+**2 / 2 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| NEGATION | 1 | 0 |
+| REFERENCE_VG | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 1 | `NOT VG78` | - |
+
+#### REFERENCE_VG (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 2 | `VG78` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Separation (IDE 27)](ADH-IDE-27.md) -> **Write histo_Fus_Sep_Log (IDE 35)**
+
+Main -> ... -> [Fusion (IDE 28)](ADH-IDE-28.md) -> **Write histo_Fus_Sep_Log (IDE 35)**
 
 ```mermaid
 graph LR
-    T[35 Write histo_Fus]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T35[35 Write histo_Fus_Sep...]
+    style T35 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC37[37 Menu changement compte]
+    style CC37 fill:#f59e0b
+    CC27[27 Separation]
+    style CC27 fill:#3fb950
+    CC28[28 Fusion]
+    style CC28 fill:#3fb950
+    CC37 --> CC27
+    CC37 --> CC28
+    CC163 --> CC37
+    CC1 --> CC163
+    CC27 --> T35
+    CC28 --> T35
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [27](ADH-IDE-27.md) | Separation | 14 |
+| [28](ADH-IDE-28.md) | Fusion | 13 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[35 Write histo_Fus]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T35[35 Write histo_Fus_Sep...]
+    style T35 fill:#58a6ff
+    NONE[Aucun callee]
+    T35 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 72 | Programme compact |
+| Expressions | 2 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 72) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (3 taches: 0 ecran, 3 traitements)
 
-### Complexite
+- **Strategie** : 3 service(s) backend injectable(s) (Domain Services).
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 3 | Simple |
-| Tables | 1 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+### 14.3 Dependances critiques
 
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| histo__fusionseparation_log | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:00 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:42*

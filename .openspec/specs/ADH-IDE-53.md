@@ -1,199 +1,370 @@
 ﻿# ADH IDE 53 - Extrait Easy Check Out à J+1
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:01
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_49.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (27s) | Assemblage 03:43
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Extrait Easy Check Out à J+1 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (5 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (3 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 53 |
-| **Fichier XML** | `Prg_49.xml` |
-| **Description** | Extrait Easy Check Out à J+1 |
-| **Module** | ADH |
-| **Public Name** | EXTRAIT_EASY_CHECKOUT |
-| **Nombre taches** | 3 |
-| **Lignes logique** | 72 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 53 |
+| Nom Programme | Extrait Easy Check Out à J+1 |
+| Fichier source | `Prg_53.xml` |
+| Dossier IDE | Comptabilite |
+| Taches | 3 (1 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 3 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
-| 69 | initialisation___ini | cafil047_dat | READ | Lecture |
-| 70 | date_comptable___dat | cafil048_dat | LINK | Jointure |
-| 372 | pv_budget | pv_budget_dat | LINK | Jointure |
-| 911 | log_booker | log_booker | LINK | Jointure |
+**Extrait Easy Check Out à J+1** assure la gestion complete de ce processus.
 
-**Resume**: 5 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (3 taches) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+### 3.1 Traitement (3 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>53 - Extrait Easy Check Out à J+1
+
+**Role** : Traitement : Extrait Easy Check Out à J+1.
+**Delegue a** : [Print extrait compte /Date (IDE 71)](ADH-IDE-71.md), [Print extrait compte /Service (IDE 76)](ADH-IDE-76.md), [Set Village Address (IDE 178)](ADH-IDE-178.md)
+
+---
+
+#### <a id="t2"></a>53.1 - Liste GM SQL [[ECRAN]](#ecran-t2)
+
+**Role** : Traitement : Liste GM SQL.
+**Ecran** : 617 x 271 DLU | [Voir mockup](#ecran-t2)
+**Delegue a** : [Set Village Address (IDE 178)](ADH-IDE-178.md)
+
+---
+
+#### <a id="t3"></a>53.1.1 - Traitement des mails
+
+**Role** : Traitement : Traitement des mails.
+**Delegue a** : [Set Village Address (IDE 178)](ADH-IDE-178.md)
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 3 programmes | **Tables**: 5 (W:0 R:2 L:3) | **Taches**: 3 | **Expressions**: 2
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 3)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 53.1 | 53.1 | Liste GM SQL | Type0 | 617 | 271 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t2"></a>53.1 - Liste GM SQL
+**Tache** : [53.1](#t2) | **Type** : Type0 | **Dimensions** : 617 x 271 DLU
+**Bloc** : Traitement | **Titre IDE** : Liste GM SQL
+
+<!-- FORM-DATA:
+{
+    "width":  617,
+    "vFactor":  8,
+    "type":  "Type0",
+    "hFactor":  4,
+    "controls":  [
+                     {
+                         "x":  4,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  12,
+                         "color":  "",
+                         "w":  604,
+                         "y":  8,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  13,
+                         "h":  256,
+                         "cols":  [
+                                      {
+                                          "title":  "gmc_compte",
+                                          "layer":  1,
+                                          "w":  63
+                                      },
+                                      {
+                                          "title":  "gmc_filiation_compte",
+                                          "layer":  2,
+                                          "w":  82
+                                      },
+                                      {
+                                          "title":  "ema_email",
+                                          "layer":  3,
+                                          "w":  439
+                                      }
+                                  ],
+                         "rows":  3
+                     },
+                     {
+                         "x":  8,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  56,
+                         "fmt":  "",
+                         "name":  "gmc_compte",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  71,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  56,
+                         "fmt":  "",
+                         "name":  "gmc_filiation_compte",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  153,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  23,
+                         "w":  432,
+                         "fmt":  "",
+                         "name":  "ema_email",
+                         "h":  10,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     }
+                 ],
+    "taskId":  "53.1",
+    "height":  271
+}
+-->
+
+<details>
+<summary><strong>Champs : 3 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 8,23 | gmc_compte | - | edit |
+| 71,23 | gmc_filiation_compte | - | edit |
+| 153,23 | ema_email | - | edit |
+
+</details>
+
+## 9. NAVIGATION
+
+Ecran unique: **Liste GM SQL**
+
+### 9.3 Structure hierarchique (3 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **53.1** | [**Extrait Easy Check Out à J+1** (53)](#t1) | - | - | Traitement |
+| 53.1.1 | [Liste GM SQL (53.1)](#t2) [mockup](#ecran-t2) | - | 617x271 | |
+| 53.1.2 | [Traitement des mails (53.1.1)](#t3) | - | - | |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>3 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Liste GM SQL]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 3 |
-| **Lignes logique** | 72 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 5 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (5)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
+| 69 | initialisation___ini |  | DB | R |   |   | 1 |
+| 70 | date_comptable___dat |  | DB |   |   | L | 1 |
+| 372 | pv_budget |  | DB |   |   | L | 1 |
+| 911 | log_booker |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 69 - initialisation___ini (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| F | v.nom fichier PDF | Alpha | - |
+
+### 11.2 Autres (5)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | V0.DateDepart | Alpha | - |
+| B | gmc_compte | Numeric | - |
+| C | gmc_filiation_compte | Numeric | - |
+| D | ema_email | Unicode | - |
+| E | solde du compte | Numeric | - |
+
+## 12. EXPRESSIONS
+
+**2 / 2 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONSTANTE | 1 | 0 |
+| FORMAT | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONSTANTE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 2 | `'C'` | - |
+
+#### FORMAT (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 1 | `DStr(AddDate (Date(),0,0,1),'YYYYMMDD')` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[53 Extrait Easy Ch]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T53[53 Extrait Easy Check ...]
+    style T53 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T53
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ECF partage - appels cross-projet | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[53 Extrait Easy Ch]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T53[53 Extrait Easy Check ...]
+    style T53 fill:#58a6ff
+    C71[71 Print extrait compt...]
+    T53 --> C71
+    style C71 fill:#3fb950
+    C76[76 Print extrait compt...]
+    T53 --> C76
+    style C76 fill:#3fb950
+    C178[178 Set Village Address]
+    T53 --> C178
+    style C178 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [71](ADH-IDE-71.md) | Print extrait compte /Date | 1 | Impression ticket/document |
+| [76](ADH-IDE-76.md) | Print extrait compte /Service | 1 | Impression ticket/document |
+| [178](ADH-IDE-178.md) | Set Village Address | 1 | Sous-programme |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| ADH.ecf | 53 | EXTRAIT_EASY_CHECKOUT | Sessions_Reprises |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Defini: EXTRAIT_EASY_CHECKOUT |
-| ECF partage | OUI - ADH.ecf |
-| **Conclusion** | **NON ORPHELIN** - Composant ECF partage |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 72 | Programme compact |
+| Expressions | 2 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 3 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 72) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (3 taches: 1 ecran, 2 traitements)
 
-### Complexite
+- **Strategie** : Orchestrateur avec 1 ecrans (Razor/React) et 2 traitements backend (services).
+- Les ecrans deviennent des composants UI, les traitements invisibles deviennent des services injectables.
+- 3 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 3 | Simple |
-| Tables | 5 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+### 14.3 Dependances critiques
 
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Set Village Address (IDE 178)](ADH-IDE-178.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [Print extrait compte /Service (IDE 76)](ADH-IDE-76.md) | Sous-programme | 1x | Normale - Impression ticket/document |
+| [Print extrait compte /Date (IDE 71)](ADH-IDE-71.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:01 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:43*

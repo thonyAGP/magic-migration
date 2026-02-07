@@ -1,13 +1,13 @@
 ﻿# ADH IDE 67 - Reedition Recap Easy Check Out
 
-> **Analyse**: 2026-02-07 03:10
+> **Analyse**: 2026-02-07 03:43
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
 - **Fonction**: Reedition Recap Easy Check Out
 - **Tables modifiees**: 0
-- **Complexite**: **BASSE** (0/100)
+- **Complexite**: **BASSE** (5/100)
 - **Statut**: ORPHELIN_POTENTIEL
 - **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
@@ -16,7 +16,7 @@
 | Direction | Programmes |
 |-----------|------------|
 | **Appele par** | (aucun) |
-| **Appelle** | (aucun) |
+| **Appelle** | [Edition & Mail Easy Check Out (IDE 65)](ADH-IDE-65.md) |
 
 ## STATISTIQUES
 

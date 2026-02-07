@@ -1,6 +1,6 @@
 ﻿# ADH IDE 192 - Calcul si depôt existe
 
-> **Analyse**: Phases 1-4 2026-02-07 03:18 -> 03:19 (30s) | Assemblage 03:19
+> **Analyse**: Phases 1-4 2026-02-07 03:52 -> 03:53 (27s) | Assemblage 03:53
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -21,11 +21,27 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Calcul si depôt existe** assure la gestion complete de ce processus.
+**Calcul si depôt existe** assure la gestion complete de ce processus, accessible depuis [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
 
 **Logique metier** : 1 regles identifiees couvrant conditions metier.
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Calcul (1 tache)
+
+Calculs metier : montants, stocks, compteurs.
+
+---
+
+#### <a id="t1"></a>192 - Calcul si depôt existe
+
+**Role** : Calcul : Calcul si depôt existe.
+**Variables liees** : C (PO Existe objet), D (PO Existe devise), E (P0 Existe scelle), F (VexisteObjet), G (VexisteDevise)
+
 
 ## 5. REGLES METIER
 
@@ -45,7 +61,7 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md)
 - **Appelle**: 0 programmes | **Tables**: 3 (W:0 R:1 L:2) | **Taches**: 1 | **Expressions**: 6
 
 <!-- TAB:Ecrans -->
@@ -56,10 +72,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **192.1** | [**Calcul si depôt existe** (192)](#t1) | MDI | - | Calcul |
 
 ### 9.4 Algorigramme
 
@@ -114,7 +131,7 @@ flowchart TD
 
 ### 11.1 Parametres entrants (5)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Solde compte fin sejour (IDE 193)](ADH-IDE-193.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
@@ -175,22 +192,35 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md) -> **Calcul si depôt existe (IDE 192)**
 
 ```mermaid
 graph LR
     T192[192 Calcul si depôt ex...]
     style T192 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T192
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#f59e0b
+    CC174[174 VersementRetrait]
+    style CC174 fill:#f59e0b
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#3fb950
+    CC174 --> CC193
+    CC190 --> CC193
+    CC163 --> CC174
+    CC163 --> CC190
+    CC1 --> CC163
+    CC193 --> T192
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [193](ADH-IDE-193.md) | Solde compte fin sejour | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -225,10 +255,15 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Calcul (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : Services de calcul purs (Domain Services).
+- Migrer la logique de calcul (stock, compteurs, montants)
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:19*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:53*

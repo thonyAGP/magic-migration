@@ -1,6 +1,6 @@
 ﻿# ADH IDE 31 - Write histo_Fus_Sep_Det
 
-> **Analyse**: Phases 1-4 2026-02-07 03:08 -> 03:09 (30s) | Assemblage 03:09
+> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (27s) | Assemblage 03:41
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,15 +18,29 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Write histo_Fus_Sep_Det** assure la gestion complete de ce processus.
+**Write histo_Fus_Sep_Det** assure la gestion complete de ce processus, accessible depuis [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Traitement** (1 tache) : traitements metier divers
 
 **Donnees modifiees** : 1 tables en ecriture (histo_fusionseparation_detail).
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>31 - Ecriture histo_Fus_Sep_Det
+
+**Role** : Traitement : Ecriture histo_Fus_Sep_Det.
+
 
 ## 5. REGLES METIER
 
@@ -34,7 +48,7 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 7
 
 <!-- TAB:Ecrans -->
@@ -45,10 +59,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **31.1** | [**Ecriture histo_Fus_Sep_Det** (31)](#t1) | MDI | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -149,22 +164,38 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Separation (IDE 27)](ADH-IDE-27.md) -> **Write histo_Fus_Sep_Det (IDE 31)**
+
+Main -> ... -> [Fusion (IDE 28)](ADH-IDE-28.md) -> **Write histo_Fus_Sep_Det (IDE 31)**
 
 ```mermaid
 graph LR
     T31[31 Write histo_Fus_Sep...]
     style T31 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T31
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC37[37 Menu changement compte]
+    style CC37 fill:#f59e0b
+    CC27[27 Separation]
+    style CC27 fill:#3fb950
+    CC28[28 Fusion]
+    style CC28 fill:#3fb950
+    CC37 --> CC27
+    CC37 --> CC28
+    CC163 --> CC37
+    CC1 --> CC163
+    CC27 --> T31
+    CC28 --> T31
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [27](ADH-IDE-27.md) | Separation | 11 |
+| [28](ADH-IDE-28.md) | Fusion | 10 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -199,6 +230,11 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Traitement (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
+- Decomposer les taches en services unitaires testables.
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
@@ -206,4 +242,4 @@ graph LR
 | histo_fusionseparation_detail | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:09*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:41*

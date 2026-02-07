@@ -1,199 +1,460 @@
 ﻿# ADH IDE 147 - Devises des tickets WS
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:06
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_143.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:50 (30s) | Assemblage 03:50
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Devises des tickets WS |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (9 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (14 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 147 |
-| **Fichier XML** | `Prg_143.xml` |
-| **Description** | Devises des tickets WS |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 14 |
-| **Lignes logique** | 149 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 147 |
+| Nom Programme | Devises des tickets WS |
+| Fichier source | `Prg_147.xml` |
+| Dossier IDE | Change |
+| Taches | 14 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 1 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 50 | moyens_reglement_mor | cafil028_dat | READ | Lecture |
-| 139 | moyens_reglement_mor | cafil117_dat | LINK/READ | Jointure+Lecture |
-| 232 | gestion_devise_session | caisse_devise | LINK/READ | Jointure+Lecture |
-| 250 | histo_sessions_caisse_devise | caisse_session_devise | LINK/READ | Jointure+Lecture |
-| 513 | pv_invoiceprintfiliationtmp | %club_user%_pv_filiations | LINK/WRITE | Jointure+Ecriture |
+**Devises des tickets WS** assure la gestion complete de ce processus, accessible depuis [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md), [Ouverture caisse (IDE 122)](ADH-IDE-122.md), [Ouverture caisse 143 (IDE 297)](ADH-IDE-297.md).
 
-**Resume**: 9 tables accedees dont **1 en ecriture**
+Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (8 taches) : traitements metier divers
+- **Creation** (3 taches) : insertion d'enregistrements en base (mouvements, prestations)
+- **Impression** (3 taches) : generation de tickets et documents
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Donnees modifiees** : 1 tables en ecriture (pv_invoiceprintfiliationtmp).
 
-### 2.4 Algorigramme
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Impression (3 taches)
+
+- **147** - Devises des tickets WS
+- **147.1** - Ticket ouverture
+- **147.2** - Ticket fermeture
+
+#### Phase 2 : Traitement (8 taches)
+
+- **147.1.1** - Avec devise session
+- **147.2.1** - Avec devise session
+- **147.2.2** - Avec histo devise
+- **147.2.3** - Solde fermeture
+- **147.2.3.1** - Solde fermeture
+- **147.2.3.1.1** - Total solde final
+- **147.2.3.2** - Solde fermeture
+- **147.2.3.2.1** - Total solde final
+
+Delegue a : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
+
+#### Phase 3 : Creation (3 taches)
+
+- **147.1.1.1** - Creation
+- **147.2.1.1** - Creation
+- **147.2.2.1** - creation
+
+#### Tables impactees
+
+| Table | Operations | Role metier |
+|-------|-----------|-------------|
+| pv_invoiceprintfiliationtmp | **W**/L (6 usages) | Services / filieres |
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Impression (3 taches)
+
+Generation des documents et tickets.
+
+---
+
+#### <a id="t1"></a>147 - Devises des tickets WS
+
+**Role** : Generation du document : Devises des tickets WS.
+**Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
+
+---
+
+#### <a id="t2"></a>147.1 - Ticket ouverture
+
+**Role** : Generation du document : Ticket ouverture.
+
+---
+
+#### <a id="t5"></a>147.2 - Ticket fermeture
+
+**Role** : Generation du document : Ticket fermeture.
+
+
+### 3.2 Traitement (8 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t3"></a>147.1.1 - Avec devise session
+
+**Role** : Traitement : Avec devise session.
+**Variables liees** : B (Param devise locale), C (Param N° session), F (Quantite devise)
+**Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
+
+---
+
+#### <a id="t6"></a>147.2.1 - Avec devise session
+
+**Role** : Traitement : Avec devise session.
+**Variables liees** : B (Param devise locale), C (Param N° session), F (Quantite devise)
+**Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
+
+---
+
+#### <a id="t8"></a>147.2.2 - Avec histo devise
+
+**Role** : Traitement : Avec histo devise.
+**Variables liees** : B (Param devise locale), F (Quantite devise)
+**Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
+
+---
+
+#### <a id="t10"></a>147.2.3 - Solde fermeture
+
+**Role** : Consultation/chargement : Solde fermeture.
+**Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
+
+---
+
+#### <a id="t11"></a>147.2.3.1 - Solde fermeture
+
+**Role** : Consultation/chargement : Solde fermeture.
+**Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
+
+---
+
+#### <a id="t12"></a>147.2.3.1.1 - Total solde final
+
+**Role** : Consultation/chargement : Total solde final.
+**Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
+
+---
+
+#### <a id="t13"></a>147.2.3.2 - Solde fermeture
+
+**Role** : Consultation/chargement : Solde fermeture.
+**Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
+
+---
+
+#### <a id="t14"></a>147.2.3.2.1 - Total solde final
+
+**Role** : Consultation/chargement : Total solde final.
+**Delegue a** : [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md)
+
+
+### 3.3 Creation (3 taches)
+
+Insertion de nouveaux enregistrements en base.
+
+---
+
+#### <a id="t4"></a>147.1.1.1 - Creation
+
+**Role** : Creation d'enregistrement : Creation.
+
+---
+
+#### <a id="t7"></a>147.2.1.1 - Creation
+
+**Role** : Creation d'enregistrement : Creation.
+
+---
+
+#### <a id="t9"></a>147.2.2.1 - creation
+
+**Role** : Creation d'enregistrement : creation.
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md), [Ouverture caisse (IDE 122)](ADH-IDE-122.md), [Ouverture caisse 143 (IDE 297)](ADH-IDE-297.md)
+- **Appelle**: 1 programmes | **Tables**: 5 (W:1 R:4 L:4) | **Taches**: 14 | **Expressions**: 3
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (14 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **147.1** | [**Devises des tickets WS** (147)](#t1) | MDI | - | Impression |
+| 147.1.1 | [Ticket ouverture (147.1)](#t2) | MDI | - | |
+| 147.1.2 | [Ticket fermeture (147.2)](#t5) | MDI | - | |
+| **147.2** | [**Avec devise session** (147.1.1)](#t3) | MDI | - | Traitement |
+| 147.2.1 | [Avec devise session (147.2.1)](#t6) | MDI | - | |
+| 147.2.2 | [Avec histo devise (147.2.2)](#t8) | MDI | - | |
+| 147.2.3 | [Solde fermeture (147.2.3)](#t10) | MDI | - | |
+| 147.2.4 | [Solde fermeture (147.2.3.1)](#t11) | MDI | - | |
+| 147.2.5 | [Total solde final (147.2.3.1.1)](#t12) | MDI | - | |
+| 147.2.6 | [Solde fermeture (147.2.3.2)](#t13) | MDI | - | |
+| 147.2.7 | [Total solde final (147.2.3.2.1)](#t14) | MDI | - | |
+| **147.3** | [**Creation** (147.1.1.1)](#t4) | MDI | - | Creation |
+| 147.3.1 | [Creation (147.2.1.1)](#t7) | MDI | - | |
+| 147.3.2 | [creation (147.2.2.1)](#t9) | MDI | - | |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>14 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 14 |
-| **Lignes logique** | 149 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 9 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (5)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 50 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 2 |
+| 139 | moyens_reglement_mor | Reglements / paiements | DB | R |   | L | 2 |
+| 232 | gestion_devise_session | Sessions de caisse | DB | R |   | L | 3 |
+| 250 | histo_sessions_caisse_devise | Sessions de caisse | DB | R |   | L | 2 |
+| 513 | pv_invoiceprintfiliationtmp | Services / filieres | TMP |   | **W** | L | 6 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (2 / 5 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 50 - moyens_reglement_mor (R) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 139 - moyens_reglement_mor (R/L) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 232 - gestion_devise_session (R/L) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| B | Param devise locale | R | Alpha |
+| C | Param N° session | R | Numeric |
+| F | Quantite devise | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 250 - histo_sessions_caisse_devise (R/L) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| B | Param devise locale | R | Alpha |
+| F | Quantite devise | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 513 - pv_invoiceprintfiliationtmp (**W**/L) - 6 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Autres (6)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | Param societe | Alpha | - |
+| B | Param devise locale | Alpha | - |
+| C | Param N° session | Numeric | - |
+| D | Param Quand | Alpha | 2x refs |
+| E | Param UNI/BI | Alpha | - |
+| F | Quantite devise | Numeric | - |
+
+## 12. EXPRESSIONS
+
+**3 / 3 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 2 | 0 |
+| OTHER | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 2 | `Param Quand [D]='F'` | - |
+| CONDITION | 1 | `Param Quand [D]='O'` | - |
+
+#### OTHER (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 3 | `DbDel ('{513,4}'DSOURCE,'')` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Fermeture caisse (IDE 131)](ADH-IDE-131.md) -> **Devises des tickets WS (IDE 147)**
+
+Main -> ... -> [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md) -> **Devises des tickets WS (IDE 147)**
+
+Main -> ... -> [Ouverture caisse (IDE 122)](ADH-IDE-122.md) -> **Devises des tickets WS (IDE 147)**
+
+Main -> ... -> [Ouverture caisse 143 (IDE 297)](ADH-IDE-297.md) -> **Devises des tickets WS (IDE 147)**
 
 ```mermaid
 graph LR
-    T[147 Devises des tic]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T147[147 Devises des ticket...]
+    style T147 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC281[281 Fermeture Sessions]
+    style CC281 fill:#f59e0b
+    CC298[298 Gestion caisse 142]
+    style CC298 fill:#f59e0b
+    CC121[121 Gestion caisse]
+    style CC121 fill:#f59e0b
+    CC131[131 Fermeture caisse]
+    style CC131 fill:#3fb950
+    CC122[122 Ouverture caisse]
+    style CC122 fill:#3fb950
+    CC299[299 Fermeture caisse 144]
+    style CC299 fill:#3fb950
+    CC297[297 Ouverture caisse 143]
+    style CC297 fill:#3fb950
+    CC121 --> CC122
+    CC298 --> CC122
+    CC121 --> CC131
+    CC298 --> CC131
+    CC121 --> CC297
+    CC298 --> CC297
+    CC121 --> CC299
+    CC298 --> CC299
+    CC163 --> CC121
+    CC281 --> CC121
+    CC163 --> CC298
+    CC281 --> CC298
+    CC1 --> CC163
+    CC1 --> CC281
+    CC122 --> T147
+    CC131 --> T147
+    CC297 --> T147
+    CC299 --> T147
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [131](ADH-IDE-131.md) | Fermeture caisse | 2 |
+| [299](ADH-IDE-299.md) | Fermeture caisse 144 | 2 |
+| [122](ADH-IDE-122.md) | Ouverture caisse | 1 |
+| [297](ADH-IDE-297.md) | Ouverture caisse 143 | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[147 Devises des tic]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T147[147 Devises des ticket...]
+    style T147 fill:#58a6ff
+    C145[145 Devises finales FF...]
+    T147 --> C145
+    style C145 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [145](ADH-IDE-145.md) | Devises finales F/F Qte WS | 2 | Sous-programme |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 149 | Programme compact |
+| Expressions | 3 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 149) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Impression (3 taches: 0 ecran, 3 traitements)
 
-### Complexite
+- **Strategie** : Templates HTML -> PDF via wkhtmltopdf ou Puppeteer.
+- `PrintService` injectable avec choix imprimante
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 14 | Moyen |
-| Tables | 9 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **MOYENNE** | - |
+#### Traitement (8 taches: 0 ecran, 8 traitements)
 
-### Points d'attention migration
+- **Strategie** : 8 service(s) backend injectable(s) (Domain Services).
+- 1 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- Decomposer les taches en services unitaires testables.
 
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+#### Creation (3 taches: 0 ecran, 3 traitements)
 
----
+- **Strategie** : Repository pattern avec Entity Framework Core.
+- Insertion via `IRepository<T>.CreateAsync()`
 
-## HISTORIQUE
+### 14.3 Dependances critiques
 
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:06 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| pv_invoiceprintfiliationtmp | Table WRITE (Temp) | 5x | Schema + repository |
+| [Devises finales F/F Qte WS (IDE 145)](ADH-IDE-145.md) | Sous-programme | 2x | Haute - Sous-programme |
 
 ---
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:50*

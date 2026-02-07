@@ -1,201 +1,336 @@
 ﻿# ADH IDE 103 - Facture - Sejour archive V3
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:04
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_99.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:48 (27s) | Assemblage 03:48
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Facture - Sejour archive V3 |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (8 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (6 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 103 |
-| **Fichier XML** | `Prg_99.xml` |
-| **Description** | Facture - Sejour archive V3 |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 6 |
-| **Lignes logique** | 270 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 103 |
+| Nom Programme | Facture - Sejour archive V3 |
+| Fichier source | `Prg_103.xml` |
+| Dossier IDE | Facturation |
+| Taches | 6 (0 ecrans visibles) |
+| Tables modifiees | 2 |
+| Programmes appeles | 0 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 744 | pv_lieux_vente | pv_lieux_vente | LINK | Jointure |
-| 746 | projet | version | LINK | Jointure |
-| 755 | cafil_address_tmp | cafil_address_tmp | LINK | Jointure |
-| 756 | Country_ISO | cafil_country_iso | LINK | Jointure |
-| 868 | Affectation_Gift_Pass | affectation_gift_pass | READ/WRITE | Lecture+Ecriture |
-| 870 | Rayons_Boutique | rayons_boutique | WRITE | Ecriture |
-| 871 | Activite | activite | LINK | Jointure |
+**Facture - Sejour archive V3** assure la gestion complete de ce processus, accessible depuis [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md).
 
-**Resume**: 8 tables accedees dont **2 en ecriture**
+Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (4 taches) : traitements metier divers
+- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
+- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Donnees modifiees** : 2 tables en ecriture (Affectation_Gift_Pass, Rayons_Boutique).
 
-### 2.4 Algorigramme
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Traitement (4 taches)
+
+- **103** - Hebergement **[[ECRAN]](#ecran-t1)**
+- **103.1** - Création
+- **103.2.1** - Maj Hebergement Temp
+- **103.3.1** - Maj Hebergement Temp
+
+#### Phase 2 : Calcul (1 tache)
+
+- **103.2** - Creation Lg Compta
+
+#### Phase 3 : Saisie (1 tache)
+
+- **103.3** - Creation Lg Vente **[[ECRAN]](#ecran-t5)**
+
+#### Tables impactees
+
+| Table | Operations | Role metier |
+|-------|-----------|-------------|
+| Affectation_Gift_Pass | R/**W** (4 usages) |  |
+| Rayons_Boutique | **W** (2 usages) |  |
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (4 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>103 - Hebergement [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : Hebergement.
+**Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t1)
+
+<details>
+<summary>3 sous-taches directes</summary>
+
+| Tache | Nom | Bloc |
+|-------|-----|------|
+| [103.1](#t2) | Création | Traitement |
+| [103.2.1](#t4) | Maj Hebergement Temp | Traitement |
+| [103.3.1](#t6) | Maj Hebergement Temp | Traitement |
+
+</details>
+**Variables liees** : D (V.Lien Hebergement_Pro)
+
+---
+
+#### <a id="t2"></a>103.1 - Création
+
+**Role** : Traitement : Création.
+
+---
+
+#### <a id="t4"></a>103.2.1 - Maj Hebergement Temp
+
+**Role** : Traitement : Maj Hebergement Temp.
+**Variables liees** : D (V.Lien Hebergement_Pro)
+
+---
+
+#### <a id="t6"></a>103.3.1 - Maj Hebergement Temp
+
+**Role** : Traitement : Maj Hebergement Temp.
+**Variables liees** : D (V.Lien Hebergement_Pro)
+
+
+### 3.2 Calcul (1 tache)
+
+Calculs metier : montants, stocks, compteurs.
+
+---
+
+#### <a id="t3"></a>103.2 - Creation Lg Compta
+
+**Role** : Creation d'enregistrement : Creation Lg Compta.
+
+
+### 3.3 Saisie (1 tache)
+
+L'operateur saisit les donnees de la transaction via 1 ecran (Creation Lg Vente).
+
+---
+
+#### <a id="t5"></a>103.3 - Creation Lg Vente [[ECRAN]](#ecran-t5)
+
+**Role** : Saisie des donnees : Creation Lg Vente.
+**Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t5)
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md)
+- **Appelle**: 0 programmes | **Tables**: 7 (W:2 R:1 L:5) | **Taches**: 6 | **Expressions**: 6
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (6 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **103.1** | [**Hebergement** (103)](#t1) [mockup](#ecran-t1) | - | 630x0 | Traitement |
+| 103.1.1 | [Création (103.1)](#t2) | - | - | |
+| 103.1.2 | [Maj Hebergement Temp (103.2.1)](#t4) | - | - | |
+| 103.1.3 | [Maj Hebergement Temp (103.3.1)](#t6) | - | - | |
+| **103.2** | [**Creation Lg Compta** (103.2)](#t3) | - | - | Calcul |
+| **103.3** | [**Creation Lg Vente** (103.3)](#t5) [mockup](#ecran-t5) | - | 630x0 | Saisie |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>6 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 2 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 6 |
-| **Lignes logique** | 270 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 8 |
-| **Tables en ecriture** | 2 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (7)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 744 | pv_lieux_vente | Donnees de ventes | DB |   |   | L | 1 |
+| 746 | projet |  | DB |   |   | L | 1 |
+| 755 | cafil_address_tmp | Services / filieres | DB |   |   | L | 2 |
+| 756 | Country_ISO |  | DB |   |   | L | 2 |
+| 868 | Affectation_Gift_Pass |  | DB | R | **W** |   | 4 |
+| 870 | Rayons_Boutique |  | DB |   | **W** |   | 2 |
+| 871 | Activite |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 868 - Affectation_Gift_Pass (R/**W**) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.Société | W | Alpha |
+| B | P.Num compte | W | Numeric |
+| C | P.Fliliation | W | Numeric |
+| D | V.Lien Hebergement_Pro | W | Logical |
+
+</details>
+
+<details>
+<summary>Table 870 - Rayons_Boutique (**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (3)
+
+Variables recues du programme appelant ([Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | P.Société | Alpha | 1x parametre entrant |
+| B | P.Num compte | Numeric | 1x parametre entrant |
+| C | P.Fliliation | Numeric | 1x parametre entrant |
+
+### 11.2 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| D | V.Lien Hebergement_Pro | Logical | - |
+
+## 12. EXPRESSIONS
+
+**6 / 6 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| OTHER | 6 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### OTHER (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 4 | `[G]` | - |
+| OTHER | 5 | `[H]` | - |
+| OTHER | 6 | `NOT([I])` | - |
+| OTHER | 1 | `P.Société [A]` | - |
+| OTHER | 2 | `P.Num compte [B]` | - |
+| ... | | *+1 autres* | |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Facture - Sejour archive V3 (IDE 103)**
 
 ```mermaid
 graph LR
-    T[103 Facture - Sejou]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T103[103 Facture - Sejour a...]
+    style T103 fill:#58a6ff
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [0](ADH-IDE-0.md) | Garantie sur compte PMS-584 | 2 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[103 Facture - Sejou]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T103[103 Facture - Sejour a...]
+    style T103 fill:#58a6ff
+    NONE[Aucun callee]
+    T103 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 270 | Taille moyenne |
+| Expressions | 6 | Peu de logique |
+| Tables WRITE | 2 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 270) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (4 taches: 1 ecran, 3 traitements)
 
-### Complexite
+- **Strategie** : Orchestrateur avec 1 ecrans (Razor/React) et 3 traitements backend (services).
+- Les ecrans deviennent des composants UI, les traitements invisibles deviennent des services injectables.
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 6 | Moyen |
-| Tables | 8 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **MOYENNE** | - |
+#### Calcul (1 tache: 0 ecran, 1 traitement)
 
-### Points d'attention migration
+- **Strategie** : Services de calcul purs (Domain Services).
+- Migrer la logique de calcul (stock, compteurs, montants)
 
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+#### Saisie (1 tache: 1 ecran, 0 traitement)
 
----
+- **Strategie** : Formulaire React/Blazor avec validation Zod/FluentValidation.
+- Reproduire 1 ecran : Creation Lg Vente
+- Validation temps reel cote client + serveur
 
-## HISTORIQUE
+### 14.3 Dependances critiques
 
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:04 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| Affectation_Gift_Pass | Table WRITE (Database) | 3x | Schema + repository |
+| Rayons_Boutique | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:48*

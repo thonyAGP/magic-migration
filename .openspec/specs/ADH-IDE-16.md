@@ -1,195 +1,915 @@
 ﻿# ADH IDE 16 - Browse - Countries iso
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 22:59
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_12.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:39 (27s) | Assemblage 03:39
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | Browse - Countries iso |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (4 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 16 |
-| **Fichier XML** | `Prg_12.xml` |
-| **Description** | Browse - Countries iso |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 4 |
-| **Lignes logique** | 43 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 16 |
+| Nom Programme | Browse - Countries iso |
+| Fichier source | `Prg_16.xml` |
+| Dossier IDE | General |
+| Taches | 4 (3 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 784 | type_repas_nenc_vill | type_repas_nenc_vill | WRITE | Ecriture |
+**Browse - Countries iso** assure la gestion complete de ce processus, accessible depuis [Menu Data Catching (IDE 7)](ADH-IDE-7.md).
 
-**Resume**: 1 tables accedees dont **1 en ecriture**
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (4 taches) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Donnees modifiees** : 1 tables en ecriture (type_repas_nenc_vill).
 
-### 2.4 Algorigramme
+<details>
+<summary>Detail : phases du traitement</summary>
+
+#### Phase 1 : Traitement (4 taches)
+
+- **16** - Browse - Countries iso **[[ECRAN]](#ecran-t1)**
+- **16.1** - List of countries **[[ECRAN]](#ecran-t2)**
+- **16.2** - List of countries **[[ECRAN]](#ecran-t3)**
+- **16.3** - List of countries **[[ECRAN]](#ecran-t4)**
+
+#### Tables impactees
+
+| Table | Operations | Role metier |
+|-------|-----------|-------------|
+| type_repas_nenc_vill | **W** (3 usages) |  |
+
+</details>
+
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (4 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>16 - Browse - Countries iso [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : Browse - Countries iso.
+**Ecran** : 537 x 331 DLU (MDI) | [Voir mockup](#ecran-t1)
+
+<details>
+<summary>3 sous-taches directes</summary>
+
+| Tache | Nom | Bloc |
+|-------|-----|------|
+| [16.1](#t2) | List of countries **[[ECRAN]](#ecran-t2)** | Traitement |
+| [16.2](#t3) | List of countries **[[ECRAN]](#ecran-t3)** | Traitement |
+| [16.3](#t4) | List of countries **[[ECRAN]](#ecran-t4)** | Traitement |
+
+</details>
+
+---
+
+#### <a id="t2"></a>16.1 - List of countries [[ECRAN]](#ecran-t2)
+
+**Role** : Traitement : List of countries.
+**Ecran** : 537 x 331 DLU (MDI) | [Voir mockup](#ecran-t2)
+
+---
+
+#### <a id="t3"></a>16.2 - List of countries [[ECRAN]](#ecran-t3)
+
+**Role** : Traitement : List of countries.
+**Ecran** : 537 x 331 DLU (MDI) | [Voir mockup](#ecran-t3)
+
+---
+
+#### <a id="t4"></a>16.3 - List of countries [[ECRAN]](#ecran-t4)
+
+**Role** : Traitement : List of countries.
+**Ecran** : 537 x 331 DLU (MDI) | [Voir mockup](#ecran-t4)
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Menu Data Catching (IDE 7)](ADH-IDE-7.md)
+- **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 4 | **Expressions**: 3
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (3 / 4)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 16.1 | 16.1 | List of countries | MDI | 537 | 331 | Traitement |
+| 2 | 16.2 | 16.2 | List of countries | MDI | 537 | 331 | Traitement |
+| 3 | 16.3 | 16.3 | List of countries | MDI | 537 | 331 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t2"></a>16.1 - List of countries
+**Tache** : [16.1](#t2) | **Type** : MDI | **Dimensions** : 537 x 331 DLU
+**Bloc** : Traitement | **Titre IDE** : List of countries
+
+<!-- FORM-DATA:
+{
+    "width":  537,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  4,
+    "controls":  [
+                     {
+                         "x":  2,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  1,
+                         "w":  532,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  39,
+                         "color":  "200",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  21,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  13,
+                         "w":  512,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  14,
+                         "color":  "205",
+                         "text":  "Please choose your country of residence from the list and click \"Select\"",
+                         "parent":  1
+                     },
+                     {
+                         "x":  59,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  48,
+                         "w":  117,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  13,
+                         "color":  "201",
+                         "text":  "Countries",
+                         "parent":  null
+                     },
+                     {
+                         "x":  78,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  12,
+                         "color":  "110",
+                         "w":  323,
+                         "y":  64,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  19,
+                         "h":  209,
+                         "cols":  [
+                                      {
+                                          "title":  "",
+                                          "layer":  1,
+                                          "w":  309
+                                      }
+                                  ],
+                         "rows":  1
+                     },
+                     {
+                         "x":  90,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  67,
+                         "w":  293,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  12,
+                         "color":  "205",
+                         "text":  "",
+                         "parent":  7
+                     },
+                     {
+                         "x":  401,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  63,
+                         "w":  60,
+                         "fmt":  "ñ",
+                         "name":  "",
+                         "h":  106,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  473,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  63,
+                         "w":  60,
+                         "fmt":  "Ù",
+                         "name":  "",
+                         "h":  106,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  401,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  170,
+                         "w":  60,
+                         "fmt":  "ò",
+                         "name":  "",
+                         "h":  102,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  473,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  170,
+                         "w":  60,
+                         "fmt":  "Ú",
+                         "name":  "",
+                         "h":  102,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  41,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  296,
+                         "w":  93,
+                         "fmt":  "Exit",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  402,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  296,
+                         "w":  93,
+                         "fmt":  "Select",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  96,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  63,
+                         "w":  311,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  234,
+                         "color":  "6",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "16.1",
+    "height":  331
+}
+-->
+
+<details>
+<summary><strong>Champs : 1 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 90,67 | (sans nom) | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 6 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| ñ | 401,63 | Bouton fonctionnel |
+| Ù | 473,63 | Bouton fonctionnel |
+| ò | 401,170 | Bouton fonctionnel |
+| Ú | 473,170 | Bouton fonctionnel |
+| Exit | 41,296 | Quitte le programme |
+| Select | 402,296 | Ouvre la selection |
+
+</details>
+
+---
+
+#### <a id="ecran-t3"></a>16.2 - List of countries
+**Tache** : [16.2](#t3) | **Type** : MDI | **Dimensions** : 537 x 331 DLU
+**Bloc** : Traitement | **Titre IDE** : List of countries
+
+<!-- FORM-DATA:
+{
+    "width":  537,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  4,
+    "controls":  [
+                     {
+                         "x":  2,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  1,
+                         "w":  532,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  39,
+                         "color":  "200",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  16,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  13,
+                         "w":  516,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  14,
+                         "color":  "205",
+                         "text":  "Veuillez s\u0027il vous plait, choisir, votre pays de résidence dans la liste, et appuyer sur \"Select\"",
+                         "parent":  1
+                     },
+                     {
+                         "x":  59,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  48,
+                         "w":  117,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  13,
+                         "color":  "201",
+                         "text":  "Pays",
+                         "parent":  null
+                     },
+                     {
+                         "x":  78,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  12,
+                         "color":  "205",
+                         "w":  323,
+                         "y":  64,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  19,
+                         "h":  209,
+                         "cols":  [
+                                      {
+                                          "title":  "",
+                                          "layer":  1,
+                                          "w":  309
+                                      }
+                                  ],
+                         "rows":  1
+                     },
+                     {
+                         "x":  90,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  67,
+                         "w":  293,
+                         "fmt":  "U30",
+                         "name":  "",
+                         "h":  12,
+                         "color":  "205",
+                         "text":  "",
+                         "parent":  7
+                     },
+                     {
+                         "x":  401,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  63,
+                         "w":  60,
+                         "fmt":  "ñ",
+                         "name":  "",
+                         "h":  106,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  473,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  63,
+                         "w":  60,
+                         "fmt":  "Ù",
+                         "name":  "",
+                         "h":  106,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  401,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  170,
+                         "w":  60,
+                         "fmt":  "ò",
+                         "name":  "",
+                         "h":  102,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  473,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  170,
+                         "w":  60,
+                         "fmt":  "Ú",
+                         "name":  "",
+                         "h":  102,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  41,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  296,
+                         "w":  93,
+                         "fmt":  "Retour",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  402,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  296,
+                         "w":  93,
+                         "fmt":  "Selectionner",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  96,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  63,
+                         "w":  311,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  234,
+                         "color":  "6",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "16.2",
+    "height":  331
+}
+-->
+
+<details>
+<summary><strong>Champs : 1 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 90,67 | U30 | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 6 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| ñ | 401,63 | Bouton fonctionnel |
+| Ù | 473,63 | Bouton fonctionnel |
+| ò | 401,170 | Bouton fonctionnel |
+| Ú | 473,170 | Bouton fonctionnel |
+| Retour | 41,296 | Annule et retour au menu |
+| Selectionner | 402,296 | Ouvre la selection |
+
+</details>
+
+---
+
+#### <a id="ecran-t4"></a>16.3 - List of countries
+**Tache** : [16.3](#t4) | **Type** : MDI | **Dimensions** : 537 x 331 DLU
+**Bloc** : Traitement | **Titre IDE** : List of countries
+
+<!-- FORM-DATA:
+{
+    "width":  537,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  4,
+    "controls":  [
+                     {
+                         "x":  2,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  1,
+                         "w":  532,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  39,
+                         "color":  "200",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  16,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  13,
+                         "w":  516,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  14,
+                         "color":  "205",
+                         "text":  "Veuillez s\u0027il vous plait, choisir, votre pays de résidence dans la liste, et appuyer sur \"Select\"",
+                         "parent":  1
+                     },
+                     {
+                         "x":  59,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  48,
+                         "w":  117,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  13,
+                         "color":  "201",
+                         "text":  "Pays",
+                         "parent":  null
+                     },
+                     {
+                         "x":  78,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  12,
+                         "color":  "205",
+                         "w":  323,
+                         "y":  64,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  19,
+                         "h":  209,
+                         "cols":  [
+                                      {
+                                          "title":  "",
+                                          "layer":  1,
+                                          "w":  309
+                                      }
+                                  ],
+                         "rows":  1
+                     },
+                     {
+                         "x":  90,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  67,
+                         "w":  293,
+                         "fmt":  "U30",
+                         "name":  "",
+                         "h":  12,
+                         "color":  "205",
+                         "text":  "",
+                         "parent":  7
+                     },
+                     {
+                         "x":  401,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  63,
+                         "w":  60,
+                         "fmt":  "ñ",
+                         "name":  "",
+                         "h":  106,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  473,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  63,
+                         "w":  60,
+                         "fmt":  "Ù",
+                         "name":  "",
+                         "h":  106,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  401,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  170,
+                         "w":  60,
+                         "fmt":  "ò",
+                         "name":  "",
+                         "h":  102,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  473,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  170,
+                         "w":  60,
+                         "fmt":  "Ú",
+                         "name":  "",
+                         "h":  102,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  41,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  296,
+                         "w":  93,
+                         "fmt":  "Retour",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  402,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  296,
+                         "w":  93,
+                         "fmt":  "Selectionner",
+                         "name":  "",
+                         "h":  29,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  96,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  63,
+                         "w":  311,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  234,
+                         "color":  "6",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "16.3",
+    "height":  331
+}
+-->
+
+<details>
+<summary><strong>Champs : 1 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 90,67 | U30 | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 6 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| ñ | 401,63 | Bouton fonctionnel |
+| Ù | 473,63 | Bouton fonctionnel |
+| ò | 401,170 | Bouton fonctionnel |
+| Ú | 473,170 | Bouton fonctionnel |
+| Retour | 41,296 | Annule et retour au menu |
+| Selectionner | 402,296 | Ouvre la selection |
+
+</details>
+
+## 9. NAVIGATION
+
+### 9.1 Enchainement des ecrans
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>4 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
-
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
-
+    START([Entree])
     style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    VF2[16.1 List of countries]
+    style VF2 fill:#58a6ff
+    VF3[16.2 List of countries]
+    style VF3 fill:#58a6ff
+    VF4[16.3 List of countries]
+    style VF4 fill:#58a6ff
+    FIN([Sortie])
+    style FIN fill:#f85149
+    START --> VF2
+    VF2 --> FIN
 ```
 
-### 2.5 Statistiques
+**Detail par enchainement :**
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 4 |
-| **Lignes logique** | 43 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+| Depuis | Action | Vers | Retour |
+|--------|--------|------|--------|
 
----
+### 9.3 Structure hierarchique (4 taches)
 
-<!-- TAB:Cartographie -->
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **16.1** | [**Browse - Countries iso** (16)](#t1) [mockup](#ecran-t1) | MDI | 537x331 | Traitement |
+| 16.1.1 | [List of countries (16.1)](#t2) [mockup](#ecran-t2) | MDI | 537x331 | |
+| 16.1.2 | [List of countries (16.2)](#t3) [mockup](#ecran-t3) | MDI | 537x331 | |
+| 16.1.3 | [List of countries (16.3)](#t4) [mockup](#ecran-t4) | MDI | 537x331 | |
 
-## CARTOGRAPHIE APPLICATIVE
+### 9.4 Algorigramme
 
-### 3.1 Chaine d'appels depuis Main
+```mermaid
+flowchart TD
+    START([START])
+    INIT[Init controles]
+    SAISIE[ANG]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+```
+
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+
+<!-- TAB:Donnees -->
+
+## 10. TABLES
+
+### Tables utilisees (1)
+
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 784 | type_repas_nenc_vill |  | DB |   | **W** |   | 3 |
+
+### Colonnes par table (0 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 784 - type_repas_nenc_vill (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Autres (2)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | PARAM LANGUAGE | Alpha | - |
+| B | PARAM COUNTRY CODE ISO | Alpha | - |
+
+## 12. EXPRESSIONS
+
+**3 / 3 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 3 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 3 | `GetParam ('LANGUAGE')='SPA'` | - |
+| CONDITION | 2 | `GetParam ('LANGUAGE')='FRE'` | - |
+| CONDITION | 1 | `GetParam ('LANGUAGE')<>'FRE'` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Menu Data Catching (IDE 7)](ADH-IDE-7.md) -> **Browse - Countries iso (IDE 16)**
 
 ```mermaid
 graph LR
-    T[16 Browse - Countr]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T16[16 Browse - Countries iso]
+    style T16 fill:#58a6ff
+    CC7[7 Menu Data Catching]
+    style CC7 fill:#8b5cf6
+    CC7 --> T16
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [7](ADH-IDE-7.md) | Menu Data Catching | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[16 Browse - Countr]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T16[16 Browse - Countries iso]
+    style T16 fill:#58a6ff
+    NONE[Aucun callee]
+    T16 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 43 | Programme compact |
+| Expressions | 3 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 3 | Quelques ecrans |
+| Code desactive | 0% (0 / 43) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (4 taches: 4 ecrans, 0 traitement)
 
-### Complexite
+- **Strategie** : 4 composant(s) UI (Razor/React) avec formulaires et validation.
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 4 | Simple |
-| Tables | 1 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+### 14.3 Dependances critiques
 
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| type_repas_nenc_vill | Table WRITE (Database) | 3x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 22:59 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*

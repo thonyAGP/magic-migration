@@ -1,196 +1,304 @@
-﻿# ADH IDE 8 -      Set Village info
+﻿# ADH IDE 8 - Set Village info
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 22:58
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_4.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 03:39
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** |      Set Village info |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (2 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (2 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 8 |
-| **Fichier XML** | `Prg_4.xml` |
-| **Description** |      Set Village info |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 2 |
-| **Lignes logique** | 76 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 8 |
+| Nom Programme | Set Village info |
+| Fichier source | `Prg_8.xml` |
+| Dossier IDE | General |
+| Taches | 2 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 372 | pv_budget | pv_budget_dat | LINK | Jointure |
-| 904 | Boo_AvailibleEmployees | Boo_AvailibleEmployees | READ | Lecture |
+**Set Village info** assure la gestion complete de ce processus, accessible depuis [Menu Data Catching (IDE 7)](ADH-IDE-7.md).
 
-**Resume**: 2 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (2 taches) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+### 3.1 Traitement (2 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>8 - Set Village Address
+
+**Role** : Traitement : Set Village Address.
+**Variables liees** : A (V lien adresse_service_village)
+
+---
+
+#### <a id="t2"></a>8.1 - Load Buffer
+
+**Role** : Traitement : Load Buffer.
+**Variables liees** : B (Buffer)
+
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Menu Data Catching (IDE 7)](ADH-IDE-7.md)
+- **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 2 | **Expressions**: 22
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (2 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **8.1** | [**Set Village Address** (8)](#t1) | MDI | - | Traitement |
+| 8.1.1 | [Load Buffer (8.1)](#t2) | MDI | - | |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>2 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 2 |
-| **Lignes logique** | 76 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 2 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (2)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 372 | pv_budget |  | DB |   |   | L | 1 |
+| 904 | Boo_AvailibleEmployees |  | DB | R |   |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 904 - Boo_AvailibleEmployees (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | V lien adresse_service_village | R | Logical |
+| B | Buffer | R | Alpha |
+| C | CounterTel | R | Numeric |
+| D | CounterFax | R | Numeric |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | V lien adresse_service_village | Logical | - |
+
+### 11.2 Autres (3)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| B | Buffer | Alpha | - |
+| C | CounterTel | Numeric | - |
+| D | CounterFax | Numeric | - |
+
+## 12. EXPRESSIONS
+
+**22 / 22 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONSTANTE | 1 | 0 |
+| OTHER | 10 | 0 |
+| NEGATION | 1 | 0 |
+| STRING | 10 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONSTANTE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 22 | `''` | - |
+
+#### OTHER (10 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 13 | `SetParam ('VI_FAXN',MID ([AE],775,128))` | - |
+| OTHER | 11 | `SetParam ('VI_PHON',MID ([AE],646,128))` | - |
+| OTHER | 15 | `SetParam ('VI_MAIL',MID ([AE],904,128))` | - |
+| OTHER | 19 | `SetParam ('VI_VATN',MID ([AE],1162,128))` | - |
+| OTHER | 17 | `SetParam ('VI_SIRE',MID ([AE],1033,128))` | - |
+| ... | | *+5 autres* | |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 21 | `NOT ([Q])` | - |
+
+#### STRING (10 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 14 | `SetParam ('VI_FAXN','Fax  '&Trim([AA]))` | - |
+| STRING | 12 | `SetParam ('VI_PHON','Tel  '&Trim([Z]))` | - |
+| STRING | 16 | `SetParam ('VI_MAIL',Trim([AD]))` | - |
+| STRING | 20 | `SetParam ('VI_VATN',Trim([AC]))` | - |
+| STRING | 18 | `SetParam ('VI_SIRE',Trim([AB]))` | - |
+| ... | | *+5 autres* | |
+
+### 12.3 Toutes les expressions (22)
+
+<details>
+<summary>Voir les 22 expressions</summary>
+
+#### CONSTANTE (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 22 | `''` |
+
+#### OTHER (10)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 1 | `SetParam ('VI_CLUB',MID ([AE],1,128))` |
+| 3 | `SetParam ('VI_NAME',MID ([AE],130,128))` |
+| 5 | `SetParam ('VI_ADR1',MID ([AE],259,128))` |
+| 7 | `SetParam ('VI_ADR2',MID ([AE],388,128))` |
+| 9 | `SetParam ('VI_ZIPC',MID ([AE],517,128))` |
+| 11 | `SetParam ('VI_PHON',MID ([AE],646,128))` |
+| 13 | `SetParam ('VI_FAXN',MID ([AE],775,128))` |
+| 15 | `SetParam ('VI_MAIL',MID ([AE],904,128))` |
+| 17 | `SetParam ('VI_SIRE',MID ([AE],1033,128))` |
+| 19 | `SetParam ('VI_VATN',MID ([AE],1162,128))` |
+
+#### NEGATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 21 | `NOT ([Q])` |
+
+#### STRING (10)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 2 | `SetParam ('VI_CLUB',Trim([T]))` |
+| 4 | `SetParam ('VI_NAME',Trim([U]))` |
+| 6 | `SetParam ('VI_ADR1',Trim([V]))` |
+| 8 | `SetParam ('VI_ADR2',Trim([W]))` |
+| 10 | `SetParam ('VI_ZIPC',Trim([Y]))` |
+| 12 | `SetParam ('VI_PHON','Tel  '&Trim([Z]))` |
+| 14 | `SetParam ('VI_FAXN','Fax  '&Trim([AA]))` |
+| 16 | `SetParam ('VI_MAIL',Trim([AD]))` |
+| 18 | `SetParam ('VI_SIRE',Trim([AB]))` |
+| 20 | `SetParam ('VI_VATN',Trim([AC]))` |
+
+</details>
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Menu Data Catching (IDE 7)](ADH-IDE-7.md) -> **Set Village info (IDE 8)**
 
 ```mermaid
 graph LR
-    T[8      Set Villag]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T8[8 Set Village info]
+    style T8 fill:#58a6ff
+    CC7[7 Menu Data Catching]
+    style CC7 fill:#8b5cf6
+    CC7 --> T8
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [7](ADH-IDE-7.md) | Menu Data Catching | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[8      Set Villag]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T8[8 Set Village info]
+    style T8 fill:#58a6ff
+    NONE[Aucun callee]
+    T8 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 76 | Programme compact |
+| Expressions | 22 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 76) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (2 taches: 0 ecran, 2 traitements)
 
-### Complexite
+- **Strategie** : 2 service(s) backend injectable(s) (Domain Services).
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 2 | Simple |
-| Tables | 2 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+### 14.3 Dependances critiques
 
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 22:58 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*

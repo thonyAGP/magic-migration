@@ -1,6 +1,6 @@
 ﻿# ADH IDE 9 - System avail (top left corner
 
-> **Analyse**: 2026-02-07 03:04
+> **Analyse**: 2026-02-07 03:39
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: System avail (top left corner
 - **Tables modifiees**: 1
 - **Complexite**: **BASSE** (7/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 1 programme(s): Menu Data Catching (IDE 7)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
+| **Appele par** | [Menu Data Catching (IDE 7)](ADH-IDE-7.md) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

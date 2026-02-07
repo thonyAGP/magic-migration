@@ -1,6 +1,6 @@
 ﻿# ADH IDE 11 - Export - address
 
-> **Analyse**: Phases 1-4 2026-02-07 03:04 -> 03:04 (30s) | Assemblage 03:04
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 03:39
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -15,20 +15,35 @@
 | Nom Programme | Export - address |
 | Fichier source | `Prg_11.xml` |
 | Dossier IDE | General |
-| Taches | 1 (0 ecrans visibles) |
+| Taches | 1 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Export - address** assure la gestion complete de ce processus.
+**Export - address** assure la gestion complete de ce processus, accessible depuis [Print list Checkout (shift F9) (IDE 10)](ADH-IDE-10.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Traitement** (1 tache) : traitements metier divers
 
 **Donnees modifiees** : 1 tables en ecriture (address_data_catching).
 
 **Logique metier** : 1 regles identifiees couvrant conditions metier.
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>11 - Export - address [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : Export - address.
+**Ecran** : 364 x 46 DLU (MDI) | [Voir mockup](#ecran-t1)
+
 
 ## 5. REGLES METIER
 
@@ -48,21 +63,71 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Print list Checkout (shift F9) (IDE 10)](ADH-IDE-10.md)
 - **Appelle**: 0 programmes | **Tables**: 3 (W:1 R:0 L:2) | **Taches**: 1 | **Expressions**: 11
 
 <!-- TAB:Ecrans -->
 
 ## 8. ECRANS
 
-*(Programme sans ecran visible)*
+### 8.1 Forms visibles (1 / 1)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 11 | 11 | Export - address | MDI | 364 | 46 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>11 - Export - address
+**Tache** : [11](#t1) | **Type** : MDI | **Dimensions** : 364 x 46 DLU
+**Bloc** : Traitement | **Titre IDE** : Export - address
+
+<!-- FORM-DATA:
+{
+    "width":  364,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  4,
+    "controls":  [
+                     {
+                         "x":  22,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  18,
+                         "w":  320,
+                         "fmt":  "60",
+                         "name":  "",
+                         "h":  11,
+                         "color":  "6",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "11",
+    "height":  46
+}
+-->
+
+<details>
+<summary><strong>Champs : 1 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 22,18 | 60 | - | edit |
+
+</details>
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+Ecran unique: **Export - address**
+
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **11.1** | [**Export - address** (11)](#t1) [mockup](#ecran-t1) | MDI | 364x46 | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -155,22 +220,25 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Print list Checkout (shift F9) (IDE 10)](ADH-IDE-10.md) -> **Export - address (IDE 11)**
 
 ```mermaid
 graph LR
     T11[11 Export - address]
     style T11 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T11
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC7[7 Menu Data Catching]
+    style CC7 fill:#8b5cf6
+    CC10[10 Print list Checkout...]
+    style CC10 fill:#3fb950
+    CC7 --> CC10
+    CC10 --> T11
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [10](ADH-IDE-10.md) | Print list Checkout (shift F9) | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -199,11 +267,16 @@ graph LR
 | Expressions | 11 | Peu de logique |
 | Tables WRITE | 1 | Impact faible |
 | Sous-programmes | 0 | Peu de dependances |
-| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 68) | Code sain |
 | Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
+
+#### Traitement (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : 1 composant(s) UI (Razor/React) avec formulaires et validation.
+- Decomposer les taches en services unitaires testables.
 
 ### 14.3 Dependances critiques
 
@@ -212,4 +285,4 @@ graph LR
 | address_data_catching | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:04*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*

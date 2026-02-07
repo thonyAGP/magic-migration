@@ -1,6 +1,6 @@
 ﻿# ADH IDE 104 - Maj Hebergement Tempo V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:14 -> 03:15 (30s) | Assemblage 03:15
+> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:48 (27s) | Assemblage 03:48
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,13 +18,29 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Maj Hebergement Tempo V3** assure la gestion complete de ce processus.
+**Maj Hebergement Tempo V3** assure la gestion complete de ce processus, accessible depuis [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md).
+
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
+
+- **Traitement** (1 tache) : traitements metier divers
 
 ## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>104 - Maj Hebergement Tempo V3 [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : Maj Hebergement Tempo V3.
+**Ecran** : 672 x 0 DLU | [Voir mockup](#ecran-t1)
+**Variables liees** : H (V.Lien Hebergement_Pro)
+
 
 ## 5. REGLES METIER
 
@@ -32,7 +48,7 @@
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)
 - **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 9
 
 <!-- TAB:Ecrans -->
@@ -43,10 +59,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **104.1** | [**Maj Hebergement Tempo V3** (104)](#t1) [mockup](#ecran-t1) | - | 672x0 | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -100,7 +117,7 @@ flowchart TD
 
 ### 11.1 Parametres entrants (7)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
@@ -156,22 +173,41 @@ Variables persistantes pendant toute la session.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) -> **Maj Hebergement Tempo V3 (IDE 104)**
 
 ```mermaid
 graph LR
     T104[104 Maj Hebergement Te...]
     style T104 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T104
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC174[174 VersementRetrait]
+    style CC174 fill:#8b5cf6
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#f59e0b
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#f59e0b
+    CC97[97 Factures Tble Compt...]
+    style CC97 fill:#3fb950
+    CC163 --> CC97
+    CC190 --> CC97
+    CC193 --> CC97
+    CC1 --> CC163
+    CC174 --> CC163
+    CC1 --> CC190
+    CC174 --> CC190
+    CC1 --> CC193
+    CC174 --> CC193
+    CC97 --> T104
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [97](ADH-IDE-97.md) | Factures (Tble Compta&Vent) V3 | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -206,10 +242,15 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Traitement (1 tache: 1 ecran, 0 traitement)
+
+- **Strategie** : 1 composant(s) UI (Razor/React) avec formulaires et validation.
+- Decomposer les taches en services unitaires testables.
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:15*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:48*

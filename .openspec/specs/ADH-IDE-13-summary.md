@@ -1,6 +1,6 @@
 ﻿# ADH IDE 13 - calculate week #
 
-> **Analyse**: 2026-02-07 03:05
+> **Analyse**: 2026-02-07 03:39
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: calculate week #
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 1 programme(s): Catching stats (IDE 12)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
+| **Appele par** | [Catching stats (IDE 12)](ADH-IDE-12.md) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

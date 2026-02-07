@@ -1,6 +1,6 @@
 ﻿# ADH IDE 11 - Export - address
 
-> **Analyse**: 2026-02-07 03:04
+> **Analyse**: 2026-02-07 03:39
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Export - address
 - **Tables modifiees**: 1
 - **Complexite**: **BASSE** (7/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 1 programme(s): Print list Checkout (shift F9) (IDE 10)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
+| **Appele par** | [Print list Checkout (shift F9) (IDE 10)](ADH-IDE-10.md) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

@@ -1,195 +1,984 @@
 ﻿# ADH IDE 15 - keyboard
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 22:59
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_11.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:39 (28s) | Assemblage 03:39
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur (utilisateur connecte) |
-| **Quoi** | keyboard |
-| **Pourquoi** | Fonction metier du module ADH |
-| **Declencheur** | Appel depuis programme parent ou menu |
-| **Resultat** | Traitement effectue selon logique programme |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (0 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (2 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 15 |
-| **Fichier XML** | `Prg_11.xml` |
-| **Description** | keyboard |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 2 |
-| **Lignes logique** | 18 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 15 |
+| Nom Programme | keyboard |
+| Fichier source | `Prg_15.xml` |
+| Dossier IDE | General |
+| Taches | 2 (1 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| - | Aucune table | - | - | - |
+**keyboard** assure la gestion complete de ce processus, accessible depuis [Menu Data Catching (IDE 7)](ADH-IDE-7.md).
 
-**Resume**: 0 tables accedees dont **0 en ecriture**
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
-### 2.3 Parametres d'entree (0 parametres)
+- **Traitement** (2 taches) : traitements metier divers
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+**Logique metier** : 1 regles identifiees couvrant conditions metier.
 
-### 2.4 Algorigramme
+## 3. BLOCS FONCTIONNELS
+
+### 3.1 Traitement (2 taches)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>15 - Keyboard ENG [[ECRAN]](#ecran-t1)
+
+**Role** : Traitement : Keyboard ENG.
+**Ecran** : 680 x 356 DLU (MDI) | [Voir mockup](#ecran-t1)
+**Variables liees** : C (v.keyboard control name prev)
+
+---
+
+#### <a id="t2"></a>15.1 - Keyboard [[ECRAN]](#ecran-t2)
+
+**Role** : Traitement : Keyboard.
+**Ecran** : 199 x 80 DLU (MDI) | [Voir mockup](#ecran-t2)
+**Variables liees** : C (v.keyboard control name prev)
+
+
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Si GetParam ('LANGUAGE')='SPA' alors 3 sinon IF (GetParam ('LANGUAGE')='FRE',2,1))
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('LANGUAGE')='SPA'` |
+| **Si vrai** | 3 |
+| **Si faux** | IF (GetParam ('LANGUAGE')='FRE',2,1)) |
+| **Expression source** | Expression 1 : `IF (GetParam ('LANGUAGE')='SPA',3,IF (GetParam ('LANGUAGE')=` |
+| **Exemple** | Si GetParam ('LANGUAGE')='SPA' â†’ 3. Sinon â†’ IF (GetParam ('LANGUAGE')='FRE',2,1)) |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Menu Data Catching (IDE 7)](ADH-IDE-7.md)
+- **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 2 | **Expressions**: 4
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+### 8.1 Forms visibles (1 / 2)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 15 | 15 | Keyboard ENG | MDI | 680 | 356 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t1"></a>15 - Keyboard ENG
+**Tache** : [15](#t1) | **Type** : MDI | **Dimensions** : 680 x 356 DLU
+**Bloc** : Traitement | **Titre IDE** : Keyboard ENG
+
+<!-- FORM-DATA:
+{
+    "width":  680,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  4,
+    "controls":  [
+                     {
+                         "x":  3,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  3,
+                         "w":  674,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  39,
+                         "color":  "200",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  21,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  13,
+                         "w":  512,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  14,
+                         "color":  "205",
+                         "text":  "Please enter your information with the use of the keyboard. Then click \"Continue\"",
+                         "parent":  1
+                     },
+                     {
+                         "x":  142,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  46,
+                         "w":  397,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  19,
+                         "color":  "201",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  142,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  66,
+                         "w":  397,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  19,
+                         "color":  "204",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  503,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  314,
+                         "w":  83,
+                         "fmt":  "Continue",
+                         "name":  "",
+                         "h":  28,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  22,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  98,
+                         "w":  52,
+                         "fmt":  "-",
+                         "name":  "*-",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  74,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  98,
+                         "w":  52,
+                         "fmt":  "_",
+                         "name":  "*_",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  126,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  98,
+                         "w":  52,
+                         "fmt":  ".",
+                         "name":  "*.",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  178,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  98,
+                         "w":  52,
+                         "fmt":  "/",
+                         "name":  "*/",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  230,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  98,
+                         "w":  52,
+                         "fmt":  "@",
+                         "name":  "*@",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  282,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  98,
+                         "w":  104,
+                         "fmt":  "Clear",
+                         "name":  "+CLEAR",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  386,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  98,
+                         "w":  104,
+                         "fmt":  "Backspace",
+                         "name":  "+BACKSPACE",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  506,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  98,
+                         "w":  52,
+                         "fmt":  "1",
+                         "name":  "*1",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  558,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  98,
+                         "w":  52,
+                         "fmt":  "2",
+                         "name":  "*2",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  610,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  98,
+                         "w":  52,
+                         "fmt":  "3",
+                         "name":  "*3",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  22,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "A",
+                         "name":  "*A",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  74,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "B",
+                         "name":  "*B",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  126,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "C",
+                         "name":  "*C",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  178,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "D",
+                         "name":  "*D",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  230,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "E",
+                         "name":  "*E",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  282,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "F",
+                         "name":  "*F",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  334,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "G",
+                         "name":  "*G",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  386,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "H",
+                         "name":  "*H",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  438,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "I",
+                         "name":  "*I",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  506,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "4",
+                         "name":  "*4",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  558,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "5",
+                         "name":  "*5",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  610,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  138,
+                         "w":  52,
+                         "fmt":  "6",
+                         "name":  "*6",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  22,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "J",
+                         "name":  "*J",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  74,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "K",
+                         "name":  "*K",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  126,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "L",
+                         "name":  "*L",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  178,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "M",
+                         "name":  "*M",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  230,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "N",
+                         "name":  "*N",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  282,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "O",
+                         "name":  "*O",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  334,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "P",
+                         "name":  "*P",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  386,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "Q",
+                         "name":  "*Q",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  438,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "R",
+                         "name":  "*R",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  506,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "7",
+                         "name":  "*7",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  558,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "8",
+                         "name":  "*8",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  610,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  178,
+                         "w":  52,
+                         "fmt":  "9",
+                         "name":  "*9",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  22,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  218,
+                         "w":  52,
+                         "fmt":  "S",
+                         "name":  "*S",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  74,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  218,
+                         "w":  52,
+                         "fmt":  "T",
+                         "name":  "*T",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  126,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  218,
+                         "w":  52,
+                         "fmt":  "U",
+                         "name":  "*U",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  178,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  218,
+                         "w":  52,
+                         "fmt":  "V",
+                         "name":  "*V",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  230,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  218,
+                         "w":  52,
+                         "fmt":  "W",
+                         "name":  "*W",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  282,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  218,
+                         "w":  52,
+                         "fmt":  "X",
+                         "name":  "*X",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  334,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  218,
+                         "w":  52,
+                         "fmt":  "Y",
+                         "name":  "*Y",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  386,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  218,
+                         "w":  52,
+                         "fmt":  "Z",
+                         "name":  "*Z",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  558,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  218,
+                         "w":  52,
+                         "fmt":  "0",
+                         "name":  "*0",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  22,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  258,
+                         "w":  416,
+                         "fmt":  "Space",
+                         "name":  "+SPACE",
+                         "h":  40,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  95,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  314,
+                         "w":  83,
+                         "fmt":  "Cancel",
+                         "name":  "",
+                         "h":  28,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "15",
+    "height":  356
+}
+-->
+
+<details>
+<summary><strong>Champs : 2 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 142,46 | (sans nom) | - | edit |
+| 142,66 | (sans nom) | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 46 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| Continue | 503,314 | Bouton fonctionnel |
+| - | 22,98 | Bouton fonctionnel |
+| _ | 74,98 | Bouton fonctionnel |
+| . | 126,98 | Bouton fonctionnel |
+| / | 178,98 | Bouton fonctionnel |
+| @ | 230,98 | Bouton fonctionnel |
+| Clear | 282,98 | Bouton fonctionnel |
+| Backspace | 386,98 | Bouton fonctionnel |
+| 1 | 506,98 | Bouton fonctionnel |
+| 2 | 558,98 | Bouton fonctionnel |
+| 3 | 610,98 | Bouton fonctionnel |
+| A | 22,138 | Bouton fonctionnel |
+| B | 74,138 | Bouton fonctionnel |
+| C | 126,138 | Bouton fonctionnel |
+| D | 178,138 | Bouton fonctionnel |
+| E | 230,138 | Bouton fonctionnel |
+| F | 282,138 | Bouton fonctionnel |
+| G | 334,138 | Bouton fonctionnel |
+| H | 386,138 | Bouton fonctionnel |
+| I | 438,138 | Bouton fonctionnel |
+| 4 | 506,138 | Bouton fonctionnel |
+| 5 | 558,138 | Bouton fonctionnel |
+| 6 | 610,138 | Bouton fonctionnel |
+| J | 22,178 | Bouton fonctionnel |
+| K | 74,178 | Bouton fonctionnel |
+| L | 126,178 | Bouton fonctionnel |
+| M | 178,178 | Bouton fonctionnel |
+| N | 230,178 | Bouton fonctionnel |
+| O | 282,178 | Bouton fonctionnel |
+| P | 334,178 | Bouton fonctionnel |
+| Q | 386,178 | Bouton fonctionnel |
+| R | 438,178 | Bouton fonctionnel |
+| 7 | 506,178 | Bouton fonctionnel |
+| 8 | 558,178 | Bouton fonctionnel |
+| 9 | 610,178 | Bouton fonctionnel |
+| S | 22,218 | Bouton fonctionnel |
+| T | 74,218 | Bouton fonctionnel |
+| U | 126,218 | Bouton fonctionnel |
+| V | 178,218 | Bouton fonctionnel |
+| W | 230,218 | Bouton fonctionnel |
+| X | 282,218 | Bouton fonctionnel |
+| Y | 334,218 | Bouton fonctionnel |
+| Z | 386,218 | Bouton fonctionnel |
+| 0 | 558,218 | Bouton fonctionnel |
+| Space | 22,258 | Bouton fonctionnel |
+| Cancel | 95,314 | Annule et retour au menu |
+
+</details>
+
+## 9. NAVIGATION
+
+Ecran unique: **Keyboard ENG**
+
+### 9.3 Structure hierarchique (2 taches)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+| **15.1** | [**Keyboard ENG** (15)](#t1) [mockup](#ecran-t1) | MDI | 680x356 | Traitement |
+| 15.1.1 | [Keyboard (15.1)](#t2) [mockup](#ecran-t2) | MDI | 199x80 | |
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>2 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 2 |
-| **Lignes logique** | 18 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 0 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (0)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (0 / 0 tables avec colonnes identifiees)
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (1)
+
+Variables recues du programme appelant ([Menu Data Catching (IDE 7)](ADH-IDE-7.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | p.chain | Alpha | 1x parametre entrant |
+
+### 11.2 Variables de session (3)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| B | v.contol name | Alpha | - |
+| C | v.keyboard control name prev | Alpha | - |
+| D | v.chaine | Alpha | 1x session |
+
+### 11.3 Autres (1)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| E | btn valid | Alpha | - |
+
+## 12. EXPRESSIONS
+
+**4 / 4 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 1 | 5 |
+| OTHER | 3 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 1 | `IF (GetParam ('LANGUAGE')='SPA',3,IF (GetParam ('LANGUAGE')='FRE',2,1))` | [RM-001](#rm-RM-001) |
+
+#### OTHER (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 4 | `v.chaine [D]` | - |
+| OTHER | 3 | `p.chain [A]` | - |
+| OTHER | 2 | `LastClicked ()` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Menu Data Catching (IDE 7)](ADH-IDE-7.md) -> **keyboard (IDE 15)**
 
 ```mermaid
 graph LR
-    T[15 keyboard]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T15[15 keyboard]
+    style T15 fill:#58a6ff
+    CC7[7 Menu Data Catching]
+    style CC7 fill:#8b5cf6
+    CC7 --> T15
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [7](ADH-IDE-7.md) | Menu Data Catching | 6 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[15 keyboard]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T15[15 keyboard]
+    style T15 fill:#58a6ff
+    NONE[Aucun callee]
+    T15 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 18 | Programme compact |
+| Expressions | 4 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 18) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+#### Traitement (2 taches: 2 ecrans, 0 traitement)
 
-### Complexite
+- **Strategie** : 2 composant(s) UI (Razor/React) avec formulaires et validation.
+- Decomposer les taches en services unitaires testables.
 
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 2 | Simple |
-| Tables | 0 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
+### 14.3 Dependances critiques
 
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 22:59 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*
