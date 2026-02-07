@@ -1227,7 +1227,21 @@ if ($businessRules.Count -gt 0) {
         }
     }
 } else {
-    Add-Line "*(Aucune regle metier identifiee)*"
+    # V7.3: Contextual message based on program type
+    $blocNamesLocal = @($blocMap.Keys | Where-Object { $blocMap[$_].Count -gt 0 })
+    $isPrint = $blocNamesLocal -match 'Impression|Print|Edition'
+    $isUtility = $blocNamesLocal -match 'Initialisation|RAZ|Config'
+    $isLookup = $blocNamesLocal -match 'Consultation|Recherche|Lecture'
+
+    if ($isPrint) {
+        Add-Line "*(Programme d'impression - logique technique sans conditions metier)*"
+    } elseif ($isUtility) {
+        Add-Line "*(Programme utilitaire - operations systeme sans logique conditionnelle)*"
+    } elseif ($isLookup) {
+        Add-Line "*(Programme de consultation - lecture seule sans regles de validation)*"
+    } else {
+        Add-Line "*(Aucune regle metier identifiee dans les expressions)*"
+    }
     Add-Line
 }
 
@@ -1820,19 +1834,75 @@ if ($algoData -and $algoData.tasks) {
     Add-Line "> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions"
     Add-Line "> *Algorigramme auto-genere. Utiliser ``/algorigramme`` pour une synthese metier detaillee.*"
 } else {
-    # Fallback: minimal placeholder if algo-data failed
+    # V7.3 Enhanced fallback: use available bloc/table data when algo-data fails
     $paramCount = @($variableRows | Where-Object { $_.Category -eq "P0" }).Count
+    # Calculate write tables from tableUnified (usedTables not yet defined at this point)
+    $writeTableCount = @($tableUnified.Values | Where-Object { $_.W }).Count
+    $blocNames = @($blocMap.Keys | Where-Object { $blocMap[$_].Count -gt 0 })
+
     Add-Line '```mermaid'
     Add-Line "flowchart TD"
     Add-Line "    START([START])"
-    Add-Line "    PROCESS[Traitement $taskCount taches]"
-    Add-Line "    ENDOK([END])"
-    Add-Line "    START --> PROCESS --> ENDOK"
+
+    # Build flowchart based on blocs fonctionnels
+    if ($blocNames.Count -ge 2) {
+        # Multi-bloc program: show bloc sequence
+        $prevNode = "START"
+        $nodeIdx = 1
+        foreach ($bName in $blocNames) {
+            $bTasks = $blocMap[$bName]
+            $bLabel = Clean-MermaidLabel "$bName"
+            $nodeId = "B$nodeIdx"
+            $taskInfo = "($($bTasks.Count)t)"
+            Add-Line "    $nodeId[$bLabel $taskInfo]"
+            Add-Line "    $prevNode --> $nodeId"
+            $prevNode = $nodeId
+            $nodeIdx++
+        }
+
+        # Add write operation if tables modified
+        if ($writeTableCount -gt 0) {
+            Add-Line "    WRITE[MAJ $writeTableCount tables]"
+            Add-Line "    $prevNode --> WRITE"
+            $prevNode = "WRITE"
+        }
+
+        Add-Line "    ENDOK([END])"
+        Add-Line "    $prevNode --> ENDOK"
+    } elseif ($visibleForms.Count -gt 0) {
+        # Screen-based program
+        $mainForm = $visibleForms[0]
+        $formLabel = Clean-MermaidLabel (if ($mainForm.name) { $mainForm.name } else { "Ecran principal" })
+        Add-Line "    SAISIE[$formLabel]"
+        Add-Line "    START --> SAISIE"
+
+        if ($writeTableCount -gt 0) {
+            Add-Line "    WRITE[MAJ $writeTableCount tables]"
+            Add-Line "    SAISIE --> WRITE --> ENDOK"
+        } else {
+            Add-Line "    SAISIE --> ENDOK"
+        }
+        Add-Line "    ENDOK([END])"
+    } else {
+        # Minimal fallback for batch/utility programs
+        Add-Line "    PROCESS[Traitement $taskCount taches]"
+        if ($writeTableCount -gt 0) {
+            Add-Line "    WRITE[MAJ $writeTableCount tables]"
+            Add-Line "    START --> PROCESS --> WRITE --> ENDOK"
+        } else {
+            Add-Line "    START --> PROCESS --> ENDOK"
+        }
+        Add-Line "    ENDOK([END])"
+    }
+
     Add-Line "    style START fill:#3fb950,color:#000"
     Add-Line "    style ENDOK fill:#3fb950,color:#000"
+    if ($writeTableCount -gt 0) {
+        Add-Line "    style WRITE fill:#ffeb3b,color:#000"
+    }
     Add-Line '```'
     Add-Line
-    Add-Line "> *algo-data indisponible. Utiliser ``/algorigramme`` pour generer.*"
+    Add-Line "> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser ``/algorigramme`` pour une synthese metier detaillee.*"
 }
 Add-Line
 
