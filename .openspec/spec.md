@@ -8,16 +8,39 @@ Agent Claude Code specialise pour l'analyse et la migration d'applications Magic
 
 ## Architecture
 
-### Projets Magic Sources
+### Projets Magic Sources (29 projets, 4 043 programmes)
 
-| Projet | Chemin | Programmes | Role | Statut |
-|--------|--------|------------|------|--------|
-| REF | `D:\Data\Migration\XPA\PMS\REF\Source\` | ~700 | Reference (tables partagees) | Actif |
-| PBP | `D:\Data\Migration\XPA\PMS\PBP\Source\` | ~430 | Editions/Exports | MECANO valide |
-| ADH | `D:\Data\Migration\XPA\PMS\ADH\Source\` | 350 | Adherents/Caisse | **Migre 85.5%** |
-| PBG | `D:\Data\Migration\XPA\PMS\PBG\Source\` | 394 | Planification/Batch (arrivees, logements) | Explore |
-| PVE | `D:\Data\Migration\XPA\PMS\PVE\Source\` | 448 | Point de Vente/POS (TPE, stocks, Mobile POS) | Explore |
-| VIL | `D:\Data\Migration\XPA\PMS\VIL\Source\` | ~600 | Village (editions, recapitulatifs, sessions PMS) | Bug analysé |
+| Projet | Programmes | Role | Statut |
+|--------|------------|------|--------|
+| **REF** | 901 | Reference (tables partagees) | Actif |
+| **Import** | 456 | Imports donnees | Explore |
+| **PVE** | 449 | Point de Vente/POS (TPE, stocks, Mobile POS) | Explore |
+| **PBP** | 419 | Editions/Exports | MECANO valide |
+| **PBG** | 400 | Planification/Batch (arrivees, logements) | Explore |
+| **VIL** | 222 | Village (editions, recapitulatifs) | Bug analyse |
+| **ADH** | 135 | Adherents/Caisse | **Migre 85.5%** |
+| **GES** | 121 | Gestion | Explore |
+| **WEL** | 117 | Welcome/Accueil | Explore |
+| **MAI** | 102 | Maintenance | Explore |
+| **PBS** | 99 | Batch secondaire | Explore |
+| **POO** | 80 | Pooling | Explore |
+| **REQ** | 74 | Requetes | Explore |
+| **EXB** | 49 | Exports batch | Explore |
+| **PTR** | 47 | Pointage | Explore |
+| **EXF** | 43 | Exports fichiers | Explore |
+| **CAP** | 41 | Caisse parametres | Explore |
+| **CAB** | 31 | Caisse batch | Explore |
+| **QUA** | 30 | Qualite | Explore |
+| **LOG** | 26 | Logging | Explore |
+| **PUG** | 25 | Purge | Explore |
+| **EXM** | 23 | Exports manuels | Explore |
+| **Menu** | 23 | Menus | Explore |
+| **FIN** | 18 | Finance | Explore |
+| **RET** | 18 | Retours | Explore |
+| **NET** | 15 | Network | Explore |
+| **TST** | 8 | Tests | Explore |
+| **TPE** | 3 | Terminal paiement | Explore |
+| **UTILS** | 2 | Utilitaires (.NET) | Explore |
 
 ### Composants Partages (ECF)
 
@@ -303,7 +326,7 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 
 | Categorie | Outils | Etat | Cible | Score |
 |-----------|--------|------|-------|-------|
-| MCP Server | **93 outils** | **211%** | 44 | **A+** |
+| MCP Server | **97 outils** | **220%** | 44 | **A+** |
 | Agents specialises | 5 agents | 100% | 5 | **A** |
 | Scripts PowerShell | **130 scripts** | 52% doc | 100% | **B** |
 | Parser TypeScript | 3 generateurs | **100%** | 100% | **A** |
@@ -403,6 +426,45 @@ git -C 'D:\Data\Migration\XPA\PMS' stash pop
 | Commande KbIndexRunner | Description | Statut |
 |------------------------|-------------|--------|
 | `analyze-impact <project> <ide>` | Analyse d'impact rapide depuis CLI | **NOUVEAU** |
+
+**Tier 6: SQL Server Metadata** (documentation tables/colonnes)
+
+| Outil | Description | Statut |
+|-------|-------------|--------|
+| `magic_sql_tables` | Liste toutes les tables SQL Server (filtrable) | **NOUVEAU 2026-02-07** |
+| `magic_sql_table_info` | Structure complete d'une table (colonnes, PK, FK, index, sample values) | **NOUVEAU 2026-02-07** |
+| `magic_sql_search_column` | Recherche colonnes par pattern (LIKE) | **NOUVEAU 2026-02-07** |
+| `magic_sql_search_value` | Recherche valeur dans colonnes echantillonnees | **NOUVEAU 2026-02-07** |
+
+| Commande KbIndexRunner | Description | Statut |
+|------------------------|-------------|--------|
+| `import-sql-metadata` | Importe JSON metadata dans KB SQLite | **NOUVEAU** |
+
+| Script PowerShell | Description | Statut |
+|-------------------|-------------|--------|
+| `Extract-SqlMetadata.ps1` | Extrait metadata SQL Server (colonnes, PK, FK, index, sample values) | **NOUVEAU** |
+| `Generate-TableDocs.ps1` | Genere 1 fichier MD par table | **NOUVEAU** |
+| `Search-TableColumn.ps1` | Recherche rapide PowerShell (wildcards) | **NOUVEAU** |
+
+**Donnees extraites (PHU2512):**
+| Metrique | Valeur |
+|----------|--------|
+| Tables | 692 |
+| Colonnes | 6 973 |
+| Indexes | 1 216 |
+| Fichiers MD | 692 (`tools/db-metadata/tables/`) |
+| JSON | 8.9 MB (`PHU2512-metadata.json`) |
+
+### Schema Knowledge Base v11 (2026-02-07) - NOUVEAU
+
+```sql
+-- Tables SQL Server metadata (distinctes des tables Magic XML)
+CREATE TABLE sql_tables (database_name, table_name, logical_name, row_count, column_count, primary_key_json);
+CREATE TABLE sql_columns (sql_table_id FK, column_name, ordinal_position, sql_type, max_length, nullable, distinct_count, sample_values_json);
+CREATE TABLE sql_foreign_keys (sql_table_id FK, fk_name, columns_json, referenced_table, referenced_columns_json);
+CREATE TABLE sql_indexes (sql_table_id FK, index_name, index_type, is_unique, columns_json);
+CREATE VIRTUAL TABLE sql_columns_fts USING fts5(column_name, table_name, sample_values);
+```
 
 ### Schema Knowledge Base v5 (2026-01-25) - NOUVEAU
 
@@ -811,20 +873,27 @@ CREATE TABLE IF NOT EXISTS variable_modifications (
 
 ## Bases de donnees
 
-### Validee
-- **Serveur**: LENOVO_LB2I\SQLEXPRESS
-- **Base**: CSK0912
-- **Modules testes**: MECANO, Caisse (API C# .NET 8)
+### Validees
 
-### A tester
-- Base 1: (a definir)
-- Base 2: (a definir)
+| Serveur | Base | Usage | Metadata |
+|---------|------|-------|----------|
+| LENOVO_P14S | **PHU2512** | Production actuelle | 692 tables, 6973 colonnes documentees |
+| LENOVO_LB2I\SQLEXPRESS | CSK0912 | Tests MECANO, API Caisse | - |
+
+### Documentation SQL
+
+- **Fichiers MD**: `tools/db-metadata/tables/` (692 fichiers)
+- **JSON complet**: `tools/db-metadata/PHU2512-metadata.json` (8.9 MB)
+- **Recherche**: `Search-TableColumn.ps1 -Column "*societe*"`
+- **Outils MCP**: `magic_sql_table_info`, `magic_sql_search_column`
 
 ## Changelog
 
 > Historique complet: `.openspec/history/changelog.md`
 
 **Derniers changements:**
+- 2026-02-07: **Infrastructure SQL Metadata complete** - (1) Extract-SqlMetadata.ps1 extrait colonnes, PK, FK, indexes, sample values depuis SQL Server, (2) 4 outils MCP `magic_sql_*` (tables, table_info, search_column, search_value), (3) Schema KB v11 avec tables sql_*, FTS5 sur colonnes, (4) KbIndexRunner `import-sql-metadata`, (5) Generate-TableDocs.ps1 genere 692 fichiers MD, (6) Search-TableColumn.ps1 recherche PowerShell. **Resultat: PHU2512 - 692 tables, 6973 colonnes, 1216 indexes documentes. Plus jamais besoin de deviner un nom de colonne.**
+- 2026-02-07: **OpenSpec liste complete 29 projets Magic** - Ajout des 23 projets manquants (Import, GES, WEL, MAI, PBS, POO, REQ, EXB, PTR, EXF, CAP, CAB, QUA, LOG, PUG, EXM, Menu, FIN, RET, NET, TST, TPE, UTILS). Total: 4043 programmes indexes.
 - 2026-01-30: **Spec Quality V7.3 - 3 ameliorations majeures** - (1) **Viewer mockup renderer** : nouveau preprocesseur FORM-DATA dans viewer.html qui dessine les ecrans Magic (style Windows XP, champs positionnes, boutons) a partir des blocs JSON. (2) **Algorigramme metier** : Phase5-Synthesis extrait les conditions IF depuis decoded.json (by_type.CONDITION) pour generer des noeuds de decision (losanges jaunes OUI/NON) au lieu de chaines lineaires. Teste sur ADH IDE 237 : 6 decisions extraites. (3) **Validation 23 criteres** : 3 nouveaux checks dans Validate-SpecContentV72.ps1 - NR_VAR_NAMING (pas de 'Variable X' sans nom), NR_RAW_FIELD_REF (pas de {0,N} brut), NR_ALGO_DECISIONS (min 2 noeuds decision). **Resultat ADH-IDE-237 : 24/24 PASS (100%)**
 - 2026-01-29: **Pipeline Ticket v2.0 Hybride** - Architecture hybride PS1+Claude. (1) Refactoring Phase 1 (3 sources: Jira/Index/Fichiers, keywords, attachments), (2) Refactoring Phase 2 (callers/callees KB SQLite), (3) Fix BOM UTF-8 toutes phases, (4) Fix Phase 5 Hashtable serialization + $Matches variable PS auto, (5) Consolidation auto-consolidate.ps1 < 30KB, (6) Template ANALYSIS.md 9 sections, (7) Skill + protocole mis a jour. **Teste: PMS-1427 6/6 (55 progs, 2 patterns), PMS-1419 6/6 (4 progs)**
 - 2026-01-28: **Workflow APEX 4-Phase V4.0** - Implementation complete du workflow de specification en 4 phases: (1) DISCOVERY - identification, ECF, orphan check, (2) MAPPING - tables R/W/L, parametres, (3) DECODE - expressions, regles metier, (4) SYNTHESIS - spec 3 onglets + Mermaid. Script: `Generate-SpecV40.ps1`. README spec-generator/ mis a jour. Teste sur ADH IDE 237 et 121 (complexite HAUTE).
