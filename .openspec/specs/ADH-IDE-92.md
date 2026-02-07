@@ -1,6 +1,6 @@
 ﻿# ADH IDE 92 - flag ligne boutique
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:47 (29s) | Assemblage 03:47
+> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:47 (29s) | Assemblage 06:56
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 92 |
 | Nom Programme | flag ligne boutique |
 | Fichier source | `Prg_92.xml` |
-| Dossier IDE | General |
+| Dossier IDE | Factures |
 | Taches | 2 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
@@ -37,13 +37,13 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>92 - flag ligne boutique
+#### <a id="t1"></a>T1 - flag ligne boutique
 
 **Role** : Traitement : flag ligne boutique.
 
 ---
 
-#### <a id="t2"></a>92.1 - flag ligne
+#### <a id="t2"></a>T2 - flag ligne
 
 **Role** : Traitement : flag ligne.
 
@@ -69,28 +69,22 @@ Traitements internes.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **92.1** | [**flag ligne boutique** (92)](#t1) | - | - | Traitement |
-| 92.1.1 | [flag ligne (92.1)](#t2) | - | - | |
+| **92.1** | [**flag ligne boutique** (T1)](#t1) | - | - | Traitement |
+| 92.1.1 | [flag ligne (T2)](#t2) | - | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 1 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 2 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -285,4 +279,4 @@ graph LR
 | maj_appli_tpe | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:47*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:56*

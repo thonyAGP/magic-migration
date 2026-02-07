@@ -1,6 +1,6 @@
 ﻿# ADH IDE 9 - System avail (top left corner
 
-> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 03:39
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 12:48
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,16 +18,17 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**System avail (top left corner** assure la gestion complete de ce processus, accessible depuis [Menu Data Catching (IDE 7)](ADH-IDE-7.md).
+**ADH IDE 9 - System avail (top left corner)**
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Ce programme affiche un indicateur de disponibilité système dans le coin supérieur gauche de l'interface MDI. Appelé depuis le menu de saisie des données (IDE 7), il gère l'état du système via la variable globale VG79 et détermine si l'application est opérationnelle ou en mode dégradé.
 
-- **Traitement** (1 tache) : traitements metier divers
+La logique principale évalue une condition booléenne (NOT variable C) pour établir le statut de disponibilité. Le résultat est enregistré dans la table `log_affec_auto_detail` pour traçabilité, ce qui permet de suivre les changements d'état du système et les périodes d'indisponibilité.
 
-**Donnees modifiees** : 1 tables en ecriture (log_affec_auto_detail).
+C'est un composant léger sans dépendances descendantes : il n'appelle aucun autre programme et sert uniquement à l'affichage de l'état système. Son intégration au menu de saisie en fait un élément clé du tableau de bord utilisateur pour surveiller la disponibilité globale de l'application ADH.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -44,7 +45,7 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -208,4 +209,4 @@ graph LR
 | log_affec_auto_detail | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:49*

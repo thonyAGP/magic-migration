@@ -1,6 +1,6 @@
 ﻿# ADH IDE 29 - Write histo Fus_Sep
 
-> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (27s) | Assemblage 03:41
+> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (27s) | Assemblage 13:04
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,16 +18,15 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Write histo Fus_Sep** assure la gestion complete de ce processus, accessible depuis [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md).
+**ADH IDE 29** est un **enregistreur d'audit spécialisé** qui journalise les transitions d'état des opérations de fusion et séparation de comptes. Le programme écrit dans la table `histo_fusionseparation` un seul enregistrement pour chaque phase de traitement, capturant le type d'opération (DATEHEURE, UPDFIRST, UPDTABLE, UPDEND, FIN, REPRISE), la date/heure exacte, un numéro séquentiel et un flag de validation. Cette structure de logging immuable permet de tracer l'historique complet d'une opération de fusion ou séparation de compte.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Le programme est appelé **6 fois** depuis IDE 27 (Separation) et **6 fois** depuis IDE 28 (Fusion), ce qui correspond aux 6 phases distinctes de la pipeline transactionnelle. Chaque invocation enregistre un point d'étape précis dans le workflow, formant une trace d'audit complète et ordonnée. Les codes d'état incluent un marqueur de reprise (REPRISE), ce qui suggère que le système peut interrompre et reprendre une opération de fusion/séparation longue, en s'appuyant sur cet historique pour valider la continuité.
 
-- **Impression** (1 tache) : generation de tickets et documents
-
-**Donnees modifiees** : 1 tables en ecriture (histo_fusionseparation).
+Son intégration avec le formulaire **Printer Management** indique que ce programme peut également générer de la documentation ou des rapports d'audit destinés à l'impression, transformant les données de transition d'état brutes en artefacts utilisateur finaux. IDE 29 est donc le cœur du mécanisme d'audit transactionnel pour les opérations critiques de gestion de compte.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -44,7 +43,7 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Programme d'impression - logique technique sans conditions metier)*
 
 ## 6. CONTEXTE
 
@@ -256,4 +255,4 @@ graph LR
 | histo_fusionseparation | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:41*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:06*

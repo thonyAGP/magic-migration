@@ -1,6 +1,6 @@
 ﻿# ADH IDE 79 - Balance Credit de conso
 
-> **Analyse**: 2026-02-07 03:45
+> **Analyse**: 2026-02-07 06:51
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

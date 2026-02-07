@@ -1,6 +1,6 @@
 ﻿# ADH IDE 90 - Edition Facture Tva(Compta&Ve)
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:46 (28s) | Assemblage 03:46
+> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:46 (28s) | Assemblage 06:55
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 90 |
 | Nom Programme | Edition Facture Tva(Compta&Ve) |
 | Fichier source | `Prg_90.xml` |
-| Dossier IDE | Facturation |
+| Dossier IDE | Factures |
 | Taches | 4 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
@@ -36,16 +36,16 @@ Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
 #### Phase 1 : Saisie (1 tache)
 
-- **90** - Edition Facture Tva(Ventes)
+- **T1** - Edition Facture Tva(Ventes)
 
 #### Phase 2 : Impression (2 taches)
 
-- **90.1** - Edition
-- **90.1.1** - Edition du Pied
+- **T2** - Edition
+- **T3** - Edition du Pied
 
 #### Phase 3 : Traitement (1 tache)
 
-- **90.1.1.1** - Total Général
+- **T4** - Total Général
 
 </details>
 
@@ -57,7 +57,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t1"></a>90 - Edition Facture Tva(Ventes)
+#### <a id="t1"></a>T1 - Edition Facture Tva(Ventes)
 
 **Role** : Saisie des donnees : Edition Facture Tva(Ventes).
 **Variables liees** : E (P.Num Facture), G (P.Facture sans Nom), H (P.Facture sans Adresse), I (P.Facture flaguee)
@@ -69,13 +69,13 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>90.1 - Edition
+#### <a id="t2"></a>T2 - Edition
 
 **Role** : Generation du document : Edition.
 
 ---
 
-#### <a id="t3"></a>90.1.1 - Edition du Pied
+#### <a id="t3"></a>T3 - Edition du Pied
 
 **Role** : Generation du document : Edition du Pied.
 
@@ -86,7 +86,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t4"></a>90.1.1.1 - Total Général
+#### <a id="t4"></a>T4 - Total Général
 
 **Role** : Traitement : Total Général.
 
@@ -124,29 +124,24 @@ Traitements internes.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **90.1** | [**Edition Facture Tva(Ventes)** (90)](#t1) | - | - | Saisie |
-| **90.2** | [**Edition** (90.1)](#t2) | - | - | Impression |
-| 90.2.1 | [Edition du Pied (90.1.1)](#t3) | - | - | |
-| **90.3** | [**Total Général** (90.1.1.1)](#t4) | - | - | Traitement |
+| **90.1** | [**Edition Facture Tva(Ventes)** (T1)](#t1) | - | - | Saisie |
+| **90.2** | [**Edition** (T2)](#t2) | - | - | Impression |
+| 90.2.1 | [Edition du Pied (T3)](#t3) | - | - | |
+| **90.3** | [**Total Général** (T4)](#t4) | - | - | Traitement |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    PROCESS[Traitement 4 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -213,7 +208,7 @@ Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](AD
 | B | P.Compte GM | Numeric | - |
 | C | P.Filiation | Numeric | - |
 | D | P.Nom Fichier PDF | Alpha | - |
-| E | P.Num Facture | Numeric | [90](#t1) |
+| E | P.Num Facture | Numeric | [T1](#t1) |
 | F | P.Service | Alpha | - |
 | G | P.Facture sans Nom | Logical | - |
 | H | P.Facture sans Adresse | Logical | - |
@@ -383,4 +378,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:46*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:55*

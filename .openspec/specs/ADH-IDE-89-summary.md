@@ -1,6 +1,6 @@
 ﻿# ADH IDE 89 - Factures (Tble Compta&Vent
 
-> **Analyse**: 2026-02-07 03:46
+> **Analyse**: 2026-02-07 06:55
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

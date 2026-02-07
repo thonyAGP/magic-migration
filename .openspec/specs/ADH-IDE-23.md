@@ -1,6 +1,6 @@
 ﻿# ADH IDE 23 - Print reçu change achat
 
-> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 03:41 (27s) | Assemblage 03:41
+> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 03:41 (27s) | Assemblage 13:03
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,6 +18,7 @@
 | Taches | 14 (3 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 1 |
+| Complexite | **BASSE** (score 12/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
@@ -69,7 +70,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>23 - Veuillez patienter ... [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Veuillez patienter ... [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (9 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -79,69 +80,69 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [23.1.1](#t3) | Impression reçu change | Traitement |
-| [23.1.2](#t4) | Impression reçu change | Traitement |
-| [23.2.1](#t6) | Impression reçu change | Traitement |
-| [23.2.2](#t7) | Impression reçu change | Traitement |
-| [23.3.1](#t9) | Veuillez patienter ... **[[ECRAN]](#ecran-t9)** | Traitement |
-| [23.4.1](#t11) | Veuillez patienter... **[[ECRAN]](#ecran-t11)** | Traitement |
-| [23.5.1](#t13) | Veuillez patienter... **[[ECRAN]](#ecran-t13)** | Traitement |
-| [23.6](#t14) | Existe ligne | Traitement |
+| [T3](#t3) | Impression reçu change | Traitement |
+| [T4](#t4) | Impression reçu change | Traitement |
+| [T6](#t6) | Impression reçu change | Traitement |
+| [T7](#t7) | Impression reçu change | Traitement |
+| [T9](#t9) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T11](#t11) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T13](#t13) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T14](#t14) | Existe ligne | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t3"></a>23.1.1 - Impression reçu change
+#### <a id="t3"></a>T3 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
 **Variables liees** : V (v. Frais de change (Libelle))
 
 ---
 
-#### <a id="t4"></a>23.1.2 - Impression reçu change
+#### <a id="t4"></a>T4 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
 **Variables liees** : V (v. Frais de change (Libelle))
 
 ---
 
-#### <a id="t6"></a>23.2.1 - Impression reçu change
+#### <a id="t6"></a>T6 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
 **Variables liees** : V (v. Frais de change (Libelle))
 
 ---
 
-#### <a id="t7"></a>23.2.2 - Impression reçu change
+#### <a id="t7"></a>T7 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
 **Variables liees** : V (v. Frais de change (Libelle))
 
 ---
 
-#### <a id="t9"></a>23.3.1 - Veuillez patienter ... [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t11"></a>23.4.1 - Veuillez patienter... [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 57 DLU (MDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t13"></a>23.5.1 - Veuillez patienter... [[ECRAN]](#ecran-t13)
+#### <a id="t13"></a>T13 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 57 DLU (MDI) | [Voir mockup](#ecran-t13)
 
 ---
 
-#### <a id="t14"></a>23.6 - Existe ligne
+#### <a id="t14"></a>T14 - Existe ligne
 
 **Role** : Traitement : Existe ligne.
 **Variables liees** : Q (W0 existe ligne à editer), BD (V.Libellé ligne transaction), BE (V.Libellé ligne acceptation), BF (V.Edition ligne détail carte?)
@@ -153,33 +154,33 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>23.1 - Printer 1
+#### <a id="t2"></a>T2 - Printer 1
 
 **Role** : Generation du document : Printer 1.
 
 ---
 
-#### <a id="t5"></a>23.2 - Printer 4
+#### <a id="t5"></a>T5 - Printer 4
 
 **Role** : Generation du document : Printer 4.
 
 ---
 
-#### <a id="t8"></a>23.3 - Printer 5 [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Printer 5 [ECRAN]
 
 **Role** : Generation du document : Printer 5.
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t10"></a>23.4 - Printer 8 [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - Printer 8 [ECRAN]
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 422 x 57 DLU (MDI) | [Voir mockup](#ecran-t10)
 
 ---
 
-#### <a id="t12"></a>23.5 - Printer 9 [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Printer 9 [ECRAN]
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 422 x 57 DLU (MDI) | [Voir mockup](#ecran-t12)
@@ -214,16 +215,16 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 23 | 23 | Veuillez patienter ... | MDI | 422 | 56 | Traitement |
-| 2 | 23.4.1 | 23.4.1 | Veuillez patienter... | MDI | 422 | 57 | Traitement |
-| 3 | 23.5.1 | 23.5.1 | Veuillez patienter... | MDI | 422 | 57 | Traitement |
+| 1 | 23 | T1 | Veuillez patienter ... | MDI | 422 | 56 | Traitement |
+| 2 | 23.4.1 | T11 | Veuillez patienter... | MDI | 422 | 57 | Traitement |
+| 3 | 23.5.1 | T13 | Veuillez patienter... | MDI | 422 | 57 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>23 - Veuillez patienter ...
-**Tache** : [23](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter ...
 
 <!-- FORM-DATA:
@@ -307,7 +308,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t11"></a>23.4.1 - Veuillez patienter...
-**Tache** : [23.4.1](#t11) | **Type** : MDI | **Dimensions** : 422 x 57 DLU
+**Tache** : [T11](#t11) | **Type** : MDI | **Dimensions** : 422 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -391,7 +392,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t13"></a>23.5.1 - Veuillez patienter...
-**Tache** : [23.5.1](#t13) | **Type** : MDI | **Dimensions** : 422 x 57 DLU
+**Tache** : [T13](#t13) | **Type** : MDI | **Dimensions** : 422 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -480,11 +481,11 @@ Generation des documents et tickets.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[23 Veuillez patienter ...]
+    VF1[T1 Veuillez patienter ...]
     style VF1 fill:#58a6ff
-    VF11[23.4.1 Veuillez patienter...]
+    VF11[T11 Veuillez patienter...]
     style VF11 fill:#58a6ff
-    VF13[23.5.1 Veuillez patienter...]
+    VF13[T13 Veuillez patienter...]
     style VF13 fill:#58a6ff
     EXT22[IDE 22 Calcul equivalent]
     style EXT22 fill:#3fb950
@@ -505,39 +506,37 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **23.1** | [**Veuillez patienter ...** (23)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
-| 23.1.1 | [Impression reçu change (23.1.1)](#t3) | MDI | - | |
-| 23.1.2 | [Impression reçu change (23.1.2)](#t4) | MDI | - | |
-| 23.1.3 | [Impression reçu change (23.2.1)](#t6) | MDI | - | |
-| 23.1.4 | [Impression reçu change (23.2.2)](#t7) | MDI | - | |
-| 23.1.5 | [Veuillez patienter ... (23.3.1)](#t9) [mockup](#ecran-t9) | MDI | 424x56 | |
-| 23.1.6 | [Veuillez patienter... (23.4.1)](#t11) [mockup](#ecran-t11) | MDI | 422x57 | |
-| 23.1.7 | [Veuillez patienter... (23.5.1)](#t13) [mockup](#ecran-t13) | MDI | 422x57 | |
-| 23.1.8 | [Existe ligne (23.6)](#t14) | MDI | - | |
-| **23.2** | [**Printer 1** (23.1)](#t2) | MDI | - | Impression |
-| 23.2.1 | [Printer 4 (23.2)](#t5) | MDI | - | |
-| 23.2.2 | [Printer 5 (23.3)](#t8) [mockup](#ecran-t8) | MDI | 424x56 | |
-| 23.2.3 | [Printer 8 (23.4)](#t10) [mockup](#ecran-t10) | MDI | 422x57 | |
-| 23.2.4 | [Printer 9 (23.5)](#t12) [mockup](#ecran-t12) | MDI | 422x57 | |
+| **23.1** | [**Veuillez patienter ...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
+| 23.1.1 | [Impression reçu change (T3)](#t3) | MDI | - | |
+| 23.1.2 | [Impression reçu change (T4)](#t4) | MDI | - | |
+| 23.1.3 | [Impression reçu change (T6)](#t6) | MDI | - | |
+| 23.1.4 | [Impression reçu change (T7)](#t7) | MDI | - | |
+| 23.1.5 | [Veuillez patienter ... (T9)](#t9) [mockup](#ecran-t9) | MDI | 424x56 | |
+| 23.1.6 | [Veuillez patienter... (T11)](#t11) [mockup](#ecran-t11) | MDI | 422x57 | |
+| 23.1.7 | [Veuillez patienter... (T13)](#t13) [mockup](#ecran-t13) | MDI | 422x57 | |
+| 23.1.8 | [Existe ligne (T14)](#t14) | MDI | - | |
+| **23.2** | [**Printer 1** (T2)](#t2) | MDI | - | Impression |
+| 23.2.1 | [Printer 4 (T5)](#t5) | MDI | - | |
+| 23.2.2 | [Printer 5 (T8)](#t8) [mockup](#ecran-t8) | MDI | 424x56 | |
+| 23.2.3 | [Printer 8 (T10)](#t10) [mockup](#ecran-t10) | MDI | 422x57 | |
+| 23.2.4 | [Printer 9 (T12)](#t12) [mockup](#ecran-t12) | MDI | 422x57 | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    B1[Traitement (9t)]
+    START --> B1
+    B2[Impression (5t)]
+    B1 --> B2
+    ENDOK([END])
+    B2 --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -547,16 +546,35 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
+| 44 | change___________chg |  | DB | R |   | L | 8 |
 | 30 | gm-recherche_____gmr | Index de recherche | DB | R |   | L | 7 |
 | 31 | gm-complet_______gmc |  | DB | R |   |   | 1 |
-| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 1 |
-| 44 | change___________chg |  | DB | R |   | L | 8 |
-| 122 | unilateral_bilateral |  | DB |   |   | L | 1 |
-| 324 | frais_change___fchg |  | DB |   |   | L | 1 |
-| 368 | pms_village |  | DB |   |   | L | 1 |
 | 474 | comptage_caisse_devise | Sessions de caisse | TMP |   |   | L | 7 |
+| 122 | unilateral_bilateral |  | DB |   |   | L | 1 |
+| 368 | pms_village |  | DB |   |   | L | 1 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 1 |
+| 324 | frais_change___fchg |  | DB |   |   | L | 1 |
 
 ### Colonnes par table (5 / 3 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 44 - change___________chg (R/L) - 8 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 Equivalent | R | Numeric |
+| B | W1 large | R | Alpha |
+| C | W1 normal | R | Alpha |
+| D | W1 condense | R | Alpha |
+| E | W1 detecteur | R | Alpha |
+| F | W1 inhibe Panel | R | Alpha |
+| G | W1 massicot | R | Alpha |
+| H | W1 selection feuille | R | Alpha |
+| I | W1 selection rouleau | R | Alpha |
+| J | W1 ejection feuille | R | Alpha |
+| K | W1 equivalent | R | Numeric |
+
+</details>
 
 <details>
 <summary>Table 30 - gm-recherche_____gmr (R/L) - 7 usages</summary>
@@ -602,25 +620,6 @@ flowchart TD
 | BD | V.Libellé ligne transaction | R | Unicode |
 | BE | V.Libellé ligne acceptation | R | Unicode |
 | BF | V.Edition ligne détail carte? | R | Logical |
-
-</details>
-
-<details>
-<summary>Table 44 - change___________chg (R/L) - 8 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W1 Equivalent | R | Numeric |
-| B | W1 large | R | Alpha |
-| C | W1 normal | R | Alpha |
-| D | W1 condense | R | Alpha |
-| E | W1 detecteur | R | Alpha |
-| F | W1 inhibe Panel | R | Alpha |
-| G | W1 massicot | R | Alpha |
-| H | W1 selection feuille | R | Alpha |
-| I | W1 selection rouleau | R | Alpha |
-| J | W1 ejection feuille | R | Alpha |
-| K | W1 equivalent | R | Numeric |
 
 </details>
 
@@ -940,4 +939,4 @@ graph LR
 | [Calcul equivalent (IDE 22)](ADH-IDE-22.md) | Sous-programme | 7x | **CRITIQUE** - Calcul de donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:41*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:03*

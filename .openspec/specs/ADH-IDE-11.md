@@ -1,6 +1,6 @@
 ﻿# ADH IDE 11 - Export - address
 
-> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 03:39
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 12:50
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,18 +18,15 @@
 | Taches | 1 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Export - address** assure la gestion complete de ce processus, accessible depuis [Print list Checkout (shift F9) (IDE 10)](ADH-IDE-10.md).
+ADH IDE 11 est un **programme de capture et export d'adresses** utilisé lors du processus de validation de commande (shift F9). Appelé depuis IDE 10 (Print list Checkout), il écrit les données d'adresse dans la table `address_data_catching` avec un statut d'acceptation email tri-niveau. Le programme applique une règle métier simple : si une variable [AY] n'est pas vide, le statut est '0' (accepté), sinon il vérifie [BD]=0 pour '1' (en attente) ou '2' (rejeté).
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Le programme est structuré en une seule tâche (Tache 11.1) composée de 68 lignes de logique 100% active, sans code mort. Il utilise un formulaire minimaliste avec un seul champ EDIT pour l'acceptation email, et référence deux tables liées (`gm-complet_______gmc` et `client_gm`) pour le contexte. Aucune sous-tâche, aucun branchement conditionnel : la logique est linéaire et déterministe, parfaitement isolée en tant que programme terminal.
 
-- **Traitement** (1 tache) : traitements metier divers
-
-**Donnees modifiees** : 1 tables en ecriture (address_data_catching).
-
-**Logique metier** : 1 regles identifiees couvrant conditions metier.
+Le programme génère un fichier export nommé **KIOemail.TXT** (chemin dynamique depuis configuration INI), persistent la capture d'adresse avec le statut email calculé. Il représente une pièce simple mais critique du workflow Data Catching, serveur de persistance pour les validations de checkout sans dépendances aval.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -158,8 +155,8 @@ flowchart TD
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
 | 22 | address_data_catching |  | DB |   | **W** |   | 1 |
-| 31 | gm-complet_______gmc |  | DB |   |   | L | 1 |
 | 36 | client_gm |  | DB |   |   | L | 1 |
+| 31 | gm-complet_______gmc |  | DB |   |   | L | 1 |
 
 ### Colonnes par table (0 / 1 tables avec colonnes identifiees)
 
@@ -285,4 +282,4 @@ graph LR
 | address_data_catching | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:52*

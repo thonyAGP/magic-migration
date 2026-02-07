@@ -1,31 +1,31 @@
-﻿# ADH IDE 150 - Print comptage WS
+﻿# ADH IDE 150 - Devises finales F/F Qte WS
 
-> **Analyse**: 2026-02-07 03:50
+> **Analyse**: 2026-02-07 07:15
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Print comptage WS
+- **Fonction**: Devises finales F/F Qte WS
 - **Tables modifiees**: 0
-- **Complexite**: **BASSE** (12/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Saisie contenu caisse (IDE 120)
+- **Complexite**: **BASSE** (0/100)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Saisie contenu caisse (IDE 120)](ADH-IDE-120.md) |
-| **Appelle** | [Get Printer (IDE 179)](ADH-IDE-179.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md) |
+| **Appele par** | (aucun) |
+| **Appelle** | (aucun) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 11 |
-| Lignes Logic | 103 |
-| Expressions | 6 |
-| Tables | 4 |
+| Taches | 1 |
+| Lignes Logic | 35 |
+| Expressions | 8 |
+| Tables |  |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

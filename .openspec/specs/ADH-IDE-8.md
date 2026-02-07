@@ -1,6 +1,6 @@
 ﻿# ADH IDE 8 - Set Village info
 
-> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 03:39
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 12:47
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,14 +18,15 @@
 | Taches | 2 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Set Village info** assure la gestion complete de ce processus, accessible depuis [Menu Data Catching (IDE 7)](ADH-IDE-7.md).
+**ADH IDE 8 - Set Village info** extrait et structure les informations du village depuis un buffer (variable AE) pour les paramétrer dans le système. Le programme parcourt 10 champs distincts d'identité du club (code, nom, adresses, code postal, téléphone, fax, email, SIRE, TVA) en utilisant la fonction MID pour découper des sections précises du buffer à des positions définies. Chaque extraction est ensuite trimmée et assignée à une variable VI_* correspondante via SetParam.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Le flux s'articule autour de deux tâches principales : **Set Village Address** qui gère l'affectation des paramètres d'identification, et **Load Buffer** qui charge les données brutes. La condition de sortie (NOT [Q]) vérifie que la variable Q n'est pas à vraie, contrôlant ainsi le flux d'exécution. Cette séparation entre extraction brute (MID) et nettoyage (Trim) permet à la fois de capturer des fragments longs depuis le buffer et de stocker des versions compactes pour l'affichage.
 
-- **Traitement** (2 taches) : traitements metier divers
+Le programme fait appel à une table externe (Boo_AvailibleEmployees) avec un lien vers pv_budget, mais l'analyse syntaxique montre qu'aucune logique métier complexe n'intervient—il s'agit essentiellement d'une mécanique de parsing structuré de données brutes vers des paramètres métier.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -35,14 +36,14 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>8 - Set Village Address
+#### <a id="t1"></a>T1 - Set Village Address
 
 **Role** : Traitement : Set Village Address.
 **Variables liees** : A (V lien adresse_service_village)
 
 ---
 
-#### <a id="t2"></a>8.1 - Load Buffer
+#### <a id="t2"></a>T2 - Load Buffer
 
 **Role** : Traitement : Load Buffer.
 **Variables liees** : B (Buffer)
@@ -50,7 +51,7 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -69,27 +70,22 @@ Traitements internes.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **8.1** | [**Set Village Address** (8)](#t1) | MDI | - | Traitement |
-| 8.1.1 | [Load Buffer (8.1)](#t2) | MDI | - | |
+| **8.1** | [**Set Village Address** (T1)](#t1) | MDI | - | Traitement |
+| 8.1.1 | [Load Buffer (T2)](#t2) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    PROCESS[Traitement 2 taches]
+    START --> PROCESS --> ENDOK
+    ENDOK([END])
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -99,8 +95,8 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 372 | pv_budget |  | DB |   |   | L | 1 |
 | 904 | Boo_AvailibleEmployees |  | DB | R |   |   | 1 |
+| 372 | pv_budget |  | DB |   |   | L | 1 |
 
 ### Colonnes par table (1 / 1 tables avec colonnes identifiees)
 
@@ -301,4 +297,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:48*

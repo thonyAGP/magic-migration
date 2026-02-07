@@ -1,6 +1,6 @@
 ﻿# ADH IDE 7 - Menu Data Catching
 
-> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 03:39
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 12:46
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,80 +18,18 @@
 | Taches | 33 (15 ecrans visibles) |
 | Tables modifiees | 5 |
 | Programmes appeles | 9 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **MOYENNE** (score 43/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Menu Data Catching** assure la gestion complete de ce processus.
+# Menu Data Catching - ADH IDE 7
 
-Le flux de traitement s'organise en **3 blocs fonctionnels** :
+Point d'entrée principal pour la saisie et gestion des données de catching (enregistrement des clients). Ce menu centralise toutes les opérations critiques liées aux informations de séjour : authentification par clavier, paramétrisation de la zone géographique et des offres combinées, définition des informations du village, consultation de la disponibilité système et génération des documents comptables (confirmations checkout, extraits de compte).
 
-- **Traitement** (30 taches) : traitements metier divers
-- **Impression** (2 taches) : generation de tickets et documents
-- **Validation** (1 tache) : controles et verifications de coherence
+Le programme gère six tables majeures pour persister l'état de la saisie : les données brutes de catching (`address_data_catching`), les comptes clients (`compte_gm________cgm`), les cartes de paiement (`ez_card`), les hôtels virtuels (`vrl_hp`) et l'effectif quotidien. Cela en fait un hub de données transactionnel où chaque action impacte potentiellement plusieurs entités en aval.
 
-**Donnees modifiees** : 5 tables en ecriture (address_data_catching, compte_gm________cgm, ez_card, vrl_hp, effectif_quotidien).
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (30 taches)
-
-- **7** - (sans nom) **[[ECRAN]](#ecran-t1)**
-- **7.1** - welcome ENG **[[ECRAN]](#ecran-t2)**
-- **7.1.1** - update menu
-- **7.1.2** - update language
-- **7.1.3** - Scroll sur noms **[[ECRAN]](#ecran-t5)**
-- **7.1.4** - Counter **[[ECRAN]](#ecran-t6)**
-- **7.1.5** - personal info ENG **[[ECRAN]](#ecran-t7)**
-- **7.1.5.1** - Loading **[[ECRAN]](#ecran-t8)**
-- **7.1.5.2** - Loading **[[ECRAN]](#ecran-t9)**
-- **7.1.5.3** - info ENG **[[ECRAN]](#ecran-t10)**
-- **7.1.5.3.1** - copy
-- **7.1.5.3.2** - Loading **[[ECRAN]](#ecran-t12)**
-- **7.1.5.4** - Loading ENG **[[ECRAN]](#ecran-t13)**
-- **7.1.5.5** - Update **[[ECRAN]](#ecran-t14)**
-- **7.1.6.1.1** - Loading **[[ECRAN]](#ecran-t17)**
-- **7.1.6.1.2** - Loading **[[ECRAN]](#ecran-t18)**
-- **7.1.6.1.3** - info ENG **[[ECRAN]](#ecran-t19)**
-- **7.1.6.1.4** - Del liste addr tmp
-- **7.1.7** - Check out ENG **[[ECRAN]](#ecran-t21)**
-- **7.1.7.1** - 0 Account review ENG **[[ECRAN]](#ecran-t22)**
-- **7.1.7.1.1** - detail ENG **[[ECRAN]](#ecran-t23)**
-- **7.1.7.1.2** - (sans nom)
-- **7.1.7.1.3** - compute tab chain **[[ECRAN]](#ecran-t25)**
-- **7.1.7.2** - 1 Check out ENG **[[ECRAN]](#ecran-t26)**
-- **7.1.7.2.1** - Accept/decline ENG **[[ECRAN]](#ecran-t27)**
-- **7.1.7.2.2.1** - change account satus
-- **7.1.7.2.2.2** - cancel clubmed pass
-- **7.1.7.2.2.3** - Update log
-- **7.1.7.3** - Thank you ENG **[[ECRAN]](#ecran-t32)**
-- **7.1.8** - 4 Log Out
-
-Delegue a : [keyboard (IDE 15)](ADH-IDE-15.md), [Alimentation Combos NATION P (IDE 5)](ADH-IDE-5.md), [     Set Village info (IDE 8)](ADH-IDE-8.md), [System avail (top left corner (IDE 9)](ADH-IDE-9.md), [Catching stats (IDE 12)](ADH-IDE-12.md), [Browse - Countries iso (IDE 16)](ADH-IDE-16.md)
-
-#### Phase 2 : Impression (2 taches)
-
-- **7.1.6** - Print **[[ECRAN]](#ecran-t15)**
-- **7.1.6.1** - Print **[[ECRAN]](#ecran-t16)**
-
-Delegue a : [Print list Checkout (shift F9) (IDE 10)](ADH-IDE-10.md), [Print C/O confirmation (IDE 17)](ADH-IDE-17.md), [Print extrait compte (IDE 18)](ADH-IDE-18.md)
-
-#### Phase 3 : Validation (1 tache)
-
-- **7.1.7.2.2** - Valid check out
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| vrl_hp | R/**W**/L (6 usages) |  |
-| address_data_catching | R/**W** (5 usages) |  |
-| effectif_quotidien | **W**/L (5 usages) |  |
-| compte_gm________cgm | R/**W**/L (5 usages) | Comptes GM (generaux) |
-| ez_card | **W** (1 usages) |  |
-
-</details>
+Les tâches associées couvrent l'expérience utilisateur multilingue (accueil en anglais, mise à jour des labels menu et langue) et l'ergonomie de navigation (scroll sur les noms de clients, compteur d'enregistrements, affichage des données personnelles en anglais). L'architecture en étoile (9 appels de programmes liés) suggère une forte dépendance aux microfonctions de validation, impression et interrogation d'état système.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -101,7 +39,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>7 - (sans nom) [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - (sans nom) [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (30 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 815 x 431 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -111,69 +49,69 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [7.1](#t2) | welcome ENG **[[ECRAN]](#ecran-t2)** | Traitement |
-| [7.1.1](#t3) | update menu | Traitement |
-| [7.1.2](#t4) | update language | Traitement |
-| [7.1.3](#t5) | Scroll sur noms **[[ECRAN]](#ecran-t5)** | Traitement |
-| [7.1.4](#t6) | Counter **[[ECRAN]](#ecran-t6)** | Traitement |
-| [7.1.5](#t7) | personal info ENG **[[ECRAN]](#ecran-t7)** | Traitement |
-| [7.1.5.1](#t8) | Loading **[[ECRAN]](#ecran-t8)** | Traitement |
-| [7.1.5.2](#t9) | Loading **[[ECRAN]](#ecran-t9)** | Traitement |
-| [7.1.5.3](#t10) | info ENG **[[ECRAN]](#ecran-t10)** | Traitement |
-| [7.1.5.3.1](#t11) | copy | Traitement |
-| [7.1.5.3.2](#t12) | Loading **[[ECRAN]](#ecran-t12)** | Traitement |
-| [7.1.5.4](#t13) | Loading ENG **[[ECRAN]](#ecran-t13)** | Traitement |
-| [7.1.5.5](#t14) | Update **[[ECRAN]](#ecran-t14)** | Traitement |
-| [7.1.6.1.1](#t17) | Loading **[[ECRAN]](#ecran-t17)** | Traitement |
-| [7.1.6.1.2](#t18) | Loading **[[ECRAN]](#ecran-t18)** | Traitement |
-| [7.1.6.1.3](#t19) | info ENG **[[ECRAN]](#ecran-t19)** | Traitement |
-| [7.1.6.1.4](#t20) | Del liste addr tmp | Traitement |
-| [7.1.7](#t21) | Check out ENG **[[ECRAN]](#ecran-t21)** | Traitement |
-| [7.1.7.1](#t22) | 0 Account review ENG **[[ECRAN]](#ecran-t22)** | Traitement |
-| [7.1.7.1.1](#t23) | detail ENG **[[ECRAN]](#ecran-t23)** | Traitement |
-| [7.1.7.1.2](#t24) | (sans nom) | Traitement |
-| [7.1.7.1.3](#t25) | compute tab chain **[[ECRAN]](#ecran-t25)** | Traitement |
-| [7.1.7.2](#t26) | 1 Check out ENG **[[ECRAN]](#ecran-t26)** | Traitement |
-| [7.1.7.2.1](#t27) | Accept/decline ENG **[[ECRAN]](#ecran-t27)** | Traitement |
-| [7.1.7.2.2.1](#t29) | change account satus | Traitement |
-| [7.1.7.2.2.2](#t30) | cancel clubmed pass | Traitement |
-| [7.1.7.2.2.3](#t31) | Update log | Traitement |
-| [7.1.7.3](#t32) | Thank you ENG **[[ECRAN]](#ecran-t32)** | Traitement |
-| [7.1.8](#t33) | 4 Log Out | Traitement |
+| [T2](#t2) | welcome ENG **[ECRAN]** | Traitement |
+| [T3](#t3) | update menu | Traitement |
+| [T4](#t4) | update language | Traitement |
+| [T5](#t5) | Scroll sur noms **[ECRAN]** | Traitement |
+| [T6](#t6) | Counter **[ECRAN]** | Traitement |
+| [T7](#t7) | personal info ENG **[ECRAN]** | Traitement |
+| [T8](#t8) | Loading **[ECRAN]** | Traitement |
+| [T9](#t9) | Loading **[ECRAN]** | Traitement |
+| [T10](#t10) | info ENG **[ECRAN]** | Traitement |
+| [T11](#t11) | copy | Traitement |
+| [T12](#t12) | Loading **[ECRAN]** | Traitement |
+| [T13](#t13) | Loading ENG **[ECRAN]** | Traitement |
+| [T14](#t14) | Update **[ECRAN]** | Traitement |
+| [T17](#t17) | Loading **[ECRAN]** | Traitement |
+| [T18](#t18) | Loading **[ECRAN]** | Traitement |
+| [T19](#t19) | info ENG **[ECRAN]** | Traitement |
+| [T20](#t20) | Del liste addr tmp | Traitement |
+| [T21](#t21) | Check out ENG **[ECRAN]** | Traitement |
+| [T22](#t22) | 0 Account review ENG **[ECRAN]** | Traitement |
+| [T23](#t23) | detail ENG **[ECRAN]** | Traitement |
+| [T24](#t24) | (sans nom) | Traitement |
+| [T25](#t25) | compute tab chain **[ECRAN]** | Traitement |
+| [T26](#t26) | 1 Check out ENG **[ECRAN]** | Traitement |
+| [T27](#t27) | Accept/decline ENG **[ECRAN]** | Traitement |
+| [T29](#t29) | change account satus | Traitement |
+| [T30](#t30) | cancel clubmed pass | Traitement |
+| [T31](#t31) | Update log | Traitement |
+| [T32](#t32) | Thank you ENG **[ECRAN]** | Traitement |
+| [T33](#t33) | 4 Log Out | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>7.1 - welcome ENG [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - welcome ENG [ECRAN]
 
 **Role** : Traitement : welcome ENG.
 **Ecran** : 812 x 398 DLU (MDI) | [Voir mockup](#ecran-t2)
 
 ---
 
-#### <a id="t3"></a>7.1.1 - update menu
+#### <a id="t3"></a>T3 - update menu
 
 **Role** : Traitement : update menu.
 **Variables liees** : R (v.menu)
 
 ---
 
-#### <a id="t4"></a>7.1.2 - update language
+#### <a id="t4"></a>T4 - update language
 
 **Role** : Traitement : update language.
 **Variables liees** : S (v.language)
 
 ---
 
-#### <a id="t5"></a>7.1.3 - Scroll sur noms [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Scroll sur noms [ECRAN]
 
 **Role** : Traitement : Scroll sur noms.
 **Ecran** : 1616 x 390 DLU (MDI) | [Voir mockup](#ecran-t5)
 
 ---
 
-#### <a id="t6"></a>7.1.4 - Counter [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Counter [ECRAN]
 
 **Role** : Traitement : Counter.
 **Ecran** : 373 x 86 DLU (MDI) | [Voir mockup](#ecran-t6)
@@ -181,89 +119,89 @@ Traitements internes.
 
 ---
 
-#### <a id="t7"></a>7.1.5 - personal info ENG [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - personal info ENG [ECRAN]
 
 **Role** : Traitement : personal info ENG.
 **Ecran** : 809 x 388 DLU (Modal) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>7.1.5.1 - Loading [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Loading [ECRAN]
 
 **Role** : Traitement : Loading.
 **Ecran** : 366 x 93 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t9"></a>7.1.5.2 - Loading [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Loading [ECRAN]
 
 **Role** : Traitement : Loading.
 **Ecran** : 366 x 93 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t10"></a>7.1.5.3 - info ENG [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - info ENG [ECRAN]
 
 **Role** : Traitement : info ENG.
 **Ecran** : 805 x 340 DLU (Modal) | [Voir mockup](#ecran-t10)
 
 ---
 
-#### <a id="t11"></a>7.1.5.3.1 - copy
+#### <a id="t11"></a>T11 - copy
 
 **Role** : Traitement : copy.
 
 ---
 
-#### <a id="t12"></a>7.1.5.3.2 - Loading [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Loading [ECRAN]
 
 **Role** : Traitement : Loading.
 **Ecran** : 366 x 100 DLU (MDI) | [Voir mockup](#ecran-t12)
 
 ---
 
-#### <a id="t13"></a>7.1.5.4 - Loading ENG [[ECRAN]](#ecran-t13)
+#### <a id="t13"></a>T13 - Loading ENG [ECRAN]
 
 **Role** : Traitement : Loading ENG.
 **Ecran** : 364 x 88 DLU (MDI) | [Voir mockup](#ecran-t13)
 
 ---
 
-#### <a id="t14"></a>7.1.5.5 - Update [[ECRAN]](#ecran-t14)
+#### <a id="t14"></a>T14 - Update [ECRAN]
 
 **Role** : Traitement : Update.
 **Ecran** : 364 x 88 DLU (MDI) | [Voir mockup](#ecran-t14)
 
 ---
 
-#### <a id="t17"></a>7.1.6.1.1 - Loading [[ECRAN]](#ecran-t17)
+#### <a id="t17"></a>T17 - Loading [ECRAN]
 
 **Role** : Traitement : Loading.
 **Ecran** : 366 x 93 DLU (MDI) | [Voir mockup](#ecran-t17)
 
 ---
 
-#### <a id="t18"></a>7.1.6.1.2 - Loading [[ECRAN]](#ecran-t18)
+#### <a id="t18"></a>T18 - Loading [ECRAN]
 
 **Role** : Traitement : Loading.
 **Ecran** : 366 x 93 DLU (MDI) | [Voir mockup](#ecran-t18)
 
 ---
 
-#### <a id="t19"></a>7.1.6.1.3 - info ENG [[ECRAN]](#ecran-t19)
+#### <a id="t19"></a>T19 - info ENG [ECRAN]
 
 **Role** : Traitement : info ENG.
 **Ecran** : 334 x 116 DLU (MDI) | [Voir mockup](#ecran-t19)
 
 ---
 
-#### <a id="t20"></a>7.1.6.1.4 - Del liste addr tmp
+#### <a id="t20"></a>T20 - Del liste addr tmp
 
 **Role** : Traitement : Del liste addr tmp.
 
 ---
 
-#### <a id="t21"></a>7.1.7 - Check out ENG [[ECRAN]](#ecran-t21)
+#### <a id="t21"></a>T21 - Check out ENG [ECRAN]
 
 **Role** : Traitement : Check out ENG.
 **Ecran** : 809 x 340 DLU (Modal) | [Voir mockup](#ecran-t21)
@@ -271,7 +209,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t22"></a>7.1.7.1 - 0 Account review ENG [[ECRAN]](#ecran-t22)
+#### <a id="t22"></a>T22 - 0 Account review ENG [ECRAN]
 
 **Role** : Traitement : 0 Account review ENG.
 **Ecran** : 807 x 290 DLU (Modal) | [Voir mockup](#ecran-t22)
@@ -279,27 +217,27 @@ Traitements internes.
 
 ---
 
-#### <a id="t23"></a>7.1.7.1.1 - detail ENG [[ECRAN]](#ecran-t23)
+#### <a id="t23"></a>T23 - detail ENG [ECRAN]
 
 **Role** : Traitement : detail ENG.
 **Ecran** : 1589 x 235 DLU (Modal) | [Voir mockup](#ecran-t23)
 
 ---
 
-#### <a id="t24"></a>7.1.7.1.2 - (sans nom)
+#### <a id="t24"></a>T24 - (sans nom)
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t25"></a>7.1.7.1.3 - compute tab chain [[ECRAN]](#ecran-t25)
+#### <a id="t25"></a>T25 - compute tab chain [ECRAN]
 
 **Role** : Traitement : compute tab chain.
 **Ecran** : 626 x 252 DLU (MDI) | [Voir mockup](#ecran-t25)
 
 ---
 
-#### <a id="t26"></a>7.1.7.2 - 1 Check out ENG [[ECRAN]](#ecran-t26)
+#### <a id="t26"></a>T26 - 1 Check out ENG [ECRAN]
 
 **Role** : Traitement : 1 Check out ENG.
 **Ecran** : 806 x 293 DLU (Modal) | [Voir mockup](#ecran-t26)
@@ -307,41 +245,41 @@ Traitements internes.
 
 ---
 
-#### <a id="t27"></a>7.1.7.2.1 - Accept/decline ENG [[ECRAN]](#ecran-t27)
+#### <a id="t27"></a>T27 - Accept/decline ENG [ECRAN]
 
 **Role** : Traitement : Accept/decline ENG.
 **Ecran** : 526 x 174 DLU (MDI) | [Voir mockup](#ecran-t27)
 
 ---
 
-#### <a id="t29"></a>7.1.7.2.2.1 - change account satus
+#### <a id="t29"></a>T29 - change account satus
 
 **Role** : Traitement : change account satus.
 **Variables liees** : B (v.account GM last)
 
 ---
 
-#### <a id="t30"></a>7.1.7.2.2.2 - cancel clubmed pass
+#### <a id="t30"></a>T30 - cancel clubmed pass
 
 **Role** : Traitement : cancel clubmed pass.
 **Variables liees** : P (v.bypass counter)
 
 ---
 
-#### <a id="t31"></a>7.1.7.2.2.3 - Update log
+#### <a id="t31"></a>T31 - Update log
 
 **Role** : Traitement : Update log.
 
 ---
 
-#### <a id="t32"></a>7.1.7.3 - Thank you ENG [[ECRAN]](#ecran-t32)
+#### <a id="t32"></a>T32 - Thank you ENG [ECRAN]
 
 **Role** : Traitement : Thank you ENG.
 **Ecran** : 807 x 293 DLU (Modal) | [Voir mockup](#ecran-t32)
 
 ---
 
-#### <a id="t33"></a>7.1.8 - 4 Log Out
+#### <a id="t33"></a>T33 - 4 Log Out
 
 **Role** : Traitement : 4 Log Out.
 
@@ -352,7 +290,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t15"></a>7.1.6 - Print [[ECRAN]](#ecran-t15)
+#### <a id="t15"></a>T15 - Print [ECRAN]
 
 **Role** : Generation du document : Print.
 **Ecran** : 417 x 112 DLU (MDI) | [Voir mockup](#ecran-t15)
@@ -360,7 +298,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t16"></a>7.1.6.1 - Print [[ECRAN]](#ecran-t16)
+#### <a id="t16"></a>T16 - Print [ECRAN]
 
 **Role** : Generation du document : Print.
 **Ecran** : 306 x 89 DLU (MDI) | [Voir mockup](#ecran-t16)
@@ -373,7 +311,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ---
 
-#### <a id="t28"></a>7.1.7.2.2 - Valid check out
+#### <a id="t28"></a>T28 - Valid check out
 
 **Role** : Verification : Valid check out.
 **Variables liees** : F (v.access to check out ok)
@@ -381,7 +319,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Programme d'impression - logique technique sans conditions metier)*
 
 ## 6. CONTEXTE
 
@@ -396,28 +334,28 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 7.1 | 7.1 | welcome ENG | MDI | 812 | 398 | Traitement |
-| 2 | 7.1.3 | 7.1.3 | Scroll sur noms | MDI | 1616 | 390 | Traitement |
-| 3 | 7.1.4 | 7.1.4 | Counter | MDI | 373 | 86 | Traitement |
-| 4 | 7.1.5 | 7.1.5 | personal info ENG | Modal | 809 | 388 | Traitement |
-| 5 | 7.1.5.3 | 7.1.5.3 | info ENG | Modal | 805 | 340 | Traitement |
-| 6 | 7.1.5.4 | 7.1.5.4 | Loading ENG | MDI | 364 | 88 | Traitement |
-| 7 | 7.1.5.5 | 7.1.5.5 | Update | MDI | 364 | 88 | Traitement |
-| 8 | 7.1.6 | 7.1.6 | Print | MDI | 417 | 112 | Impression |
-| 9 | 7.1.6.1 | 7.1.6.1 | Print | MDI | 306 | 89 | Impression |
-| 10 | 7.1.7 | 7.1.7 | Check out ENG | Modal | 809 | 340 | Traitement |
-| 11 | 7.1.7.1 | 7.1.7.1 | 0 Account review ENG | Modal | 807 | 290 | Traitement |
-| 12 | 7.1.7.1.1 | 7.1.7.1.1 | detail ENG | Modal | 1589 | 235 | Traitement |
-| 13 | 7.1.7.2 | 7.1.7.2 | 1 Check out ENG | Modal | 806 | 293 | Traitement |
-| 14 | 7.1.7.2.1 | 7.1.7.2.1 | Accept/decline ENG | MDI | 526 | 174 | Traitement |
-| 15 | 7.1.7.3 | 7.1.7.3 | Thank you ENG | Modal | 807 | 293 | Traitement |
+| 1 | 7.1 | T2 | welcome ENG | MDI | 812 | 398 | Traitement |
+| 2 | 7.1.3 | T5 | Scroll sur noms | MDI | 1616 | 390 | Traitement |
+| 3 | 7.1.4 | T6 | Counter | MDI | 373 | 86 | Traitement |
+| 4 | 7.1.5 | T7 | personal info ENG | Modal | 809 | 388 | Traitement |
+| 5 | 7.1.5.3 | T10 | info ENG | Modal | 805 | 340 | Traitement |
+| 6 | 7.1.5.4 | T13 | Loading ENG | MDI | 364 | 88 | Traitement |
+| 7 | 7.1.5.5 | T14 | Update | MDI | 364 | 88 | Traitement |
+| 8 | 7.1.6 | T15 | Print | MDI | 417 | 112 | Impression |
+| 9 | 7.1.6.1 | T16 | Print | MDI | 306 | 89 | Impression |
+| 10 | 7.1.7 | T21 | Check out ENG | Modal | 809 | 340 | Traitement |
+| 11 | 7.1.7.1 | T22 | 0 Account review ENG | Modal | 807 | 290 | Traitement |
+| 12 | 7.1.7.1.1 | T23 | detail ENG | Modal | 1589 | 235 | Traitement |
+| 13 | 7.1.7.2 | T26 | 1 Check out ENG | Modal | 806 | 293 | Traitement |
+| 14 | 7.1.7.2.1 | T27 | Accept/decline ENG | MDI | 526 | 174 | Traitement |
+| 15 | 7.1.7.3 | T32 | Thank you ENG | Modal | 807 | 293 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t2"></a>7.1 - welcome ENG
-**Tache** : [7.1](#t2) | **Type** : MDI | **Dimensions** : 812 x 398 DLU
+**Tache** : [T2](#t2) | **Type** : MDI | **Dimensions** : 812 x 398 DLU
 **Bloc** : Traitement | **Titre IDE** : welcome ENG
 
 <!-- FORM-DATA:
@@ -562,7 +500,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t5"></a>7.1.3 - Scroll sur noms
-**Tache** : [7.1.3](#t5) | **Type** : MDI | **Dimensions** : 1616 x 390 DLU
+**Tache** : [T5](#t5) | **Type** : MDI | **Dimensions** : 1616 x 390 DLU
 **Bloc** : Traitement | **Titre IDE** : Scroll sur noms
 
 <!-- FORM-DATA:
@@ -1317,7 +1255,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t6"></a>7.1.4 - Counter
-**Tache** : [7.1.4](#t6) | **Type** : MDI | **Dimensions** : 373 x 86 DLU
+**Tache** : [T6](#t6) | **Type** : MDI | **Dimensions** : 373 x 86 DLU
 **Bloc** : Traitement | **Titre IDE** : Counter
 
 <!-- FORM-DATA:
@@ -1349,7 +1287,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t7"></a>7.1.5 - personal info ENG
-**Tache** : [7.1.5](#t7) | **Type** : Modal | **Dimensions** : 809 x 388 DLU
+**Tache** : [T7](#t7) | **Type** : Modal | **Dimensions** : 809 x 388 DLU
 **Bloc** : Traitement | **Titre IDE** : personal info ENG
 
 <!-- FORM-DATA:
@@ -1446,7 +1384,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t10"></a>7.1.5.3 - info ENG
-**Tache** : [7.1.5.3](#t10) | **Type** : Modal | **Dimensions** : 805 x 340 DLU
+**Tache** : [T10](#t10) | **Type** : Modal | **Dimensions** : 805 x 340 DLU
 **Bloc** : Traitement | **Titre IDE** : info ENG
 
 <!-- FORM-DATA:
@@ -2152,7 +2090,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t13"></a>7.1.5.4 - Loading ENG
-**Tache** : [7.1.5.4](#t13) | **Type** : MDI | **Dimensions** : 364 x 88 DLU
+**Tache** : [T13](#t13) | **Type** : MDI | **Dimensions** : 364 x 88 DLU
 **Bloc** : Traitement | **Titre IDE** : Loading ENG
 
 <!-- FORM-DATA:
@@ -2184,7 +2122,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t14"></a>7.1.5.5 - Update
-**Tache** : [7.1.5.5](#t14) | **Type** : MDI | **Dimensions** : 364 x 88 DLU
+**Tache** : [T14](#t14) | **Type** : MDI | **Dimensions** : 364 x 88 DLU
 **Bloc** : Traitement | **Titre IDE** : Update
 
 <!-- FORM-DATA:
@@ -2229,7 +2167,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t15"></a>7.1.6 - Print
-**Tache** : [7.1.6](#t15) | **Type** : MDI | **Dimensions** : 417 x 112 DLU
+**Tache** : [T15](#t15) | **Type** : MDI | **Dimensions** : 417 x 112 DLU
 **Bloc** : Impression | **Titre IDE** : Print
 
 <!-- FORM-DATA:
@@ -2320,7 +2258,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t16"></a>7.1.6.1 - Print
-**Tache** : [7.1.6.1](#t16) | **Type** : MDI | **Dimensions** : 306 x 89 DLU
+**Tache** : [T16](#t16) | **Type** : MDI | **Dimensions** : 306 x 89 DLU
 **Bloc** : Impression | **Titre IDE** : Print
 
 <!-- FORM-DATA:
@@ -2352,7 +2290,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t21"></a>7.1.7 - Check out ENG
-**Tache** : [7.1.7](#t21) | **Type** : Modal | **Dimensions** : 809 x 340 DLU
+**Tache** : [T21](#t21) | **Type** : Modal | **Dimensions** : 809 x 340 DLU
 **Bloc** : Traitement | **Titre IDE** : Check out ENG
 
 <!-- FORM-DATA:
@@ -2475,7 +2413,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t22"></a>7.1.7.1 - 0 Account review ENG
-**Tache** : [7.1.7.1](#t22) | **Type** : Modal | **Dimensions** : 807 x 290 DLU
+**Tache** : [T22](#t22) | **Type** : Modal | **Dimensions** : 807 x 290 DLU
 **Bloc** : Traitement | **Titre IDE** : 0 Account review ENG
 
 <!-- FORM-DATA:
@@ -2596,7 +2534,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t23"></a>7.1.7.1.1 - detail ENG
-**Tache** : [7.1.7.1.1](#t23) | **Type** : Modal | **Dimensions** : 1589 x 235 DLU
+**Tache** : [T23](#t23) | **Type** : Modal | **Dimensions** : 1589 x 235 DLU
 **Bloc** : Traitement | **Titre IDE** : detail ENG
 
 <!-- FORM-DATA:
@@ -2929,7 +2867,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t26"></a>7.1.7.2 - 1 Check out ENG
-**Tache** : [7.1.7.2](#t26) | **Type** : Modal | **Dimensions** : 806 x 293 DLU
+**Tache** : [T26](#t26) | **Type** : Modal | **Dimensions** : 806 x 293 DLU
 **Bloc** : Traitement | **Titre IDE** : 1 Check out ENG
 
 <!-- FORM-DATA:
@@ -3045,7 +2983,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t27"></a>7.1.7.2.1 - Accept/decline ENG
-**Tache** : [7.1.7.2.1](#t27) | **Type** : MDI | **Dimensions** : 526 x 174 DLU
+**Tache** : [T27](#t27) | **Type** : MDI | **Dimensions** : 526 x 174 DLU
 **Bloc** : Traitement | **Titre IDE** : Accept/decline ENG
 
 <!-- FORM-DATA:
@@ -3187,7 +3125,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 ---
 
 #### <a id="ecran-t32"></a>7.1.7.3 - Thank you ENG
-**Tache** : [7.1.7.3](#t32) | **Type** : Modal | **Dimensions** : 807 x 293 DLU
+**Tache** : [T32](#t32) | **Type** : Modal | **Dimensions** : 807 x 293 DLU
 **Bloc** : Traitement | **Titre IDE** : Thank you ENG
 
 <!-- FORM-DATA:
@@ -3299,35 +3237,35 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF2[7.1 welcome ENG]
+    VF2[T2 welcome ENG]
     style VF2 fill:#58a6ff
-    VF5[7.1.3 Scroll sur noms]
+    VF5[T5 Scroll sur noms]
     style VF5 fill:#58a6ff
-    VF6[7.1.4 Counter]
+    VF6[T6 Counter]
     style VF6 fill:#58a6ff
-    VF7[7.1.5 personal info ENG]
+    VF7[T7 personal info ENG]
     style VF7 fill:#58a6ff
-    VF10[7.1.5.3 info ENG]
+    VF10[T10 info ENG]
     style VF10 fill:#58a6ff
-    VF13[7.1.5.4 Loading ENG]
+    VF13[T13 Loading ENG]
     style VF13 fill:#58a6ff
-    VF14[7.1.5.5 Update]
+    VF14[T14 Update]
     style VF14 fill:#58a6ff
-    VF15[7.1.6 Print]
+    VF15[T15 Print]
     style VF15 fill:#58a6ff
-    VF16[7.1.6.1 Print]
+    VF16[T16 Print]
     style VF16 fill:#58a6ff
-    VF21[7.1.7 Check out ENG]
+    VF21[T21 Check out ENG]
     style VF21 fill:#58a6ff
-    VF22[7.1.7.1 0 Account review ENG]
+    VF22[T22 0 Account review ENG]
     style VF22 fill:#58a6ff
-    VF23[7.1.7.1.1 detail ENG]
+    VF23[T23 detail ENG]
     style VF23 fill:#58a6ff
-    VF26[7.1.7.2 1 Check out ENG]
+    VF26[T26 1 Check out ENG]
     style VF26 fill:#58a6ff
-    VF27[7.1.7.2.1 Acceptdecline ENG]
+    VF27[T27 Acceptdecline ENG]
     style VF27 fill:#58a6ff
-    VF32[7.1.7.3 Thank you ENG]
+    VF32[T32 Thank you ENG]
     style VF32 fill:#58a6ff
     EXT15[IDE 15 keyboard]
     style EXT15 fill:#3fb950
@@ -3379,59 +3317,61 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **7.1** | [**(sans nom)** (7)](#t1) [mockup](#ecran-t1) | MDI | 815x431 | Traitement |
-| 7.1.1 | [welcome ENG (7.1)](#t2) [mockup](#ecran-t2) | MDI | 812x398 | |
-| 7.1.2 | [update menu (7.1.1)](#t3) | MDI | - | |
-| 7.1.3 | [update language (7.1.2)](#t4) | MDI | - | |
-| 7.1.4 | [Scroll sur noms (7.1.3)](#t5) [mockup](#ecran-t5) | MDI | 1616x390 | |
-| 7.1.5 | [Counter (7.1.4)](#t6) [mockup](#ecran-t6) | MDI | 373x86 | |
-| 7.1.6 | [personal info ENG (7.1.5)](#t7) [mockup](#ecran-t7) | Modal | 809x388 | |
-| 7.1.7 | [Loading (7.1.5.1)](#t8) [mockup](#ecran-t8) | MDI | 366x93 | |
-| 7.1.8 | [Loading (7.1.5.2)](#t9) [mockup](#ecran-t9) | MDI | 366x93 | |
-| 7.1.9 | [info ENG (7.1.5.3)](#t10) [mockup](#ecran-t10) | Modal | 805x340 | |
-| 7.1.10 | [copy (7.1.5.3.1)](#t11) | MDI | - | |
-| 7.1.11 | [Loading (7.1.5.3.2)](#t12) [mockup](#ecran-t12) | MDI | 366x100 | |
-| 7.1.12 | [Loading ENG (7.1.5.4)](#t13) [mockup](#ecran-t13) | MDI | 364x88 | |
-| 7.1.13 | [Update (7.1.5.5)](#t14) [mockup](#ecran-t14) | MDI | 364x88 | |
-| 7.1.14 | [Loading (7.1.6.1.1)](#t17) [mockup](#ecran-t17) | MDI | 366x93 | |
-| 7.1.15 | [Loading (7.1.6.1.2)](#t18) [mockup](#ecran-t18) | MDI | 366x93 | |
-| 7.1.16 | [info ENG (7.1.6.1.3)](#t19) [mockup](#ecran-t19) | MDI | 334x116 | |
-| 7.1.17 | [Del liste addr tmp (7.1.6.1.4)](#t20) | MDI | - | |
-| 7.1.18 | [Check out ENG (7.1.7)](#t21) [mockup](#ecran-t21) | Modal | 809x340 | |
-| 7.1.19 | [0 Account review ENG (7.1.7.1)](#t22) [mockup](#ecran-t22) | Modal | 807x290 | |
-| 7.1.20 | [detail ENG (7.1.7.1.1)](#t23) [mockup](#ecran-t23) | Modal | 1589x235 | |
-| 7.1.21 | [(sans nom) (7.1.7.1.2)](#t24) | Modal | - | |
-| 7.1.22 | [compute tab chain (7.1.7.1.3)](#t25) [mockup](#ecran-t25) | MDI | 626x252 | |
-| 7.1.23 | [1 Check out ENG (7.1.7.2)](#t26) [mockup](#ecran-t26) | Modal | 806x293 | |
-| 7.1.24 | [Accept/decline ENG (7.1.7.2.1)](#t27) [mockup](#ecran-t27) | MDI | 526x174 | |
-| 7.1.25 | [change account satus (7.1.7.2.2.1)](#t29) | MDI | - | |
-| 7.1.26 | [cancel clubmed pass (7.1.7.2.2.2)](#t30) | MDI | - | |
-| 7.1.27 | [Update log (7.1.7.2.2.3)](#t31) | MDI | - | |
-| 7.1.28 | [Thank you ENG (7.1.7.3)](#t32) [mockup](#ecran-t32) | Modal | 807x293 | |
-| 7.1.29 | [4 Log Out (7.1.8)](#t33) | MDI | - | |
-| **7.2** | [**Print** (7.1.6)](#t15) [mockup](#ecran-t15) | MDI | 417x112 | Impression |
-| 7.2.1 | [Print (7.1.6.1)](#t16) [mockup](#ecran-t16) | MDI | 306x89 | |
-| **7.3** | [**Valid check out** (7.1.7.2.2)](#t28) | MDI | - | Validation |
+| **7.1** | [**(sans nom)** (T1)](#t1) [mockup](#ecran-t1) | MDI | 815x431 | Traitement |
+| 7.1.1 | [welcome ENG (T2)](#t2) [mockup](#ecran-t2) | MDI | 812x398 | |
+| 7.1.2 | [update menu (T3)](#t3) | MDI | - | |
+| 7.1.3 | [update language (T4)](#t4) | MDI | - | |
+| 7.1.4 | [Scroll sur noms (T5)](#t5) [mockup](#ecran-t5) | MDI | 1616x390 | |
+| 7.1.5 | [Counter (T6)](#t6) [mockup](#ecran-t6) | MDI | 373x86 | |
+| 7.1.6 | [personal info ENG (T7)](#t7) [mockup](#ecran-t7) | Modal | 809x388 | |
+| 7.1.7 | [Loading (T8)](#t8) [mockup](#ecran-t8) | MDI | 366x93 | |
+| 7.1.8 | [Loading (T9)](#t9) [mockup](#ecran-t9) | MDI | 366x93 | |
+| 7.1.9 | [info ENG (T10)](#t10) [mockup](#ecran-t10) | Modal | 805x340 | |
+| 7.1.10 | [copy (T11)](#t11) | MDI | - | |
+| 7.1.11 | [Loading (T12)](#t12) [mockup](#ecran-t12) | MDI | 366x100 | |
+| 7.1.12 | [Loading ENG (T13)](#t13) [mockup](#ecran-t13) | MDI | 364x88 | |
+| 7.1.13 | [Update (T14)](#t14) [mockup](#ecran-t14) | MDI | 364x88 | |
+| 7.1.14 | [Loading (T17)](#t17) [mockup](#ecran-t17) | MDI | 366x93 | |
+| 7.1.15 | [Loading (T18)](#t18) [mockup](#ecran-t18) | MDI | 366x93 | |
+| 7.1.16 | [info ENG (T19)](#t19) [mockup](#ecran-t19) | MDI | 334x116 | |
+| 7.1.17 | [Del liste addr tmp (T20)](#t20) | MDI | - | |
+| 7.1.18 | [Check out ENG (T21)](#t21) [mockup](#ecran-t21) | Modal | 809x340 | |
+| 7.1.19 | [0 Account review ENG (T22)](#t22) [mockup](#ecran-t22) | Modal | 807x290 | |
+| 7.1.20 | [detail ENG (T23)](#t23) [mockup](#ecran-t23) | Modal | 1589x235 | |
+| 7.1.21 | [(sans nom) (T24)](#t24) | Modal | - | |
+| 7.1.22 | [compute tab chain (T25)](#t25) [mockup](#ecran-t25) | MDI | 626x252 | |
+| 7.1.23 | [1 Check out ENG (T26)](#t26) [mockup](#ecran-t26) | Modal | 806x293 | |
+| 7.1.24 | [Accept/decline ENG (T27)](#t27) [mockup](#ecran-t27) | MDI | 526x174 | |
+| 7.1.25 | [change account satus (T29)](#t29) | MDI | - | |
+| 7.1.26 | [cancel clubmed pass (T30)](#t30) | MDI | - | |
+| 7.1.27 | [Update log (T31)](#t31) | MDI | - | |
+| 7.1.28 | [Thank you ENG (T32)](#t32) [mockup](#ecran-t32) | Modal | 807x293 | |
+| 7.1.29 | [4 Log Out (T33)](#t33) | MDI | - | |
+| **7.2** | [**Print** (T15)](#t15) [mockup](#ecran-t15) | MDI | 417x112 | Impression |
+| 7.2.1 | [Print (T16)](#t16) [mockup](#ecran-t16) | MDI | 306x89 | |
+| **7.3** | [**Valid check out** (T28)](#t28) | MDI | - | Validation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[main]
-    UPDATE[MAJ 5 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    B1[Traitement (30t)]
+    START --> B1
+    B2[Impression (2t)]
+    B1 --> B2
+    B3[Validation (1t)]
+    B2 --> B3
+    WRITE[MAJ 5 tables]
+    B3 --> WRITE
+    ENDOK([END])
+    WRITE --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -3441,78 +3381,21 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 22 | address_data_catching |  | DB | R | **W** |   | 5 |
-| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   | L | 4 |
-| 31 | gm-complet_______gmc |  | DB | R |   | L | 6 |
-| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 3 |
-| 40 | comptable________cte |  | DB | R |   | L | 2 |
-| 47 | compte_gm________cgm | Comptes GM (generaux) | DB | R | **W** | L | 5 |
-| 312 | ez_card |  | DB |   | **W** |   | 1 |
-| 780 | log_affec_auto_detail |  | DB | R |   |   | 1 |
-| 781 | log_affec_auto_entete |  | DB |   |   | L | 1 |
 | 783 | vrl_hp |  | DB | R | **W** | L | 6 |
-| 784 | type_repas_nenc_vill |  | DB |   |   | L | 2 |
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB | R | **W** | L | 5 |
+| 22 | address_data_catching |  | DB | R | **W** |   | 5 |
 | 785 | effectif_quotidien |  | DB |   | **W** | L | 5 |
+| 312 | ez_card |  | DB |   | **W** |   | 1 |
+| 31 | gm-complet_______gmc |  | DB | R |   | L | 6 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   | L | 4 |
+| 40 | comptable________cte |  | DB | R |   | L | 2 |
 | 786 | qualite_avant_reprise |  | DB | R |   |   | 1 |
+| 780 | log_affec_auto_detail |  | DB | R |   |   | 1 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 3 |
+| 784 | type_repas_nenc_vill |  | DB |   |   | L | 2 |
+| 781 | log_affec_auto_entete |  | DB |   |   | L | 1 |
 
 ### Colonnes par table (5 / 10 tables avec colonnes identifiees)
-
-<details>
-<summary>Table 22 - address_data_catching (R/**W**) - 5 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | v.step | W | Numeric |
-| B | v.exit | W | Logical |
-| C | R.exist in address | W | Logical |
-
-</details>
-
-<details>
-<summary>Table 30 - gm-recherche_____gmr (R/L) - 4 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 31 - gm-complet_______gmc (R/L) - 6 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 40 - comptable________cte (R/L) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 47 - compte_gm________cgm (R/**W**/L) - 5 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | v.tab chain | W | Alpha |
-| B | v.tab | W | Alpha |
-| C | v.total | W | Numeric |
-
-</details>
-
-<details>
-<summary>Table 312 - ez_card (**W**) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 780 - log_affec_auto_detail (R) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
 
 <details>
 <summary>Table 783 - vrl_hp (R/**W**/L) - 6 usages</summary>
@@ -3532,7 +3415,57 @@ flowchart TD
 </details>
 
 <details>
+<summary>Table 47 - compte_gm________cgm (R/**W**/L) - 5 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v.tab chain | W | Alpha |
+| B | v.tab | W | Alpha |
+| C | v.total | W | Numeric |
+
+</details>
+
+<details>
+<summary>Table 22 - address_data_catching (R/**W**) - 5 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v.step | W | Numeric |
+| B | v.exit | W | Logical |
+| C | R.exist in address | W | Logical |
+
+</details>
+
+<details>
 <summary>Table 785 - effectif_quotidien (**W**/L) - 5 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 312 - ez_card (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 31 - gm-complet_______gmc (R/L) - 6 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R/L) - 4 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 40 - comptable________cte (R/L) - 2 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
@@ -3551,6 +3484,13 @@ flowchart TD
 | F | BTN TODAY | R | Alpha |
 | G | BTN TOMORROW | R | Alpha |
 | H | V.Quitter | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 780 - log_affec_auto_detail (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
@@ -3781,4 +3721,4 @@ graph LR
 | [System avail (top left corner (IDE 9)](ADH-IDE-9.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:47*

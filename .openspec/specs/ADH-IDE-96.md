@@ -1,6 +1,6 @@
 ﻿# ADH IDE 96 - ExistFactureVente 2
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:47 (29s) | Assemblage 03:47
+> **Analyse**: Phases 1-4 2026-02-07 06:57 -> 06:57 (16s) | Assemblage 06:57
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 96 |
 | Nom Programme | ExistFactureVente 2 |
 | Fichier source | `Prg_96.xml` |
-| Dossier IDE | Ventes |
+| Dossier IDE | Factures |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
@@ -24,22 +24,7 @@
 
 **ExistFactureVente 2** assure la gestion complete de ce processus.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
-
 ## 3. BLOCS FONCTIONNELS
-
-### 3.1 Saisie (1 tache)
-
-Ce bloc traite la saisie des donnees de la transaction.
-
----
-
-#### <a id="t1"></a>96 - ExistFactureVente 2
-
-**Role** : Saisie des donnees : ExistFactureVente 2.
-
 
 ## 5. REGLES METIER
 
@@ -58,11 +43,10 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **96.1** | [**ExistFactureVente 2** (96)](#t1) | - | - | Saisie |
 
 ### 9.4 Algorigramme
 
@@ -233,15 +217,10 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
-#### Saisie (1 tache: 0 ecran, 1 traitement)
-
-- **Strategie** : Formulaire React/Blazor avec validation Zod/FluentValidation.
-- Validation temps reel cote client + serveur
-
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:47*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:57*

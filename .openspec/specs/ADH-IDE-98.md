@@ -1,6 +1,6 @@
-﻿# ADH IDE 98 - EditFactureTva(Compta&Ve) V3
+﻿# ADH IDE 98 - ExistFactureVente 2
 
-> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 03:47 (27s) | Assemblage 03:47
+> **Analyse**: Phases 1-4 2026-02-07 06:57 -> 06:57 (16s) | Assemblage 06:58
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -12,105 +12,28 @@
 |----------|--------|
 | Projet | ADH |
 | IDE Position | 98 |
-| Nom Programme | EditFactureTva(Compta&Ve) V3 |
+| Nom Programme | ExistFactureVente 2 |
 | Fichier source | `Prg_98.xml` |
-| Dossier IDE | Facturation |
-| Taches | 4 (0 ecrans visibles) |
+| Dossier IDE | Factures |
+| Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**EditFactureTva(Compta&Ve) V3** assure la gestion complete de ce processus, accessible depuis [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md).
-
-Le flux de traitement s'organise en **3 blocs fonctionnels** :
-
-- **Impression** (2 taches) : generation de tickets et documents
-- **Traitement** (1 tache) : traitements metier divers
-- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
-
-**Logique metier** : 1 regles identifiees couvrant valeurs par defaut.
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Saisie (1 tache)
-
-- **98** - Edition Facture Tva(Ventes)
-
-#### Phase 2 : Impression (2 taches)
-
-- **98.1** - Edition
-- **98.1.1** - Edition du Pied
-
-#### Phase 3 : Traitement (1 tache)
-
-- **98.1.1.1** - Total Général
-
-</details>
+**ExistFactureVente 2** assure la gestion complete de ce processus.
 
 ## 3. BLOCS FONCTIONNELS
 
-### 3.1 Saisie (1 tache)
-
-Ce bloc traite la saisie des donnees de la transaction.
-
----
-
-#### <a id="t1"></a>98 - Edition Facture Tva(Ventes)
-
-**Role** : Saisie des donnees : Edition Facture Tva(Ventes).
-**Variables liees** : E (P.i.Num Facture), G (P.i.Facture sans Nom), H (P.i.Facture sans Adresse), I (P.i.Facture flaguee)
-
-
-### 3.2 Impression (2 taches)
-
-Generation des documents et tickets.
-
----
-
-#### <a id="t2"></a>98.1 - Edition
-
-**Role** : Generation du document : Edition.
-
----
-
-#### <a id="t3"></a>98.1.1 - Edition du Pied
-
-**Role** : Generation du document : Edition du Pied.
-
-
-### 3.3 Traitement (1 tache)
-
-Traitements internes.
-
----
-
-#### <a id="t4"></a>98.1.1.1 - Total Général
-
-**Role** : Traitement : Total Général.
-
-
 ## 5. REGLES METIER
 
-1 regles identifiees:
-
-### Autres (1 regles)
-
-#### <a id="rm-RM-001"></a>[RM-001] Valeur par defaut si Trim(VG22) est vide
-
-| Element | Detail |
-|---------|--------|
-| **Condition** | `Trim(VG22)=''` |
-| **Si vrai** | 'N12.2Z' |
-| **Si faux** | VG22) |
-| **Expression source** | Expression 2 : `IF(Trim(VG22)='','N12.2Z',VG22)` |
-| **Exemple** | Si Trim(VG22)='' â†’ 'N12.2Z'. Sinon â†’ VG22) |
+*(Aucune regle metier identifiee)*
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)
-- **Appelle**: 0 programmes | **Tables**: 9 (W:0 R:3 L:6) | **Taches**: 4 | **Expressions**: 4
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 4 (W:0 R:1 L:3) | **Taches**: 1 | **Expressions**: 8
 
 <!-- TAB:Ecrans -->
 
@@ -120,146 +43,118 @@ Traitements internes.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (4 taches)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **98.1** | [**Edition Facture Tva(Ventes)** (98)](#t1) | - | - | Saisie |
-| **98.2** | [**Edition** (98.1)](#t2) | - | - | Impression |
-| 98.2.1 | [Edition du Pied (98.1.1)](#t3) | - | - | |
-| **98.3** | [**Total Général** (98.1.1.1)](#t4) | - | - | Traitement |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    PROCESS[Traitement 1 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
 
-### Tables utilisees (9)
+### Tables utilisees (4)
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 27 | donnees_village__dvi |  | DB | R |   |   | 1 |
-| 31 | gm-complet_______gmc |  | DB |   |   | L | 1 |
-| 121 | tables_pays_ventes | Donnees de ventes | DB |   |   | L | 1 |
-| 372 | pv_budget |  | DB |   |   | L | 1 |
-| 744 | pv_lieux_vente | Donnees de ventes | DB | R |   |   | 1 |
-| 866 | maj_appli_tpe |  | DB |   |   | L | 1 |
-| 867 | log_maj_tpe |  | DB | R |   |   | 2 |
-| 869 | Detail_Import_Boutique |  | DB |   |   | L | 1 |
-| 932 | taxe_add_param |  | DB |   |   | L | 1 |
+| 40 | comptable________cte |  | DB | R |   |   | 1 |
+| 263 | vente | Donnees de ventes | DB |   |   | L | 1 |
+| 746 | projet |  | DB |   |   | L | 1 |
+| 871 | Activite |  | DB |   |   | L | 1 |
 
-### Colonnes par table (2 / 3 tables avec colonnes identifiees)
+### Colonnes par table (2 / 1 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 27 - donnees_village__dvi (R) - 1 usages</summary>
+<summary>Table 40 - comptable________cte (R) - 1 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | P.i.Societe | R | Alpha |
-| B | P.i.Compte GM | R | Numeric |
-| C | P.i.Filiation | R | Numeric |
-| D | P.i.Nom Fichier PDF | R | Alpha |
-| E | P.i.Num Facture | R | Numeric |
-| F | P.i.Service | R | Alpha |
-| G | P.i.Facture sans Nom | R | Logical |
-| H | P.i.Facture sans Adresse | R | Logical |
-| I | P.i.Facture flaguee | R | Logical |
-| J | P.i.Archive | R | Logical |
-| K | P.i.Preview ? | R | Logical |
-| L | P.i.Titre | R | Alpha |
-| M | P.i.Duplicata ? | R | Logical |
-
-</details>
-
-<details>
-<summary>Table 744 - pv_lieux_vente (R) - 1 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | v.Adresse Gm | R | Alpha |
-| B | v.Montant Versements | R | Numeric |
-
-</details>
-
-<details>
-<summary>Table 867 - log_maj_tpe (R) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+| A | P.Societe | R | Unicode |
+| B | P.Compte | R | Numeric |
+| C | P.Filiation | R | Numeric |
+| D | P.Facture | R | Numeric |
+| E | v.Result | R | Logical |
+| F | v.Vente? | R | Logical |
+| G | v.Compta? | R | Logical |
+| H | v.ArcCompta? | R | Logical |
+| I | v.ArcVente | R | Logical |
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Parametres entrants (13)
+### 11.1 Parametres entrants (4)
 
-Variables recues du programme appelant ([Factures_Check_Out (IDE 54)](ADH-IDE-54.md)).
+Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.i.Societe | Alpha | - |
-| B | P.i.Compte GM | Numeric | - |
-| C | P.i.Filiation | Numeric | - |
-| D | P.i.Nom Fichier PDF | Alpha | - |
-| E | P.i.Num Facture | Numeric | [98](#t1) |
-| F | P.i.Service | Alpha | - |
-| G | P.i.Facture sans Nom | Logical | - |
-| H | P.i.Facture sans Adresse | Logical | - |
-| I | P.i.Facture flaguee | Logical | - |
-| J | P.i.Archive | Logical | - |
-| K | P.i.Preview ? | Logical | - |
-| L | P.i.Titre | Alpha | - |
-| M | P.i.Duplicata ? | Logical | - |
+| A | P.Societe | Unicode | 1x parametre entrant |
+| B | P.Compte | Numeric | 1x parametre entrant |
+| C | P.Filiation | Numeric | 1x parametre entrant |
+| D | P.Facture | Numeric | 1x parametre entrant |
+
+### 11.2 Variables de session (5)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| E | v.Result | Logical | 1x session |
+| F | v.Vente? | Logical | 1x session |
+| G | v.Compta? | Logical | - |
+| H | v.ArcCompta? | Logical | - |
+| I | v.ArcVente | Logical | - |
 
 ## 12. EXPRESSIONS
 
-**4 / 4 expressions decodees (100%)**
+**8 / 8 expressions decodees (100%)**
 
 ### 12.1 Repartition par type
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 1 | 5 |
-| OTHER | 1 | 0 |
+| OTHER | 5 | 0 |
 | CAST_LOGIQUE | 2 | 0 |
+| CONDITION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
 
-#### CONDITION (1 expressions)
+#### OTHER (5 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 2 | `IF(Trim(VG22)='','N12.2Z',VG22)` | [RM-001](#rm-RM-001) |
-
-#### OTHER (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| OTHER | 1 | `P.i.Num Facture [E]` | - |
+| OTHER | 4 | `P.Facture [D]` | - |
+| OTHER | 5 | `v.Result [E]` | - |
+| OTHER | 3 | `P.Filiation [C]` | - |
+| OTHER | 1 | `P.Societe [A]` | - |
+| OTHER | 2 | `P.Compte [B]` | - |
 
 #### CAST_LOGIQUE (2 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CAST_LOGIQUE | 4 | `INIPut('CompressPDF =Y','FALSE'LOG)` | - |
-| CAST_LOGIQUE | 3 | `INIPut('EmbedFonts=N','FALSE'LOG)` | - |
+| CAST_LOGIQUE | 7 | `'TRUE'LOG` | - |
+| CAST_LOGIQUE | 6 | `'FALSE'LOG` | - |
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 8 | `(v.Vente? [F] AND [J] > 0) OR ([K] AND [O] > 0) OR ([P] AND [T] > 0) OR ([U] AND [Y] > 0)` | - |
 
 <!-- TAB:Connexions -->
 
@@ -267,66 +162,28 @@ Variables recues du programme appelant ([Factures_Check_Out (IDE 54)](ADH-IDE-54
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Factures_Check_Out (IDE 54)](ADH-IDE-54.md) -> **EditFactureTva(Compta&Ve) V3 (IDE 98)**
-
-Main -> ... -> [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) -> **EditFactureTva(Compta&Ve) V3 (IDE 98)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T98[98 EditFactureTvaCompt...]
+    T98[98 ExistFactureVente 2]
     style T98 fill:#58a6ff
-    CC313[313 Easy Check-Out ===...]
-    style CC313 fill:#8b5cf6
-    CC287[287 Solde Easy Check Out]
-    style CC287 fill:#8b5cf6
-    CC190[190 Menu solde dun compte]
-    style CC190 fill:#8b5cf6
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#8b5cf6
-    CC193[193 Solde compte fin s...]
-    style CC193 fill:#8b5cf6
-    CC283[283 Easy Check-Out ===...]
-    style CC283 fill:#8b5cf6
-    CC64[64 Solde Easy Check Out]
-    style CC64 fill:#8b5cf6
-    CC280[280 Lanceur Facture]
-    style CC280 fill:#8b5cf6
-    CC54[54 Factures_Check_Out]
-    style CC54 fill:#3fb950
-    CC97[97 Factures Tble Compt...]
-    style CC97 fill:#3fb950
-    CC64 --> CC54
-    CC280 --> CC54
-    CC283 --> CC54
-    CC287 --> CC54
-    CC313 --> CC54
-    CC163 --> CC54
-    CC190 --> CC54
-    CC193 --> CC54
-    CC64 --> CC97
-    CC280 --> CC97
-    CC283 --> CC97
-    CC287 --> CC97
-    CC313 --> CC97
-    CC163 --> CC97
-    CC190 --> CC97
-    CC193 --> CC97
-    CC54 --> T98
-    CC97 --> T98
+    NONE[Aucun caller]
+    NONE -.-> T98
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [54](ADH-IDE-54.md) | Factures_Check_Out | 2 |
-| [97](ADH-IDE-97.md) | Factures (Tble Compta&Vent) V3 | 1 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T98[98 EditFactureTvaCompt...]
+    T98[98 ExistFactureVente 2]
     style T98 fill:#58a6ff
     NONE[Aucun callee]
     T98 -.-> NONE
@@ -345,30 +202,15 @@ graph LR
 
 | Metrique | Valeur | Impact migration |
 |----------|--------|-----------------|
-| Lignes de logique | 150 | Programme compact |
-| Expressions | 4 | Peu de logique |
+| Lignes de logique | 45 | Programme compact |
+| Expressions | 8 | Peu de logique |
 | Tables WRITE | 0 | Impact faible |
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
-| Code desactive | 0.7% (1 / 150) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Code desactive | 0% (0 / 45) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
 ### 14.2 Plan de migration par bloc
-
-#### Saisie (1 tache: 0 ecran, 1 traitement)
-
-- **Strategie** : Formulaire React/Blazor avec validation Zod/FluentValidation.
-- Validation temps reel cote client + serveur
-
-#### Impression (2 taches: 0 ecran, 2 traitements)
-
-- **Strategie** : Templates HTML -> PDF via wkhtmltopdf ou Puppeteer.
-- `PrintService` injectable avec choix imprimante
-
-#### Traitement (1 tache: 0 ecran, 1 traitement)
-
-- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
-- Decomposer les taches en services unitaires testables.
 
 ### 14.3 Dependances critiques
 
@@ -376,4 +218,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:47*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:58*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 105 - Maj des lignes saisies V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:48 (28s) | Assemblage 03:48
+> **Analyse**: Phases 1-4 2026-02-07 07:00 -> 07:00 (17s) | Assemblage 07:00
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,36 +14,21 @@
 | IDE Position | 105 |
 | Nom Programme | Maj des lignes saisies V3 |
 | Fichier source | `Prg_105.xml` |
-| Dossier IDE | General |
+| Dossier IDE | Factures |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Maj des lignes saisies V3** assure la gestion complete de ce processus, accessible depuis [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md).
-
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
+**Maj des lignes saisies V3** assure la gestion complete de ce processus.
 
 **Donnees modifiees** : 1 tables en ecriture (comptable________cte).
 
 **Logique metier** : 2 regles identifiees couvrant conditions metier, valeurs par defaut.
 
 ## 3. BLOCS FONCTIONNELS
-
-### 3.1 Saisie (1 tache)
-
-L'operateur saisit les donnees de la transaction via 1 ecran (Maj des lignes saisies V3).
-
----
-
-#### <a id="t1"></a>105 - Maj des lignes saisies V3 [[ECRAN]](#ecran-t1)
-
-**Role** : Saisie des donnees : Maj des lignes saisies V3.
-**Ecran** : 1070 x 0 DLU | [Voir mockup](#ecran-t1)
-
 
 ## 5. REGLES METIER
 
@@ -75,7 +60,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Maj des lignes sai
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)
+- **Appele par**: (aucun)
 - **Appelle**: 0 programmes | **Tables**: 4 (W:1 R:0 L:3) | **Taches**: 1 | **Expressions**: 23
 
 <!-- TAB:Ecrans -->
@@ -86,11 +71,10 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Maj des lignes sai
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **105.1** | [**Maj des lignes saisies V3** (105)](#t1) [mockup](#ecran-t1) | - | 1070x0 | Saisie |
 
 ### 9.4 Algorigramme
 
@@ -158,7 +142,7 @@ flowchart TD
 
 ### 11.1 Parametres entrants (8)
 
-Variables recues du programme appelant ([Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md)).
+Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
@@ -289,63 +273,22 @@ Variables persistantes pendant toute la session.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Maj des lignes saisies V3 (IDE 105)**
-
-Main -> ... -> [Factures_Check_Out (IDE 54)](ADH-IDE-54.md) -> **Maj des lignes saisies V3 (IDE 105)**
-
-Main -> ... -> [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) -> **Maj des lignes saisies V3 (IDE 105)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T105[105 Maj des lignes sai...]
     style T105 fill:#58a6ff
-    CC313[313 Easy Check-Out ===...]
-    style CC313 fill:#8b5cf6
-    CC287[287 Solde Easy Check Out]
-    style CC287 fill:#8b5cf6
-    CC190[190 Menu solde dun compte]
-    style CC190 fill:#8b5cf6
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#8b5cf6
-    CC193[193 Solde compte fin s...]
-    style CC193 fill:#8b5cf6
-    CC283[283 Easy Check-Out ===...]
-    style CC283 fill:#8b5cf6
-    CC64[64 Solde Easy Check Out]
-    style CC64 fill:#8b5cf6
-    CC280[280 Lanceur Facture]
-    style CC280 fill:#8b5cf6
-    CC54[54 Factures_Check_Out]
-    style CC54 fill:#3fb950
-    CC97[97 Factures Tble Compt...]
-    style CC97 fill:#3fb950
-    CC64 --> CC54
-    CC280 --> CC54
-    CC283 --> CC54
-    CC287 --> CC54
-    CC313 --> CC54
-    CC163 --> CC54
-    CC190 --> CC54
-    CC193 --> CC54
-    CC64 --> CC97
-    CC280 --> CC97
-    CC283 --> CC97
-    CC287 --> CC97
-    CC313 --> CC97
-    CC163 --> CC97
-    CC190 --> CC97
-    CC193 --> CC97
-    CC54 --> T105
-    CC97 --> T105
+    NONE[Aucun caller]
+    NONE -.-> T105
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [0](ADH-IDE-0.md) | Garantie sur compte PMS-584 | 2 |
-| [54](ADH-IDE-54.md) | Factures_Check_Out | 2 |
-| [97](ADH-IDE-97.md) | Factures (Tble Compta&Vent) V3 | 2 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -380,12 +323,6 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
-#### Saisie (1 tache: 1 ecran, 0 traitement)
-
-- **Strategie** : Formulaire React/Blazor avec validation Zod/FluentValidation.
-- Reproduire 1 ecran : Maj des lignes saisies V3
-- Validation temps reel cote client + serveur
-
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
@@ -393,4 +330,4 @@ graph LR
 | comptable________cte | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:48*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:00*

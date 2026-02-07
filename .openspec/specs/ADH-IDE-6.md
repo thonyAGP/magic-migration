@@ -1,6 +1,6 @@
 ﻿# ADH IDE 6 - Suppression Carac interdit
 
-> **Analyse**: Phases 1-4 2026-02-07 03:37 -> 03:38 (32s) | Assemblage 03:38
+> **Analyse**: Phases 1-4 2026-02-07 03:37 -> 03:38 (32s) | Assemblage 12:44
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,14 +18,15 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Suppression Carac interdit** assure la gestion complete de ce processus, accessible depuis [Alimentation Combos NATION P (IDE 5)](ADH-IDE-5.md).
+Le programme **ADH IDE 6 - "Suppression Carac interdit"** est un utilitaire de normalisation des codes de nationalité. Son rôle exclusif est de nettoyer les tirets ('-') présents dans les chaînes de caractères en les remplaçant par des tirets bas ('_'). Appelé par le programme ADH IDE 5 "Alimentation Combos NATION P", il garantit que les codes de nationalité respectent un format standardisé requis par le système de réservation PMS. Le programme n'accède à aucune table de données — c'est une transformation purement en mémoire sur une variable locale (A) contenant la concaténation des nationalités.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+La logique repose sur trois expressions : une première vérifie l'absence de tiret (aucune transformation nécessaire), une deuxième détecte la présence du caractère, et la troisième effectue la substitution en découpant la chaîne avant et après le tiret, en insérant un tiret bas. Cette opération est critique pour maintenir la cohérence des données de nationalité à travers la chaîne de traitement du système, sans risque de perte d'information puisque seul le caractère séparateur est transformé.
 
-- **Traitement** (1 tache) : traitements metier divers
+**Dépendance métier :** Le programme est terminal (aucun appelé) et fait partie intégrante du flux d'alimentation des combos de nationalité. Son remplacement ou suppression affecterait directement la cohérence des données de réservation en aval, ce qui le rend transversalement important malgré sa simplicité apparente.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -42,7 +43,7 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -193,4 +194,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:38*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:46*

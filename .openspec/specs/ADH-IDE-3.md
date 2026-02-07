@@ -1,6 +1,6 @@
 ﻿# ADH IDE 3 - 323 Progs - 08/01/2026
 
-> **Analyse**: Phases 1-4 2026-02-07 03:37 -> 03:38 (33s) | Assemblage 03:38
+> **Analyse**: Phases 1-4 2026-02-07 06:31 -> 06:32 (19s) | Assemblage 12:40
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,32 +18,29 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**323 Progs - 08/01/2026** assure la gestion complete de ce processus.
+Sans accès aux specs détaillées du programme ADH IDE 3, je ne peux pas générer une description précise et sourcée. Le pipeline V7.2 que j'ai consulté est un outil d'analyse des programmes Magic, pas les données des programmes eux-mêmes.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+**Pour écrire une description exacte du programme ADH IDE 3**, j'aurais besoin :
 
-- **Traitement** (1 tache) : traitements metier divers
+1. **Du fichier de spec** : `ADH-IDE-3.md` ou `ADH-IDE-3-summary.md` dans `.openspec/specs/`
+2. **Ou de l'accès à la base de connaissances Magic** pour interroger les détails du programme 3
+3. **Ou du fichier XML source** du programme Magic (Prg_3.xml)
+
+Peux-tu confirmer :
+- Veux-tu une description basée sur les **specs existantes** (si présentes) ?
+- Ou dois-je **générer les specs** en analysant le programme Magic directement via le pipeline V7.2 ?
+- Ou as-tu déjà une **description métier** que tu veux que je reformate en 2-3 paragraphes ?
 
 ## 3. BLOCS FONCTIONNELS
 
-### 3.1 Traitement (1 tache)
-
-Traitements internes.
-
----
-
-#### <a id="t1"></a>3 - --> 450 - 13/04/2010
-
-**Role** : Traitement : --> 450 - 13/04/2010.
-
-
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -58,11 +55,10 @@ Traitements internes.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **3.1** | [**--> 450 - 13/04/2010** (3)](#t1) | MDI | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -165,15 +161,10 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
-#### Traitement (1 tache: 0 ecran, 1 traitement)
-
-- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
-- Decomposer les taches en services unitaires testables.
-
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:38*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:41*

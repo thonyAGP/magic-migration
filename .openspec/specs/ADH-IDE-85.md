@@ -1,6 +1,6 @@
 ﻿# ADH IDE 85 - Determine Age Debut Sejour
 
-> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (26s) | Assemblage 03:45
+> **Analyse**: Phases 1-4 2026-02-07 06:53 -> 06:53 (16s) | Assemblage 06:53
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 85 |
 | Nom Programme | Determine Age Debut Sejour |
 | Fichier source | `Prg_85.xml` |
-| Dossier IDE | General |
+| Dossier IDE | EzCard |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
@@ -24,24 +24,9 @@
 
 **Determine Age Debut Sejour** assure la gestion complete de ce processus.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Traitement** (1 tache) : traitements metier divers
-
 **Logique metier** : 3 regles identifiees couvrant conditions metier.
 
 ## 3. BLOCS FONCTIONNELS
-
-### 3.1 Traitement (1 tache)
-
-Traitements internes.
-
----
-
-#### <a id="t1"></a>85 - Determination Age
-
-**Role** : Traitement : Determination Age.
-
 
 ## 5. REGLES METIER
 
@@ -95,11 +80,10 @@ Traitements internes.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **85.1** | [**Determination Age** (85)](#t1) | MDI | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -259,15 +243,10 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
-#### Traitement (1 tache: 0 ecran, 1 traitement)
-
-- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
-- Decomposer les taches en services unitaires testables.
-
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:45*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:53*

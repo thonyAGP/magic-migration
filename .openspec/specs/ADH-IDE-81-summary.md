@@ -1,6 +1,6 @@
 ﻿# ADH IDE 81 - Card scan create
 
-> **Analyse**: 2026-02-07 03:45
+> **Analyse**: 2026-02-07 06:52
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Card scan create
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Club Med Pass menu (IDE 77)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Club Med Pass menu (IDE 77)](ADH-IDE-77.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

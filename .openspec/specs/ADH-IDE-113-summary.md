@@ -1,6 +1,6 @@
 ﻿# ADH IDE 113 - Test Activation ECO
 
-> **Analyse**: 2026-02-07 03:49
+> **Analyse**: 2026-02-07 07:03
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Test Activation ECO
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 4 programme(s): Garantie sur compte PMS-584 (IDE 112), Garantie sur compte (IDE 111), Menu caisse GM - scroll (IDE 163), Garantie sur compte (IDE 288)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

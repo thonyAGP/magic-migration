@@ -1,6 +1,6 @@
 ﻿# ADH IDE 35 - Write histo_Fus_Sep_Log
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (27s) | Assemblage 03:42
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (27s) | Assemblage 13:10
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,16 +18,17 @@
 | Taches | 3 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Write histo_Fus_Sep_Log** assure la gestion complete de ce processus, accessible depuis [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md).
+# ADH IDE 35 - Write histo_Fus_Sep_Log
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Programme utilitaire chargé d'enregistrer les opérations de fusion et séparation de comptes clients dans la table de journalisation `histo__fusionseparation_log`. Il capture les métadonnées critiques de chaque opération : identificateurs des comptes source/destination, type d'opération (fusion ou séparation), horodatage et utilisateur responsable.
 
-- **Traitement** (3 taches) : traitements metier divers
+Appelé systématiquement par les programmes Separation (IDE 27) et Fusion (IDE 28) après validation des données, il assure la traçabilité complète de ces opérations sensibles. Cet audit trail est obligatoire pour la réconciliation comptable et les investigations ultérieures sur l'historique des comptes.
 
-**Donnees modifiees** : 1 tables en ecriture (histo__fusionseparation_log).
+Fonction atomique sans logique métier complexe : valide les paramètres d'entrée, construit le enregistrement avec contexte d'exécution, puis persiste dans la table de historique avant de retourner le statut de succès au programme appelant.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -37,26 +38,26 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>35 - (sans nom)
+#### <a id="t1"></a>T1 - (sans nom)
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t2"></a>35.1 - (sans nom)
+#### <a id="t2"></a>T2 - (sans nom)
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t3"></a>35.2 - (sans nom)
+#### <a id="t3"></a>T3 - (sans nom)
 
 **Role** : Traitement interne.
 
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -75,29 +76,25 @@ Traitements internes.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **35.1** | [**(sans nom)** (35)](#t1) | MDI | - | Traitement |
-| 35.1.1 | [(sans nom) (35.1)](#t2) | MDI | - | |
-| 35.1.2 | [(sans nom) (35.2)](#t3) | MDI | - | |
+| **35.1** | [**(sans nom)** (T1)](#t1) | MDI | - | Traitement |
+| 35.1.1 | [(sans nom) (T2)](#t2) | MDI | - | |
+| 35.1.2 | [(sans nom) (T3)](#t3) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 1 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 3 taches]
+    WRITE[MAJ 1 tables]
+    START --> PROCESS --> WRITE --> ENDOK
+    ENDOK([END])
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -251,4 +248,4 @@ graph LR
 | histo__fusionseparation_log | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:42*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:10*

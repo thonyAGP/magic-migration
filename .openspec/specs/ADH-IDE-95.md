@@ -1,6 +1,6 @@
 ﻿# ADH IDE 95 - Facture - Sejour archive
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:47 (30s) | Assemblage 03:47
+> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:47 (30s) | Assemblage 06:57
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 95 |
 | Nom Programme | Facture - Sejour archive |
 | Fichier source | `Prg_95.xml` |
-| Dossier IDE | Facturation |
+| Dossier IDE | Factures |
 | Taches | 6 (0 ecrans visibles) |
 | Tables modifiees | 2 |
 | Programmes appeles | 0 |
@@ -36,18 +36,18 @@ Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (4 taches)
 
-- **95** - Hebergement **[[ECRAN]](#ecran-t1)**
-- **95.1** - Création
-- **95.2.1** - Maj Hebergement Temp
-- **95.3.1** - Maj Hebergement Temp
+- **T1** - Hebergement **[ECRAN]**
+- **T2** - Création
+- **T4** - Maj Hebergement Temp
+- **T6** - Maj Hebergement Temp
 
 #### Phase 2 : Calcul (1 tache)
 
-- **95.2** - Creation Lg Compta **[[ECRAN]](#ecran-t3)**
+- **T3** - Creation Lg Compta **[ECRAN]**
 
 #### Phase 3 : Saisie (1 tache)
 
-- **95.3** - Creation Lg Vente **[[ECRAN]](#ecran-t5)**
+- **T5** - Creation Lg Vente **[ECRAN]**
 
 #### Tables impactees
 
@@ -66,7 +66,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>95 - Hebergement [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Hebergement [ECRAN]
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t1)
@@ -76,29 +76,29 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [95.1](#t2) | Création | Traitement |
-| [95.2.1](#t4) | Maj Hebergement Temp | Traitement |
-| [95.3.1](#t6) | Maj Hebergement Temp | Traitement |
+| [T2](#t2) | Création | Traitement |
+| [T4](#t4) | Maj Hebergement Temp | Traitement |
+| [T6](#t6) | Maj Hebergement Temp | Traitement |
 
 </details>
 **Variables liees** : E (V.Lien Hebergement_Pro)
 
 ---
 
-#### <a id="t2"></a>95.1 - Création
+#### <a id="t2"></a>T2 - Création
 
 **Role** : Traitement : Création.
 
 ---
 
-#### <a id="t4"></a>95.2.1 - Maj Hebergement Temp
+#### <a id="t4"></a>T4 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
 **Variables liees** : E (V.Lien Hebergement_Pro)
 
 ---
 
-#### <a id="t6"></a>95.3.1 - Maj Hebergement Temp
+#### <a id="t6"></a>T6 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
 **Variables liees** : E (V.Lien Hebergement_Pro)
@@ -110,7 +110,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t3"></a>95.2 - Creation Lg Compta [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Creation Lg Compta [ECRAN]
 
 **Role** : Creation d'enregistrement : Creation Lg Compta.
 **Ecran** : 1009 x 0 DLU | [Voir mockup](#ecran-t3)
@@ -122,7 +122,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Creation Lg Vente)
 
 ---
 
-#### <a id="t5"></a>95.3 - Creation Lg Vente [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Creation Lg Vente [ECRAN]
 
 **Role** : Saisie des donnees : Creation Lg Vente.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t5)
@@ -149,32 +149,26 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Creation Lg Vente)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **95.1** | [**Hebergement** (95)](#t1) [mockup](#ecran-t1) | - | 630x0 | Traitement |
-| 95.1.1 | [Création (95.1)](#t2) | - | - | |
-| 95.1.2 | [Maj Hebergement Temp (95.2.1)](#t4) | - | - | |
-| 95.1.3 | [Maj Hebergement Temp (95.3.1)](#t6) | - | - | |
-| **95.2** | [**Creation Lg Compta** (95.2)](#t3) [mockup](#ecran-t3) | - | 1009x0 | Calcul |
-| **95.3** | [**Creation Lg Vente** (95.3)](#t5) [mockup](#ecran-t5) | - | 630x0 | Saisie |
+| **95.1** | [**Hebergement** (T1)](#t1) [mockup](#ecran-t1) | - | 630x0 | Traitement |
+| 95.1.1 | [Création (T2)](#t2) | - | - | |
+| 95.1.2 | [Maj Hebergement Temp (T4)](#t4) | - | - | |
+| 95.1.3 | [Maj Hebergement Temp (T6)](#t6) | - | - | |
+| **95.2** | [**Creation Lg Compta** (T3)](#t3) [mockup](#ecran-t3) | - | 1009x0 | Calcul |
+| **95.3** | [**Creation Lg Vente** (T5)](#t5) [mockup](#ecran-t5) | - | 630x0 | Saisie |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 2 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 6 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -366,4 +360,4 @@ graph LR
 | Rayons_Boutique | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:47*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:57*

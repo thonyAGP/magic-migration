@@ -1,6 +1,6 @@
 ﻿# ADH IDE 86 - Bar Limit
 
-> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (27s) | Assemblage 03:45
+> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (27s) | Assemblage 06:54
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 86 |
 | Nom Programme | Bar Limit |
 | Fichier source | `Prg_86.xml` |
-| Dossier IDE | General |
+| Dossier IDE | EzCard |
 | Taches | 14 (4 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 6 |
@@ -36,28 +36,28 @@ Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (9 taches)
 
-- **86** - Bar Limit **[[ECRAN]](#ecran-t1)**
-- **86.1.1** - Bar Limit Cancel **[[ECRAN]](#ecran-t3)**
-- **86.1.1.2** - Plafond actuel
-- **86.1.1.3** - plafond reste
-- **86.1.1.4** - derniere annulation
-- **86.3** - Bar Limit **[[ECRAN]](#ecran-t11)**
-- **86.4** - Plafond actuel
-- **86.5** - derniere annulation
-- **86.6** - plafond reste
+- **T1** - Bar Limit **[ECRAN]**
+- **T3** - Bar Limit Cancel **[ECRAN]**
+- **T5** - Plafond actuel
+- **T6** - plafond reste
+- **T7** - derniere annulation
+- **T11** - Bar Limit **[ECRAN]**
+- **T12** - Plafond actuel
+- **T13** - derniere annulation
+- **T14** - plafond reste
 
 Delegue a : [Appel programme (IDE 44)](ADH-IDE-44.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md)
 
 #### Phase 2 : Creation (3 taches)
 
-- **86.1** - Create **[[ECRAN]](#ecran-t2)**
-- **86.2** - Create **[[ECRAN]](#ecran-t8)**
-- **86.2.1** - Creation **[[ECRAN]](#ecran-t9)**
+- **T2** - Create **[ECRAN]**
+- **T8** - Create **[ECRAN]**
+- **T9** - Creation **[ECRAN]**
 
 #### Phase 3 : Validation (2 taches)
 
-- **86.1.1.1** - validate D/C GO **[[ECRAN]](#ecran-t4)**
-- **86.2.1.1** - validate D/C GO **[[ECRAN]](#ecran-t10)**
+- **T4** - validate D/C GO **[ECRAN]**
+- **T10** - validate D/C GO **[ECRAN]**
 
 #### Tables impactees
 
@@ -75,7 +75,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>86 - Bar Limit [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Bar Limit [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (9 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 806 x 235 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -85,21 +85,21 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [86.1.1](#t3) | Bar Limit Cancel **[[ECRAN]](#ecran-t3)** | Traitement |
-| [86.1.1.2](#t5) | Plafond actuel | Traitement |
-| [86.1.1.3](#t6) | plafond reste | Traitement |
-| [86.1.1.4](#t7) | derniere annulation | Traitement |
-| [86.3](#t11) | Bar Limit **[[ECRAN]](#ecran-t11)** | Traitement |
-| [86.4](#t12) | Plafond actuel | Traitement |
-| [86.5](#t13) | derniere annulation | Traitement |
-| [86.6](#t14) | plafond reste | Traitement |
+| [T3](#t3) | Bar Limit Cancel **[ECRAN]** | Traitement |
+| [T5](#t5) | Plafond actuel | Traitement |
+| [T6](#t6) | plafond reste | Traitement |
+| [T7](#t7) | derniere annulation | Traitement |
+| [T11](#t11) | Bar Limit **[ECRAN]** | Traitement |
+| [T12](#t12) | Plafond actuel | Traitement |
+| [T13](#t13) | derniere annulation | Traitement |
+| [T14](#t14) | plafond reste | Traitement |
 
 </details>
 **Delegue a** : [Appel programme (IDE 44)](ADH-IDE-44.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md)
 
 ---
 
-#### <a id="t3"></a>86.1.1 - Bar Limit Cancel [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Bar Limit Cancel [ECRAN]
 
 **Role** : Traitement : Bar Limit Cancel.
 **Ecran** : 627 x 121 DLU (MDI) | [Voir mockup](#ecran-t3)
@@ -107,7 +107,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t5"></a>86.1.1.2 - Plafond actuel
+#### <a id="t5"></a>T5 - Plafond actuel
 
 **Role** : Traitement : Plafond actuel.
 **Variables liees** : G (v.plafond actuel), H (v.plafond reste)
@@ -115,7 +115,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t6"></a>86.1.1.3 - plafond reste
+#### <a id="t6"></a>T6 - plafond reste
 
 **Role** : Traitement : plafond reste.
 **Variables liees** : G (v.plafond actuel), H (v.plafond reste)
@@ -123,7 +123,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t7"></a>86.1.1.4 - derniere annulation
+#### <a id="t7"></a>T7 - derniere annulation
 
 **Role** : Traitement : derniere annulation.
 **Variables liees** : J (V.Date derniere annulation), K (V.Time derniere annulation)
@@ -131,7 +131,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t11"></a>86.3 - Bar Limit [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Bar Limit [ECRAN]
 
 **Role** : Traitement : Bar Limit.
 **Ecran** : 803 x 121 DLU (Modal) | [Voir mockup](#ecran-t11)
@@ -139,7 +139,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t12"></a>86.4 - Plafond actuel
+#### <a id="t12"></a>T12 - Plafond actuel
 
 **Role** : Traitement : Plafond actuel.
 **Variables liees** : G (v.plafond actuel), H (v.plafond reste)
@@ -147,7 +147,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t13"></a>86.5 - derniere annulation
+#### <a id="t13"></a>T13 - derniere annulation
 
 **Role** : Traitement : derniere annulation.
 **Variables liees** : J (V.Date derniere annulation), K (V.Time derniere annulation)
@@ -155,7 +155,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t14"></a>86.6 - plafond reste
+#### <a id="t14"></a>T14 - plafond reste
 
 **Role** : Traitement : plafond reste.
 **Variables liees** : G (v.plafond actuel), H (v.plafond reste)
@@ -168,21 +168,21 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t2"></a>86.1 - Create [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - Create [ECRAN]
 
 **Role** : Traitement : Create.
 **Ecran** : 144 x 59 DLU (MDI) | [Voir mockup](#ecran-t2)
 
 ---
 
-#### <a id="t8"></a>86.2 - Create [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Create [ECRAN]
 
 **Role** : Traitement : Create.
 **Ecran** : 144 x 59 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t9"></a>86.2.1 - Creation [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Creation [ECRAN]
 
 **Role** : Creation d'enregistrement : Creation.
 **Ecran** : 627 x 121 DLU (MDI) | [Voir mockup](#ecran-t9)
@@ -194,14 +194,14 @@ Controles de coherence : 2 taches verifient les donnees et conditions.
 
 ---
 
-#### <a id="t4"></a>86.1.1.1 - validate D/C GO [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - validate D/C GO [ECRAN]
 
 **Role** : Verification : validate D/C GO.
 **Ecran** : 127 x 81 DLU (MDI) | [Voir mockup](#ecran-t4)
 
 ---
 
-#### <a id="t10"></a>86.2.1.1 - validate D/C GO [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - validate D/C GO [ECRAN]
 
 **Role** : Verification : validate D/C GO.
 **Ecran** : 127 x 81 DLU (MDI) | [Voir mockup](#ecran-t10)
@@ -224,17 +224,17 @@ Controles de coherence : 2 taches verifient les donnees et conditions.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 86 | 86 | Bar Limit | MDI | 806 | 235 | Traitement |
-| 2 | 86.1.1 | 86.1.1 | Bar Limit Cancel | MDI | 627 | 121 | Traitement |
-| 3 | 86.2.1 | 86.2.1 | Creation | MDI | 627 | 121 | Creation |
-| 4 | 86.3 | 86.3 | Bar Limit | Modal | 803 | 121 | Traitement |
+| 1 | 86 | T1 | Bar Limit | MDI | 806 | 235 | Traitement |
+| 2 | 86.1.1 | T3 | Bar Limit Cancel | MDI | 627 | 121 | Traitement |
+| 3 | 86.2.1 | T9 | Creation | MDI | 627 | 121 | Creation |
+| 4 | 86.3 | T11 | Bar Limit | Modal | 803 | 121 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>86 - Bar Limit
-**Tache** : [86](#t1) | **Type** : MDI | **Dimensions** : 806 x 235 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 806 x 235 DLU
 **Bloc** : Traitement | **Titre IDE** : Bar Limit
 
 <!-- FORM-DATA:
@@ -537,7 +537,7 @@ Controles de coherence : 2 taches verifient les donnees et conditions.
 ---
 
 #### <a id="ecran-t3"></a>86.1.1 - Bar Limit Cancel
-**Tache** : [86.1.1](#t3) | **Type** : MDI | **Dimensions** : 627 x 121 DLU
+**Tache** : [T3](#t3) | **Type** : MDI | **Dimensions** : 627 x 121 DLU
 **Bloc** : Traitement | **Titre IDE** : Bar Limit Cancel
 
 <!-- FORM-DATA:
@@ -747,7 +747,7 @@ Controles de coherence : 2 taches verifient les donnees et conditions.
 ---
 
 #### <a id="ecran-t9"></a>86.2.1 - Creation
-**Tache** : [86.2.1](#t9) | **Type** : MDI | **Dimensions** : 627 x 121 DLU
+**Tache** : [T9](#t9) | **Type** : MDI | **Dimensions** : 627 x 121 DLU
 **Bloc** : Creation | **Titre IDE** : Creation
 
 <!-- FORM-DATA:
@@ -917,7 +917,7 @@ Controles de coherence : 2 taches verifient les donnees et conditions.
 ---
 
 #### <a id="ecran-t11"></a>86.3 - Bar Limit
-**Tache** : [86.3](#t11) | **Type** : Modal | **Dimensions** : 803 x 121 DLU
+**Tache** : [T11](#t11) | **Type** : Modal | **Dimensions** : 803 x 121 DLU
 **Bloc** : Traitement | **Titre IDE** : Bar Limit
 
 <!-- FORM-DATA:
@@ -1142,13 +1142,13 @@ Controles de coherence : 2 taches verifient les donnees et conditions.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[86 Bar Limit]
+    VF1[T1 Bar Limit]
     style VF1 fill:#58a6ff
-    VF3[86.1.1 Bar Limit Cancel]
+    VF3[T3 Bar Limit Cancel]
     style VF3 fill:#58a6ff
-    VF9[86.2.1 Creation]
+    VF9[T9 Creation]
     style VF9 fill:#58a6ff
-    VF11[86.3 Bar Limit]
+    VF11[T11 Bar Limit]
     style VF11 fill:#58a6ff
     EXT44[IDE 44 Appel programme]
     style EXT44 fill:#3fb950
@@ -1189,40 +1189,34 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **86.1** | [**Bar Limit** (86)](#t1) [mockup](#ecran-t1) | MDI | 806x235 | Traitement |
-| 86.1.1 | [Bar Limit Cancel (86.1.1)](#t3) [mockup](#ecran-t3) | MDI | 627x121 | |
-| 86.1.2 | [Plafond actuel (86.1.1.2)](#t5) | MDI | - | |
-| 86.1.3 | [plafond reste (86.1.1.3)](#t6) | MDI | - | |
-| 86.1.4 | [derniere annulation (86.1.1.4)](#t7) | MDI | - | |
-| 86.1.5 | [Bar Limit (86.3)](#t11) [mockup](#ecran-t11) | Modal | 803x121 | |
-| 86.1.6 | [Plafond actuel (86.4)](#t12) | MDI | - | |
-| 86.1.7 | [derniere annulation (86.5)](#t13) | MDI | - | |
-| 86.1.8 | [plafond reste (86.6)](#t14) | MDI | - | |
-| **86.2** | [**Create** (86.1)](#t2) [mockup](#ecran-t2) | MDI | 144x59 | Creation |
-| 86.2.1 | [Create (86.2)](#t8) [mockup](#ecran-t8) | MDI | 144x59 | |
-| 86.2.2 | [Creation (86.2.1)](#t9) [mockup](#ecran-t9) | MDI | 627x121 | |
-| **86.3** | [**validate D/C GO** (86.1.1.1)](#t4) [mockup](#ecran-t4) | MDI | 127x81 | Validation |
-| 86.3.1 | [validate D/C GO (86.2.1.1)](#t10) [mockup](#ecran-t10) | MDI | 127x81 | |
+| **86.1** | [**Bar Limit** (T1)](#t1) [mockup](#ecran-t1) | MDI | 806x235 | Traitement |
+| 86.1.1 | [Bar Limit Cancel (T3)](#t3) [mockup](#ecran-t3) | MDI | 627x121 | |
+| 86.1.2 | [Plafond actuel (T5)](#t5) | MDI | - | |
+| 86.1.3 | [plafond reste (T6)](#t6) | MDI | - | |
+| 86.1.4 | [derniere annulation (T7)](#t7) | MDI | - | |
+| 86.1.5 | [Bar Limit (T11)](#t11) [mockup](#ecran-t11) | Modal | 803x121 | |
+| 86.1.6 | [Plafond actuel (T12)](#t12) | MDI | - | |
+| 86.1.7 | [derniere annulation (T13)](#t13) | MDI | - | |
+| 86.1.8 | [plafond reste (T14)](#t14) | MDI | - | |
+| **86.2** | [**Create** (T2)](#t2) [mockup](#ecran-t2) | MDI | 144x59 | Creation |
+| 86.2.1 | [Create (T8)](#t8) [mockup](#ecran-t8) | MDI | 144x59 | |
+| 86.2.2 | [Creation (T9)](#t9) [mockup](#ecran-t9) | MDI | 627x121 | |
+| **86.3** | [**validate D/C GO** (T4)](#t4) [mockup](#ecran-t4) | MDI | 127x81 | Validation |
+| 86.3.1 | [validate D/C GO (T10)](#t10) [mockup](#ecran-t10) | MDI | 127x81 | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Liste]
-    UPDATE[MAJ 1 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 14 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -1467,4 +1461,4 @@ graph LR
 | [Get Printer (IDE 179)](ADH-IDE-179.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:46*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:54*

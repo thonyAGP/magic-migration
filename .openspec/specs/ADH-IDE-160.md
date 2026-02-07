@@ -1,6 +1,6 @@
 ﻿# ADH IDE 160 - Liste des GM
 
-> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:51 (28s) | Assemblage 03:51
+> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:51 (28s) | Assemblage 07:18
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 160 |
 | Nom Programme | Liste des GM |
 | Fichier source | `Prg_160.xml` |
-| Dossier IDE | General |
+| Dossier IDE | Identification |
 | Taches | 2 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
@@ -39,14 +39,14 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>160 - Liste des GM [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Liste des GM [ECRAN]
 
 **Role** : Traitement : Liste des GM.
 **Ecran** : 1440 x 224 DLU (MDI) | [Voir mockup](#ecran-t1)
 
 ---
 
-#### <a id="t2"></a>160.1 - Update Ezcard
+#### <a id="t2"></a>T2 - Update Ezcard
 
 **Role** : Traitement : Update Ezcard.
 
@@ -80,14 +80,14 @@ Traitements internes.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 160 | 160 | Liste des GM | MDI | 1440 | 224 | Traitement |
+| 1 | 160 | T1 | Liste des GM | MDI | 1440 | 224 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>160 - Liste des GM
-**Tache** : [160](#t1) | **Type** : MDI | **Dimensions** : 1440 x 224 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1440 x 224 DLU
 **Bloc** : Traitement | **Titre IDE** : Liste des GM
 
 <!-- FORM-DATA:
@@ -320,28 +320,22 @@ Ecran unique: **Liste des GM**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **160.1** | [**Liste des GM** (160)](#t1) [mockup](#ecran-t1) | MDI | 1440x224 | Traitement |
-| 160.1.1 | [Update Ezcard (160.1)](#t2) | - | - | |
+| **160.1** | [**Liste des GM** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1440x224 | Traitement |
+| 160.1.1 | [Update Ezcard (T2)](#t2) | - | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 1 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 2 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -627,4 +621,4 @@ graph LR
 | ez_card | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:51*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:19*

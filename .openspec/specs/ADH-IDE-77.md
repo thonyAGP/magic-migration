@@ -1,6 +1,6 @@
 ﻿# ADH IDE 77 - Club Med Pass menu
 
-> **Analyse**: Phases 1-4 2026-02-07 03:44 -> 03:45 (28s) | Assemblage 03:45
+> **Analyse**: Phases 1-4 2026-02-07 03:44 -> 03:45 (28s) | Assemblage 06:50
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 77 |
 | Nom Programme | Club Med Pass menu |
 | Fichier source | `Prg_77.xml` |
-| Dossier IDE | Navigation |
+| Dossier IDE | EzCard |
 | Taches | 9 (5 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 12 |
@@ -38,25 +38,25 @@ Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (6 taches)
 
-- **77** - Club Med Pass menu **[[ECRAN]](#ecran-t1)**
-- **77.1** - Processing ... **[[ECRAN]](#ecran-t2)**
-- **77.3** - Opposition Club Med Pass
-- **77.4** - Delete Club Med Pass
-- **77.6** - paramètre
-- **77.7** - Club Med Pass menu **[[ECRAN]](#ecran-t9)**
+- **T1** - Club Med Pass menu **[ECRAN]**
+- **T2** - Processing ... **[ECRAN]**
+- **T5** - Opposition Club Med Pass
+- **T6** - Delete Club Med Pass
+- **T8** - paramètre
+- **T9** - Club Med Pass menu **[ECRAN]**
 
 Delegue a : [Appel programme (IDE 44)](ADH-IDE-44.md), [Balance Credit de conso (IDE 79)](ADH-IDE-79.md), [   Card scan read (IDE 80)](ADH-IDE-80.md), [Bar Limit (IDE 86)](ADH-IDE-86.md), [Gestion forfait TAI LOCAL (IDE 173)](ADH-IDE-173.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md)
 
 #### Phase 2 : Saisie (2 taches)
 
-- **77.2** - Detail des transactions CMP **[[ECRAN]](#ecran-t3)**
-- **77.2.1** - Transactions details **[[ECRAN]](#ecran-t4)**
+- **T3** - Detail des transactions CMP **[ECRAN]**
+- **T4** - Transactions details **[ECRAN]**
 
 Delegue a : [Print Ventes Club Med Pass (IDE 78)](ADH-IDE-78.md)
 
 #### Phase 3 : Creation (1 tache)
 
-- **77.5** - Create Club Med Pass
+- **T7** - Create Club Med Pass
 
 Delegue a : [   Card scan create (IDE 81)](ADH-IDE-81.md)
 
@@ -76,7 +76,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>77 - Club Med Pass menu [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Club Med Pass menu [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 1056 x 256 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -86,11 +86,11 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [77.1](#t2) | Processing ... **[[ECRAN]](#ecran-t2)** | Traitement |
-| [77.3](#t5) | Opposition Club Med Pass | Traitement |
-| [77.4](#t6) | Delete Club Med Pass | Traitement |
-| [77.6](#t8) | paramètre | Traitement |
-| [77.7](#t9) | Club Med Pass menu **[[ECRAN]](#ecran-t9)** | Traitement |
+| [T2](#t2) | Processing ... **[ECRAN]** | Traitement |
+| [T5](#t5) | Opposition Club Med Pass | Traitement |
+| [T6](#t6) | Delete Club Med Pass | Traitement |
+| [T8](#t8) | paramètre | Traitement |
+| [T9](#t9) | Club Med Pass menu **[ECRAN]** | Traitement |
 
 </details>
 **Variables liees** : Y (v.Club Med Pass ID), Z (V.ID Club Med Pass scannee)
@@ -98,7 +98,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t2"></a>77.1 - Processing ... [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - Processing ... [ECRAN]
 
 **Role** : Traitement : Processing ....
 **Ecran** : 129 x 64 DLU (MDI) | [Voir mockup](#ecran-t2)
@@ -106,7 +106,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t5"></a>77.3 - Opposition Club Med Pass
+#### <a id="t5"></a>T5 - Opposition Club Med Pass
 
 **Role** : Traitement : Opposition Club Med Pass.
 **Variables liees** : Y (v.Club Med Pass ID), Z (V.ID Club Med Pass scannee)
@@ -114,7 +114,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t6"></a>77.4 - Delete Club Med Pass
+#### <a id="t6"></a>T6 - Delete Club Med Pass
 
 **Role** : Traitement : Delete Club Med Pass.
 **Variables liees** : Y (v.Club Med Pass ID), Z (V.ID Club Med Pass scannee), BD (v.delete confirmation)
@@ -122,14 +122,14 @@ Traitements internes.
 
 ---
 
-#### <a id="t8"></a>77.6 - paramètre
+#### <a id="t8"></a>T8 - paramètre
 
 **Role** : Traitement : paramètre.
 **Delegue a** : [Appel programme (IDE 44)](ADH-IDE-44.md), [Balance Credit de conso (IDE 79)](ADH-IDE-79.md), [   Card scan read (IDE 80)](ADH-IDE-80.md)
 
 ---
 
-#### <a id="t9"></a>77.7 - Club Med Pass menu [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Club Med Pass menu [ECRAN]
 
 **Role** : Traitement : Club Med Pass menu.
 **Ecran** : 1050 x 73 DLU (Modal) | [Voir mockup](#ecran-t9)
@@ -143,7 +143,7 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Detail des transa
 
 ---
 
-#### <a id="t3"></a>77.2 - Detail des transactions CMP [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Detail des transactions CMP [ECRAN]
 
 **Role** : Saisie des donnees : Detail des transactions CMP.
 **Ecran** : 1190 x 294 DLU (MDI) | [Voir mockup](#ecran-t3)
@@ -152,7 +152,7 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Detail des transa
 
 ---
 
-#### <a id="t4"></a>77.2.1 - Transactions details [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 594 x 87 DLU (Modal) | [Voir mockup](#ecran-t4)
@@ -165,7 +165,7 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t7"></a>77.5 - Create Club Med Pass
+#### <a id="t7"></a>T7 - Create Club Med Pass
 
 **Role** : Traitement : Create Club Med Pass.
 **Variables liees** : Y (v.Club Med Pass ID), Z (V.ID Club Med Pass scannee), BF (v.ok to create)
@@ -211,18 +211,18 @@ Insertion de nouveaux enregistrements en base.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 77 | 77 | Club Med Pass menu | MDI | 1056 | 256 | Traitement |
-| 2 | 77.1 | 77.1 | Processing ... | MDI | 129 | 64 | Traitement |
-| 3 | 77.2 | 77.2 | Detail des transactions CMP | MDI | 1190 | 294 | Saisie |
-| 4 | 77.2.1 | 77.2.1 | Transactions details | Modal | 594 | 87 | Saisie |
-| 5 | 77.7 | 77.7 | Club Med Pass menu | Modal | 1050 | 73 | Traitement |
+| 1 | 77 | T1 | Club Med Pass menu | MDI | 1056 | 256 | Traitement |
+| 2 | 77.1 | T2 | Processing ... | MDI | 129 | 64 | Traitement |
+| 3 | 77.2 | T3 | Detail des transactions CMP | MDI | 1190 | 294 | Saisie |
+| 4 | 77.2.1 | T4 | Transactions details | Modal | 594 | 87 | Saisie |
+| 5 | 77.7 | T9 | Club Med Pass menu | Modal | 1050 | 73 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>77 - Club Med Pass menu
-**Tache** : [77](#t1) | **Type** : MDI | **Dimensions** : 1056 x 256 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1056 x 256 DLU
 **Bloc** : Traitement | **Titre IDE** : Club Med Pass menu
 
 <!-- FORM-DATA:
@@ -777,7 +777,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t2"></a>77.1 - Processing ...
-**Tache** : [77.1](#t2) | **Type** : MDI | **Dimensions** : 129 x 64 DLU
+**Tache** : [T2](#t2) | **Type** : MDI | **Dimensions** : 129 x 64 DLU
 **Bloc** : Traitement | **Titre IDE** : Processing ...
 
 <!-- FORM-DATA:
@@ -818,7 +818,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t3"></a>77.2 - Detail des transactions CMP
-**Tache** : [77.2](#t3) | **Type** : MDI | **Dimensions** : 1190 x 294 DLU
+**Tache** : [T3](#t3) | **Type** : MDI | **Dimensions** : 1190 x 294 DLU
 **Bloc** : Saisie | **Titre IDE** : Detail des transactions CMP
 
 <!-- FORM-DATA:
@@ -1169,7 +1169,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t4"></a>77.2.1 - Transactions details
-**Tache** : [77.2.1](#t4) | **Type** : Modal | **Dimensions** : 594 x 87 DLU
+**Tache** : [T4](#t4) | **Type** : Modal | **Dimensions** : 594 x 87 DLU
 **Bloc** : Saisie | **Titre IDE** : Transactions details
 
 <!-- FORM-DATA:
@@ -1328,7 +1328,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t9"></a>77.7 - Club Med Pass menu
-**Tache** : [77.7](#t9) | **Type** : Modal | **Dimensions** : 1050 x 73 DLU
+**Tache** : [T9](#t9) | **Type** : Modal | **Dimensions** : 1050 x 73 DLU
 **Bloc** : Traitement | **Titre IDE** : Club Med Pass menu
 
 <!-- FORM-DATA:
@@ -1509,15 +1509,15 @@ Insertion de nouveaux enregistrements en base.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[77 Club Med Pass menu]
+    VF1[T1 Club Med Pass menu]
     style VF1 fill:#58a6ff
-    VF2[77.1 Processing ...]
+    VF2[T2 Processing ...]
     style VF2 fill:#58a6ff
-    VF3[77.2 Detail des transact...]
+    VF3[T3 Detail des transact...]
     style VF3 fill:#58a6ff
-    VF4[77.2.1 Transactions details]
+    VF4[T4 Transactions details]
     style VF4 fill:#58a6ff
-    VF9[77.7 Club Med Pass menu]
+    VF9[T9 Club Med Pass menu]
     style VF9 fill:#58a6ff
     EXT44[IDE 44 Appel programme]
     style EXT44 fill:#3fb950
@@ -1578,35 +1578,29 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **77.1** | [**Club Med Pass menu** (77)](#t1) [mockup](#ecran-t1) | MDI | 1056x256 | Traitement |
-| 77.1.1 | [Processing ... (77.1)](#t2) [mockup](#ecran-t2) | MDI | 129x64 | |
-| 77.1.2 | [Opposition Club Med Pass (77.3)](#t5) | MDI | - | |
-| 77.1.3 | [Delete Club Med Pass (77.4)](#t6) | MDI | - | |
-| 77.1.4 | [paramètre (77.6)](#t8) | MDI | - | |
-| 77.1.5 | [Club Med Pass menu (77.7)](#t9) [mockup](#ecran-t9) | Modal | 1050x73 | |
-| **77.2** | [**Detail des transactions CMP** (77.2)](#t3) [mockup](#ecran-t3) | MDI | 1190x294 | Saisie |
-| 77.2.1 | [Transactions details (77.2.1)](#t4) [mockup](#ecran-t4) | Modal | 594x87 | |
-| **77.3** | [**Create Club Med Pass** (77.5)](#t7) | MDI | - | Creation |
+| **77.1** | [**Club Med Pass menu** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1056x256 | Traitement |
+| 77.1.1 | [Processing ... (T2)](#t2) [mockup](#ecran-t2) | MDI | 129x64 | |
+| 77.1.2 | [Opposition Club Med Pass (T5)](#t5) | MDI | - | |
+| 77.1.3 | [Delete Club Med Pass (T6)](#t6) | MDI | - | |
+| 77.1.4 | [paramètre (T8)](#t8) | MDI | - | |
+| 77.1.5 | [Club Med Pass menu (T9)](#t9) [mockup](#ecran-t9) | Modal | 1050x73 | |
+| **77.2** | [**Detail des transactions CMP** (T3)](#t3) [mockup](#ecran-t3) | MDI | 1190x294 | Saisie |
+| 77.2.1 | [Transactions details (T4)](#t4) [mockup](#ecran-t4) | Modal | 594x87 | |
+| **77.3** | [**Create Club Med Pass** (T7)](#t7) | MDI | - | Creation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[CR lecture carte]
-    UPDATE[MAJ 1 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 9 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -1756,7 +1750,7 @@ Variables persistantes pendant toute la session.
 | V | V.TAI Obligatoire | Alpha | - |
 | W | V.Nom complet | Alpha | - |
 | X | V.Prenom complet | Alpha | - |
-| Y | v.Club Med Pass ID | Alpha | [77](#t1), [77.3](#t5), [77.4](#t6) |
+| Y | v.Club Med Pass ID | Alpha | [T1](#t1), [T5](#t5), [T6](#t6) |
 | Z | V.ID Club Med Pass scannee | Alpha | - |
 | BA | V.Status card | Alpha | - |
 | BB | V.Other card valid | Logical | - |
@@ -2121,4 +2115,4 @@ graph LR
 | [   Select affilies (IDE 82)](ADH-IDE-82.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:45*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:50*

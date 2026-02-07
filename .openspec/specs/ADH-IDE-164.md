@@ -1,6 +1,6 @@
 ﻿# ADH IDE 164 - Operation durant Cloture
 
-> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:52 (28s) | Assemblage 03:52
+> **Analyse**: Phases 1-4 2026-02-07 07:20 -> 07:20 (16s) | Assemblage 07:20
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,31 +14,17 @@
 | IDE Position | 164 |
 | Nom Programme | Operation durant Cloture |
 | Fichier source | `Prg_164.xml` |
-| Dossier IDE | General |
+| Dossier IDE | Menus |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Operation durant Cloture** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md).
-
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Traitement** (1 tache) : traitements metier divers
+**Operation durant Cloture** assure la gestion complete de ce processus.
 
 ## 3. BLOCS FONCTIONNELS
-
-### 3.1 Traitement (1 tache)
-
-Traitements internes.
-
----
-
-#### <a id="t1"></a>164 - Lecture paramètres par     1.6
-
-**Role** : Traitement : Lecture paramètres par     1.6.
-
 
 ## 5. REGLES METIER
 
@@ -46,7 +32,7 @@ Traitements internes.
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)
+- **Appele par**: (aucun)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 4
 
 <!-- TAB:Ecrans -->
@@ -57,11 +43,10 @@ Traitements internes.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **164.1** | [**Lecture paramètres par     1.6** (164)](#t1) | MDI | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -144,25 +129,22 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Operation durant Cloture (IDE 164)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T164[164 Operation durant C...]
     style T164 fill:#58a6ff
-    CC1[1 Main Program]
-    style CC1 fill:#8b5cf6
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#3fb950
-    CC1 --> CC163
-    CC163 --> T164
+    NONE[Aucun caller]
+    NONE -.-> T164
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -197,15 +179,10 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
-#### Traitement (1 tache: 0 ecran, 1 traitement)
-
-- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
-- Decomposer les taches en services unitaires testables.
-
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:52*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:20*

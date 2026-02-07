@@ -1,6 +1,6 @@
 ﻿# ADH IDE 107 - Print creation garantie
 
-> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:48 (27s) | Assemblage 03:48
+> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:48 (27s) | Assemblage 07:01
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 107 |
 | Nom Programme | Print creation garantie |
 | Fichier source | `Prg_107.xml` |
-| Dossier IDE | Garanties |
+| Dossier IDE | Garantie |
 | Taches | 14 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 1 |
@@ -33,23 +33,23 @@ Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (4 taches)
 
-- **107** - (sans nom)
-- **107.3** - Iteration **[[ECRAN]](#ecran-t8)**
-- **107.3.1** - Veuillez patienter... **[[ECRAN]](#ecran-t9)**
-- **107.4** - recup nom adherent
+- **T1** - (sans nom)
+- **T8** - Iteration **[ECRAN]**
+- **T9** - Veuillez patienter... **[ECRAN]**
+- **T10** - recup nom adherent
 
 #### Phase 2 : Impression (10 taches)
 
-- **107.1** - Printer 1
-- **107.1.1** - edition extrait compte
-- **107.1.2** - edition extrait compte
-- **107.2** - Printer 4
-- **107.2.1** - edition extrait compte
-- **107.2.2** - edition extrait compte
-- **107.5** - Printer 8
-- **107.5.1** - edition extrait compte
-- **107.6** - Printer 9
-- **107.6.1** - edition extrait compte
+- **T2** - Printer 1
+- **T3** - edition extrait compte
+- **T4** - edition extrait compte
+- **T5** - Printer 4
+- **T6** - edition extrait compte
+- **T7** - edition extrait compte
+- **T11** - Printer 8
+- **T12** - edition extrait compte
+- **T13** - Printer 9
+- **T14** - edition extrait compte
 
 Delegue a : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
@@ -63,7 +63,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>107 - (sans nom)
+#### <a id="t1"></a>T1 - (sans nom)
 
 **Role** : Traitement interne.
 
@@ -72,29 +72,29 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [107.3](#t8) | Iteration **[[ECRAN]](#ecran-t8)** | Traitement |
-| [107.3.1](#t9) | Veuillez patienter... **[[ECRAN]](#ecran-t9)** | Traitement |
-| [107.4](#t10) | recup nom adherent | Traitement |
+| [T8](#t8) | Iteration **[ECRAN]** | Traitement |
+| [T9](#t9) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T10](#t10) | recup nom adherent | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t8"></a>107.3 - Iteration [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Iteration [ECRAN]
 
 **Role** : Traitement : Iteration.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t9"></a>107.3.1 - Veuillez patienter... [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t10"></a>107.4 - recup nom adherent
+#### <a id="t10"></a>T10 - recup nom adherent
 
 **Role** : Consultation/chargement : recup nom adherent.
 **Variables liees** : B (P0 code adherent), H (W0 n° adherent)
@@ -106,70 +106,70 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>107.1 - Printer 1
+#### <a id="t2"></a>T2 - Printer 1
 
 **Role** : Generation du document : Printer 1.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t3"></a>107.1.1 - edition extrait compte
+#### <a id="t3"></a>T3 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t4"></a>107.1.2 - edition extrait compte
+#### <a id="t4"></a>T4 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t5"></a>107.2 - Printer 4
+#### <a id="t5"></a>T5 - Printer 4
 
 **Role** : Generation du document : Printer 4.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t6"></a>107.2.1 - edition extrait compte
+#### <a id="t6"></a>T6 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t7"></a>107.2.2 - edition extrait compte
+#### <a id="t7"></a>T7 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t11"></a>107.5 - Printer 8
+#### <a id="t11"></a>T11 - Printer 8
 
 **Role** : Generation du document : Printer 8.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t12"></a>107.5.1 - edition extrait compte
+#### <a id="t12"></a>T12 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t13"></a>107.6 - Printer 9
+#### <a id="t13"></a>T13 - Printer 9
 
 **Role** : Generation du document : Printer 9.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t14"></a>107.6.1 - edition extrait compte
+#### <a id="t14"></a>T14 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
@@ -192,14 +192,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 107.3.1 | 107.3.1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+| 1 | 107.3.1 | T9 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t9"></a>107.3.1 - Veuillez patienter...
-**Tache** : [107.3.1](#t9) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [T9](#t9) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -288,39 +288,34 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **107.1** | [**(sans nom)** (107)](#t1) | MDI | - | Traitement |
-| 107.1.1 | [Iteration (107.3)](#t8) [mockup](#ecran-t8) | MDI | 422x56 | |
-| 107.1.2 | [Veuillez patienter... (107.3.1)](#t9) [mockup](#ecran-t9) | MDI | 422x56 | |
-| 107.1.3 | [recup nom adherent (107.4)](#t10) | MDI | - | |
-| **107.2** | [**Printer 1** (107.1)](#t2) | MDI | - | Impression |
-| 107.2.1 | [edition extrait compte (107.1.1)](#t3) | MDI | - | |
-| 107.2.2 | [edition extrait compte (107.1.2)](#t4) | MDI | - | |
-| 107.2.3 | [Printer 4 (107.2)](#t5) | MDI | - | |
-| 107.2.4 | [edition extrait compte (107.2.1)](#t6) | MDI | - | |
-| 107.2.5 | [edition extrait compte (107.2.2)](#t7) | MDI | - | |
-| 107.2.6 | [Printer 8 (107.5)](#t11) | MDI | - | |
-| 107.2.7 | [edition extrait compte (107.5.1)](#t12) | MDI | - | |
-| 107.2.8 | [Printer 9 (107.6)](#t13) | MDI | - | |
-| 107.2.9 | [edition extrait compte (107.6.1)](#t14) | MDI | - | |
+| **107.1** | [**(sans nom)** (T1)](#t1) | MDI | - | Traitement |
+| 107.1.1 | [Iteration (T8)](#t8) [mockup](#ecran-t8) | MDI | 422x56 | |
+| 107.1.2 | [Veuillez patienter... (T9)](#t9) [mockup](#ecran-t9) | MDI | 422x56 | |
+| 107.1.3 | [recup nom adherent (T10)](#t10) | MDI | - | |
+| **107.2** | [**Printer 1** (T2)](#t2) | MDI | - | Impression |
+| 107.2.1 | [edition extrait compte (T3)](#t3) | MDI | - | |
+| 107.2.2 | [edition extrait compte (T4)](#t4) | MDI | - | |
+| 107.2.3 | [Printer 4 (T5)](#t5) | MDI | - | |
+| 107.2.4 | [edition extrait compte (T6)](#t6) | MDI | - | |
+| 107.2.5 | [edition extrait compte (T7)](#t7) | MDI | - | |
+| 107.2.6 | [Printer 8 (T11)](#t11) | MDI | - | |
+| 107.2.7 | [edition extrait compte (T12)](#t12) | MDI | - | |
+| 107.2.8 | [Printer 9 (T13)](#t13) | MDI | - | |
+| 107.2.9 | [edition extrait compte (T14)](#t14) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    PROCESS[Traitement 14 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -570,4 +565,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:48*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:01*

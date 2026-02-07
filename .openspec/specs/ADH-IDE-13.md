@@ -1,6 +1,6 @@
 ﻿# ADH IDE 13 - calculate week #
 
-> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:39 (29s) | Assemblage 03:39
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:39 (29s) | Assemblage 12:53
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,14 +18,15 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**calculate week #** assure la gestion complete de ce processus, accessible depuis [Catching stats (IDE 12)](ADH-IDE-12.md).
+ADH IDE 13 est un programme de **calcul pur du numéro de semaine ISO** pour une date donnée. Appelé depuis ADH IDE 12 (Catching stats) lors du traitement des statistiques de caisse, il reçoit une date en entrée et retourne le numéro de semaine correspondant. C'est un bloc de logique calendaire sans accès base de données : il détermine d'abord le début d'année, vérifie le jour de la semaine du 1er janvier, calcule la fin de la première semaine ISO, puis convertit la différence avec la date entrante en nombre de semaines avec arrondi.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+La logique suit la norme ISO 8601 où une semaine commence le lundi et finit le dimanche. Le programme utilise 7 expressions successives : obtention du début d'année (`BOY`), extraction du jour de la semaine (`DOW`), calcul des jours jusqu'à fin de première semaine, détermination de cette date limite, comparaison avec la date entrante, et enfin conversion du nombre de jours en semaines avec arrondi entier. Toute la complexité réside dans le respect strict du calendrier ISO : les jours excédentaires sont arrondis à la semaine supérieure, et le résultat est incrémenté de 1 pour commencer à la semaine 1 (pas 0).
 
-- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
+C'est un composant **non orphelin et non critique** : spécialisé, autonome, sans dépendances externes, il sert exclusivement à enrichir les analyses de caisse avec la dimension temporelle par semaine. Si modifié, seul IDE 12 en subirait les impacts directs. Aucune table n'est impliquée, aucun autre programme ne le compose ou ne l'enrichit—c'est une brique de calcul isolée et robuste.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -43,7 +44,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -217,4 +218,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:54*

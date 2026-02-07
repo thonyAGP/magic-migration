@@ -1,199 +1,187 @@
 ﻿# ADH IDE 44 - Appel programme
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:00
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_40.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 06:46 -> 06:47 (16s) | Assemblage 13:16
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Comptes de depot** est le **service de consultation des comptes de depot adherent** qui **recupere et affiche les informations financieres d'un adherent pour une societe donnee**.
-
-**Objectif metier** : Permettre la consultation des comptes de depot des adherents en fonction de leur societe, code adherent et filiation, avec gestion multi-devises et formatage des montants selon la devise locale.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur caisse ou gestionnaire adherent |
-| **Quoi** | Consultation des comptes de depot adherent |
-| **Pourquoi** | Visualiser les soldes et mouvements financiers d'un adherent |
-| **Declencheur** | Selection d'un adherent depuis un ecran de gestion ou caisse |
-| **Resultat** | Affichage des informations de depot avec formatage devise adapte |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (0 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 44 |
-| **Fichier XML** | `Prg_40.xml` |
-| **Description** | Appel programme |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 4 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 44 |
+| Nom Programme | Appel programme |
+| Fichier source | `Prg_44.xml` |
+| Dossier IDE | General |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| - | Aucune table | - | - | - |
+ADH IDE 44 est un **programme utilitaire de routage** chargé de dispatcher les clics utilisateurs depuis les menus vers les programmes cibles appropriés. Bien qu'extrêmement simple (une seule tâche, une expression), il joue un rôle central en tant que point de passage pour quatre menus différents : changement de compte, Great Member, impression des appels, et changement bilatéral. Le programme ne contient aucune logique métier complexe — il se limite à récupérer le dernier élément cliqué via la fonction `LastClicked()` et en déduit la cible d'exécution.
 
-**Resume**: 0 tables accedees dont **0 en ecriture**
+Ce programme n'accède à aucune table et n'appelle aucun autre programme : c'est une **fonction terminale** purement technique. Son rôle est de décharger les menus d'une logique de routage répétitive en centralisant le mécanisme de dispatch. Cette approche évite la duplication de code dans les quatre menus appelants et garantit un traitement cohérent des commandes utilisateur.
 
-### 2.3 Parametres d'entree (0 parametres)
+Classé en **non-orphelin** malgré zéro appel externe, ADH IDE 44 est utilisé par d'autres programmes plutôt que d'en appeler. Sa qualité de code est excellente (zéro ligne désactivée, pas de code mort), et sa complexité minimale en fait un bon candidat pour des refactorisations futures si le besoin de dispatch devient plus sophistiqué.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee dans les expressions)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Menu changement compte (IDE 37)](ADH-IDE-37.md), [Menu Great Member (IDE 158)](ADH-IDE-158.md), [Menu impression des appels (IDE 214)](ADH-IDE-214.md), [Menu change bilateral (IDE 295)](ADH-IDE-295.md)
+- **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 1
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 4 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 0 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (0)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (0 / 0 tables avec colonnes identifiees)
+
+## 11. VARIABLES
+
+*(Programme sans variables locales mappees)*
+
+## 12. EXPRESSIONS
+
+**1 / 1 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| OTHER | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### OTHER (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 1 | `LastClicked ()` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Menu changement compte (IDE 37)](ADH-IDE-37.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Menu Great Member (IDE 158)](ADH-IDE-158.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Menu impression des appels (IDE 214)](ADH-IDE-214.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Menu change bilateral (IDE 295)](ADH-IDE-295.md) -> **Appel programme (IDE 44)**
 
 ```mermaid
 graph LR
-    T[44 Appel programme]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T44[44 Appel programme]
+    style T44 fill:#58a6ff
+    CC214[214 Menu impression de...]
+    style CC214 fill:#8b5cf6
+    CC295[295 Menu change bilateral]
+    style CC295 fill:#8b5cf6
+    CC37[37 Menu changement compte]
+    style CC37 fill:#8b5cf6
+    CC158[158 Menu Great Member]
+    style CC158 fill:#8b5cf6
+    CC37 --> T44
+    CC158 --> T44
+    CC214 --> T44
+    CC295 --> T44
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [37](ADH-IDE-37.md) | Menu changement compte | 1 |
+| [158](ADH-IDE-158.md) | Menu Great Member | 1 |
+| [214](ADH-IDE-214.md) | Menu impression des appels | 1 |
+| [295](ADH-IDE-295.md) | Menu change bilateral | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[44 Appel programme]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T44[44 Appel programme]
+    style T44 fill:#58a6ff
+    NONE[Aucun callee]
+    T44 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 4 | Programme compact |
+| Expressions | 1 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 4) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 0 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:00 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:18*

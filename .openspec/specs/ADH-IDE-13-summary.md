@@ -1,6 +1,6 @@
 ﻿# ADH IDE 13 - calculate week #
 
-> **Analyse**: 2026-02-07 03:39
+> **Analyse**: 2026-02-07 12:53
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

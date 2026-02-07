@@ -1,202 +1,215 @@
-﻿# ADH IDE 144 - Devises finales F/F Nbre WS
+﻿# ADH IDE 144 - Devise update session WS
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:06
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_140.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-07 07:12 -> 07:12 (16s) | Assemblage 07:13
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Devises finales F/F Nbre WS** est le **composant de calcul des nombres de billets/pieces par devise** qui **determine les quantites finales de chaque coupure pour le fond de caisse (F/F = Fond Final)**.
-
-**Objectif metier** : Calculer le nombre de billets et pieces par devise a conserver dans le fond de caisse lors de la cloture de session. Ce programme alimente un Web Service (WS) avec les donnees de comptage final, permettant de determiner combien de coupures de chaque type restent en caisse apres les operations de la journee.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur caisse / Responsable fermeture |
-| **Quoi** | Calcul du nombre de coupures par devise pour le fond de caisse final |
-| **Pourquoi** | Preparer les donnees de comptage pour la cloture et le reporting WS |
-| **Declencheur** | Processus de fermeture de caisse ou appel WS |
-| **Resultat** | Nombre de billets/pieces par type de moyen de reglement et devise calcule |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (4 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (3 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 144 |
-| **Fichier XML** | `Prg_140.xml` |
-| **Description** | Devises finales F/F Nbre WS |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 3 |
-| **Lignes logique** | 131 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 144 |
+| Nom Programme | Devise update session WS |
+| Fichier source | `Prg_144.xml` |
+| Dossier IDE | Gestion |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
+| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 50 | moyens_reglement_mor | cafil028_dat | READ | Lecture |
-| 67 | tables___________tab | cafil045_dat | READ | Lecture |
-| 139 | moyens_reglement_mor | cafil117_dat | LINK | Jointure |
-| 232 | gestion_devise_session | caisse_devise | LINK | Jointure |
+**Devise update session WS** assure la gestion complete de ce processus.
 
-**Resume**: 4 tables accedees dont **0 en ecriture**
+**Donnees modifiees** : 1 tables en ecriture (gestion_devise_session).
 
-### 2.3 Parametres d'entree (0 parametres)
+## 3. BLOCS FONCTIONNELS
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 5. REGLES METIER
 
-### 2.4 Algorigramme
+*(Aucune regle metier identifiee)*
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 9
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>3 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
+    START([START])
+    PROCESS[Traitement 1 taches]
     ENDOK([END])
-
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
-
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    START --> PROCESS --> ENDOK
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 3 |
-| **Lignes logique** | 131 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 4 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (1)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 232 | gestion_devise_session | Sessions de caisse | DB |   | **W** |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 232 - gestion_devise_session (**W**) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | Param Code devise | W | Alpha |
+| B | Param mode paiement | W | Alpha |
+| C | Param Quand | W | Alpha |
+| D | Param Type | W | Alpha |
+| E | Param Quantite | W | Numeric |
+| F | Param cumul OP change | W | Logical |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Autres (6)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| A | Param Code devise | Alpha | 1x refs |
+| B | Param mode paiement | Alpha | 1x refs |
+| C | Param Quand | Alpha | 1x refs |
+| D | Param Type | Alpha | 1x refs |
+| E | Param Quantite | Numeric | 2x refs |
+| F | Param cumul OP change | Logical | 2x refs |
+
+## 12. EXPRESSIONS
+
+**9 / 9 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CALCULATION | 1 | 0 |
+| REFERENCE_VG | 1 | 0 |
+| OTHER | 6 | 0 |
+| NEGATION | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CALCULATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CALCULATION | 7 | `[L]+Param Quantite [E]` | - |
+
+#### REFERENCE_VG (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 1 | `VG1` | - |
+
+#### OTHER (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 5 | `Param Type [D]` | - |
+| OTHER | 6 | `Param Quantite [E]` | - |
+| OTHER | 9 | `Param cumul OP change [F]` | - |
+| OTHER | 2 | `Param Code devise [A]` | - |
+| OTHER | 3 | `Param mode paiement [B]` | - |
+| ... | | *+1 autres* | |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 8 | `NOT (Param cumul OP change [F])` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[144 Devises finales]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T144[144 Devise update sess...]
+    style T144 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T144
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[144 Devises finales]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T144[144 Devise update sess...]
+    style T144 fill:#58a6ff
+    NONE[Aucun callee]
+    T144 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 22 | Programme compact |
+| Expressions | 9 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 22) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 3 | Simple |
-| Tables | 4 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| gestion_devise_session | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:06 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:13*

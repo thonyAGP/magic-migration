@@ -1,6 +1,6 @@
 ﻿# ADH IDE 94 - Maj des lignes saisies archive
 
-> **Analyse**: 2026-02-07 03:47
+> **Analyse**: 2026-02-07 06:56
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Maj des lignes saisies archive
 - **Tables modifiees**: 1
 - **Complexite**: **BASSE** (7/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Factures (Tble Compta&Vent (IDE 89)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 162 - Selection filiations
 
-> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:51 (27s) | Assemblage 03:51
+> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:51 (27s) | Assemblage 07:19
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 162 |
 | Nom Programme | Selection filiations |
 | Fichier source | `Prg_162.xml` |
-| Dossier IDE | Consultation |
+| Dossier IDE | Menus |
 | Taches | 2 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
@@ -37,11 +37,11 @@ Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (1 tache)
 
-- **162** - Sélection filiations **[[ECRAN]](#ecran-t1)**
+- **T1** - Sélection filiations **[ECRAN]**
 
 #### Phase 2 : Consultation (1 tache)
 
-- **162.1** - Init tmp selections
+- **T2** - Init tmp selections
 
 #### Tables impactees
 
@@ -59,7 +59,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>162 - Sélection filiations [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Sélection filiations [ECRAN]
 
 **Role** : Traitement : Sélection filiations.
 **Ecran** : 1238 x 284 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -72,7 +72,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t2"></a>162.1 - Init tmp selections
+#### <a id="t2"></a>T2 - Init tmp selections
 
 **Role** : Selection par l'operateur : Init tmp selections.
 
@@ -103,7 +103,7 @@ Ecrans de recherche et consultation.
 | **Variables** | D (P.i.Texte info) |
 | **Expression source** | Expression 9 : `IF(P.i.Texte info [D]<>'',P.i.Texte info [D],'Veuillez sélec` |
 | **Exemple** | Si P.i.Texte info [D]<>'' â†’ P.i.Texte info [D]. Sinon â†’ 'Veuillez sélectionner les filiations concernées') |
-| **Impact** | [162 - Sélection filiations](#t1) |
+| **Impact** | [T1 - Sélection filiations](#t1) |
 
 ## 6. CONTEXTE
 
@@ -118,14 +118,14 @@ Ecrans de recherche et consultation.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 162 | 162 | Sélection filiations | MDI | 1238 | 284 | Traitement |
+| 1 | 162 | T1 | Sélection filiations | MDI | 1238 | 284 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>162 - Sélection filiations
-**Tache** : [162](#t1) | **Type** : MDI | **Dimensions** : 1238 x 284 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1238 x 284 DLU
 **Bloc** : Traitement | **Titre IDE** : Sélection filiations
 
 <!-- FORM-DATA:
@@ -346,28 +346,22 @@ Ecran unique: **Sélection filiations**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **162.1** | [**Sélection filiations** (162)](#t1) [mockup](#ecran-t1) | MDI | 1238x284 | Traitement |
-| **162.2** | [**Init tmp selections** (162.1)](#t2) | - | - | Consultation |
+| **162.1** | [**Sélection filiations** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1238x284 | Traitement |
+| **162.2** | [**Init tmp selections** (T2)](#t2) | - | - | Consultation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 1 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 2 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -589,4 +583,4 @@ graph LR
 | Table_1047 | Table WRITE (Memory) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:51*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:19*

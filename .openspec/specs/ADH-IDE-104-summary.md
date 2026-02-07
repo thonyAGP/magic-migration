@@ -1,6 +1,6 @@
 ﻿# ADH IDE 104 - Maj Hebergement Tempo V3
 
-> **Analyse**: 2026-02-07 03:48
+> **Analyse**: 2026-02-07 07:00
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Maj Hebergement Tempo V3
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Factures (Tble Compta&Vent) V3 (IDE 97)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

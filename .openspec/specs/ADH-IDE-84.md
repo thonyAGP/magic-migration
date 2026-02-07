@@ -1,6 +1,6 @@
 ﻿# ADH IDE 84 - SP Caractères Interdits
 
-> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (27s) | Assemblage 03:45
+> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (27s) | Assemblage 06:53
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 84 |
 | Nom Programme | SP Caractères Interdits |
 | Fichier source | `Prg_84.xml` |
-| Dossier IDE | General |
+| Dossier IDE | EzCard |
 | Taches | 2 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
@@ -33,11 +33,11 @@ Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (1 tache)
 
-- **84** - Caractères Interdits
+- **T1** - Caractères Interdits
 
 #### Phase 2 : Validation (1 tache)
 
-- **84.1** - Verification Chaine
+- **T2** - Verification Chaine
 
 </details>
 
@@ -49,7 +49,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>84 - Caractères Interdits
+#### <a id="t1"></a>T1 - Caractères Interdits
 
 **Role** : Traitement : Caractères Interdits.
 
@@ -60,7 +60,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ---
 
-#### <a id="t2"></a>84.1 - Verification Chaine
+#### <a id="t2"></a>T2 - Verification Chaine
 
 **Role** : Verification : Verification Chaine.
 
@@ -86,27 +86,22 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **84.1** | [**Caractères Interdits** (84)](#t1) | MDI | - | Traitement |
-| **84.2** | [**Verification Chaine** (84.1)](#t2) | MDI | - | Validation |
+| **84.1** | [**Caractères Interdits** (T1)](#t1) | MDI | - | Traitement |
+| **84.2** | [**Verification Chaine** (T2)](#t2) | MDI | - | Validation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    PROCESS[Traitement 2 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -280,4 +275,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:45*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:53*

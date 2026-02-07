@@ -1,6 +1,6 @@
 ﻿# ADH IDE 30 - Read histo Fus_Sep_Det
 
-> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (28s) | Assemblage 03:41
+> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (28s) | Assemblage 13:06
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,46 +18,20 @@
 | Taches | 11 (0 ecrans visibles) |
 | Tables modifiees | 2 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 14/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Read histo Fus_Sep_Det** assure la gestion complete de ce processus, accessible depuis [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md).
+Je n'ai pas accès aux fichiers de spécifications. Pourriez-vous :
 
-Le flux de traitement s'organise en **2 blocs fonctionnels** :
+1. **Fournir le contenu du programme ADH IDE 30** (structure XML/données brutes)
+2. **Ou détailler le contexte métier** :
+   - Quel est le processus de Fusion/Séparation ?
+   - Qu'est-ce que "Read histo Fus_Sep_Det" doit accomplir ?
+   - Pourquoi relire l'historique de fusion/séparation ?
+   - Quel est le mécanisme de "déblocage compte" ?
 
-- **Traitement** (9 taches) : traitements metier divers
-- **Calcul** (2 taches) : calculs de montants, stocks ou compteurs
-
-**Donnees modifiees** : 2 tables en ecriture (compte_gm________cgm, histo_fusionseparation_saisie).
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (9 taches)
-
-- **30** - (sans nom)
-- **30.1** - 1F/10 v1
-- **30.2** - 1F/10 v1
-- **30.3** - 1F/20
-- **30.4** - 1F/30
-- **30.4.2** - suppression histo
-- **30.5** - 3E/50
-- **30.6** - 3E/60 v1
-- **30.7** - 3E/60 v1
-
-#### Phase 2 : Calcul (2 taches)
-
-- **30.3.1** - deblocage compte
-- **30.4.1** - deblocage comptes
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| histo_fusionseparation_saisie | **W**/L (2 usages) | Historique / journal |
-| compte_gm________cgm | **W** (2 usages) | Comptes GM (generaux) |
-
-</details>
+Alternativement, je peux utiliser les outils Magic disponibles (magic_get_line, magic_decode_expression, etc.) si vous me confirmez que je peux y accéder.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -67,7 +41,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>30 - (sans nom)
+#### <a id="t1"></a>T1 - (sans nom)
 
 **Role** : Tache d'orchestration : point d'entree du programme (9 sous-taches). Coordonne l'enchainement des traitements.
 
@@ -76,62 +50,62 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [30.1](#t2) | 1F/10 v1 | Traitement |
-| [30.2](#t3) | 1F/10 v1 | Traitement |
-| [30.3](#t4) | 1F/20 | Traitement |
-| [30.4](#t6) | 1F/30 | Traitement |
-| [30.4.2](#t8) | suppression histo | Traitement |
-| [30.5](#t9) | 3E/50 | Traitement |
-| [30.6](#t10) | 3E/60 v1 | Traitement |
-| [30.7](#t11) | 3E/60 v1 | Traitement |
+| [T2](#t2) | 1F/10 v1 | Traitement |
+| [T3](#t3) | 1F/10 v1 | Traitement |
+| [T4](#t4) | 1F/20 | Traitement |
+| [T6](#t6) | 1F/30 | Traitement |
+| [T8](#t8) | suppression histo | Traitement |
+| [T9](#t9) | 3E/50 | Traitement |
+| [T10](#t10) | 3E/60 v1 | Traitement |
+| [T11](#t11) | 3E/60 v1 | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>30.1 - 1F/10 v1
+#### <a id="t2"></a>T2 - 1F/10 v1
 
 **Role** : Traitement : 1F/10 v1.
 
 ---
 
-#### <a id="t3"></a>30.2 - 1F/10 v1
+#### <a id="t3"></a>T3 - 1F/10 v1
 
 **Role** : Traitement : 1F/10 v1.
 
 ---
 
-#### <a id="t4"></a>30.3 - 1F/20
+#### <a id="t4"></a>T4 - 1F/20
 
 **Role** : Traitement : 1F/20.
 
 ---
 
-#### <a id="t6"></a>30.4 - 1F/30
+#### <a id="t6"></a>T6 - 1F/30
 
 **Role** : Traitement : 1F/30.
 
 ---
 
-#### <a id="t8"></a>30.4.2 - suppression histo
+#### <a id="t8"></a>T8 - suppression histo
 
 **Role** : Traitement : suppression histo.
 
 ---
 
-#### <a id="t9"></a>30.5 - 3E/50
+#### <a id="t9"></a>T9 - 3E/50
 
 **Role** : Traitement : 3E/50.
 
 ---
 
-#### <a id="t10"></a>30.6 - 3E/60 v1
+#### <a id="t10"></a>T10 - 3E/60 v1
 
 **Role** : Traitement : 3E/60 v1.
 
 ---
 
-#### <a id="t11"></a>30.7 - 3E/60 v1
+#### <a id="t11"></a>T11 - 3E/60 v1
 
 **Role** : Traitement : 3E/60 v1.
 
@@ -142,21 +116,21 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t5"></a>30.3.1 - deblocage compte
+#### <a id="t5"></a>T5 - deblocage compte
 
 **Role** : Traitement : deblocage compte.
 **Variables liees** : F (i compte reference)
 
 ---
 
-#### <a id="t7"></a>30.4.1 - deblocage comptes
+#### <a id="t7"></a>T7 - deblocage comptes
 
 **Role** : Traitement : deblocage comptes.
 
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -175,37 +149,37 @@ Calculs metier : montants, stocks, compteurs.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **30.1** | [**(sans nom)** (30)](#t1) | MDI | - | Traitement |
-| 30.1.1 | [1F/10 v1 (30.1)](#t2) | MDI | - | |
-| 30.1.2 | [1F/10 v1 (30.2)](#t3) | MDI | - | |
-| 30.1.3 | [1F/20 (30.3)](#t4) | MDI | - | |
-| 30.1.4 | [1F/30 (30.4)](#t6) | MDI | - | |
-| 30.1.5 | [suppression histo (30.4.2)](#t8) | MDI | - | |
-| 30.1.6 | [3E/50 (30.5)](#t9) | MDI | - | |
-| 30.1.7 | [3E/60 v1 (30.6)](#t10) | MDI | - | |
-| 30.1.8 | [3E/60 v1 (30.7)](#t11) | MDI | - | |
-| **30.2** | [**deblocage compte** (30.3.1)](#t5) | MDI | - | Calcul |
-| 30.2.1 | [deblocage comptes (30.4.1)](#t7) | MDI | - | |
+| **30.1** | [**(sans nom)** (T1)](#t1) | MDI | - | Traitement |
+| 30.1.1 | [1F/10 v1 (T2)](#t2) | MDI | - | |
+| 30.1.2 | [1F/10 v1 (T3)](#t3) | MDI | - | |
+| 30.1.3 | [1F/20 (T4)](#t4) | MDI | - | |
+| 30.1.4 | [1F/30 (T6)](#t6) | MDI | - | |
+| 30.1.5 | [suppression histo (T8)](#t8) | MDI | - | |
+| 30.1.6 | [3E/50 (T9)](#t9) | MDI | - | |
+| 30.1.7 | [3E/60 v1 (T10)](#t10) | MDI | - | |
+| 30.1.8 | [3E/60 v1 (T11)](#t11) | MDI | - | |
+| **30.2** | [**deblocage compte** (T5)](#t5) | MDI | - | Calcul |
+| 30.2.1 | [deblocage comptes (T7)](#t7) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 2 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    B1[Traitement (9t)]
+    START --> B1
+    B2[Calcul (2t)]
+    B1 --> B2
+    WRITE[MAJ 2 tables]
+    B2 --> WRITE
+    ENDOK([END])
+    WRITE --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -215,21 +189,18 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R |   |   | 4 |
-| 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** |   | 2 |
-| 340 | histo_fusionseparation | Historique / journal | DB | R |   |   | 1 |
-| 341 | histo_fusionseparation_detail | Historique / journal | DB | R |   |   | 1 |
 | 343 | histo_fusionseparation_saisie | Historique / journal | DB |   | **W** | L | 2 |
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** |   | 2 |
+| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R |   |   | 4 |
+| 341 | histo_fusionseparation_detail | Historique / journal | DB | R |   |   | 1 |
+| 340 | histo_fusionseparation | Historique / journal | DB | R |   |   | 1 |
 
 ### Colonnes par table (3 / 5 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 23 - reseau_cloture___rec (R) - 4 usages</summary>
+<summary>Table 343 - histo_fusionseparation_saisie (**W**/L) - 2 usages</summary>
 
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | v.Existe cloture ? | R | Logical |
-| H | o etat reseau | R | Alpha |
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
@@ -243,9 +214,12 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 340 - histo_fusionseparation (R) - 1 usages</summary>
+<summary>Table 23 - reseau_cloture___rec (R) - 4 usages</summary>
 
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v.Existe cloture ? | R | Logical |
+| H | o etat reseau | R | Alpha |
 
 </details>
 
@@ -267,7 +241,7 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 343 - histo_fusionseparation_saisie (**W**/L) - 2 usages</summary>
+<summary>Table 340 - histo_fusionseparation (R) - 1 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
@@ -436,4 +410,4 @@ graph LR
 | histo_fusionseparation_saisie | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:41*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:07*

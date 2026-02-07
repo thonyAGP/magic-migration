@@ -1,6 +1,6 @@
 ﻿# ADH IDE 178 - Set Village Address
 
-> **Analyse**: Phases 1-4 2026-02-07 03:52 -> 03:52 (27s) | Assemblage 03:52
+> **Analyse**: Phases 1-4 2026-02-07 07:24 -> 07:25 (16s) | Assemblage 07:25
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,31 +14,16 @@
 | IDE Position | 178 |
 | Nom Programme | Set Village Address |
 | Fichier source | `Prg_178.xml` |
-| Dossier IDE | General |
+| Dossier IDE | Printer |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Set Village Address** assure la gestion complete de ce processus, accessible depuis [Extrait Easy Check Out à J+1 (IDE 53)](ADH-IDE-53.md), [Get Printer (IDE 179)](ADH-IDE-179.md).
-
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Traitement** (1 tache) : traitements metier divers
+**Set Village Address** assure la gestion complete de ce processus.
 
 ## 3. BLOCS FONCTIONNELS
-
-### 3.1 Traitement (1 tache)
-
-Traitements internes.
-
----
-
-#### <a id="t1"></a>178 - Set Village Address
-
-**Role** : Traitement : Set Village Address.
-
 
 ## 5. REGLES METIER
 
@@ -46,7 +31,7 @@ Traitements internes.
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Extrait Easy Check Out à J+1 (IDE 53)](ADH-IDE-53.md), [Get Printer (IDE 179)](ADH-IDE-179.md)
+- **Appele par**: (aucun)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 10
 
 <!-- TAB:Ecrans -->
@@ -57,11 +42,10 @@ Traitements internes.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **178.1** | [**Set Village Address** (178)](#t1) | MDI | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -144,83 +128,22 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Extrait Easy Check Out à J+1 (IDE 53)](ADH-IDE-53.md) -> **Set Village Address (IDE 178)**
-
-Main -> ... -> [Get Printer (IDE 179)](ADH-IDE-179.md) -> **Set Village Address (IDE 178)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T178[178 Set Village Address]
     style T178 fill:#58a6ff
-    CC37[37 Menu changement compte]
-    style CC37 fill:#8b5cf6
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#8b5cf6
-    CC55[55 Easy Check-Out === ...]
-    style CC55 fill:#8b5cf6
-    CC283[283 Easy Check-Out ===...]
-    style CC283 fill:#8b5cf6
-    CC66[66 Lancement Solde ECO]
-    style CC66 fill:#8b5cf6
-    CC64[64 Solde Easy Check Out]
-    style CC64 fill:#f59e0b
-    CC27[27 Separation]
-    style CC27 fill:#f59e0b
-    CC25[25 Change GM]
-    style CC25 fill:#f59e0b
-    CC40[40 Comptes de depôt]
-    style CC40 fill:#f59e0b
-    CC28[28 Fusion]
-    style CC28 fill:#f59e0b
-    CC53[53 Extrait Easy Check ...]
-    style CC53 fill:#3fb950
-    CC179[179 Get Printer]
-    style CC179 fill:#3fb950
-    CC25 --> CC53
-    CC27 --> CC53
-    CC28 --> CC53
-    CC40 --> CC53
-    CC64 --> CC53
-    CC25 --> CC179
-    CC27 --> CC179
-    CC28 --> CC179
-    CC40 --> CC179
-    CC64 --> CC179
-    CC163 --> CC25
-    CC37 --> CC25
-    CC55 --> CC25
-    CC66 --> CC25
-    CC283 --> CC25
-    CC163 --> CC27
-    CC37 --> CC27
-    CC55 --> CC27
-    CC66 --> CC27
-    CC283 --> CC27
-    CC163 --> CC28
-    CC37 --> CC28
-    CC55 --> CC28
-    CC66 --> CC28
-    CC283 --> CC28
-    CC163 --> CC40
-    CC37 --> CC40
-    CC55 --> CC40
-    CC66 --> CC40
-    CC283 --> CC40
-    CC163 --> CC64
-    CC37 --> CC64
-    CC55 --> CC64
-    CC66 --> CC64
-    CC283 --> CC64
-    CC53 --> T178
-    CC179 --> T178
+    NONE[Aucun caller]
+    NONE -.-> T178
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [53](ADH-IDE-53.md) | Extrait Easy Check Out à J+1 | 1 |
-| [179](ADH-IDE-179.md) | Get Printer | 1 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -255,15 +178,10 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
-#### Traitement (1 tache: 0 ecran, 1 traitement)
-
-- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
-- Decomposer les taches en services unitaires testables.
-
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:52*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:25*

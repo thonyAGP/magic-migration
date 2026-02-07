@@ -1,6 +1,6 @@
 ﻿# ADH IDE 114 - Club Med Pass Filiations
 
-> **Analyse**: Phases 1-4 2026-02-07 03:49 -> 03:49 (28s) | Assemblage 03:49
+> **Analyse**: Phases 1-4 2026-02-07 03:49 -> 03:49 (28s) | Assemblage 07:03
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 114 |
 | Nom Programme | Club Med Pass Filiations |
 | Fichier source | `Prg_114.xml` |
-| Dossier IDE | General |
+| Dossier IDE | Garantie |
 | Taches | 2 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
@@ -39,14 +39,14 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>114 - Création des Club Med Pass [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Création des Club Med Pass [ECRAN]
 
 **Role** : Traitement : Création des Club Med Pass.
 **Ecran** : 1102 x 227 DLU (MDI) | [Voir mockup](#ecran-t1)
 
 ---
 
-#### <a id="t2"></a>114.1 - Update Ezcard
+#### <a id="t2"></a>T2 - Update Ezcard
 
 **Role** : Traitement : Update Ezcard.
 
@@ -100,14 +100,14 @@ Traitements internes.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 114 | 114 | Création des Club Med Pass | MDI | 1102 | 227 | Traitement |
+| 1 | 114 | T1 | Création des Club Med Pass | MDI | 1102 | 227 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>114 - Création des Club Med Pass
-**Tache** : [114](#t1) | **Type** : MDI | **Dimensions** : 1102 x 227 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1102 x 227 DLU
 **Bloc** : Traitement | **Titre IDE** : Création des Club Med Pass
 
 <!-- FORM-DATA:
@@ -467,28 +467,22 @@ Ecran unique: **Création des Club Med Pass**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **114.1** | [**Création des Club Med Pass** (114)](#t1) [mockup](#ecran-t1) | MDI | 1102x227 | Traitement |
-| 114.1.1 | [Update Ezcard (114.1)](#t2) | - | - | |
+| **114.1** | [**Création des Club Med Pass** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1102x227 | Traitement |
+| 114.1.1 | [Update Ezcard (T2)](#t2) | - | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 1 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 2 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -806,4 +800,4 @@ graph LR
 | ez_card | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:50*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:03*

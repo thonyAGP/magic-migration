@@ -1,6 +1,6 @@
 ﻿# ADH IDE 109 - Print creation garantie TIK V1
 
-> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:49 (27s) | Assemblage 03:49
+> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:49 (27s) | Assemblage 07:02
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 109 |
 | Nom Programme | Print creation garantie TIK V1 |
 | Fichier source | `Prg_109.xml` |
-| Dossier IDE | Garanties |
+| Dossier IDE | Garantie |
 | Taches | 14 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 1 |
@@ -33,25 +33,25 @@ Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
 #### Phase 1 : Impression (11 taches)
 
-- **109** - Print creation garantie TIK V1
-- **109.1** - Printer 1
-- **109.1.1** - edition extrait compte
-- **109.1.2** - edition extrait compte
-- **109.2** - Printer 4
-- **109.2.1** - edition extrait compte
-- **109.2.2** - edition extrait compte
-- **109.5** - Printer 8
-- **109.5.1** - edition extrait compte
-- **109.6** - Printer 9
-- **109.6.1** - edition extrait compte
+- **T1** - Print creation garantie TIK V1
+- **T2** - Printer 1
+- **T3** - edition extrait compte
+- **T4** - edition extrait compte
+- **T5** - Printer 4
+- **T6** - edition extrait compte
+- **T7** - edition extrait compte
+- **T11** - Printer 8
+- **T12** - edition extrait compte
+- **T13** - Printer 9
+- **T14** - edition extrait compte
 
 Delegue a : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 #### Phase 2 : Traitement (3 taches)
 
-- **109.3** - Iteration **[[ECRAN]](#ecran-t8)**
-- **109.3.1** - Veuillez patienter... **[[ECRAN]](#ecran-t9)**
-- **109.4** - recup nom adherent
+- **T8** - Iteration **[ECRAN]**
+- **T9** - Veuillez patienter... **[ECRAN]**
+- **T10** - recup nom adherent
 
 </details>
 
@@ -63,7 +63,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t1"></a>109 - Print creation garantie TIK V1
+#### <a id="t1"></a>T1 - Print creation garantie TIK V1
 
 **Role** : Tache d'orchestration : point d'entree du programme (11 sous-taches). Coordonne l'enchainement des traitements.
 
@@ -72,76 +72,76 @@ Generation des documents et tickets.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [109.1](#t2) | Printer 1 | Impression |
-| [109.1.1](#t3) | edition extrait compte | Impression |
-| [109.1.2](#t4) | edition extrait compte | Impression |
-| [109.2](#t5) | Printer 4 | Impression |
-| [109.2.1](#t6) | edition extrait compte | Impression |
-| [109.2.2](#t7) | edition extrait compte | Impression |
-| [109.5](#t11) | Printer 8 | Impression |
-| [109.5.1](#t12) | edition extrait compte | Impression |
-| [109.6](#t13) | Printer 9 | Impression |
-| [109.6.1](#t14) | edition extrait compte | Impression |
+| [T2](#t2) | Printer 1 | Impression |
+| [T3](#t3) | edition extrait compte | Impression |
+| [T4](#t4) | edition extrait compte | Impression |
+| [T5](#t5) | Printer 4 | Impression |
+| [T6](#t6) | edition extrait compte | Impression |
+| [T7](#t7) | edition extrait compte | Impression |
+| [T11](#t11) | Printer 8 | Impression |
+| [T12](#t12) | edition extrait compte | Impression |
+| [T13](#t13) | Printer 9 | Impression |
+| [T14](#t14) | edition extrait compte | Impression |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>109.1 - Printer 1
+#### <a id="t2"></a>T2 - Printer 1
 
 **Role** : Generation du document : Printer 1.
 
 ---
 
-#### <a id="t3"></a>109.1.1 - edition extrait compte
+#### <a id="t3"></a>T3 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
 ---
 
-#### <a id="t4"></a>109.1.2 - edition extrait compte
+#### <a id="t4"></a>T4 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
 ---
 
-#### <a id="t5"></a>109.2 - Printer 4
+#### <a id="t5"></a>T5 - Printer 4
 
 **Role** : Generation du document : Printer 4.
 
 ---
 
-#### <a id="t6"></a>109.2.1 - edition extrait compte
+#### <a id="t6"></a>T6 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
 ---
 
-#### <a id="t7"></a>109.2.2 - edition extrait compte
+#### <a id="t7"></a>T7 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
 ---
 
-#### <a id="t11"></a>109.5 - Printer 8
+#### <a id="t11"></a>T11 - Printer 8
 
 **Role** : Generation du document : Printer 8.
 
 ---
 
-#### <a id="t12"></a>109.5.1 - edition extrait compte
+#### <a id="t12"></a>T12 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
 ---
 
-#### <a id="t13"></a>109.6 - Printer 9
+#### <a id="t13"></a>T13 - Printer 9
 
 **Role** : Generation du document : Printer 9.
 
 ---
 
-#### <a id="t14"></a>109.6.1 - edition extrait compte
+#### <a id="t14"></a>T14 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
@@ -152,21 +152,21 @@ Traitements internes.
 
 ---
 
-#### <a id="t8"></a>109.3 - Iteration [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Iteration [ECRAN]
 
 **Role** : Traitement : Iteration.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t9"></a>109.3.1 - Veuillez patienter... [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t10"></a>109.4 - recup nom adherent
+#### <a id="t10"></a>T10 - recup nom adherent
 
 **Role** : Consultation/chargement : recup nom adherent.
 **Variables liees** : B (P0 code adherent), H (W0 n° adherent)
@@ -189,14 +189,14 @@ Traitements internes.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 109.3.1 | 109.3.1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+| 1 | 109.3.1 | T9 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t9"></a>109.3.1 - Veuillez patienter...
-**Tache** : [109.3.1](#t9) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [T9](#t9) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -285,39 +285,34 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **109.1** | [**Print creation garantie TIK V1** (109)](#t1) | MDI | - | Impression |
-| 109.1.1 | [Printer 1 (109.1)](#t2) | MDI | - | |
-| 109.1.2 | [edition extrait compte (109.1.1)](#t3) | MDI | - | |
-| 109.1.3 | [edition extrait compte (109.1.2)](#t4) | MDI | - | |
-| 109.1.4 | [Printer 4 (109.2)](#t5) | MDI | - | |
-| 109.1.5 | [edition extrait compte (109.2.1)](#t6) | MDI | - | |
-| 109.1.6 | [edition extrait compte (109.2.2)](#t7) | MDI | - | |
-| 109.1.7 | [Printer 8 (109.5)](#t11) | MDI | - | |
-| 109.1.8 | [edition extrait compte (109.5.1)](#t12) | MDI | - | |
-| 109.1.9 | [Printer 9 (109.6)](#t13) | MDI | - | |
-| 109.1.10 | [edition extrait compte (109.6.1)](#t14) | MDI | - | |
-| **109.2** | [**Iteration** (109.3)](#t8) [mockup](#ecran-t8) | MDI | 422x56 | Traitement |
-| 109.2.1 | [Veuillez patienter... (109.3.1)](#t9) [mockup](#ecran-t9) | MDI | 422x56 | |
-| 109.2.2 | [recup nom adherent (109.4)](#t10) | MDI | - | |
+| **109.1** | [**Print creation garantie TIK V1** (T1)](#t1) | MDI | - | Impression |
+| 109.1.1 | [Printer 1 (T2)](#t2) | MDI | - | |
+| 109.1.2 | [edition extrait compte (T3)](#t3) | MDI | - | |
+| 109.1.3 | [edition extrait compte (T4)](#t4) | MDI | - | |
+| 109.1.4 | [Printer 4 (T5)](#t5) | MDI | - | |
+| 109.1.5 | [edition extrait compte (T6)](#t6) | MDI | - | |
+| 109.1.6 | [edition extrait compte (T7)](#t7) | MDI | - | |
+| 109.1.7 | [Printer 8 (T11)](#t11) | MDI | - | |
+| 109.1.8 | [edition extrait compte (T12)](#t12) | MDI | - | |
+| 109.1.9 | [Printer 9 (T13)](#t13) | MDI | - | |
+| 109.1.10 | [edition extrait compte (T14)](#t14) | MDI | - | |
+| **109.2** | [**Iteration** (T8)](#t8) [mockup](#ecran-t8) | MDI | 422x56 | Traitement |
+| 109.2.1 | [Veuillez patienter... (T9)](#t9) [mockup](#ecran-t9) | MDI | 422x56 | |
+| 109.2.2 | [recup nom adherent (T10)](#t10) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    PROCESS[Traitement 14 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -568,4 +563,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:49*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:02*

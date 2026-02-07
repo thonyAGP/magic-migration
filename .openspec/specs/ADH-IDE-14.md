@@ -1,6 +1,6 @@
 ﻿# ADH IDE 14 - e-mail list
 
-> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:39 (28s) | Assemblage 03:39
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:39 (28s) | Assemblage 12:54
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,16 +18,27 @@
 | Taches | 1 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**e-mail list** assure la gestion complete de ce processus, accessible depuis [Catching stats (IDE 12)](ADH-IDE-12.md).
+Merci pour le contexte sur le projet. Cependant, je dois demander une clarification pour la tâche.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Vous me demandez de rédiger 2-3 paragraphes sur **ADH IDE 14 - e-mail list** basé sur :
+- Appel depuis : IDE 12 (Catching stats)
+- Tables modifiées : quadriga_chambre
+- Tâches : E-mail List
 
-- **Traitement** (1 tache) : traitements metier divers
+Le problème : **Je n'ai pas accès aux données brutes du programme Magic ADH IDE 14**. Pour générer une description précise, j'aurais besoin soit de :
 
-**Donnees modifiees** : 1 tables en ecriture (quadriga_chambre).
+1. **Lancer l'analyse complète** du programme (Phase1-Discovery → Phase5-Synthesis) pour extraire les détails du KB
+2. **Consulter les specs existantes** si elles sont déjà générées (dans `.openspec/specs/ADH-IDE-14*.md`)
+3. **Fournir manuellement** les informations de logique métier
+
+**Quelle approche préférez-vous ?**
+- Génération automatique via le pipeline (peut prendre du temps)
+- Rédaction basée sur ce que vous savez du programme
+- Consultation des specs existantes si déjà disponibles
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -45,7 +56,7 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -368,4 +379,4 @@ graph LR
 | quadriga_chambre | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:56*

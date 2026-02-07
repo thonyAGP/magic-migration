@@ -1,6 +1,6 @@
 ﻿# ADH IDE 34 - Read histo_Fus_Sep_Log
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (26s) | Assemblage 03:42
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (26s) | Assemblage 13:08
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,14 +18,15 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Read histo_Fus_Sep_Log** assure la gestion complete de ce processus, accessible depuis [Separation (IDE 27)](ADH-IDE-27.md), [Fusion (IDE 28)](ADH-IDE-28.md).
+**ADH IDE 34 - Read histo_Fus_Sep_Log** est un utilitaire de lecture du journal d'historique des opérations de fusion et séparation de comptes (table histo_fus_sep_log). Le programme expose une interface de consultation simple permettant de rechercher les traces d'opérations en fonction d'un numéro de chronologie et d'un code, avec vérification logique de l'existence du code. C'est un programme terminal qui sert de point d'accès centralisé aux données historiques.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Le programme est appelé exclusivement par deux programmes métier critiques : **Separation (IDE 27)** et **Fusion (IDE 28)**, qui utilisent ses capacités de lecture pour tracer et valider les opérations de gestion de compte. Ces appels s'inscrivent dans la chaîne de menu depuis Main → Menu caisse → Menu changement de compte, ce qui indique que la consultation de l'historique est une fonction auxiliaire supportant les opérations principales de gestion comptable du logiciel de caisse.
 
-- **Traitement** (1 tache) : traitements metier divers
+La structure minimale du programme (12 lignes de logic, zéro complexité conditionnelle) et son interface sans contrôles GUI spécialisés soulignent son rôle d'utilitaire léger dédié à la simple récupération et consultation des données historiques, sans logique métier embarquée au-delà de la lecture et de la vérification d'existence des clés.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -42,7 +43,7 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -226,4 +227,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:42*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:10*

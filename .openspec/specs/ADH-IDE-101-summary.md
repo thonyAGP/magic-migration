@@ -1,31 +1,31 @@
-﻿# ADH IDE 101 - Creation Pied Facture V3
+﻿# ADH IDE 101 - Verif boutique V3
 
-> **Analyse**: 2026-02-07 03:48
+> **Analyse**: 2026-02-07 06:59
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Creation Pied Facture V3
-- **Tables modifiees**: 1
-- **Complexite**: **BASSE** (7/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Factures (Tble Compta&Vent) V3 (IDE 97)
+- **Fonction**: Verif boutique V3
+- **Tables modifiees**: 0
+- **Complexite**: **BASSE** (0/100)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 2 |
-| Lignes Logic | 76 |
-| Expressions | 15 |
-| Tables | 2 |
+| Taches | 1 |
+| Lignes Logic | 17 |
+| Expressions | 9 |
+| Tables |  |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

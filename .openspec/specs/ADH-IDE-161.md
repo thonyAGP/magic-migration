@@ -1,6 +1,6 @@
 ﻿# ADH IDE 161 - Get Club Med Pass
 
-> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:51 (28s) | Assemblage 03:51
+> **Analyse**: Phases 1-4 2026-02-07 07:19 -> 07:19 (16s) | Assemblage 07:19
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 161 |
 | Nom Programme | Get Club Med Pass |
 | Fichier source | `Prg_161.xml` |
-| Dossier IDE | General |
+| Dossier IDE | Identification |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
@@ -24,25 +24,9 @@
 
 **Get Club Med Pass** assure la gestion complete de ce processus.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Traitement** (1 tache) : traitements metier divers
-
 **Donnees modifiees** : 1 tables en ecriture (ez_card).
 
 ## 3. BLOCS FONCTIONNELS
-
-### 3.1 Traitement (1 tache)
-
-Traitements internes.
-
----
-
-#### <a id="t1"></a>161 - Return Card Id [[ECRAN]](#ecran-t1)
-
-**Role** : Traitement : Return Card Id.
-**Ecran** : 253 x 16 DLU (MDI) | [Voir mockup](#ecran-t1)
-
 
 ## 5. REGLES METIER
 
@@ -61,11 +45,10 @@ Traitements internes.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **161.1** | [**Return Card Id** (161)](#t1) [mockup](#ecran-t1) | MDI | 253x16 | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -206,11 +189,6 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
-#### Traitement (1 tache: 1 ecran, 0 traitement)
-
-- **Strategie** : 1 composant(s) UI (Razor/React) avec formulaires et validation.
-- Decomposer les taches en services unitaires testables.
-
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
@@ -218,4 +196,4 @@ graph LR
 | ez_card | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:51*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:19*

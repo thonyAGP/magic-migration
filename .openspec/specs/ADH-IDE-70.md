@@ -1,6 +1,6 @@
 ﻿# ADH IDE 70 - Print extrait compte /Nom
 
-> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 03:43 (27s) | Assemblage 12:12
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 03:43 (27s) | Assemblage 12:34
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 70 est un programme de **génération d'extrait de compte** lancé depuis le programme principal de consultation (IDE 69). Il gère l'intégralité du flux d'impression : récupération des données adhérent, formatage du document et envoi vers l'imprimante configurée. Le programme s'appuie sur une architecture modulaire avec des sous-programmes spécialisés pour éviter les redondances (création du pied de facture, récupération de la devise, gestion de l'imprimante).
+**ADH IDE 70** gère l'impression de l'extrait de compte pour un adhérent. Le programme affiche d'abord un message "Veuillez patienter..." avant de récupérer les informations essentielles : le nom de l'adhérent depuis la base de données, la devise locale via le programme IDE 21, et configure l'imprimante via IDE 179. Il initialise également le numéro de listage pour le document (IDE 181) et réinitialise les paramètres imprimante (IDE 182).
 
-Le flux commence par une **tâche "Veuillez patienter"** affichant un écran de progression utilisateur. Ensuite, le programme récupère le nom et informations de l'adhérent, configure l'imprimante sélectionnée via Get Printer (IDE 179), puis génère les trois sections du document : l'en-tête extrait compte, le contenu principal, et le pied standardisé (appel à IDE 75). Pendant ce processus, le numéro de listing est incrémenté via Set Listing Number (IDE 181) pour traçabilité des impressions.
+Le cœur du processus consiste à éditer l'extrait de compte avec tous les détails de l'adhérent en utilisant l'imprimante sélectionnée. Une fois le contenu principal généré, le programme ajoute le pied de page du document via IDE 75, puis édite un récapitulatif des extras gratuits. Chaque étape met à jour la table `log_maj_tpe` pour tracer les modifications effectuées.
 
-L'enregistrement des opérations se fait via une **mise à jour de la table log_maj_tpe**, fournissant une piste d'audit pour chaque impression. Les montants sont convertis dans la devise locale (IDE 21) pour respect des normes comptables régionales. À la fin, Raz Current Printer (IDE 182) réinitialise les paramètres d'imprimante pour libérer les ressources. Ce programme est critique pour la documentation contractuelle et les réclamations adhérents.
+Ce programme est un example classique de workflow d'édition/impression : il orchestestre plusieurs sous-programmes spécialisés (récupération données, configuration d'impression, génération de contenu) pour produire un document complet et correctement formaté. Il s'inscrit dans la chaîne d'édition des extraits de compte, appelé depuis IDE 69 lorsque l'utilisateur demande l'impression.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -194,7 +194,7 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Programme d'impression - logique technique sans conditions metier)*
 
 ## 6. CONTEXTE
 
@@ -238,14 +238,20 @@ Generation des documents et tickets.
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 19 taches]
+    B1[Traitement (5t)]
+    START --> B1
+    B2[Impression (14t)]
+    B1 --> B2
+    WRITE[MAJ 1 tables]
+    B2 --> WRITE
     ENDOK([END])
-    START --> PROCESS --> ENDOK
+    WRITE --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -558,4 +564,4 @@ graph LR
 | [Get Printer (IDE 179)](ADH-IDE-179.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:13*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:34*

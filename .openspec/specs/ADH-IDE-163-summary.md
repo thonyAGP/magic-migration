@@ -1,6 +1,6 @@
 ﻿# ADH IDE 163 - Menu caisse GM - scroll
 
-> **Analyse**: 2026-02-07 03:51
+> **Analyse**: 2026-02-07 07:20
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

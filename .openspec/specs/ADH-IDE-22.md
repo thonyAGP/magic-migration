@@ -1,6 +1,6 @@
 ﻿# ADH IDE 22 - Calcul equivalent
 
-> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 03:41 (27s) | Assemblage 03:41
+> **Analyse**: Phases 1-4 2026-02-07 06:38 -> 06:39 (16s) | Assemblage 13:03
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,6 +18,8 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
@@ -35,25 +37,13 @@ Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
 ## 3. BLOCS FONCTIONNELS
 
-### 3.1 Consultation (1 tache)
-
-Ecrans de recherche et consultation.
-
----
-
-#### <a id="t1"></a>22 - Creation/Affichage change [[ECRAN]](#ecran-t1)
-
-**Role** : Reinitialisation : Creation/Affichage change.
-**Ecran** : 874 x 210 DLU (MDI) | [Voir mockup](#ecran-t1)
-
-
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Print reçu change achat (IDE 23)](ADH-IDE-23.md), [Print reçu change vente (IDE 24)](ADH-IDE-24.md), [Tableau recap fermeture (IDE 154)](ADH-IDE-154.md)
+- **Appele par**: (aucun)
 - **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 16
 
 <!-- TAB:Ecrans -->
@@ -64,11 +54,10 @@ Ecrans de recherche et consultation.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **22.1** | [**Creation/Affichage change** (22)](#t1) [mockup](#ecran-t1) | MDI | 874x210 | Consultation |
 
 ### 9.4 Algorigramme
 
@@ -185,72 +174,22 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Print reçu change achat (IDE 23)](ADH-IDE-23.md) -> **Calcul equivalent (IDE 22)**
-
-Main -> ... -> [Print reçu change vente (IDE 24)](ADH-IDE-24.md) -> **Calcul equivalent (IDE 22)**
-
-Main -> ... -> [Tableau recap fermeture (IDE 154)](ADH-IDE-154.md) -> **Calcul equivalent (IDE 22)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T22[22 Calcul equivalent]
     style T22 fill:#58a6ff
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#8b5cf6
-    CC131[131 Fermeture caisse]
-    style CC131 fill:#f59e0b
-    CC193[193 Solde compte fin s...]
-    style CC193 fill:#f59e0b
-    CC299[299 Fermeture caisse 144]
-    style CC299 fill:#f59e0b
-    CC151[151 Reimpression ticke...]
-    style CC151 fill:#f59e0b
-    CC25[25 Change GM]
-    style CC25 fill:#f59e0b
-    CC174[174 VersementRetrait]
-    style CC174 fill:#f59e0b
-    CC23[23 Print reçu change a...]
-    style CC23 fill:#3fb950
-    CC24[24 Print reçu change v...]
-    style CC24 fill:#3fb950
-    CC154[154 Tableau recap ferm...]
-    style CC154 fill:#3fb950
-    CC25 --> CC23
-    CC174 --> CC23
-    CC193 --> CC23
-    CC131 --> CC23
-    CC151 --> CC23
-    CC299 --> CC23
-    CC25 --> CC24
-    CC174 --> CC24
-    CC193 --> CC24
-    CC131 --> CC24
-    CC151 --> CC24
-    CC299 --> CC24
-    CC25 --> CC154
-    CC174 --> CC154
-    CC193 --> CC154
-    CC131 --> CC154
-    CC151 --> CC154
-    CC299 --> CC154
-    CC163 --> CC25
-    CC163 --> CC174
-    CC163 --> CC193
-    CC163 --> CC131
-    CC163 --> CC151
-    CC163 --> CC299
-    CC23 --> T22
-    CC24 --> T22
-    CC154 --> T22
+    NONE[Aucun caller]
+    NONE -.-> T22
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [23](ADH-IDE-23.md) | Print reçu change achat | 7 |
-| [24](ADH-IDE-24.md) | Print reçu change vente | 7 |
-| [154](ADH-IDE-154.md) | Tableau recap fermeture | 6 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -285,15 +224,10 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
-#### Consultation (1 tache: 1 ecran, 0 traitement)
-
-- **Strategie** : Composants de recherche/selection en modales.
-- 1 ecran : Creation/Affichage change
-
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:41*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:03*

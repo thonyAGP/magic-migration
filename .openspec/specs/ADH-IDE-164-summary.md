@@ -1,6 +1,6 @@
 ﻿# ADH IDE 164 - Operation durant Cloture
 
-> **Analyse**: 2026-02-07 03:52
+> **Analyse**: 2026-02-07 07:20
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Operation durant Cloture
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Menu caisse GM - scroll (IDE 163)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

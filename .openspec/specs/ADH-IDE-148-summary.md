@@ -1,31 +1,31 @@
-﻿# ADH IDE 148 - Devises RAZ WS
+﻿# ADH IDE 148 - Devises finales F/F Qte WS
 
-> **Analyse**: 2026-02-07 03:50
+> **Analyse**: 2026-02-07 07:14
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Devises RAZ WS
+- **Fonction**: Devises finales F/F Qte WS
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 4 programme(s): Ouverture caisse (IDE 122), Fermeture caisse (IDE 131), Ouverture caisse 143 (IDE 297), Fermeture caisse 144 (IDE 299)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Ouverture caisse (IDE 122)](ADH-IDE-122.md), [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Ouverture caisse 143 (IDE 297)](ADH-IDE-297.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 3 |
-| Lignes Logic | 58 |
-| Expressions | 2 |
-| Tables | 3 |
+| Taches | 1 |
+| Lignes Logic | 35 |
+| Expressions | 8 |
+| Tables |  |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

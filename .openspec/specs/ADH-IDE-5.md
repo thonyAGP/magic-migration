@@ -1,6 +1,6 @@
 ﻿# ADH IDE 5 - Alimentation Combos NATION P
 
-> **Analyse**: Phases 1-4 2026-02-07 03:37 -> 03:38 (33s) | Assemblage 03:38
+> **Analyse**: Phases 1-4 2026-02-07 03:37 -> 03:38 (33s) | Assemblage 12:42
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,14 +18,15 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Alimentation Combos NATION P** assure la gestion complete de ce processus, accessible depuis [Menu Data Catching (IDE 7)](ADH-IDE-7.md).
+**ADH IDE 5 alimenté les listes déroulantes de nationalité (combos) utilisées par le système de gestion de caisse. Il lit une chaîne brute depuis la table `pms_footer_comment`, la formate en supprimant les espaces inutiles, et ajoute intelligemment des séparateurs (virgules) entre les occurrences multiples. Le programme construit ainsi une liste composée de codes et libellés de nationalité (variables `[C]` et `[D]`) qu'il expose comme paramètre global `NATIONALITEP` à destination du menu appelant (IDE 7 - Menu Data Catching).**
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+**Avant de finaliser le résultat, ADH IDE 5 appelle le programme IDE 6 (Suppression Carac interdit) pour nettoyer les caractères illégaux—notamment les tirets (`-`) qu'il remplace par des underscores (`_`). Cette normalisation assure que les patterns de nationalité (comme "FRANCE-EU" → "FRANCE_EU") respectent les contraintes de la base de données et de l'interface utilisateur, évitant les problèmes de sérialisation ou de parsing.**
 
-- **Traitement** (1 tache) : traitements metier divers
+**Ce programme joue un rôle auxiliaire dans le processus de "data catching" : il prépare et valide les données métier avant qu'elles ne soient exploitées par le formulaire de sélection de nationalité affiché en écran modal. Son exécution est rapide et sans risque de régression, étant donné la simplicité logique et l'absence de modifications de données.**
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -44,7 +45,7 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -201,4 +202,4 @@ graph LR
 | [    Suppression Carac interdit (IDE 6)](ADH-IDE-6.md) | Sous-programme | 1x | Normale - Validation saisie |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:38*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:44*

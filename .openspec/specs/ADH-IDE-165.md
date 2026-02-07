@@ -1,6 +1,6 @@
 ﻿# ADH IDE 165 - Saisies cautions
 
-> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:52 (28s) | Assemblage 03:52
+> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:52 (28s) | Assemblage 07:20
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 165 |
 | Nom Programme | Saisies cautions |
 | Fichier source | `Prg_165.xml` |
-| Dossier IDE | Garanties |
+| Dossier IDE | Menus |
 | Taches | 7 (1 ecrans visibles) |
 | Tables modifiees | 2 |
 | Programmes appeles | 1 |
@@ -35,18 +35,18 @@ Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (6 taches)
 
-- **165** - Versement/Retrait **[[ECRAN]](#ecran-t1)**
-- **165.1** - Charge table caution
-- **165.2** - Charge existant
-- **165.4** - MAJ caution
-- **165.4.1** - MAJ
-- **165.4.2** - DELETE
+- **T1** - Versement/Retrait **[ECRAN]**
+- **T2** - Charge table caution
+- **T3** - Charge existant
+- **T5** - MAJ caution
+- **T6** - MAJ
+- **T7** - DELETE
 
 Delegue a : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 #### Phase 2 : Saisie (1 tache)
 
-- **165.3** - Saisie caution **[[ECRAN]](#ecran-t4)**
+- **T4** - Saisie caution **[ECRAN]**
 
 #### Tables impactees
 
@@ -65,7 +65,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>165 - Versement/Retrait [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Versement/Retrait [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 166 x 14 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -75,45 +75,45 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [165.1](#t2) | Charge table caution | Traitement |
-| [165.2](#t3) | Charge existant | Traitement |
-| [165.4](#t5) | MAJ caution | Traitement |
-| [165.4.1](#t6) | MAJ | Traitement |
-| [165.4.2](#t7) | DELETE | Traitement |
+| [T2](#t2) | Charge table caution | Traitement |
+| [T3](#t3) | Charge existant | Traitement |
+| [T5](#t5) | MAJ caution | Traitement |
+| [T6](#t6) | MAJ | Traitement |
+| [T7](#t7) | DELETE | Traitement |
 
 </details>
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 ---
 
-#### <a id="t2"></a>165.1 - Charge table caution
+#### <a id="t2"></a>T2 - Charge table caution
 
 **Role** : Traitement : Charge table caution.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 ---
 
-#### <a id="t3"></a>165.2 - Charge existant
+#### <a id="t3"></a>T3 - Charge existant
 
 **Role** : Traitement : Charge existant.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 ---
 
-#### <a id="t5"></a>165.4 - MAJ caution
+#### <a id="t5"></a>T5 - MAJ caution
 
 **Role** : Traitement : MAJ caution.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 ---
 
-#### <a id="t6"></a>165.4.1 - MAJ
+#### <a id="t6"></a>T6 - MAJ
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t7"></a>165.4.2 - DELETE
+#### <a id="t7"></a>T7 - DELETE
 
 **Role** : Traitement : DELETE.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
@@ -125,7 +125,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Saisie caution).
 
 ---
 
-#### <a id="t4"></a>165.3 - Saisie caution [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Saisie caution [ECRAN]
 
 **Role** : Saisie des donnees : Saisie caution.
 **Ecran** : 380 x 159 DLU (MDI) | [Voir mockup](#ecran-t4)
@@ -149,14 +149,14 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Saisie caution).
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 165.3 | 165.3 | Saisie caution | MDI | 380 | 159 | Saisie |
+| 1 | 165.3 | T4 | Saisie caution | MDI | 380 | 159 | Saisie |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t4"></a>165.3 - Saisie caution
-**Tache** : [165.3](#t4) | **Type** : MDI | **Dimensions** : 380 x 159 DLU
+**Tache** : [T4](#t4) | **Type** : MDI | **Dimensions** : 380 x 159 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie caution
 
 <!-- FORM-DATA:
@@ -385,33 +385,27 @@ Ecran unique: **Saisie caution**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **165.1** | [**Versement/Retrait** (165)](#t1) [mockup](#ecran-t1) | MDI | 166x14 | Traitement |
-| 165.1.1 | [Charge table caution (165.1)](#t2) | MDI | - | |
-| 165.1.2 | [Charge existant (165.2)](#t3) | MDI | - | |
-| 165.1.3 | [MAJ caution (165.4)](#t5) | MDI | - | |
-| 165.1.4 | [MAJ (165.4.1)](#t6) | MDI | - | |
-| 165.1.5 | [DELETE (165.4.2)](#t7) | MDI | - | |
-| **165.2** | [**Saisie caution** (165.3)](#t4) [mockup](#ecran-t4) | MDI | 380x159 | Saisie |
+| **165.1** | [**Versement/Retrait** (T1)](#t1) [mockup](#ecran-t1) | MDI | 166x14 | Traitement |
+| 165.1.1 | [Charge table caution (T2)](#t2) | MDI | - | |
+| 165.1.2 | [Charge existant (T3)](#t3) | MDI | - | |
+| 165.1.3 | [MAJ caution (T5)](#t5) | MDI | - | |
+| 165.1.4 | [MAJ (T6)](#t6) | MDI | - | |
+| 165.1.5 | [DELETE (T7)](#t7) | MDI | - | |
+| **165.2** | [**Saisie caution** (T4)](#t4) [mockup](#ecran-t4) | MDI | 380x159 | Saisie |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Saisie caution]
-    UPDATE[MAJ 2 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 7 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -459,7 +453,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| D | V Validation saisie | Logical | [165.3](#t4) |
+| D | V Validation saisie | Logical | [T4](#t4) |
 | E | v.titre | Alpha | 1x session |
 
 ### 11.2 Autres (3)
@@ -593,4 +587,4 @@ graph LR
 | [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:52*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:20*

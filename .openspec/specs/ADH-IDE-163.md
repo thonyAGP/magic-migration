@@ -1,6 +1,6 @@
 ﻿# ADH IDE 163 - Menu caisse GM - scroll
 
-> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:51 (28s) | Assemblage 03:51
+> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:51 (28s) | Assemblage 07:20
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 163 |
 | Nom Programme | Menu caisse GM - scroll |
 | Fichier source | `Prg_163.xml` |
-| Dossier IDE | Caisse |
+| Dossier IDE | Menus |
 | Taches | 39 (7 ecrans visibles) |
 | Tables modifiees | 6 |
 | Programmes appeles | 20 |
@@ -37,60 +37,60 @@ Le flux de traitement s'organise en **4 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (32 taches)
 
-- **163** - (sans nom) **[[ECRAN]](#ecran-t1)**
-- **163.1** - Station eteinte erreur v1
-- **163.2** - Station eteinte erreur v1
-- **163.3** - Scroll sur noms **[[ECRAN]](#ecran-t4)**
-- **163.3.1** - Existe FusSep
-- **163.3.2** - Action
-- **163.3.3** - (sans nom) **[[ECRAN]](#ecran-t7)**
-- **163.3.3.1** - mise a jour des parametres
-- **163.3.4** - Lecture session
-- **163.3.5** - Groupement / Separation **[[ECRAN]](#ecran-t10)**
-- **163.3.5.1** - Detail pour le support **[[ECRAN]](#ecran-t11)**
-- **163.3.5.2** - Detail pour le support **[[ECRAN]](#ecran-t12)**
-- **163.4** - Menu caisse                1.3 **[[ECRAN]](#ecran-t13)**
-- **163.4.2** - GM purge ?
-- **163.4.3** - GM purge ?
-- **163.4.4** - Appel programme
-- **163.4.5** - GESTION RESP?
-- **163.4.6** - Lecture email
-- **163.4.7** - recup terminal
-- **163.4.8** - recup terminal
-- **163.4.9** - Menu caisse                1.3 **[[ECRAN]](#ecran-t22)**
-- **163.4.9.1** - SendMail
-- **163.8** - Lecture paramètres par     1.6
-- **163.8.1** - Paramètres caisse
-- **163.9** - Lecture Paramètres TEL     1.7
-- **163.10** - Lecture Parametre Change
-- **163.11** - Messages autres
-- **163.12.1** - Solde GM
-- **163.13** - read FROM_IMS
-- **163.14** - read COFFRE2
-- **163.15** - read COFFRE2
-- **163.4.11.1** - Solde GM
+- **T1** - (sans nom) **[ECRAN]**
+- **T2** - Station eteinte erreur v1
+- **T3** - Station eteinte erreur v1
+- **T4** - Scroll sur noms **[ECRAN]**
+- **T5** - Existe FusSep
+- **T6** - Action
+- **T7** - (sans nom) **[ECRAN]**
+- **T8** - mise a jour des parametres
+- **T9** - Lecture session
+- **T10** - Groupement / Separation **[ECRAN]**
+- **T11** - Detail pour le support **[ECRAN]**
+- **T12** - Detail pour le support **[ECRAN]**
+- **T13** - Menu caisse                1.3 **[ECRAN]**
+- **T15** - GM purge ?
+- **T16** - GM purge ?
+- **T17** - Appel programme
+- **T18** - GESTION RESP?
+- **T19** - Lecture email
+- **T20** - recup terminal
+- **T21** - recup terminal
+- **T22** - Menu caisse                1.3 **[ECRAN]**
+- **T23** - SendMail
+- **T27** - Lecture paramètres par     1.6
+- **T28** - Paramètres caisse
+- **T29** - Lecture Paramètres TEL     1.7
+- **T30** - Lecture Parametre Change
+- **T31** - Messages autres
+- **T33** - Solde GM
+- **T34** - read FROM_IMS
+- **T35** - read COFFRE2
+- **T36** - read COFFRE2
+- **T51** - Solde GM
 
 Delegue a : [Liste des affiliés (IDE 167)](ADH-IDE-167.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Gestion caisse (IDE 121)](ADH-IDE-121.md), [Change GM (IDE 25)](ADH-IDE-25.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Contrôles - Integrite dates (IDE 48)](ADH-IDE-48.md), [Club Med Pass menu (IDE 77)](ADH-IDE-77.md), [   Card scan read (IDE 80)](ADH-IDE-80.md), [Test Activation ECO (IDE 113)](ADH-IDE-113.md), [Club Med Pass Filiations (IDE 114)](ADH-IDE-114.md)
 
 #### Phase 2 : Consultation (2 taches)
 
-- **163.4.1** - Affichage donnees adherent **[[ECRAN]](#ecran-t14)**
-- **163.4.10** - Affichage sessions **[[ECRAN]](#ecran-t47)**
+- **T14** - Affichage donnees adherent **[ECRAN]**
+- **T47** - Affichage sessions **[ECRAN]**
 
 Delegue a : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md)
 
 #### Phase 3 : Saisie (3 taches)
 
-- **163.5** - Saisie nbre decimales
-- **163.6** - Saisie nbre decimales
-- **163.7** - Saisie nbre decimales
+- **T24** - Saisie nbre decimales
+- **T25** - Saisie nbre decimales
+- **T26** - Saisie nbre decimales
 
 Delegue a : [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md)
 
 #### Phase 4 : Calcul (2 taches)
 
-- **163.12** - Recalcul solde
-- **163.4.11** - Recalcul solde
+- **T32** - Recalcul solde
+- **T50** - Recalcul solde
 
 Delegue a : [Menu changement compte (IDE 37)](ADH-IDE-37.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md), [Extrait de compte (IDE 69)](ADH-IDE-69.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md), [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md)
 
@@ -115,7 +115,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>163 - (sans nom) [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - (sans nom) [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (32 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 640 x 184 DLU (SDI) | [Voir mockup](#ecran-t1)
@@ -125,116 +125,116 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [163.1](#t2) | Station eteinte erreur v1 | Traitement |
-| [163.2](#t3) | Station eteinte erreur v1 | Traitement |
-| [163.3](#t4) | Scroll sur noms **[[ECRAN]](#ecran-t4)** | Traitement |
-| [163.3.1](#t5) | Existe FusSep | Traitement |
-| [163.3.2](#t6) | Action | Traitement |
-| [163.3.3](#t7) | (sans nom) **[[ECRAN]](#ecran-t7)** | Traitement |
-| [163.3.3.1](#t8) | mise a jour des parametres | Traitement |
-| [163.3.4](#t9) | Lecture session | Traitement |
-| [163.3.5](#t10) | Groupement / Separation **[[ECRAN]](#ecran-t10)** | Traitement |
-| [163.3.5.1](#t11) | Detail pour le support **[[ECRAN]](#ecran-t11)** | Traitement |
-| [163.3.5.2](#t12) | Detail pour le support **[[ECRAN]](#ecran-t12)** | Traitement |
-| [163.4](#t13) | Menu caisse                1.3 **[[ECRAN]](#ecran-t13)** | Traitement |
-| [163.4.2](#t15) | GM purge ? | Traitement |
-| [163.4.3](#t16) | GM purge ? | Traitement |
-| [163.4.4](#t17) | Appel programme | Traitement |
-| [163.4.5](#t18) | GESTION RESP? | Traitement |
-| [163.4.6](#t19) | Lecture email | Traitement |
-| [163.4.7](#t20) | recup terminal | Traitement |
-| [163.4.8](#t21) | recup terminal | Traitement |
-| [163.4.9](#t22) | Menu caisse                1.3 **[[ECRAN]](#ecran-t22)** | Traitement |
-| [163.4.9.1](#t23) | SendMail | Traitement |
-| [163.8](#t27) | Lecture paramètres par     1.6 | Traitement |
-| [163.8.1](#t28) | Paramètres caisse | Traitement |
-| [163.9](#t29) | Lecture Paramètres TEL     1.7 | Traitement |
-| [163.10](#t30) | Lecture Parametre Change | Traitement |
-| [163.11](#t31) | Messages autres | Traitement |
-| [163.12.1](#t33) | Solde GM | Traitement |
-| [163.13](#t34) | read FROM_IMS | Traitement |
-| [163.14](#t35) | read COFFRE2 | Traitement |
-| [163.15](#t36) | read COFFRE2 | Traitement |
-| [163.4.11.1](#t51) | Solde GM | Traitement |
+| [T2](#t2) | Station eteinte erreur v1 | Traitement |
+| [T3](#t3) | Station eteinte erreur v1 | Traitement |
+| [T4](#t4) | Scroll sur noms **[ECRAN]** | Traitement |
+| [T5](#t5) | Existe FusSep | Traitement |
+| [T6](#t6) | Action | Traitement |
+| [T7](#t7) | (sans nom) **[ECRAN]** | Traitement |
+| [T8](#t8) | mise a jour des parametres | Traitement |
+| [T9](#t9) | Lecture session | Traitement |
+| [T10](#t10) | Groupement / Separation **[ECRAN]** | Traitement |
+| [T11](#t11) | Detail pour le support **[ECRAN]** | Traitement |
+| [T12](#t12) | Detail pour le support **[ECRAN]** | Traitement |
+| [T13](#t13) | Menu caisse                1.3 **[ECRAN]** | Traitement |
+| [T15](#t15) | GM purge ? | Traitement |
+| [T16](#t16) | GM purge ? | Traitement |
+| [T17](#t17) | Appel programme | Traitement |
+| [T18](#t18) | GESTION RESP? | Traitement |
+| [T19](#t19) | Lecture email | Traitement |
+| [T20](#t20) | recup terminal | Traitement |
+| [T21](#t21) | recup terminal | Traitement |
+| [T22](#t22) | Menu caisse                1.3 **[ECRAN]** | Traitement |
+| [T23](#t23) | SendMail | Traitement |
+| [T27](#t27) | Lecture paramètres par     1.6 | Traitement |
+| [T28](#t28) | Paramètres caisse | Traitement |
+| [T29](#t29) | Lecture Paramètres TEL     1.7 | Traitement |
+| [T30](#t30) | Lecture Parametre Change | Traitement |
+| [T31](#t31) | Messages autres | Traitement |
+| [T33](#t33) | Solde GM | Traitement |
+| [T34](#t34) | read FROM_IMS | Traitement |
+| [T35](#t35) | read COFFRE2 | Traitement |
+| [T36](#t36) | read COFFRE2 | Traitement |
+| [T51](#t51) | Solde GM | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>163.1 - Station eteinte erreur v1
+#### <a id="t2"></a>T2 - Station eteinte erreur v1
 
 **Role** : Traitement : Station eteinte erreur v1.
 
 ---
 
-#### <a id="t3"></a>163.2 - Station eteinte erreur v1
+#### <a id="t3"></a>T3 - Station eteinte erreur v1
 
 **Role** : Traitement : Station eteinte erreur v1.
 
 ---
 
-#### <a id="t4"></a>163.3 - Scroll sur noms [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Scroll sur noms [ECRAN]
 
 **Role** : Traitement : Scroll sur noms.
 **Ecran** : 1347 x 271 DLU (MDI) | [Voir mockup](#ecran-t4)
 
 ---
 
-#### <a id="t5"></a>163.3.1 - Existe FusSep
+#### <a id="t5"></a>T5 - Existe FusSep
 
 **Role** : Traitement : Existe FusSep.
 
 ---
 
-#### <a id="t6"></a>163.3.2 - Action
+#### <a id="t6"></a>T6 - Action
 
 **Role** : Traitement : Action.
 **Variables liees** : U (W0 choix action)
 
 ---
 
-#### <a id="t7"></a>163.3.3 - (sans nom) [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - (sans nom) [ECRAN]
 
 **Role** : Traitement interne.
 **Ecran** : 404 x 183 DLU (SDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>163.3.3.1 - mise a jour des parametres
+#### <a id="t8"></a>T8 - mise a jour des parametres
 
 **Role** : Traitement : mise a jour des parametres.
 
 ---
 
-#### <a id="t9"></a>163.3.4 - Lecture session
+#### <a id="t9"></a>T9 - Lecture session
 
 **Role** : Traitement : Lecture session.
 **Variables liees** : CC (W0 Libelle session caisse)
 
 ---
 
-#### <a id="t10"></a>163.3.5 - Groupement / Separation [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - Groupement / Separation [ECRAN]
 
 **Role** : Traitement : Groupement / Separation.
 **Ecran** : 523 x 112 DLU (SDI) | [Voir mockup](#ecran-t10)
 
 ---
 
-#### <a id="t11"></a>163.3.5.1 - Detail pour le support [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Detail pour le support [ECRAN]
 
 **Role** : Traitement : Detail pour le support.
 **Ecran** : 989 x 169 DLU (SDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t12"></a>163.3.5.2 - Detail pour le support [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Detail pour le support [ECRAN]
 
 **Role** : Traitement : Detail pour le support.
 **Ecran** : 989 x 169 DLU (SDI) | [Voir mockup](#ecran-t12)
 
 ---
 
-#### <a id="t13"></a>163.4 - Menu caisse                1.3 [[ECRAN]](#ecran-t13)
+#### <a id="t13"></a>T13 - Menu caisse                1.3 [ECRAN]
 
 **Role** : Traitement : Menu caisse                1.3.
 **Ecran** : 1238 x 312 DLU (MDI) | [Voir mockup](#ecran-t13)
@@ -242,53 +242,53 @@ Traitements internes.
 
 ---
 
-#### <a id="t15"></a>163.4.2 - GM purge ?
+#### <a id="t15"></a>T15 - GM purge ?
 
 **Role** : Traitement : GM purge ?.
 
 ---
 
-#### <a id="t16"></a>163.4.3 - GM purge ?
+#### <a id="t16"></a>T16 - GM purge ?
 
 **Role** : Traitement : GM purge ?.
 
 ---
 
-#### <a id="t17"></a>163.4.4 - Appel programme
+#### <a id="t17"></a>T17 - Appel programme
 
 **Role** : Traitement : Appel programme.
 **Variables liees** : Y (WP0 prog d'appel)
 
 ---
 
-#### <a id="t18"></a>163.4.5 - GESTION RESP?
+#### <a id="t18"></a>T18 - GESTION RESP?
 
 **Role** : Gestion du moyen de paiement : GESTION RESP?.
 **Variables liees** : Q (P0 nouvelle gestion caisse)
 
 ---
 
-#### <a id="t19"></a>163.4.6 - Lecture email
+#### <a id="t19"></a>T19 - Lecture email
 
 **Role** : Traitement : Lecture email.
 
 ---
 
-#### <a id="t20"></a>163.4.7 - recup terminal
+#### <a id="t20"></a>T20 - recup terminal
 
 **Role** : Consultation/chargement : recup terminal.
 **Variables liees** : CH (W0 TERMINAL COFFRE2)
 
 ---
 
-#### <a id="t21"></a>163.4.8 - recup terminal
+#### <a id="t21"></a>T21 - recup terminal
 
 **Role** : Consultation/chargement : recup terminal.
 **Variables liees** : CH (W0 TERMINAL COFFRE2)
 
 ---
 
-#### <a id="t22"></a>163.4.9 - Menu caisse                1.3 [[ECRAN]](#ecran-t22)
+#### <a id="t22"></a>T22 - Menu caisse                1.3 [ECRAN]
 
 **Role** : Traitement : Menu caisse                1.3.
 **Ecran** : 667 x 139 DLU (MDI) | [Voir mockup](#ecran-t22)
@@ -296,71 +296,71 @@ Traitements internes.
 
 ---
 
-#### <a id="t23"></a>163.4.9.1 - SendMail
+#### <a id="t23"></a>T23 - SendMail
 
 **Role** : Traitement : SendMail.
 
 ---
 
-#### <a id="t27"></a>163.8 - Lecture paramètres par     1.6
+#### <a id="t27"></a>T27 - Lecture paramètres par     1.6
 
 **Role** : Traitement : Lecture paramètres par     1.6.
 
 ---
 
-#### <a id="t28"></a>163.8.1 - Paramètres caisse
+#### <a id="t28"></a>T28 - Paramètres caisse
 
 **Role** : Traitement : Paramètres caisse.
 **Variables liees** : Q (P0 nouvelle gestion caisse), BU (W0 titre menu caisse), CC (W0 Libelle session caisse), CD (W0 Etat caisse)
 
 ---
 
-#### <a id="t29"></a>163.9 - Lecture Paramètres TEL     1.7
+#### <a id="t29"></a>T29 - Lecture Paramètres TEL     1.7
 
 **Role** : Traitement : Lecture Paramètres TEL     1.7.
 
 ---
 
-#### <a id="t30"></a>163.10 - Lecture Parametre Change
+#### <a id="t30"></a>T30 - Lecture Parametre Change
 
 **Role** : Traitement : Lecture Parametre Change.
 
 ---
 
-#### <a id="t31"></a>163.11 - Messages autres
+#### <a id="t31"></a>T31 - Messages autres
 
 **Role** : Traitement : Messages autres.
 **Variables liees** : BZ (W0 message autres affilies)
 
 ---
 
-#### <a id="t33"></a>163.12.1 - Solde GM
+#### <a id="t33"></a>T33 - Solde GM
 
 **Role** : Consultation/chargement : Solde GM.
 
 ---
 
-#### <a id="t34"></a>163.13 - read FROM_IMS
+#### <a id="t34"></a>T34 - read FROM_IMS
 
 **Role** : Traitement : read FROM_IMS.
 
 ---
 
-#### <a id="t35"></a>163.14 - read COFFRE2
+#### <a id="t35"></a>T35 - read COFFRE2
 
 **Role** : Traitement : read COFFRE2.
 **Variables liees** : CH (W0 TERMINAL COFFRE2), CI (v.Hostname coffre2), CJ (v.Host courant coffre2 ?)
 
 ---
 
-#### <a id="t36"></a>163.15 - read COFFRE2
+#### <a id="t36"></a>T36 - read COFFRE2
 
 **Role** : Traitement : read COFFRE2.
 **Variables liees** : CH (W0 TERMINAL COFFRE2), CI (v.Hostname coffre2), CJ (v.Host courant coffre2 ?)
 
 ---
 
-#### <a id="t51"></a>163.4.11.1 - Solde GM
+#### <a id="t51"></a>T51 - Solde GM
 
 **Role** : Consultation/chargement : Solde GM.
 
@@ -371,7 +371,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t14"></a>163.4.1 - Affichage donnees adherent [[ECRAN]](#ecran-t14)
+#### <a id="t14"></a>T14 - Affichage donnees adherent [ECRAN]
 
 **Role** : Reinitialisation : Affichage donnees adherent.
 **Ecran** : 1236 x 67 DLU (Modal) | [Voir mockup](#ecran-t14)
@@ -379,7 +379,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t47"></a>163.4.10 - Affichage sessions [[ECRAN]](#ecran-t47)
+#### <a id="t47"></a>T47 - Affichage sessions [ECRAN]
 
 **Role** : Reinitialisation : Affichage sessions.
 **Ecran** : 338 x 41 DLU (MDI) | [Voir mockup](#ecran-t47)
@@ -392,7 +392,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t24"></a>163.5 - Saisie nbre decimales
+#### <a id="t24"></a>T24 - Saisie nbre decimales
 
 **Role** : Saisie des donnees : Saisie nbre decimales.
 **Variables liees** : G (P0 nbre_de_decimales)
@@ -400,7 +400,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t25"></a>163.6 - Saisie nbre decimales
+#### <a id="t25"></a>T25 - Saisie nbre decimales
 
 **Role** : Saisie des donnees : Saisie nbre decimales.
 **Variables liees** : G (P0 nbre_de_decimales)
@@ -408,7 +408,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t26"></a>163.7 - Saisie nbre decimales
+#### <a id="t26"></a>T26 - Saisie nbre decimales
 
 **Role** : Saisie des donnees : Saisie nbre decimales.
 **Variables liees** : G (P0 nbre_de_decimales)
@@ -421,14 +421,14 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t32"></a>163.12 - Recalcul solde
+#### <a id="t32"></a>T32 - Recalcul solde
 
 **Role** : Calcul : Recalcul solde.
 **Delegue a** : [Menu changement compte (IDE 37)](ADH-IDE-37.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md), [Extrait de compte (IDE 69)](ADH-IDE-69.md)
 
 ---
 
-#### <a id="t50"></a>163.4.11 - Recalcul solde
+#### <a id="t50"></a>T50 - Recalcul solde
 
 **Role** : Calcul : Recalcul solde.
 **Delegue a** : [Menu changement compte (IDE 37)](ADH-IDE-37.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md), [Extrait de compte (IDE 69)](ADH-IDE-69.md)
@@ -451,20 +451,20 @@ Calculs metier : montants, stocks, compteurs.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 163.3 | 163.3 | Scroll sur noms | MDI | 1347 | 271 | Traitement |
-| 2 | 163.3.3 | 163.3.3 | (sans nom) | SDI | 404 | 183 | Traitement |
-| 3 | 163.3.5 | 163.3.5 | Groupement / Separation | SDI | 523 | 112 | Traitement |
-| 4 | 163.3.5.1 | 163.3.5.1 | Detail pour le support | SDI | 989 | 169 | Traitement |
-| 5 | 163.3.5.2 | 163.3.5.2 | Detail pour le support | SDI | 989 | 169 | Traitement |
-| 6 | 163.4 | 163.4 | Menu caisse                1.3 | MDI | 1238 | 312 | Traitement |
-| 7 | 163.4.2 | 163.4.1 | Affichage donnees adherent | Modal | 1236 | 67 | Consultation |
+| 1 | 163.3 | T4 | Scroll sur noms | MDI | 1347 | 271 | Traitement |
+| 2 | 163.3.3 | T7 | (sans nom) | SDI | 404 | 183 | Traitement |
+| 3 | 163.3.5 | T10 | Groupement / Separation | SDI | 523 | 112 | Traitement |
+| 4 | 163.3.5.1 | T11 | Detail pour le support | SDI | 989 | 169 | Traitement |
+| 5 | 163.3.5.2 | T12 | Detail pour le support | SDI | 989 | 169 | Traitement |
+| 6 | 163.4 | T13 | Menu caisse                1.3 | MDI | 1238 | 312 | Traitement |
+| 7 | 163.4.2 | T14 | Affichage donnees adherent | Modal | 1236 | 67 | Consultation |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t4"></a>163.3 - Scroll sur noms
-**Tache** : [163.3](#t4) | **Type** : MDI | **Dimensions** : 1347 x 271 DLU
+**Tache** : [T4](#t4) | **Type** : MDI | **Dimensions** : 1347 x 271 DLU
 **Bloc** : Traitement | **Titre IDE** : Scroll sur noms
 
 <!-- FORM-DATA:
@@ -1029,7 +1029,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t7"></a>163.3.3 - (sans nom)
-**Tache** : [163.3.3](#t7) | **Type** : SDI | **Dimensions** : 404 x 183 DLU
+**Tache** : [T7](#t7) | **Type** : SDI | **Dimensions** : 404 x 183 DLU
 **Bloc** : Traitement | **Titre IDE** : (sans nom)
 
 <!-- FORM-DATA:
@@ -1143,7 +1143,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t10"></a>163.3.5 - Groupement / Separation
-**Tache** : [163.3.5](#t10) | **Type** : SDI | **Dimensions** : 523 x 112 DLU
+**Tache** : [T10](#t10) | **Type** : SDI | **Dimensions** : 523 x 112 DLU
 **Bloc** : Traitement | **Titre IDE** : Groupement / Separation
 
 <!-- FORM-DATA:
@@ -1302,7 +1302,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t11"></a>163.3.5.1 - Detail pour le support
-**Tache** : [163.3.5.1](#t11) | **Type** : SDI | **Dimensions** : 989 x 169 DLU
+**Tache** : [T11](#t11) | **Type** : SDI | **Dimensions** : 989 x 169 DLU
 **Bloc** : Traitement | **Titre IDE** : Detail pour le support
 
 <!-- FORM-DATA:
@@ -1945,7 +1945,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t12"></a>163.3.5.2 - Detail pour le support
-**Tache** : [163.3.5.2](#t12) | **Type** : SDI | **Dimensions** : 989 x 169 DLU
+**Tache** : [T12](#t12) | **Type** : SDI | **Dimensions** : 989 x 169 DLU
 **Bloc** : Traitement | **Titre IDE** : Detail pour le support
 
 <!-- FORM-DATA:
@@ -2588,7 +2588,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t13"></a>163.4 - Menu caisse                1.3
-**Tache** : [163.4](#t13) | **Type** : MDI | **Dimensions** : 1238 x 312 DLU
+**Tache** : [T13](#t13) | **Type** : MDI | **Dimensions** : 1238 x 312 DLU
 **Bloc** : Traitement | **Titre IDE** : Menu caisse                1.3
 
 <!-- FORM-DATA:
@@ -3597,7 +3597,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t14"></a>163.4.2 - Affichage donnees adherent
-**Tache** : [163.4.1](#t14) | **Type** : Modal | **Dimensions** : 1236 x 67 DLU
+**Tache** : [T14](#t14) | **Type** : Modal | **Dimensions** : 1236 x 67 DLU
 **Bloc** : Consultation | **Titre IDE** : Affichage donnees adherent
 
 <!-- FORM-DATA:
@@ -4123,19 +4123,19 @@ Calculs metier : montants, stocks, compteurs.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF4[163.3 Scroll sur noms]
+    VF4[T4 Scroll sur noms]
     style VF4 fill:#58a6ff
-    VF7[163.3.3 sans nom]
+    VF7[T7 sans nom]
     style VF7 fill:#58a6ff
-    VF10[163.3.5 Groupement Separation]
+    VF10[T10 Groupement Separation]
     style VF10 fill:#58a6ff
-    VF11[163.3.5.1 Detail pour le sup...]
+    VF11[T11 Detail pour le sup...]
     style VF11 fill:#58a6ff
-    VF12[163.3.5.2 Detail pour le sup...]
+    VF12[T12 Detail pour le sup...]
     style VF12 fill:#58a6ff
-    VF13[163.4 Menu caisse 1.3]
+    VF13[T13 Menu caisse 1.3]
     style VF13 fill:#58a6ff
-    VF14[163.4.1 Affichage donnees ...]
+    VF14[T14 Affichage donnees ...]
     style VF14 fill:#58a6ff
     EXT167[IDE 167 Liste des affi...]
     style EXT167 fill:#3fb950
@@ -4220,65 +4220,59 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **163.1** | [**(sans nom)** (163)](#t1) [mockup](#ecran-t1) | SDI | 640x184 | Traitement |
-| 163.1.1 | [Station eteinte erreur v1 (163.1)](#t2) | MDI | - | |
-| 163.1.2 | [Station eteinte erreur v1 (163.2)](#t3) | MDI | - | |
-| 163.1.3 | [Scroll sur noms (163.3)](#t4) [mockup](#ecran-t4) | MDI | 1347x271 | |
-| 163.1.4 | [Existe FusSep (163.3.1)](#t5) | SDI | - | |
-| 163.1.5 | [Action (163.3.2)](#t6) | SDI | - | |
-| 163.1.6 | [(sans nom) (163.3.3)](#t7) [mockup](#ecran-t7) | SDI | 404x183 | |
-| 163.1.7 | [mise a jour des parametres (163.3.3.1)](#t8) | SDI | - | |
-| 163.1.8 | [Lecture session (163.3.4)](#t9) | SDI | - | |
-| 163.1.9 | [Groupement / Separation (163.3.5)](#t10) [mockup](#ecran-t10) | SDI | 523x112 | |
-| 163.1.10 | [Detail pour le support (163.3.5.1)](#t11) [mockup](#ecran-t11) | SDI | 989x169 | |
-| 163.1.11 | [Detail pour le support (163.3.5.2)](#t12) [mockup](#ecran-t12) | SDI | 989x169 | |
-| 163.1.12 | [Menu caisse                1.3 (163.4)](#t13) [mockup](#ecran-t13) | MDI | 1238x312 | |
-| 163.1.13 | [GM purge ? (163.4.2)](#t15) | SDI | - | |
-| 163.1.14 | [GM purge ? (163.4.3)](#t16) | SDI | - | |
-| 163.1.15 | [Appel programme (163.4.4)](#t17) | SDI | - | |
-| 163.1.16 | [GESTION RESP? (163.4.5)](#t18) | SDI | - | |
-| 163.1.17 | [Lecture email (163.4.6)](#t19) | SDI | - | |
-| 163.1.18 | [recup terminal (163.4.7)](#t20) | - | - | |
-| 163.1.19 | [recup terminal (163.4.8)](#t21) | - | - | |
-| 163.1.20 | [Menu caisse                1.3 (163.4.9)](#t22) [mockup](#ecran-t22) | MDI | 667x139 | |
-| 163.1.21 | [SendMail (163.4.9.1)](#t23) | - | - | |
-| 163.1.22 | [Lecture paramètres par     1.6 (163.8)](#t27) | SDI | - | |
-| 163.1.23 | [Paramètres caisse (163.8.1)](#t28) | SDI | - | |
-| 163.1.24 | [Lecture Paramètres TEL     1.7 (163.9)](#t29) | MDI | - | |
-| 163.1.25 | [Lecture Parametre Change (163.10)](#t30) | SDI | - | |
-| 163.1.26 | [Messages autres (163.11)](#t31) | SDI | - | |
-| 163.1.27 | [Solde GM (163.12.1)](#t33) | SDI | - | |
-| 163.1.28 | [read FROM_IMS (163.13)](#t34) | SDI | - | |
-| 163.1.29 | [read COFFRE2 (163.14)](#t35) | SDI | - | |
-| 163.1.30 | [read COFFRE2 (163.15)](#t36) | SDI | - | |
-| 163.1.31 | [Solde GM (163.4.11.1)](#t51) | SDI | - | |
-| **163.2** | [**Affichage donnees adherent** (163.4.1)](#t14) [mockup](#ecran-t14) | Modal | 1236x67 | Consultation |
-| 163.2.1 | [Affichage sessions (163.4.10)](#t47) [mockup](#ecran-t47) | MDI | 338x41 | |
-| **163.3** | [**Saisie nbre decimales** (163.5)](#t24) | Modal | - | Saisie |
-| 163.3.1 | [Saisie nbre decimales (163.6)](#t25) | Modal | - | |
-| 163.3.2 | [Saisie nbre decimales (163.7)](#t26) | Modal | - | |
-| **163.4** | [**Recalcul solde** (163.12)](#t32) | SDI | - | Calcul |
-| 163.4.1 | [Recalcul solde (163.4.11)](#t50) | SDI | - | |
+| **163.1** | [**(sans nom)** (T1)](#t1) [mockup](#ecran-t1) | SDI | 640x184 | Traitement |
+| 163.1.1 | [Station eteinte erreur v1 (T2)](#t2) | MDI | - | |
+| 163.1.2 | [Station eteinte erreur v1 (T3)](#t3) | MDI | - | |
+| 163.1.3 | [Scroll sur noms (T4)](#t4) [mockup](#ecran-t4) | MDI | 1347x271 | |
+| 163.1.4 | [Existe FusSep (T5)](#t5) | SDI | - | |
+| 163.1.5 | [Action (T6)](#t6) | SDI | - | |
+| 163.1.6 | [(sans nom) (T7)](#t7) [mockup](#ecran-t7) | SDI | 404x183 | |
+| 163.1.7 | [mise a jour des parametres (T8)](#t8) | SDI | - | |
+| 163.1.8 | [Lecture session (T9)](#t9) | SDI | - | |
+| 163.1.9 | [Groupement / Separation (T10)](#t10) [mockup](#ecran-t10) | SDI | 523x112 | |
+| 163.1.10 | [Detail pour le support (T11)](#t11) [mockup](#ecran-t11) | SDI | 989x169 | |
+| 163.1.11 | [Detail pour le support (T12)](#t12) [mockup](#ecran-t12) | SDI | 989x169 | |
+| 163.1.12 | [Menu caisse                1.3 (T13)](#t13) [mockup](#ecran-t13) | MDI | 1238x312 | |
+| 163.1.13 | [GM purge ? (T15)](#t15) | SDI | - | |
+| 163.1.14 | [GM purge ? (T16)](#t16) | SDI | - | |
+| 163.1.15 | [Appel programme (T17)](#t17) | SDI | - | |
+| 163.1.16 | [GESTION RESP? (T18)](#t18) | SDI | - | |
+| 163.1.17 | [Lecture email (T19)](#t19) | SDI | - | |
+| 163.1.18 | [recup terminal (T20)](#t20) | - | - | |
+| 163.1.19 | [recup terminal (T21)](#t21) | - | - | |
+| 163.1.20 | [Menu caisse                1.3 (T22)](#t22) [mockup](#ecran-t22) | MDI | 667x139 | |
+| 163.1.21 | [SendMail (T23)](#t23) | - | - | |
+| 163.1.22 | [Lecture paramètres par     1.6 (T27)](#t27) | SDI | - | |
+| 163.1.23 | [Paramètres caisse (T28)](#t28) | SDI | - | |
+| 163.1.24 | [Lecture Paramètres TEL     1.7 (T29)](#t29) | MDI | - | |
+| 163.1.25 | [Lecture Parametre Change (T30)](#t30) | SDI | - | |
+| 163.1.26 | [Messages autres (T31)](#t31) | SDI | - | |
+| 163.1.27 | [Solde GM (T33)](#t33) | SDI | - | |
+| 163.1.28 | [read FROM_IMS (T34)](#t34) | SDI | - | |
+| 163.1.29 | [read COFFRE2 (T35)](#t35) | SDI | - | |
+| 163.1.30 | [read COFFRE2 (T36)](#t36) | SDI | - | |
+| 163.1.31 | [Solde GM (T51)](#t51) | SDI | - | |
+| **163.2** | [**Affichage donnees adherent** (T14)](#t14) [mockup](#ecran-t14) | Modal | 1236x67 | Consultation |
+| 163.2.1 | [Affichage sessions (T47)](#t47) [mockup](#ecran-t47) | MDI | 338x41 | |
+| **163.3** | [**Saisie nbre decimales** (T24)](#t24) | Modal | - | Saisie |
+| 163.3.1 | [Saisie nbre decimales (T25)](#t25) | Modal | - | |
+| 163.3.2 | [Saisie nbre decimales (T26)](#t26) | Modal | - | |
+| **163.4** | [**Recalcul solde** (T32)](#t32) | SDI | - | Calcul |
+| 163.4.1 | [Recalcul solde (T50)](#t50) | SDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Scroll sur noms]
-    UPDATE[MAJ 6 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 39 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -4623,7 +4617,7 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| U | W0 choix action | Alpha | [163.3.2](#t6) |
+| U | W0 choix action | Alpha | [T6](#t6) |
 | BO | W0 utilisation caiss | Alpha | - |
 | BP | W0 code retour | Alpha | - |
 | BQ | W0 Uni/Bi-Lateral | Alpha | - |
@@ -5059,4 +5053,4 @@ graph LR
 | [Club Med Pass Filiations (IDE 114)](ADH-IDE-114.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:52*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:20*

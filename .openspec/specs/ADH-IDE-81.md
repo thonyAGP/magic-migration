@@ -1,6 +1,6 @@
 ﻿# ADH IDE 81 - Card scan create
 
-> **Analyse**: Phases 1-4 2026-02-07 03:44 -> 03:45 (27s) | Assemblage 03:45
+> **Analyse**: Phases 1-4 2026-02-07 06:51 -> 06:52 (20s) | Assemblage 06:52
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,35 +14,19 @@
 | IDE Position | 81 |
 | Nom Programme | Card scan create |
 | Fichier source | `Prg_81.xml` |
-| Dossier IDE | General |
-| Taches | 1 (1 ecrans visibles) |
+| Dossier IDE | EzCard |
+| Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Card scan create** assure la gestion complete de ce processus, accessible depuis [Club Med Pass menu (IDE 77)](ADH-IDE-77.md).
-
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Creation** (1 tache) : insertion d'enregistrements en base (mouvements, prestations)
+**Card scan create** assure la gestion complete de ce processus.
 
 **Logique metier** : 1 regles identifiees couvrant conditions metier.
 
 ## 3. BLOCS FONCTIONNELS
-
-### 3.1 Creation (1 tache)
-
-Insertion de nouveaux enregistrements en base.
-
----
-
-#### <a id="t1"></a>81 - EZ Card Creation [[ECRAN]](#ecran-t1)
-
-**Role** : Creation d'enregistrement : EZ Card Creation.
-**Ecran** : 366 x 69 DLU (MDI) | [Voir mockup](#ecran-t1)
-**Variables liees** : A (p.card id), B (v.card id), C (r.card)
-
 
 ## 5. REGLES METIER
 
@@ -62,146 +46,21 @@ Insertion de nouveaux enregistrements en base.
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Club Med Pass menu (IDE 77)](ADH-IDE-77.md)
+- **Appele par**: (aucun)
 - **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 11
 
 <!-- TAB:Ecrans -->
 
 ## 8. ECRANS
 
-### 8.1 Forms visibles (1 / 1)
-
-| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
-|---|----------|-------|-----|------|---------|---------|------|
-| 1 | 81 | 81 | EZ Card Creation | MDI | 366 | 69 | Creation |
-
-### 8.2 Mockups Ecrans
-
----
-
-#### <a id="ecran-t1"></a>81 - EZ Card Creation
-**Tache** : [81](#t1) | **Type** : MDI | **Dimensions** : 366 x 69 DLU
-**Bloc** : Creation | **Titre IDE** : EZ Card Creation
-
-<!-- FORM-DATA:
-{
-    "width":  366,
-    "vFactor":  4,
-    "type":  "MDI",
-    "hFactor":  4,
-    "controls":  [
-                     {
-                         "x":  132,
-                         "type":  "label",
-                         "var":  "",
-                         "y":  12,
-                         "w":  88,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  5,
-                         "color":  "6",
-                         "text":  "Scan Club Med Pass...",
-                         "parent":  null
-                     },
-                     {
-                         "x":  0,
-                         "type":  "label",
-                         "var":  "",
-                         "y":  54,
-                         "w":  363,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  13,
-                         "color":  "6",
-                         "text":  "",
-                         "parent":  null
-                     },
-                     {
-                         "x":  198,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  24,
-                         "w":  92,
-                         "fmt":  "",
-                         "name":  "v.card id",
-                         "h":  8,
-                         "color":  "",
-                         "text":  "",
-                         "parent":  null
-                     },
-                     {
-                         "x":  16,
-                         "type":  "image",
-                         "var":  "",
-                         "y":  8,
-                         "w":  102,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  39,
-                         "color":  "",
-                         "text":  "",
-                         "parent":  null
-                     },
-                     {
-                         "x":  148,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  35,
-                         "w":  200,
-                         "fmt":  "100",
-                         "name":  "",
-                         "h":  12,
-                         "color":  "143",
-                         "text":  "",
-                         "parent":  null
-                     },
-                     {
-                         "x":  262,
-                         "type":  "button",
-                         "var":  "",
-                         "y":  57,
-                         "w":  99,
-                         "fmt":  "Cancel",
-                         "name":  "CANCEL",
-                         "h":  9,
-                         "color":  "",
-                         "text":  "",
-                         "parent":  null
-                     }
-                 ],
-    "taskId":  "81",
-    "height":  69
-}
--->
-
-<details>
-<summary><strong>Champs : 2 champs</strong></summary>
-
-| Pos (x,y) | Nom | Variable | Type |
-|-----------|-----|----------|------|
-| 198,24 | v.card id | - | edit |
-| 148,35 | 100 | - | edit |
-
-</details>
-
-<details>
-<summary><strong>Boutons : 1 boutons</strong></summary>
-
-| Bouton | Pos (x,y) | Action |
-|--------|-----------|--------|
-| Cancel | 262,57 | Annule et retour au menu |
-
-</details>
+*(Programme sans ecran visible)*
 
 ## 9. NAVIGATION
 
-Ecran unique: **EZ Card Creation**
-
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **81.1** | [**EZ Card Creation** (81)](#t1) [mockup](#ecran-t1) | MDI | 366x69 | Creation |
 
 ### 9.4 Algorigramme
 
@@ -250,7 +109,7 @@ flowchart TD
 
 ### 11.1 Parametres entrants (1)
 
-Variables recues du programme appelant ([Club Med Pass menu (IDE 77)](ADH-IDE-77.md)).
+Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
@@ -330,28 +189,22 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Club Med Pass menu (IDE 77)](ADH-IDE-77.md) -> **Card scan create (IDE 81)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T81[81 Card scan create]
     style T81 fill:#58a6ff
-    CC1[1 Main Program]
-    style CC1 fill:#8b5cf6
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#f59e0b
-    CC77[77 Club Med Pass menu]
-    style CC77 fill:#3fb950
-    CC163 --> CC77
-    CC1 --> CC163
-    CC77 --> T81
+    NONE[Aucun caller]
+    NONE -.-> T81
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [77](ADH-IDE-77.md) | Club Med Pass menu | 1 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -380,16 +233,11 @@ graph LR
 | Expressions | 11 | Peu de logique |
 | Tables WRITE | 0 | Impact faible |
 | Sous-programmes | 0 | Peu de dependances |
-| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 24) | Code sain |
 | Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
-
-#### Creation (1 tache: 1 ecran, 0 traitement)
-
-- **Strategie** : Repository pattern avec Entity Framework Core.
-- Insertion via `IRepository<T>.CreateAsync()`
 
 ### 14.3 Dependances critiques
 
@@ -397,4 +245,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:45*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:52*

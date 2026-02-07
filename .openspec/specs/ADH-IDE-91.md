@@ -1,6 +1,6 @@
 ﻿# ADH IDE 91 - Verif boutique
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:46 (29s) | Assemblage 03:46
+> **Analyse**: Phases 1-4 2026-02-07 06:55 -> 06:55 (16s) | Assemblage 06:55
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,32 +14,17 @@
 | IDE Position | 91 |
 | Nom Programme | Verif boutique |
 | Fichier source | `Prg_91.xml` |
-| Dossier IDE | General |
+| Dossier IDE | Factures |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Verif boutique** assure la gestion complete de ce processus, accessible depuis [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md), [Factures (Tble Compta&Vent (IDE 311)](ADH-IDE-311.md), [Factures_Check_Out (IDE 54)](ADH-IDE-54.md).
-
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Validation** (1 tache) : controles et verifications de coherence
+**Verif boutique** assure la gestion complete de ce processus.
 
 ## 3. BLOCS FONCTIONNELS
-
-### 3.1 Validation (1 tache)
-
-Controles de coherence : 1 tache verifie les donnees et conditions.
-
----
-
-#### <a id="t1"></a>91 - Verif boutique
-
-**Role** : Verification : Verif boutique.
-**Variables liees** : E (v.Existe ligne boutique ?)
-
 
 ## 5. REGLES METIER
 
@@ -47,7 +32,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md), [Factures (Tble Compta&Vent (IDE 311)](ADH-IDE-311.md), [Factures_Check_Out (IDE 54)](ADH-IDE-54.md)
+- **Appele par**: (aucun)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 9
 
 <!-- TAB:Ecrans -->
@@ -58,11 +43,10 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **91.1** | [**Verif boutique** (91)](#t1) | - | - | Validation |
 
 ### 9.4 Algorigramme
 
@@ -112,7 +96,7 @@ flowchart TD
 
 ### 11.1 Parametres entrants (4)
 
-Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md)).
+Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
@@ -185,88 +169,22 @@ Variables persistantes pendant toute la session.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md) -> **Verif boutique (IDE 91)**
-
-Main -> ... -> [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) -> **Verif boutique (IDE 91)**
-
-Main -> ... -> [Factures (Tble Compta&Vent (IDE 311)](ADH-IDE-311.md) -> **Verif boutique (IDE 91)**
-
-Main -> ... -> [Factures_Check_Out (IDE 54)](ADH-IDE-54.md) -> **Verif boutique (IDE 91)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T91[91 Verif boutique]
     style T91 fill:#58a6ff
-    CC287[287 Solde Easy Check Out]
-    style CC287 fill:#8b5cf6
-    CC283[283 Easy Check-Out ===...]
-    style CC283 fill:#8b5cf6
-    CC313[313 Easy Check-Out ===...]
-    style CC313 fill:#8b5cf6
-    CC190[190 Menu solde dun compte]
-    style CC190 fill:#8b5cf6
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#8b5cf6
-    CC193[193 Solde compte fin s...]
-    style CC193 fill:#8b5cf6
-    CC280[280 Lanceur Facture]
-    style CC280 fill:#8b5cf6
-    CC64[64 Solde Easy Check Out]
-    style CC64 fill:#8b5cf6
-    CC54[54 Factures_Check_Out]
-    style CC54 fill:#3fb950
-    CC89[89 Factures Tble Compt...]
-    style CC89 fill:#3fb950
-    CC311[311 Factures Tble Comp...]
-    style CC311 fill:#3fb950
-    CC97[97 Factures Tble Compt...]
-    style CC97 fill:#3fb950
-    CC64 --> CC54
-    CC280 --> CC54
-    CC283 --> CC54
-    CC287 --> CC54
-    CC313 --> CC54
-    CC163 --> CC54
-    CC190 --> CC54
-    CC193 --> CC54
-    CC64 --> CC89
-    CC280 --> CC89
-    CC283 --> CC89
-    CC287 --> CC89
-    CC313 --> CC89
-    CC163 --> CC89
-    CC190 --> CC89
-    CC193 --> CC89
-    CC64 --> CC97
-    CC280 --> CC97
-    CC283 --> CC97
-    CC287 --> CC97
-    CC313 --> CC97
-    CC163 --> CC97
-    CC190 --> CC97
-    CC193 --> CC97
-    CC64 --> CC311
-    CC280 --> CC311
-    CC283 --> CC311
-    CC287 --> CC311
-    CC313 --> CC311
-    CC163 --> CC311
-    CC190 --> CC311
-    CC193 --> CC311
-    CC54 --> T91
-    CC89 --> T91
-    CC97 --> T91
-    CC311 --> T91
+    NONE[Aucun caller]
+    NONE -.-> T91
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [89](ADH-IDE-89.md) | Factures (Tble Compta&Vent | 2 |
-| [97](ADH-IDE-97.md) | Factures (Tble Compta&Vent) V3 | 2 |
-| [311](ADH-IDE-311.md) | Factures (Tble Compta&Vent | 2 |
-| [54](ADH-IDE-54.md) | Factures_Check_Out | 1 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -301,15 +219,10 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
-#### Validation (1 tache: 0 ecran, 1 traitement)
-
-- **Strategie** : FluentValidation avec validators specifiques.
-- Chaque tache de validation -> un validator injectable
-
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:46*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:55*

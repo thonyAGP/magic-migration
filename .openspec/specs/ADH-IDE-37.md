@@ -1,6 +1,6 @@
 ﻿# ADH IDE 37 - Menu changement compte
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (27s) | Assemblage 03:43
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (27s) | Assemblage 13:10
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,16 +18,17 @@
 | Taches | 1 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 4 |
+| Complexite | **BASSE** (score 5/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Menu changement compte** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md).
+# ADH IDE 37 - Menu changement compte
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Le programme affiche un menu permettant à l'utilisateur de changer de compte client lors d'une session de caisse. Il offre quatre options principales : la séparation de compte (division d'un compte en plusieurs), la fusion de comptes (regroupement de plusieurs comptes), la récupération du titre du compte sélectionné, et l'appel direct d'autres programmes selon le contexte. Ce menu fonctionne comme point d'aiguillage pour les opérations de gestion de compte complexes.
 
-- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
+La logique de la tâche OCA (Menu changement compte) gère la navigation utilisateur et l'aiguillage vers les programmes métier correspondants. Elle valide le contexte de caisse et s'assure que l'utilisateur dispose des droits nécessaires avant de permettre l'accès aux opérations sensibles comme la séparation ou fusion de comptes. Le programme récupère également les informations du compte courant (titre, solde, historique) pour affichage et utilise ces données pour contextualiser les opérations disponibles.
 
-**Logique metier** : 1 regles identifiees couvrant conditions metier.
+Ce programme est intégré à la chaîne de caisse et représente un élément critique du flux de gestion multi-compte. Il est appelé depuis le menu principal de caisse (IDE 163) et sert de carrefour décisionnel avant d'effectuer des modifications structurantes sur les comptes clients.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -538,4 +539,4 @@ graph LR
 | [Fusion (IDE 28)](ADH-IDE-28.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:43*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:11*

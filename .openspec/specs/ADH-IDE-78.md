@@ -1,6 +1,6 @@
 ﻿# ADH IDE 78 - Print Ventes Club Med Pass
 
-> **Analyse**: Phases 1-4 2026-02-07 03:44 -> 03:45 (27s) | Assemblage 03:45
+> **Analyse**: Phases 1-4 2026-02-07 03:44 -> 03:45 (27s) | Assemblage 06:51
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 78 |
 | Nom Programme | Print Ventes Club Med Pass |
 | Fichier source | `Prg_78.xml` |
-| Dossier IDE | Ventes |
+| Dossier IDE | EzCard |
 | Taches | 14 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 1 |
@@ -34,28 +34,28 @@ Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
 #### Phase 1 : Impression (6 taches)
 
-- **78** - Print **[[ECRAN]](#ecran-t1)**
-- **78.2** - Printer 1 **[[ECRAN]](#ecran-t3)**
-- **78.3** - Printer 4 **[[ECRAN]](#ecran-t6)**
-- **78.4** - Printer 6 **[[ECRAN]](#ecran-t9)**
-- **78.5** - Printer 8 **[[ECRAN]](#ecran-t11)**
-- **78.6** - Printer 9 **[[ECRAN]](#ecran-t13)**
+- **T1** - Print **[ECRAN]**
+- **T3** - Printer 1 **[ECRAN]**
+- **T6** - Printer 4 **[ECRAN]**
+- **T9** - Printer 6 **[ECRAN]**
+- **T11** - Printer 8 **[ECRAN]**
+- **T13** - Printer 9 **[ECRAN]**
 
 Delegue a : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 #### Phase 2 : Initialisation (1 tache)
 
-- **78.1** - Init village **[[ECRAN]](#ecran-t2)**
+- **T2** - Init village **[ECRAN]**
 
 #### Phase 3 : Saisie (7 taches)
 
-- **78.2.1** - Transactions details **[[ECRAN]](#ecran-t4)**
-- **78.2.2** - Transactions details **[[ECRAN]](#ecran-t5)**
-- **78.3.1** - Transactions details **[[ECRAN]](#ecran-t7)**
-- **78.3.2** - Transactions details **[[ECRAN]](#ecran-t8)**
-- **78.4.1** - Transactions details **[[ECRAN]](#ecran-t10)**
-- **78.5.1** - Transactions details **[[ECRAN]](#ecran-t12)**
-- **78.6.1** - Transactions details **[[ECRAN]](#ecran-t14)**
+- **T4** - Transactions details **[ECRAN]**
+- **T5** - Transactions details **[ECRAN]**
+- **T7** - Transactions details **[ECRAN]**
+- **T8** - Transactions details **[ECRAN]**
+- **T10** - Transactions details **[ECRAN]**
+- **T12** - Transactions details **[ECRAN]**
+- **T14** - Transactions details **[ECRAN]**
 
 </details>
 
@@ -67,7 +67,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t1"></a>78 - Print [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Print [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 426 x 57 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -77,11 +77,11 @@ Generation des documents et tickets.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [78.2](#t3) | Printer 1 **[[ECRAN]](#ecran-t3)** | Impression |
-| [78.3](#t6) | Printer 4 **[[ECRAN]](#ecran-t6)** | Impression |
-| [78.4](#t9) | Printer 6 **[[ECRAN]](#ecran-t9)** | Impression |
-| [78.5](#t11) | Printer 8 **[[ECRAN]](#ecran-t11)** | Impression |
-| [78.6](#t13) | Printer 9 **[[ECRAN]](#ecran-t13)** | Impression |
+| [T3](#t3) | Printer 1 **[ECRAN]** | Impression |
+| [T6](#t6) | Printer 4 **[ECRAN]** | Impression |
+| [T9](#t9) | Printer 6 **[ECRAN]** | Impression |
+| [T11](#t11) | Printer 8 **[ECRAN]** | Impression |
+| [T13](#t13) | Printer 9 **[ECRAN]** | Impression |
 
 </details>
 **Variables liees** : I (v.PrinterName)
@@ -89,7 +89,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t3"></a>78.2 - Printer 1 [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Printer 1 [ECRAN]
 
 **Role** : Generation du document : Printer 1.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t3)
@@ -98,7 +98,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t6"></a>78.3 - Printer 4 [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Printer 4 [ECRAN]
 
 **Role** : Generation du document : Printer 4.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t6)
@@ -107,7 +107,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t9"></a>78.4 - Printer 6 [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Printer 6 [ECRAN]
 
 **Role** : Generation du document : Printer 6.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t9)
@@ -116,7 +116,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t11"></a>78.5 - Printer 8 [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Printer 8 [ECRAN]
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t11)
@@ -125,7 +125,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t13"></a>78.6 - Printer 9 [[ECRAN]](#ecran-t13)
+#### <a id="t13"></a>T13 - Printer 9 [ECRAN]
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t13)
@@ -139,7 +139,7 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t2"></a>78.1 - Init village [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - Init village [ECRAN]
 
 **Role** : Reinitialisation : Init village.
 **Ecran** : 274 x 204 DLU (MDI) | [Voir mockup](#ecran-t2)
@@ -152,49 +152,49 @@ L'operateur saisit les donnees de la transaction via 7 ecrans (Transactions deta
 
 ---
 
-#### <a id="t4"></a>78.2.1 - Transactions details [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t4)
 
 ---
 
-#### <a id="t5"></a>78.2.2 - Transactions details [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t5)
 
 ---
 
-#### <a id="t7"></a>78.3.1 - Transactions details [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>78.3.2 - Transactions details [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t10"></a>78.4.1 - Transactions details [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t10)
 
 ---
 
-#### <a id="t12"></a>78.5.1 - Transactions details [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t12)
 
 ---
 
-#### <a id="t14"></a>78.6.1 - Transactions details [[ECRAN]](#ecran-t14)
+#### <a id="t14"></a>T14 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 434 x 62 DLU (MDI) | [Voir mockup](#ecran-t14)
@@ -217,14 +217,14 @@ L'operateur saisit les donnees de la transaction via 7 ecrans (Transactions deta
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 78 | 78 | Print | MDI | 426 | 57 | Impression |
+| 1 | 78 | T1 | Print | MDI | 426 | 57 | Impression |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>78 - Print
-**Tache** : [78](#t1) | **Type** : MDI | **Dimensions** : 426 x 57 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 426 x 57 DLU
 **Bloc** : Impression | **Titre IDE** : Print
 
 <!-- FORM-DATA:
@@ -313,39 +313,34 @@ Ecran unique: **Print**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **78.1** | [**Print** (78)](#t1) [mockup](#ecran-t1) | MDI | 426x57 | Impression |
-| 78.1.1 | [Printer 1 (78.2)](#t3) [mockup](#ecran-t3) | MDI | 434x62 | |
-| 78.1.2 | [Printer 4 (78.3)](#t6) [mockup](#ecran-t6) | MDI | 434x62 | |
-| 78.1.3 | [Printer 6 (78.4)](#t9) [mockup](#ecran-t9) | MDI | 434x62 | |
-| 78.1.4 | [Printer 8 (78.5)](#t11) [mockup](#ecran-t11) | MDI | 434x62 | |
-| 78.1.5 | [Printer 9 (78.6)](#t13) [mockup](#ecran-t13) | MDI | 434x62 | |
-| **78.2** | [**Init village** (78.1)](#t2) [mockup](#ecran-t2) | MDI | 274x204 | Initialisation |
-| **78.3** | [**Transactions details** (78.2.1)](#t4) [mockup](#ecran-t4) | MDI | 434x62 | Saisie |
-| 78.3.1 | [Transactions details (78.2.2)](#t5) [mockup](#ecran-t5) | MDI | 434x62 | |
-| 78.3.2 | [Transactions details (78.3.1)](#t7) [mockup](#ecran-t7) | MDI | 434x62 | |
-| 78.3.3 | [Transactions details (78.3.2)](#t8) [mockup](#ecran-t8) | MDI | 434x62 | |
-| 78.3.4 | [Transactions details (78.4.1)](#t10) [mockup](#ecran-t10) | MDI | 434x62 | |
-| 78.3.5 | [Transactions details (78.5.1)](#t12) [mockup](#ecran-t12) | MDI | 434x62 | |
-| 78.3.6 | [Transactions details (78.6.1)](#t14) [mockup](#ecran-t14) | MDI | 434x62 | |
+| **78.1** | [**Print** (T1)](#t1) [mockup](#ecran-t1) | MDI | 426x57 | Impression |
+| 78.1.1 | [Printer 1 (T3)](#t3) [mockup](#ecran-t3) | MDI | 434x62 | |
+| 78.1.2 | [Printer 4 (T6)](#t6) [mockup](#ecran-t6) | MDI | 434x62 | |
+| 78.1.3 | [Printer 6 (T9)](#t9) [mockup](#ecran-t9) | MDI | 434x62 | |
+| 78.1.4 | [Printer 8 (T11)](#t11) [mockup](#ecran-t11) | MDI | 434x62 | |
+| 78.1.5 | [Printer 9 (T13)](#t13) [mockup](#ecran-t13) | MDI | 434x62 | |
+| **78.2** | [**Init village** (T2)](#t2) [mockup](#ecran-t2) | MDI | 274x204 | Initialisation |
+| **78.3** | [**Transactions details** (T4)](#t4) [mockup](#ecran-t4) | MDI | 434x62 | Saisie |
+| 78.3.1 | [Transactions details (T5)](#t5) [mockup](#ecran-t5) | MDI | 434x62 | |
+| 78.3.2 | [Transactions details (T7)](#t7) [mockup](#ecran-t7) | MDI | 434x62 | |
+| 78.3.3 | [Transactions details (T8)](#t8) [mockup](#ecran-t8) | MDI | 434x62 | |
+| 78.3.4 | [Transactions details (T10)](#t10) [mockup](#ecran-t10) | MDI | 434x62 | |
+| 78.3.5 | [Transactions details (T12)](#t12) [mockup](#ecran-t12) | MDI | 434x62 | |
+| 78.3.6 | [Transactions details (T14)](#t14) [mockup](#ecran-t14) | MDI | 434x62 | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    PROCESS[Traitement 14 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -528,4 +523,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:45*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:51*

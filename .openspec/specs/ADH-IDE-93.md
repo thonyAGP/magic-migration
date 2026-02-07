@@ -1,6 +1,6 @@
 ﻿# ADH IDE 93 - Creation Pied Facture
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:47 (30s) | Assemblage 03:47
+> **Analyse**: Phases 1-4 2026-02-07 06:56 -> 06:56 (16s) | Assemblage 06:56
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,34 +14,19 @@
 | IDE Position | 93 |
 | Nom Programme | Creation Pied Facture |
 | Fichier source | `Prg_93.xml` |
-| Dossier IDE | Facturation |
+| Dossier IDE | Factures |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| :warning: Statut | **ORPHELIN_POTENTIEL** |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Creation Pied Facture** assure la gestion complete de ce processus, accessible depuis [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md), [Factures_Check_Out (IDE 54)](ADH-IDE-54.md).
-
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Creation** (1 tache) : insertion d'enregistrements en base (mouvements, prestations)
+**Creation Pied Facture** assure la gestion complete de ce processus.
 
 **Logique metier** : 1 regles identifiees couvrant conditions metier.
 
 ## 3. BLOCS FONCTIONNELS
-
-### 3.1 Creation (1 tache)
-
-Insertion de nouveaux enregistrements en base.
-
----
-
-#### <a id="t1"></a>93 - Creation Pied Facture [[ECRAN]](#ecran-t1)
-
-**Role** : Creation d'enregistrement : Creation Pied Facture.
-**Ecran** : 586 x 0 DLU | [Voir mockup](#ecran-t1)
-
 
 ## 5. REGLES METIER
 
@@ -61,7 +46,7 @@ Insertion de nouveaux enregistrements en base.
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md), [Factures_Check_Out (IDE 54)](ADH-IDE-54.md)
+- **Appele par**: (aucun)
 - **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 16
 
 <!-- TAB:Ecrans -->
@@ -72,11 +57,10 @@ Insertion de nouveaux enregistrements en base.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (1 tache)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **93.1** | [**Creation Pied Facture** (93)](#t1) [mockup](#ecran-t1) | - | 586x0 | Creation |
 
 ### 9.4 Algorigramme
 
@@ -127,7 +111,7 @@ flowchart TD
 
 ### 11.1 Parametres entrants (5)
 
-Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md)).
+Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
@@ -199,62 +183,22 @@ Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](AD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md) -> **Creation Pied Facture (IDE 93)**
-
-Main -> ... -> [Factures_Check_Out (IDE 54)](ADH-IDE-54.md) -> **Creation Pied Facture (IDE 93)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T93[93 Creation Pied Facture]
     style T93 fill:#58a6ff
-    CC55[55 Easy Check-Out === ...]
-    style CC55 fill:#8b5cf6
-    CC66[66 Lancement Solde ECO]
-    style CC66 fill:#8b5cf6
-    CC287[287 Solde Easy Check Out]
-    style CC287 fill:#f59e0b
-    CC313[313 Easy Check-Out ===...]
-    style CC313 fill:#f59e0b
-    CC283[283 Easy Check-Out ===...]
-    style CC283 fill:#f59e0b
-    CC64[64 Solde Easy Check Out]
-    style CC64 fill:#f59e0b
-    CC280[280 Lanceur Facture]
-    style CC280 fill:#f59e0b
-    CC54[54 Factures_Check_Out]
-    style CC54 fill:#3fb950
-    CC89[89 Factures Tble Compt...]
-    style CC89 fill:#3fb950
-    CC64 --> CC54
-    CC280 --> CC54
-    CC283 --> CC54
-    CC287 --> CC54
-    CC313 --> CC54
-    CC64 --> CC89
-    CC280 --> CC89
-    CC283 --> CC89
-    CC287 --> CC89
-    CC313 --> CC89
-    CC55 --> CC64
-    CC66 --> CC64
-    CC55 --> CC280
-    CC66 --> CC280
-    CC55 --> CC283
-    CC66 --> CC283
-    CC55 --> CC287
-    CC66 --> CC287
-    CC55 --> CC313
-    CC66 --> CC313
-    CC54 --> T93
-    CC89 --> T93
+    NONE[Aucun caller]
+    NONE -.-> T93
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [89](ADH-IDE-89.md) | Factures (Tble Compta&Vent | 3 |
-| [54](ADH-IDE-54.md) | Factures_Check_Out | 2 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -289,15 +233,10 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
-#### Creation (1 tache: 1 ecran, 0 traitement)
-
-- **Strategie** : Repository pattern avec Entity Framework Core.
-- Insertion via `IRepository<T>.CreateAsync()`
-
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:47*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:56*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 166 - Start
 
-> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:52 (29s) | Assemblage 03:52
+> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:52 (29s) | Assemblage 07:21
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 166 |
 | Nom Programme | Start |
 | Fichier source | `Prg_166.xml` |
-| Dossier IDE | General |
+| Dossier IDE | Menus |
 | Taches | 7 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 6 |
@@ -38,21 +38,21 @@ Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (5 taches)
 
-- **166** - Start
-- **166.1** - read FROM_IMS
-- **166.3** - Recup Logins avec matricule
-- **166.4** - read FROM_IMS
-- **166.5** - read FROM_IMS
+- **T1** - Start
+- **T2** - read FROM_IMS
+- **T4** - Recup Logins avec matricule
+- **T5** - read FROM_IMS
+- **T6** - read FROM_IMS
 
 Delegue a : [Recuperation langue (IDE 45)](ADH-IDE-45.md), [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md), [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md)
 
 #### Phase 2 : Calcul (1 tache)
 
-- **166.2** - comptage lieu sejour
+- **T3** - comptage lieu sejour
 
 #### Phase 3 : Initialisation (1 tache)
 
-- **166.4.1** - reset log_initialisation_tpe
+- **T7** - reset log_initialisation_tpe
 
 Delegue a : [  Initialistaion Easy Arrival (IDE 50)](ADH-IDE-50.md)
 
@@ -72,7 +72,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>166 - Start
+#### <a id="t1"></a>T1 - Start
 
 **Role** : Traitement : Start.
 
@@ -81,17 +81,17 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [166.1](#t2) | read FROM_IMS | Traitement |
-| [166.3](#t4) | Recup Logins avec matricule | Traitement |
-| [166.4](#t5) | read FROM_IMS | Traitement |
-| [166.5](#t6) | read FROM_IMS | Traitement |
+| [T2](#t2) | read FROM_IMS | Traitement |
+| [T4](#t4) | Recup Logins avec matricule | Traitement |
+| [T5](#t5) | read FROM_IMS | Traitement |
+| [T6](#t6) | read FROM_IMS | Traitement |
 
 </details>
 **Delegue a** : [Recuperation langue (IDE 45)](ADH-IDE-45.md), [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md), [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md)
 
 ---
 
-#### <a id="t2"></a>166.1 - read FROM_IMS
+#### <a id="t2"></a>T2 - read FROM_IMS
 
 **Role** : Traitement : read FROM_IMS.
 **Variables liees** : B (FROM_IMS)
@@ -99,14 +99,14 @@ Traitements internes.
 
 ---
 
-#### <a id="t4"></a>166.3 - Recup Logins avec matricule
+#### <a id="t4"></a>T4 - Recup Logins avec matricule
 
 **Role** : Consultation/chargement : Recup Logins avec matricule.
 **Delegue a** : [Recuperation langue (IDE 45)](ADH-IDE-45.md), [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md), [Raisons utilisation ADH (IDE 231)](ADH-IDE-231.md)
 
 ---
 
-#### <a id="t5"></a>166.4 - read FROM_IMS
+#### <a id="t5"></a>T5 - read FROM_IMS
 
 **Role** : Traitement : read FROM_IMS.
 **Variables liees** : B (FROM_IMS)
@@ -114,7 +114,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t6"></a>166.5 - read FROM_IMS
+#### <a id="t6"></a>T6 - read FROM_IMS
 
 **Role** : Traitement : read FROM_IMS.
 **Variables liees** : B (FROM_IMS)
@@ -127,7 +127,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t3"></a>166.2 - comptage lieu sejour
+#### <a id="t3"></a>T3 - comptage lieu sejour
 
 **Role** : Traitement : comptage lieu sejour.
 
@@ -138,7 +138,7 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t7"></a>166.4.1 - reset log_initialisation_tpe
+#### <a id="t7"></a>T7 - reset log_initialisation_tpe
 
 **Role** : Reinitialisation : reset log_initialisation_tpe.
 **Delegue a** : [  Initialistaion Easy Arrival (IDE 50)](ADH-IDE-50.md)
@@ -177,33 +177,27 @@ Reinitialisation d'etats et variables de travail.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **166.1** | [**Start** (166)](#t1) | MDI | - | Traitement |
-| 166.1.1 | [read FROM_IMS (166.1)](#t2) | MDI | - | |
-| 166.1.2 | [Recup Logins avec matricule (166.3)](#t4) | - | - | |
-| 166.1.3 | [read FROM_IMS (166.4)](#t5) | MDI | - | |
-| 166.1.4 | [read FROM_IMS (166.5)](#t6) | MDI | - | |
-| **166.2** | [**comptage lieu sejour** (166.2)](#t3) | - | - | Calcul |
-| **166.3** | [**reset log_initialisation_tpe** (166.4.1)](#t7) | - | - | Initialisation |
+| **166.1** | [**Start** (T1)](#t1) | MDI | - | Traitement |
+| 166.1.1 | [read FROM_IMS (T2)](#t2) | MDI | - | |
+| 166.1.2 | [Recup Logins avec matricule (T4)](#t4) | - | - | |
+| 166.1.3 | [read FROM_IMS (T5)](#t5) | MDI | - | |
+| 166.1.4 | [read FROM_IMS (T6)](#t6) | MDI | - | |
+| **166.2** | [**comptage lieu sejour** (T3)](#t3) | - | - | Calcul |
+| **166.3** | [**reset log_initialisation_tpe** (T7)](#t7) | - | - | Initialisation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 1 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 7 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -587,4 +581,4 @@ graph LR
 | [Creation adresse_village (IDE 52)](ADH-IDE-52.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:52*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:21*

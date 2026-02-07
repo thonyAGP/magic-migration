@@ -1,31 +1,31 @@
-﻿# ADH IDE 103 - Facture - Sejour archive V3
+﻿# ADH IDE 103 - Maj lignes saisies archive V3
 
-> **Analyse**: 2026-02-07 03:48
+> **Analyse**: 2026-02-07 06:59
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Facture - Sejour archive V3
-- **Tables modifiees**: 2
-- **Complexite**: **BASSE** (14/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Garantie sur compte PMS-584 (IDE 0)
+- **Fonction**: Maj lignes saisies archive V3
+- **Tables modifiees**: 1
+- **Complexite**: **BASSE** (7/100)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 6 |
-| Lignes Logic | 270 |
-| Expressions | 6 |
-| Tables | 7 |
+| Taches | 1 |
+| Lignes Logic | 63 |
+| Expressions | 14 |
+| Tables | 4 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

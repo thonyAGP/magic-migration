@@ -1,6 +1,6 @@
 ﻿# ADH IDE 105 - Maj des lignes saisies V3
 
-> **Analyse**: 2026-02-07 03:48
+> **Analyse**: 2026-02-07 07:00
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Maj des lignes saisies V3
 - **Tables modifiees**: 1
 - **Complexite**: **BASSE** (7/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 3 programme(s): Garantie sur compte PMS-584 (IDE 0), Factures_Check_Out (IDE 54), Factures (Tble Compta&Vent) V3 (IDE 97)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 87 - Print Plafonds alloués
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:46 (29s) | Assemblage 03:46
+> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:46 (29s) | Assemblage 06:54
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 87 |
 | Nom Programme | Print Plafonds alloués |
 | Fichier source | `Prg_87.xml` |
-| Dossier IDE | Impression |
+| Dossier IDE | EzCard |
 | Taches | 14 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 1 |
@@ -34,28 +34,28 @@ Le flux de traitement s'organise en **3 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (1 tache)
 
-- **87** - Veuillez patienter... **[[ECRAN]](#ecran-t1)**
+- **T1** - Veuillez patienter... **[ECRAN]**
 
 Delegue a : [Recupere devise local (IDE 21)](ADH-IDE-21.md)
 
 #### Phase 2 : Initialisation (1 tache)
 
-- **87.1** - Init village **[[ECRAN]](#ecran-t2)**
+- **T2** - Init village **[ECRAN]**
 
 #### Phase 3 : Impression (12 taches)
 
-- **87.2** - Printer 1 **[[ECRAN]](#ecran-t3)**
-- **87.2.1** - edition extrait compte **[[ECRAN]](#ecran-t4)**
-- **87.2.2** - edition extrait compte **[[ECRAN]](#ecran-t5)**
-- **87.3** - Printer 4 **[[ECRAN]](#ecran-t6)**
-- **87.3.1** - edition extrait compte **[[ECRAN]](#ecran-t7)**
-- **87.3.2** - edition extrait compte **[[ECRAN]](#ecran-t8)**
-- **87.4** - Printer 5 **[[ECRAN]](#ecran-t9)**
-- **87.4.1** - edition extrait compte **[[ECRAN]](#ecran-t10)**
-- **87.5** - Printer 8 **[[ECRAN]](#ecran-t11)**
-- **87.5.1** - edition extrait compte **[[ECRAN]](#ecran-t12)**
-- **87.6** - Printer 9 **[[ECRAN]](#ecran-t13)**
-- **87.6.1** - edition extrait compte **[[ECRAN]](#ecran-t14)**
+- **T3** - Printer 1 **[ECRAN]**
+- **T4** - edition extrait compte **[ECRAN]**
+- **T5** - edition extrait compte **[ECRAN]**
+- **T6** - Printer 4 **[ECRAN]**
+- **T7** - edition extrait compte **[ECRAN]**
+- **T8** - edition extrait compte **[ECRAN]**
+- **T9** - Printer 5 **[ECRAN]**
+- **T10** - edition extrait compte **[ECRAN]**
+- **T11** - Printer 8 **[ECRAN]**
+- **T12** - edition extrait compte **[ECRAN]**
+- **T13** - Printer 9 **[ECRAN]**
+- **T14** - edition extrait compte **[ECRAN]**
 
 </details>
 
@@ -67,7 +67,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>87 - Veuillez patienter... [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -80,7 +80,7 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t2"></a>87.1 - Init village [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - Init village [ECRAN]
 
 **Role** : Reinitialisation : Init village.
 **Ecran** : 274 x 204 DLU (MDI) | [Voir mockup](#ecran-t2)
@@ -93,84 +93,84 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t3"></a>87.2 - Printer 1 [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Printer 1 [ECRAN]
 
 **Role** : Generation du document : Printer 1.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t3)
 
 ---
 
-#### <a id="t4"></a>87.2.1 - edition extrait compte [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t4)
 
 ---
 
-#### <a id="t5"></a>87.2.2 - edition extrait compte [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t5)
 
 ---
 
-#### <a id="t6"></a>87.3 - Printer 4 [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Printer 4 [ECRAN]
 
 **Role** : Generation du document : Printer 4.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t6)
 
 ---
 
-#### <a id="t7"></a>87.3.1 - edition extrait compte [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>87.3.2 - edition extrait compte [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t9"></a>87.4 - Printer 5 [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Printer 5 [ECRAN]
 
 **Role** : Generation du document : Printer 5.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t10"></a>87.4.1 - edition extrait compte [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t10)
 
 ---
 
-#### <a id="t11"></a>87.5 - Printer 8 [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Printer 8 [ECRAN]
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t12"></a>87.5.1 - edition extrait compte [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t12)
 
 ---
 
-#### <a id="t13"></a>87.6 - Printer 9 [[ECRAN]](#ecran-t13)
+#### <a id="t13"></a>T13 - Printer 9 [ECRAN]
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t13)
 
 ---
 
-#### <a id="t14"></a>87.6.1 - edition extrait compte [[ECRAN]](#ecran-t14)
+#### <a id="t14"></a>T14 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t14)
@@ -193,14 +193,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 87 | 87 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+| 1 | 87 | T1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>87 - Veuillez patienter...
-**Tache** : [87](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -289,39 +289,34 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **87.1** | [**Veuillez patienter...** (87)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
-| **87.2** | [**Init village** (87.1)](#t2) [mockup](#ecran-t2) | MDI | 274x204 | Initialisation |
-| **87.3** | [**Printer 1** (87.2)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | Impression |
-| 87.3.1 | [edition extrait compte (87.2.1)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
-| 87.3.2 | [edition extrait compte (87.2.2)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
-| 87.3.3 | [Printer 4 (87.3)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
-| 87.3.4 | [edition extrait compte (87.3.1)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
-| 87.3.5 | [edition extrait compte (87.3.2)](#t8) [mockup](#ecran-t8) | MDI | 1058x791 | |
-| 87.3.6 | [Printer 5 (87.4)](#t9) [mockup](#ecran-t9) | MDI | 1058x791 | |
-| 87.3.7 | [edition extrait compte (87.4.1)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
-| 87.3.8 | [Printer 8 (87.5)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
-| 87.3.9 | [edition extrait compte (87.5.1)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
-| 87.3.10 | [Printer 9 (87.6)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
-| 87.3.11 | [edition extrait compte (87.6.1)](#t14) [mockup](#ecran-t14) | MDI | 1058x791 | |
+| **87.1** | [**Veuillez patienter...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
+| **87.2** | [**Init village** (T2)](#t2) [mockup](#ecran-t2) | MDI | 274x204 | Initialisation |
+| **87.3** | [**Printer 1** (T3)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | Impression |
+| 87.3.1 | [edition extrait compte (T4)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
+| 87.3.2 | [edition extrait compte (T5)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
+| 87.3.3 | [Printer 4 (T6)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
+| 87.3.4 | [edition extrait compte (T7)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
+| 87.3.5 | [edition extrait compte (T8)](#t8) [mockup](#ecran-t8) | MDI | 1058x791 | |
+| 87.3.6 | [Printer 5 (T9)](#t9) [mockup](#ecran-t9) | MDI | 1058x791 | |
+| 87.3.7 | [edition extrait compte (T10)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
+| 87.3.8 | [Printer 8 (T11)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
+| 87.3.9 | [edition extrait compte (T12)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
+| 87.3.10 | [Printer 9 (T13)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
+| 87.3.11 | [edition extrait compte (T14)](#t14) [mockup](#ecran-t14) | MDI | 1058x791 | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    PROCESS[Traitement 14 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -506,4 +501,4 @@ graph LR
 | [Recupere devise local (IDE 21)](ADH-IDE-21.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:46*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:54*

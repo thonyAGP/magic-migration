@@ -1,6 +1,6 @@
 ﻿# ADH IDE 28 - Fusion
 
-> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (29s) | Assemblage 03:41
+> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (29s) | Assemblage 13:04
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,309 +18,15 @@
 | Taches | 192 (11 ecrans visibles) |
 | Tables modifiees | 60 |
 | Programmes appeles | 13 |
+| Complexite | **MOYENNE** (score 65/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Fusion** assure la gestion complete de ce processus, accessible depuis [Menu changement compte (IDE 37)](ADH-IDE-37.md).
+Le programme **ADH IDE 28 - Fusion** gère la fusion de comptes clients dans le système de gestion hôtelière. Appelé depuis le menu de changement de compte (IDE 37), il orchestre un processus complexe impliquant plusieurs vérifications préalables : test de clôture en cours, blocages de clôture, et vérification de l'état réseau. Le programme sélectionne ensuite le compte GM (Guest Management) cible et récupère l'état actuel du compte avant de procéder aux opérations de fusion.
 
-Le flux de traitement s'organise en **6 blocs fonctionnels** :
+L'opération elle-même modifie un nombre considérable de tables couvrant les transactions, prestations, hébergement, comptes clients, mouvements financiers, et données d'historique. La fusion synchronise les données historiques via des appels spécialisés (IDE 29-34) qui gèrent l'écriture et la lecture des logs de fusion/séparation, puis consolide les informations du compte fusionné.
 
-- **Traitement** (131 taches) : traitements metier divers
-- **Creation** (47 taches) : insertion d'enregistrements en base (mouvements, prestations)
-- **Calcul** (8 taches) : calculs de montants, stocks ou compteurs
-- **Consultation** (4 taches) : ecrans de recherche, selection et consultation
-- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
-- **Validation** (1 tache) : controles et verifications de coherence
-
-**Donnees modifiees** : 60 tables en ecriture (transac_entete_bar, bl_detail, reseau_cloture___rec, voyages__________voy, gm-recherche_____gmr, gm-complet_______gmc, prestations, prestations______pre, hebergement______heb, personnel_go______go, client_gm, commentaire_gm_________acc, comptable_gratuite, depot_garantie___dga, comptable________cte, depot_objets_____doa, depot_devises____dda, solde_devises____sda, change___________chg, mvt_prestation___mpr, compte_gm________cgm, lignes_de_solde__sld, fusion_eclatementfec, gratuites________gra, codes_autocom____aut, vendeurs_________ven, fichier_messagerie, fichier_validation, fichier_histotel, change_vente_____chg, lignes_de_solde__sld, troncon__________tro, heb_circuit______hci, commentaire______com, vente, cc_comptable, cc_total_par_type, cc_total, cc_type_detail, email, participants_____par, details_partici__dpa, vente_option_veo, vente____________vep, ez_card, histo_fusionseparation, histo_fusionseparation_saisie, import_mod, pms_print_param, pv_discount_reasons, heure_de_passage, qualite_avant_reprise, valeur_credit_bar_defaut, vente_par_moyen_paiement, plafond_lit, import_go_erreur_affection, tpe_par_terminal, ##_pv_customer_dat, Table_947, Table_1059).
-
-**Logique metier** : 2 regles identifiees couvrant conditions metier.
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (131 taches)
-
-- **28** - (sans nom) **[[ECRAN]](#ecran-t1)**
-- **28.1** - Test si cloture en cours
-- **28.1.1** - Blocage cloture v1
-- **28.1.2** - Blocage cloture v1
-- **28.2** - Test reseau
-- **28.3** - (sans nom) **[[ECRAN]](#ecran-t6)**
-- **28.3.2** - Veuillez patienter... **[[ECRAN]](#ecran-t11)**
-- **28.3.4** - Veuillez patienter... **[[ECRAN]](#ecran-t13)**
-- **28.3.4.1** - Mise à Oui des filiations
-- **28.3.5** - Genère filiations new
-- **28.3.7** - listing garanties
-- **28.3.8** - listing garanties
-- **28.4** - Veuillez patienter... **[[ECRAN]](#ecran-t20)**
-- **28.4.1** - Veuillez patienter ... **[[ECRAN]](#ecran-t21)**
-- **28.4.1.2** - Suppression DGA
-- **28.4.2** - Veuillez patienter ... **[[ECRAN]](#ecran-t24)**
-- **28.4.2.1** - Suppression DGA
-- **28.4.2.2** - Suppression DGA
-- **28.4.3** - Veuillez patienter ... **[[ECRAN]](#ecran-t27)**
-- **28.4.3.2** - Suppression DGA
-- **28.4.4** - Veuillez patienter ... **[[ECRAN]](#ecran-t30)**
-- **28.4.4.2** - Suppression DGA
-- **28.4.5** - Veuillez patienter ... **[[ECRAN]](#ecran-t33)**
-- **28.4.5.2** - Suppression DGA
-- **28.4.6** - Veuillez patienter ... **[[ECRAN]](#ecran-t36)**
-- **28.4.6.2** - Suppression DGA
-- **28.4.7** - Veuillez patienter ... **[[ECRAN]](#ecran-t39)**
-- **28.4.7.2** - Suppression DGA
-- **28.4.9** - Veuillez patienter ... **[[ECRAN]](#ecran-t43)**
-- **28.4.9.2** - Suppression DGA
-- **28.4.10** - Veuillez patienter ... **[[ECRAN]](#ecran-t46)**
-- **28.4.11** - Veuillez patienter ... **[[ECRAN]](#ecran-t48)**
-- **28.4.12** - Veuillez patienter ... **[[ECRAN]](#ecran-t50)**
-- **28.4.13** - Veuillez patienter ... **[[ECRAN]](#ecran-t51)**
-- **28.4.14** - Veuillez patienter... **[[ECRAN]](#ecran-t52)**
-- **28.4.15** - Veuillez patienter ... **[[ECRAN]](#ecran-t53)**
-- **28.4.15.2** - Suppression DGA
-- **28.4.16** - Veuillez patienter ... **[[ECRAN]](#ecran-t56)**
-- **28.4.16.2** - Suppression DGA
-- **28.4.17** - Veuillez patienter ... **[[ECRAN]](#ecran-t59)**
-- **28.4.17.2** - Suppression DGA
-- **28.4.18** - Veuillez patienter ... **[[ECRAN]](#ecran-t62)**
-- **28.4.18.1** - Lecture CAM
-- **28.4.19** - Veuillez patienter ... **[[ECRAN]](#ecran-t65)**
-- **28.4.19.2** - Suppression DGA
-- **28.4.20** - Veuillez patienter ... **[[ECRAN]](#ecran-t68)**
-- **28.4.20.1** - Lecture CAM
-- **28.4.21** - Veuillez patienter ... **[[ECRAN]](#ecran-t71)**
-- **28.4.21.2** - Suppression DGA
-- **28.4.22** - Veuillez patienter ... **[[ECRAN]](#ecran-t74)**
-- **28.4.22.1** - Lecture CAM
-- **28.4.23** - Veuillez patienter ... **[[ECRAN]](#ecran-t77)**
-- **28.4.23.2** - Suppression DGA
-- **28.4.24** - Veuillez patienter ... **[[ECRAN]](#ecran-t80)**
-- **28.4.24.2** - Suppression DGA
-- **28.4.25** - Veuillez patienter ... **[[ECRAN]](#ecran-t83)**
-- **28.4.25.2** - Suppression DGA
-- **28.4.26** - Veuillez patienter ... **[[ECRAN]](#ecran-t86)**
-- **28.4.26.2** - Suppression DGA
-- **28.4.27** - Veuillez patienter ... **[[ECRAN]](#ecran-t89)**
-- **28.4.27.1** - Lecture
-- **28.4.28.1** - Lecture
-- **28.4.29** - Veuillez patienter ... **[[ECRAN]](#ecran-t95)**
-- **28.4.29.2** - Suppression DGA
-- **28.4.30** - Veuillez patienter ... **[[ECRAN]](#ecran-t98)**
-- **28.4.30.2** - Suppression DGA
-- **28.4.31** - Veuillez patienter ... **[[ECRAN]](#ecran-t101)**
-- **28.4.31.1** - Suppression DGA
-- **28.4.32** - Veuillez patienter ... **[[ECRAN]](#ecran-t103)**
-- **28.4.33** - Veuillez patienter ... **[[ECRAN]](#ecran-t104)**
-- **28.4.34** - Veuillez patienter ... **[[ECRAN]](#ecran-t105)**
-- **28.4.35** - Veuillez patienter ... **[[ECRAN]](#ecran-t108)**
-- **28.4.35.1** - Lecture CAM
-- **28.4.36** - Veuillez patienter ... **[[ECRAN]](#ecran-t111)**
-- **28.4.36.1** - Lecture CAM
-- **28.4.37** - Veuillez patienter ... **[[ECRAN]](#ecran-t114)**
-- **28.4.37.2** - Suppression DGA
-- **28.4.38** - Veuillez patienter ... **[[ECRAN]](#ecran-t117)**
-- **28.4.38.1** - Lecture CAM
-- **28.4.39** - Veuilez patienter ... **[[ECRAN]](#ecran-t120)**
-- **28.4.39.2** - Suppression DGA
-- **28.4.40** - Veuillez patienter ... **[[ECRAN]](#ecran-t123)**
-- **28.4.40.2** - Suppression DGA
-- **28.4.41** - Veuillez patienter ... **[[ECRAN]](#ecran-t126)**
-- **28.4.42** - Veuillez patienter ... **[[ECRAN]](#ecran-t127)**
-- **28.4.43** - Veuillez patienter ... **[[ECRAN]](#ecran-t128)**
-- **28.4.43.2** - Suppression DGA
-- **28.4.44** - Veuillez patienter ... **[[ECRAN]](#ecran-t131)**
-- **28.4.44.2** - Suppression DGA
-- **28.4.44.3** - Suppression DGA
-- **28.4.45** - Veuillez patienter ... **[[ECRAN]](#ecran-t135)**
-- **28.4.45.2** - Suppression DGA
-- **28.4.46** - Veuillez patienter ... **[[ECRAN]](#ecran-t138)**
-- **28.4.46.2** - Suppression DGA
-- **28.4.47** - Veuillez patienter ... **[[ECRAN]](#ecran-t141)**
-- **28.4.47.2** - Suppression DGA
-- **28.4.48** - Veuillez patienter... **[[ECRAN]](#ecran-t144)**
-- **28.4.48.2** - Suppression DGA
-- **28.4.49** - Veuillez patienter... **[[ECRAN]](#ecran-t147)**
-- **28.4.49.2** - Suppression DGA
-- **28.4.50** - Veuillez patienter... **[[ECRAN]](#ecran-t150)**
-- **28.4.50.2** - Suppression DGA
-- **28.4.51** - Veuillez patienter... **[[ECRAN]](#ecran-t153)**
-- **28.4.51.2** - Suppression DGA
-- **28.4.52** - Veuillez patienter... **[[ECRAN]](#ecran-t156)**
-- **28.4.52.2** - Suppression DGA
-- **28.4.53** - Veuillez patienter... **[[ECRAN]](#ecran-t159)**
-- **28.4.53.2** - Suppression DGA
-- **28.4.54** - Veuillez patienter... **[[ECRAN]](#ecran-t162)**
-- **28.4.54.2** - Suppression DGA
-- **28.4.55** - Veuillez patienter ... **[[ECRAN]](#ecran-t165)**
-- **28.4.55.2** - Suppression DGA
-- **28.4.56** - Veuillez patienter... **[[ECRAN]](#ecran-t168)**
-- **28.4.57** - Veuillez patienter ... **[[ECRAN]](#ecran-t169)**
-- **28.5** - Veuillez patienter... **[[ECRAN]](#ecran-t172)**
-- **28.5.1** - Sejour
-- **28.6** - Veuillez patienter... **[[ECRAN]](#ecran-t174)**
-- **28.8** - Deblocage cloture v1
-- **28.9** - Deblocage cloture v1
-- **28.10** - Existe ecritures
-- **28.11** - Lecture histo
-- **28.11.1** - Chrono LOG reprise
-- **28.15** - Veuillez patienter SVP ... **[[ECRAN]](#ecran-t184)**
-- **28.16** - Reprise virtuelles
-- **28.17** - Veuillez patienter... **[[ECRAN]](#ecran-t190)**
-- **28.3.4.2** - View pointage **[[ECRAN]](#ecran-t191)**
-- **28.4.2.3** - Update DGA
-- **28.3.1.1.1** - (sans nom)
-- **28.4.58** - Traitement VRLVSL
-- **28.4.59** - Veuillez patienter ... **[[ECRAN]](#ecran-t201)**
-- **28.4.59.2** - Suppression DGA
-
-Delegue a : [Write histo_Fus_Sep_Log (IDE 35)](ADH-IDE-35.md), [Read histo Fus_Sep_Det (IDE 30)](ADH-IDE-30.md), [Write histo_Fus_Sep_Det (IDE 31)](ADH-IDE-31.md), [Write histo Fus_Sep (IDE 29)](ADH-IDE-29.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Read histo_Fus_Sep_Log (IDE 34)](ADH-IDE-34.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md)
-
-#### Phase 2 : Consultation (4 taches)
-
-- **28.3.1** - Selection GM **[[ECRAN]](#ecran-t7)**
-- **28.3.6** - Recherche d'un GM **[[ECRAN]](#ecran-t16)**
-- **28.3.9** - Choix de la garantie **[[ECRAN]](#ecran-t19)**
-- **28.7** - Reaffichage infos reseau
-
-Delegue a : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
-
-#### Phase 3 : Calcul (8 taches)
-
-- **28.3.1.1** - Lect. Etat du compte
-- **28.3.1.2** - Blocage comptes selectionnes **[[ECRAN]](#ecran-t9)**
-- **28.3.1.3** - Blocage comptes selectionnes **[[ECRAN]](#ecran-t10)**
-- **28.4.10.1** - Calcul solde compte cible
-- **28.4.11.1** - Calcul solde compte cible
-- **28.12** - Calcul compte GM
-- **28.4.2.4** - MaJ Flag Compte Garanti
-- **28.4.2.5** - Get Compte Tempo
-
-#### Phase 4 : Validation (1 tache)
-
-- **28.3.3** - Validation **[[ECRAN]](#ecran-t12)**
-
-#### Phase 5 : Creation (47 taches)
-
-- **28.4.1.1** - Creation DGA
-- **28.4.3.1** - Creation DGA
-- **28.4.4.1** - Creation DGA
-- **28.4.5.1** - Creation DGA
-- **28.4.6.1** - Creation DGA
-- **28.4.7.1** - Creation DGA
-- **28.4.8** - Creation FEC **[[ECRAN]](#ecran-t42)**
-- **28.4.9.1** - Creation DGA
-- **28.4.15.1** - Creation DGA
-- **28.4.16.1** - Creation DGA
-- **28.4.17.1** - Creation DGA
-- **28.4.18.2** - Creation DGA
-- **28.4.19.1** - Creation DGA
-- **28.4.20.2** - Creation DGA
-- **28.4.21.1** - Creation DGA
-- **28.4.22.2** - Creation DGA
-- **28.4.23.1** - Creation DGA
-- **28.4.24.1** - Creation DGA
-- **28.4.25.1** - Creation DGA
-- **28.4.26.1** - Creation DGA
-- **28.4.27.2** - Creation DGA
-- **28.4.28.2** - Creation DGA
-- **28.4.29.1** - Creation DGA
-- **28.4.30.1** - Creation DGA
-- **28.4.35.2** - Creation DGA
-- **28.4.36.2** - Creation DGA
-- **28.4.37.1** - Creation DGA
-- **28.4.38.2** - Creation DGA
-- **28.4.39.1** - Creation DGA
-- **28.4.40.1** - Creation DGA
-- **28.4.43.1** - Creation DGA
-- **28.4.44.1** - Creation DGA
-- **28.4.45.1** - Creation DGA
-- **28.4.46.1** - Creation DGA
-- **28.4.47.1** - Creation DGA
-- **28.4.48.1** - Creation DGA
-- **28.4.49.1** - Creation DGA
-- **28.4.50.1** - Creation DGA
-- **28.4.51.1** - Creation DGA
-- **28.4.52.1** - Creation DGA
-- **28.4.53.1** - Creation DGA
-- **28.4.54.1** - Creation DGA
-- **28.4.55.1** - Creation DGA
-- **28.13** - creation histo
-- **28.14** - creation histo
-- **28.4.49.3** - Creation
-- **28.4.59.1** - Creation DGA
-
-#### Phase 6 : Saisie (1 tache)
-
-- **28.4.28** - Traitement CHG vente **[[ECRAN]](#ecran-t92)**
-
-Delegue a : [Write histo_Fus_Sep_Saisie (IDE 32)](ADH-IDE-32.md), [Delete histo_Fus_Sep_Saisie (IDE 33)](ADH-IDE-33.md)
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| compte_gm________cgm | R/**W** (12 usages) | Comptes GM (generaux) |
-| histo_fusionseparation_saisie | R/**W**/L (9 usages) | Historique / journal |
-| gm-recherche_____gmr | R/**W**/L (8 usages) | Index de recherche |
-| depot_garantie___dga | R/**W**/L (6 usages) | Depots et garanties |
-| histo_fusionseparation | R/**W**/L (5 usages) | Historique / journal |
-| reseau_cloture___rec | R/**W** (5 usages) | Donnees reseau/cloture |
-| vente____________vep | **W** (4 usages) | Donnees de ventes |
-| cc_comptable | **W** (4 usages) |  |
-| fusion_eclatementfec | R/**W** (4 usages) |  |
-| lignes_de_solde__sld | **W** (3 usages) |  |
-| comptable________cte | R/**W** (3 usages) |  |
-| cc_total | **W** (3 usages) |  |
-| mvt_prestation___mpr | R/**W** (3 usages) | Prestations/services vendus |
-| depot_devises____dda | **W** (3 usages) | Depots et garanties |
-| import_go_erreur_affection | R/**W** (3 usages) |  |
-| commentaire_gm_________acc | R/**W** (3 usages) |  |
-| prestations______pre | R/**W** (3 usages) | Prestations/services vendus |
-| lignes_de_solde__sld | **W** (3 usages) |  |
-| cc_type_detail | **W** (3 usages) |  |
-| Table_947 | **W** (3 usages) |  |
-| tpe_par_terminal | R/**W** (3 usages) |  |
-| gratuites________gra | R/**W** (3 usages) |  |
-| plafond_lit | R/**W** (3 usages) |  |
-| transac_entete_bar | **W** (3 usages) |  |
-| vente_option_veo | **W** (3 usages) | Donnees de ventes |
-| prestations | R/**W** (3 usages) | Prestations/services vendus |
-| heure_de_passage | **W** (3 usages) |  |
-| participants_____par | **W** (3 usages) |  |
-| voyages__________voy | **W** (3 usages) |  |
-| bl_detail | **W** (3 usages) |  |
-| hebergement______heb | **W** (3 usages) | Hebergement (chambres) |
-| fichier_validation | R/**W** (3 usages) |  |
-| details_partici__dpa | **W** (3 usages) |  |
-| fichier_histotel | R/**W** (3 usages) | Historique / journal |
-| pms_print_param | **W** (3 usages) |  |
-| cc_total_par_type | **W** (3 usages) |  |
-| depot_objets_____doa | **W** (3 usages) | Depots et garanties |
-| import_mod | **W** (3 usages) |  |
-| heb_circuit______hci | **W** (3 usages) | Hebergement (chambres) |
-| vente_par_moyen_paiement | R/**W** (3 usages) | Donnees de ventes |
-| comptable_gratuite | **W** (3 usages) |  |
-| ##_pv_customer_dat | R/**W** (3 usages) |  |
-| personnel_go______go | R/**W** (2 usages) |  |
-| solde_devises____sda | **W** (2 usages) | Devises / taux de change |
-| change___________chg | R/**W** (2 usages) |  |
-| qualite_avant_reprise | R/**W** (2 usages) |  |
-| gm-complet_______gmc | R/**W** (2 usages) |  |
-| change_vente_____chg | R/**W** (2 usages) | Donnees de ventes |
-| fichier_messagerie | R/**W** (2 usages) |  |
-| codes_autocom____aut | R/**W** (2 usages) |  |
-| vente | **W** (2 usages) | Donnees de ventes |
-| ez_card | R/**W** (2 usages) |  |
-| valeur_credit_bar_defaut | **W** (1 usages) |  |
-| Table_1059 | **W** (1 usages) |  |
-| pv_discount_reasons | **W** (1 usages) |  |
-| client_gm | **W** (1 usages) |  |
-| troncon__________tro | **W** (1 usages) |  |
-| vendeurs_________ven | **W** (1 usages) |  |
-| email | **W** (1 usages) |  |
-| commentaire______com | **W** (1 usages) |  |
-
-</details>
+À l'issue de la fusion, le programme génère des documents d'impression via les modules d'édition (IDE 36, 179-182) pour confirmer l'opération. Cette architecture en cascades de tâches reflète la complexité métier d'une fusion de compte : validation préalable, transformation données multi-tables, traçabilité complète via historique, et génération de preuves documentaires.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -330,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>28 - (sans nom) [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - (sans nom) [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (131 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -340,986 +46,986 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [28.1](#t2) | Test si cloture en cours | Traitement |
-| [28.1.1](#t3) | Blocage cloture v1 | Traitement |
-| [28.1.2](#t4) | Blocage cloture v1 | Traitement |
-| [28.2](#t5) | Test reseau | Traitement |
-| [28.3](#t6) | (sans nom) **[[ECRAN]](#ecran-t6)** | Traitement |
-| [28.3.2](#t11) | Veuillez patienter... **[[ECRAN]](#ecran-t11)** | Traitement |
-| [28.3.4](#t13) | Veuillez patienter... **[[ECRAN]](#ecran-t13)** | Traitement |
-| [28.3.4.1](#t14) | Mise à Oui des filiations | Traitement |
-| [28.3.5](#t15) | Genère filiations new | Traitement |
-| [28.3.7](#t17) | listing garanties | Traitement |
-| [28.3.8](#t18) | listing garanties | Traitement |
-| [28.4](#t20) | Veuillez patienter... **[[ECRAN]](#ecran-t20)** | Traitement |
-| [28.4.1](#t21) | Veuillez patienter ... **[[ECRAN]](#ecran-t21)** | Traitement |
-| [28.4.1.2](#t23) | Suppression DGA | Traitement |
-| [28.4.2](#t24) | Veuillez patienter ... **[[ECRAN]](#ecran-t24)** | Traitement |
-| [28.4.2.1](#t25) | Suppression DGA | Traitement |
-| [28.4.2.2](#t26) | Suppression DGA | Traitement |
-| [28.4.3](#t27) | Veuillez patienter ... **[[ECRAN]](#ecran-t27)** | Traitement |
-| [28.4.3.2](#t29) | Suppression DGA | Traitement |
-| [28.4.4](#t30) | Veuillez patienter ... **[[ECRAN]](#ecran-t30)** | Traitement |
-| [28.4.4.2](#t32) | Suppression DGA | Traitement |
-| [28.4.5](#t33) | Veuillez patienter ... **[[ECRAN]](#ecran-t33)** | Traitement |
-| [28.4.5.2](#t35) | Suppression DGA | Traitement |
-| [28.4.6](#t36) | Veuillez patienter ... **[[ECRAN]](#ecran-t36)** | Traitement |
-| [28.4.6.2](#t38) | Suppression DGA | Traitement |
-| [28.4.7](#t39) | Veuillez patienter ... **[[ECRAN]](#ecran-t39)** | Traitement |
-| [28.4.7.2](#t41) | Suppression DGA | Traitement |
-| [28.4.9](#t43) | Veuillez patienter ... **[[ECRAN]](#ecran-t43)** | Traitement |
-| [28.4.9.2](#t45) | Suppression DGA | Traitement |
-| [28.4.10](#t46) | Veuillez patienter ... **[[ECRAN]](#ecran-t46)** | Traitement |
-| [28.4.11](#t48) | Veuillez patienter ... **[[ECRAN]](#ecran-t48)** | Traitement |
-| [28.4.12](#t50) | Veuillez patienter ... **[[ECRAN]](#ecran-t50)** | Traitement |
-| [28.4.13](#t51) | Veuillez patienter ... **[[ECRAN]](#ecran-t51)** | Traitement |
-| [28.4.14](#t52) | Veuillez patienter... **[[ECRAN]](#ecran-t52)** | Traitement |
-| [28.4.15](#t53) | Veuillez patienter ... **[[ECRAN]](#ecran-t53)** | Traitement |
-| [28.4.15.2](#t55) | Suppression DGA | Traitement |
-| [28.4.16](#t56) | Veuillez patienter ... **[[ECRAN]](#ecran-t56)** | Traitement |
-| [28.4.16.2](#t58) | Suppression DGA | Traitement |
-| [28.4.17](#t59) | Veuillez patienter ... **[[ECRAN]](#ecran-t59)** | Traitement |
-| [28.4.17.2](#t61) | Suppression DGA | Traitement |
-| [28.4.18](#t62) | Veuillez patienter ... **[[ECRAN]](#ecran-t62)** | Traitement |
-| [28.4.18.1](#t63) | Lecture CAM | Traitement |
-| [28.4.19](#t65) | Veuillez patienter ... **[[ECRAN]](#ecran-t65)** | Traitement |
-| [28.4.19.2](#t67) | Suppression DGA | Traitement |
-| [28.4.20](#t68) | Veuillez patienter ... **[[ECRAN]](#ecran-t68)** | Traitement |
-| [28.4.20.1](#t69) | Lecture CAM | Traitement |
-| [28.4.21](#t71) | Veuillez patienter ... **[[ECRAN]](#ecran-t71)** | Traitement |
-| [28.4.21.2](#t73) | Suppression DGA | Traitement |
-| [28.4.22](#t74) | Veuillez patienter ... **[[ECRAN]](#ecran-t74)** | Traitement |
-| [28.4.22.1](#t75) | Lecture CAM | Traitement |
-| [28.4.23](#t77) | Veuillez patienter ... **[[ECRAN]](#ecran-t77)** | Traitement |
-| [28.4.23.2](#t79) | Suppression DGA | Traitement |
-| [28.4.24](#t80) | Veuillez patienter ... **[[ECRAN]](#ecran-t80)** | Traitement |
-| [28.4.24.2](#t82) | Suppression DGA | Traitement |
-| [28.4.25](#t83) | Veuillez patienter ... **[[ECRAN]](#ecran-t83)** | Traitement |
-| [28.4.25.2](#t85) | Suppression DGA | Traitement |
-| [28.4.26](#t86) | Veuillez patienter ... **[[ECRAN]](#ecran-t86)** | Traitement |
-| [28.4.26.2](#t88) | Suppression DGA | Traitement |
-| [28.4.27](#t89) | Veuillez patienter ... **[[ECRAN]](#ecran-t89)** | Traitement |
-| [28.4.27.1](#t90) | Lecture | Traitement |
-| [28.4.28.1](#t93) | Lecture | Traitement |
-| [28.4.29](#t95) | Veuillez patienter ... **[[ECRAN]](#ecran-t95)** | Traitement |
-| [28.4.29.2](#t97) | Suppression DGA | Traitement |
-| [28.4.30](#t98) | Veuillez patienter ... **[[ECRAN]](#ecran-t98)** | Traitement |
-| [28.4.30.2](#t100) | Suppression DGA | Traitement |
-| [28.4.31](#t101) | Veuillez patienter ... **[[ECRAN]](#ecran-t101)** | Traitement |
-| [28.4.31.1](#t102) | Suppression DGA | Traitement |
-| [28.4.32](#t103) | Veuillez patienter ... **[[ECRAN]](#ecran-t103)** | Traitement |
-| [28.4.33](#t104) | Veuillez patienter ... **[[ECRAN]](#ecran-t104)** | Traitement |
-| [28.4.34](#t105) | Veuillez patienter ... **[[ECRAN]](#ecran-t105)** | Traitement |
-| [28.4.35](#t108) | Veuillez patienter ... **[[ECRAN]](#ecran-t108)** | Traitement |
-| [28.4.35.1](#t109) | Lecture CAM | Traitement |
-| [28.4.36](#t111) | Veuillez patienter ... **[[ECRAN]](#ecran-t111)** | Traitement |
-| [28.4.36.1](#t112) | Lecture CAM | Traitement |
-| [28.4.37](#t114) | Veuillez patienter ... **[[ECRAN]](#ecran-t114)** | Traitement |
-| [28.4.37.2](#t116) | Suppression DGA | Traitement |
-| [28.4.38](#t117) | Veuillez patienter ... **[[ECRAN]](#ecran-t117)** | Traitement |
-| [28.4.38.1](#t118) | Lecture CAM | Traitement |
-| [28.4.39](#t120) | Veuilez patienter ... **[[ECRAN]](#ecran-t120)** | Traitement |
-| [28.4.39.2](#t122) | Suppression DGA | Traitement |
-| [28.4.40](#t123) | Veuillez patienter ... **[[ECRAN]](#ecran-t123)** | Traitement |
-| [28.4.40.2](#t125) | Suppression DGA | Traitement |
-| [28.4.41](#t126) | Veuillez patienter ... **[[ECRAN]](#ecran-t126)** | Traitement |
-| [28.4.42](#t127) | Veuillez patienter ... **[[ECRAN]](#ecran-t127)** | Traitement |
-| [28.4.43](#t128) | Veuillez patienter ... **[[ECRAN]](#ecran-t128)** | Traitement |
-| [28.4.43.2](#t130) | Suppression DGA | Traitement |
-| [28.4.44](#t131) | Veuillez patienter ... **[[ECRAN]](#ecran-t131)** | Traitement |
-| [28.4.44.2](#t133) | Suppression DGA | Traitement |
-| [28.4.44.3](#t134) | Suppression DGA | Traitement |
-| [28.4.45](#t135) | Veuillez patienter ... **[[ECRAN]](#ecran-t135)** | Traitement |
-| [28.4.45.2](#t137) | Suppression DGA | Traitement |
-| [28.4.46](#t138) | Veuillez patienter ... **[[ECRAN]](#ecran-t138)** | Traitement |
-| [28.4.46.2](#t140) | Suppression DGA | Traitement |
-| [28.4.47](#t141) | Veuillez patienter ... **[[ECRAN]](#ecran-t141)** | Traitement |
-| [28.4.47.2](#t143) | Suppression DGA | Traitement |
-| [28.4.48](#t144) | Veuillez patienter... **[[ECRAN]](#ecran-t144)** | Traitement |
-| [28.4.48.2](#t146) | Suppression DGA | Traitement |
-| [28.4.49](#t147) | Veuillez patienter... **[[ECRAN]](#ecran-t147)** | Traitement |
-| [28.4.49.2](#t149) | Suppression DGA | Traitement |
-| [28.4.50](#t150) | Veuillez patienter... **[[ECRAN]](#ecran-t150)** | Traitement |
-| [28.4.50.2](#t152) | Suppression DGA | Traitement |
-| [28.4.51](#t153) | Veuillez patienter... **[[ECRAN]](#ecran-t153)** | Traitement |
-| [28.4.51.2](#t155) | Suppression DGA | Traitement |
-| [28.4.52](#t156) | Veuillez patienter... **[[ECRAN]](#ecran-t156)** | Traitement |
-| [28.4.52.2](#t158) | Suppression DGA | Traitement |
-| [28.4.53](#t159) | Veuillez patienter... **[[ECRAN]](#ecran-t159)** | Traitement |
-| [28.4.53.2](#t161) | Suppression DGA | Traitement |
-| [28.4.54](#t162) | Veuillez patienter... **[[ECRAN]](#ecran-t162)** | Traitement |
-| [28.4.54.2](#t164) | Suppression DGA | Traitement |
-| [28.4.55](#t165) | Veuillez patienter ... **[[ECRAN]](#ecran-t165)** | Traitement |
-| [28.4.55.2](#t167) | Suppression DGA | Traitement |
-| [28.4.56](#t168) | Veuillez patienter... **[[ECRAN]](#ecran-t168)** | Traitement |
-| [28.4.57](#t169) | Veuillez patienter ... **[[ECRAN]](#ecran-t169)** | Traitement |
-| [28.5](#t172) | Veuillez patienter... **[[ECRAN]](#ecran-t172)** | Traitement |
-| [28.5.1](#t173) | Sejour | Traitement |
-| [28.6](#t174) | Veuillez patienter... **[[ECRAN]](#ecran-t174)** | Traitement |
-| [28.8](#t176) | Deblocage cloture v1 | Traitement |
-| [28.9](#t177) | Deblocage cloture v1 | Traitement |
-| [28.10](#t178) | Existe ecritures | Traitement |
-| [28.11](#t179) | Lecture histo | Traitement |
-| [28.11.1](#t180) | Chrono LOG reprise | Traitement |
-| [28.15](#t184) | Veuillez patienter SVP ... **[[ECRAN]](#ecran-t184)** | Traitement |
-| [28.16](#t185) | Reprise virtuelles | Traitement |
-| [28.17](#t190) | Veuillez patienter... **[[ECRAN]](#ecran-t190)** | Traitement |
-| [28.3.4.2](#t191) | View pointage **[[ECRAN]](#ecran-t191)** | Traitement |
-| [28.4.2.3](#t192) | Update DGA | Traitement |
-| [28.3.1.1.1](#t195) | (sans nom) | Traitement |
-| [28.4.58](#t196) | Traitement VRLVSL | Traitement |
-| [28.4.59](#t201) | Veuillez patienter ... **[[ECRAN]](#ecran-t201)** | Traitement |
-| [28.4.59.2](#t203) | Suppression DGA | Traitement |
+| [T2](#t2) | Test si cloture en cours | Traitement |
+| [T3](#t3) | Blocage cloture v1 | Traitement |
+| [T4](#t4) | Blocage cloture v1 | Traitement |
+| [T5](#t5) | Test reseau | Traitement |
+| [T6](#t6) | (sans nom) **[ECRAN]** | Traitement |
+| [T11](#t11) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T13](#t13) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T14](#t14) | Mise à Oui des filiations | Traitement |
+| [T15](#t15) | Genère filiations new | Traitement |
+| [T17](#t17) | listing garanties | Traitement |
+| [T18](#t18) | listing garanties | Traitement |
+| [T20](#t20) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T21](#t21) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T23](#t23) | Suppression DGA | Traitement |
+| [T24](#t24) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T25](#t25) | Suppression DGA | Traitement |
+| [T26](#t26) | Suppression DGA | Traitement |
+| [T27](#t27) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T29](#t29) | Suppression DGA | Traitement |
+| [T30](#t30) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T32](#t32) | Suppression DGA | Traitement |
+| [T33](#t33) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T35](#t35) | Suppression DGA | Traitement |
+| [T36](#t36) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T38](#t38) | Suppression DGA | Traitement |
+| [T39](#t39) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T41](#t41) | Suppression DGA | Traitement |
+| [T43](#t43) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T45](#t45) | Suppression DGA | Traitement |
+| [T46](#t46) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T48](#t48) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T50](#t50) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T51](#t51) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T52](#t52) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T53](#t53) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T55](#t55) | Suppression DGA | Traitement |
+| [T56](#t56) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T58](#t58) | Suppression DGA | Traitement |
+| [T59](#t59) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T61](#t61) | Suppression DGA | Traitement |
+| [T62](#t62) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T63](#t63) | Lecture CAM | Traitement |
+| [T65](#t65) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T67](#t67) | Suppression DGA | Traitement |
+| [T68](#t68) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T69](#t69) | Lecture CAM | Traitement |
+| [T71](#t71) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T73](#t73) | Suppression DGA | Traitement |
+| [T74](#t74) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T75](#t75) | Lecture CAM | Traitement |
+| [T77](#t77) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T79](#t79) | Suppression DGA | Traitement |
+| [T80](#t80) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T82](#t82) | Suppression DGA | Traitement |
+| [T83](#t83) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T85](#t85) | Suppression DGA | Traitement |
+| [T86](#t86) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T88](#t88) | Suppression DGA | Traitement |
+| [T89](#t89) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T90](#t90) | Lecture | Traitement |
+| [T93](#t93) | Lecture | Traitement |
+| [T95](#t95) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T97](#t97) | Suppression DGA | Traitement |
+| [T98](#t98) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T100](#t100) | Suppression DGA | Traitement |
+| [T101](#t101) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T102](#t102) | Suppression DGA | Traitement |
+| [T103](#t103) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T104](#t104) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T105](#t105) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T108](#t108) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T109](#t109) | Lecture CAM | Traitement |
+| [T111](#t111) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T112](#t112) | Lecture CAM | Traitement |
+| [T114](#t114) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T116](#t116) | Suppression DGA | Traitement |
+| [T117](#t117) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T118](#t118) | Lecture CAM | Traitement |
+| [T120](#t120) | Veuilez patienter ... **[ECRAN]** | Traitement |
+| [T122](#t122) | Suppression DGA | Traitement |
+| [T123](#t123) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T125](#t125) | Suppression DGA | Traitement |
+| [T126](#t126) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T127](#t127) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T128](#t128) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T130](#t130) | Suppression DGA | Traitement |
+| [T131](#t131) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T133](#t133) | Suppression DGA | Traitement |
+| [T134](#t134) | Suppression DGA | Traitement |
+| [T135](#t135) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T137](#t137) | Suppression DGA | Traitement |
+| [T138](#t138) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T140](#t140) | Suppression DGA | Traitement |
+| [T141](#t141) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T143](#t143) | Suppression DGA | Traitement |
+| [T144](#t144) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T146](#t146) | Suppression DGA | Traitement |
+| [T147](#t147) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T149](#t149) | Suppression DGA | Traitement |
+| [T150](#t150) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T152](#t152) | Suppression DGA | Traitement |
+| [T153](#t153) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T155](#t155) | Suppression DGA | Traitement |
+| [T156](#t156) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T158](#t158) | Suppression DGA | Traitement |
+| [T159](#t159) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T161](#t161) | Suppression DGA | Traitement |
+| [T162](#t162) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T164](#t164) | Suppression DGA | Traitement |
+| [T165](#t165) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T167](#t167) | Suppression DGA | Traitement |
+| [T168](#t168) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T169](#t169) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T172](#t172) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T173](#t173) | Sejour | Traitement |
+| [T174](#t174) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T176](#t176) | Deblocage cloture v1 | Traitement |
+| [T177](#t177) | Deblocage cloture v1 | Traitement |
+| [T178](#t178) | Existe ecritures | Traitement |
+| [T179](#t179) | Lecture histo | Traitement |
+| [T180](#t180) | Chrono LOG reprise | Traitement |
+| [T184](#t184) | Veuillez patienter SVP ... **[ECRAN]** | Traitement |
+| [T185](#t185) | Reprise virtuelles | Traitement |
+| [T190](#t190) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T191](#t191) | View pointage **[ECRAN]** | Traitement |
+| [T192](#t192) | Update DGA | Traitement |
+| [T195](#t195) | (sans nom) | Traitement |
+| [T196](#t196) | Traitement VRLVSL | Traitement |
+| [T201](#t201) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T203](#t203) | Suppression DGA | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>28.1 - Test si cloture en cours
+#### <a id="t2"></a>T2 - Test si cloture en cours
 
 **Role** : Verification : Test si cloture en cours.
 
 ---
 
-#### <a id="t3"></a>28.1.1 - Blocage cloture v1
+#### <a id="t3"></a>T3 - Blocage cloture v1
 
 **Role** : Traitement : Blocage cloture v1.
 
 ---
 
-#### <a id="t4"></a>28.1.2 - Blocage cloture v1
+#### <a id="t4"></a>T4 - Blocage cloture v1
 
 **Role** : Traitement : Blocage cloture v1.
 
 ---
 
-#### <a id="t5"></a>28.2 - Test reseau
+#### <a id="t5"></a>T5 - Test reseau
 
 **Role** : Verification : Test reseau.
 **Variables liees** : M (W0 reseau)
 
 ---
 
-#### <a id="t6"></a>28.3 - (sans nom) [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - (sans nom) [ECRAN]
 
 **Role** : Traitement interne.
 **Ecran** : 640 x 128 DLU (MDI) | [Voir mockup](#ecran-t6)
 
 ---
 
-#### <a id="t11"></a>28.3.2 - Veuillez patienter... [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t13"></a>28.3.4 - Veuillez patienter... [[ECRAN]](#ecran-t13)
+#### <a id="t13"></a>T13 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 57 DLU (MDI) | [Voir mockup](#ecran-t13)
 
 ---
 
-#### <a id="t14"></a>28.3.4.1 - Mise à Oui des filiations
+#### <a id="t14"></a>T14 - Mise à Oui des filiations
 
 **Role** : Traitement : Mise à Oui des filiations.
 
 ---
 
-#### <a id="t15"></a>28.3.5 - Genère filiations new
+#### <a id="t15"></a>T15 - Genère filiations new
 
 **Role** : Traitement : Genère filiations new.
 
 ---
 
-#### <a id="t17"></a>28.3.7 - listing garanties
+#### <a id="t17"></a>T17 - listing garanties
 
 **Role** : Traitement : listing garanties.
 
 ---
 
-#### <a id="t18"></a>28.3.8 - listing garanties
+#### <a id="t18"></a>T18 - listing garanties
 
 **Role** : Traitement : listing garanties.
 
 ---
 
-#### <a id="t20"></a>28.4 - Veuillez patienter... [[ECRAN]](#ecran-t20)
+#### <a id="t20"></a>T20 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 474 x 56 DLU (MDI) | [Voir mockup](#ecran-t20)
 
 ---
 
-#### <a id="t21"></a>28.4.1 - Veuillez patienter ... [[ECRAN]](#ecran-t21)
+#### <a id="t21"></a>T21 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 382 x 103 DLU (MDI) | [Voir mockup](#ecran-t21)
 
 ---
 
-#### <a id="t23"></a>28.4.1.2 - Suppression DGA
+#### <a id="t23"></a>T23 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t24"></a>28.4.2 - Veuillez patienter ... [[ECRAN]](#ecran-t24)
+#### <a id="t24"></a>T24 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 406 x 60 DLU (MDI) | [Voir mockup](#ecran-t24)
 
 ---
 
-#### <a id="t25"></a>28.4.2.1 - Suppression DGA
+#### <a id="t25"></a>T25 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t26"></a>28.4.2.2 - Suppression DGA
+#### <a id="t26"></a>T26 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t27"></a>28.4.3 - Veuillez patienter ... [[ECRAN]](#ecran-t27)
+#### <a id="t27"></a>T27 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 494 x 126 DLU (MDI) | [Voir mockup](#ecran-t27)
 
 ---
 
-#### <a id="t29"></a>28.4.3.2 - Suppression DGA
+#### <a id="t29"></a>T29 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t30"></a>28.4.4 - Veuillez patienter ... [[ECRAN]](#ecran-t30)
+#### <a id="t30"></a>T30 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 494 x 126 DLU (MDI) | [Voir mockup](#ecran-t30)
 
 ---
 
-#### <a id="t32"></a>28.4.4.2 - Suppression DGA
+#### <a id="t32"></a>T32 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t33"></a>28.4.5 - Veuillez patienter ... [[ECRAN]](#ecran-t33)
+#### <a id="t33"></a>T33 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 494 x 126 DLU (MDI) | [Voir mockup](#ecran-t33)
 
 ---
 
-#### <a id="t35"></a>28.4.5.2 - Suppression DGA
+#### <a id="t35"></a>T35 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t36"></a>28.4.6 - Veuillez patienter ... [[ECRAN]](#ecran-t36)
+#### <a id="t36"></a>T36 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 494 x 126 DLU (MDI) | [Voir mockup](#ecran-t36)
 
 ---
 
-#### <a id="t38"></a>28.4.6.2 - Suppression DGA
+#### <a id="t38"></a>T38 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t39"></a>28.4.7 - Veuillez patienter ... [[ECRAN]](#ecran-t39)
+#### <a id="t39"></a>T39 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 494 x 126 DLU (MDI) | [Voir mockup](#ecran-t39)
 
 ---
 
-#### <a id="t41"></a>28.4.7.2 - Suppression DGA
+#### <a id="t41"></a>T41 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t43"></a>28.4.9 - Veuillez patienter ... [[ECRAN]](#ecran-t43)
+#### <a id="t43"></a>T43 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 494 x 126 DLU (MDI) | [Voir mockup](#ecran-t43)
 
 ---
 
-#### <a id="t45"></a>28.4.9.2 - Suppression DGA
+#### <a id="t45"></a>T45 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t46"></a>28.4.10 - Veuillez patienter ... [[ECRAN]](#ecran-t46)
+#### <a id="t46"></a>T46 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 634 x 111 DLU (MDI) | [Voir mockup](#ecran-t46)
 
 ---
 
-#### <a id="t48"></a>28.4.11 - Veuillez patienter ... [[ECRAN]](#ecran-t48)
+#### <a id="t48"></a>T48 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 634 x 111 DLU (MDI) | [Voir mockup](#ecran-t48)
 
 ---
 
-#### <a id="t50"></a>28.4.12 - Veuillez patienter ... [[ECRAN]](#ecran-t50)
+#### <a id="t50"></a>T50 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 634 x 111 DLU (MDI) | [Voir mockup](#ecran-t50)
 
 ---
 
-#### <a id="t51"></a>28.4.13 - Veuillez patienter ... [[ECRAN]](#ecran-t51)
+#### <a id="t51"></a>T51 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 634 x 111 DLU (MDI) | [Voir mockup](#ecran-t51)
 
 ---
 
-#### <a id="t52"></a>28.4.14 - Veuillez patienter... [[ECRAN]](#ecran-t52)
+#### <a id="t52"></a>T52 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 57 DLU (MDI) | [Voir mockup](#ecran-t52)
 
 ---
 
-#### <a id="t53"></a>28.4.15 - Veuillez patienter ... [[ECRAN]](#ecran-t53)
+#### <a id="t53"></a>T53 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 506 x 119 DLU (MDI) | [Voir mockup](#ecran-t53)
 
 ---
 
-#### <a id="t55"></a>28.4.15.2 - Suppression DGA
+#### <a id="t55"></a>T55 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t56"></a>28.4.16 - Veuillez patienter ... [[ECRAN]](#ecran-t56)
+#### <a id="t56"></a>T56 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 642 x 111 DLU (MDI) | [Voir mockup](#ecran-t56)
 
 ---
 
-#### <a id="t58"></a>28.4.16.2 - Suppression DGA
+#### <a id="t58"></a>T58 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t59"></a>28.4.17 - Veuillez patienter ... [[ECRAN]](#ecran-t59)
+#### <a id="t59"></a>T59 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 637 x 109 DLU (MDI) | [Voir mockup](#ecran-t59)
 
 ---
 
-#### <a id="t61"></a>28.4.17.2 - Suppression DGA
+#### <a id="t61"></a>T61 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t62"></a>28.4.18 - Veuillez patienter ... [[ECRAN]](#ecran-t62)
+#### <a id="t62"></a>T62 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 403 x 105 DLU (MDI) | [Voir mockup](#ecran-t62)
 
 ---
 
-#### <a id="t63"></a>28.4.18.1 - Lecture CAM
+#### <a id="t63"></a>T63 - Lecture CAM
 
 **Role** : Traitement : Lecture CAM.
 
 ---
 
-#### <a id="t65"></a>28.4.19 - Veuillez patienter ... [[ECRAN]](#ecran-t65)
+#### <a id="t65"></a>T65 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 406 x 107 DLU (MDI) | [Voir mockup](#ecran-t65)
 
 ---
 
-#### <a id="t67"></a>28.4.19.2 - Suppression DGA
+#### <a id="t67"></a>T67 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t68"></a>28.4.20 - Veuillez patienter ... [[ECRAN]](#ecran-t68)
+#### <a id="t68"></a>T68 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 394 x 107 DLU (MDI) | [Voir mockup](#ecran-t68)
 
 ---
 
-#### <a id="t69"></a>28.4.20.1 - Lecture CAM
+#### <a id="t69"></a>T69 - Lecture CAM
 
 **Role** : Traitement : Lecture CAM.
 
 ---
 
-#### <a id="t71"></a>28.4.21 - Veuillez patienter ... [[ECRAN]](#ecran-t71)
+#### <a id="t71"></a>T71 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 530 x 107 DLU (MDI) | [Voir mockup](#ecran-t71)
 
 ---
 
-#### <a id="t73"></a>28.4.21.2 - Suppression DGA
+#### <a id="t73"></a>T73 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t74"></a>28.4.22 - Veuillez patienter ... [[ECRAN]](#ecran-t74)
+#### <a id="t74"></a>T74 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 358 x 108 DLU (MDI) | [Voir mockup](#ecran-t74)
 
 ---
 
-#### <a id="t75"></a>28.4.22.1 - Lecture CAM
+#### <a id="t75"></a>T75 - Lecture CAM
 
 **Role** : Traitement : Lecture CAM.
 
 ---
 
-#### <a id="t77"></a>28.4.23 - Veuillez patienter ... [[ECRAN]](#ecran-t77)
+#### <a id="t77"></a>T77 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 382 x 103 DLU (MDI) | [Voir mockup](#ecran-t77)
 
 ---
 
-#### <a id="t79"></a>28.4.23.2 - Suppression DGA
+#### <a id="t79"></a>T79 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t80"></a>28.4.24 - Veuillez patienter ... [[ECRAN]](#ecran-t80)
+#### <a id="t80"></a>T80 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 386 x 101 DLU (MDI) | [Voir mockup](#ecran-t80)
 
 ---
 
-#### <a id="t82"></a>28.4.24.2 - Suppression DGA
+#### <a id="t82"></a>T82 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t83"></a>28.4.25 - Veuillez patienter ... [[ECRAN]](#ecran-t83)
+#### <a id="t83"></a>T83 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 525 x 102 DLU (MDI) | [Voir mockup](#ecran-t83)
 
 ---
 
-#### <a id="t85"></a>28.4.25.2 - Suppression DGA
+#### <a id="t85"></a>T85 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t86"></a>28.4.26 - Veuillez patienter ... [[ECRAN]](#ecran-t86)
+#### <a id="t86"></a>T86 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 526 x 103 DLU (MDI) | [Voir mockup](#ecran-t86)
 
 ---
 
-#### <a id="t88"></a>28.4.26.2 - Suppression DGA
+#### <a id="t88"></a>T88 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t89"></a>28.4.27 - Veuillez patienter ... [[ECRAN]](#ecran-t89)
+#### <a id="t89"></a>T89 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 650 x 102 DLU (MDI) | [Voir mockup](#ecran-t89)
 
 ---
 
-#### <a id="t90"></a>28.4.27.1 - Lecture
+#### <a id="t90"></a>T90 - Lecture
 
 **Role** : Traitement : Lecture.
 
 ---
 
-#### <a id="t93"></a>28.4.28.1 - Lecture
+#### <a id="t93"></a>T93 - Lecture
 
 **Role** : Traitement : Lecture.
 
 ---
 
-#### <a id="t95"></a>28.4.29 - Veuillez patienter ... [[ECRAN]](#ecran-t95)
+#### <a id="t95"></a>T95 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 390 x 106 DLU (MDI) | [Voir mockup](#ecran-t95)
 
 ---
 
-#### <a id="t97"></a>28.4.29.2 - Suppression DGA
+#### <a id="t97"></a>T97 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t98"></a>28.4.30 - Veuillez patienter ... [[ECRAN]](#ecran-t98)
+#### <a id="t98"></a>T98 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 389 x 103 DLU (MDI) | [Voir mockup](#ecran-t98)
 
 ---
 
-#### <a id="t100"></a>28.4.30.2 - Suppression DGA
+#### <a id="t100"></a>T100 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t101"></a>28.4.31 - Veuillez patienter ... [[ECRAN]](#ecran-t101)
+#### <a id="t101"></a>T101 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 386 x 102 DLU (MDI) | [Voir mockup](#ecran-t101)
 
 ---
 
-#### <a id="t102"></a>28.4.31.1 - Suppression DGA
+#### <a id="t102"></a>T102 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t103"></a>28.4.32 - Veuillez patienter ... [[ECRAN]](#ecran-t103)
+#### <a id="t103"></a>T103 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 411 x 76 DLU (MDI) | [Voir mockup](#ecran-t103)
 
 ---
 
-#### <a id="t104"></a>28.4.33 - Veuillez patienter ... [[ECRAN]](#ecran-t104)
+#### <a id="t104"></a>T104 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 528 x 102 DLU (MDI) | [Voir mockup](#ecran-t104)
 
 ---
 
-#### <a id="t105"></a>28.4.34 - Veuillez patienter ... [[ECRAN]](#ecran-t105)
+#### <a id="t105"></a>T105 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 389 x 36 DLU (MDI) | [Voir mockup](#ecran-t105)
 
 ---
 
-#### <a id="t108"></a>28.4.35 - Veuillez patienter ... [[ECRAN]](#ecran-t108)
+#### <a id="t108"></a>T108 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 378 x 104 DLU (MDI) | [Voir mockup](#ecran-t108)
 
 ---
 
-#### <a id="t109"></a>28.4.35.1 - Lecture CAM
+#### <a id="t109"></a>T109 - Lecture CAM
 
 **Role** : Traitement : Lecture CAM.
 
 ---
 
-#### <a id="t111"></a>28.4.36 - Veuillez patienter ... [[ECRAN]](#ecran-t111)
+#### <a id="t111"></a>T111 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 389 x 102 DLU (MDI) | [Voir mockup](#ecran-t111)
 
 ---
 
-#### <a id="t112"></a>28.4.36.1 - Lecture CAM
+#### <a id="t112"></a>T112 - Lecture CAM
 
 **Role** : Traitement : Lecture CAM.
 
 ---
 
-#### <a id="t114"></a>28.4.37 - Veuillez patienter ... [[ECRAN]](#ecran-t114)
+#### <a id="t114"></a>T114 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 390 x 102 DLU (MDI) | [Voir mockup](#ecran-t114)
 
 ---
 
-#### <a id="t116"></a>28.4.37.2 - Suppression DGA
+#### <a id="t116"></a>T116 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t117"></a>28.4.38 - Veuillez patienter ... [[ECRAN]](#ecran-t117)
+#### <a id="t117"></a>T117 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 389 x 102 DLU (MDI) | [Voir mockup](#ecran-t117)
 
 ---
 
-#### <a id="t118"></a>28.4.38.1 - Lecture CAM
+#### <a id="t118"></a>T118 - Lecture CAM
 
 **Role** : Traitement : Lecture CAM.
 
 ---
 
-#### <a id="t120"></a>28.4.39 - Veuilez patienter ... [[ECRAN]](#ecran-t120)
+#### <a id="t120"></a>T120 - Veuilez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuilez patienter ....
 **Ecran** : 378 x 104 DLU (MDI) | [Voir mockup](#ecran-t120)
 
 ---
 
-#### <a id="t122"></a>28.4.39.2 - Suppression DGA
+#### <a id="t122"></a>T122 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t123"></a>28.4.40 - Veuillez patienter ... [[ECRAN]](#ecran-t123)
+#### <a id="t123"></a>T123 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 480 x 104 DLU (MDI) | [Voir mockup](#ecran-t123)
 
 ---
 
-#### <a id="t125"></a>28.4.40.2 - Suppression DGA
+#### <a id="t125"></a>T125 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t126"></a>28.4.41 - Veuillez patienter ... [[ECRAN]](#ecran-t126)
+#### <a id="t126"></a>T126 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 507 x 103 DLU (MDI) | [Voir mockup](#ecran-t126)
 
 ---
 
-#### <a id="t127"></a>28.4.42 - Veuillez patienter ... [[ECRAN]](#ecran-t127)
+#### <a id="t127"></a>T127 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 498 x 103 DLU (MDI) | [Voir mockup](#ecran-t127)
 
 ---
 
-#### <a id="t128"></a>28.4.43 - Veuillez patienter ... [[ECRAN]](#ecran-t128)
+#### <a id="t128"></a>T128 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 379 x 103 DLU (MDI) | [Voir mockup](#ecran-t128)
 
 ---
 
-#### <a id="t130"></a>28.4.43.2 - Suppression DGA
+#### <a id="t130"></a>T130 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t131"></a>28.4.44 - Veuillez patienter ... [[ECRAN]](#ecran-t131)
+#### <a id="t131"></a>T131 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 382 x 103 DLU (MDI) | [Voir mockup](#ecran-t131)
 
 ---
 
-#### <a id="t133"></a>28.4.44.2 - Suppression DGA
+#### <a id="t133"></a>T133 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t134"></a>28.4.44.3 - Suppression DGA
+#### <a id="t134"></a>T134 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t135"></a>28.4.45 - Veuillez patienter ... [[ECRAN]](#ecran-t135)
+#### <a id="t135"></a>T135 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 382 x 103 DLU (MDI) | [Voir mockup](#ecran-t135)
 
 ---
 
-#### <a id="t137"></a>28.4.45.2 - Suppression DGA
+#### <a id="t137"></a>T137 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t138"></a>28.4.46 - Veuillez patienter ... [[ECRAN]](#ecran-t138)
+#### <a id="t138"></a>T138 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 382 x 103 DLU (MDI) | [Voir mockup](#ecran-t138)
 
 ---
 
-#### <a id="t140"></a>28.4.46.2 - Suppression DGA
+#### <a id="t140"></a>T140 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t141"></a>28.4.47 - Veuillez patienter ... [[ECRAN]](#ecran-t141)
+#### <a id="t141"></a>T141 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 382 x 103 DLU (MDI) | [Voir mockup](#ecran-t141)
 
 ---
 
-#### <a id="t143"></a>28.4.47.2 - Suppression DGA
+#### <a id="t143"></a>T143 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t144"></a>28.4.48 - Veuillez patienter... [[ECRAN]](#ecran-t144)
+#### <a id="t144"></a>T144 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t144)
 
 ---
 
-#### <a id="t146"></a>28.4.48.2 - Suppression DGA
+#### <a id="t146"></a>T146 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t147"></a>28.4.49 - Veuillez patienter... [[ECRAN]](#ecran-t147)
+#### <a id="t147"></a>T147 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t147)
 
 ---
 
-#### <a id="t149"></a>28.4.49.2 - Suppression DGA
+#### <a id="t149"></a>T149 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t150"></a>28.4.50 - Veuillez patienter... [[ECRAN]](#ecran-t150)
+#### <a id="t150"></a>T150 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t150)
 
 ---
 
-#### <a id="t152"></a>28.4.50.2 - Suppression DGA
+#### <a id="t152"></a>T152 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t153"></a>28.4.51 - Veuillez patienter... [[ECRAN]](#ecran-t153)
+#### <a id="t153"></a>T153 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t153)
 
 ---
 
-#### <a id="t155"></a>28.4.51.2 - Suppression DGA
+#### <a id="t155"></a>T155 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t156"></a>28.4.52 - Veuillez patienter... [[ECRAN]](#ecran-t156)
+#### <a id="t156"></a>T156 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t156)
 
 ---
 
-#### <a id="t158"></a>28.4.52.2 - Suppression DGA
+#### <a id="t158"></a>T158 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t159"></a>28.4.53 - Veuillez patienter... [[ECRAN]](#ecran-t159)
+#### <a id="t159"></a>T159 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t159)
 
 ---
 
-#### <a id="t161"></a>28.4.53.2 - Suppression DGA
+#### <a id="t161"></a>T161 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t162"></a>28.4.54 - Veuillez patienter... [[ECRAN]](#ecran-t162)
+#### <a id="t162"></a>T162 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t162)
 
 ---
 
-#### <a id="t164"></a>28.4.54.2 - Suppression DGA
+#### <a id="t164"></a>T164 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t165"></a>28.4.55 - Veuillez patienter ... [[ECRAN]](#ecran-t165)
+#### <a id="t165"></a>T165 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 382 x 103 DLU (MDI) | [Voir mockup](#ecran-t165)
 
 ---
 
-#### <a id="t167"></a>28.4.55.2 - Suppression DGA
+#### <a id="t167"></a>T167 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
 ---
 
-#### <a id="t168"></a>28.4.56 - Veuillez patienter... [[ECRAN]](#ecran-t168)
+#### <a id="t168"></a>T168 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t168)
 
 ---
 
-#### <a id="t169"></a>28.4.57 - Veuillez patienter ... [[ECRAN]](#ecran-t169)
+#### <a id="t169"></a>T169 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 494 x 126 DLU (MDI) | [Voir mockup](#ecran-t169)
 
 ---
 
-#### <a id="t172"></a>28.5 - Veuillez patienter... [[ECRAN]](#ecran-t172)
+#### <a id="t172"></a>T172 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 57 DLU (MDI) | [Voir mockup](#ecran-t172)
 
 ---
 
-#### <a id="t173"></a>28.5.1 - Sejour
+#### <a id="t173"></a>T173 - Sejour
 
 **Role** : Traitement : Sejour.
 
 ---
 
-#### <a id="t174"></a>28.6 - Veuillez patienter... [[ECRAN]](#ecran-t174)
+#### <a id="t174"></a>T174 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 426 x 57 DLU (MDI) | [Voir mockup](#ecran-t174)
 
 ---
 
-#### <a id="t176"></a>28.8 - Deblocage cloture v1
+#### <a id="t176"></a>T176 - Deblocage cloture v1
 
 **Role** : Traitement : Deblocage cloture v1.
 
 ---
 
-#### <a id="t177"></a>28.9 - Deblocage cloture v1
+#### <a id="t177"></a>T177 - Deblocage cloture v1
 
 **Role** : Traitement : Deblocage cloture v1.
 
 ---
 
-#### <a id="t178"></a>28.10 - Existe ecritures
+#### <a id="t178"></a>T178 - Existe ecritures
 
 **Role** : Traitement : Existe ecritures.
 **Variables liees** : U (W0 Existe ecriture), BB (W0 code LOG existe)
 
 ---
 
-#### <a id="t179"></a>28.11 - Lecture histo
+#### <a id="t179"></a>T179 - Lecture histo
 
 **Role** : Traitement : Lecture histo.
 **Variables liees** : K (P0.Chrono histo sans interface), BA (W0 chrono histo)
 
 ---
 
-#### <a id="t180"></a>28.11.1 - Chrono LOG reprise
+#### <a id="t180"></a>T180 - Chrono LOG reprise
 
 **Role** : Traitement : Chrono LOG reprise.
 **Variables liees** : I (P0 Reprise Auto), K (P0.Chrono histo sans interface), W (W0 reprise), X (W0 chrono reprise), BA (W0 chrono histo)
 
 ---
 
-#### <a id="t184"></a>28.15 - Veuillez patienter SVP ... [[ECRAN]](#ecran-t184)
+#### <a id="t184"></a>T184 - Veuillez patienter SVP ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter SVP ....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t184)
 
 ---
 
-#### <a id="t185"></a>28.16 - Reprise virtuelles
+#### <a id="t185"></a>T185 - Reprise virtuelles
 
 **Role** : Traitement : Reprise virtuelles.
 **Variables liees** : I (P0 Reprise Auto), W (W0 reprise), X (W0 chrono reprise), BD (W0 reprise confirmee)
 
 ---
 
-#### <a id="t190"></a>28.17 - Veuillez patienter... [[ECRAN]](#ecran-t190)
+#### <a id="t190"></a>T190 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 426 x 57 DLU (MDI) | [Voir mockup](#ecran-t190)
 
 ---
 
-#### <a id="t191"></a>28.3.4.2 - View pointage [[ECRAN]](#ecran-t191)
+#### <a id="t191"></a>T191 - View pointage [ECRAN]
 
 **Role** : Traitement : View pointage.
 **Ecran** : 1066 x 0 DLU | [Voir mockup](#ecran-t191)
 
 ---
 
-#### <a id="t192"></a>28.4.2.3 - Update DGA
+#### <a id="t192"></a>T192 - Update DGA
 
 **Role** : Traitement : Update DGA.
 
 ---
 
-#### <a id="t195"></a>28.3.1.1.1 - (sans nom)
+#### <a id="t195"></a>T195 - (sans nom)
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t196"></a>28.4.58 - Traitement VRLVSL
+#### <a id="t196"></a>T196 - Traitement VRLVSL
 
 **Role** : Traitement : Traitement VRLVSL.
 
 ---
 
-#### <a id="t201"></a>28.4.59 - Veuillez patienter ... [[ECRAN]](#ecran-t201)
+#### <a id="t201"></a>T201 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 382 x 103 DLU (MDI) | [Voir mockup](#ecran-t201)
 
 ---
 
-#### <a id="t203"></a>28.4.59.2 - Suppression DGA
+#### <a id="t203"></a>T203 - Suppression DGA
 
 **Role** : Traitement : Suppression DGA.
 
@@ -1330,21 +1036,21 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t7"></a>28.3.1 - Selection GM [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - Selection GM [ECRAN]
 
 **Role** : Selection par l'operateur : Selection GM.
 **Ecran** : 1074 x 208 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t16"></a>28.3.6 - Recherche d'un GM [[ECRAN]](#ecran-t16)
+#### <a id="t16"></a>T16 - Recherche d'un GM [ECRAN]
 
 **Role** : Traitement : Recherche d'un GM.
 **Ecran** : 680 x 90 DLU (MDI) | [Voir mockup](#ecran-t16)
 
 ---
 
-#### <a id="t19"></a>28.3.9 - Choix de la garantie [[ECRAN]](#ecran-t19)
+#### <a id="t19"></a>T19 - Choix de la garantie [ECRAN]
 
 **Role** : Selection par l'operateur : Choix de la garantie.
 **Ecran** : 680 x 90 DLU (MDI) | [Voir mockup](#ecran-t19)
@@ -1352,7 +1058,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t175"></a>28.7 - Reaffichage infos reseau
+#### <a id="t175"></a>T175 - Reaffichage infos reseau
 
 **Role** : Reinitialisation : Reaffichage infos reseau.
 **Variables liees** : M (W0 reseau)
@@ -1364,56 +1070,56 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t8"></a>28.3.1.1 - Lect. Etat du compte
+#### <a id="t8"></a>T8 - Lect. Etat du compte
 
 **Role** : Traitement : Lect. Etat du compte.
 **Variables liees** : S (W0 qualite compte), BE (W0 Compte garantie à conserver), BH (W0 Compte utilisé modifié?), BI (W0 Compte remplace à la sortie)
 
 ---
 
-#### <a id="t9"></a>28.3.1.2 - Blocage comptes selectionnes [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Blocage comptes selectionnes [ECRAN]
 
 **Role** : Selection par l'operateur : Blocage comptes selectionnes.
 **Ecran** : 120 x 8 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t10"></a>28.3.1.3 - Blocage comptes selectionnes [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - Blocage comptes selectionnes [ECRAN]
 
 **Role** : Selection par l'operateur : Blocage comptes selectionnes.
 **Ecran** : 120 x 8 DLU (MDI) | [Voir mockup](#ecran-t10)
 
 ---
 
-#### <a id="t47"></a>28.4.10.1 - Calcul solde compte cible
+#### <a id="t47"></a>T47 - Calcul solde compte cible
 
 **Role** : Calcul : Calcul solde compte cible.
 **Variables liees** : E (P0 solde), F (P0 date limite solde), S (W0 qualite compte), BE (W0 Compte garantie à conserver), BH (W0 Compte utilisé modifié?)
 
 ---
 
-#### <a id="t49"></a>28.4.11.1 - Calcul solde compte cible
+#### <a id="t49"></a>T49 - Calcul solde compte cible
 
 **Role** : Calcul : Calcul solde compte cible.
 **Variables liees** : E (P0 solde), F (P0 date limite solde), S (W0 qualite compte), BE (W0 Compte garantie à conserver), BH (W0 Compte utilisé modifié?)
 
 ---
 
-#### <a id="t181"></a>28.12 - Calcul compte GM
+#### <a id="t181"></a>T181 - Calcul compte GM
 
 **Role** : Calcul : Calcul compte GM.
 **Variables liees** : S (W0 qualite compte), BE (W0 Compte garantie à conserver), BH (W0 Compte utilisé modifié?), BI (W0 Compte remplace à la sortie)
 
 ---
 
-#### <a id="t193"></a>28.4.2.4 - MaJ Flag Compte Garanti
+#### <a id="t193"></a>T193 - MaJ Flag Compte Garanti
 
 **Role** : Traitement : MaJ Flag Compte Garanti.
 **Variables liees** : S (W0 qualite compte), BE (W0 Compte garantie à conserver), BF (W0 Filiation garantie à conserv), BG (W0 Garantie Club à conserver?), BH (W0 Compte utilisé modifié?)
 
 ---
 
-#### <a id="t194"></a>28.4.2.5 - Get Compte Tempo
+#### <a id="t194"></a>T194 - Get Compte Tempo
 
 **Role** : Consultation/chargement : Get Compte Tempo.
 **Variables liees** : S (W0 qualite compte), BE (W0 Compte garantie à conserver), BH (W0 Compte utilisé modifié?), BI (W0 Compte remplace à la sortie)
@@ -1425,7 +1131,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ---
 
-#### <a id="t12"></a>28.3.3 - Validation [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Validation [ECRAN]
 
 **Role** : Verification : Validation.
 **Ecran** : 72 x 8 DLU (MDI) | [Voir mockup](#ecran-t12)
@@ -1438,286 +1144,286 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t22"></a>28.4.1.1 - Creation DGA
+#### <a id="t22"></a>T22 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t28"></a>28.4.3.1 - Creation DGA
+#### <a id="t28"></a>T28 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t31"></a>28.4.4.1 - Creation DGA
+#### <a id="t31"></a>T31 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t34"></a>28.4.5.1 - Creation DGA
+#### <a id="t34"></a>T34 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t37"></a>28.4.6.1 - Creation DGA
+#### <a id="t37"></a>T37 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t40"></a>28.4.7.1 - Creation DGA
+#### <a id="t40"></a>T40 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t42"></a>28.4.8 - Creation FEC [[ECRAN]](#ecran-t42)
+#### <a id="t42"></a>T42 - Creation FEC [ECRAN]
 
 **Role** : Creation d'enregistrement : Creation FEC.
 **Ecran** : 422 x 57 DLU (MDI) | [Voir mockup](#ecran-t42)
 
 ---
 
-#### <a id="t44"></a>28.4.9.1 - Creation DGA
+#### <a id="t44"></a>T44 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t54"></a>28.4.15.1 - Creation DGA
+#### <a id="t54"></a>T54 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t57"></a>28.4.16.1 - Creation DGA
+#### <a id="t57"></a>T57 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t60"></a>28.4.17.1 - Creation DGA
+#### <a id="t60"></a>T60 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t64"></a>28.4.18.2 - Creation DGA
+#### <a id="t64"></a>T64 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t66"></a>28.4.19.1 - Creation DGA
+#### <a id="t66"></a>T66 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t70"></a>28.4.20.2 - Creation DGA
+#### <a id="t70"></a>T70 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t72"></a>28.4.21.1 - Creation DGA
+#### <a id="t72"></a>T72 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t76"></a>28.4.22.2 - Creation DGA
+#### <a id="t76"></a>T76 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t78"></a>28.4.23.1 - Creation DGA
+#### <a id="t78"></a>T78 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t81"></a>28.4.24.1 - Creation DGA
+#### <a id="t81"></a>T81 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t84"></a>28.4.25.1 - Creation DGA
+#### <a id="t84"></a>T84 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t87"></a>28.4.26.1 - Creation DGA
+#### <a id="t87"></a>T87 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t91"></a>28.4.27.2 - Creation DGA
+#### <a id="t91"></a>T91 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t94"></a>28.4.28.2 - Creation DGA
+#### <a id="t94"></a>T94 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t96"></a>28.4.29.1 - Creation DGA
+#### <a id="t96"></a>T96 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t99"></a>28.4.30.1 - Creation DGA
+#### <a id="t99"></a>T99 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t110"></a>28.4.35.2 - Creation DGA
+#### <a id="t110"></a>T110 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t113"></a>28.4.36.2 - Creation DGA
+#### <a id="t113"></a>T113 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t115"></a>28.4.37.1 - Creation DGA
+#### <a id="t115"></a>T115 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t119"></a>28.4.38.2 - Creation DGA
+#### <a id="t119"></a>T119 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t121"></a>28.4.39.1 - Creation DGA
+#### <a id="t121"></a>T121 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t124"></a>28.4.40.1 - Creation DGA
+#### <a id="t124"></a>T124 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t129"></a>28.4.43.1 - Creation DGA
+#### <a id="t129"></a>T129 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t132"></a>28.4.44.1 - Creation DGA
+#### <a id="t132"></a>T132 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t136"></a>28.4.45.1 - Creation DGA
+#### <a id="t136"></a>T136 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t139"></a>28.4.46.1 - Creation DGA
+#### <a id="t139"></a>T139 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t142"></a>28.4.47.1 - Creation DGA
+#### <a id="t142"></a>T142 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t145"></a>28.4.48.1 - Creation DGA
+#### <a id="t145"></a>T145 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t148"></a>28.4.49.1 - Creation DGA
+#### <a id="t148"></a>T148 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t151"></a>28.4.50.1 - Creation DGA
+#### <a id="t151"></a>T151 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t154"></a>28.4.51.1 - Creation DGA
+#### <a id="t154"></a>T154 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t157"></a>28.4.52.1 - Creation DGA
+#### <a id="t157"></a>T157 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t160"></a>28.4.53.1 - Creation DGA
+#### <a id="t160"></a>T160 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t163"></a>28.4.54.1 - Creation DGA
+#### <a id="t163"></a>T163 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t166"></a>28.4.55.1 - Creation DGA
+#### <a id="t166"></a>T166 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
 ---
 
-#### <a id="t182"></a>28.13 - creation histo
+#### <a id="t182"></a>T182 - creation histo
 
 **Role** : Creation d'enregistrement : creation histo.
 **Variables liees** : K (P0.Chrono histo sans interface), BA (W0 chrono histo)
 
 ---
 
-#### <a id="t183"></a>28.14 - creation histo
+#### <a id="t183"></a>T183 - creation histo
 
 **Role** : Creation d'enregistrement : creation histo.
 **Variables liees** : K (P0.Chrono histo sans interface), BA (W0 chrono histo)
 
 ---
 
-#### <a id="t197"></a>28.4.49.3 - Creation
+#### <a id="t197"></a>T197 - Creation
 
 **Role** : Creation d'enregistrement : Creation.
 
 ---
 
-#### <a id="t202"></a>28.4.59.1 - Creation DGA
+#### <a id="t202"></a>T202 - Creation DGA
 
 **Role** : Creation d'enregistrement : Creation DGA.
 
@@ -1728,7 +1434,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 
 ---
 
-#### <a id="t92"></a>28.4.28 - Traitement CHG vente [[ECRAN]](#ecran-t92)
+#### <a id="t92"></a>T92 - Traitement CHG vente [ECRAN]
 
 **Role** : Saisie des donnees : Traitement CHG vente.
 **Ecran** : 629 x 77 DLU (MDI) | [Voir mockup](#ecran-t92)
@@ -1774,24 +1480,24 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 28.3.1 | 28.3.1 | Selection GM | MDI | 1074 | 208 | Consultation |
-| 2 | 28.3.2 | 28.3.2 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
-| 3 | 28.3.4 | 28.3.4 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
-| 4 | 28.3.6 | 28.3.6 | Recherche d'un GM | MDI | 680 | 90 | Consultation |
-| 5 | 28.3.9 | 28.3.9 | Choix de la garantie | MDI | 680 | 90 | Consultation |
-| 6 | 28.4 | 28.4 | Veuillez patienter... | MDI | 474 | 56 | Traitement |
-| 7 | 28.5 | 28.5 | Veuillez patienter... | MDI | 422 | 57 | Traitement |
-| 8 | 28.6 | 28.6 | Veuillez patienter... | MDI | 426 | 57 | Traitement |
-| 9 | 28.16 | 28.15 | Veuillez patienter SVP ... | MDI | 422 | 56 | Traitement |
-| 10 | 28.7 | 28.17 | Veuillez patienter... | MDI | 426 | 57 | Traitement |
-| 11 | 28.3.4.2 | 28.3.4.2 | View pointage | Type0 | 1066 | 0 | Traitement |
+| 1 | 28.3.1 | T7 | Selection GM | MDI | 1074 | 208 | Consultation |
+| 2 | 28.3.2 | T11 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+| 3 | 28.3.4 | T13 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
+| 4 | 28.3.6 | T16 | Recherche d'un GM | MDI | 680 | 90 | Consultation |
+| 5 | 28.3.9 | T19 | Choix de la garantie | MDI | 680 | 90 | Consultation |
+| 6 | 28.4 | T20 | Veuillez patienter... | MDI | 474 | 56 | Traitement |
+| 7 | 28.5 | T172 | Veuillez patienter... | MDI | 422 | 57 | Traitement |
+| 8 | 28.6 | T174 | Veuillez patienter... | MDI | 426 | 57 | Traitement |
+| 9 | 28.16 | T184 | Veuillez patienter SVP ... | MDI | 422 | 56 | Traitement |
+| 10 | 28.7 | T190 | Veuillez patienter... | MDI | 426 | 57 | Traitement |
+| 11 | 28.3.4.2 | T191 | View pointage | Type0 | 1066 | 0 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t7"></a>28.3.1 - Selection GM
-**Tache** : [28.3.1](#t7) | **Type** : MDI | **Dimensions** : 1074 x 208 DLU
+**Tache** : [T7](#t7) | **Type** : MDI | **Dimensions** : 1074 x 208 DLU
 **Bloc** : Consultation | **Titre IDE** : Selection GM
 
 <!-- FORM-DATA:
@@ -2236,7 +1942,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 ---
 
 #### <a id="ecran-t11"></a>28.3.2 - Veuillez patienter...
-**Tache** : [28.3.2](#t11) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [T11](#t11) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -2320,7 +2026,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 ---
 
 #### <a id="ecran-t13"></a>28.3.4 - Veuillez patienter...
-**Tache** : [28.3.4](#t13) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
+**Tache** : [T13](#t13) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -2404,7 +2110,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 ---
 
 #### <a id="ecran-t16"></a>28.3.6 - Recherche d'un GM
-**Tache** : [28.3.6](#t16) | **Type** : MDI | **Dimensions** : 680 x 90 DLU
+**Tache** : [T16](#t16) | **Type** : MDI | **Dimensions** : 680 x 90 DLU
 **Bloc** : Consultation | **Titre IDE** : Recherche d'un GM
 
 <!-- FORM-DATA:
@@ -2533,7 +2239,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 ---
 
 #### <a id="ecran-t19"></a>28.3.9 - Choix de la garantie
-**Tache** : [28.3.9](#t19) | **Type** : MDI | **Dimensions** : 680 x 90 DLU
+**Tache** : [T19](#t19) | **Type** : MDI | **Dimensions** : 680 x 90 DLU
 **Bloc** : Consultation | **Titre IDE** : Choix de la garantie
 
 <!-- FORM-DATA:
@@ -2675,7 +2381,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 ---
 
 #### <a id="ecran-t20"></a>28.4 - Veuillez patienter...
-**Tache** : [28.4](#t20) | **Type** : MDI | **Dimensions** : 474 x 56 DLU
+**Tache** : [T20](#t20) | **Type** : MDI | **Dimensions** : 474 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -2795,7 +2501,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 ---
 
 #### <a id="ecran-t172"></a>28.5 - Veuillez patienter...
-**Tache** : [28.5](#t172) | **Type** : MDI | **Dimensions** : 422 x 57 DLU
+**Tache** : [T172](#t172) | **Type** : MDI | **Dimensions** : 422 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -2879,7 +2585,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 ---
 
 #### <a id="ecran-t174"></a>28.6 - Veuillez patienter...
-**Tache** : [28.6](#t174) | **Type** : MDI | **Dimensions** : 426 x 57 DLU
+**Tache** : [T174](#t174) | **Type** : MDI | **Dimensions** : 426 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -2963,7 +2669,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 ---
 
 #### <a id="ecran-t184"></a>28.16 - Veuillez patienter SVP ...
-**Tache** : [28.15](#t184) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [T184](#t184) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter SVP ...
 
 <!-- FORM-DATA:
@@ -3047,7 +2753,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 ---
 
 #### <a id="ecran-t190"></a>28.7 - Veuillez patienter...
-**Tache** : [28.17](#t190) | **Type** : MDI | **Dimensions** : 426 x 57 DLU
+**Tache** : [T190](#t190) | **Type** : MDI | **Dimensions** : 426 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -3131,7 +2837,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 ---
 
 #### <a id="ecran-t191"></a>28.3.4.2 - View pointage
-**Tache** : [28.3.4.2](#t191) | **Type** : Type0 | **Dimensions** : 1066 x 0 DLU
+**Tache** : [T191](#t191) | **Type** : Type0 | **Dimensions** : 1066 x 0 DLU
 **Bloc** : Traitement | **Titre IDE** : View pointage
 
 <!-- FORM-DATA:
@@ -3428,27 +3134,27 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Traitement CHG ven
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF7[28.3.1 Selection GM]
+    VF7[T7 Selection GM]
     style VF7 fill:#58a6ff
-    VF11[28.3.2 Veuillez patienter...]
+    VF11[T11 Veuillez patienter...]
     style VF11 fill:#58a6ff
-    VF13[28.3.4 Veuillez patienter...]
+    VF13[T13 Veuillez patienter...]
     style VF13 fill:#58a6ff
-    VF16[28.3.6 Recherche dun GM]
+    VF16[T16 Recherche dun GM]
     style VF16 fill:#58a6ff
-    VF19[28.3.9 Choix de la garantie]
+    VF19[T19 Choix de la garantie]
     style VF19 fill:#58a6ff
-    VF20[28.4 Veuillez patienter...]
+    VF20[T20 Veuillez patienter...]
     style VF20 fill:#58a6ff
-    VF172[28.5 Veuillez patiente...]
+    VF172[T172 Veuillez patiente...]
     style VF172 fill:#58a6ff
-    VF174[28.6 Veuillez patiente...]
+    VF174[T174 Veuillez patiente...]
     style VF174 fill:#58a6ff
-    VF184[28.15 Veuillez patiente...]
+    VF184[T184 Veuillez patiente...]
     style VF184 fill:#58a6ff
-    VF190[28.17 Veuillez patiente...]
+    VF190[T190 Veuillez patiente...]
     style VF190 fill:#58a6ff
-    VF191[28.3.4.2 View pointage]
+    VF191[T191 View pointage]
     style VF191 fill:#58a6ff
     EXT35[IDE 35 Write histo_Fus...]
     style EXT35 fill:#3fb950
@@ -3512,218 +3218,226 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **28.1** | [**(sans nom)** (28)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
-| 28.1.1 | [Test si cloture en cours (28.1)](#t2) | MDI | - | |
-| 28.1.2 | [Blocage cloture v1 (28.1.1)](#t3) | MDI | - | |
-| 28.1.3 | [Blocage cloture v1 (28.1.2)](#t4) | MDI | - | |
-| 28.1.4 | [Test reseau (28.2)](#t5) | MDI | - | |
-| 28.1.5 | [(sans nom) (28.3)](#t6) [mockup](#ecran-t6) | MDI | 640x128 | |
-| 28.1.6 | [Veuillez patienter... (28.3.2)](#t11) [mockup](#ecran-t11) | MDI | 422x56 | |
-| 28.1.7 | [Veuillez patienter... (28.3.4)](#t13) [mockup](#ecran-t13) | MDI | 424x57 | |
-| 28.1.8 | [Mise à Oui des filiations (28.3.4.1)](#t14) | MDI | - | |
-| 28.1.9 | [Genère filiations new (28.3.5)](#t15) | MDI | - | |
-| 28.1.10 | [listing garanties (28.3.7)](#t17) | - | - | |
-| 28.1.11 | [listing garanties (28.3.8)](#t18) | - | - | |
-| 28.1.12 | [Veuillez patienter... (28.4)](#t20) [mockup](#ecran-t20) | MDI | 474x56 | |
-| 28.1.13 | [Veuillez patienter ... (28.4.1)](#t21) [mockup](#ecran-t21) | MDI | 382x103 | |
-| 28.1.14 | [Suppression DGA (28.4.1.2)](#t23) | MDI | - | |
-| 28.1.15 | [Veuillez patienter ... (28.4.2)](#t24) [mockup](#ecran-t24) | MDI | 406x60 | |
-| 28.1.16 | [Suppression DGA (28.4.2.1)](#t25) | MDI | - | |
-| 28.1.17 | [Suppression DGA (28.4.2.2)](#t26) | MDI | - | |
-| 28.1.18 | [Veuillez patienter ... (28.4.3)](#t27) [mockup](#ecran-t27) | MDI | 494x126 | |
-| 28.1.19 | [Suppression DGA (28.4.3.2)](#t29) | MDI | - | |
-| 28.1.20 | [Veuillez patienter ... (28.4.4)](#t30) [mockup](#ecran-t30) | MDI | 494x126 | |
-| 28.1.21 | [Suppression DGA (28.4.4.2)](#t32) | MDI | - | |
-| 28.1.22 | [Veuillez patienter ... (28.4.5)](#t33) [mockup](#ecran-t33) | MDI | 494x126 | |
-| 28.1.23 | [Suppression DGA (28.4.5.2)](#t35) | MDI | - | |
-| 28.1.24 | [Veuillez patienter ... (28.4.6)](#t36) [mockup](#ecran-t36) | MDI | 494x126 | |
-| 28.1.25 | [Suppression DGA (28.4.6.2)](#t38) | MDI | - | |
-| 28.1.26 | [Veuillez patienter ... (28.4.7)](#t39) [mockup](#ecran-t39) | MDI | 494x126 | |
-| 28.1.27 | [Suppression DGA (28.4.7.2)](#t41) | MDI | - | |
-| 28.1.28 | [Veuillez patienter ... (28.4.9)](#t43) [mockup](#ecran-t43) | MDI | 494x126 | |
-| 28.1.29 | [Suppression DGA (28.4.9.2)](#t45) | MDI | - | |
-| 28.1.30 | [Veuillez patienter ... (28.4.10)](#t46) [mockup](#ecran-t46) | MDI | 634x111 | |
-| 28.1.31 | [Veuillez patienter ... (28.4.11)](#t48) [mockup](#ecran-t48) | MDI | 634x111 | |
-| 28.1.32 | [Veuillez patienter ... (28.4.12)](#t50) [mockup](#ecran-t50) | MDI | 634x111 | |
-| 28.1.33 | [Veuillez patienter ... (28.4.13)](#t51) [mockup](#ecran-t51) | MDI | 634x111 | |
-| 28.1.34 | [Veuillez patienter... (28.4.14)](#t52) [mockup](#ecran-t52) | MDI | 424x57 | |
-| 28.1.35 | [Veuillez patienter ... (28.4.15)](#t53) [mockup](#ecran-t53) | MDI | 506x119 | |
-| 28.1.36 | [Suppression DGA (28.4.15.2)](#t55) | MDI | - | |
-| 28.1.37 | [Veuillez patienter ... (28.4.16)](#t56) [mockup](#ecran-t56) | MDI | 642x111 | |
-| 28.1.38 | [Suppression DGA (28.4.16.2)](#t58) | MDI | - | |
-| 28.1.39 | [Veuillez patienter ... (28.4.17)](#t59) [mockup](#ecran-t59) | MDI | 637x109 | |
-| 28.1.40 | [Suppression DGA (28.4.17.2)](#t61) | MDI | - | |
-| 28.1.41 | [Veuillez patienter ... (28.4.18)](#t62) [mockup](#ecran-t62) | MDI | 403x105 | |
-| 28.1.42 | [Lecture CAM (28.4.18.1)](#t63) | MDI | - | |
-| 28.1.43 | [Veuillez patienter ... (28.4.19)](#t65) [mockup](#ecran-t65) | MDI | 406x107 | |
-| 28.1.44 | [Suppression DGA (28.4.19.2)](#t67) | MDI | - | |
-| 28.1.45 | [Veuillez patienter ... (28.4.20)](#t68) [mockup](#ecran-t68) | MDI | 394x107 | |
-| 28.1.46 | [Lecture CAM (28.4.20.1)](#t69) | MDI | - | |
-| 28.1.47 | [Veuillez patienter ... (28.4.21)](#t71) [mockup](#ecran-t71) | MDI | 530x107 | |
-| 28.1.48 | [Suppression DGA (28.4.21.2)](#t73) | MDI | - | |
-| 28.1.49 | [Veuillez patienter ... (28.4.22)](#t74) [mockup](#ecran-t74) | MDI | 358x108 | |
-| 28.1.50 | [Lecture CAM (28.4.22.1)](#t75) | MDI | - | |
-| 28.1.51 | [Veuillez patienter ... (28.4.23)](#t77) [mockup](#ecran-t77) | MDI | 382x103 | |
-| 28.1.52 | [Suppression DGA (28.4.23.2)](#t79) | MDI | - | |
-| 28.1.53 | [Veuillez patienter ... (28.4.24)](#t80) [mockup](#ecran-t80) | MDI | 386x101 | |
-| 28.1.54 | [Suppression DGA (28.4.24.2)](#t82) | MDI | - | |
-| 28.1.55 | [Veuillez patienter ... (28.4.25)](#t83) [mockup](#ecran-t83) | MDI | 525x102 | |
-| 28.1.56 | [Suppression DGA (28.4.25.2)](#t85) | MDI | - | |
-| 28.1.57 | [Veuillez patienter ... (28.4.26)](#t86) [mockup](#ecran-t86) | MDI | 526x103 | |
-| 28.1.58 | [Suppression DGA (28.4.26.2)](#t88) | MDI | - | |
-| 28.1.59 | [Veuillez patienter ... (28.4.27)](#t89) [mockup](#ecran-t89) | MDI | 650x102 | |
-| 28.1.60 | [Lecture (28.4.27.1)](#t90) | MDI | - | |
-| 28.1.61 | [Lecture (28.4.28.1)](#t93) | MDI | - | |
-| 28.1.62 | [Veuillez patienter ... (28.4.29)](#t95) [mockup](#ecran-t95) | MDI | 390x106 | |
-| 28.1.63 | [Suppression DGA (28.4.29.2)](#t97) | MDI | - | |
-| 28.1.64 | [Veuillez patienter ... (28.4.30)](#t98) [mockup](#ecran-t98) | MDI | 389x103 | |
-| 28.1.65 | [Suppression DGA (28.4.30.2)](#t100) | MDI | - | |
-| 28.1.66 | [Veuillez patienter ... (28.4.31)](#t101) [mockup](#ecran-t101) | MDI | 386x102 | |
-| 28.1.67 | [Suppression DGA (28.4.31.1)](#t102) | MDI | - | |
-| 28.1.68 | [Veuillez patienter ... (28.4.32)](#t103) [mockup](#ecran-t103) | MDI | 411x76 | |
-| 28.1.69 | [Veuillez patienter ... (28.4.33)](#t104) [mockup](#ecran-t104) | MDI | 528x102 | |
-| 28.1.70 | [Veuillez patienter ... (28.4.34)](#t105) [mockup](#ecran-t105) | MDI | 389x36 | |
-| 28.1.71 | [Veuillez patienter ... (28.4.35)](#t108) [mockup](#ecran-t108) | MDI | 378x104 | |
-| 28.1.72 | [Lecture CAM (28.4.35.1)](#t109) | MDI | - | |
-| 28.1.73 | [Veuillez patienter ... (28.4.36)](#t111) [mockup](#ecran-t111) | MDI | 389x102 | |
-| 28.1.74 | [Lecture CAM (28.4.36.1)](#t112) | MDI | - | |
-| 28.1.75 | [Veuillez patienter ... (28.4.37)](#t114) [mockup](#ecran-t114) | MDI | 390x102 | |
-| 28.1.76 | [Suppression DGA (28.4.37.2)](#t116) | MDI | - | |
-| 28.1.77 | [Veuillez patienter ... (28.4.38)](#t117) [mockup](#ecran-t117) | MDI | 389x102 | |
-| 28.1.78 | [Lecture CAM (28.4.38.1)](#t118) | MDI | - | |
-| 28.1.79 | [Veuilez patienter ... (28.4.39)](#t120) [mockup](#ecran-t120) | MDI | 378x104 | |
-| 28.1.80 | [Suppression DGA (28.4.39.2)](#t122) | MDI | - | |
-| 28.1.81 | [Veuillez patienter ... (28.4.40)](#t123) [mockup](#ecran-t123) | MDI | 480x104 | |
-| 28.1.82 | [Suppression DGA (28.4.40.2)](#t125) | MDI | - | |
-| 28.1.83 | [Veuillez patienter ... (28.4.41)](#t126) [mockup](#ecran-t126) | MDI | 507x103 | |
-| 28.1.84 | [Veuillez patienter ... (28.4.42)](#t127) [mockup](#ecran-t127) | MDI | 498x103 | |
-| 28.1.85 | [Veuillez patienter ... (28.4.43)](#t128) [mockup](#ecran-t128) | MDI | 379x103 | |
-| 28.1.86 | [Suppression DGA (28.4.43.2)](#t130) | MDI | - | |
-| 28.1.87 | [Veuillez patienter ... (28.4.44)](#t131) [mockup](#ecran-t131) | MDI | 382x103 | |
-| 28.1.88 | [Suppression DGA (28.4.44.2)](#t133) | MDI | - | |
-| 28.1.89 | [Suppression DGA (28.4.44.3)](#t134) | MDI | - | |
-| 28.1.90 | [Veuillez patienter ... (28.4.45)](#t135) [mockup](#ecran-t135) | MDI | 382x103 | |
-| 28.1.91 | [Suppression DGA (28.4.45.2)](#t137) | MDI | - | |
-| 28.1.92 | [Veuillez patienter ... (28.4.46)](#t138) [mockup](#ecran-t138) | MDI | 382x103 | |
-| 28.1.93 | [Suppression DGA (28.4.46.2)](#t140) | MDI | - | |
-| 28.1.94 | [Veuillez patienter ... (28.4.47)](#t141) [mockup](#ecran-t141) | MDI | 382x103 | |
-| 28.1.95 | [Suppression DGA (28.4.47.2)](#t143) | MDI | - | |
-| 28.1.96 | [Veuillez patienter... (28.4.48)](#t144) [mockup](#ecran-t144) | MDI | 424x56 | |
-| 28.1.97 | [Suppression DGA (28.4.48.2)](#t146) | MDI | - | |
-| 28.1.98 | [Veuillez patienter... (28.4.49)](#t147) [mockup](#ecran-t147) | MDI | 424x56 | |
-| 28.1.99 | [Suppression DGA (28.4.49.2)](#t149) | MDI | - | |
-| 28.1.100 | [Veuillez patienter... (28.4.50)](#t150) [mockup](#ecran-t150) | MDI | 424x56 | |
-| 28.1.101 | [Suppression DGA (28.4.50.2)](#t152) | MDI | - | |
-| 28.1.102 | [Veuillez patienter... (28.4.51)](#t153) [mockup](#ecran-t153) | MDI | 424x56 | |
-| 28.1.103 | [Suppression DGA (28.4.51.2)](#t155) | MDI | - | |
-| 28.1.104 | [Veuillez patienter... (28.4.52)](#t156) [mockup](#ecran-t156) | MDI | 424x56 | |
-| 28.1.105 | [Suppression DGA (28.4.52.2)](#t158) | MDI | - | |
-| 28.1.106 | [Veuillez patienter... (28.4.53)](#t159) [mockup](#ecran-t159) | MDI | 424x56 | |
-| 28.1.107 | [Suppression DGA (28.4.53.2)](#t161) | MDI | - | |
-| 28.1.108 | [Veuillez patienter... (28.4.54)](#t162) [mockup](#ecran-t162) | MDI | 424x56 | |
-| 28.1.109 | [Suppression DGA (28.4.54.2)](#t164) | MDI | - | |
-| 28.1.110 | [Veuillez patienter ... (28.4.55)](#t165) [mockup](#ecran-t165) | MDI | 382x103 | |
-| 28.1.111 | [Suppression DGA (28.4.55.2)](#t167) | MDI | - | |
-| 28.1.112 | [Veuillez patienter... (28.4.56)](#t168) [mockup](#ecran-t168) | MDI | 424x56 | |
-| 28.1.113 | [Veuillez patienter ... (28.4.57)](#t169) [mockup](#ecran-t169) | MDI | 494x126 | |
-| 28.1.114 | [Veuillez patienter... (28.5)](#t172) [mockup](#ecran-t172) | MDI | 422x57 | |
-| 28.1.115 | [Sejour (28.5.1)](#t173) | MDI | - | |
-| 28.1.116 | [Veuillez patienter... (28.6)](#t174) [mockup](#ecran-t174) | MDI | 426x57 | |
-| 28.1.117 | [Deblocage cloture v1 (28.8)](#t176) | MDI | - | |
-| 28.1.118 | [Deblocage cloture v1 (28.9)](#t177) | MDI | - | |
-| 28.1.119 | [Existe ecritures (28.10)](#t178) | MDI | - | |
-| 28.1.120 | [Lecture histo (28.11)](#t179) | MDI | - | |
-| 28.1.121 | [Chrono LOG reprise (28.11.1)](#t180) | MDI | - | |
-| 28.1.122 | [Veuillez patienter SVP ... (28.15)](#t184) [mockup](#ecran-t184) | MDI | 422x56 | |
-| 28.1.123 | [Reprise virtuelles (28.16)](#t185) | MDI | - | |
-| 28.1.124 | [Veuillez patienter... (28.17)](#t190) [mockup](#ecran-t190) | MDI | 426x57 | |
-| 28.1.125 | [View pointage (28.3.4.2)](#t191) [mockup](#ecran-t191) | - | 1066x0 | |
-| 28.1.126 | [Update DGA (28.4.2.3)](#t192) | - | - | |
-| 28.1.127 | [(sans nom) (28.3.1.1.1)](#t195) | - | - | |
-| 28.1.128 | [Traitement VRLVSL (28.4.58)](#t196) | - | - | |
-| 28.1.129 | [Veuillez patienter ... (28.4.59)](#t201) [mockup](#ecran-t201) | MDI | 382x103 | |
-| 28.1.130 | [Suppression DGA (28.4.59.2)](#t203) | MDI | - | |
-| **28.2** | [**Selection GM** (28.3.1)](#t7) [mockup](#ecran-t7) | MDI | 1074x208 | Consultation |
-| 28.2.1 | [Recherche d'un GM (28.3.6)](#t16) [mockup](#ecran-t16) | MDI | 680x90 | |
-| 28.2.2 | [Choix de la garantie (28.3.9)](#t19) [mockup](#ecran-t19) | MDI | 680x90 | |
-| 28.2.3 | [Reaffichage infos reseau (28.7)](#t175) | MDI | - | |
-| **28.3** | [**Lect. Etat du compte** (28.3.1.1)](#t8) | MDI | - | Calcul |
-| 28.3.1 | [Blocage comptes selectionnes (28.3.1.2)](#t9) [mockup](#ecran-t9) | MDI | 120x8 | |
-| 28.3.2 | [Blocage comptes selectionnes (28.3.1.3)](#t10) [mockup](#ecran-t10) | MDI | 120x8 | |
-| 28.3.3 | [Calcul solde compte cible (28.4.10.1)](#t47) | MDI | - | |
-| 28.3.4 | [Calcul solde compte cible (28.4.11.1)](#t49) | MDI | - | |
-| 28.3.5 | [Calcul compte GM (28.12)](#t181) | MDI | - | |
-| 28.3.6 | [MaJ Flag Compte Garanti (28.4.2.4)](#t193) | - | - | |
-| 28.3.7 | [Get Compte Tempo (28.4.2.5)](#t194) | - | - | |
-| **28.4** | [**Validation** (28.3.3)](#t12) [mockup](#ecran-t12) | MDI | 72x8 | Validation |
-| **28.5** | [**Creation DGA** (28.4.1.1)](#t22) | MDI | - | Creation |
-| 28.5.1 | [Creation DGA (28.4.3.1)](#t28) | MDI | - | |
-| 28.5.2 | [Creation DGA (28.4.4.1)](#t31) | MDI | - | |
-| 28.5.3 | [Creation DGA (28.4.5.1)](#t34) | MDI | - | |
-| 28.5.4 | [Creation DGA (28.4.6.1)](#t37) | MDI | - | |
-| 28.5.5 | [Creation DGA (28.4.7.1)](#t40) | MDI | - | |
-| 28.5.6 | [Creation FEC (28.4.8)](#t42) [mockup](#ecran-t42) | MDI | 422x57 | |
-| 28.5.7 | [Creation DGA (28.4.9.1)](#t44) | MDI | - | |
-| 28.5.8 | [Creation DGA (28.4.15.1)](#t54) | MDI | - | |
-| 28.5.9 | [Creation DGA (28.4.16.1)](#t57) | MDI | - | |
-| 28.5.10 | [Creation DGA (28.4.17.1)](#t60) | MDI | - | |
-| 28.5.11 | [Creation DGA (28.4.18.2)](#t64) | MDI | - | |
-| 28.5.12 | [Creation DGA (28.4.19.1)](#t66) | MDI | - | |
-| 28.5.13 | [Creation DGA (28.4.20.2)](#t70) | MDI | - | |
-| 28.5.14 | [Creation DGA (28.4.21.1)](#t72) | MDI | - | |
-| 28.5.15 | [Creation DGA (28.4.22.2)](#t76) | MDI | - | |
-| 28.5.16 | [Creation DGA (28.4.23.1)](#t78) | MDI | - | |
-| 28.5.17 | [Creation DGA (28.4.24.1)](#t81) | MDI | - | |
-| 28.5.18 | [Creation DGA (28.4.25.1)](#t84) | MDI | - | |
-| 28.5.19 | [Creation DGA (28.4.26.1)](#t87) | MDI | - | |
-| 28.5.20 | [Creation DGA (28.4.27.2)](#t91) | MDI | - | |
-| 28.5.21 | [Creation DGA (28.4.28.2)](#t94) | MDI | - | |
-| 28.5.22 | [Creation DGA (28.4.29.1)](#t96) | MDI | - | |
-| 28.5.23 | [Creation DGA (28.4.30.1)](#t99) | MDI | - | |
-| 28.5.24 | [Creation DGA (28.4.35.2)](#t110) | MDI | - | |
-| 28.5.25 | [Creation DGA (28.4.36.2)](#t113) | MDI | - | |
-| 28.5.26 | [Creation DGA (28.4.37.1)](#t115) | MDI | - | |
-| 28.5.27 | [Creation DGA (28.4.38.2)](#t119) | MDI | - | |
-| 28.5.28 | [Creation DGA (28.4.39.1)](#t121) | MDI | - | |
-| 28.5.29 | [Creation DGA (28.4.40.1)](#t124) | MDI | - | |
-| 28.5.30 | [Creation DGA (28.4.43.1)](#t129) | MDI | - | |
-| 28.5.31 | [Creation DGA (28.4.44.1)](#t132) | MDI | - | |
-| 28.5.32 | [Creation DGA (28.4.45.1)](#t136) | MDI | - | |
-| 28.5.33 | [Creation DGA (28.4.46.1)](#t139) | MDI | - | |
-| 28.5.34 | [Creation DGA (28.4.47.1)](#t142) | MDI | - | |
-| 28.5.35 | [Creation DGA (28.4.48.1)](#t145) | MDI | - | |
-| 28.5.36 | [Creation DGA (28.4.49.1)](#t148) | MDI | - | |
-| 28.5.37 | [Creation DGA (28.4.50.1)](#t151) | MDI | - | |
-| 28.5.38 | [Creation DGA (28.4.51.1)](#t154) | MDI | - | |
-| 28.5.39 | [Creation DGA (28.4.52.1)](#t157) | MDI | - | |
-| 28.5.40 | [Creation DGA (28.4.53.1)](#t160) | MDI | - | |
-| 28.5.41 | [Creation DGA (28.4.54.1)](#t163) | MDI | - | |
-| 28.5.42 | [Creation DGA (28.4.55.1)](#t166) | MDI | - | |
-| 28.5.43 | [creation histo (28.13)](#t182) | MDI | - | |
-| 28.5.44 | [creation histo (28.14)](#t183) | MDI | - | |
-| 28.5.45 | [Creation (28.4.49.3)](#t197) | - | - | |
-| 28.5.46 | [Creation DGA (28.4.59.1)](#t202) | MDI | - | |
-| **28.6** | [**Traitement CHG vente** (28.4.28)](#t92) [mockup](#ecran-t92) | MDI | 629x77 | Saisie |
+| **28.1** | [**(sans nom)** (T1)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
+| 28.1.1 | [Test si cloture en cours (T2)](#t2) | MDI | - | |
+| 28.1.2 | [Blocage cloture v1 (T3)](#t3) | MDI | - | |
+| 28.1.3 | [Blocage cloture v1 (T4)](#t4) | MDI | - | |
+| 28.1.4 | [Test reseau (T5)](#t5) | MDI | - | |
+| 28.1.5 | [(sans nom) (T6)](#t6) [mockup](#ecran-t6) | MDI | 640x128 | |
+| 28.1.6 | [Veuillez patienter... (T11)](#t11) [mockup](#ecran-t11) | MDI | 422x56 | |
+| 28.1.7 | [Veuillez patienter... (T13)](#t13) [mockup](#ecran-t13) | MDI | 424x57 | |
+| 28.1.8 | [Mise à Oui des filiations (T14)](#t14) | MDI | - | |
+| 28.1.9 | [Genère filiations new (T15)](#t15) | MDI | - | |
+| 28.1.10 | [listing garanties (T17)](#t17) | - | - | |
+| 28.1.11 | [listing garanties (T18)](#t18) | - | - | |
+| 28.1.12 | [Veuillez patienter... (T20)](#t20) [mockup](#ecran-t20) | MDI | 474x56 | |
+| 28.1.13 | [Veuillez patienter ... (T21)](#t21) [mockup](#ecran-t21) | MDI | 382x103 | |
+| 28.1.14 | [Suppression DGA (T23)](#t23) | MDI | - | |
+| 28.1.15 | [Veuillez patienter ... (T24)](#t24) [mockup](#ecran-t24) | MDI | 406x60 | |
+| 28.1.16 | [Suppression DGA (T25)](#t25) | MDI | - | |
+| 28.1.17 | [Suppression DGA (T26)](#t26) | MDI | - | |
+| 28.1.18 | [Veuillez patienter ... (T27)](#t27) [mockup](#ecran-t27) | MDI | 494x126 | |
+| 28.1.19 | [Suppression DGA (T29)](#t29) | MDI | - | |
+| 28.1.20 | [Veuillez patienter ... (T30)](#t30) [mockup](#ecran-t30) | MDI | 494x126 | |
+| 28.1.21 | [Suppression DGA (T32)](#t32) | MDI | - | |
+| 28.1.22 | [Veuillez patienter ... (T33)](#t33) [mockup](#ecran-t33) | MDI | 494x126 | |
+| 28.1.23 | [Suppression DGA (T35)](#t35) | MDI | - | |
+| 28.1.24 | [Veuillez patienter ... (T36)](#t36) [mockup](#ecran-t36) | MDI | 494x126 | |
+| 28.1.25 | [Suppression DGA (T38)](#t38) | MDI | - | |
+| 28.1.26 | [Veuillez patienter ... (T39)](#t39) [mockup](#ecran-t39) | MDI | 494x126 | |
+| 28.1.27 | [Suppression DGA (T41)](#t41) | MDI | - | |
+| 28.1.28 | [Veuillez patienter ... (T43)](#t43) [mockup](#ecran-t43) | MDI | 494x126 | |
+| 28.1.29 | [Suppression DGA (T45)](#t45) | MDI | - | |
+| 28.1.30 | [Veuillez patienter ... (T46)](#t46) [mockup](#ecran-t46) | MDI | 634x111 | |
+| 28.1.31 | [Veuillez patienter ... (T48)](#t48) [mockup](#ecran-t48) | MDI | 634x111 | |
+| 28.1.32 | [Veuillez patienter ... (T50)](#t50) [mockup](#ecran-t50) | MDI | 634x111 | |
+| 28.1.33 | [Veuillez patienter ... (T51)](#t51) [mockup](#ecran-t51) | MDI | 634x111 | |
+| 28.1.34 | [Veuillez patienter... (T52)](#t52) [mockup](#ecran-t52) | MDI | 424x57 | |
+| 28.1.35 | [Veuillez patienter ... (T53)](#t53) [mockup](#ecran-t53) | MDI | 506x119 | |
+| 28.1.36 | [Suppression DGA (T55)](#t55) | MDI | - | |
+| 28.1.37 | [Veuillez patienter ... (T56)](#t56) [mockup](#ecran-t56) | MDI | 642x111 | |
+| 28.1.38 | [Suppression DGA (T58)](#t58) | MDI | - | |
+| 28.1.39 | [Veuillez patienter ... (T59)](#t59) [mockup](#ecran-t59) | MDI | 637x109 | |
+| 28.1.40 | [Suppression DGA (T61)](#t61) | MDI | - | |
+| 28.1.41 | [Veuillez patienter ... (T62)](#t62) [mockup](#ecran-t62) | MDI | 403x105 | |
+| 28.1.42 | [Lecture CAM (T63)](#t63) | MDI | - | |
+| 28.1.43 | [Veuillez patienter ... (T65)](#t65) [mockup](#ecran-t65) | MDI | 406x107 | |
+| 28.1.44 | [Suppression DGA (T67)](#t67) | MDI | - | |
+| 28.1.45 | [Veuillez patienter ... (T68)](#t68) [mockup](#ecran-t68) | MDI | 394x107 | |
+| 28.1.46 | [Lecture CAM (T69)](#t69) | MDI | - | |
+| 28.1.47 | [Veuillez patienter ... (T71)](#t71) [mockup](#ecran-t71) | MDI | 530x107 | |
+| 28.1.48 | [Suppression DGA (T73)](#t73) | MDI | - | |
+| 28.1.49 | [Veuillez patienter ... (T74)](#t74) [mockup](#ecran-t74) | MDI | 358x108 | |
+| 28.1.50 | [Lecture CAM (T75)](#t75) | MDI | - | |
+| 28.1.51 | [Veuillez patienter ... (T77)](#t77) [mockup](#ecran-t77) | MDI | 382x103 | |
+| 28.1.52 | [Suppression DGA (T79)](#t79) | MDI | - | |
+| 28.1.53 | [Veuillez patienter ... (T80)](#t80) [mockup](#ecran-t80) | MDI | 386x101 | |
+| 28.1.54 | [Suppression DGA (T82)](#t82) | MDI | - | |
+| 28.1.55 | [Veuillez patienter ... (T83)](#t83) [mockup](#ecran-t83) | MDI | 525x102 | |
+| 28.1.56 | [Suppression DGA (T85)](#t85) | MDI | - | |
+| 28.1.57 | [Veuillez patienter ... (T86)](#t86) [mockup](#ecran-t86) | MDI | 526x103 | |
+| 28.1.58 | [Suppression DGA (T88)](#t88) | MDI | - | |
+| 28.1.59 | [Veuillez patienter ... (T89)](#t89) [mockup](#ecran-t89) | MDI | 650x102 | |
+| 28.1.60 | [Lecture (T90)](#t90) | MDI | - | |
+| 28.1.61 | [Lecture (T93)](#t93) | MDI | - | |
+| 28.1.62 | [Veuillez patienter ... (T95)](#t95) [mockup](#ecran-t95) | MDI | 390x106 | |
+| 28.1.63 | [Suppression DGA (T97)](#t97) | MDI | - | |
+| 28.1.64 | [Veuillez patienter ... (T98)](#t98) [mockup](#ecran-t98) | MDI | 389x103 | |
+| 28.1.65 | [Suppression DGA (T100)](#t100) | MDI | - | |
+| 28.1.66 | [Veuillez patienter ... (T101)](#t101) [mockup](#ecran-t101) | MDI | 386x102 | |
+| 28.1.67 | [Suppression DGA (T102)](#t102) | MDI | - | |
+| 28.1.68 | [Veuillez patienter ... (T103)](#t103) [mockup](#ecran-t103) | MDI | 411x76 | |
+| 28.1.69 | [Veuillez patienter ... (T104)](#t104) [mockup](#ecran-t104) | MDI | 528x102 | |
+| 28.1.70 | [Veuillez patienter ... (T105)](#t105) [mockup](#ecran-t105) | MDI | 389x36 | |
+| 28.1.71 | [Veuillez patienter ... (T108)](#t108) [mockup](#ecran-t108) | MDI | 378x104 | |
+| 28.1.72 | [Lecture CAM (T109)](#t109) | MDI | - | |
+| 28.1.73 | [Veuillez patienter ... (T111)](#t111) [mockup](#ecran-t111) | MDI | 389x102 | |
+| 28.1.74 | [Lecture CAM (T112)](#t112) | MDI | - | |
+| 28.1.75 | [Veuillez patienter ... (T114)](#t114) [mockup](#ecran-t114) | MDI | 390x102 | |
+| 28.1.76 | [Suppression DGA (T116)](#t116) | MDI | - | |
+| 28.1.77 | [Veuillez patienter ... (T117)](#t117) [mockup](#ecran-t117) | MDI | 389x102 | |
+| 28.1.78 | [Lecture CAM (T118)](#t118) | MDI | - | |
+| 28.1.79 | [Veuilez patienter ... (T120)](#t120) [mockup](#ecran-t120) | MDI | 378x104 | |
+| 28.1.80 | [Suppression DGA (T122)](#t122) | MDI | - | |
+| 28.1.81 | [Veuillez patienter ... (T123)](#t123) [mockup](#ecran-t123) | MDI | 480x104 | |
+| 28.1.82 | [Suppression DGA (T125)](#t125) | MDI | - | |
+| 28.1.83 | [Veuillez patienter ... (T126)](#t126) [mockup](#ecran-t126) | MDI | 507x103 | |
+| 28.1.84 | [Veuillez patienter ... (T127)](#t127) [mockup](#ecran-t127) | MDI | 498x103 | |
+| 28.1.85 | [Veuillez patienter ... (T128)](#t128) [mockup](#ecran-t128) | MDI | 379x103 | |
+| 28.1.86 | [Suppression DGA (T130)](#t130) | MDI | - | |
+| 28.1.87 | [Veuillez patienter ... (T131)](#t131) [mockup](#ecran-t131) | MDI | 382x103 | |
+| 28.1.88 | [Suppression DGA (T133)](#t133) | MDI | - | |
+| 28.1.89 | [Suppression DGA (T134)](#t134) | MDI | - | |
+| 28.1.90 | [Veuillez patienter ... (T135)](#t135) [mockup](#ecran-t135) | MDI | 382x103 | |
+| 28.1.91 | [Suppression DGA (T137)](#t137) | MDI | - | |
+| 28.1.92 | [Veuillez patienter ... (T138)](#t138) [mockup](#ecran-t138) | MDI | 382x103 | |
+| 28.1.93 | [Suppression DGA (T140)](#t140) | MDI | - | |
+| 28.1.94 | [Veuillez patienter ... (T141)](#t141) [mockup](#ecran-t141) | MDI | 382x103 | |
+| 28.1.95 | [Suppression DGA (T143)](#t143) | MDI | - | |
+| 28.1.96 | [Veuillez patienter... (T144)](#t144) [mockup](#ecran-t144) | MDI | 424x56 | |
+| 28.1.97 | [Suppression DGA (T146)](#t146) | MDI | - | |
+| 28.1.98 | [Veuillez patienter... (T147)](#t147) [mockup](#ecran-t147) | MDI | 424x56 | |
+| 28.1.99 | [Suppression DGA (T149)](#t149) | MDI | - | |
+| 28.1.100 | [Veuillez patienter... (T150)](#t150) [mockup](#ecran-t150) | MDI | 424x56 | |
+| 28.1.101 | [Suppression DGA (T152)](#t152) | MDI | - | |
+| 28.1.102 | [Veuillez patienter... (T153)](#t153) [mockup](#ecran-t153) | MDI | 424x56 | |
+| 28.1.103 | [Suppression DGA (T155)](#t155) | MDI | - | |
+| 28.1.104 | [Veuillez patienter... (T156)](#t156) [mockup](#ecran-t156) | MDI | 424x56 | |
+| 28.1.105 | [Suppression DGA (T158)](#t158) | MDI | - | |
+| 28.1.106 | [Veuillez patienter... (T159)](#t159) [mockup](#ecran-t159) | MDI | 424x56 | |
+| 28.1.107 | [Suppression DGA (T161)](#t161) | MDI | - | |
+| 28.1.108 | [Veuillez patienter... (T162)](#t162) [mockup](#ecran-t162) | MDI | 424x56 | |
+| 28.1.109 | [Suppression DGA (T164)](#t164) | MDI | - | |
+| 28.1.110 | [Veuillez patienter ... (T165)](#t165) [mockup](#ecran-t165) | MDI | 382x103 | |
+| 28.1.111 | [Suppression DGA (T167)](#t167) | MDI | - | |
+| 28.1.112 | [Veuillez patienter... (T168)](#t168) [mockup](#ecran-t168) | MDI | 424x56 | |
+| 28.1.113 | [Veuillez patienter ... (T169)](#t169) [mockup](#ecran-t169) | MDI | 494x126 | |
+| 28.1.114 | [Veuillez patienter... (T172)](#t172) [mockup](#ecran-t172) | MDI | 422x57 | |
+| 28.1.115 | [Sejour (T173)](#t173) | MDI | - | |
+| 28.1.116 | [Veuillez patienter... (T174)](#t174) [mockup](#ecran-t174) | MDI | 426x57 | |
+| 28.1.117 | [Deblocage cloture v1 (T176)](#t176) | MDI | - | |
+| 28.1.118 | [Deblocage cloture v1 (T177)](#t177) | MDI | - | |
+| 28.1.119 | [Existe ecritures (T178)](#t178) | MDI | - | |
+| 28.1.120 | [Lecture histo (T179)](#t179) | MDI | - | |
+| 28.1.121 | [Chrono LOG reprise (T180)](#t180) | MDI | - | |
+| 28.1.122 | [Veuillez patienter SVP ... (T184)](#t184) [mockup](#ecran-t184) | MDI | 422x56 | |
+| 28.1.123 | [Reprise virtuelles (T185)](#t185) | MDI | - | |
+| 28.1.124 | [Veuillez patienter... (T190)](#t190) [mockup](#ecran-t190) | MDI | 426x57 | |
+| 28.1.125 | [View pointage (T191)](#t191) [mockup](#ecran-t191) | - | 1066x0 | |
+| 28.1.126 | [Update DGA (T192)](#t192) | - | - | |
+| 28.1.127 | [(sans nom) (T195)](#t195) | - | - | |
+| 28.1.128 | [Traitement VRLVSL (T196)](#t196) | - | - | |
+| 28.1.129 | [Veuillez patienter ... (T201)](#t201) [mockup](#ecran-t201) | MDI | 382x103 | |
+| 28.1.130 | [Suppression DGA (T203)](#t203) | MDI | - | |
+| **28.2** | [**Selection GM** (T7)](#t7) [mockup](#ecran-t7) | MDI | 1074x208 | Consultation |
+| 28.2.1 | [Recherche d'un GM (T16)](#t16) [mockup](#ecran-t16) | MDI | 680x90 | |
+| 28.2.2 | [Choix de la garantie (T19)](#t19) [mockup](#ecran-t19) | MDI | 680x90 | |
+| 28.2.3 | [Reaffichage infos reseau (T175)](#t175) | MDI | - | |
+| **28.3** | [**Lect. Etat du compte** (T8)](#t8) | MDI | - | Calcul |
+| 28.3.1 | [Blocage comptes selectionnes (T9)](#t9) [mockup](#ecran-t9) | MDI | 120x8 | |
+| 28.3.2 | [Blocage comptes selectionnes (T10)](#t10) [mockup](#ecran-t10) | MDI | 120x8 | |
+| 28.3.3 | [Calcul solde compte cible (T47)](#t47) | MDI | - | |
+| 28.3.4 | [Calcul solde compte cible (T49)](#t49) | MDI | - | |
+| 28.3.5 | [Calcul compte GM (T181)](#t181) | MDI | - | |
+| 28.3.6 | [MaJ Flag Compte Garanti (T193)](#t193) | - | - | |
+| 28.3.7 | [Get Compte Tempo (T194)](#t194) | - | - | |
+| **28.4** | [**Validation** (T12)](#t12) [mockup](#ecran-t12) | MDI | 72x8 | Validation |
+| **28.5** | [**Creation DGA** (T22)](#t22) | MDI | - | Creation |
+| 28.5.1 | [Creation DGA (T28)](#t28) | MDI | - | |
+| 28.5.2 | [Creation DGA (T31)](#t31) | MDI | - | |
+| 28.5.3 | [Creation DGA (T34)](#t34) | MDI | - | |
+| 28.5.4 | [Creation DGA (T37)](#t37) | MDI | - | |
+| 28.5.5 | [Creation DGA (T40)](#t40) | MDI | - | |
+| 28.5.6 | [Creation FEC (T42)](#t42) [mockup](#ecran-t42) | MDI | 422x57 | |
+| 28.5.7 | [Creation DGA (T44)](#t44) | MDI | - | |
+| 28.5.8 | [Creation DGA (T54)](#t54) | MDI | - | |
+| 28.5.9 | [Creation DGA (T57)](#t57) | MDI | - | |
+| 28.5.10 | [Creation DGA (T60)](#t60) | MDI | - | |
+| 28.5.11 | [Creation DGA (T64)](#t64) | MDI | - | |
+| 28.5.12 | [Creation DGA (T66)](#t66) | MDI | - | |
+| 28.5.13 | [Creation DGA (T70)](#t70) | MDI | - | |
+| 28.5.14 | [Creation DGA (T72)](#t72) | MDI | - | |
+| 28.5.15 | [Creation DGA (T76)](#t76) | MDI | - | |
+| 28.5.16 | [Creation DGA (T78)](#t78) | MDI | - | |
+| 28.5.17 | [Creation DGA (T81)](#t81) | MDI | - | |
+| 28.5.18 | [Creation DGA (T84)](#t84) | MDI | - | |
+| 28.5.19 | [Creation DGA (T87)](#t87) | MDI | - | |
+| 28.5.20 | [Creation DGA (T91)](#t91) | MDI | - | |
+| 28.5.21 | [Creation DGA (T94)](#t94) | MDI | - | |
+| 28.5.22 | [Creation DGA (T96)](#t96) | MDI | - | |
+| 28.5.23 | [Creation DGA (T99)](#t99) | MDI | - | |
+| 28.5.24 | [Creation DGA (T110)](#t110) | MDI | - | |
+| 28.5.25 | [Creation DGA (T113)](#t113) | MDI | - | |
+| 28.5.26 | [Creation DGA (T115)](#t115) | MDI | - | |
+| 28.5.27 | [Creation DGA (T119)](#t119) | MDI | - | |
+| 28.5.28 | [Creation DGA (T121)](#t121) | MDI | - | |
+| 28.5.29 | [Creation DGA (T124)](#t124) | MDI | - | |
+| 28.5.30 | [Creation DGA (T129)](#t129) | MDI | - | |
+| 28.5.31 | [Creation DGA (T132)](#t132) | MDI | - | |
+| 28.5.32 | [Creation DGA (T136)](#t136) | MDI | - | |
+| 28.5.33 | [Creation DGA (T139)](#t139) | MDI | - | |
+| 28.5.34 | [Creation DGA (T142)](#t142) | MDI | - | |
+| 28.5.35 | [Creation DGA (T145)](#t145) | MDI | - | |
+| 28.5.36 | [Creation DGA (T148)](#t148) | MDI | - | |
+| 28.5.37 | [Creation DGA (T151)](#t151) | MDI | - | |
+| 28.5.38 | [Creation DGA (T154)](#t154) | MDI | - | |
+| 28.5.39 | [Creation DGA (T157)](#t157) | MDI | - | |
+| 28.5.40 | [Creation DGA (T160)](#t160) | MDI | - | |
+| 28.5.41 | [Creation DGA (T163)](#t163) | MDI | - | |
+| 28.5.42 | [Creation DGA (T166)](#t166) | MDI | - | |
+| 28.5.43 | [creation histo (T182)](#t182) | MDI | - | |
+| 28.5.44 | [creation histo (T183)](#t183) | MDI | - | |
+| 28.5.45 | [Creation (T197)](#t197) | - | - | |
+| 28.5.46 | [Creation DGA (T202)](#t202) | MDI | - | |
+| **28.6** | [**Traitement CHG vente** (T92)](#t92) [mockup](#ecran-t92) | MDI | 629x77 | Saisie |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement fichiers:co...]
-    UPDATE[MAJ 60 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    B1[Traitement (131t)]
+    START --> B1
+    B2[Consultation (4t)]
+    B1 --> B2
+    B3[Calcul (8t)]
+    B2 --> B3
+    B4[Validation (1t)]
+    B3 --> B4
+    B5[Creation (47t)]
+    B4 --> B5
+    B6[Saisie (1t)]
+    B5 --> B6
+    WRITE[MAJ 60 tables]
+    B6 --> WRITE
+    ENDOK([END])
+    WRITE --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -3733,99 +3447,80 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 15 | transac_entete_bar |  | DB |   | **W** |   | 3 |
-| 19 | bl_detail |  | DB |   | **W** |   | 3 |
-| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R | **W** |   | 5 |
-| 29 | voyages__________voy |  | DB |   | **W** |   | 3 |
-| 30 | gm-recherche_____gmr | Index de recherche | DB | R | **W** | L | 8 |
-| 31 | gm-complet_______gmc |  | DB | R | **W** |   | 2 |
-| 32 | prestations | Prestations/services vendus | DB | R | **W** |   | 3 |
-| 33 | prestations______pre | Prestations/services vendus | DB | R | **W** |   | 3 |
-| 34 | hebergement______heb | Hebergement (chambres) | DB |   | **W** |   | 3 |
-| 35 | personnel_go______go |  | DB | R | **W** |   | 2 |
-| 36 | client_gm |  | DB |   | **W** |   | 1 |
-| 37 | commentaire_gm_________acc |  | DB | R | **W** |   | 3 |
-| 38 | comptable_gratuite |  | DB |   | **W** |   | 3 |
-| 39 | depot_garantie___dga | Depots et garanties | DB | R | **W** | L | 6 |
-| 40 | comptable________cte |  | DB | R | **W** |   | 3 |
-| 41 | depot_objets_____doa | Depots et garanties | DB |   | **W** |   | 3 |
-| 42 | depot_devises____dda | Depots et garanties | DB |   | **W** |   | 3 |
-| 43 | solde_devises____sda | Devises / taux de change | DB |   | **W** |   | 2 |
-| 44 | change___________chg |  | DB | R | **W** |   | 2 |
-| 46 | mvt_prestation___mpr | Prestations/services vendus | DB | R | **W** |   | 3 |
-| 47 | compte_gm________cgm | Comptes GM (generaux) | DB | R | **W** |   | 12 |
-| 48 | lignes_de_solde__sld |  | DB |   | **W** |   | 3 |
-| 51 | fusion_eclatementfec |  | DB | R | **W** |   | 4 |
-| 70 | date_comptable___dat |  | DB | R |   |   | 1 |
-| 79 | gratuites________gra |  | DB | R | **W** |   | 3 |
-| 80 | codes_autocom____aut |  | DB | R | **W** |   | 2 |
-| 93 | vendeurs_________ven |  | DB |   | **W** |   | 1 |
-| 123 | fichier_messagerie |  | DB | R | **W** |   | 2 |
-| 131 | fichier_validation |  | DB | R | **W** |   | 3 |
-| 137 | fichier_histotel | Historique / journal | DB | R | **W** |   | 3 |
-| 147 | change_vente_____chg | Donnees de ventes | DB | R | **W** |   | 2 |
-| 148 | lignes_de_solde__sld |  | DB |   | **W** |   | 3 |
-| 167 | troncon__________tro |  | DB |   | **W** |   | 1 |
-| 168 | heb_circuit______hci | Hebergement (chambres) | DB |   | **W** |   | 3 |
-| 171 | commentaire______com |  | DB |   | **W** |   | 1 |
-| 263 | vente | Donnees de ventes | DB |   | **W** |   | 2 |
-| 266 | cc_comptable |  | DB |   | **W** |   | 4 |
-| 268 | cc_total_par_type |  | DB |   | **W** |   | 3 |
-| 271 | cc_total |  | DB |   | **W** |   | 3 |
-| 272 | cc_type_detail |  | DB |   | **W** |   | 3 |
-| 285 | email |  | DB |   | **W** |   | 1 |
-| 298 | participants_____par |  | DB |   | **W** |   | 3 |
-| 301 | details_partici__dpa |  | DB |   | **W** |   | 3 |
-| 307 | vente_option_veo | Donnees de ventes | DB |   | **W** |   | 3 |
-| 309 | vente____________vep | Donnees de ventes | DB |   | **W** |   | 4 |
-| 312 | ez_card |  | DB | R | **W** |   | 2 |
-| 340 | histo_fusionseparation | Historique / journal | DB | R | **W** | L | 5 |
-| 342 | histo__fusionseparation_log | Historique / journal | DB | R |   | L | 2 |
 | 343 | histo_fusionseparation_saisie | Historique / journal | DB | R | **W** | L | 9 |
-| 358 | import_mod |  | DB |   | **W** |   | 3 |
-| 366 | pms_print_param |  | DB |   | **W** |   | 3 |
-| 382 | pv_discount_reasons |  | DB |   | **W** |   | 1 |
-| 463 | heure_de_passage |  | DB |   | **W** |   | 3 |
-| 786 | qualite_avant_reprise |  | DB | R | **W** |   | 2 |
-| 804 | valeur_credit_bar_defaut |  | DB |   | **W** |   | 1 |
-| 805 | vente_par_moyen_paiement | Donnees de ventes | DB | R | **W** |   | 3 |
-| 807 | plafond_lit |  | DB | R | **W** |   | 3 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R | **W** | L | 8 |
+| 39 | depot_garantie___dga | Depots et garanties | DB | R | **W** | L | 6 |
+| 340 | histo_fusionseparation | Historique / journal | DB | R | **W** | L | 5 |
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB | R | **W** |   | 12 |
+| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R | **W** |   | 5 |
+| 51 | fusion_eclatementfec |  | DB | R | **W** |   | 4 |
+| 33 | prestations______pre | Prestations/services vendus | DB | R | **W** |   | 3 |
+| 131 | fichier_validation |  | DB | R | **W** |   | 3 |
+| 37 | commentaire_gm_________acc |  | DB | R | **W** |   | 3 |
 | 831 | import_go_erreur_affection |  | DB | R | **W** |   | 3 |
-| 834 | tpe_par_terminal |  | DB | R | **W** |   | 3 |
 | 837 | ##_pv_customer_dat |  | DB | R | **W** |   | 3 |
+| 46 | mvt_prestation___mpr | Prestations/services vendus | DB | R | **W** |   | 3 |
+| 79 | gratuites________gra |  | DB | R | **W** |   | 3 |
+| 137 | fichier_histotel | Historique / journal | DB | R | **W** |   | 3 |
+| 834 | tpe_par_terminal |  | DB | R | **W** |   | 3 |
+| 805 | vente_par_moyen_paiement | Donnees de ventes | DB | R | **W** |   | 3 |
+| 40 | comptable________cte |  | DB | R | **W** |   | 3 |
+| 807 | plafond_lit |  | DB | R | **W** |   | 3 |
+| 32 | prestations | Prestations/services vendus | DB | R | **W** |   | 3 |
+| 312 | ez_card |  | DB | R | **W** |   | 2 |
+| 31 | gm-complet_______gmc |  | DB | R | **W** |   | 2 |
+| 35 | personnel_go______go |  | DB | R | **W** |   | 2 |
+| 786 | qualite_avant_reprise |  | DB | R | **W** |   | 2 |
+| 123 | fichier_messagerie |  | DB | R | **W** |   | 2 |
+| 147 | change_vente_____chg | Donnees de ventes | DB | R | **W** |   | 2 |
+| 80 | codes_autocom____aut |  | DB | R | **W** |   | 2 |
+| 44 | change___________chg |  | DB | R | **W** |   | 2 |
+| 266 | cc_comptable |  | DB |   | **W** |   | 4 |
+| 309 | vente____________vep | Donnees de ventes | DB |   | **W** |   | 4 |
+| 15 | transac_entete_bar |  | DB |   | **W** |   | 3 |
+| 307 | vente_option_veo | Donnees de ventes | DB |   | **W** |   | 3 |
+| 41 | depot_objets_____doa | Depots et garanties | DB |   | **W** |   | 3 |
+| 463 | heure_de_passage |  | DB |   | **W** |   | 3 |
 | 947 | Table_947 |  | MEM |   | **W** |   | 3 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB |   | **W** |   | 3 |
+| 168 | heb_circuit______hci | Hebergement (chambres) | DB |   | **W** |   | 3 |
+| 268 | cc_total_par_type |  | DB |   | **W** |   | 3 |
+| 272 | cc_type_detail |  | DB |   | **W** |   | 3 |
+| 48 | lignes_de_solde__sld |  | DB |   | **W** |   | 3 |
+| 271 | cc_total |  | DB |   | **W** |   | 3 |
+| 298 | participants_____par |  | DB |   | **W** |   | 3 |
+| 29 | voyages__________voy |  | DB |   | **W** |   | 3 |
+| 19 | bl_detail |  | DB |   | **W** |   | 3 |
+| 38 | comptable_gratuite |  | DB |   | **W** |   | 3 |
+| 358 | import_mod |  | DB |   | **W** |   | 3 |
+| 42 | depot_devises____dda | Depots et garanties | DB |   | **W** |   | 3 |
+| 366 | pms_print_param |  | DB |   | **W** |   | 3 |
+| 301 | details_partici__dpa |  | DB |   | **W** |   | 3 |
+| 148 | lignes_de_solde__sld |  | DB |   | **W** |   | 3 |
+| 43 | solde_devises____sda | Devises / taux de change | DB |   | **W** |   | 2 |
+| 263 | vente | Donnees de ventes | DB |   | **W** |   | 2 |
+| 382 | pv_discount_reasons |  | DB |   | **W** |   | 1 |
+| 171 | commentaire______com |  | DB |   | **W** |   | 1 |
+| 285 | email |  | DB |   | **W** |   | 1 |
+| 804 | valeur_credit_bar_defaut |  | DB |   | **W** |   | 1 |
+| 36 | client_gm |  | DB |   | **W** |   | 1 |
+| 93 | vendeurs_________ven |  | DB |   | **W** |   | 1 |
 | 1059 | Table_1059 |  | MEM |   | **W** |   | 1 |
+| 167 | troncon__________tro |  | DB |   | **W** |   | 1 |
+| 342 | histo__fusionseparation_log | Historique / journal | DB | R |   | L | 2 |
+| 70 | date_comptable___dat |  | DB | R |   |   | 1 |
 
 ### Colonnes par table (27 / 62 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 15 - transac_entete_bar (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 19 - bl_detail (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 23 - reseau_cloture___rec (R/**W**) - 5 usages</summary>
+<summary>Table 343 - histo_fusionseparation_saisie (R/**W**/L) - 9 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | W1 fin tache | W | Alpha |
-| B | W1 cloture en cours | W | Numeric |
-
-</details>
-
-<details>
-<summary>Table 29 - voyages__________voy (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+| A | v.new filiation | W | Numeric |
+| B | v.numero adherent | W | Numeric |
+| C | v.filiation adherent | W | Numeric |
+| D | v.type client | W | Alpha |
 
 </details>
 
@@ -3852,7 +3547,141 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 31 - gm-complet_______gmc (R/**W**) - 2 usages</summary>
+<summary>Table 39 - depot_garantie___dga (R/**W**/L) - 6 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | V Garantie existe | W | Logical |
+| B | Nocompte\Fili\GarCLUB | W | Unicode |
+
+</details>
+
+<details>
+<summary>Table 340 - histo_fusionseparation (R/**W**/L) - 5 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| BA | W0 chrono histo | W | Numeric |
+| K | P0.Chrono histo sans interface | W | Numeric |
+
+</details>
+
+<details>
+<summary>Table 47 - compte_gm________cgm (R/**W**) - 12 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W3 fin de tache | W | Alpha |
+| B | W3 ret. lien garanti? | W | Logical |
+
+</details>
+
+<details>
+<summary>Table 23 - reseau_cloture___rec (R/**W**) - 5 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 fin tache | W | Alpha |
+| B | W1 cloture en cours | W | Numeric |
+
+</details>
+
+<details>
+<summary>Table 51 - fusion_eclatementfec (R/**W**) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| D | W1 Filiation compte fusionne | W | Numeric |
+| E | P.i.Filiation Fusion | W | Numeric |
+
+</details>
+
+<details>
+<summary>Table 33 - prestations______pre (R/**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 131 - fichier_validation (R/**W**) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W2 validation | W | Numeric |
+| N | W0 validation | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 37 - commentaire_gm_________acc (R/**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 831 - import_go_erreur_affection (R/**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 837 - ##_pv_customer_dat (R/**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 46 - mvt_prestation___mpr (R/**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 79 - gratuites________gra (R/**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 137 - fichier_histotel (R/**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 834 - tpe_par_terminal (R/**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 805 - vente_par_moyen_paiement (R/**W**) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| J | W2 mode paiement | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 40 - comptable________cte (R/**W**) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| F | W2 date comptable | W | Date |
+
+</details>
+
+<details>
+<summary>Table 807 - plafond_lit (R/**W**) - 3 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
@@ -3866,9 +3695,131 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 33 - prestations______pre (R/**W**) - 3 usages</summary>
+<summary>Table 312 - ez_card (R/**W**) - 2 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 31 - gm-complet_______gmc (R/**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 35 - personnel_go______go (R/**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 786 - qualite_avant_reprise (R/**W**) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v. qualite | W | Unicode |
+| BD | W0 reprise confirmee | W | Numeric |
+| C | W2 qualite compte | W | Alpha |
+| I | P0 Reprise Auto | W | Logical |
+| S | W0 qualite compte | W | Alpha |
+| W | W0 reprise | W | Logical |
+| X | W0 chrono reprise | W | Numeric |
+
+</details>
+
+<details>
+<summary>Table 123 - fichier_messagerie (R/**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 147 - change_vente_____chg (R/**W**) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| D | W2 change GM | W | Alpha |
+| L | W2 taux change | W | Numeric |
+
+</details>
+
+<details>
+<summary>Table 80 - codes_autocom____aut (R/**W**) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W2 code autocom | W | Numeric |
+
+</details>
+
+<details>
+<summary>Table 44 - change___________chg (R/**W**) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| D | W2 change GM | W | Alpha |
+| L | W2 taux change | W | Numeric |
+
+</details>
+
+<details>
+<summary>Table 266 - cc_comptable (**W**) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| F | W2 date comptable | W | Date |
+
+</details>
+
+<details>
+<summary>Table 309 - vente____________vep (**W**) - 4 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 15 - transac_entete_bar (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 307 - vente_option_veo (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 41 - depot_objets_____doa (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 463 - heure_de_passage (**W**) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| H | W2 heure operation | W | Time |
+| R | W0 heure operation | W | Time |
+
+</details>
+
+<details>
+<summary>Table 947 - Table_947 (**W**) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W3 fin tâche | W | Alpha |
+| B | P.i.Filiation | W | Numeric |
 
 </details>
 
@@ -3880,7 +3831,159 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 35 - personnel_go______go (R/**W**) - 2 usages</summary>
+<summary>Table 168 - heb_circuit______hci (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 268 - cc_total_par_type (**W**) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W2 type client | W | Alpha |
+| D | v.type client | W | Alpha |
+| P | W0 type operation | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 272 - cc_type_detail (**W**) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W2 type client | W | Alpha |
+| D | v.type client | W | Alpha |
+| P | W0 type operation | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 48 - lignes_de_solde__sld (**W**) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| E | P0 solde | W | Numeric |
+| F | P0 date limite solde | W | Date |
+
+</details>
+
+<details>
+<summary>Table 271 - cc_total (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 298 - participants_____par (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 29 - voyages__________voy (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 19 - bl_detail (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 38 - comptable_gratuite (**W**) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| F | W2 date comptable | W | Date |
+
+</details>
+
+<details>
+<summary>Table 358 - import_mod (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 42 - depot_devises____dda (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 366 - pms_print_param (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 301 - details_partici__dpa (**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 148 - lignes_de_solde__sld (**W**) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| E | P0 solde | W | Numeric |
+| F | P0 date limite solde | W | Date |
+
+</details>
+
+<details>
+<summary>Table 43 - solde_devises____sda (**W**) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| E | P0 solde | W | Numeric |
+| F | P0 date limite solde | W | Date |
+
+</details>
+
+<details>
+<summary>Table 263 - vente (**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 382 - pv_discount_reasons (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 171 - commentaire______com (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 285 - email (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 804 - valeur_credit_bar_defaut (**W**) - 1 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
@@ -3897,14 +4000,14 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 37 - commentaire_gm_________acc (R/**W**) - 3 usages</summary>
+<summary>Table 93 - vendeurs_________ven (**W**) - 1 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
-<summary>Table 38 - comptable_gratuite (**W**) - 3 usages</summary>
+<summary>Table 1059 - Table_1059 (**W**) - 1 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
@@ -3913,92 +4016,19 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 39 - depot_garantie___dga (R/**W**/L) - 6 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | V Garantie existe | W | Logical |
-| B | Nocompte\Fili\GarCLUB | W | Unicode |
-
-</details>
-
-<details>
-<summary>Table 40 - comptable________cte (R/**W**) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| F | W2 date comptable | W | Date |
-
-</details>
-
-<details>
-<summary>Table 41 - depot_objets_____doa (**W**) - 3 usages</summary>
+<summary>Table 167 - troncon__________tro (**W**) - 1 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
-<summary>Table 42 - depot_devises____dda (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 43 - solde_devises____sda (**W**) - 2 usages</summary>
+<summary>Table 342 - histo__fusionseparation_log (R/L) - 2 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| E | P0 solde | W | Numeric |
-| F | P0 date limite solde | W | Date |
-
-</details>
-
-<details>
-<summary>Table 44 - change___________chg (R/**W**) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| D | W2 change GM | W | Alpha |
-| L | W2 taux change | W | Numeric |
-
-</details>
-
-<details>
-<summary>Table 46 - mvt_prestation___mpr (R/**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 47 - compte_gm________cgm (R/**W**) - 12 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W3 fin de tache | W | Alpha |
-| B | W3 ret. lien garanti? | W | Logical |
-
-</details>
-
-<details>
-<summary>Table 48 - lignes_de_solde__sld (**W**) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| E | P0 solde | W | Numeric |
-| F | P0 date limite solde | W | Date |
-
-</details>
-
-<details>
-<summary>Table 51 - fusion_eclatementfec (R/**W**) - 4 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| D | W1 Filiation compte fusionne | W | Numeric |
-| E | P.i.Filiation Fusion | W | Numeric |
+| BA | W0 chrono histo | R | Numeric |
+| K | P0.Chrono histo sans interface | R | Numeric |
 
 </details>
 
@@ -4046,322 +4076,6 @@ flowchart TD
 
 </details>
 
-<details>
-<summary>Table 79 - gratuites________gra (R/**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 80 - codes_autocom____aut (R/**W**) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W2 code autocom | W | Numeric |
-
-</details>
-
-<details>
-<summary>Table 93 - vendeurs_________ven (**W**) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 123 - fichier_messagerie (R/**W**) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 131 - fichier_validation (R/**W**) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W2 validation | W | Numeric |
-| N | W0 validation | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 137 - fichier_histotel (R/**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 147 - change_vente_____chg (R/**W**) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| D | W2 change GM | W | Alpha |
-| L | W2 taux change | W | Numeric |
-
-</details>
-
-<details>
-<summary>Table 148 - lignes_de_solde__sld (**W**) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| E | P0 solde | W | Numeric |
-| F | P0 date limite solde | W | Date |
-
-</details>
-
-<details>
-<summary>Table 167 - troncon__________tro (**W**) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 168 - heb_circuit______hci (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 171 - commentaire______com (**W**) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 263 - vente (**W**) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 266 - cc_comptable (**W**) - 4 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| F | W2 date comptable | W | Date |
-
-</details>
-
-<details>
-<summary>Table 268 - cc_total_par_type (**W**) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W2 type client | W | Alpha |
-| D | v.type client | W | Alpha |
-| P | W0 type operation | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 271 - cc_total (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 272 - cc_type_detail (**W**) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W2 type client | W | Alpha |
-| D | v.type client | W | Alpha |
-| P | W0 type operation | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 285 - email (**W**) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 298 - participants_____par (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 301 - details_partici__dpa (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 307 - vente_option_veo (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 309 - vente____________vep (**W**) - 4 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 312 - ez_card (R/**W**) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 340 - histo_fusionseparation (R/**W**/L) - 5 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| BA | W0 chrono histo | W | Numeric |
-| K | P0.Chrono histo sans interface | W | Numeric |
-
-</details>
-
-<details>
-<summary>Table 342 - histo__fusionseparation_log (R/L) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| BA | W0 chrono histo | R | Numeric |
-| K | P0.Chrono histo sans interface | R | Numeric |
-
-</details>
-
-<details>
-<summary>Table 343 - histo_fusionseparation_saisie (R/**W**/L) - 9 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | v.new filiation | W | Numeric |
-| B | v.numero adherent | W | Numeric |
-| C | v.filiation adherent | W | Numeric |
-| D | v.type client | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 358 - import_mod (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 366 - pms_print_param (**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 382 - pv_discount_reasons (**W**) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 463 - heure_de_passage (**W**) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| H | W2 heure operation | W | Time |
-| R | W0 heure operation | W | Time |
-
-</details>
-
-<details>
-<summary>Table 786 - qualite_avant_reprise (R/**W**) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | v. qualite | W | Unicode |
-| BD | W0 reprise confirmee | W | Numeric |
-| C | W2 qualite compte | W | Alpha |
-| I | P0 Reprise Auto | W | Logical |
-| S | W0 qualite compte | W | Alpha |
-| W | W0 reprise | W | Logical |
-| X | W0 chrono reprise | W | Numeric |
-
-</details>
-
-<details>
-<summary>Table 804 - valeur_credit_bar_defaut (**W**) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 805 - vente_par_moyen_paiement (R/**W**) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| J | W2 mode paiement | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 807 - plafond_lit (R/**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 831 - import_go_erreur_affection (R/**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 834 - tpe_par_terminal (R/**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 837 - ##_pv_customer_dat (R/**W**) - 3 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 947 - Table_947 (**W**) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W3 fin tâche | W | Alpha |
-| B | P.i.Filiation | W | Numeric |
-
-</details>
-
-<details>
-<summary>Table 1059 - Table_1059 (**W**) - 1 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| F | W2 date comptable | W | Date |
-
-</details>
-
 ## 11. VARIABLES
 
 ### 11.1 Parametres entrants (11)
@@ -4372,13 +4086,13 @@ Variables recues du programme appelant ([Menu changement compte (IDE 37)](ADH-ID
 |--------|-----|------|-----------|
 | A | P0 societe | Alpha | 1x parametre entrant |
 | B | P0 code GM | Numeric | 1x parametre entrant |
-| C | P0 filiation | Numeric | [28.3.4.1](#t14), [28.3.5](#t15) |
+| C | P0 filiation | Numeric | [T14](#t14), [T15](#t15) |
 | D | P0 masque montant | Alpha | - |
 | E | P0 solde | Numeric | - |
 | F | P0 date limite solde | Date | - |
 | G | P0 nom village | Alpha | - |
 | H | P0 Bilateral | Alpha | - |
-| I | P0 Reprise Auto | Logical | [28.11.1](#t180), [28.16](#t185) |
+| I | P0 Reprise Auto | Logical | [T180](#t180), [T185](#t185) |
 | J | P0.Sans interface | Logical | 1x parametre entrant |
 | K | P0.Chrono histo sans interface | Numeric | - |
 
@@ -4389,8 +4103,8 @@ Variables internes au programme.
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
 | L | W0 imprimante | Numeric | - |
-| M | W0 reseau | Alpha | [28.2](#t5), [28.7](#t175) |
-| N | W0 validation | Alpha | [28.3.3](#t12) |
+| M | W0 reseau | Alpha | [T5](#t5), [T175](#t175) |
+| N | W0 validation | Alpha | [T12](#t12) |
 | O | W0 filiation libre | Numeric | - |
 | P | W0 type operation | Alpha | - |
 | Q | W0 date operation | Date | - |
@@ -4884,4 +4598,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:41*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:04*

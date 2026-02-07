@@ -1,6 +1,6 @@
 ﻿# ADH IDE 79 - Balance Credit de conso
 
-> **Analyse**: Phases 1-4 2026-02-07 03:44 -> 03:45 (28s) | Assemblage 03:45
+> **Analyse**: Phases 1-4 2026-02-07 03:44 -> 03:45 (28s) | Assemblage 06:51
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 79 |
 | Nom Programme | Balance Credit de conso |
 | Fichier source | `Prg_79.xml` |
-| Dossier IDE | General |
+| Dossier IDE | EzCard |
 | Taches | 30 (2 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 5 |
@@ -39,49 +39,49 @@ Le flux de traitement s'organise en **4 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (5 taches)
 
-- **79** - Position des credits bar **[[ECRAN]](#ecran-t1)**
-- **79.2** - detail credit conso **[[ECRAN]](#ecran-t3)**
-- **79.3** - GLOBAL **[[ECRAN]](#ecran-t4)**
-- **79.4** - DETAIL **[[ECRAN]](#ecran-t17)**
-- **79.5** - get solde
+- **T1** - Position des credits bar **[ECRAN]**
+- **T3** - detail credit conso **[ECRAN]**
+- **T4** - GLOBAL **[ECRAN]**
+- **T17** - DETAIL **[ECRAN]**
+- **T30** - get solde
 
 Delegue a : [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Chained Listing Load Default (IDE 186)](ADH-IDE-186.md)
 
 #### Phase 2 : Initialisation (1 tache)
 
-- **79.1** - Init village **[[ECRAN]](#ecran-t2)**
+- **T2** - Init village **[ECRAN]**
 
 #### Phase 3 : Impression (22 taches)
 
-- **79.3.1** - Printer 1 **[[ECRAN]](#ecran-t5)**
-- **79.3.1.1** - edition extrait compte **[[ECRAN]](#ecran-t6)**
-- **79.3.1.2** - edition extrait compte **[[ECRAN]](#ecran-t7)**
-- **79.3.2** - Printer 4 **[[ECRAN]](#ecran-t8)**
-- **79.3.2.1** - edition extrait compte **[[ECRAN]](#ecran-t9)**
-- **79.3.2.2** - edition extrait compte **[[ECRAN]](#ecran-t10)**
-- **79.3.3** - Printer 6 **[[ECRAN]](#ecran-t11)**
-- **79.3.4** - Printer 8 **[[ECRAN]](#ecran-t13)**
-- **79.3.4.1** - edition extrait compte **[[ECRAN]](#ecran-t14)**
-- **79.3.5** - Printer 9 **[[ECRAN]](#ecran-t15)**
-- **79.3.5.1** - edition extrait compte **[[ECRAN]](#ecran-t16)**
-- **79.4.1** - Printer 1 **[[ECRAN]](#ecran-t18)**
-- **79.4.1.1** - edition extrait compte **[[ECRAN]](#ecran-t19)**
-- **79.4.1.2** - edition extrait compte **[[ECRAN]](#ecran-t20)**
-- **79.4.2** - Printer 4 **[[ECRAN]](#ecran-t21)**
-- **79.4.2.1** - edition extrait compte **[[ECRAN]](#ecran-t22)**
-- **79.4.2.2** - edition extrait compte **[[ECRAN]](#ecran-t23)**
-- **79.4.3** - Printer 6 **[[ECRAN]](#ecran-t24)**
-- **79.4.4** - Printer 8 **[[ECRAN]](#ecran-t26)**
-- **79.4.4.1** - edition extrait compte **[[ECRAN]](#ecran-t27)**
-- **79.4.5** - Printer 9 **[[ECRAN]](#ecran-t28)**
-- **79.4.5.1** - edition extrait compte **[[ECRAN]](#ecran-t29)**
+- **T5** - Printer 1 **[ECRAN]**
+- **T6** - edition extrait compte **[ECRAN]**
+- **T7** - edition extrait compte **[ECRAN]**
+- **T8** - Printer 4 **[ECRAN]**
+- **T9** - edition extrait compte **[ECRAN]**
+- **T10** - edition extrait compte **[ECRAN]**
+- **T11** - Printer 6 **[ECRAN]**
+- **T13** - Printer 8 **[ECRAN]**
+- **T14** - edition extrait compte **[ECRAN]**
+- **T15** - Printer 9 **[ECRAN]**
+- **T16** - edition extrait compte **[ECRAN]**
+- **T18** - Printer 1 **[ECRAN]**
+- **T19** - edition extrait compte **[ECRAN]**
+- **T20** - edition extrait compte **[ECRAN]**
+- **T21** - Printer 4 **[ECRAN]**
+- **T22** - edition extrait compte **[ECRAN]**
+- **T23** - edition extrait compte **[ECRAN]**
+- **T24** - Printer 6 **[ECRAN]**
+- **T26** - Printer 8 **[ECRAN]**
+- **T27** - edition extrait compte **[ECRAN]**
+- **T28** - Printer 9 **[ECRAN]**
+- **T29** - edition extrait compte **[ECRAN]**
 
 Delegue a : [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Get Printer for chained list (IDE 184)](ADH-IDE-184.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md), [Chained Listing Printer Choice (IDE 185)](ADH-IDE-185.md), [Chained Listing Load Default (IDE 186)](ADH-IDE-186.md)
 
 #### Phase 4 : Saisie (2 taches)
 
-- **79.3.3.1** - Transactions details **[[ECRAN]](#ecran-t12)**
-- **79.4.3.1** - Transactions details **[[ECRAN]](#ecran-t25)**
+- **T12** - Transactions details **[ECRAN]**
+- **T25** - Transactions details **[ECRAN]**
 
 #### Tables impactees
 
@@ -99,7 +99,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>79 - Position des credits bar [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Position des credits bar [ECRAN]
 
 **Role** : Calcul fidelite/avantage : Position des credits bar.
 **Ecran** : 728 x 276 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -109,17 +109,17 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [79.2](#t3) | detail credit conso **[[ECRAN]](#ecran-t3)** | Traitement |
-| [79.3](#t4) | GLOBAL **[[ECRAN]](#ecran-t4)** | Traitement |
-| [79.4](#t17) | DETAIL **[[ECRAN]](#ecran-t17)** | Traitement |
-| [79.5](#t30) | get solde | Traitement |
+| [T3](#t3) | detail credit conso **[ECRAN]** | Traitement |
+| [T4](#t4) | GLOBAL **[ECRAN]** | Traitement |
+| [T17](#t17) | DETAIL **[ECRAN]** | Traitement |
+| [T30](#t30) | get solde | Traitement |
 
 </details>
 **Delegue a** : [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Chained Listing Load Default (IDE 186)](ADH-IDE-186.md)
 
 ---
 
-#### <a id="t3"></a>79.2 - detail credit conso [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - detail credit conso [ECRAN]
 
 **Role** : Calcul fidelite/avantage : detail credit conso.
 **Ecran** : 349 x 81 DLU (Modal) | [Voir mockup](#ecran-t3)
@@ -128,7 +128,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t4"></a>79.3 - GLOBAL [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - GLOBAL [ECRAN]
 
 **Role** : Traitement : GLOBAL.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t4)
@@ -136,7 +136,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t17"></a>79.4 - DETAIL [[ECRAN]](#ecran-t17)
+#### <a id="t17"></a>T17 - DETAIL [ECRAN]
 
 **Role** : Traitement : DETAIL.
 **Ecran** : 213 x 45 DLU (MDI) | [Voir mockup](#ecran-t17)
@@ -145,7 +145,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t30"></a>79.5 - get solde
+#### <a id="t30"></a>T30 - get solde
 
 **Role** : Consultation/chargement : get solde.
 **Variables liees** : E (v.solde_credit_conso)
@@ -158,7 +158,7 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t2"></a>79.1 - Init village [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - Init village [ECRAN]
 
 **Role** : Reinitialisation : Init village.
 **Ecran** : 274 x 204 DLU (MDI) | [Voir mockup](#ecran-t2)
@@ -171,154 +171,154 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t5"></a>79.3.1 - Printer 1 [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Printer 1 [ECRAN]
 
 **Role** : Generation du document : Printer 1.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t5)
 
 ---
 
-#### <a id="t6"></a>79.3.1.1 - edition extrait compte [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t6)
 
 ---
 
-#### <a id="t7"></a>79.3.1.2 - edition extrait compte [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>79.3.2 - Printer 4 [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Printer 4 [ECRAN]
 
 **Role** : Generation du document : Printer 4.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t9"></a>79.3.2.1 - edition extrait compte [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t10"></a>79.3.2.2 - edition extrait compte [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t10)
 
 ---
 
-#### <a id="t11"></a>79.3.3 - Printer 6 [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Printer 6 [ECRAN]
 
 **Role** : Generation du document : Printer 6.
 **Ecran** : 213 x 45 DLU (MDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t13"></a>79.3.4 - Printer 8 [[ECRAN]](#ecran-t13)
+#### <a id="t13"></a>T13 - Printer 8 [ECRAN]
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t13)
 
 ---
 
-#### <a id="t14"></a>79.3.4.1 - edition extrait compte [[ECRAN]](#ecran-t14)
+#### <a id="t14"></a>T14 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t14)
 
 ---
 
-#### <a id="t15"></a>79.3.5 - Printer 9 [[ECRAN]](#ecran-t15)
+#### <a id="t15"></a>T15 - Printer 9 [ECRAN]
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t15)
 
 ---
 
-#### <a id="t16"></a>79.3.5.1 - edition extrait compte [[ECRAN]](#ecran-t16)
+#### <a id="t16"></a>T16 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t16)
 
 ---
 
-#### <a id="t18"></a>79.4.1 - Printer 1 [[ECRAN]](#ecran-t18)
+#### <a id="t18"></a>T18 - Printer 1 [ECRAN]
 
 **Role** : Generation du document : Printer 1.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t18)
 
 ---
 
-#### <a id="t19"></a>79.4.1.1 - edition extrait compte [[ECRAN]](#ecran-t19)
+#### <a id="t19"></a>T19 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t19)
 
 ---
 
-#### <a id="t20"></a>79.4.1.2 - edition extrait compte [[ECRAN]](#ecran-t20)
+#### <a id="t20"></a>T20 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t20)
 
 ---
 
-#### <a id="t21"></a>79.4.2 - Printer 4 [[ECRAN]](#ecran-t21)
+#### <a id="t21"></a>T21 - Printer 4 [ECRAN]
 
 **Role** : Generation du document : Printer 4.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t21)
 
 ---
 
-#### <a id="t22"></a>79.4.2.1 - edition extrait compte [[ECRAN]](#ecran-t22)
+#### <a id="t22"></a>T22 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t22)
 
 ---
 
-#### <a id="t23"></a>79.4.2.2 - edition extrait compte [[ECRAN]](#ecran-t23)
+#### <a id="t23"></a>T23 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t23)
 
 ---
 
-#### <a id="t24"></a>79.4.3 - Printer 6 [[ECRAN]](#ecran-t24)
+#### <a id="t24"></a>T24 - Printer 6 [ECRAN]
 
 **Role** : Generation du document : Printer 6.
 **Ecran** : 213 x 45 DLU (MDI) | [Voir mockup](#ecran-t24)
 
 ---
 
-#### <a id="t26"></a>79.4.4 - Printer 8 [[ECRAN]](#ecran-t26)
+#### <a id="t26"></a>T26 - Printer 8 [ECRAN]
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t26)
 
 ---
 
-#### <a id="t27"></a>79.4.4.1 - edition extrait compte [[ECRAN]](#ecran-t27)
+#### <a id="t27"></a>T27 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t27)
 
 ---
 
-#### <a id="t28"></a>79.4.5 - Printer 9 [[ECRAN]](#ecran-t28)
+#### <a id="t28"></a>T28 - Printer 9 [ECRAN]
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t28)
 
 ---
 
-#### <a id="t29"></a>79.4.5.1 - edition extrait compte [[ECRAN]](#ecran-t29)
+#### <a id="t29"></a>T29 - edition extrait compte [ECRAN]
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t29)
@@ -330,14 +330,14 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Transactions deta
 
 ---
 
-#### <a id="t12"></a>79.3.3.1 - Transactions details [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 213 x 45 DLU (MDI) | [Voir mockup](#ecran-t12)
 
 ---
 
-#### <a id="t25"></a>79.4.3.1 - Transactions details [[ECRAN]](#ecran-t25)
+#### <a id="t25"></a>T25 - Transactions details [ECRAN]
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 213 x 45 DLU (MDI) | [Voir mockup](#ecran-t25)
@@ -358,7 +358,7 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Transactions deta
 | **Si faux** | 'Detail') |
 | **Expression source** | Expression 14 : `IF ([X],'Quit Detail','Detail')` |
 | **Exemple** | Si [X] â†’ 'Quit Detail'. Sinon â†’ 'Detail') |
-| **Impact** | [79.2 - detail credit conso](#t3) |
+| **Impact** | [T3 - detail credit conso](#t3) |
 
 ## 6. CONTEXTE
 
@@ -373,15 +373,15 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Transactions deta
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 79 | 79 | Position des credits bar | MDI | 728 | 276 | Traitement |
-| 2 | 79.2 | 79.2 | detail credit conso | Modal | 349 | 81 | Traitement |
+| 1 | 79 | T1 | Position des credits bar | MDI | 728 | 276 | Traitement |
+| 2 | 79.2 | T3 | detail credit conso | Modal | 349 | 81 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>79 - Position des credits bar
-**Tache** : [79](#t1) | **Type** : MDI | **Dimensions** : 728 x 276 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 728 x 276 DLU
 **Bloc** : Traitement | **Titre IDE** : Position des credits bar
 
 <!-- FORM-DATA:
@@ -678,7 +678,7 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Transactions deta
 ---
 
 #### <a id="ecran-t3"></a>79.2 - detail credit conso
-**Tache** : [79.2](#t3) | **Type** : Modal | **Dimensions** : 349 x 81 DLU
+**Tache** : [T3](#t3) | **Type** : Modal | **Dimensions** : 349 x 81 DLU
 **Bloc** : Traitement | **Titre IDE** : detail credit conso
 
 <!-- FORM-DATA:
@@ -804,9 +804,9 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Transactions deta
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[79 Position des credit...]
+    VF1[T1 Position des credit...]
     style VF1 fill:#58a6ff
-    VF3[79.2 detail credit conso]
+    VF3[T3 detail credit conso]
     style VF3 fill:#58a6ff
     EXT181[IDE 181 Set Listing Nu...]
     style EXT181 fill:#3fb950
@@ -843,56 +843,50 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **79.1** | [**Position des credits bar** (79)](#t1) [mockup](#ecran-t1) | MDI | 728x276 | Traitement |
-| 79.1.1 | [detail credit conso (79.2)](#t3) [mockup](#ecran-t3) | Modal | 349x81 | |
-| 79.1.2 | [GLOBAL (79.3)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
-| 79.1.3 | [DETAIL (79.4)](#t17) [mockup](#ecran-t17) | MDI | 213x45 | |
-| 79.1.4 | [get solde (79.5)](#t30) | - | - | |
-| **79.2** | [**Init village** (79.1)](#t2) [mockup](#ecran-t2) | MDI | 274x204 | Initialisation |
-| **79.3** | [**Printer 1** (79.3.1)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | Impression |
-| 79.3.1 | [edition extrait compte (79.3.1.1)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
-| 79.3.2 | [edition extrait compte (79.3.1.2)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
-| 79.3.3 | [Printer 4 (79.3.2)](#t8) [mockup](#ecran-t8) | MDI | 1058x791 | |
-| 79.3.4 | [edition extrait compte (79.3.2.1)](#t9) [mockup](#ecran-t9) | MDI | 1058x791 | |
-| 79.3.5 | [edition extrait compte (79.3.2.2)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
-| 79.3.6 | [Printer 6 (79.3.3)](#t11) [mockup](#ecran-t11) | MDI | 213x45 | |
-| 79.3.7 | [Printer 8 (79.3.4)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
-| 79.3.8 | [edition extrait compte (79.3.4.1)](#t14) [mockup](#ecran-t14) | MDI | 1058x791 | |
-| 79.3.9 | [Printer 9 (79.3.5)](#t15) [mockup](#ecran-t15) | MDI | 1058x791 | |
-| 79.3.10 | [edition extrait compte (79.3.5.1)](#t16) [mockup](#ecran-t16) | MDI | 1058x791 | |
-| 79.3.11 | [Printer 1 (79.4.1)](#t18) [mockup](#ecran-t18) | MDI | 1058x791 | |
-| 79.3.12 | [edition extrait compte (79.4.1.1)](#t19) [mockup](#ecran-t19) | MDI | 1058x791 | |
-| 79.3.13 | [edition extrait compte (79.4.1.2)](#t20) [mockup](#ecran-t20) | MDI | 1058x791 | |
-| 79.3.14 | [Printer 4 (79.4.2)](#t21) [mockup](#ecran-t21) | MDI | 1058x791 | |
-| 79.3.15 | [edition extrait compte (79.4.2.1)](#t22) [mockup](#ecran-t22) | MDI | 1058x791 | |
-| 79.3.16 | [edition extrait compte (79.4.2.2)](#t23) [mockup](#ecran-t23) | MDI | 1058x791 | |
-| 79.3.17 | [Printer 6 (79.4.3)](#t24) [mockup](#ecran-t24) | MDI | 213x45 | |
-| 79.3.18 | [Printer 8 (79.4.4)](#t26) [mockup](#ecran-t26) | MDI | 1058x791 | |
-| 79.3.19 | [edition extrait compte (79.4.4.1)](#t27) [mockup](#ecran-t27) | MDI | 1058x791 | |
-| 79.3.20 | [Printer 9 (79.4.5)](#t28) [mockup](#ecran-t28) | MDI | 1058x791 | |
-| 79.3.21 | [edition extrait compte (79.4.5.1)](#t29) [mockup](#ecran-t29) | MDI | 1058x791 | |
-| **79.4** | [**Transactions details** (79.3.3.1)](#t12) [mockup](#ecran-t12) | MDI | 213x45 | Saisie |
-| 79.4.1 | [Transactions details (79.4.3.1)](#t25) [mockup](#ecran-t25) | MDI | 213x45 | |
+| **79.1** | [**Position des credits bar** (T1)](#t1) [mockup](#ecran-t1) | MDI | 728x276 | Traitement |
+| 79.1.1 | [detail credit conso (T3)](#t3) [mockup](#ecran-t3) | Modal | 349x81 | |
+| 79.1.2 | [GLOBAL (T4)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
+| 79.1.3 | [DETAIL (T17)](#t17) [mockup](#ecran-t17) | MDI | 213x45 | |
+| 79.1.4 | [get solde (T30)](#t30) | - | - | |
+| **79.2** | [**Init village** (T2)](#t2) [mockup](#ecran-t2) | MDI | 274x204 | Initialisation |
+| **79.3** | [**Printer 1** (T5)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | Impression |
+| 79.3.1 | [edition extrait compte (T6)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
+| 79.3.2 | [edition extrait compte (T7)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
+| 79.3.3 | [Printer 4 (T8)](#t8) [mockup](#ecran-t8) | MDI | 1058x791 | |
+| 79.3.4 | [edition extrait compte (T9)](#t9) [mockup](#ecran-t9) | MDI | 1058x791 | |
+| 79.3.5 | [edition extrait compte (T10)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
+| 79.3.6 | [Printer 6 (T11)](#t11) [mockup](#ecran-t11) | MDI | 213x45 | |
+| 79.3.7 | [Printer 8 (T13)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
+| 79.3.8 | [edition extrait compte (T14)](#t14) [mockup](#ecran-t14) | MDI | 1058x791 | |
+| 79.3.9 | [Printer 9 (T15)](#t15) [mockup](#ecran-t15) | MDI | 1058x791 | |
+| 79.3.10 | [edition extrait compte (T16)](#t16) [mockup](#ecran-t16) | MDI | 1058x791 | |
+| 79.3.11 | [Printer 1 (T18)](#t18) [mockup](#ecran-t18) | MDI | 1058x791 | |
+| 79.3.12 | [edition extrait compte (T19)](#t19) [mockup](#ecran-t19) | MDI | 1058x791 | |
+| 79.3.13 | [edition extrait compte (T20)](#t20) [mockup](#ecran-t20) | MDI | 1058x791 | |
+| 79.3.14 | [Printer 4 (T21)](#t21) [mockup](#ecran-t21) | MDI | 1058x791 | |
+| 79.3.15 | [edition extrait compte (T22)](#t22) [mockup](#ecran-t22) | MDI | 1058x791 | |
+| 79.3.16 | [edition extrait compte (T23)](#t23) [mockup](#ecran-t23) | MDI | 1058x791 | |
+| 79.3.17 | [Printer 6 (T24)](#t24) [mockup](#ecran-t24) | MDI | 213x45 | |
+| 79.3.18 | [Printer 8 (T26)](#t26) [mockup](#ecran-t26) | MDI | 1058x791 | |
+| 79.3.19 | [edition extrait compte (T27)](#t27) [mockup](#ecran-t27) | MDI | 1058x791 | |
+| 79.3.20 | [Printer 9 (T28)](#t28) [mockup](#ecran-t28) | MDI | 1058x791 | |
+| 79.3.21 | [edition extrait compte (T29)](#t29) [mockup](#ecran-t29) | MDI | 1058x791 | |
+| **79.4** | [**Transactions details** (T12)](#t12) [mockup](#ecran-t12) | MDI | 213x45 | Saisie |
+| 79.4.1 | [Transactions details (T25)](#t25) [mockup](#ecran-t25) | MDI | 213x45 | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[detail credit conso]
-    UPDATE[MAJ 1 tables]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 30 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -973,7 +967,7 @@ Variables persistantes pendant toute la session.
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
 | E | v.solde_credit_conso | Numeric | 1x session |
-| F | v.nom village | Alpha | [79.1](#t2) |
+| F | v.nom village | Alpha | [T2](#t2) |
 | G | v.masque-mtt | Alpha | 1x session |
 | H | v.code-devise | Alpha | 1x session |
 | I | v.detail | Logical | - |
@@ -1250,4 +1244,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:45*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:51*

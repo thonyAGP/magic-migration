@@ -1,6 +1,6 @@
 ﻿# ADH IDE 82 - Select affilies
 
-> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (26s) | Assemblage 03:45
+> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (26s) | Assemblage 06:52
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 82 |
 | Nom Programme | Select affilies |
 | Fichier source | `Prg_82.xml` |
-| Dossier IDE | General |
+| Dossier IDE | EzCard |
 | Taches | 2 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 1 |
@@ -35,13 +35,13 @@ Le flux de traitement s'organise en **2 blocs fonctionnels** :
 
 #### Phase 1 : Traitement (1 tache)
 
-- **82** - Ecran **[[ECRAN]](#ecran-t1)**
+- **T1** - Ecran **[ECRAN]**
 
 Delegue a : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 #### Phase 2 : Calcul (1 tache)
 
-- **82.1** - Reaffichage infos compte
+- **T2** - Reaffichage infos compte
 
 </details>
 
@@ -53,7 +53,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>82 - Ecran [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Ecran [ECRAN]
 
 **Role** : Traitement : Ecran.
 **Ecran** : 1010 x 227 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -66,7 +66,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t2"></a>82.1 - Reaffichage infos compte
+#### <a id="t2"></a>T2 - Reaffichage infos compte
 
 **Role** : Reinitialisation : Reaffichage infos compte.
 **Variables liees** : E (< solde compte), F (< etat compte)
@@ -121,14 +121,14 @@ Calculs metier : montants, stocks, compteurs.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 82 | 82 | Ecran | MDI | 1010 | 227 | Traitement |
+| 1 | 82 | T1 | Ecran | MDI | 1010 | 227 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>82 - Ecran
-**Tache** : [82](#t1) | **Type** : MDI | **Dimensions** : 1010 x 227 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1010 x 227 DLU
 **Bloc** : Traitement | **Titre IDE** : Ecran
 
 <!-- FORM-DATA:
@@ -502,27 +502,22 @@ Ecran unique: **Ecran**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **82.1** | [**Ecran** (82)](#t1) [mockup](#ecran-t1) | MDI | 1010x227 | Traitement |
-| **82.2** | [**Reaffichage infos compte** (82.1)](#t2) | MDI | - | Calcul |
+| **82.1** | [**Ecran** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1010x227 | Traitement |
+| **82.2** | [**Reaffichage infos compte** (T2)](#t2) | MDI | - | Calcul |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    PROCESS[Traitement 2 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -849,4 +844,4 @@ graph LR
 | [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:45*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:52*

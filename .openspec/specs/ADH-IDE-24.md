@@ -1,6 +1,6 @@
 ﻿# ADH IDE 24 - Print reçu change vente
 
-> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 03:41 (27s) | Assemblage 03:41
+> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 03:41 (27s) | Assemblage 13:03
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,6 +18,7 @@
 | Taches | 14 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 2 |
+| Complexite | **BASSE** (score 12/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
@@ -71,7 +72,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>24 - Veuillez patienter ... [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Veuillez patienter ... [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (8 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -81,61 +82,61 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [24.1.1](#t3) | Impression reçu change **[[ECRAN]](#ecran-t3)** | Traitement |
-| [24.1.2](#t4) | Impression reçu change **[[ECRAN]](#ecran-t4)** | Traitement |
-| [24.2.1](#t6) | Impression reçu change **[[ECRAN]](#ecran-t6)** | Traitement |
-| [24.2.2](#t7) | Impression reçu change **[[ECRAN]](#ecran-t7)** | Traitement |
-| [24.4.1](#t11) | Impression reçu change **[[ECRAN]](#ecran-t11)** | Traitement |
-| [24.5.1](#t13) | Impression reçu change **[[ECRAN]](#ecran-t13)** | Traitement |
-| [24.6](#t16) | Impression reçu change **[[ECRAN]](#ecran-t16)** | Traitement |
+| [T3](#t3) | Impression reçu change **[ECRAN]** | Traitement |
+| [T4](#t4) | Impression reçu change **[ECRAN]** | Traitement |
+| [T6](#t6) | Impression reçu change **[ECRAN]** | Traitement |
+| [T7](#t7) | Impression reçu change **[ECRAN]** | Traitement |
+| [T11](#t11) | Impression reçu change **[ECRAN]** | Traitement |
+| [T13](#t13) | Impression reçu change **[ECRAN]** | Traitement |
+| [T16](#t16) | Impression reçu change **[ECRAN]** | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t3"></a>24.1.1 - Impression reçu change [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t3)
 
 ---
 
-#### <a id="t4"></a>24.1.2 - Impression reçu change [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t4)
 
 ---
 
-#### <a id="t6"></a>24.2.1 - Impression reçu change [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t6)
 
 ---
 
-#### <a id="t7"></a>24.2.2 - Impression reçu change [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t11"></a>24.4.1 - Impression reçu change [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t13"></a>24.5.1 - Impression reçu change [[ECRAN]](#ecran-t13)
+#### <a id="t13"></a>T13 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t13)
 
 ---
 
-#### <a id="t16"></a>24.6 - Impression reçu change [[ECRAN]](#ecran-t16)
+#### <a id="t16"></a>T16 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t16)
@@ -147,7 +148,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>24.1 - Printer 1 [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - Printer 1 [ECRAN]
 
 **Role** : Generation du document : Printer 1.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t2)
@@ -155,7 +156,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t5"></a>24.2 - Printer 4 [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Printer 4 [ECRAN]
 
 **Role** : Generation du document : Printer 4.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t5)
@@ -163,7 +164,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t8"></a>24.3 - Printer 5 [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Printer 5 [ECRAN]
 
 **Role** : Generation du document : Printer 5.
 **Ecran** : 357 x 103 DLU (MDI) | [Voir mockup](#ecran-t8)
@@ -171,7 +172,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t9"></a>24.3.1 - Impression reçu change ticket [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Impression reçu change ticket [ECRAN]
 
 **Role** : Generation du document : Impression reçu change ticket.
 **Ecran** : 357 x 103 DLU (MDI) | [Voir mockup](#ecran-t9)
@@ -180,7 +181,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t10"></a>24.4 - Printer 8 [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - Printer 8 [ECRAN]
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t10)
@@ -188,7 +189,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t12"></a>24.5 - Printer 9 [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Printer 9 [ECRAN]
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t12)
@@ -224,14 +225,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 24 | 24 | Veuillez patienter ... | MDI | 424 | 56 | Traitement |
+| 1 | 24 | T1 | Veuillez patienter ... | MDI | 424 | 56 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>24 - Veuillez patienter ...
-**Tache** : [24](#t1) | **Type** : MDI | **Dimensions** : 424 x 56 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 424 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter ...
 
 <!-- FORM-DATA:
@@ -320,39 +321,37 @@ Ecran unique: **Veuillez patienter ...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **24.1** | [**Veuillez patienter ...** (24)](#t1) [mockup](#ecran-t1) | MDI | 424x56 | Traitement |
-| 24.1.1 | [Impression reçu change (24.1.1)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | |
-| 24.1.2 | [Impression reçu change (24.1.2)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
-| 24.1.3 | [Impression reçu change (24.2.1)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
-| 24.1.4 | [Impression reçu change (24.2.2)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
-| 24.1.5 | [Impression reçu change (24.4.1)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
-| 24.1.6 | [Impression reçu change (24.5.1)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
-| 24.1.7 | [Impression reçu change (24.6)](#t16) [mockup](#ecran-t16) | MDI | 1058x791 | |
-| **24.2** | [**Printer 1** (24.1)](#t2) [mockup](#ecran-t2) | MDI | 1058x791 | Impression |
-| 24.2.1 | [Printer 4 (24.2)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
-| 24.2.2 | [Printer 5 (24.3)](#t8) [mockup](#ecran-t8) | MDI | 357x103 | |
-| 24.2.3 | [Impression reçu change ticket (24.3.1)](#t9) [mockup](#ecran-t9) | MDI | 357x103 | |
-| 24.2.4 | [Printer 8 (24.4)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
-| 24.2.5 | [Printer 9 (24.5)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
+| **24.1** | [**Veuillez patienter ...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 424x56 | Traitement |
+| 24.1.1 | [Impression reçu change (T3)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | |
+| 24.1.2 | [Impression reçu change (T4)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
+| 24.1.3 | [Impression reçu change (T6)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
+| 24.1.4 | [Impression reçu change (T7)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
+| 24.1.5 | [Impression reçu change (T11)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
+| 24.1.6 | [Impression reçu change (T13)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
+| 24.1.7 | [Impression reçu change (T16)](#t16) [mockup](#ecran-t16) | MDI | 1058x791 | |
+| **24.2** | [**Printer 1** (T2)](#t2) [mockup](#ecran-t2) | MDI | 1058x791 | Impression |
+| 24.2.1 | [Printer 4 (T5)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
+| 24.2.2 | [Printer 5 (T8)](#t8) [mockup](#ecran-t8) | MDI | 357x103 | |
+| 24.2.3 | [Impression reçu change ticket (T9)](#t9) [mockup](#ecran-t9) | MDI | 357x103 | |
+| 24.2.4 | [Printer 8 (T10)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
+| 24.2.5 | [Printer 9 (T12)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    B1[Traitement (8t)]
+    START --> B1
+    B2[Impression (6t)]
+    B1 --> B2
+    ENDOK([END])
+    B2 --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -362,13 +361,22 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
+| 147 | change_vente_____chg | Donnees de ventes | DB | R |   | L | 8 |
 | 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 7 |
 | 31 | gm-complet_______gmc |  | DB | R |   |   | 1 |
-| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 1 |
-| 147 | change_vente_____chg | Donnees de ventes | DB | R |   | L | 8 |
 | 368 | pms_village |  | DB |   |   | L | 1 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 1 |
 
 ### Colonnes par table (4 / 3 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 147 - change_vente_____chg (R/L) - 8 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| U | v. Vente de devise (Libelle) | R | Alpha |
+
+</details>
 
 <details>
 <summary>Table 30 - gm-recherche_____gmr (R) - 7 usages</summary>
@@ -421,15 +429,6 @@ flowchart TD
 | Y | v.Existe ligne? | R | Logical |
 | Z | v.Montant Product | R | Numeric |
 | BA | v.Nombre de copies | R | Numeric |
-
-</details>
-
-<details>
-<summary>Table 147 - change_vente_____chg (R/L) - 8 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| U | v. Vente de devise (Libelle) | R | Alpha |
 
 </details>
 
@@ -709,4 +708,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:41*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:03*

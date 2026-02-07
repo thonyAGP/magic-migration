@@ -1,6 +1,6 @@
 ﻿# ADH IDE 10 - Print list Checkout (shift F9)
 
-> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 03:39
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 12:49
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,31 +18,17 @@
 | Taches | 3 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Print list Checkout (shift F9)** assure la gestion complete de ce processus, accessible depuis [Menu Data Catching (IDE 7)](ADH-IDE-7.md).
+# ADH IDE 10 - Print List Checkout
 
-Le flux de traitement s'organise en **2 blocs fonctionnels** :
+Le programme gère l'impression de listes de transactions lors de la clôture de caisse (shift F9). Il s'exécute en réponse directe à l'action utilisateur depuis le menu de saisie données (IDE 7) et constitue un élément clé du workflow de fin de journée.
 
-- **Impression** (2 taches) : generation de tickets et documents
-- **Traitement** (1 tache) : traitements metier divers
+Le flux principal comporte trois tâches distinctes : d'abord, une tâche d'attente affiche un message "Veuillez patienter..." pour informer l'utilisateur du traitement en cours. Ensuite, la tâche "Printer 1" pilote l'imprimante configurée pour générer la sortie papier. Enfin, la tâche "édition extrait compte" produit un extrait complet de caisse avec toutes les transactions du cycle.
 
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (1 tache)
-
-- **10** - Veuillez patienter... **[[ECRAN]](#ecran-t1)**
-
-Delegue a : [Export - address (IDE 11)](ADH-IDE-11.md)
-
-#### Phase 2 : Impression (2 taches)
-
-- **10.1** - Printer 1
-- **10.1.1** - edition extrait compte
-
-</details>
+Le programme collabore étroitement avec IDE 11 (Export - address) pour formater et exporter les adresses des clients associées aux transactions. Cette intégration permet de générer des documents complets incluant les données de facturation et de livraison, formant un processus unitaire de fin de caisse.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -52,7 +38,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>10 - Veuillez patienter... [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 57 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -65,13 +51,13 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>10.1 - Printer 1
+#### <a id="t2"></a>T2 - Printer 1
 
 **Role** : Generation du document : Printer 1.
 
 ---
 
-#### <a id="t3"></a>10.1.1 - edition extrait compte
+#### <a id="t3"></a>T3 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 **Variables liees** : A (W1 solde compte)
@@ -79,7 +65,7 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Programme d'impression - logique technique sans conditions metier)*
 
 ## 6. CONTEXTE
 
@@ -94,14 +80,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 10 | 10 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
+| 1 | 10 | T1 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>10 - Veuillez patienter...
-**Tache** : [10](#t1) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -190,28 +176,26 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **10.1** | [**Veuillez patienter...** (10)](#t1) [mockup](#ecran-t1) | MDI | 424x57 | Traitement |
-| **10.2** | [**Printer 1** (10.1)](#t2) | MDI | - | Impression |
-| 10.2.1 | [edition extrait compte (10.1.1)](#t3) | MDI | - | |
+| **10.1** | [**Veuillez patienter...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 424x57 | Traitement |
+| **10.2** | [**Printer 1** (T2)](#t2) | MDI | - | Impression |
+| 10.2.1 | [edition extrait compte (T3)](#t3) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    B1[Traitement (1t)]
+    START --> B1
+    B2[Impression (2t)]
+    B1 --> B2
+    ENDOK([END])
+    B2 --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -331,4 +315,4 @@ graph LR
 | [Export - address (IDE 11)](ADH-IDE-11.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:39*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:50*

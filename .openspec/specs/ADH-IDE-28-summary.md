@@ -1,6 +1,6 @@
 ﻿# ADH IDE 28 - Fusion
 
-> **Analyse**: 2026-02-07 03:41
+> **Analyse**: 2026-02-07 13:04
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

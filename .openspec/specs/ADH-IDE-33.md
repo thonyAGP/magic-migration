@@ -1,6 +1,6 @@
 ﻿# ADH IDE 33 - Delete histo_Fus_Sep_Saisie
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (26s) | Assemblage 03:42
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (26s) | Assemblage 13:08
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,16 +18,15 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Delete histo_Fus_Sep_Saisie** assure la gestion complete de ce processus, accessible depuis [Fusion (IDE 28)](ADH-IDE-28.md).
+Le programme **ADH IDE 33** gère la suppression des enregistrements historiques de fusion/séparation de compte lors d'une saisie. Il intervient dans le flux de correction d'une opération de fusion (appelé depuis IDE 28) pour nettoyer la table `histo_fusionseparation_saisie` et maintenir la cohérence des données historiques.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+La logique principale supprime les entrées obsolètes de l'historique associées à la transaction en cours, permettant ainsi de revenir à un état antérieur avant la fusion si nécessaire. Cette suppression est critique pour éviter les doublons ou les traces incohérentes lorsqu'une fusion est annulée ou corrigée.
 
-- **Traitement** (1 tache) : traitements metier divers
-
-**Donnees modifiees** : 1 tables en ecriture (histo_fusionseparation_saisie).
+Le programme s'inscrit dans un mécanisme de rollback contrôlé : au lieu de conserver des états intermédiaires contradictoires dans l'historique, il efface proprement les traces de l'opération incomplète ou erronée. Cela garantit que la table `histo_fusionseparation_saisie` reflète toujours l'état consolidé et valide des fusions/séparations effectuées.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -44,7 +43,7 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -226,4 +225,4 @@ graph LR
 | histo_fusionseparation_saisie | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:42*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:08*

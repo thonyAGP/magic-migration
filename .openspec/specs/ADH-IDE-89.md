@@ -1,6 +1,6 @@
 ﻿# ADH IDE 89 - Factures (Tble Compta&Vent
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:46 (29s) | Assemblage 03:46
+> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:46 (29s) | Assemblage 06:55
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,7 +14,7 @@
 | IDE Position | 89 |
 | Nom Programme | Factures (Tble Compta&Vent |
 | Fichier source | `Prg_89.xml` |
-| Dossier IDE | Facturation |
+| Dossier IDE | Factures |
 | Taches | 35 (5 ecrans visibles) |
 | Tables modifiees | 7 |
 | Programmes appeles | 12 |
@@ -42,64 +42,64 @@ Le flux de traitement s'organise en **6 blocs fonctionnels** :
 
 #### Phase 1 : Saisie (6 taches)
 
-- **89** - Factures Bis(Ventes) **[[ECRAN]](#ecran-t1)**
-- **89.1** - Maj des lignes saisies **[[ECRAN]](#ecran-t2)**
-- **89.2.3** - Creation Lg Vente **[[ECRAN]](#ecran-t7)**
-- **89.4.1** - Ventes **[[ECRAN]](#ecran-t11)**
-- **89.6** - Maj des lignes saisies **[[ECRAN]](#ecran-t19)**
-- **89.9.3** - Creation Lg Vente **[[ECRAN]](#ecran-t26)**
+- **T1** - Factures Bis(Ventes) **[ECRAN]**
+- **T2** - Maj des lignes saisies **[ECRAN]**
+- **T7** - Creation Lg Vente **[ECRAN]**
+- **T11** - Ventes **[ECRAN]**
+- **T19** - Maj des lignes saisies **[ECRAN]**
+- **T26** - Creation Lg Vente **[ECRAN]**
 
 Delegue a : [Maj des lignes saisies (IDE 61)](ADH-IDE-61.md), [Maj des lignes saisies archive (IDE 94)](ADH-IDE-94.md)
 
 #### Phase 2 : Traitement (20 taches)
 
-- **89.2** - Hebergement **[[ECRAN]](#ecran-t3)**
-- **89.2.1** - Création
-- **89.2.2.1** - Maj Hebergement Temp
-- **89.2.3.1** - Maj Hebergement Temp
-- **89.4** - Hebergement **[[ECRAN]](#ecran-t10)**
-- **89.4.1.1** - Lignes boutique **[[ECRAN]](#ecran-t12)**
-- **89.4.1.1.2** - Suppr fact pro boutique
-- **89.4.2** - Flag All **[[ECRAN]](#ecran-t15)**
-- **89.4.3** - Pied de Facture **[[ECRAN]](#ecran-t16)**
-- **89.5** - Incremente N° de Facture
-- **89.9** - Hebergement **[[ECRAN]](#ecran-t22)**
-- **89.9.1** - Création
-- **89.9.2.1** - Maj Hebergement Temp
-- **89.9.3.1** - Maj Hebergement Temp
-- **89.10** - Maj Hebergement Tempo **[[ECRAN]](#ecran-t28)**
-- **89.11** - flag ligne boutique
-- **89.11.1** - flag ligne
-- **89.13** - chargement boutique
-- **89.15** - SQL parcourt facture **[[ECRAN]](#ecran-t34)**
-- **89.16** - SQL parcourt facture **[[ECRAN]](#ecran-t35)**
+- **T3** - Hebergement **[ECRAN]**
+- **T4** - Création
+- **T6** - Maj Hebergement Temp
+- **T8** - Maj Hebergement Temp
+- **T10** - Hebergement **[ECRAN]**
+- **T12** - Lignes boutique **[ECRAN]**
+- **T14** - Suppr fact pro boutique
+- **T15** - Flag All **[ECRAN]**
+- **T16** - Pied de Facture **[ECRAN]**
+- **T18** - Incremente N° de Facture
+- **T22** - Hebergement **[ECRAN]**
+- **T23** - Création
+- **T25** - Maj Hebergement Temp
+- **T27** - Maj Hebergement Temp
+- **T28** - Maj Hebergement Tempo **[ECRAN]**
+- **T29** - flag ligne boutique
+- **T30** - flag ligne
+- **T32** - chargement boutique
+- **T34** - SQL parcourt facture **[ECRAN]**
+- **T35** - SQL parcourt facture **[ECRAN]**
 
 Delegue a : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [flag ligne boutique (IDE 92)](ADH-IDE-92.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md), [Maj Hebergement Tempo (IDE 62)](ADH-IDE-62.md), [Facture - Sejour archive (IDE 95)](ADH-IDE-95.md)
 
 #### Phase 3 : Calcul (2 taches)
 
-- **89.2.2** - Creation Lg Compta
-- **89.9.2** - Creation Lg Compta
+- **T5** - Creation Lg Compta
+- **T24** - Creation Lg Compta
 
 #### Phase 4 : Validation (4 taches)
 
-- **89.3** - verif non flaguee
-- **89.4.1.1.1** - Controle ttc
-- **89.4.4** - verif boutique
-- **89.12** - verif non flaguee
+- **T9** - verif non flaguee
+- **T13** - Controle ttc
+- **T17** - verif boutique
+- **T31** - verif non flaguee
 
 Delegue a : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 #### Phase 5 : Creation (2 taches)
 
-- **89.7** - Creation Pied Facture **[[ECRAN]](#ecran-t20)**
-- **89.14** - Creation entete
+- **T20** - Creation Pied Facture **[ECRAN]**
+- **T33** - Creation entete
 
 Delegue a : [Creation entete facture (IDE 60)](ADH-IDE-60.md), [Creation Pied Facture (IDE 93)](ADH-IDE-93.md)
 
 #### Phase 6 : Consultation (1 tache)
 
-- **89.8** - Recherche si Fact déjà éditée
+- **T21** - Recherche si Fact déjà éditée
 
 #### Tables impactees
 
@@ -123,7 +123,7 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 ---
 
-#### <a id="t1"></a>89 - Factures Bis(Ventes) [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Factures Bis(Ventes) [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 881 x 411 DLU | [Voir mockup](#ecran-t1)
@@ -133,18 +133,18 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [89.1](#t2) | Maj des lignes saisies **[[ECRAN]](#ecran-t2)** | Saisie |
-| [89.2.3](#t7) | Creation Lg Vente **[[ECRAN]](#ecran-t7)** | Saisie |
-| [89.4.1](#t11) | Ventes **[[ECRAN]](#ecran-t11)** | Saisie |
-| [89.6](#t19) | Maj des lignes saisies **[[ECRAN]](#ecran-t19)** | Saisie |
-| [89.9.3](#t26) | Creation Lg Vente **[[ECRAN]](#ecran-t26)** | Saisie |
+| [T2](#t2) | Maj des lignes saisies **[ECRAN]** | Saisie |
+| [T7](#t7) | Creation Lg Vente **[ECRAN]** | Saisie |
+| [T11](#t11) | Ventes **[ECRAN]** | Saisie |
+| [T19](#t19) | Maj des lignes saisies **[ECRAN]** | Saisie |
+| [T26](#t26) | Creation Lg Vente **[ECRAN]** | Saisie |
 
 </details>
 **Delegue a** : [Maj des lignes saisies (IDE 61)](ADH-IDE-61.md), [Maj des lignes saisies archive (IDE 94)](ADH-IDE-94.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md)
 
 ---
 
-#### <a id="t2"></a>89.1 - Maj des lignes saisies [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - Maj des lignes saisies [ECRAN]
 
 **Role** : Saisie des donnees : Maj des lignes saisies.
 **Ecran** : 562 x 0 DLU | [Voir mockup](#ecran-t2)
@@ -152,7 +152,7 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 ---
 
-#### <a id="t7"></a>89.2.3 - Creation Lg Vente [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - Creation Lg Vente [ECRAN]
 
 **Role** : Saisie des donnees : Creation Lg Vente.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t7)
@@ -161,7 +161,7 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 ---
 
-#### <a id="t11"></a>89.4.1 - Ventes [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Ventes [ECRAN]
 
 **Role** : Saisie des donnees : Ventes.
 **Ecran** : 650 x 233 DLU | [Voir mockup](#ecran-t11)
@@ -169,7 +169,7 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 ---
 
-#### <a id="t19"></a>89.6 - Maj des lignes saisies [[ECRAN]](#ecran-t19)
+#### <a id="t19"></a>T19 - Maj des lignes saisies [ECRAN]
 
 **Role** : Saisie des donnees : Maj des lignes saisies.
 **Ecran** : 562 x 0 DLU | [Voir mockup](#ecran-t19)
@@ -177,7 +177,7 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 ---
 
-#### <a id="t26"></a>89.9.3 - Creation Lg Vente [[ECRAN]](#ecran-t26)
+#### <a id="t26"></a>T26 - Creation Lg Vente [ECRAN]
 
 **Role** : Saisie des donnees : Creation Lg Vente.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t26)
@@ -191,7 +191,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t3"></a>89.2 - Hebergement [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Hebergement [ECRAN]
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t3)
@@ -199,27 +199,27 @@ Traitements internes.
 
 ---
 
-#### <a id="t4"></a>89.2.1 - Création
+#### <a id="t4"></a>T4 - Création
 
 **Role** : Traitement : Création.
 
 ---
 
-#### <a id="t6"></a>89.2.2.1 - Maj Hebergement Temp
+#### <a id="t6"></a>T6 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
 **Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t8"></a>89.2.3.1 - Maj Hebergement Temp
+#### <a id="t8"></a>T8 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
 **Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t10"></a>89.4 - Hebergement [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - Hebergement [ECRAN]
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 866 x 250 DLU | [Voir mockup](#ecran-t10)
@@ -227,21 +227,21 @@ Traitements internes.
 
 ---
 
-#### <a id="t12"></a>89.4.1.1 - Lignes boutique [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Lignes boutique [ECRAN]
 
 **Role** : Traitement : Lignes boutique.
 **Ecran** : 704 x 239 DLU | [Voir mockup](#ecran-t12)
 
 ---
 
-#### <a id="t14"></a>89.4.1.1.2 - Suppr fact pro boutique
+#### <a id="t14"></a>T14 - Suppr fact pro boutique
 
 **Role** : Traitement : Suppr fact pro boutique.
 **Variables liees** : G (V.Lien Pied de facture), H (V.EntetFacture?), I (v.ExistFactureVente), J (V.Existe facture ?), P (V.Facture Sans Nom)
 
 ---
 
-#### <a id="t15"></a>89.4.2 - Flag All [[ECRAN]](#ecran-t15)
+#### <a id="t15"></a>T15 - Flag All [ECRAN]
 
 **Role** : Traitement : Flag All.
 **Ecran** : 541 x 291 DLU | [Voir mockup](#ecran-t15)
@@ -249,7 +249,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t16"></a>89.4.3 - Pied de Facture [[ECRAN]](#ecran-t16)
+#### <a id="t16"></a>T16 - Pied de Facture [ECRAN]
 
 **Role** : Traitement : Pied de Facture.
 **Ecran** : 207 x 102 DLU | [Voir mockup](#ecran-t16)
@@ -257,14 +257,14 @@ Traitements internes.
 
 ---
 
-#### <a id="t18"></a>89.5 - Incremente N° de Facture
+#### <a id="t18"></a>T18 - Incremente N° de Facture
 
 **Role** : Traitement : Incremente N° de Facture.
 **Variables liees** : G (V.Lien Pied de facture), H (V.EntetFacture?), I (v.ExistFactureVente), J (V.Existe facture ?), P (V.Facture Sans Nom)
 
 ---
 
-#### <a id="t22"></a>89.9 - Hebergement [[ECRAN]](#ecran-t22)
+#### <a id="t22"></a>T22 - Hebergement [ECRAN]
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t22)
@@ -272,27 +272,27 @@ Traitements internes.
 
 ---
 
-#### <a id="t23"></a>89.9.1 - Création
+#### <a id="t23"></a>T23 - Création
 
 **Role** : Traitement : Création.
 
 ---
 
-#### <a id="t25"></a>89.9.2.1 - Maj Hebergement Temp
+#### <a id="t25"></a>T25 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
 **Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t27"></a>89.9.3.1 - Maj Hebergement Temp
+#### <a id="t27"></a>T27 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
 **Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t28"></a>89.10 - Maj Hebergement Tempo [[ECRAN]](#ecran-t28)
+#### <a id="t28"></a>T28 - Maj Hebergement Tempo [ECRAN]
 
 **Role** : Traitement : Maj Hebergement Tempo.
 **Ecran** : 672 x 0 DLU | [Voir mockup](#ecran-t28)
@@ -300,27 +300,27 @@ Traitements internes.
 
 ---
 
-#### <a id="t29"></a>89.11 - flag ligne boutique
+#### <a id="t29"></a>T29 - flag ligne boutique
 
 **Role** : Traitement : flag ligne boutique.
 **Variables liees** : BD (V.Existe flaguee ?)
 
 ---
 
-#### <a id="t30"></a>89.11.1 - flag ligne
+#### <a id="t30"></a>T30 - flag ligne
 
 **Role** : Traitement : flag ligne.
 **Variables liees** : BD (V.Existe flaguee ?)
 
 ---
 
-#### <a id="t32"></a>89.13 - chargement boutique
+#### <a id="t32"></a>T32 - chargement boutique
 
 **Role** : Traitement : chargement boutique.
 
 ---
 
-#### <a id="t34"></a>89.15 - SQL parcourt facture [[ECRAN]](#ecran-t34)
+#### <a id="t34"></a>T34 - SQL parcourt facture [ECRAN]
 
 **Role** : Traitement : SQL parcourt facture.
 **Ecran** : 609 x 195 DLU | [Voir mockup](#ecran-t34)
@@ -328,7 +328,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t35"></a>89.16 - SQL parcourt facture [[ECRAN]](#ecran-t35)
+#### <a id="t35"></a>T35 - SQL parcourt facture [ECRAN]
 
 **Role** : Traitement : SQL parcourt facture.
 **Ecran** : 609 x 195 DLU | [Voir mockup](#ecran-t35)
@@ -341,14 +341,14 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t5"></a>89.2.2 - Creation Lg Compta
+#### <a id="t5"></a>T5 - Creation Lg Compta
 
 **Role** : Creation d'enregistrement : Creation Lg Compta.
 **Delegue a** : [Creation entete facture (IDE 60)](ADH-IDE-60.md), [Creation Pied Facture (IDE 93)](ADH-IDE-93.md)
 
 ---
 
-#### <a id="t24"></a>89.9.2 - Creation Lg Compta
+#### <a id="t24"></a>T24 - Creation Lg Compta
 
 **Role** : Creation d'enregistrement : Creation Lg Compta.
 **Delegue a** : [Creation entete facture (IDE 60)](ADH-IDE-60.md), [Creation Pied Facture (IDE 93)](ADH-IDE-93.md)
@@ -360,7 +360,7 @@ Controles de coherence : 4 taches verifient les donnees et conditions.
 
 ---
 
-#### <a id="t9"></a>89.3 - verif non flaguee
+#### <a id="t9"></a>T9 - verif non flaguee
 
 **Role** : Verification : verif non flaguee.
 **Variables liees** : BD (V.Existe flaguee ?)
@@ -368,21 +368,21 @@ Controles de coherence : 4 taches verifient les donnees et conditions.
 
 ---
 
-#### <a id="t13"></a>89.4.1.1.1 - Controle ttc
+#### <a id="t13"></a>T13 - Controle ttc
 
 **Role** : Verification : Controle ttc.
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t17"></a>89.4.4 - verif boutique
+#### <a id="t17"></a>T17 - verif boutique
 
 **Role** : Verification : verif boutique.
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t31"></a>89.12 - verif non flaguee
+#### <a id="t31"></a>T31 - verif non flaguee
 
 **Role** : Verification : verif non flaguee.
 **Variables liees** : BD (V.Existe flaguee ?)
@@ -395,7 +395,7 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t20"></a>89.7 - Creation Pied Facture [[ECRAN]](#ecran-t20)
+#### <a id="t20"></a>T20 - Creation Pied Facture [ECRAN]
 
 **Role** : Creation d'enregistrement : Creation Pied Facture.
 **Ecran** : 586 x 0 DLU | [Voir mockup](#ecran-t20)
@@ -404,7 +404,7 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t33"></a>89.14 - Creation entete
+#### <a id="t33"></a>T33 - Creation entete
 
 **Role** : Creation d'enregistrement : Creation entete.
 **Delegue a** : [Creation entete facture (IDE 60)](ADH-IDE-60.md), [Creation Pied Facture (IDE 93)](ADH-IDE-93.md)
@@ -416,7 +416,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t21"></a>89.8 - Recherche si Fact déjà éditée
+#### <a id="t21"></a>T21 - Recherche si Fact déjà éditée
 
 **Role** : Traitement : Recherche si Fact déjà éditée.
 **Variables liees** : G (V.Lien Pied de facture), H (V.EntetFacture?), I (v.ExistFactureVente), J (V.Existe facture ?), P (V.Facture Sans Nom)
@@ -463,18 +463,18 @@ Ecrans de recherche et consultation.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 89 | 89 | Factures Bis(Ventes) | Type0 | 881 | 411 | Saisie |
-| 2 | 89.4 | 89.4 | Hebergement | Type0 | 866 | 250 | Traitement |
-| 3 | 89.4.1 | 89.4.1 | Ventes | Type0 | 650 | 233 | Saisie |
-| 4 | 89.4.1.1 | 89.4.1.1 | Lignes boutique | Type0 | 704 | 239 | Traitement |
-| 5 | 89.4.3 | 89.4.3 | Pied de Facture | Type0 | 207 | 102 | Traitement |
+| 1 | 89 | T1 | Factures Bis(Ventes) | Type0 | 881 | 411 | Saisie |
+| 2 | 89.4 | T10 | Hebergement | Type0 | 866 | 250 | Traitement |
+| 3 | 89.4.1 | T11 | Ventes | Type0 | 650 | 233 | Saisie |
+| 4 | 89.4.1.1 | T12 | Lignes boutique | Type0 | 704 | 239 | Traitement |
+| 5 | 89.4.3 | T16 | Pied de Facture | Type0 | 207 | 102 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>89 - Factures Bis(Ventes)
-**Tache** : [89](#t1) | **Type** : Type0 | **Dimensions** : 881 x 411 DLU
+**Tache** : [T1](#t1) | **Type** : Type0 | **Dimensions** : 881 x 411 DLU
 **Bloc** : Saisie | **Titre IDE** : Factures Bis(Ventes)
 
 <!-- FORM-DATA:
@@ -911,7 +911,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t10"></a>89.4 - Hebergement
-**Tache** : [89.4](#t10) | **Type** : Type0 | **Dimensions** : 866 x 250 DLU
+**Tache** : [T10](#t10) | **Type** : Type0 | **Dimensions** : 866 x 250 DLU
 **Bloc** : Traitement | **Titre IDE** : Hebergement
 
 <!-- FORM-DATA:
@@ -1058,7 +1058,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t11"></a>89.4.1 - Ventes
-**Tache** : [89.4.1](#t11) | **Type** : Type0 | **Dimensions** : 650 x 233 DLU
+**Tache** : [T11](#t11) | **Type** : Type0 | **Dimensions** : 650 x 233 DLU
 **Bloc** : Saisie | **Titre IDE** : Ventes
 
 <!-- FORM-DATA:
@@ -1334,7 +1334,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t12"></a>89.4.1.1 - Lignes boutique
-**Tache** : [89.4.1.1](#t12) | **Type** : Type0 | **Dimensions** : 704 x 239 DLU
+**Tache** : [T12](#t12) | **Type** : Type0 | **Dimensions** : 704 x 239 DLU
 **Bloc** : Traitement | **Titre IDE** : Lignes boutique
 
 <!-- FORM-DATA:
@@ -1668,7 +1668,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t16"></a>89.4.3 - Pied de Facture
-**Tache** : [89.4.3](#t16) | **Type** : Type0 | **Dimensions** : 207 x 102 DLU
+**Tache** : [T16](#t16) | **Type** : Type0 | **Dimensions** : 207 x 102 DLU
 **Bloc** : Traitement | **Titre IDE** : Pied de Facture
 
 <!-- FORM-DATA:
@@ -1807,15 +1807,15 @@ Ecrans de recherche et consultation.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[89 Factures BisVentes]
+    VF1[T1 Factures BisVentes]
     style VF1 fill:#58a6ff
-    VF10[89.4 Hebergement]
+    VF10[T10 Hebergement]
     style VF10 fill:#58a6ff
-    VF11[89.4.1 Ventes]
+    VF11[T11 Ventes]
     style VF11 fill:#58a6ff
-    VF12[89.4.1.1 Lignes boutique]
+    VF12[T12 Lignes boutique]
     style VF12 fill:#58a6ff
-    VF16[89.4.3 Pied de Facture]
+    VF16[T16 Pied de Facture]
     style VF16 fill:#58a6ff
     EXT60[IDE 60 Creation entete...]
     style EXT60 fill:#3fb950
@@ -1876,68 +1876,55 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **89.1** | [**Factures Bis(Ventes)** (89)](#t1) [mockup](#ecran-t1) | - | 881x411 | Saisie |
-| 89.1.1 | [Maj des lignes saisies (89.1)](#t2) [mockup](#ecran-t2) | - | 562x0 | |
-| 89.1.2 | [Creation Lg Vente (89.2.3)](#t7) [mockup](#ecran-t7) | - | 630x0 | |
-| 89.1.3 | [Ventes (89.4.1)](#t11) [mockup](#ecran-t11) | - | 650x233 | |
-| 89.1.4 | [Maj des lignes saisies (89.6)](#t19) [mockup](#ecran-t19) | - | 562x0 | |
-| 89.1.5 | [Creation Lg Vente (89.9.3)](#t26) [mockup](#ecran-t26) | - | 630x0 | |
-| **89.2** | [**Hebergement** (89.2)](#t3) [mockup](#ecran-t3) | - | 630x0 | Traitement |
-| 89.2.1 | [Création (89.2.1)](#t4) | - | - | |
-| 89.2.2 | [Maj Hebergement Temp (89.2.2.1)](#t6) | - | - | |
-| 89.2.3 | [Maj Hebergement Temp (89.2.3.1)](#t8) | - | - | |
-| 89.2.4 | [Hebergement (89.4)](#t10) [mockup](#ecran-t10) | - | 866x250 | |
-| 89.2.5 | [Lignes boutique (89.4.1.1)](#t12) [mockup](#ecran-t12) | - | 704x239 | |
-| 89.2.6 | [Suppr fact pro boutique (89.4.1.1.2)](#t14) | - | - | |
-| 89.2.7 | [Flag All (89.4.2)](#t15) [mockup](#ecran-t15) | - | 541x291 | |
-| 89.2.8 | [Pied de Facture (89.4.3)](#t16) [mockup](#ecran-t16) | - | 207x102 | |
-| 89.2.9 | [Incremente N° de Facture (89.5)](#t18) | - | - | |
-| 89.2.10 | [Hebergement (89.9)](#t22) [mockup](#ecran-t22) | - | 630x0 | |
-| 89.2.11 | [Création (89.9.1)](#t23) | - | - | |
-| 89.2.12 | [Maj Hebergement Temp (89.9.2.1)](#t25) | - | - | |
-| 89.2.13 | [Maj Hebergement Temp (89.9.3.1)](#t27) | - | - | |
-| 89.2.14 | [Maj Hebergement Tempo (89.10)](#t28) [mockup](#ecran-t28) | - | 672x0 | |
-| 89.2.15 | [flag ligne boutique (89.11)](#t29) | - | - | |
-| 89.2.16 | [flag ligne (89.11.1)](#t30) | - | - | |
-| 89.2.17 | [chargement boutique (89.13)](#t32) | - | - | |
-| 89.2.18 | [SQL parcourt facture (89.15)](#t34) [mockup](#ecran-t34) | - | 609x195 | |
-| 89.2.19 | [SQL parcourt facture (89.16)](#t35) [mockup](#ecran-t35) | - | 609x195 | |
-| **89.3** | [**Creation Lg Compta** (89.2.2)](#t5) | - | - | Calcul |
-| 89.3.1 | [Creation Lg Compta (89.9.2)](#t24) | - | - | |
-| **89.4** | [**verif non flaguee** (89.3)](#t9) | - | - | Validation |
-| 89.4.1 | [Controle ttc (89.4.1.1.1)](#t13) | - | - | |
-| 89.4.2 | [verif boutique (89.4.4)](#t17) | - | - | |
-| 89.4.3 | [verif non flaguee (89.12)](#t31) | - | - | |
-| **89.5** | [**Creation Pied Facture** (89.7)](#t20) [mockup](#ecran-t20) | - | 586x0 | Creation |
-| 89.5.1 | [Creation entete (89.14)](#t33) | - | - | |
-| **89.6** | [**Recherche si Fact déjà éditée** (89.8)](#t21) | - | - | Consultation |
+| **89.1** | [**Factures Bis(Ventes)** (T1)](#t1) [mockup](#ecran-t1) | - | 881x411 | Saisie |
+| 89.1.1 | [Maj des lignes saisies (T2)](#t2) [mockup](#ecran-t2) | - | 562x0 | |
+| 89.1.2 | [Creation Lg Vente (T7)](#t7) [mockup](#ecran-t7) | - | 630x0 | |
+| 89.1.3 | [Ventes (T11)](#t11) [mockup](#ecran-t11) | - | 650x233 | |
+| 89.1.4 | [Maj des lignes saisies (T19)](#t19) [mockup](#ecran-t19) | - | 562x0 | |
+| 89.1.5 | [Creation Lg Vente (T26)](#t26) [mockup](#ecran-t26) | - | 630x0 | |
+| **89.2** | [**Hebergement** (T3)](#t3) [mockup](#ecran-t3) | - | 630x0 | Traitement |
+| 89.2.1 | [Création (T4)](#t4) | - | - | |
+| 89.2.2 | [Maj Hebergement Temp (T6)](#t6) | - | - | |
+| 89.2.3 | [Maj Hebergement Temp (T8)](#t8) | - | - | |
+| 89.2.4 | [Hebergement (T10)](#t10) [mockup](#ecran-t10) | - | 866x250 | |
+| 89.2.5 | [Lignes boutique (T12)](#t12) [mockup](#ecran-t12) | - | 704x239 | |
+| 89.2.6 | [Suppr fact pro boutique (T14)](#t14) | - | - | |
+| 89.2.7 | [Flag All (T15)](#t15) [mockup](#ecran-t15) | - | 541x291 | |
+| 89.2.8 | [Pied de Facture (T16)](#t16) [mockup](#ecran-t16) | - | 207x102 | |
+| 89.2.9 | [Incremente N° de Facture (T18)](#t18) | - | - | |
+| 89.2.10 | [Hebergement (T22)](#t22) [mockup](#ecran-t22) | - | 630x0 | |
+| 89.2.11 | [Création (T23)](#t23) | - | - | |
+| 89.2.12 | [Maj Hebergement Temp (T25)](#t25) | - | - | |
+| 89.2.13 | [Maj Hebergement Temp (T27)](#t27) | - | - | |
+| 89.2.14 | [Maj Hebergement Tempo (T28)](#t28) [mockup](#ecran-t28) | - | 672x0 | |
+| 89.2.15 | [flag ligne boutique (T29)](#t29) | - | - | |
+| 89.2.16 | [flag ligne (T30)](#t30) | - | - | |
+| 89.2.17 | [chargement boutique (T32)](#t32) | - | - | |
+| 89.2.18 | [SQL parcourt facture (T34)](#t34) [mockup](#ecran-t34) | - | 609x195 | |
+| 89.2.19 | [SQL parcourt facture (T35)](#t35) [mockup](#ecran-t35) | - | 609x195 | |
+| **89.3** | [**Creation Lg Compta** (T5)](#t5) | - | - | Calcul |
+| 89.3.1 | [Creation Lg Compta (T24)](#t24) | - | - | |
+| **89.4** | [**verif non flaguee** (T9)](#t9) | - | - | Validation |
+| 89.4.1 | [Controle ttc (T13)](#t13) | - | - | |
+| 89.4.2 | [verif boutique (T17)](#t17) | - | - | |
+| 89.4.3 | [verif non flaguee (T31)](#t31) | - | - | |
+| **89.5** | [**Creation Pied Facture** (T20)](#t20) [mockup](#ecran-t20) | - | 586x0 | Creation |
+| 89.5.1 | [Creation entete (T33)](#t33) | - | - | |
+| **89.6** | [**Recherche si Fact déjà éditée** (T21)](#t21) | - | - | Consultation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Hebergement]
-    DECISION{P.Archive}
-    PROCESS[Traitement]
-    UPDATE[MAJ 7 tables]
-    ENDOK([END OK])
-    ENDKO([END KO])
-
-    START --> INIT --> SAISIE --> DECISION
-    DECISION -->|OUI| PROCESS
-    DECISION -->|NON| ENDKO
-    PROCESS --> UPDATE --> ENDOK
-
+    PROCESS[Traitement 35 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style ENDKO fill:#f85149,color:#fff
-    style DECISION fill:#58a6ff,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
@@ -2116,7 +2103,7 @@ Variables persistantes pendant toute la session.
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
 | F | V.Lien Gm_Complet | Logical | - |
-| G | V.Lien Pied de facture | Logical | [89](#t1), [89.4.3](#t16), [89.5](#t18) |
+| G | V.Lien Pied de facture | Logical | [T1](#t1), [T16](#t16), [T18](#t18) |
 | H | V.EntetFacture? | Logical | 1x session |
 | I | v.ExistFactureVente | Logical | - |
 | J | V.Existe facture ? | Logical | - |
@@ -2128,15 +2115,15 @@ Variables persistantes pendant toute la session.
 | P | V.Facture Sans Nom | Logical | - |
 | Q | V.Facture Sans Adresse | Logical | 1x session |
 | R | V.Reponse Imprimer | Numeric | 1x session |
-| S | V.No Facture | Numeric | [89](#t1), [89.4.3](#t16), [89.5](#t18) |
+| S | V.No Facture | Numeric | [T1](#t1), [T16](#t16), [T18](#t18) |
 | T | V.Nom Fichier PDF | Alpha | 1x session |
 | U | V.Pos , | Numeric | 1x session |
 | V | V.Service | Alpha | 1x session |
-| W | V.Fact déjà editée | Logical | [89.8](#t21) |
+| W | V.Fact déjà editée | Logical | [T21](#t21) |
 | X | V.Date Début Hebergement | Date | - |
 | Y | V.Date Fin Hebergement | Date | - |
 | BC | V.Existe non facturee ? | Logical | 1x session |
-| BD | V.Existe flaguee ? | Logical | [89.3](#t9), [89.12](#t31) |
+| BD | V.Existe flaguee ? | Logical | [T9](#t9), [T31](#t31) |
 | BE | V.Erreur addresse ? | Logical | 1x session |
 
 ### 11.3 Autres (5)
@@ -2551,4 +2538,4 @@ graph LR
 | [Facture - Sejour archive (IDE 95)](ADH-IDE-95.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:46*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 06:55*

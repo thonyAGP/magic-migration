@@ -1,13 +1,13 @@
-﻿# ADH IDE 100 - flag ligne boutique V3
+﻿# ADH IDE 100 - Verif boutique V3
 
-> **Analyse**: 2026-02-07 03:47
+> **Analyse**: 2026-02-07 06:58
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: flag ligne boutique V3
-- **Tables modifiees**: 1
-- **Complexite**: **BASSE** (7/100)
+- **Fonction**: Verif boutique V3
+- **Tables modifiees**: 0
+- **Complexite**: **BASSE** (0/100)
 - **Statut**: ORPHELIN_POTENTIEL
 - **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
@@ -22,9 +22,9 @@
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 2 |
-| Lignes Logic | 16 |
-| Expressions | 4 |
+| Taches | 1 |
+| Lignes Logic | 17 |
+| Expressions | 9 |
 | Tables |  |
 
 ---

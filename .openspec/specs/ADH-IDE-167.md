@@ -1,6 +1,6 @@
-﻿# ADH IDE 167 - Liste des affiliés
+﻿# ADH IDE 167 - Facturation appel
 
-> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:52 (27s) | Assemblage 03:52
+> **Analyse**: Phases 1-4 2026-02-03 10:54 -> 10:54 (16s) | Assemblage 07:21
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -12,567 +12,301 @@
 |----------|--------|
 | Projet | ADH |
 | IDE Position | 167 |
-| Nom Programme | Liste des affiliés |
+| Nom Programme | Facturation appel |
 | Fichier source | `Prg_167.xml` |
-| Dossier IDE | General |
-| Taches | 2 (1 ecrans visibles) |
-| Tables modifiees | 0 |
-| Programmes appeles | 1 |
+| Dossier IDE | Operations |
+| Taches | 6 (0 ecrans visibles) |
+| Tables modifiees | 3 |
+| Programmes appeles | 5 |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Liste des affiliés** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transferts (IDE 0)](ADH-IDE-0.md).
+**Facturation appel** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md).
 
-Le flux de traitement s'organise en **2 blocs fonctionnels** :
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
-- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
-- **Traitement** (1 tache) : traitements metier divers
+- **Traitement** (6 taches) : traitements metier divers
 
-**Logique metier** : 2 regles identifiees couvrant conditions metier.
+**Donnees modifiees** : 3 tables en ecriture (reseau_cloture___rec, historique_pabx, coef__telephone__coe).
+
+**Logique metier** : 1 regles identifiees couvrant conditions metier.
 
 <details>
 <summary>Detail : phases du traitement</summary>
 
-#### Phase 1 : Traitement (1 tache)
+#### Phase 1 : Traitement (6 taches)
 
-- **167** - Ecran **[[ECRAN]](#ecran-t1)**
+- **T1** - Facturation appel
+- **T2** - Historique appel
+- **T3** - Historique appel
+- **T4** - Recuperation coef
+- **T5** - Deblocage cloture
+- **T8** - Deblocage cloture
 
-Delegue a : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
+Delegue a : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
 
-#### Phase 2 : Calcul (1 tache)
+#### Tables impactees
 
-- **167.1** - Reaffichage infos compte
+| Table | Operations | Role metier |
+|-------|-----------|-------------|
+| reseau_cloture___rec | **W** (2 usages) | Donnees reseau/cloture |
+| historique_pabx | **W** (2 usages) | Historique / journal |
+| coef__telephone__coe | **W** (1 usages) |  |
 
 </details>
 
 ## 3. BLOCS FONCTIONNELS
 
-### 3.1 Traitement (1 tache)
+### 3.1 Traitement (6 taches)
 
 Traitements internes.
 
 ---
 
-#### <a id="t1"></a>167 - Ecran [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Facturation appel
 
-**Role** : Traitement : Ecran.
-**Ecran** : 1010 x 227 DLU (MDI) | [Voir mockup](#ecran-t1)
-**Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
+**Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
 
+<details>
+<summary>5 sous-taches directes</summary>
 
-### 3.2 Calcul (1 tache)
+| Tache | Nom | Bloc |
+|-------|-----|------|
+| [T2](#t2) | Historique appel | Traitement |
+| [T3](#t3) | Historique appel | Traitement |
+| [T4](#t4) | Recuperation coef | Traitement |
+| [T5](#t5) | Deblocage cloture | Traitement |
+| [T8](#t8) | Deblocage cloture | Traitement |
 
-Calculs metier : montants, stocks, compteurs.
+</details>
+**Variables liees** : C (> date appel), D (> heure appel)
+**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
 
 ---
 
-#### <a id="t2"></a>167.1 - Reaffichage infos compte
+#### <a id="t2"></a>T2 - Historique appel
 
-**Role** : Reinitialisation : Reaffichage infos compte.
-**Variables liees** : D (< solde compte), E (< etat compte)
+**Role** : Consultation/chargement : Historique appel.
+**Variables liees** : C (> date appel), D (> heure appel)
+**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
+
+---
+
+#### <a id="t3"></a>T3 - Historique appel
+
+**Role** : Consultation/chargement : Historique appel.
+**Variables liees** : C (> date appel), D (> heure appel)
+**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
+
+---
+
+#### <a id="t4"></a>T4 - Recuperation coef
+
+**Role** : Consultation/chargement : Recuperation coef.
+**Variables liees** : V (w0 coeff tel)
+**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
+
+---
+
+#### <a id="t5"></a>T5 - Deblocage cloture
+
+**Role** : Traitement : Deblocage cloture.
+**Variables liees** : W (w0 cloture en cours)
+**Delegue a** : [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
+
+---
+
+#### <a id="t8"></a>T8 - Deblocage cloture
+
+**Role** : Traitement : Deblocage cloture.
+**Variables liees** : W (w0 cloture en cours)
+**Delegue a** : [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
 
 
 ## 5. REGLES METIER
 
-2 regles identifiees:
+1 regles identifiees:
 
-### Autres (2 regles)
+### Autres (1 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Traitement conditionnel si [V]>0,Str ([V],'###'),IF ([W] est a zero
-
-| Element | Detail |
-|---------|--------|
-| **Condition** | `[V]>0` |
-| **Si vrai** | Str ([V] |
-| **Si faux** | '###'),IF ([W]=0,'',Str ([W],'##'))) |
-| **Expression source** | Expression 10 : `IF ([V]>0,Str ([V],'###'),IF ([W]=0,'',Str ([W],'##')))` |
-| **Exemple** | Si [V]>0 â†’ Str ([V]. Sinon â†’ '###'),IF ([W]=0,'',Str ([W],'##'))) |
-
-#### <a id="rm-RM-002"></a>[RM-002] Si [U]<Date () alors MlsTrans ('dernier sejour :') sinon IF ([T]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))
+#### <a id="rm-RM-001"></a>[RM-001] Si > GO [G] alors 'GO' sinon 'GM')
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `[U]<Date ()` |
-| **Si vrai** | MlsTrans ('dernier sejour :') |
-| **Si faux** | IF ([T]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours'))) |
-| **Expression source** | Expression 13 : `IF ([U]<Date (),MlsTrans ('dernier sejour :'),IF ([T]>Date (` |
-| **Exemple** | Si [U]<Date () â†’ MlsTrans ('dernier sejour :') |
+| **Condition** | `> GO [G]` |
+| **Si vrai** | 'GO' |
+| **Si faux** | 'GM') |
+| **Variables** | G (> GO) |
+| **Expression source** | Expression 4 : `IF (> GO [G],'GO','GM')` |
+| **Exemple** | Si > GO [G] â†’ 'GO'. Sinon â†’ 'GM') |
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transferts (IDE 0)](ADH-IDE-0.md)
-- **Appelle**: 1 programmes | **Tables**: 2 (W:0 R:2 L:0) | **Taches**: 2 | **Expressions**: 18
+- **Appele par**: [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md)
+- **Appelle**: 5 programmes | **Tables**: 3 (W:3 R:0 L:0) | **Taches**: 6 | **Expressions**: 15
 
 <!-- TAB:Ecrans -->
 
 ## 8. ECRANS
 
-### 8.1 Forms visibles (1 / 2)
-
-| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
-|---|----------|-------|-----|------|---------|---------|------|
-| 1 | 167 | 167 | Ecran | MDI | 1010 | 227 | Traitement |
-
-### 8.2 Mockups Ecrans
-
----
-
-#### <a id="ecran-t1"></a>167 - Ecran
-**Tache** : [167](#t1) | **Type** : MDI | **Dimensions** : 1010 x 227 DLU
-**Bloc** : Traitement | **Titre IDE** : Ecran
-
-<!-- FORM-DATA:
-{
-    "width":  1010,
-    "vFactor":  8,
-    "type":  "MDI",
-    "hFactor":  8,
-    "controls":  [
-                     {
-                         "x":  0,
-                         "type":  "label",
-                         "var":  "",
-                         "y":  0,
-                         "w":  1010,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  18,
-                         "color":  "",
-                         "text":  "",
-                         "parent":  null
-                     },
-                     {
-                         "x":  0,
-                         "type":  "label",
-                         "var":  "",
-                         "y":  203,
-                         "w":  1008,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  24,
-                         "color":  "",
-                         "text":  "",
-                         "parent":  null
-                     },
-                     {
-                         "x":  1,
-                         "type":  "table",
-                         "var":  "",
-                         "name":  "",
-                         "titleH":  15,
-                         "color":  "110",
-                         "w":  814,
-                         "y":  27,
-                         "fmt":  "",
-                         "parent":  null,
-                         "text":  "",
-                         "rowH":  24,
-                         "h":  170,
-                         "cols":  [
-                                      {
-                                          "title":  "Nom / Prénom",
-                                          "layer":  1,
-                                          "w":  310
-                                      },
-                                      {
-                                          "title":  "Sexe",
-                                          "layer":  2,
-                                          "w":  141
-                                      },
-                                      {
-                                          "title":  "Age",
-                                          "layer":  3,
-                                          "w":  122
-                                      },
-                                      {
-                                          "title":  "Numéro",
-                                          "layer":  4,
-                                          "w":  210
-                                      }
-                                  ],
-                         "rows":  4
-                     },
-                     {
-                         "x":  758,
-                         "type":  "label",
-                         "var":  "",
-                         "y":  57,
-                         "w":  20,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "149",
-                         "text":  "m",
-                         "parent":  6
-                     },
-                     {
-                         "x":  10,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  47,
-                         "w":  295,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  578,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  47,
-                         "w":  120,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  698,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  47,
-                         "w":  20,
-                         "fmt":  "1",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  736,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  47,
-                         "w":  42,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  317,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  58,
-                         "w":  135,
-                         "fmt":  "WWW DD MMMMZ",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  581,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  58,
-                         "w":  132,
-                         "fmt":  "WWW DD MMMMZ",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  6,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  4,
-                         "w":  267,
-                         "fmt":  "20",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "",
-                         "text":  "",
-                         "parent":  1
-                     },
-                     {
-                         "x":  800,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  4,
-                         "w":  203,
-                         "fmt":  "WWW DD MMM YYYYT",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "",
-                         "text":  "",
-                         "parent":  1
-                     },
-                     {
-                         "x":  368,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  47,
-                         "w":  30,
-                         "fmt":  "2",
-                         "name":  "gmr_sexe",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  464,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  47,
-                         "w":  34,
-                         "fmt":  "3",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  515,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  47,
-                         "w":  52,
-                         "fmt":  "4",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  715,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  47,
-                         "w":  20,
-                         "fmt":  "1",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  824,
-                         "type":  "image",
-                         "var":  "",
-                         "y":  67,
-                         "w":  182,
-                         "fmt":  "",
-                         "name":  "",
-                         "h":  92,
-                         "color":  "",
-                         "text":  "",
-                         "parent":  null
-                     },
-                     {
-                         "x":  10,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  58,
-                         "w":  198,
-                         "fmt":  "17",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  221,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  58,
-                         "w":  53,
-                         "fmt":  "4",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  496,
-                         "type":  "edit",
-                         "var":  "",
-                         "y":  58,
-                         "w":  52,
-                         "fmt":  "4",
-                         "name":  "",
-                         "h":  8,
-                         "color":  "110",
-                         "text":  "",
-                         "parent":  6
-                     },
-                     {
-                         "x":  9,
-                         "type":  "button",
-                         "var":  "",
-                         "y":  206,
-                         "w":  168,
-                         "fmt":  "\u0026Quitter",
-                         "name":  "",
-                         "h":  18,
-                         "color":  "",
-                         "text":  "",
-                         "parent":  null
-                     }
-                 ],
-    "taskId":  "167",
-    "height":  227
-}
--->
-
-<details>
-<summary><strong>Champs : 15 champs</strong></summary>
-
-| Pos (x,y) | Nom | Variable | Type |
-|-----------|-----|----------|------|
-| 10,47 | (sans nom) | - | edit |
-| 578,47 | (sans nom) | - | edit |
-| 698,47 | 1 | - | edit |
-| 736,47 | (sans nom) | - | edit |
-| 317,58 | WWW DD MMMMZ | - | edit |
-| 581,58 | WWW DD MMMMZ | - | edit |
-| 6,4 | 20 | - | edit |
-| 800,4 | WWW DD MMM YYYYT | - | edit |
-| 368,47 | gmr_sexe | - | edit |
-| 464,47 | 3 | - | edit |
-| 515,47 | 4 | - | edit |
-| 715,47 | 1 | - | edit |
-| 10,58 | 17 | - | edit |
-| 221,58 | 4 | - | edit |
-| 496,58 | 4 | - | edit |
-
-</details>
-
-<details>
-<summary><strong>Boutons : 1 boutons</strong></summary>
-
-| Bouton | Pos (x,y) | Action |
-|--------|-----------|--------|
-| Quitter | 9,206 | Quitte le programme |
-
-</details>
+*(Programme sans ecran visible)*
 
 ## 9. NAVIGATION
 
-Ecran unique: **Ecran**
-
-### 9.3 Structure hierarchique (2 taches)
+### 9.3 Structure hierarchique (6 taches)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **167.1** | [**Ecran** (167)](#t1) [mockup](#ecran-t1) | MDI | 1010x227 | Traitement |
-| **167.2** | [**Reaffichage infos compte** (167.1)](#t2) | MDI | - | Calcul |
+| **167.1** | [**Facturation appel** (T1)](#t1) | MDI | - | Traitement |
+| 167.1.1 | [Historique appel (T2)](#t2) | MDI | - | |
+| 167.1.2 | [Historique appel (T3)](#t3) | MDI | - | |
+| 167.1.3 | [Recuperation coef (T4)](#t4) | MDI | - | |
+| 167.1.4 | [Deblocage cloture (T5)](#t5) | MDI | - | |
+| 167.1.5 | [Deblocage cloture (T8)](#t8) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    INIT[Init controles]
-    SAISIE[Traitement principal]
-    ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
-
+    PROCESS[Traitement 6 taches]
+    ENDOK([END])
+    START --> PROCESS --> ENDOK
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
 
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
 
-### Tables utilisees (2)
+### Tables utilisees (3)
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
-| 47 | compte_gm________cgm | Comptes GM (generaux) | DB | R |   |   | 1 |
+| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB |   | **W** |   | 2 |
+| 155 | historique_pabx | Historique / journal | DB |   | **W** |   | 2 |
+| 157 | coef__telephone__coe |  | DB |   | **W** |   | 1 |
 
-### Colonnes par table (2 / 2 tables avec colonnes identifiees)
+### Colonnes par table (2 / 3 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
+<summary>Table 23 - reseau_cloture___rec (**W**) - 2 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | > societe | R | Alpha |
-| B | > code adherent | R | Numeric |
-| C | > filiation | R | Numeric |
-| D | < solde compte | R | Numeric |
-| E | < etat compte | R | Alpha |
-| F | < date solde | R | Date |
-| G | < garanti O/N | R | Alpha |
-| H | v. titre | R | Alpha |
-| I | v. nom & prenom | R | Alpha |
+| W | w0 cloture en cours | W | Logical |
+| X | w0 test reseau | W | Alpha |
 
 </details>
 
 <details>
-<summary>Table 47 - compte_gm________cgm (R) - 1 usages</summary>
+<summary>Table 155 - historique_pabx (**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 157 - coef__telephone__coe (**W**) - 1 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| D | < solde compte | R | Numeric |
-| E | < etat compte | R | Alpha |
+| V | w0 coeff tel | W | Numeric |
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Variables de session (2)
+### 11.1 Variables de travail (7)
 
-Variables persistantes pendant toute la session.
+Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| H | v. titre | Alpha | 1x session |
-| I | v. nom & prenom | Alpha | - |
+| T | w0 numero de tel | Alpha | - |
+| U | w0 qualite | Alpha | 1x calcul interne |
+| V | w0 coeff tel | Numeric | 1x calcul interne |
+| W | w0 cloture en cours | Logical | - |
+| X | w0 test reseau | Alpha | 1x calcul interne |
+| Y | w0 gratuite | Logical | - |
+| Z | w0 raison gratuite | Alpha | - |
 
-### 11.2 Autres (7)
+### 11.2 Autres (19)
 
 Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > societe | Alpha | 2x refs |
-| B | > code adherent | Numeric | 1x refs |
-| C | > filiation | Numeric | - |
-| D | < solde compte | Numeric | - |
-| E | < etat compte | Alpha | - |
-| F | < date solde | Date | - |
-| G | < garanti O/N | Alpha | - |
+| A | > societe | Alpha | - |
+| B | > prefixe | Alpha | - |
+| C | > date appel | Date | [T1](#t1), [T2](#t2), [T3](#t3) |
+| D | > heure appel | Time | [T1](#t1), [T2](#t2), [T3](#t3) |
+| E | > Nom | Alpha | 2x refs |
+| F | > Prenom | Alpha | 1x refs |
+| G | > GO | Logical | 1x refs |
+| H | > compte fictif | Logical | 3x refs |
+| I | > fin | Alpha | - |
+| J | > numero de compte | Numeric | - |
+| K | > filiation | Numeric | - |
+| L | > montant | Numeric | 1x refs |
+| M | > solde du compte | Numeric | - |
+| N | < Quitter | Logical | - |
+| O | > devise local | Alpha | - |
+| P | > Masque | Alpha | - |
+| Q | > annulation | Logical | 1x refs |
+| R | > duree | Time | - |
+| S | > nombre decimal | Numeric | 1x refs |
+
+<details>
+<summary>Toutes les 26 variables (liste complete)</summary>
+
+| Cat | Lettre | Nom Variable | Type |
+|-----|--------|--------------|------|
+| W0 | **T** | w0 numero de tel | Alpha |
+| W0 | **U** | w0 qualite | Alpha |
+| W0 | **V** | w0 coeff tel | Numeric |
+| W0 | **W** | w0 cloture en cours | Logical |
+| W0 | **X** | w0 test reseau | Alpha |
+| W0 | **Y** | w0 gratuite | Logical |
+| W0 | **Z** | w0 raison gratuite | Alpha |
+| Autre | **A** | > societe | Alpha |
+| Autre | **B** | > prefixe | Alpha |
+| Autre | **C** | > date appel | Date |
+| Autre | **D** | > heure appel | Time |
+| Autre | **E** | > Nom | Alpha |
+| Autre | **F** | > Prenom | Alpha |
+| Autre | **G** | > GO | Logical |
+| Autre | **H** | > compte fictif | Logical |
+| Autre | **I** | > fin | Alpha |
+| Autre | **J** | > numero de compte | Numeric |
+| Autre | **K** | > filiation | Numeric |
+| Autre | **L** | > montant | Numeric |
+| Autre | **M** | > solde du compte | Numeric |
+| Autre | **N** | < Quitter | Logical |
+| Autre | **O** | > devise local | Alpha |
+| Autre | **P** | > Masque | Alpha |
+| Autre | **Q** | > annulation | Logical |
+| Autre | **R** | > duree | Time |
+| Autre | **S** | > nombre decimal | Numeric |
+
+</details>
 
 ## 12. EXPRESSIONS
 
-**18 / 18 expressions decodees (100%)**
+**15 / 15 expressions decodees (100%)**
 
 ### 12.1 Repartition par type
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 7 | 2 |
-| CONSTANTE | 3 | 0 |
-| DATE | 1 | 0 |
+| CONDITION | 7 | 5 |
+| CONSTANTE | 1 | 0 |
+| NEGATION | 3 | 0 |
+| CAST_LOGIQUE | 2 | 0 |
 | REFERENCE_VG | 1 | 0 |
-| OTHER | 4 | 0 |
-| STRING | 1 | 0 |
 | CONCATENATION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
@@ -581,53 +315,45 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 13 | `IF ([U]<Date (),MlsTrans ('dernier sejour :'),IF ([T]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))` | [RM-002](#rm-RM-002) |
-| CONDITION | 10 | `IF ([V]>0,Str ([V],'###'),IF ([W]=0,'',Str ([W],'##')))` | [RM-001](#rm-RM-001) |
-| CONDITION | 7 | `> code adherent [B]` | - |
-| CONDITION | 17 | `[Q]=0` | - |
-| CONDITION | 6 | `> societe [A]` | - |
+| CONDITION | 4 | `IF (> GO [G],'GO','GM')` | [RM-001](#rm-RM-001) |
+| CONDITION | 6 | `w0 test reseau [X]<>'R'` | - |
+| CONDITION | 12 | `> date appel [C]` | - |
+| CONDITION | 13 | `> heure appel [D]` | - |
+| CONDITION | 7 | `Round (> montant [L]*w0 coeff tel [V],15,> nombre decimal [S])` | - |
 | ... | | *+2 autres* | |
 
-#### CONSTANTE (3 expressions)
+#### CONSTANTE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONSTANTE | 16 | `1` | - |
-| CONSTANTE | 12 | `'-'` | - |
-| CONSTANTE | 2 | `'C'` | - |
+| CONSTANTE | 5 | `'F'` | - |
 
-#### DATE (1 expressions)
+#### NEGATION (3 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| DATE | 4 | `Date ()` | - |
+| NEGATION | 14 | `NOT VG6` | - |
+| NEGATION | 9 | `NOT (> annulation [Q])` | - |
+| NEGATION | 2 | `NOT (> compte fictif [H])` | - |
+
+#### CAST_LOGIQUE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 11 | `'FALSE'LOG` | - |
+| CAST_LOGIQUE | 8 | `'TRUE'LOG` | - |
 
 #### REFERENCE_VG (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| REFERENCE_VG | 5 | `VG2` | - |
-
-#### OTHER (4 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| OTHER | 15 | `MlsTrans ('au')` | - |
-| OTHER | 18 | `NOT(Stat(0,'M'MODE))` | - |
-| OTHER | 8 | `Stat (0,'C'MODE)` | - |
-| OTHER | 14 | `MlsTrans ('du')` | - |
-
-#### STRING (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| STRING | 3 | `Trim (v. titre [H])` | - |
+| REFERENCE_VG | 15 | `VG6` | - |
 
 #### CONCATENATION (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONCATENATION | 9 | `Trim ([K])&' '&[L]` | - |
+| CONCATENATION | 10 | `Trim (> Nom [E])&' '&Trim (> Prenom [F])` | - |
 
 <!-- TAB:Connexions -->
 
@@ -635,54 +361,61 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Liste des affiliés (IDE 167)**
-
-Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Liste des affiliés (IDE 167)**
-
-Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md) -> **Liste des affiliés (IDE 167)**
-
-Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md) -> **Liste des affiliés (IDE 167)**
-
-Main -> ... -> [Transferts (IDE 0)](ADH-IDE-0.md) -> **Liste des affiliés (IDE 167)**
+Main -> ... -> [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md) -> **Facturation appel (IDE 167)**
 
 ```mermaid
 graph LR
-    T167[167 Liste des affiliés]
+    T167[167 Facturation appel]
     style T167 fill:#58a6ff
     CC1[1 Main Program]
     style CC1 fill:#8b5cf6
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#3fb950
-    CC1 --> CC163
-    CC163 --> T167
+    CC33[33 Visualisation Appel]
+    style CC33 fill:#f59e0b
+    CC22[22 Menu caisse GM - sc...]
+    style CC22 fill:#3fb950
+    CC33 --> CC22
+    CC1 --> CC33
+    CC22 --> T167
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 3 |
-| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-584 | 1 |
-| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-710 | 1 |
-| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-721 | 1 |
-| [0](ADH-IDE-0.md) | Transferts | 1 |
+| [22](ADH-IDE-22.md) | Menu caisse GM - scroll @ | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T167[167 Liste des affiliés]
+    T167[167 Facturation appel]
     style T167 fill:#58a6ff
-    C43[43 Recuperation du titre]
-    T167 --> C43
-    style C43 fill:#3fb950
+    C16[16 Creation O.D]
+    T167 --> C16
+    style C16 fill:#3fb950
+    C17[17 Deblocage compte GM]
+    T167 --> C17
+    style C17 fill:#3fb950
+    C18[18 Test reseau]
+    T167 --> C18
+    style C18 fill:#3fb950
+    C19[19 Test si cloture en ...]
+    T167 --> C19
+    style C19 fill:#3fb950
+    C36[36 Zoom GOGM]
+    T167 --> C36
+    style C36 fill:#3fb950
 ```
 
 ### 13.4 Detail Callees avec contexte
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
+| [16](ADH-IDE-16.md) |   Creation O.D | 1 | Sous-programme |
+| [17](ADH-IDE-17.md) |   Deblocage compte GM | 1 | Sous-programme |
+| [18](ADH-IDE-18.md) |   Test reseau | 1 | Sous-programme |
+| [19](ADH-IDE-19.md) |   Test si cloture en cours | 1 | Fermeture session |
+| [36](ADH-IDE-36.md) | Zoom GO/GM | 1 | Selection/consultation |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -690,32 +423,34 @@ graph LR
 
 | Metrique | Valeur | Impact migration |
 |----------|--------|-----------------|
-| Lignes de logique | 45 | Programme compact |
-| Expressions | 18 | Peu de logique |
-| Tables WRITE | 0 | Impact faible |
-| Sous-programmes | 1 | Peu de dependances |
-| Ecrans visibles | 1 | Ecran unique ou traitement batch |
-| Code desactive | 0% (0 / 45) | Code sain |
-| Regles metier | 2 | Quelques regles a preserver |
+| Lignes de logique | 116 | Programme compact |
+| Expressions | 15 | Peu de logique |
+| Tables WRITE | 3 | Impact modere |
+| Sous-programmes | 5 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 116) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
-#### Traitement (1 tache: 1 ecran, 0 traitement)
+#### Traitement (6 taches: 0 ecran, 6 traitements)
 
-- **Strategie** : 1 composant(s) UI (Razor/React) avec formulaires et validation.
-- 1 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- **Strategie** : 6 service(s) backend injectable(s) (Domain Services).
+- 5 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
 - Decomposer les taches en services unitaires testables.
-
-#### Calcul (1 tache: 0 ecran, 1 traitement)
-
-- **Strategie** : Services de calcul purs (Domain Services).
-- Migrer la logique de calcul (stock, compteurs, montants)
 
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
-| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
+| reseau_cloture___rec | Table WRITE (Database) | 2x | Schema + repository |
+| historique_pabx | Table WRITE (Database) | 2x | Schema + repository |
+| coef__telephone__coe | Table WRITE (Database) | 1x | Schema + repository |
+| [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md) | Sous-programme | 1x | Normale - Fermeture session |
+| [Zoom GO/GM (IDE 36)](ADH-IDE-36.md) | Sous-programme | 1x | Normale - Selection/consultation |
+| [  Test reseau (IDE 18)](ADH-IDE-18.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [  Creation O.D (IDE 16)](ADH-IDE-16.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:52*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:21*

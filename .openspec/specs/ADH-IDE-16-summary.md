@@ -1,30 +1,30 @@
-﻿# ADH IDE 16 - Browse - Countries iso
+﻿# ADH IDE 16 - e-mail list
 
-> **Analyse**: 2026-02-07 03:39
+> **Analyse**: 2026-02-07 06:37
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Browse - Countries iso
+- **Fonction**: e-mail list
 - **Tables modifiees**: 1
 - **Complexite**: **BASSE** (7/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Menu Data Catching (IDE 7)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Menu Data Catching (IDE 7)](ADH-IDE-7.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 4 |
-| Lignes Logic | 43 |
-| Expressions | 3 |
+| Taches | 1 |
+| Lignes Logic | 5 |
+| Expressions | 0 |
 | Tables |  |
 
 ---

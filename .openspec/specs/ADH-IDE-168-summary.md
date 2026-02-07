@@ -1,31 +1,31 @@
-﻿# ADH IDE 168 - Gratuités
+﻿# ADH IDE 168 - Facturation appel
 
-> **Analyse**: 2026-02-07 03:52
+> **Analyse**: 2026-02-07 07:21
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Gratuités
-- **Tables modifiees**: 1
+- **Fonction**: Facturation appel
+- **Tables modifiees**: 3
 - **Complexite**: **BASSE** (19/100)
 - **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 12 programme(s): Garantie sur compte PMS-584 (IDE 0), VAD validés à imprimer (IDE 0), Histo ventes Gratuités (IDE 0), Histo ventes IGR (IDE 0), Histo ventes payantes /PMS-605 (IDE 0), Histo ventes payantes /PMS-623 (IDE 0), Print extrait compte /Service (IDE 0), Transaction Nouv vente PMS-584 (IDE 0), Transaction Nouv vente PMS-710 (IDE 0), Transaction Nouv vente PMS-721 (IDE 0), Transferts (IDE 0), Menu caisse GM - scroll (IDE 163)
+- **Raison**: Appele par 1 programme(s): Menu caisse GM - scroll @ (IDE 22)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [VAD validés à imprimer (IDE 0)](ADH-IDE-0.md), [Histo ventes Gratuités (IDE 0)](ADH-IDE-0.md), [Histo ventes IGR (IDE 0)](ADH-IDE-0.md), [Histo ventes payantes /PMS-605 (IDE 0)](ADH-IDE-0.md), [Histo ventes payantes /PMS-623 (IDE 0)](ADH-IDE-0.md), [Print extrait compte /Service (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transferts (IDE 0)](ADH-IDE-0.md), [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) |
-| **Appelle** | [Appel programme (IDE 44)](ADH-IDE-44.md), [Zoom sur table des gratuites (IDE 256)](ADH-IDE-256.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md) |
+| **Appele par** | [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md) |
+| **Appelle** | [  Creation O.D (IDE 16)](ADH-IDE-16.md), [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md), [Zoom GO/GM (IDE 36)](ADH-IDE-36.md) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 9 |
-| Lignes Logic | 144 |
-| Expressions | 6 |
-| Tables | 2 |
+| Taches | 6 |
+| Lignes Logic | 116 |
+| Expressions | 15 |
+| Tables | 3 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

@@ -1,31 +1,31 @@
-﻿# ADH IDE 98 - EditFactureTva(Compta&Ve) V3
+﻿# ADH IDE 98 - ExistFactureVente 2
 
-> **Analyse**: 2026-02-07 03:47
+> **Analyse**: 2026-02-07 06:58
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: EditFactureTva(Compta&Ve) V3
+- **Fonction**: ExistFactureVente 2
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 2 programme(s): Factures_Check_Out (IDE 54), Factures (Tble Compta&Vent) V3 (IDE 97)
+- **Statut**: ORPHELIN_POTENTIEL
+- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 4 |
-| Lignes Logic | 150 |
-| Expressions | 4 |
-| Tables | 9 |
+| Taches | 1 |
+| Lignes Logic | 45 |
+| Expressions | 8 |
+| Tables | 4 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*
