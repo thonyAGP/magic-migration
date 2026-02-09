@@ -12,6 +12,12 @@ import type {
 import type { PaymentSide } from '@/types/transaction';
 import { transactionLot2Api } from '@/services/api/endpoints-lot2';
 import type { CompleteTransactionRequest } from '@/services/api/types-lot2';
+import {
+  MOCK_MOP_CATALOG,
+  MOCK_FORFAITS,
+  MOCK_EDITION_CONFIG,
+  MOCK_PRE_CHECK,
+} from '@/fixtures/mock-transaction-catalogs';
 
 interface TransactionState {
   // Catalogues (charges au mount)
@@ -130,13 +136,37 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
           }),
       ]);
 
-      set({
+      const state = {
         preCheckResult: preCheck.data.data,
         catalogMOP: mop.data.data,
         catalogForfaits: forfaits.data.data,
         editionConfig: edition.data.data,
-        catalogErrors: errors,
-      });
+      };
+
+      const allEmpty =
+        (!state.catalogMOP || state.catalogMOP.length === 0) &&
+        (!state.catalogForfaits || state.catalogForfaits.length === 0) &&
+        !state.editionConfig;
+
+      if (allEmpty && errors.length > 0) {
+        set({
+          preCheckResult: MOCK_PRE_CHECK,
+          catalogMOP: MOCK_MOP_CATALOG,
+          catalogForfaits: MOCK_FORFAITS,
+          editionConfig: MOCK_EDITION_CONFIG,
+          catalogErrors: [
+            'Mode dev: donnees mock chargees (backend indisponible)',
+          ],
+        });
+      } else {
+        set({
+          preCheckResult: state.preCheckResult,
+          catalogMOP: state.catalogMOP,
+          catalogForfaits: state.catalogForfaits,
+          editionConfig: state.editionConfig,
+          catalogErrors: errors,
+        });
+      }
     } finally {
       set({ isLoadingCatalogs: false });
     }

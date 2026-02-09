@@ -66,3 +66,6 @@ export const accountApi = {
       `/accounts/${accountId}/extrait`,
     ),
 };
+
+// Lot 2 endpoints re-export
+export { transactionLot2Api } from './endpoints-lot2';
