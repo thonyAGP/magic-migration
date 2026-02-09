@@ -64,8 +64,15 @@ try
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
 
+    // CORS for ADH Web frontend (dev: Vite on port 3050)
+    builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+        policy.WithOrigins("http://localhost:3050")
+              .AllowAnyMethod()
+              .AllowAnyHeader()));
+
     var app = builder.Build();
 
+    app.UseCors();
     app.UseValidationExceptionHandler();
 
     if (app.Environment.IsDevelopment())
@@ -517,6 +524,141 @@ try
         return result.Found ? Results.Ok(result) : Results.NotFound(result);
     })
     .WithName("GetVadValides")
+    .WithOpenApi();
+
+    // ============ Transactions Facade (ADH Web Lot 2) ============
+    // These endpoints map the frontend URLs (adh-web) to existing CQRS handlers.
+    // Frontend expects ApiResponse<T> = { data: T, success: bool, message?: string }
+    var transactions = app.MapGroup("/api/transactions").WithTags("Transactions");
+
+    transactions.MapGet("/pre-check", async (IMediator mediator) =>
+    {
+        var result = await mediator.Send(new PreCheckSaleQuery());
+        return Results.Ok(new { data = new { canSell = result.CanSell, reason = result.Reason }, success = true });
+    })
+    .WithName("TransactionPreCheck")
+    .WithOpenApi();
+
+    transactions.MapPost("/", async (CreateTransactionFacadeDto dto, IMediator mediator) =>
+    {
+        var command = new InitiateNewSaleCommand(
+            Societe: dto.Societe ?? "",
+            CodeGm: dto.CompteId,
+            Filiation: dto.Filiation,
+            ModePaiement: dto.ModePaiement ?? "ESP",
+            Operateur: dto.Operateur ?? "",
+            DateVente: DateOnly.FromDateTime(DateTime.Now),
+            HeureVente: TimeOnly.FromDateTime(DateTime.Now),
+            DeviseTransaction: dto.Devise);
+        var result = await mediator.Send(command);
+        if (!result.Success) return Results.BadRequest(new { data = (object?)null, success = false, message = result.Message });
+        return Results.Ok(new { data = new { id = result.TransactionId }, success = true, message = result.Message });
+    })
+    .WithName("TransactionCreate")
+    .WithOpenApi();
+
+    transactions.MapPost("/{txId}/check-giftpass", async (long txId, CheckGiftPassFacadeDto dto, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetSoldeGiftPassQuery(dto.Societe, dto.Compte, dto.Filiation));
+        var available = result.SoldeCreditConso > 0;
+        return Results.Ok(new
+        {
+            data = new { balance = result.SoldeCreditConso, available, devise = "EUR" },
+            success = true
+        });
+    })
+    .WithName("TransactionCheckGiftPass")
+    .WithOpenApi();
+
+    transactions.MapPost("/{txId}/check-resort-credit", async (long txId, CheckResortCreditFacadeDto dto, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetSoldeResortCreditQuery(dto.Societe, dto.Compte, dto.Filiation, dto.Service ?? ""));
+        return Results.Ok(new
+        {
+            data = new { balance = result.SoldeResortCredit, available = result.Found && result.SoldeResortCredit > 0, devise = "EUR" },
+            success = true
+        });
+    })
+    .WithName("TransactionCheckResortCredit")
+    .WithOpenApi();
+
+    transactions.MapPost("/{txId}/complete", async (long txId, CompleteTransactionFacadeDto dto, IMediator mediator) =>
+    {
+        var command = new ValidateSaleCommand(
+            TransactionId: txId,
+            Societe: dto.Societe ?? "",
+            CodeGm: dto.CodeGm,
+            Filiation: dto.Filiation,
+            MontantTotal: dto.MontantTotal,
+            MontantTva: dto.MontantTva,
+            DeviseTransaction: dto.DeviseTransaction ?? "EUR",
+            CommentaireVente: dto.Commentaire);
+        var result = await mediator.Send(command);
+        if (!result.Success) return Results.BadRequest(new { data = (object?)null, success = false, message = result.Message });
+        return Results.Ok(new { data = (object?)null, success = true, message = result.Message });
+    })
+    .WithName("TransactionComplete")
+    .WithOpenApi();
+
+    transactions.MapPost("/{txId}/recover-tpe", async (long txId, RecoverTPEFacadeDto dto, IMediator mediator) =>
+    {
+        var mops = dto.NewMOP?.Select(m => new RecoverTPEMop(m.Code, m.Montant)).ToList() ?? new();
+        var result = await mediator.Send(new RecoverTPECommand(txId, mops));
+        if (!result.Success) return Results.BadRequest(new { data = (object?)null, success = false, message = result.Message });
+        return Results.Ok(new { data = (object?)null, success = true, message = result.Message });
+    })
+    .WithName("TransactionRecoverTPE")
+    .WithOpenApi();
+
+    // Standalone facade endpoints (not under /api/transactions)
+    app.MapGet("/api/moyen-paiements", async (string? societe, IMediator mediator) =>
+    {
+        var soc = societe ?? "";
+        var moyens = await mediator.Send(new GetMoyensReglementQuery(soc));
+        var mapped = moyens.Select(m => new
+        {
+            code = m.Mop,
+            libelle = m.Mop,
+            type = MapMopType(m.TypeOperation),
+            classe = m.Devise,
+            estTPE = m.TypeOperation == "CB"
+        }).ToList();
+        return Results.Ok(new { data = mapped, success = true });
+    })
+    .WithName("GetMoyenPaiementsFacade")
+    .WithTags("Transactions")
+    .WithOpenApi();
+
+    app.MapGet("/api/forfaits", async (string? articleType, IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetForfaitsQuery(articleType));
+        var mapped = result.Forfaits.Select(f => new
+        {
+            code = f.Code,
+            libelle = f.Libelle,
+            dateDebut = f.DateDebut,
+            dateFin = f.DateFin,
+            articleType = f.ArticleType,
+            prixParJour = f.PrixParJour,
+            prixForfait = f.PrixForfait
+        }).ToList();
+        return Results.Ok(new { data = mapped, success = true });
+    })
+    .WithName("GetForfaitsFacade")
+    .WithTags("Transactions")
+    .WithOpenApi();
+
+    app.MapGet("/api/terminal/edition-config", async (IMediator mediator) =>
+    {
+        var result = await mediator.Send(new GetEditionConfigQuery());
+        return Results.Ok(new
+        {
+            data = new { format = result.Format, printerId = result.PrinterId, printerName = result.PrinterName },
+            success = true
+        });
+    })
+    .WithName("GetEditionConfigFacade")
+    .WithTags("Transactions")
     .WithOpenApi();
 
     // ============ EasyCheckOut Endpoints ============
@@ -1490,3 +1632,54 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+// Helper for MOP type mapping (used by facade endpoints)
+static string MapMopType(string typeOperation) => typeOperation switch
+{
+    "CB" => "carte",
+    "ES" or "ESP" => "especes",
+    "CH" or "CHQ" => "cheque",
+    "VI" or "VIR" => "virement",
+    _ => "autre"
+};
+
+// ============ Facade DTOs (ADH Web Lot 2) ============
+// Minimal records for request body deserialization
+
+public record CreateTransactionFacadeDto(
+    string? Societe,
+    int CompteId,
+    int Filiation,
+    string? ModePaiement,
+    string? Operateur,
+    string? Devise,
+    string? Mode,
+    string? ArticleType);
+
+public record CheckGiftPassFacadeDto(
+    string Societe,
+    int Compte,
+    int Filiation);
+
+public record CheckResortCreditFacadeDto(
+    string Societe,
+    int Compte,
+    int Filiation,
+    string? Service);
+
+public record CompleteTransactionFacadeDto(
+    string? Societe,
+    int CodeGm,
+    int Filiation,
+    decimal MontantTotal,
+    decimal MontantTva,
+    string? DeviseTransaction,
+    string? Commentaire,
+    List<MopFacadeDto>? Mop);
+
+public record RecoverTPEFacadeDto(
+    List<MopFacadeDto>? NewMOP);
+
+public record MopFacadeDto(
+    string Code,
+    decimal Montant);
