@@ -8,6 +8,22 @@ function buildMenuItems(sessionStatus: 'open' | 'closed'): CaisseMenuItem[] {
   const isOpen = sessionStatus === 'open';
   return [
     {
+      action: 'vente_gp',
+      label: 'Vente GP',
+      icon: 'shopping-cart',
+      description: 'Transaction de vente Grand Public',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
+    {
+      action: 'vente_boutique',
+      label: 'Vente Boutique',
+      icon: 'store',
+      description: 'Transaction de vente Boutique',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
+    {
       action: 'ouverture',
       label: 'Ouverture caisse',
       icon: 'door-open',
@@ -66,6 +82,8 @@ const actionRoutes: Record<CaisseMenuAction, string> = {
   reimpression: '/caisse/reimpression',
   consultation: '/caisse/historique',
   parametres: '/caisse/menu',
+  vente_gp: '/caisse/vente/GP',
+  vente_boutique: '/caisse/vente/Boutique',
 };
 
 export function CaisseMenuPage() {

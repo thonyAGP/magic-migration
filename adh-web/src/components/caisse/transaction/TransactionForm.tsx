@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useForm, useFieldArray, type SubmitHandler } from 'react-hook-form';
-import { Plus, Trash2, MessageSquare, CreditCard } from 'lucide-react';
+import { Plus, Trash2, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui';
 import { Input } from '@/components/ui';
@@ -9,12 +9,22 @@ import { Select, SelectOption } from '@/components/ui';
 import { Combobox } from '@/components/ui';
 import { FormPanel } from '@/components/layout';
 import { cn } from '@/lib/utils';
+import { useTransactionStore } from '@/stores';
 import type {
   TransactionFormProps,
   TransactionFormData,
   TransactionLineFormData,
 } from './types';
-import { ReglementDialog } from '../dialogs/ReglementDialog';
+import type { ArticleType } from '@/types/transaction';
+import type { VRLIdentity, TransactionDraft } from '@/types/transaction-lot2';
+import { ArticleTypeSelector } from './ArticleTypeSelector';
+import { PaymentMethodGrid } from './PaymentMethodGrid';
+import { GiftPassCheck } from './GiftPassCheck';
+import { ResortCreditCheck } from './ResortCreditCheck';
+import { TPERecoveryDialog } from './TPERecoveryDialog';
+import { TransactionSummary } from './TransactionSummary';
+import { ForfaitDialog } from './ForfaitDialog';
+import { VRLIdentityDialog } from './VRLIdentityDialog';
 import { CommentaireDialog } from '../dialogs/CommentaireDialog';
 
 const DEVISES = [
@@ -56,9 +66,33 @@ export function TransactionForm({
   onCancel,
   readOnly = false,
 }: TransactionFormProps) {
-  const [reglementOpen, setReglementOpen] = useState(false);
   const [commentaireOpen, setCommentaireOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [articleType, setArticleType] = useState<ArticleType>('default');
+  const [forfaitOpen, setForfaitOpen] = useState(false);
+  const [vrlIdentityOpen, setVrlIdentityOpen] = useState(false);
+  const [tpeRecoveryOpen, setTpeRecoveryOpen] = useState(false);
+  const [vrlIdentity, setVrlIdentity] = useState<VRLIdentity | null>(null);
+  const [forfaitDates, setForfaitDates] = useState<{ debut: string; fin: string } | null>(null);
+  const [showSummary, setShowSummary] = useState(false);
+  const [isCheckingGiftPass, setIsCheckingGiftPass] = useState(false);
+  const [isCheckingResortCredit, setIsCheckingResortCredit] = useState(false);
+
+  const {
+    catalogMOP,
+    catalogForfaits,
+    selectedMOP,
+    paymentSide,
+    giftPassBalance,
+    resortCreditBalance,
+    tpeError,
+    addMOP,
+    removeMOP,
+    togglePaymentSide,
+    checkGiftPass,
+    checkResortCredit,
+    setDraft,
+  } = useTransactionStore();
 
   const defaultValues: TransactionFormData = {
     compteNumero: initialData?.compteNumero ?? '',
@@ -143,7 +177,66 @@ export function TransactionForm({
     [setValue],
   );
 
+  const handleCheckGiftPass = useCallback(async () => {
+    setIsCheckingGiftPass(true);
+    try {
+      await checkGiftPass(0, '', 0, 0);
+    } finally {
+      setIsCheckingGiftPass(false);
+    }
+  }, [checkGiftPass]);
+
+  const handleCheckResortCredit = useCallback(async () => {
+    setIsCheckingResortCredit(true);
+    try {
+      await checkResortCredit(0, '', 0, 0);
+    } finally {
+      setIsCheckingResortCredit(false);
+    }
+  }, [checkResortCredit]);
+
+  const handleVRLValidate = useCallback((data: VRLIdentity) => {
+    setVrlIdentity(data);
+    setVrlIdentityOpen(false);
+  }, []);
+
+  const handleForfaitValidate = useCallback((debut: string, fin: string) => {
+    setForfaitDates({ debut, fin });
+    setForfaitOpen(false);
+  }, []);
+
+  const buildDraft = useCallback((): TransactionDraft => {
+    const values = getValues();
+    return {
+      compteId: parseInt(values.compteNumero) || 0,
+      compteNom: values.compteNom,
+      articleType,
+      lignes: values.lignes.map(l => ({
+        description: l.description,
+        quantite: l.quantite,
+        prixUnitaire: l.prixUnitaire,
+        devise: l.devise || values.devise,
+        codeProduit: l.codeProduit,
+      })),
+      mop: selectedMOP,
+      paymentSide,
+      giftPass: giftPassBalance ?? undefined,
+      resortCredit: resortCreditBalance ?? undefined,
+      forfait: undefined,
+      vrlIdentity: vrlIdentity ?? undefined,
+      commentaire: values.commentaire || undefined,
+      devise: values.devise,
+      montantTotal: totals.totalTTC,
+    };
+  }, [getValues, articleType, selectedMOP, paymentSide, giftPassBalance, resortCreditBalance, vrlIdentity, totals.totalTTC]);
+
   const onFormSubmit: SubmitHandler<TransactionFormData> = async (data) => {
+    if (!showSummary) {
+      const d = buildDraft();
+      setDraft(d);
+      setShowSummary(true);
+      return;
+    }
     setIsSubmitting(true);
     try {
       await onSubmit(data);
@@ -223,6 +316,48 @@ export function TransactionForm({
             )}
           </div>
         </div>
+      </FormPanel>
+
+      {/* Section 1.5: Article Type Selector */}
+      <FormPanel title="Type d'article">
+        <ArticleTypeSelector
+          selected={articleType}
+          onSelect={setArticleType}
+          mode={mode}
+          disabled={readOnly}
+        />
+        {articleType === 'VRL' && (
+          <div className="mt-3 flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setVrlIdentityOpen(true)}
+              disabled={readOnly}
+            >
+              {vrlIdentity
+                ? `${vrlIdentity.nom} ${vrlIdentity.prenom}`
+                : 'Saisir identite VRL'}
+            </Button>
+            {vrlIdentity && <Badge variant="default">Identite saisie</Badge>}
+          </div>
+        )}
+        {(articleType === 'VRL' || articleType === 'VSL') && (
+          <div className="mt-3 flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setForfaitOpen(true)}
+              disabled={readOnly}
+            >
+              {forfaitDates
+                ? `${forfaitDates.debut} → ${forfaitDates.fin}`
+                : 'Dates forfait'}
+            </Button>
+            {forfaitDates && <Badge variant="default">Dates definies</Badge>}
+          </div>
+        )}
       </FormPanel>
 
       {/* Section 2: Lines */}
@@ -384,7 +519,45 @@ export function TransactionForm({
         </div>
       </FormPanel>
 
-      {/* Section 4: Actions */}
+      {/* Section 4: Payment Methods */}
+      <FormPanel title="Reglement">
+        <PaymentMethodGrid
+          catalog={catalogMOP}
+          selectedMOP={selectedMOP}
+          paymentSide={paymentSide}
+          totalTransaction={totals.totalTTC}
+          devise={devise}
+          onAddMOP={addMOP}
+          onRemoveMOP={removeMOP}
+          onTogglePaymentSide={togglePaymentSide}
+          disabled={readOnly}
+        />
+      </FormPanel>
+
+      {/* Section 5: Verifications */}
+      <FormPanel title="Verifications">
+        <div className="space-y-3">
+          <GiftPassCheck
+            result={giftPassBalance}
+            isChecking={isCheckingGiftPass}
+            onCheck={handleCheckGiftPass}
+            disabled={readOnly}
+          />
+          <ResortCreditCheck
+            result={resortCreditBalance}
+            isChecking={isCheckingResortCredit}
+            onCheck={handleCheckResortCredit}
+            disabled={readOnly}
+          />
+        </div>
+      </FormPanel>
+
+      {/* Section 6: Summary */}
+      {showSummary && buildDraft() && (
+        <TransactionSummary draft={buildDraft()} selectedMOP={selectedMOP} />
+      )}
+
+      {/* Section 7: Actions */}
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <Button
@@ -401,28 +574,25 @@ export function TransactionForm({
           <Button type="button" variant="outline" onClick={onCancel}>
             Annuler
           </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setReglementOpen(true)}
-            disabled={readOnly || totals.totalTTC <= 0}
-          >
-            <CreditCard className="h-4 w-4" />
-            Reglement
-          </Button>
           <Button type="submit" disabled={readOnly || isSubmitting}>
-            {isSubmitting ? 'Validation...' : 'Valider'}
+            {showSummary ? (isSubmitting ? 'Soumission...' : 'Confirmer') : (isSubmitting ? 'Validation...' : 'Valider')}
           </Button>
         </div>
       </div>
 
       {/* Dialogs */}
-      <ReglementDialog
-        open={reglementOpen}
-        onOpenChange={setReglementOpen}
-        totalTransaction={totals.totalTTC}
-        devise={devise}
-        onValidate={() => setReglementOpen(false)}
+      <VRLIdentityDialog
+        open={vrlIdentityOpen}
+        onOpenChange={setVrlIdentityOpen}
+        onValidate={handleVRLValidate}
+        initialData={vrlIdentity ?? undefined}
+      />
+
+      <ForfaitDialog
+        open={forfaitOpen}
+        onOpenChange={setForfaitOpen}
+        catalogForfaits={catalogForfaits}
+        onValidate={handleForfaitValidate}
       />
 
       <CommentaireDialog
@@ -430,6 +600,19 @@ export function TransactionForm({
         onOpenChange={setCommentaireOpen}
         value={commentaire}
         onSave={handleCommentaireSave}
+      />
+
+      <TPERecoveryDialog
+        open={tpeRecoveryOpen || !!tpeError}
+        onOpenChange={(open) => {
+          if (!open) setTpeRecoveryOpen(false);
+        }}
+        error={tpeError ?? ''}
+        montant={totals.totalTTC}
+        devise={devise}
+        mopCatalog={catalogMOP}
+        onRetry={(newMop: string) => addMOP(newMop, totals.totalTTC)}
+        onCancel={onCancel}
       />
     </form>
   );
