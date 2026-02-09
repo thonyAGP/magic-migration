@@ -7,6 +7,10 @@ export type TransactionType =
 
 export type TransactionStatus = 'draft' | 'validated' | 'cancelled';
 
+export type ArticleType = 'VRL' | 'VSL' | 'TRF' | 'PYR' | 'default';
+
+export type PaymentSide = 'unilateral' | 'bilateral';
+
 export interface TransactionLine {
   id: number;
   description: string;

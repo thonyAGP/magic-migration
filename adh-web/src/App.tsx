@@ -7,6 +7,7 @@ import {
   SessionFermeturePage,
   SessionHistoriquePage,
   ReimpressionPage,
+  TransactionPage,
 } from '@/pages';
 
 function LoginPage() {
@@ -38,16 +39,6 @@ function DashboardPage() {
   );
 }
 
-function VentePage() {
-  return (
-    <ScreenLayout>
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Vente</h2>
-        <p className="text-on-surface-muted">TransactionForm sera integre ici (Lot 1-2)</p>
-      </div>
-    </ScreenLayout>
-  );
-}
 
 function ExtraitPage() {
   return (
@@ -77,7 +68,8 @@ export function App() {
         <Route path="/caisse/fermeture" element={<ProtectedRoute><SessionFermeturePage /></ProtectedRoute>} />
         <Route path="/caisse/historique" element={<ProtectedRoute><SessionHistoriquePage /></ProtectedRoute>} />
         <Route path="/caisse/reimpression" element={<ProtectedRoute><ReimpressionPage /></ProtectedRoute>} />
-        <Route path="/caisse/vente" element={<ProtectedRoute><VentePage /></ProtectedRoute>} />
+        <Route path="/caisse/vente/:mode" element={<ProtectedRoute><TransactionPage /></ProtectedRoute>} />
+        <Route path="/caisse/vente" element={<Navigate to="/caisse/vente/GP" replace />} />
         <Route path="/caisse/extrait" element={<ProtectedRoute><ExtraitPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

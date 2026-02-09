@@ -87,3 +87,12 @@ export interface PaginationParams {
   page: number;
   pageSize: number;
 }
+
+// Lot 2 types re-export
+export type {
+  CreateTransactionLot2Request,
+  GiftPassCheckRequest,
+  ResortCreditCheckRequest,
+  CompleteTransactionRequest,
+  TPERecoverRequest,
+} from './types-lot2';
