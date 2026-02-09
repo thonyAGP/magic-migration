@@ -1,6 +1,6 @@
 ﻿# ADH IDE 82 - Select affilies
 
-> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (26s) | Assemblage 14:00
+> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 02:18 (22h32min) | Assemblage 02:18
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme ADH IDE 82 ("Select affilies") est un composant spécialisé d'interface utilisateur dans la chaîne Club Med Pass, qui permet aux utilisateurs de sélectionner et consulter des informations d'affiliés. Structuré autour de deux tâches principales avec 61 lignes de logique, le programme interagit avec trois tables centrales (GM-recherche, compte_gm, ez_card) en mode lecture, en récupérant des données d'entrée paramétrisées (société, code adhérent, filiation) tout en calculant des variables dérivées comme le solde du compte, le statut et l'enrichissement du titre via un appel externe à IDE 43 ("Recuperation du titre").
+**ADH IDE 82** est un composant d'interface de sélection d'affiliés appelé depuis le menu Club Med Pass. Le programme reçoit en entrée une société, code adhérent et filiation, puis affiche une table de 5 lignes listant les affiliés disponibles avec leurs informations (nom/prénom, sexe, âge, numéro, statut EZ Card). L'écran MDI mesure 1010×227 DLU et contient 27 contrôles répartis sur 2 formulaires – un header affichant la société et la date du jour, et un détail avec 16 champs éditables pour consultation des dates de séjour, codes et statuts.
 
-La logique métier repose sur trois règles conditionnelles critiques : positionnement dynamique de l'écran selon le statut de variable Y, calcul de l'affichage de l'âge au format "ans/mois" avec logique textuelle comparative (variables W/X), et classification du statut de séjour en trois catégories ("dernier séjour", "prochain séjour", "séjour en cours") par comparaison de dates sérialisées. Un contrôle d'accès sécurisé valide la propriété du compte via la condition `p. societe [A] = ''`, garantissant que seuls les utilisateurs autorisés peuvent consulter les données d'affiliés. L'interface s'étend sur 1010×227 DLU et contient 27 contrôles répartis sur 2 formulaires, affichant à la fois les paramètres d'entrée et un résumé en lecture seule des informations de compte calculées.
+La logique métier repose sur trois règles principales : ajustement dynamique de la hauteur écran (143 ou 110 DLU selon la variable Y), formatage conditionnel de l'âge en années ou mois, et classification du séjour en trois catégories (dernier/prochain/en cours) par comparaison de dates sérialisées. Les données proviennent de 3 tables en lecture seule (gm-recherche, compte_gm et ez_card) – zéro écriture base de données. Le programme appelle IDE 43 pour enrichir le titre, et valide l'accès au compte via une condition de sécurité sur la société avant d'afficher les informations.
 
-Le programme maintient une position fonctionnelle claire au sein de l'architecture : appelé exclusivement depuis IDE 77 (Club Med Pass menu) lui-même situé dans la hiérarchie IDE 163, il n'a qu'une dépendance sortante vers IDE 43 pour l'enrichissement des titres. Cette conception minimale—un seul appelant, un seul appelé—en fait un composant feuille sans impact significatif sur les branches descendantes, spécialisé dans la sélection et l'affichage d'affiliés dans le workflow plus large de gestion de compte.
+C'est un composant terminale de faible complexité (61 lignes, score 5/100), spécialisé et non orphelin puisqu'appelé depuis la chaîne principale via IDE 77. La migration vers .NET/React est directe : créer un service de récupération données, un composant React pour le formulaire, et intégrer l'appel à IDE 43 comme dépendance injectée.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Ecran [ECRAN]
+#### <a id="t1"></a>82 - Ecran [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Ecran.
 **Ecran** : 1010 x 227 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -49,17 +49,17 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t2"></a>T2 - Reaffichage infos compte
+#### <a id="t2"></a>82.1 - Reaffichage infos compte
 
 **Role** : Reinitialisation : Reaffichage infos compte.
-**Variables liees** : E (< solde compte), F (< etat compte)
+**Variables liees** : ER (< solde compte), ES (< etat compte)
 
 
 ## 5. REGLES METIER
 
-3 regles identifiees:
+6 regles identifiees:
 
-### Autres (3 regles)
+### Autres (6 regles)
 
 #### <a id="rm-RM-001"></a>[RM-001] Si [Y] alors 143 sinon 110)
 
@@ -71,7 +71,26 @@ Calculs metier : montants, stocks, compteurs.
 | **Expression source** | Expression 1 : `IF ([Y],143,110)` |
 | **Exemple** | Si [Y] â†’ 143. Sinon â†’ 110) |
 
-#### <a id="rm-RM-002"></a>[RM-002] Traitement conditionnel si [W]>0,Str ([W],'###'),IF ([X] est a zero
+#### <a id="rm-RM-002"></a>[RM-002] Negation de ([Y]) (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT ([Y])` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 2 : `NOT ([Y])` |
+| **Exemple** | Si NOT ([Y]) â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: p. societe [A] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `p. societe [A]=''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (p. societe) |
+| **Expression source** | Expression 7 : `p. societe [A]=''` |
+| **Exemple** | Si p. societe [A]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Traitement conditionnel si [W]>0,Str ([W],'###'),IF ([X] est a zero
 
 | Element | Detail |
 |---------|--------|
@@ -81,7 +100,7 @@ Calculs metier : montants, stocks, compteurs.
 | **Expression source** | Expression 18 : `IF ([W]>0,Str ([W],'###'),IF ([X]=0,'',Str ([W],'##')))` |
 | **Exemple** | Si [W]>0 â†’ Str ([W]. Sinon â†’ '###'),IF ([X]=0,'',Str ([W],'##'))) |
 
-#### <a id="rm-RM-003"></a>[RM-003] Si [V]<Date () alors MlsTrans ('dernier sejour :') sinon IF ([U]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))
+#### <a id="rm-RM-005"></a>[RM-005] Si [V]<Date () alors MlsTrans ('dernier sejour :') sinon IF ([U]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))
 
 | Element | Detail |
 |---------|--------|
@@ -90,6 +109,15 @@ Calculs metier : montants, stocks, compteurs.
 | **Si faux** | IF ([U]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours'))) |
 | **Expression source** | Expression 21 : `IF ([V]<Date (),MlsTrans ('dernier sejour :'),IF ([U]>Date (` |
 | **Exemple** | Si [V]<Date () â†’ MlsTrans ('dernier sejour :') |
+
+#### <a id="rm-RM-006"></a>[RM-006] Condition: [R] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[R]=0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 25 : `[R]=0` |
+| **Exemple** | Si [R]=0 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -104,14 +132,14 @@ Calculs metier : montants, stocks, compteurs.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 82 | T1 | Ecran | MDI | 1010 | 227 | Traitement |
+| 1 | 82 | 82 | Ecran | MDI | 1010 | 227 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>82 - Ecran
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1010 x 227 DLU
+**Tache** : [82](#t1) | **Type** : MDI | **Dimensions** : 1010 x 227 DLU
 **Bloc** : Traitement | **Titre IDE** : Ecran
 
 <!-- FORM-DATA:
@@ -485,25 +513,34 @@ Ecran unique: **Ecran**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **82.1** | [**Ecran** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1010x227 | Traitement |
-| **82.2** | [**Reaffichage infos compte** (T2)](#t2) | MDI | - | Calcul |
+| **82.1** | [**Ecran** (82)](#t1) [mockup](#ecran-t1) | MDI | 1010x227 | Traitement |
+| **82.2** | [**Reaffichage infos compte** (82.1)](#t2) | MDI | - | Calcul |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (1t)]
-    START --> B1
-    B2[Calcul (1t)]
-    B1 --> B2
-    ENDOK([END])
-    B2 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{p. societe}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -543,8 +580,8 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| E | < solde compte | R | Numeric |
-| F | < etat compte | R | Alpha |
+| ER | < solde compte | R | Numeric |
+| ES | < etat compte | R | Alpha |
 
 </details>
 
@@ -556,10 +593,10 @@ Variables recues du programme appelant ([Club Med Pass menu (IDE 77)](ADH-IDE-77
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | p. societe | Alpha | 2x parametre entrant |
-| B | p. code adherent | Numeric | 1x parametre entrant |
-| C | p. filiation | Numeric | - |
-| D | p.flag ok | Logical | - |
+| EN | p. societe | Alpha | 2x parametre entrant |
+| EO | p. code adherent | Numeric | 1x parametre entrant |
+| EP | p. filiation | Numeric | - |
+| EQ | p.flag ok | Logical | - |
 
 ### 11.2 Variables de session (2)
 
@@ -567,8 +604,8 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| I | v. titre | Alpha | 1x session |
-| J | v. nom & prenom | Alpha | - |
+| EV | v. titre | Alpha | 1x session |
+| EW | v. nom & prenom | Alpha | - |
 
 ### 11.3 Autres (5)
 
@@ -576,11 +613,11 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| E | < solde compte | Numeric | - |
-| F | < etat compte | Alpha | - |
-| G | < date solde | Date | - |
-| H | < garanti O/N | Alpha | - |
-| K | r.EZ card | Logical | - |
+| ER | < solde compte | Numeric | - |
+| ES | < etat compte | Alpha | - |
+| ET | < date solde | Date | - |
+| EU | < garanti O/N | Alpha | - |
+| EX | r.EZ card | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -590,10 +627,10 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 6 | 3 |
+| CONDITION | 6 | 5 |
+| NEGATION | 2 | 5 |
 | CONSTANTE | 4 | 0 |
 | DATE | 1 | 0 |
-| NEGATION | 2 | 0 |
 | OTHER | 9 | 0 |
 | CAST_LOGIQUE | 2 | 0 |
 | REFERENCE_VG | 1 | 0 |
@@ -606,12 +643,19 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 21 | `IF ([V]<Date (),MlsTrans ('dernier sejour :'),IF ([U]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))` | [RM-003](#rm-RM-003) |
-| CONDITION | 18 | `IF ([W]>0,Str ([W],'###'),IF ([X]=0,'',Str ([W],'##')))` | [RM-002](#rm-RM-002) |
+| CONDITION | 21 | `IF ([V]<Date (),MlsTrans ('dernier sejour :'),IF ([U]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))` | [RM-005](#rm-RM-005) |
+| CONDITION | 25 | `[R]=0` | [RM-006](#rm-RM-006) |
+| CONDITION | 18 | `IF ([W]>0,Str ([W],'###'),IF ([X]=0,'',Str ([W],'##')))` | [RM-004](#rm-RM-004) |
 | CONDITION | 1 | `IF ([Y],143,110)` | [RM-001](#rm-RM-001) |
-| CONDITION | 25 | `[R]=0` | - |
-| CONDITION | 7 | `p. societe [A]=''` | - |
+| CONDITION | 7 | `p. societe [A]=''` | [RM-003](#rm-RM-003) |
 | ... | | *+1 autres* | |
+
+#### NEGATION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 2 | `NOT ([Y])` | [RM-002](#rm-RM-002) |
+| NEGATION | 3 | `NOT ([Y])` | - |
 
 #### CONSTANTE (4 expressions)
 
@@ -627,13 +671,6 @@ Variables diverses.
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | DATE | 10 | `Date ()` | - |
-
-#### NEGATION (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 3 | `NOT ([Y])` | - |
-| NEGATION | 2 | `NOT ([Y])` | - |
 
 #### OTHER (9 expressions)
 
@@ -681,11 +718,18 @@ Variables diverses.
 | IDE | Expression Decodee |
 |-----|-------------------|
 | 1 | `IF ([Y],143,110)` |
+| 7 | `p. societe [A]=''` |
 | 18 | `IF ([W]>0,Str ([W],'###'),IF ([X]=0,'',Str ([W],'##')))` |
 | 19 | `IF ([W]>0,'ans',IF ([X]=0,'','mois'))` |
 | 21 | `IF ([V]<Date (),MlsTrans ('dernier sejour :'),IF ([U]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))` |
-| 7 | `p. societe [A]=''` |
 | 25 | `[R]=0` |
+
+#### NEGATION (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 2 | `NOT ([Y])` |
+| 3 | `NOT ([Y])` |
 
 #### CONSTANTE (4)
 
@@ -701,13 +745,6 @@ Variables diverses.
 | IDE | Expression Decodee |
 |-----|-------------------|
 | 10 | `Date ()` |
-
-#### NEGATION (2)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 2 | `NOT ([Y])` |
-| 3 | `NOT ([Y])` |
 
 #### OTHER (9)
 
@@ -808,7 +845,7 @@ graph LR
 | Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 61) | Code sain |
-| Regles metier | 3 | Quelques regles a preserver |
+| Regles metier | 6 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -830,4 +867,4 @@ graph LR
 | [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:02*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:19*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 208 - Print Reçu code autocom
 
-> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:53 (28s) | Assemblage 03:53
+> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:53 (28s) | Assemblage 04:16
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,41 +18,15 @@
 | Taches | 13 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 1 |
+| Complexite | **BASSE** (score 12/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Print Reçu code autocom** assure la gestion complete de ce processus, accessible depuis [Affectation code autocom (IDE 209)](ADH-IDE-209.md), [Menu telephone (IDE 217)](ADH-IDE-217.md).
+ADH IDE 208 gère l'impression des reçus de codes d'autocom (codes d'accès automatiques). Le programme est appelé depuis deux contextes : l'affectation de codes (ADH IDE 209) et le menu téléphone (ADH IDE 217). Sa responsabilité principale est de formatter et d'envoyer les données du code vers l'imprimante, en coordonnant avec le gestionnaire d'impression (ADH IDE 182 - Raz Current Printer).
 
-Le flux de traitement s'organise en **2 blocs fonctionnels** :
+Le workflow s'articule autour de tâches d'impression répétées : quatre tâches principales gèrent l'impression du reçu à travers différentes étapes. Le programme suit un pattern classique de gestion d'impression avec initialisation de l'imprimante, formatage du contenu (probablement identifiant, code d'accès, date, validité), puis envoi des données à l'imprimante physique. Les tâches dupliquées suggèrent possiblement une gestion de multiples copies ou tentatives de réussite d'impression.
 
-- **Traitement** (8 taches) : traitements metier divers
-- **Impression** (5 taches) : generation de tickets et documents
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (8 taches)
-
-- **208** - (sans nom)
-- **208.1.1** - Impression reçu code auto
-- **208.1.2** - Impression reçu code auto
-- **208.2.1** - Impression reçu code auto
-- **208.2.2** - Impression reçu code auto
-- **208.3.1** - Veuillez patienter... **[[ECRAN]](#ecran-t9)**
-- **208.4.1** - Impression reçu code auto
-- **208.5.1** - Impression reçu code auto
-
-#### Phase 2 : Impression (5 taches)
-
-- **208.1** - Printer 1
-- **208.2** - Printer 4
-- **208.3** - Printer 6 **[[ECRAN]](#ecran-t8)**
-- **208.4** - Printer 8
-- **208.5** - Printer 9
-
-Delegue a : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
-
-</details>
+Ce programme s'intègre dans le flux d'affectation de codes d'autocom des lignes téléphoniques : après génération d'un nouveau code par ADH IDE 209, ADH IDE 208 imprime automatiquement le reçu de confirmation. L'appel vers ADH IDE 182 (réinitialisation d'imprimante) en fin de processus assure que l'imprimante est proprement fermée, prête pour le prochain document.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -62,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>208 - (sans nom)
+#### <a id="t1"></a>T1 - (sans nom)
 
 **Role** : Tache d'orchestration : point d'entree du programme (8 sous-taches). Coordonne l'enchainement des traitements.
 
@@ -71,61 +45,61 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [208.1.1](#t3) | Impression reçu code auto | Traitement |
-| [208.1.2](#t4) | Impression reçu code auto | Traitement |
-| [208.2.1](#t6) | Impression reçu code auto | Traitement |
-| [208.2.2](#t7) | Impression reçu code auto | Traitement |
-| [208.3.1](#t9) | Veuillez patienter... **[[ECRAN]](#ecran-t9)** | Traitement |
-| [208.4.1](#t11) | Impression reçu code auto | Traitement |
-| [208.5.1](#t13) | Impression reçu code auto | Traitement |
+| [T3](#t3) | Impression reçu code auto | Traitement |
+| [T4](#t4) | Impression reçu code auto | Traitement |
+| [T6](#t6) | Impression reçu code auto | Traitement |
+| [T7](#t7) | Impression reçu code auto | Traitement |
+| [T9](#t9) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [T11](#t11) | Impression reçu code auto | Traitement |
+| [T13](#t13) | Impression reçu code auto | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t3"></a>208.1.1 - Impression reçu code auto
+#### <a id="t3"></a>T3 - Impression reçu code auto
 
 **Role** : Generation du document : Impression reçu code auto.
 **Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
 
 ---
 
-#### <a id="t4"></a>208.1.2 - Impression reçu code auto
+#### <a id="t4"></a>T4 - Impression reçu code auto
 
 **Role** : Generation du document : Impression reçu code auto.
 **Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
 
 ---
 
-#### <a id="t6"></a>208.2.1 - Impression reçu code auto
+#### <a id="t6"></a>T6 - Impression reçu code auto
 
 **Role** : Generation du document : Impression reçu code auto.
 **Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
 
 ---
 
-#### <a id="t7"></a>208.2.2 - Impression reçu code auto
+#### <a id="t7"></a>T7 - Impression reçu code auto
 
 **Role** : Generation du document : Impression reçu code auto.
 **Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
 
 ---
 
-#### <a id="t9"></a>208.3.1 - Veuillez patienter... [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Veuillez patienter... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t11"></a>208.4.1 - Impression reçu code auto
+#### <a id="t11"></a>T11 - Impression reçu code auto
 
 **Role** : Generation du document : Impression reçu code auto.
 **Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
 
 ---
 
-#### <a id="t13"></a>208.5.1 - Impression reçu code auto
+#### <a id="t13"></a>T13 - Impression reçu code auto
 
 **Role** : Generation du document : Impression reçu code auto.
 **Variables liees** : B (P0 code adherent), E (P0 longueur code), F (P0 code autocom)
@@ -137,21 +111,21 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>208.1 - Printer 1
+#### <a id="t2"></a>T2 - Printer 1
 
 **Role** : Generation du document : Printer 1.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t5"></a>208.2 - Printer 4
+#### <a id="t5"></a>T5 - Printer 4
 
 **Role** : Generation du document : Printer 4.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t8"></a>208.3 - Printer 6 [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Printer 6 [ECRAN]
 
 **Role** : Generation du document : Printer 6.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t8)
@@ -159,14 +133,14 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t10"></a>208.4 - Printer 8
+#### <a id="t10"></a>T10 - Printer 8
 
 **Role** : Generation du document : Printer 8.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t12"></a>208.5 - Printer 9
+#### <a id="t12"></a>T12 - Printer 9
 
 **Role** : Generation du document : Printer 9.
 **Delegue a** : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
@@ -174,7 +148,59 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+5 regles identifiees:
+
+### Impression (5 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Verification que l'imprimante courante est la n1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 1 : `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action conditionnelle |
+| **Impact** | [T2 - Printer 1](#t2) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n4
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 2 : `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=4 â†’ Action conditionnelle |
+| **Impact** | [T2 - Printer 1](#t2) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n6
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=6` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 3 : `GetParam ('CURRENTPRINTERNUM')=6` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=6 â†’ Action conditionnelle |
+| **Impact** | [T2 - Printer 1](#t2) |
+
+#### <a id="rm-RM-004"></a>[RM-004] Verification que l'imprimante courante est la n8
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 4 : `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=8 â†’ Action conditionnelle |
+| **Impact** | [T2 - Printer 1](#t2) |
+
+#### <a id="rm-RM-005"></a>[RM-005] Verification que l'imprimante courante est la n9
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 5 : `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action conditionnelle |
+| **Impact** | [T2 - Printer 1](#t2) |
 
 ## 6. CONTEXTE
 
@@ -189,14 +215,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 208.3.1 | 208.3.1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+| 1 | 208.3.1 | T9 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t9"></a>208.3.1 - Veuillez patienter...
-**Tache** : [208.3.1](#t9) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [T9](#t9) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -285,19 +311,19 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **208.1** | [**(sans nom)** (208)](#t1) | MDI | - | Traitement |
-| 208.1.1 | [Impression reçu code auto (208.1.1)](#t3) | MDI | - | |
-| 208.1.2 | [Impression reçu code auto (208.1.2)](#t4) | MDI | - | |
-| 208.1.3 | [Impression reçu code auto (208.2.1)](#t6) | MDI | - | |
-| 208.1.4 | [Impression reçu code auto (208.2.2)](#t7) | MDI | - | |
-| 208.1.5 | [Veuillez patienter... (208.3.1)](#t9) [mockup](#ecran-t9) | MDI | 422x56 | |
-| 208.1.6 | [Impression reçu code auto (208.4.1)](#t11) | MDI | - | |
-| 208.1.7 | [Impression reçu code auto (208.5.1)](#t13) | MDI | - | |
-| **208.2** | [**Printer 1** (208.1)](#t2) | MDI | - | Impression |
-| 208.2.1 | [Printer 4 (208.2)](#t5) | MDI | - | |
-| 208.2.2 | [Printer 6 (208.3)](#t8) [mockup](#ecran-t8) | MDI | 422x56 | |
-| 208.2.3 | [Printer 8 (208.4)](#t10) | MDI | - | |
-| 208.2.4 | [Printer 9 (208.5)](#t12) | MDI | - | |
+| **208.1** | [**(sans nom)** (T1)](#t1) | MDI | - | Traitement |
+| 208.1.1 | [Impression reçu code auto (T3)](#t3) | MDI | - | |
+| 208.1.2 | [Impression reçu code auto (T4)](#t4) | MDI | - | |
+| 208.1.3 | [Impression reçu code auto (T6)](#t6) | MDI | - | |
+| 208.1.4 | [Impression reçu code auto (T7)](#t7) | MDI | - | |
+| 208.1.5 | [Veuillez patienter... (T9)](#t9) [mockup](#ecran-t9) | MDI | 422x56 | |
+| 208.1.6 | [Impression reçu code auto (T11)](#t11) | MDI | - | |
+| 208.1.7 | [Impression reçu code auto (T13)](#t13) | MDI | - | |
+| **208.2** | [**Printer 1** (T2)](#t2) | MDI | - | Impression |
+| 208.2.1 | [Printer 4 (T5)](#t5) | MDI | - | |
+| 208.2.2 | [Printer 6 (T8)](#t8) [mockup](#ecran-t8) | MDI | 422x56 | |
+| 208.2.3 | [Printer 8 (T10)](#t10) | MDI | - | |
+| 208.2.4 | [Printer 9 (T12)](#t12) | MDI | - | |
 
 ### 9.4 Algorigramme
 
@@ -305,18 +331,20 @@ Ecran unique: **Veuillez patienter...**
 flowchart TD
     START([START])
     INIT[Init controles]
-    SAISIE[Traitement principal]
+    START --> INIT
+    B1[Traitement (8t)]
+    INIT --> B1
+    B2[Impression (5t)]
+    B1 --> B2
     ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    B2 --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -460,7 +488,7 @@ graph LR
 | Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 177) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 5 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -483,4 +511,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:53*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:17*

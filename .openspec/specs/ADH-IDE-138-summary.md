@@ -1,31 +1,31 @@
-﻿# ADH IDE 138 - Generation tableau recap WS
+﻿# ADH IDE 138 - Ticket fermeture session
 
-> **Analyse**: 2026-02-07 07:11
+> **Analyse**: 2026-02-08 03:18
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Generation tableau recap WS
+- **Fonction**: Ticket fermeture session
 - **Tables modifiees**: 0
-- **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Complexite**: **BASSE** (18/100)
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 3 programme(s): Fermeture caisse (IDE 131), Reimpression tickets fermeture (IDE 151), Fermeture caisse 144 (IDE 299)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
-| **Appelle** | (aucun) |
+| **Appele par** | [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Reimpression tickets fermeture (IDE 151)](ADH-IDE-151.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md) |
+| **Appelle** | [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Get Printer (IDE 179)](ADH-IDE-179.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 1 |
-| Lignes Logic | 98 |
-| Expressions | 30 |
-| Tables | 2 |
+| Taches | 23 |
+| Lignes Logic | 378 |
+| Expressions | 10 |
+| Tables | 8 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

@@ -1,200 +1,235 @@
 ﻿# ADH IDE 267 - Zoom devises
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:13
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_263.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:51 -> 04:51 (4s) | Assemblage 04:51
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Zoom devises** est le **selecteur des devises avec informations de moyens de reglement** qui **permet a l'operateur de consulter et selectionner une devise avec ses caracteristiques de reglement**.
-
-**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les devises disponibles enrichies des informations de moyens de reglement associes, permettant une selection contextuelle lors d'operations de change ou de paiement en devises etrangeres.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur caisse ou gestionnaire change |
-| **Quoi** | Fenetre de selection des devises avec moyens de reglement |
-| **Pourquoi** | Associer devise et mode de reglement pour les operations de change |
-| **Declencheur** | Clic sur zoom depuis un champ devise dans un contexte de reglement |
-| **Resultat** | Retour de la devise et informations associees au programme appelant |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (2 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 267 |
-| **Fichier XML** | `Prg_263.xml` |
-| **Description** | Zoom devises |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 24 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 267 |
+| Nom Programme | Zoom devises |
+| Fichier source | `Prg_267.xml` |
+| Dossier IDE | Change |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 50 | moyens_reglement_mor | cafil028_dat | READ | Lecture |
-| 67 | tables___________tab | cafil045_dat | LINK | Jointure |
+ADH IDE 267 est un programme de consultation simple qui affiche la liste des devises disponibles dans le système. Il s'agit d'une fonction de zoom typique, accessible depuis les formulaires qui nécessitent la sélection d'une devise. Le programme récupère les données de la table de référence des devises et les présente de manière conviviale à l'utilisateur pour faciliter le choix.
 
-**Resume**: 2 tables accedees dont **0 en ecriture**
+Le programme appelle ADH IDE 43 pour récupérer le titre ou la description de chaque devise. Cette dépendance externe enrichit l'affichage en ajoutant des informations de contexte sur les devises, permettant aux utilisateurs de mieux comprendre le sens de chaque code devise affiché. C'est un pattern courant dans les zooms Magic : afficher le code ET le libellé associé pour améliorer l'UX.
 
-### 2.3 Parametres d'entree (0 parametres)
+L'exécution est rapide et sans effets de bord puisqu'il s'agit d'une opération de lecture seule. Le programme est généralement appelé depuis des contextes où l'utilisateur doit sélectionner une devise (opérations de change, conversions, paramètres de facturation, etc.). Il fait partie du composant ADH.ecf partagé et peut être utilisé par d'autres modules comme PBP ou PVE qui ont besoin de gérer des devises.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee dans les expressions)*
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 1 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 13
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 24 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 2 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (2)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 50 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 1 |
+| 67 | tables___________tab |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 50 - moyens_reglement_mor (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | PO societe | R | Alpha |
+| B | PO type depôt | R | Alpha |
+| C | PO devise | R | Alpha |
+| D | v.titre | R | Alpha |
+| E | Bouton selection | R | Alpha |
+| F | Bouton quitter | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (3)
+
+Variables recues en parametre.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | PO societe | Alpha | 1x parametre entrant |
+| EO | PO type depôt | Alpha | 1x parametre entrant |
+| EP | PO devise | Alpha | 1x parametre entrant |
+
+### 11.2 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EQ | v.titre | Alpha | 1x session |
+
+### 11.3 Autres (2)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| ER | Bouton selection | Alpha | - |
+| ES | Bouton quitter | Alpha | - |
+
+## 12. EXPRESSIONS
+
+**13 / 13 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONSTANTE | 7 | 0 |
+| OTHER | 5 | 0 |
+| STRING | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONSTANTE (7 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 10 | `'&Quitter'` | - |
+| CONSTANTE | 11 | `'BDEV'` | - |
+| CONSTANTE | 12 | `''` | - |
+| CONSTANTE | 9 | `'&Selectionner'` | - |
+| CONSTANTE | 2 | `15` | - |
+| ... | | *+2 autres* | |
+
+#### OTHER (5 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 8 | `[I]` | - |
+| OTHER | 13 | `[I]` | - |
+| OTHER | 7 | `PO devise [C]` | - |
+| OTHER | 3 | `PO societe [A]` | - |
+| OTHER | 4 | `PO type depôt [B]` | - |
+
+#### STRING (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 1 | `Trim (v.titre [D])` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[267 Zoom devises]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T267[267 Zoom devises]
+    style T267 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T267
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[267 Zoom devises]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T267[267 Zoom devises]
+    style T267 fill:#58a6ff
+    C43[43 Recuperation du titre]
+    T267 --> C43
+    style C43 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 24 | Programme compact |
+| Expressions | 13 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 24) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 2 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:13 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:51*

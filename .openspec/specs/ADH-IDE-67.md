@@ -1,6 +1,6 @@
 ﻿# ADH IDE 67 - Reedition Recap Easy Check Out
 
-> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 03:43 (26s) | Assemblage 13:38
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 02:01 (22h17min) | Assemblage 02:01
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -23,13 +23,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-# ADH IDE 67 - Reedition Recap Easy Check Out
+ADH IDE 67 - Reedition Recap Easy Check Out est un programme de gestion des documents Easy Check-Out qui permet de regenerer et de renvoyer les recapitulatifs d'une transaction de paiement facile. Ce programme constitue une fonction de support client, offrant la possibilite de reimprimer ou de retransmettre par email les details d'une operation Easy Check-Out deja executee. Il s'integre dans le flux de sortie des clients, intervenant apres une transaction de paiement reussie.
 
-Le programme 67 assure la reedition du récapitulatif de transaction pour le module Easy Checkout. Il intervient en fin de processus de paiement pour permettre au client de récupérer un duplicata du reçu, soit immédiatement après la transaction, soit ultérieurement. Ce programme gère les appels au générateur de document (IDE 65) pour produire le récapitulatif au format adapté au terminal de paiement.
+Le programme appelle directement Edition & Mail Easy Check Out (IDE 65), qui gere la generation du document recapitulatif et son envoi. Cette dependance indique que ADH IDE 67 fonctionne comme un point d'entree de reedition, permettant aux operateurs de caisse de regenerer les documents de synthese a la demande, sans rejouer toute la transaction de paiement. Les cas d'usage typiques incluent la reedition pour un client qui aurait perdu son recu ou la retransmission par email d'une confirmation de paiement.
 
-La logique principale consiste à valider les paramètres de la transaction (numéro de transaction, date, montant), à récupérer les données du récapitulatif précédemment sauvegardées, puis à lancer l'édition via le programme 65 qui formatte et imprime le document. Le programme 67 centralise également la gestion des codes d'erreur relatifs à l'indisponibilité des données de récapitulatif ou aux problèmes d'impression.
-
-Ce programme est appelé par le système Easy Checkout pour permettre une reedition à la demande, intégrant les mécanismes de rejeu transactionnel. Il garantit que les clients disposent toujours d'une trace documentaire de leur paiement, conforme aux exigences réglementaires de traçabilité des transactions.
+La logique du programme reste probablement simple : recuperation des donnees de la transaction original, validation des droits d'acces, puis delegation a ADH IDE 65 pour la generation et distribution du document. Cela en fait un programme de service client integre au processus Easy Check-Out, garantissant la traçabilite et la satisfaction client apres chaque transaction.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -43,7 +41,7 @@ Generation des documents et tickets.
 
 **Role** : Generation du document : Reedition Recap Easy Check Out.
 **Ecran** : 410 x 119 DLU (MDI) | [Voir mockup](#ecran-t1)
-**Variables liees** : D (v.retour log easy check out)
+**Variables liees** : EQ (v.retour log easy check out)
 **Delegue a** : [Edition & Mail Easy Check Out (IDE 65)](ADH-IDE-65.md)
 
 
@@ -286,10 +284,10 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | v.Date Récapitulatif | Date | 1x session |
-| B | v.Mode Test | Logical | 1x session |
-| C | v.Erreurs Seules | Logical | 1x session |
-| D | v.retour log easy check out | Logical | - |
+| EN | v.Date Récapitulatif | Date | 1x session |
+| EO | v.Mode Test | Logical | 1x session |
+| EP | v.Erreurs Seules | Logical | 1x session |
+| EQ | v.retour log easy check out | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -400,4 +398,4 @@ graph LR
 | [Edition & Mail Easy Check Out (IDE 65)](ADH-IDE-65.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:38*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:01*

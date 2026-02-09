@@ -1,6 +1,6 @@
 ﻿# ADH IDE 31 - Write histo_Fus_Sep_Det
 
-> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (27s) | Assemblage 13:07
+> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 01:27 (21h45min) | Assemblage 01:27
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -24,11 +24,11 @@
 
 # ADH IDE 31 - Write histo_Fus_Sep_Det
 
-Programme de persistence enregistrant les details des operations de fusion et separation de comptes. Appele systematiquement par les programmes 27 (Separation) et 28 (Fusion) apres chaque operation reussie pour tracer l'historique complet. Ecrit dans la table `histo_fusionseparation_detail` les informations granulaires : numero compte source/destination, montants transferes, dates d'operation, et codes erreur si applicable.
+Programme utilitaire chargé de consigner les détails des opérations de séparation et fusion de comptes dans la table historique `histo_fusionseparation_detail`. Appelé systématiquement après chaque exécution des programmes de Séparation (ADH IDE 27) et Fusion (ADH IDE 28), il enregistre les mouvements de soldes, les allocations de services et les transferts de droits d'accès associés à ces opérations complexes.
 
-Responsable de la creation de l'audit trail immutable pour les operations critiques d'administration de comptes. Chaque entree historique contient les references aux comptes impliques, les details de la transaction (montants, devises, soldes avant/apres), et les timestamps precis. Ce log permet de reconstituer l'integrabilite des operations et de diagnostiquer les anomalies lors de separations/fusions partielles ou eclhouees.
+La logique d'écriture parcourt les comptes source et destination pour capturer chaque transaction de crédit/débit générée lors de la fusion ou séparation. Les enregistrements incluent l'identifiant du compte parent, le numéro de la transaction d'historique, le type d'opération (fusion/séparation), les montants par devise et service, ainsi que les dates et signatures des opérateurs responsables. Cette traçabilité est critique pour l'audit financier et la réconciliation des comptes.
 
-Execute systematiquement en fin de tache pour garantir que aucune operation n'est perdue de la trace, meme en cas de rollback partiel. Les donnees historiques deviennent la source de verite pour audits internes et regulateurs.
+Le programme gère également les cas limites : comptes partiels, allocations partagées non intégralement transférables, et situations où certains services ne peuvent pas être fusionnés (blocages de caisse, dettes en cours). Les données écrites dans `histo_fusionseparation_detail` alimentent directement les états de rapprochement et les tableaux de bord de gestion comptable du module ADH/Caisse.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -118,10 +118,10 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | i.chrono | Numeric | 1x refs |
-| B | i.position repris | Alpha | 1x refs |
-| C | i.taskNumber | Numeric | 1x refs |
-| D | i.type | Alpha | 1x refs |
+| EN | i.chrono | Numeric | 1x refs |
+| EO | i.position repris | Alpha | 1x refs |
+| EP | i.taskNumber | Numeric | 1x refs |
+| EQ | i.type | Alpha | 1x refs |
 
 ## 12. EXPRESSIONS
 
@@ -243,4 +243,4 @@ graph LR
 | histo_fusionseparation_detail | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:07*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:27*

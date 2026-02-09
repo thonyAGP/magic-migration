@@ -1,6 +1,6 @@
 ﻿# ADH IDE 135 - Generation tableau recap WS
 
-> **Analyse**: 2026-02-07 07:10
+> **Analyse**: 2026-02-08 03:13
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Generation tableau recap WS
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 3 programme(s): Controle fermeture caisse WS (IDE 155), Fermeture caisse (IDE 131), Fermeture caisse 144 (IDE 299)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
+| **Appele par** | [Controle fermeture caisse WS (IDE 155)](ADH-IDE-155.md), [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

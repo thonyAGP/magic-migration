@@ -1,6 +1,6 @@
 ﻿# ADH IDE 98 - EditFactureTva(Compta&Ve) V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 03:47 (27s) | Assemblage 14:29
+> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 02:37 (22h49min) | Assemblage 02:37
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 98 gère la génération des factures avec TVA à partir des transactions de vente et des enregistrements comptables. Le programme orchestrait quatre tâches imbriquées : initialisation du document (détection invoice number, configuration PDF), édition du corps de la facture avec adresses et montants, génération du pied de facture à partir des logs terminaux de paiement, et calcul des totaux généraux avec application de la TVA. Ce flux hiérarchisé permet une réutilisation des sections pied et totaux pour des rapports sommaires.
+ADH IDE 98 est un moteur de génération unifié pour les factures avec TVA. Appelé depuis deux workflows distincts (IDE 54 pour la caisse et IDE 97 pour la comptabilité), il garantit l'application cohérente des règles fiscales et la conformité réglementaire. Le programme orchestre quatre tâches successives qui transforment les données transactionnelles en factures formatées au format PDF avec une TVA correctement appliquée.
 
-La logique métier repose sur un système de variables globales : VG22 définit le format d'affichage de la TVA, avec un fallback obligatoire vers 'N12.2Z' (2 décimales) si aucune configuration n'existe. Les données proviennent de neuf tables (donnees_village pour identifiants, pv_lieux_vente pour adresses et montants, log_maj_tpe pour terminaux de paiement, taxe_add_param pour paramétrages TVA). Le programme ne modifie jamais la base de données—pure génération PDF—et supporte une grande flexibilité géographique et multi-devises via paramétrage.
+Le flux de traitement démarre par la saisie du numéro de facture et la détection de la configuration PDF, puis génère le corps principal de la facture en récupérant les adresses et montants de vente (tables 744, 27). La tâche imbriquée "Edition du Pied" extrait les journaux de terminal (table 867) pour formater le pied de page avec les données de paiement. Enfin, la tâche "Total Général" applique la règle VAT majeure (format VG22 avec fallback 'N12.2Z'), calcule les sous-totaux par tranche fiscale et produit le fichier PDF compressé.
 
-IDE 98 sert de couche unifiée appelée par deux chaînes distinctes : IDE 54 (Factures_Check_Out) pour les factures au point de vente, et IDE 97 (Factures - Compta&Vent) pour les factures comptables d'archivage. Cette centralisation garantit une application cohérente des règles TVA et un respect de la conformité fiscale dans tous les workflows de règlement et de comptabilisation.
+Le programme est entièrement en lecture seule (zéro modification de données) et accède à 9 tables référentielles incluant les emplacements de vente, les paramètres fiscaux et les données de budget. Son architecture orientée services facilite une migration moderne vers un backend avec génération PDF templateisée (Puppeteer/wkhtmltopdf) et un service formatage TVA configurable. C'est un candidat idéal de refactorisation vu la propreté du code (0,7% de lignes désactivées) et l'absence de logique métier complexe dans les conditions.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,10 +36,10 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t1"></a>T1 - Edition Facture Tva(Ventes)
+#### <a id="t1"></a>98 - Edition Facture Tva(Ventes)
 
 **Role** : Saisie des donnees : Edition Facture Tva(Ventes).
-**Variables liees** : E (P.i.Num Facture), G (P.i.Facture sans Nom), H (P.i.Facture sans Adresse), I (P.i.Facture flaguee)
+**Variables liees** : ER (P.i.Num Facture), ET (P.i.Facture sans Nom), EU (P.i.Facture sans Adresse), EV (P.i.Facture flaguee)
 
 
 ### 3.2 Impression (2 taches)
@@ -48,13 +48,13 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>T2 - Edition
+#### <a id="t2"></a>98.1 - Edition
 
 **Role** : Generation du document : Edition.
 
 ---
 
-#### <a id="t3"></a>T3 - Edition du Pied
+#### <a id="t3"></a>98.1.1 - Edition du Pied
 
 **Role** : Generation du document : Edition du Pied.
 
@@ -65,7 +65,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t4"></a>T4 - Total Général
+#### <a id="t4"></a>98.1.1.1 - Total Général
 
 **Role** : Traitement : Total Général.
 
@@ -103,29 +103,29 @@ Traitements internes.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **98.1** | [**Edition Facture Tva(Ventes)** (T1)](#t1) | - | - | Saisie |
-| **98.2** | [**Edition** (T2)](#t2) | - | - | Impression |
-| 98.2.1 | [Edition du Pied (T3)](#t3) | - | - | |
-| **98.3** | [**Total Général** (T4)](#t4) | - | - | Traitement |
+| **98.1** | [**Edition Facture Tva(Ventes)** (98)](#t1) | - | - | Saisie |
+| **98.2** | [**Edition** (98.1)](#t2) | - | - | Impression |
+| 98.2.1 | [Edition du Pied (98.1.1)](#t3) | - | - | |
+| **98.3** | [**Total Général** (98.1.1.1)](#t4) | - | - | Traitement |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Saisie (1t)]
-    START --> B1
-    B2[Impression (2t)]
-    B1 --> B2
-    B3[Traitement (1t)]
-    B2 --> B3
-    ENDOK([END])
-    B3 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -193,19 +193,19 @@ Variables recues du programme appelant ([Factures_Check_Out (IDE 54)](ADH-IDE-54
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.i.Societe | Alpha | - |
-| B | P.i.Compte GM | Numeric | - |
-| C | P.i.Filiation | Numeric | - |
-| D | P.i.Nom Fichier PDF | Alpha | - |
-| E | P.i.Num Facture | Numeric | [T1](#t1) |
-| F | P.i.Service | Alpha | - |
-| G | P.i.Facture sans Nom | Logical | - |
-| H | P.i.Facture sans Adresse | Logical | - |
-| I | P.i.Facture flaguee | Logical | - |
-| J | P.i.Archive | Logical | - |
-| K | P.i.Preview ? | Logical | - |
-| L | P.i.Titre | Alpha | - |
-| M | P.i.Duplicata ? | Logical | - |
+| EN | P.i.Societe | Alpha | - |
+| EO | P.i.Compte GM | Numeric | - |
+| EP | P.i.Filiation | Numeric | - |
+| EQ | P.i.Nom Fichier PDF | Alpha | - |
+| ER | P.i.Num Facture | Numeric | [98](#t1) |
+| ES | P.i.Service | Alpha | - |
+| ET | P.i.Facture sans Nom | Logical | - |
+| EU | P.i.Facture sans Adresse | Logical | - |
+| EV | P.i.Facture flaguee | Logical | - |
+| EW | P.i.Archive | Logical | - |
+| EX | P.i.Preview ? | Logical | - |
+| EY | P.i.Titre | Alpha | - |
+| EZ | P.i.Duplicata ? | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -355,4 +355,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:32*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:38*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 210 - Changement de chambre
 
-> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:54 (31s) | Assemblage 03:54
+> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:54 (31s) | Assemblage 04:17
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,73 +18,17 @@
 | Taches | 26 (1 ecrans visibles) |
 | Tables modifiees | 6 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 33/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Changement de chambre** assure la gestion complete de ce processus, accessible depuis [Menu telephone (IDE 217)](ADH-IDE-217.md).
+# ADH IDE 210 - Changement de chambre
 
-Le flux de traitement s'organise en **4 blocs fonctionnels** :
+Programme de gestion des changements de numéro de chambre pour les clients. Accessible depuis le menu téléphonie (IDE 217), il permet de modifier l'affectation d'une ligne téléphonique à un nouveau numéro de chambre. Le flux valide d'abord si le nouveau code chambre existe déjà dans la base avant d'autoriser la modification.
 
-- **Traitement** (12 taches) : traitements metier divers
-- **Creation** (11 taches) : insertion d'enregistrements en base (mouvements, prestations)
-- **Calcul** (2 taches) : calculs de montants, stocks ou compteurs
-- **Validation** (1 tache) : controles et verifications de coherence
+La logique métier repose sur une séquence de tâches : vérification de l'existence du code, mise à jour de la table `ligne_telephone__lgn` avec la nouvelle chambre, puis synchronisation dans les tables de comptage (`compteurs________cpt`) et codes auto-com (`codes_autocom____aut`). Un triplet ASCII est généré et écrit dans le fichier d'échanges (`fichier_echanges`) pour communiquer le changement aux équipements téléphoniques externes.
 
-**Donnees modifiees** : 6 tables en ecriture (ligne_telephone__lgn, compteurs________cpt, commande_autocom_cot, codes_autocom____aut, fichier_echanges, nb_code__poste).
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (12 taches)
-
-- **210** - Veuillez patienter... **[[ECRAN]](#ecran-t1)**
-- **210.1** - Code existe deja?
-- **210.2** - Ecriture dans table autocom
-- **210.4.1** - Ecrire ASCII triplet
-- **210.5.1** - Ecrire ASCII triplet
-- **210.6** - Tempo 1 seconde
-- **210.7** - Formation triplet
-- **210.7.1** - Nettoyage des anciens triplets
-- **210.7.1.2** - Libère Ligne
-- **210.7.1.3** - Libère Ligne
-- **210.7.1.4** - Ecrire ASCII triplet
-- **210.7.1.8** - Tempo 1 seconde
-
-#### Phase 2 : Calcul (2 taches)
-
-- **210.3** - Recup. compteur codes
-- **210.7.1.1** - Decrementation compteur
-
-#### Phase 3 : Creation (11 taches)
-
-- **210.4** - Creation ASCII
-- **210.4.2** - Creation commande tel
-- **210.4.3** - Creation commande tel
-- **210.4.4** - Creation commande tel
-- **210.5** - Creation ASCII
-- **210.5.2** - Creation commande tel
-- **210.5.3** - Creation commande tel
-- **210.5.4** - Creation commande tel
-- **210.7.1.5** - Creation commande tel
-- **210.7.1.6** - Creation commande tel
-- **210.7.1.7** - Creation commande tel
-
-#### Phase 4 : Validation (1 tache)
-
-- **210.7.2** - Controle du nombre de code
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| fichier_echanges | **W** (6 usages) |  |
-| commande_autocom_cot | **W** (3 usages) |  |
-| nb_code__poste | **W** (3 usages) |  |
-| codes_autocom____aut | R/**W** (3 usages) |  |
-| ligne_telephone__lgn | **W** (1 usages) |  |
-| compteurs________cpt | **W** (1 usages) | Comptes GM (generaux) |
-
-</details>
+Les tables impliquées gèrent le cycle complet : stockage de la ligne téléphonique, récupération des compteurs d'autocoms, codes d'autorisation, et génération des données d'export au format ASCII triplet nécessaires pour synchroniser les changements avec les systèmes de téléphonie.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -94,7 +38,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>210 - Veuillez patienter... [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Veuillez patienter... [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (12 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 424 x 57 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -104,91 +48,91 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [210.1](#t2) | Code existe deja? | Traitement |
-| [210.2](#t3) | Ecriture dans table autocom | Traitement |
-| [210.4.1](#t6) | Ecrire ASCII triplet | Traitement |
-| [210.5.1](#t11) | Ecrire ASCII triplet | Traitement |
-| [210.6](#t15) | Tempo 1 seconde | Traitement |
-| [210.7](#t16) | Formation triplet | Traitement |
-| [210.7.1](#t17) | Nettoyage des anciens triplets | Traitement |
-| [210.7.1.2](#t19) | Libère Ligne | Traitement |
-| [210.7.1.3](#t20) | Libère Ligne | Traitement |
-| [210.7.1.4](#t21) | Ecrire ASCII triplet | Traitement |
-| [210.7.1.8](#t25) | Tempo 1 seconde | Traitement |
+| [T2](#t2) | Code existe deja? | Traitement |
+| [T3](#t3) | Ecriture dans table autocom | Traitement |
+| [T6](#t6) | Ecrire ASCII triplet | Traitement |
+| [T11](#t11) | Ecrire ASCII triplet | Traitement |
+| [T15](#t15) | Tempo 1 seconde | Traitement |
+| [T16](#t16) | Formation triplet | Traitement |
+| [T17](#t17) | Nettoyage des anciens triplets | Traitement |
+| [T19](#t19) | Libère Ligne | Traitement |
+| [T20](#t20) | Libère Ligne | Traitement |
+| [T21](#t21) | Ecrire ASCII triplet | Traitement |
+| [T25](#t25) | Tempo 1 seconde | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>210.1 - Code existe deja?
+#### <a id="t2"></a>T2 - Code existe deja?
 
 **Role** : Traitement : Code existe deja?.
 **Variables liees** : B (P0 code GM), D (P0 code autocom), F (P0 nb code accepte), L (W0 code autocom)
 
 ---
 
-#### <a id="t3"></a>210.2 - Ecriture dans table autocom
+#### <a id="t3"></a>T3 - Ecriture dans table autocom
 
 **Role** : Traitement : Ecriture dans table autocom.
 **Variables liees** : D (P0 code autocom), L (W0 code autocom)
 
 ---
 
-#### <a id="t6"></a>210.4.1 - Ecrire ASCII triplet
+#### <a id="t6"></a>T6 - Ecrire ASCII triplet
 
 **Role** : Traitement : Ecrire ASCII triplet.
 **Variables liees** : G (P0 type triplet), M (W0 triplet)
 
 ---
 
-#### <a id="t11"></a>210.5.1 - Ecrire ASCII triplet
+#### <a id="t11"></a>T11 - Ecrire ASCII triplet
 
 **Role** : Traitement : Ecrire ASCII triplet.
 **Variables liees** : G (P0 type triplet), M (W0 triplet)
 
 ---
 
-#### <a id="t15"></a>210.6 - Tempo 1 seconde
+#### <a id="t15"></a>T15 - Tempo 1 seconde
 
 **Role** : Traitement : Tempo 1 seconde.
 
 ---
 
-#### <a id="t16"></a>210.7 - Formation triplet
+#### <a id="t16"></a>T16 - Formation triplet
 
 **Role** : Traitement : Formation triplet.
 **Variables liees** : G (P0 type triplet), M (W0 triplet)
 
 ---
 
-#### <a id="t17"></a>210.7.1 - Nettoyage des anciens triplets
+#### <a id="t17"></a>T17 - Nettoyage des anciens triplets
 
 **Role** : Traitement : Nettoyage des anciens triplets.
 
 ---
 
-#### <a id="t19"></a>210.7.1.2 - Libère Ligne
+#### <a id="t19"></a>T19 - Libère Ligne
 
 **Role** : Traitement : Libère Ligne.
 **Variables liees** : H (P0 Max Ligne / Poste), J (P0 n° ligne)
 
 ---
 
-#### <a id="t20"></a>210.7.1.3 - Libère Ligne
+#### <a id="t20"></a>T20 - Libère Ligne
 
 **Role** : Traitement : Libère Ligne.
 **Variables liees** : H (P0 Max Ligne / Poste), J (P0 n° ligne)
 
 ---
 
-#### <a id="t21"></a>210.7.1.4 - Ecrire ASCII triplet
+#### <a id="t21"></a>T21 - Ecrire ASCII triplet
 
 **Role** : Traitement : Ecrire ASCII triplet.
 **Variables liees** : G (P0 type triplet), M (W0 triplet)
 
 ---
 
-#### <a id="t25"></a>210.7.1.8 - Tempo 1 seconde
+#### <a id="t25"></a>T25 - Tempo 1 seconde
 
 **Role** : Traitement : Tempo 1 seconde.
 
@@ -199,13 +143,13 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t4"></a>210.3 - Recup. compteur codes
+#### <a id="t4"></a>T4 - Recup. compteur codes
 
 **Role** : Calcul : Recup. compteur codes.
 
 ---
 
-#### <a id="t18"></a>210.7.1.1 - Decrementation compteur
+#### <a id="t18"></a>T18 - Decrementation compteur
 
 **Role** : Calcul : Decrementation compteur.
 
@@ -216,67 +160,67 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t5"></a>210.4 - Creation ASCII
+#### <a id="t5"></a>T5 - Creation ASCII
 
 **Role** : Creation d'enregistrement : Creation ASCII.
 
 ---
 
-#### <a id="t7"></a>210.4.2 - Creation commande tel
+#### <a id="t7"></a>T7 - Creation commande tel
 
 **Role** : Creation d'enregistrement : Creation commande tel.
 
 ---
 
-#### <a id="t8"></a>210.4.3 - Creation commande tel
+#### <a id="t8"></a>T8 - Creation commande tel
 
 **Role** : Creation d'enregistrement : Creation commande tel.
 
 ---
 
-#### <a id="t9"></a>210.4.4 - Creation commande tel
+#### <a id="t9"></a>T9 - Creation commande tel
 
 **Role** : Creation d'enregistrement : Creation commande tel.
 
 ---
 
-#### <a id="t10"></a>210.5 - Creation ASCII
+#### <a id="t10"></a>T10 - Creation ASCII
 
 **Role** : Creation d'enregistrement : Creation ASCII.
 
 ---
 
-#### <a id="t12"></a>210.5.2 - Creation commande tel
+#### <a id="t12"></a>T12 - Creation commande tel
 
 **Role** : Creation d'enregistrement : Creation commande tel.
 
 ---
 
-#### <a id="t13"></a>210.5.3 - Creation commande tel
+#### <a id="t13"></a>T13 - Creation commande tel
 
 **Role** : Creation d'enregistrement : Creation commande tel.
 
 ---
 
-#### <a id="t14"></a>210.5.4 - Creation commande tel
+#### <a id="t14"></a>T14 - Creation commande tel
 
 **Role** : Creation d'enregistrement : Creation commande tel.
 
 ---
 
-#### <a id="t22"></a>210.7.1.5 - Creation commande tel
+#### <a id="t22"></a>T22 - Creation commande tel
 
 **Role** : Creation d'enregistrement : Creation commande tel.
 
 ---
 
-#### <a id="t23"></a>210.7.1.6 - Creation commande tel
+#### <a id="t23"></a>T23 - Creation commande tel
 
 **Role** : Creation d'enregistrement : Creation commande tel.
 
 ---
 
-#### <a id="t24"></a>210.7.1.7 - Creation commande tel
+#### <a id="t24"></a>T24 - Creation commande tel
 
 **Role** : Creation d'enregistrement : Creation commande tel.
 
@@ -287,7 +231,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ---
 
-#### <a id="t26"></a>210.7.2 - Controle du nombre de code
+#### <a id="t26"></a>T26 - Controle du nombre de code
 
 **Role** : Calcul : Controle du nombre de code.
 **Variables liees** : B (P0 code GM), D (P0 code autocom), F (P0 nb code accepte), L (W0 code autocom)
@@ -295,7 +239,19 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition composite: P0 type triplet [G]='1' OR P0 type triplet [G]='3'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P0 type triplet [G]='1' OR P0 type triplet [G]='3'` |
+| **Si vrai** | Action conditionnelle |
+| **Variables** | G (P0 type triplet) |
+| **Expression source** | Expression 1 : `P0 type triplet [G]='1' OR P0 type triplet [G]='3'` |
+| **Exemple** | Si P0 type triplet [G]='1' OR P0 type triplet [G]='3' â†’ Action conditionnelle |
 
 ## 6. CONTEXTE
 
@@ -310,14 +266,14 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 210 | 210 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
+| 1 | 210 | T1 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>210 - Veuillez patienter...
-**Tache** : [210](#t1) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -406,32 +362,32 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **210.1** | [**Veuillez patienter...** (210)](#t1) [mockup](#ecran-t1) | MDI | 424x57 | Traitement |
-| 210.1.1 | [Code existe deja? (210.1)](#t2) | MDI | - | |
-| 210.1.2 | [Ecriture dans table autocom (210.2)](#t3) | MDI | - | |
-| 210.1.3 | [Ecrire ASCII triplet (210.4.1)](#t6) | MDI | - | |
-| 210.1.4 | [Ecrire ASCII triplet (210.5.1)](#t11) | MDI | - | |
-| 210.1.5 | [Tempo 1 seconde (210.6)](#t15) | MDI | - | |
-| 210.1.6 | [Formation triplet (210.7)](#t16) | MDI | - | |
-| 210.1.7 | [Nettoyage des anciens triplets (210.7.1)](#t17) | MDI | - | |
-| 210.1.8 | [Libère Ligne (210.7.1.2)](#t19) | MDI | - | |
-| 210.1.9 | [Libère Ligne (210.7.1.3)](#t20) | MDI | - | |
-| 210.1.10 | [Ecrire ASCII triplet (210.7.1.4)](#t21) | MDI | - | |
-| 210.1.11 | [Tempo 1 seconde (210.7.1.8)](#t25) | MDI | - | |
-| **210.2** | [**Recup. compteur codes** (210.3)](#t4) | MDI | - | Calcul |
-| 210.2.1 | [Decrementation compteur (210.7.1.1)](#t18) | MDI | - | |
-| **210.3** | [**Creation ASCII** (210.4)](#t5) | MDI | - | Creation |
-| 210.3.1 | [Creation commande tel (210.4.2)](#t7) | MDI | - | |
-| 210.3.2 | [Creation commande tel (210.4.3)](#t8) | MDI | - | |
-| 210.3.3 | [Creation commande tel (210.4.4)](#t9) | MDI | - | |
-| 210.3.4 | [Creation ASCII (210.5)](#t10) | MDI | - | |
-| 210.3.5 | [Creation commande tel (210.5.2)](#t12) | MDI | - | |
-| 210.3.6 | [Creation commande tel (210.5.3)](#t13) | MDI | - | |
-| 210.3.7 | [Creation commande tel (210.5.4)](#t14) | MDI | - | |
-| 210.3.8 | [Creation commande tel (210.7.1.5)](#t22) | MDI | - | |
-| 210.3.9 | [Creation commande tel (210.7.1.6)](#t23) | MDI | - | |
-| 210.3.10 | [Creation commande tel (210.7.1.7)](#t24) | MDI | - | |
-| **210.4** | [**Controle du nombre de code** (210.7.2)](#t26) | MDI | - | Validation |
+| **210.1** | [**Veuillez patienter...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 424x57 | Traitement |
+| 210.1.1 | [Code existe deja? (T2)](#t2) | MDI | - | |
+| 210.1.2 | [Ecriture dans table autocom (T3)](#t3) | MDI | - | |
+| 210.1.3 | [Ecrire ASCII triplet (T6)](#t6) | MDI | - | |
+| 210.1.4 | [Ecrire ASCII triplet (T11)](#t11) | MDI | - | |
+| 210.1.5 | [Tempo 1 seconde (T15)](#t15) | MDI | - | |
+| 210.1.6 | [Formation triplet (T16)](#t16) | MDI | - | |
+| 210.1.7 | [Nettoyage des anciens triplets (T17)](#t17) | MDI | - | |
+| 210.1.8 | [Libère Ligne (T19)](#t19) | MDI | - | |
+| 210.1.9 | [Libère Ligne (T20)](#t20) | MDI | - | |
+| 210.1.10 | [Ecrire ASCII triplet (T21)](#t21) | MDI | - | |
+| 210.1.11 | [Tempo 1 seconde (T25)](#t25) | MDI | - | |
+| **210.2** | [**Recup. compteur codes** (T4)](#t4) | MDI | - | Calcul |
+| 210.2.1 | [Decrementation compteur (T18)](#t18) | MDI | - | |
+| **210.3** | [**Creation ASCII** (T5)](#t5) | MDI | - | Creation |
+| 210.3.1 | [Creation commande tel (T7)](#t7) | MDI | - | |
+| 210.3.2 | [Creation commande tel (T8)](#t8) | MDI | - | |
+| 210.3.3 | [Creation commande tel (T9)](#t9) | MDI | - | |
+| 210.3.4 | [Creation ASCII (T10)](#t10) | MDI | - | |
+| 210.3.5 | [Creation commande tel (T12)](#t12) | MDI | - | |
+| 210.3.6 | [Creation commande tel (T13)](#t13) | MDI | - | |
+| 210.3.7 | [Creation commande tel (T14)](#t14) | MDI | - | |
+| 210.3.8 | [Creation commande tel (T22)](#t22) | MDI | - | |
+| 210.3.9 | [Creation commande tel (T23)](#t23) | MDI | - | |
+| 210.3.10 | [Creation commande tel (T24)](#t24) | MDI | - | |
+| **210.4** | [**Controle du nombre de code** (T26)](#t26) | MDI | - | Validation |
 
 ### 9.4 Algorigramme
 
@@ -439,19 +395,27 @@ Ecran unique: **Veuillez patienter...**
 flowchart TD
     START([START])
     INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 6 tables]
+    START --> INIT
+    B1[Traitement (12t)]
+    INIT --> B1
+    B2[Calcul (2t)]
+    B1 --> B2
+    B3[Creation (11t)]
+    B2 --> B3
+    B4[Validation (1t)]
+    B3 --> B4
+    WRITE[MAJ 6 tables]
+    B4 --> WRITE
     ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
+    WRITE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -461,59 +425,21 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   | L | 3 |
-| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 2 |
-| 53 | ligne_telephone__lgn |  | DB |   | **W** |   | 1 |
-| 68 | compteurs________cpt | Comptes GM (generaux) | DB |   | **W** |   | 1 |
-| 75 | commande_autocom_cot |  | DB |   | **W** |   | 3 |
 | 80 | codes_autocom____aut |  | DB | R | **W** |   | 3 |
-| 87 | sda_telephone____sda |  | DB |   |   | L | 1 |
-| 104 | fichier_menage |  | DB | R |   |   | 1 |
-| 130 | fichier_langue |  | DB |   |   | L | 1 |
-| 131 | fichier_validation |  | DB |   |   | L | 1 |
 | 136 | fichier_echanges |  | DB |   | **W** |   | 6 |
+| 75 | commande_autocom_cot |  | DB |   | **W** |   | 3 |
 | 151 | nb_code__poste |  | DB |   | **W** |   | 3 |
+| 68 | compteurs________cpt | Comptes GM (generaux) | DB |   | **W** |   | 1 |
+| 53 | ligne_telephone__lgn |  | DB |   | **W** |   | 1 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   | L | 3 |
 | 152 | parametres_pour_pabx |  | DB | R |   | L | 2 |
+| 104 | fichier_menage |  | DB | R |   |   | 1 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 2 |
+| 131 | fichier_validation |  | DB |   |   | L | 1 |
+| 87 | sda_telephone____sda |  | DB |   |   | L | 1 |
+| 130 | fichier_langue |  | DB |   |   | L | 1 |
 
 ### Colonnes par table (6 / 9 tables avec colonnes identifiees)
-
-<details>
-<summary>Table 30 - gm-recherche_____gmr (R/L) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W1 nom ASCII | R | Alpha |
-| B | W1 fin tâche | R | Alpha |
-
-</details>
-
-<details>
-<summary>Table 53 - ligne_telephone__lgn (**W**) - 1 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W3 ret.lien ligne | W | Numeric |
-| B | W3 ret.lien SDA | W | Numeric |
-| C | W3 fin tâche | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 75 - commande_autocom_cot (**W**) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| D | P0 code autocom | W | Numeric |
-| L | W0 code autocom | W | Numeric |
-
-</details>
 
 <details>
 <summary>Table 80 - codes_autocom____aut (R/**W**) - 3 usages</summary>
@@ -531,23 +457,19 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 104 - fichier_menage (R) - 1 usages</summary>
+<summary>Table 136 - fichier_echanges (**W**) - 6 usages</summary>
 
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W1 fin tâche | R | Alpha |
-| B | W1 ret.lien HEB | R | Numeric |
-| C | W1 date debut | R | Alpha |
-| D | W1 date fin | R | Alpha |
-| E | W1 Heb futur ? | R | Numeric |
-| F | W1 date deb future | R | Alpha |
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
-<summary>Table 136 - fichier_echanges (**W**) - 6 usages</summary>
+<summary>Table 75 - commande_autocom_cot (**W**) - 3 usages</summary>
 
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| D | P0 code autocom | W | Numeric |
+| L | W0 code autocom | W | Numeric |
 
 </details>
 
@@ -568,9 +490,51 @@ flowchart TD
 </details>
 
 <details>
+<summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 53 - ligne_telephone__lgn (**W**) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W3 ret.lien ligne | W | Numeric |
+| B | W3 ret.lien SDA | W | Numeric |
+| C | W3 fin tâche | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R/L) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 nom ASCII | R | Alpha |
+| B | W1 fin tâche | R | Alpha |
+
+</details>
+
+<details>
 <summary>Table 152 - parametres_pour_pabx (R/L) - 2 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 104 - fichier_menage (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 fin tâche | R | Alpha |
+| B | W1 ret.lien HEB | R | Numeric |
+| C | W1 date debut | R | Alpha |
+| D | W1 date fin | R | Alpha |
+| E | W1 Heb futur ? | R | Numeric |
+| F | W1 date deb future | R | Alpha |
 
 </details>
 
@@ -588,7 +552,7 @@ Variables recues du programme appelant ([Menu telephone (IDE 217)](ADH-IDE-217.m
 | D | P0 code autocom | Numeric | - |
 | E | P0 nom village | Alpha | - |
 | F | P0 nb code accepte | Numeric | - |
-| G | P0 type triplet | Alpha | [210.4.1](#t6), [210.5.1](#t11), [210.7](#t16) |
+| G | P0 type triplet | Alpha | [T6](#t6), [T11](#t11), [T16](#t16) |
 | H | P0 Max Ligne / Poste | Numeric | - |
 | I | P0 Interface | Alpha | - |
 | J | P0 n° ligne | Numeric | - |
@@ -690,7 +654,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 507) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -727,4 +691,4 @@ graph LR
 | nb_code__poste | Table WRITE (Database) | 3x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:54*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:18*

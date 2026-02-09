@@ -1,6 +1,6 @@
 ﻿# ADH IDE 33 - Delete histo_Fus_Sep_Saisie
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (26s) | Assemblage 13:08
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 01:28 (21h45min) | Assemblage 01:28
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme **ADH IDE 33** gère la suppression des enregistrements historiques de fusion/séparation de compte lors d'une saisie. Il intervient dans le flux de correction d'une opération de fusion (appelé depuis IDE 28) pour nettoyer la table `histo_fusionseparation_saisie` et maintenir la cohérence des données historiques.
+Ce programme gère la suppression des enregistrements historiques de saisie lors des opérations de fusion/séparation de comptes. Il intervient dans le flux de gestion des comptes (IDE 28 - Fusion) et nettoie la table `histo_fusionseparation_saisie` après traitement des données de fusion.
 
-La logique principale supprime les entrées obsolètes de l'historique associées à la transaction en cours, permettant ainsi de revenir à un état antérieur avant la fusion si nécessaire. Cette suppression est critique pour éviter les doublons ou les traces incohérentes lorsqu'une fusion est annulée ou corrigée.
+Le programme effectue une suppression simple mais critique : il purge tous les enregistrements historiques relatifs à une opération de fusion/séparation identifiée. Cette opération s'inscrit dans un processus de maintenance des données, permettant de récupérer l'espace disque et de maintenir l'intégrité historique après que les données pertinentes ont été traitées et archivées ailleurs.
 
-Le programme s'inscrit dans un mécanisme de rollback contrôlé : au lieu de conserver des états intermédiaires contradictoires dans l'historique, il efface proprement les traces de l'opération incomplète ou erronée. Cela garantit que la table `histo_fusionseparation_saisie` reflète toujours l'état consolidé et valide des fusions/séparations effectuées.
+L'absence de paramètres visibles suggère une suppression basée sur des critères implicites (probablement une clé de session ou d'opération passée en contexte global). Le programme est généralement appelé en fin de flux, une fois que les étapes de validation et de fusion sont complétées, assurant qu'aucune donnée critique n'est supprimée avant son traitement.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -118,12 +118,12 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | i chrono E/F | Numeric | 1x refs |
-| B | i societe | Alpha | 1x refs |
-| C | i compte reference | Numeric | 1x refs |
-| D | i filiation reference | Numeric | 1x refs |
-| E | i compte pointe old | Numeric | 1x refs |
-| F | i filiation pointe old | Numeric | 1x refs |
+| EN | i chrono E/F | Numeric | 1x refs |
+| EO | i societe | Alpha | 1x refs |
+| EP | i compte reference | Numeric | 1x refs |
+| EQ | i filiation reference | Numeric | 1x refs |
+| ER | i compte pointe old | Numeric | 1x refs |
+| ES | i filiation pointe old | Numeric | 1x refs |
 
 ## 12. EXPRESSIONS
 
@@ -225,4 +225,4 @@ graph LR
 | histo_fusionseparation_saisie | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:08*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:28*

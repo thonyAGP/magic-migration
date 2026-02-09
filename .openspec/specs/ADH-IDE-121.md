@@ -1,6 +1,6 @@
 ﻿# ADH IDE 121 - Gestion caisse
 
-> **Analyse**: Phases 1-4 2026-02-07 03:49 -> 03:50 (27s) | Assemblage 15:34
+> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:03 (23h12min) | Assemblage 03:03
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -116,7 +116,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Gestion caisse
+#### <a id="t1"></a>121 - Gestion caisse
 
 **Role** : Tache d'orchestration : point d'entree du programme (23 sous-taches). Coordonne l'enchainement des traitements.
 
@@ -125,183 +125,183 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Paramètres caisse | Traitement |
-| [T4](#t4) | Paramètres caisse | Traitement |
-| [T6](#t6) | Etat de la caisse | Traitement |
-| [T7](#t7) | Gestion de la caisse **[ECRAN]** | Traitement |
-| [T8](#t8) | Existe histo | Traitement |
-| [T9](#t9) | Ouverture caisse | Traitement |
-| [T10](#t10) | Cloture en cours v1 | Traitement |
-| [T13](#t13) | histo coffre2 | Traitement |
-| [T15](#t15) | Fermeture caisse | Traitement |
-| [T16](#t16) | Clôture histo session | Traitement |
-| [T17](#t17) | Apport coffre | Traitement |
-| [T18](#t18) | Apport produit | Traitement |
-| [T19](#t19) | Remise au coffre | Traitement |
-| [T21](#t21) | Historique | Traitement |
-| [T22](#t22) | Consultation | Traitement |
-| [T24](#t24) | Remise au coffre | Traitement |
-| [T25](#t25) | Open sessions | Traitement |
-| [T26](#t26) | Pointage | Traitement |
-| [T27](#t27) | Read Sessions | Traitement |
-| [T28](#t28) | Remise au coffre | Traitement |
-| [T31](#t31) | histo coffre2 | Traitement |
-| [T32](#t32) | Concurrence sessions for devel **[ECRAN]** | Traitement |
+| [121.1](#t2) | Paramètres caisse | Traitement |
+| [121.3](#t4) | Paramètres caisse | Traitement |
+| [121.5](#t6) | Etat de la caisse | Traitement |
+| [121.6](#t7) | Gestion de la caisse **[[ECRAN]](#ecran-t7)** | Traitement |
+| [121.6.1](#t8) | Existe histo | Traitement |
+| [121.6.2](#t9) | Ouverture caisse | Traitement |
+| [121.6.2.1](#t10) | Cloture en cours v1 | Traitement |
+| [121.6.2.3.1](#t13) | histo coffre2 | Traitement |
+| [121.6.3](#t15) | Fermeture caisse | Traitement |
+| [121.6.3.1](#t16) | Clôture histo session | Traitement |
+| [121.6.4](#t17) | Apport coffre | Traitement |
+| [121.6.5](#t18) | Apport produit | Traitement |
+| [121.6.6](#t19) | Remise au coffre | Traitement |
+| [121.6.7](#t21) | Historique | Traitement |
+| [121.6.8](#t22) | Consultation | Traitement |
+| [121.6.10](#t24) | Remise au coffre | Traitement |
+| [121.6.11](#t25) | Open sessions | Traitement |
+| [121.6.11.1](#t26) | Pointage | Traitement |
+| [121.6.11.2](#t27) | Read Sessions | Traitement |
+| [121.6.11.2.1](#t28) | Remise au coffre | Traitement |
+| [121.6.11.2.1.2.1](#t31) | histo coffre2 | Traitement |
+| [121.6.12](#t32) | Concurrence sessions for devel **[[ECRAN]](#ecran-t32)** | Traitement |
 
 </details>
-**Variables liees** : Y (V N° caisse reception mini), Z (V N° caisse reception maxi), A (Param Libelle caisse), B (Param Etat caisse)
+**Variables liees** : FL (V N° caisse reception mini), FM (V N° caisse reception maxi), EN (Param Libelle caisse), EO (Param Etat caisse)
 
 ---
 
-#### <a id="t2"></a>T2 - Paramètres caisse
+#### <a id="t2"></a>121.1 - Paramètres caisse
 
 **Role** : Traitement : Paramètres caisse.
-**Variables liees** : Y (V N° caisse reception mini), Z (V N° caisse reception maxi), A (Param Libelle caisse), B (Param Etat caisse)
+**Variables liees** : FL (V N° caisse reception mini), FM (V N° caisse reception maxi), EN (Param Libelle caisse), EO (Param Etat caisse)
 
 ---
 
-#### <a id="t4"></a>T4 - Paramètres caisse
+#### <a id="t4"></a>121.3 - Paramètres caisse
 
 **Role** : Traitement : Paramètres caisse.
-**Variables liees** : Y (V N° caisse reception mini), Z (V N° caisse reception maxi), A (Param Libelle caisse), B (Param Etat caisse)
+**Variables liees** : FL (V N° caisse reception mini), FM (V N° caisse reception maxi), EN (Param Libelle caisse), EO (Param Etat caisse)
 
 ---
 
-#### <a id="t6"></a>T6 - Etat de la caisse
+#### <a id="t6"></a>121.5 - Etat de la caisse
 
 **Role** : Traitement : Etat de la caisse.
-**Variables liees** : Y (V N° caisse reception mini), Z (V N° caisse reception maxi), A (Param Libelle caisse), B (Param Etat caisse)
+**Variables liees** : FL (V N° caisse reception mini), FM (V N° caisse reception maxi), EN (Param Libelle caisse), EO (Param Etat caisse)
 
 ---
 
-#### <a id="t7"></a>T7 - Gestion de la caisse [ECRAN]
+#### <a id="t7"></a>121.6 - Gestion de la caisse [[ECRAN]](#ecran-t7)
 
 **Role** : Gestion du moyen de paiement : Gestion de la caisse.
 **Ecran** : 939 x 178 DLU (MDI) | [Voir mockup](#ecran-t7)
-**Variables liees** : Y (V N° caisse reception mini), Z (V N° caisse reception maxi), A (Param Libelle caisse), B (Param Etat caisse)
+**Variables liees** : FL (V N° caisse reception mini), FM (V N° caisse reception maxi), EN (Param Libelle caisse), EO (Param Etat caisse)
 
 ---
 
-#### <a id="t8"></a>T8 - Existe histo
+#### <a id="t8"></a>121.6.1 - Existe histo
 
 **Role** : Traitement : Existe histo.
 
 ---
 
-#### <a id="t9"></a>T9 - Ouverture caisse
+#### <a id="t9"></a>121.6.2 - Ouverture caisse
 
 **Role** : Traitement : Ouverture caisse.
-**Variables liees** : T (V User ouverture), U (V Date ouverture), V (V Time ouverture), Y (V N° caisse reception mini), Z (V N° caisse reception maxi)
+**Variables liees** : FG (V User ouverture), FH (V Date ouverture), FI (V Time ouverture), FL (V N° caisse reception mini), FM (V N° caisse reception maxi)
 
 ---
 
-#### <a id="t10"></a>T10 - Cloture en cours v1
+#### <a id="t10"></a>121.6.2.1 - Cloture en cours v1
 
 **Role** : Traitement : Cloture en cours v1.
-**Variables liees** : BA (V Cloture en cours), BD (V cloture auto)
+**Variables liees** : FN (V Cloture en cours), FQ (V cloture auto)
 
 ---
 
-#### <a id="t13"></a>T13 - histo coffre2
+#### <a id="t13"></a>121.6.2.3.1 - histo coffre2
 
 **Role** : Traitement : histo coffre2.
-**Variables liees** : M (p.i.Terminal coffre2), P (p.i.Hostl coffre2)
+**Variables liees** : EZ (p.i.Terminal coffre2), FC (p.i.Hostl coffre2)
 
 ---
 
-#### <a id="t15"></a>T15 - Fermeture caisse
+#### <a id="t15"></a>121.6.3 - Fermeture caisse
 
 **Role** : Traitement : Fermeture caisse.
-**Variables liees** : Y (V N° caisse reception mini), Z (V N° caisse reception maxi), A (Param Libelle caisse), B (Param Etat caisse)
+**Variables liees** : FL (V N° caisse reception mini), FM (V N° caisse reception maxi), EN (Param Libelle caisse), EO (Param Etat caisse)
 
 ---
 
-#### <a id="t16"></a>T16 - Clôture histo session
+#### <a id="t16"></a>121.6.3.1 - Clôture histo session
 
 **Role** : Traitement : Clôture histo session.
-**Variables liees** : S (V session active), W (V Date Fin session), N (Param VIL open sessions)
+**Variables liees** : FF (V session active), FJ (V Date Fin session), FA (Param VIL open sessions)
 
 ---
 
-#### <a id="t17"></a>T17 - Apport coffre
+#### <a id="t17"></a>121.6.4 - Apport coffre
 
 **Role** : Traitement : Apport coffre.
-**Variables liees** : M (p.i.Terminal coffre2), P (p.i.Hostl coffre2), BC (V avec coffre 2), Q (i.Host courant coffre 2 ?), BB (COFFRE 2 est ouvert)
+**Variables liees** : EZ (p.i.Terminal coffre2), FC (p.i.Hostl coffre2), FP (V avec coffre 2), FD (i.Host courant coffre 2 ?), FO (COFFRE 2 est ouvert)
 
 ---
 
-#### <a id="t18"></a>T18 - Apport produit
+#### <a id="t18"></a>121.6.5 - Apport produit
 
 **Role** : Traitement : Apport produit.
 
 ---
 
-#### <a id="t19"></a>T19 - Remise au coffre
+#### <a id="t19"></a>121.6.6 - Remise au coffre
 
 **Role** : Calcul fidelite/avantage : Remise au coffre.
-**Variables liees** : M (p.i.Terminal coffre2), P (p.i.Hostl coffre2), BC (V avec coffre 2), Q (i.Host courant coffre 2 ?), BB (COFFRE 2 est ouvert)
+**Variables liees** : EZ (p.i.Terminal coffre2), FC (p.i.Hostl coffre2), FP (V avec coffre 2), FD (i.Host courant coffre 2 ?), FO (COFFRE 2 est ouvert)
 
 ---
 
-#### <a id="t21"></a>T21 - Historique
+#### <a id="t21"></a>121.6.7 - Historique
 
 **Role** : Consultation/chargement : Historique.
 
 ---
 
-#### <a id="t22"></a>T22 - Consultation
+#### <a id="t22"></a>121.6.8 - Consultation
 
 **Role** : Consultation/chargement : Consultation.
-**Variables liees** : L (Param Mode consultation)
+**Variables liees** : EY (Param Mode consultation)
 
 ---
 
-#### <a id="t24"></a>T24 - Remise au coffre
+#### <a id="t24"></a>121.6.10 - Remise au coffre
 
 **Role** : Calcul fidelite/avantage : Remise au coffre.
-**Variables liees** : M (p.i.Terminal coffre2), P (p.i.Hostl coffre2), BC (V avec coffre 2), Q (i.Host courant coffre 2 ?), BB (COFFRE 2 est ouvert)
+**Variables liees** : EZ (p.i.Terminal coffre2), FC (p.i.Hostl coffre2), FP (V avec coffre 2), FD (i.Host courant coffre 2 ?), FO (COFFRE 2 est ouvert)
 
 ---
 
-#### <a id="t25"></a>T25 - Open sessions
+#### <a id="t25"></a>121.6.11 - Open sessions
 
 **Role** : Traitement : Open sessions.
-**Variables liees** : N (Param VIL open sessions)
+**Variables liees** : FA (Param VIL open sessions)
 
 ---
 
-#### <a id="t26"></a>T26 - Pointage
+#### <a id="t26"></a>121.6.11.1 - Pointage
 
 **Role** : Traitement : Pointage.
 
 ---
 
-#### <a id="t27"></a>T27 - Read Sessions
+#### <a id="t27"></a>121.6.11.2 - Read Sessions
 
 **Role** : Traitement : Read Sessions.
-**Variables liees** : N (Param VIL open sessions)
+**Variables liees** : FA (Param VIL open sessions)
 
 ---
 
-#### <a id="t28"></a>T28 - Remise au coffre
+#### <a id="t28"></a>121.6.11.2.1 - Remise au coffre
 
 **Role** : Calcul fidelite/avantage : Remise au coffre.
-**Variables liees** : M (p.i.Terminal coffre2), P (p.i.Hostl coffre2), BC (V avec coffre 2), Q (i.Host courant coffre 2 ?), BB (COFFRE 2 est ouvert)
+**Variables liees** : EZ (p.i.Terminal coffre2), FC (p.i.Hostl coffre2), FP (V avec coffre 2), FD (i.Host courant coffre 2 ?), FO (COFFRE 2 est ouvert)
 
 ---
 
-#### <a id="t31"></a>T31 - histo coffre2
+#### <a id="t31"></a>121.6.11.2.1.2.1 - histo coffre2
 
 **Role** : Traitement : histo coffre2.
-**Variables liees** : M (p.i.Terminal coffre2), P (p.i.Hostl coffre2)
+**Variables liees** : EZ (p.i.Terminal coffre2), FC (p.i.Hostl coffre2)
 
 ---
 
-#### <a id="t32"></a>T32 - Concurrence sessions for devel [ECRAN]
+#### <a id="t32"></a>121.6.12 - Concurrence sessions for devel [[ECRAN]](#ecran-t32)
 
 **Role** : Traitement : Concurrence sessions for devel.
 **Ecran** : 524 x 236 DLU (MDI) | [Voir mockup](#ecran-t32)
-**Variables liees** : N (Param VIL open sessions)
+**Variables liees** : FA (Param VIL open sessions)
 
 
 ### 3.2 Validation (2 taches)
@@ -310,15 +310,15 @@ Controles de coherence : 2 taches verifient les donnees et conditions.
 
 ---
 
-#### <a id="t3"></a>T3 - Controle COFFRE2
+#### <a id="t3"></a>121.2 - Controle COFFRE2
 
 **Role** : Verification : Controle COFFRE2.
-**Variables liees** : M (p.i.Terminal coffre2), P (p.i.Hostl coffre2)
+**Variables liees** : EZ (p.i.Terminal coffre2), FC (p.i.Hostl coffre2)
 **Delegue a** : [Controle fermeture caisse WS (IDE 155)](ADH-IDE-155.md), [Verif session caisse ouverte2 (IDE 156)](ADH-IDE-156.md)
 
 ---
 
-#### <a id="t11"></a>T11 - Controle monnaie/produit
+#### <a id="t11"></a>121.6.2.2 - Controle monnaie/produit
 
 **Role** : Verification : Controle monnaie/produit.
 **Delegue a** : [Controle fermeture caisse WS (IDE 155)](ADH-IDE-155.md), [Verif session caisse ouverte2 (IDE 156)](ADH-IDE-156.md)
@@ -330,10 +330,10 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t5"></a>T5 - Date comptable
+#### <a id="t5"></a>121.4 - Date comptable
 
 **Role** : Traitement : Date comptable.
-**Variables liees** : R (V Date comptable), U (V Date ouverture), W (V Date Fin session)
+**Variables liees** : FE (V Date comptable), FH (V Date ouverture), FJ (V Date Fin session)
 **Delegue a** : [Calcul concurrence sessions (IDE 116)](ADH-IDE-116.md)
 
 
@@ -343,17 +343,17 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t12"></a>T12 - Creation histo session
+#### <a id="t12"></a>121.6.2.3 - Creation histo session
 
 **Role** : Creation d'enregistrement : Creation histo session.
-**Variables liees** : S (V session active), W (V Date Fin session), N (Param VIL open sessions)
+**Variables liees** : FF (V session active), FJ (V Date Fin session), FA (Param VIL open sessions)
 
 ---
 
-#### <a id="t30"></a>T30 - Creation histo session
+#### <a id="t30"></a>121.6.11.2.1.2 - Creation histo session
 
 **Role** : Creation d'enregistrement : Creation histo session.
-**Variables liees** : S (V session active), W (V Date Fin session), N (Param VIL open sessions)
+**Variables liees** : FF (V session active), FJ (V Date Fin session), FA (Param VIL open sessions)
 
 
 ### 3.5 Saisie (2 taches)
@@ -362,13 +362,13 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t14"></a>T14 - init tempo saisie dev
+#### <a id="t14"></a>121.6.2.4 - init tempo saisie dev
 
 **Role** : Saisie des donnees : init tempo saisie dev.
 
 ---
 
-#### <a id="t20"></a>T20 - RAZ Saisie devises P/V
+#### <a id="t20"></a>121.6.6.1 - RAZ Saisie devises P/V
 
 **Role** : Saisie des donnees : RAZ Saisie devises P/V.
 
@@ -379,7 +379,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t23"></a>T23 - reimprimer tickets
+#### <a id="t23"></a>121.6.9 - reimprimer tickets
 
 **Role** : Generation du document : reimprimer tickets.
 **Delegue a** : [Ticket appro remise (IDE 139)](ADH-IDE-139.md), [Reimpression tickets fermeture (IDE 151)](ADH-IDE-151.md)
@@ -391,7 +391,7 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t29"></a>T29 - Ligne Initiale
+#### <a id="t29"></a>121.6.11.2.1.1 - Ligne Initiale
 
 **Role** : Reinitialisation : Ligne Initiale.
 **Delegue a** : [Init apport article session WS (IDE 140)](ADH-IDE-140.md), [Init devise session WS (IDE 141)](ADH-IDE-141.md)
@@ -399,7 +399,20 @@ Reinitialisation d'etats et variables de travail.
 
 ## 5. REGLES METIER
 
-*(Programme d'impression - logique technique sans conditions metier)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: Param VIL open sessions [N] egale 'O'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Param VIL open sessions [N]='O'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FA (Param VIL open sessions) |
+| **Expression source** | Expression 1 : `Param VIL open sessions [N]='O'` |
+| **Exemple** | Si Param VIL open sessions [N]='O' â†’ Action si vrai |
+| **Impact** | [121.6.11 - Open sessions](#t25) |
 
 ## 6. CONTEXTE
 
@@ -414,15 +427,15 @@ Reinitialisation d'etats et variables de travail.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 121.6 | T7 | Gestion de la caisse | MDI | 939 | 178 | Traitement |
-| 2 | 121.6.12 | T32 | Concurrence sessions for devel | MDI | 524 | 236 | Traitement |
+| 1 | 121.6 | 121.6 | Gestion de la caisse | MDI | 939 | 178 | Traitement |
+| 2 | 121.6.12 | 121.6.12 | Concurrence sessions for devel | MDI | 524 | 236 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t7"></a>121.6 - Gestion de la caisse
-**Tache** : [T7](#t7) | **Type** : MDI | **Dimensions** : 939 x 178 DLU
+**Tache** : [121.6](#t7) | **Type** : MDI | **Dimensions** : 939 x 178 DLU
 **Bloc** : Traitement | **Titre IDE** : Gestion de la caisse
 
 <!-- FORM-DATA:
@@ -869,7 +882,7 @@ Reinitialisation d'etats et variables de travail.
 ---
 
 #### <a id="ecran-t32"></a>121.6.12 - Concurrence sessions for devel
-**Tache** : [T32](#t32) | **Type** : MDI | **Dimensions** : 524 x 236 DLU
+**Tache** : [121.6.12](#t32) | **Type** : MDI | **Dimensions** : 524 x 236 DLU
 **Bloc** : Traitement | **Titre IDE** : Concurrence sessions for devel
 
 <!-- FORM-DATA:
@@ -1014,9 +1027,9 @@ Reinitialisation d'etats et variables de travail.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF7[T7 Gestion de la caisse]
+    VF7[121.6 Gestion de la caisse]
     style VF7 fill:#58a6ff
-    VF32[T32 Concurrence sessio...]
+    VF32[121.6.12 Concurrence sessio...]
     style VF32 fill:#58a6ff
     EXT116[IDE 116 Calcul concurr...]
     style EXT116 fill:#3fb950
@@ -1095,38 +1108,38 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **121.1** | [**Gestion caisse** (T1)](#t1) | MDI | - | Traitement |
-| 121.1.1 | [Paramètres caisse (T2)](#t2) | SDI | - | |
-| 121.1.2 | [Paramètres caisse (T4)](#t4) | MDI | - | |
-| 121.1.3 | [Etat de la caisse (T6)](#t6) | MDI | - | |
-| 121.1.4 | [Gestion de la caisse (T7)](#t7) [mockup](#ecran-t7) | MDI | 939x178 | |
-| 121.1.5 | [Existe histo (T8)](#t8) | MDI | - | |
-| 121.1.6 | [Ouverture caisse (T9)](#t9) | MDI | - | |
-| 121.1.7 | [Cloture en cours v1 (T10)](#t10) | MDI | - | |
-| 121.1.8 | [histo coffre2 (T13)](#t13) | MDI | - | |
-| 121.1.9 | [Fermeture caisse (T15)](#t15) | MDI | - | |
-| 121.1.10 | [Clôture histo session (T16)](#t16) | MDI | - | |
-| 121.1.11 | [Apport coffre (T17)](#t17) | MDI | - | |
-| 121.1.12 | [Apport produit (T18)](#t18) | MDI | - | |
-| 121.1.13 | [Remise au coffre (T19)](#t19) | MDI | - | |
-| 121.1.14 | [Historique (T21)](#t21) | MDI | - | |
-| 121.1.15 | [Consultation (T22)](#t22) | MDI | - | |
-| 121.1.16 | [Remise au coffre (T24)](#t24) | MDI | - | |
-| 121.1.17 | [Open sessions (T25)](#t25) | MDI | - | |
-| 121.1.18 | [Pointage (T26)](#t26) | MDI | - | |
-| 121.1.19 | [Read Sessions (T27)](#t27) | MDI | - | |
-| 121.1.20 | [Remise au coffre (T28)](#t28) | MDI | - | |
-| 121.1.21 | [histo coffre2 (T31)](#t31) | MDI | - | |
-| 121.1.22 | [Concurrence sessions for devel (T32)](#t32) [mockup](#ecran-t32) | MDI | 524x236 | |
-| **121.2** | [**Controle COFFRE2** (T3)](#t3) | MDI | - | Validation |
-| 121.2.1 | [Controle monnaie/produit (T11)](#t11) | MDI | - | |
-| **121.3** | [**Date comptable** (T5)](#t5) | MDI | - | Calcul |
-| **121.4** | [**Creation histo session** (T12)](#t12) | MDI | - | Creation |
-| 121.4.1 | [Creation histo session (T30)](#t30) | MDI | - | |
-| **121.5** | [**init tempo saisie dev** (T14)](#t14) | MDI | - | Saisie |
-| 121.5.1 | [RAZ Saisie devises P/V (T20)](#t20) | MDI | - | |
-| **121.6** | [**reimprimer tickets** (T23)](#t23) | MDI | - | Impression |
-| **121.7** | [**Ligne Initiale** (T29)](#t29) | MDI | - | Initialisation |
+| **121.1** | [**Gestion caisse** (121)](#t1) | MDI | - | Traitement |
+| 121.1.1 | [Paramètres caisse (121.1)](#t2) | SDI | - | |
+| 121.1.2 | [Paramètres caisse (121.3)](#t4) | MDI | - | |
+| 121.1.3 | [Etat de la caisse (121.5)](#t6) | MDI | - | |
+| 121.1.4 | [Gestion de la caisse (121.6)](#t7) [mockup](#ecran-t7) | MDI | 939x178 | |
+| 121.1.5 | [Existe histo (121.6.1)](#t8) | MDI | - | |
+| 121.1.6 | [Ouverture caisse (121.6.2)](#t9) | MDI | - | |
+| 121.1.7 | [Cloture en cours v1 (121.6.2.1)](#t10) | MDI | - | |
+| 121.1.8 | [histo coffre2 (121.6.2.3.1)](#t13) | MDI | - | |
+| 121.1.9 | [Fermeture caisse (121.6.3)](#t15) | MDI | - | |
+| 121.1.10 | [Clôture histo session (121.6.3.1)](#t16) | MDI | - | |
+| 121.1.11 | [Apport coffre (121.6.4)](#t17) | MDI | - | |
+| 121.1.12 | [Apport produit (121.6.5)](#t18) | MDI | - | |
+| 121.1.13 | [Remise au coffre (121.6.6)](#t19) | MDI | - | |
+| 121.1.14 | [Historique (121.6.7)](#t21) | MDI | - | |
+| 121.1.15 | [Consultation (121.6.8)](#t22) | MDI | - | |
+| 121.1.16 | [Remise au coffre (121.6.10)](#t24) | MDI | - | |
+| 121.1.17 | [Open sessions (121.6.11)](#t25) | MDI | - | |
+| 121.1.18 | [Pointage (121.6.11.1)](#t26) | MDI | - | |
+| 121.1.19 | [Read Sessions (121.6.11.2)](#t27) | MDI | - | |
+| 121.1.20 | [Remise au coffre (121.6.11.2.1)](#t28) | MDI | - | |
+| 121.1.21 | [histo coffre2 (121.6.11.2.1.2.1)](#t31) | MDI | - | |
+| 121.1.22 | [Concurrence sessions for devel (121.6.12)](#t32) [mockup](#ecran-t32) | MDI | 524x236 | |
+| **121.2** | [**Controle COFFRE2** (121.2)](#t3) | MDI | - | Validation |
+| 121.2.1 | [Controle monnaie/produit (121.6.2.2)](#t11) | MDI | - | |
+| **121.3** | [**Date comptable** (121.4)](#t5) | MDI | - | Calcul |
+| **121.4** | [**Creation histo session** (121.6.2.3)](#t12) | MDI | - | Creation |
+| 121.4.1 | [Creation histo session (121.6.11.2.1.2)](#t30) | MDI | - | |
+| **121.5** | [**init tempo saisie dev** (121.6.2.4)](#t14) | MDI | - | Saisie |
+| 121.5.1 | [RAZ Saisie devises P/V (121.6.6.1)](#t20) | MDI | - | |
+| **121.6** | [**reimprimer tickets** (121.6.9)](#t23) | MDI | - | Impression |
+| **121.7** | [**Ligne Initiale** (121.6.11.2.1.1)](#t29) | MDI | - | Initialisation |
 
 ### 9.4 Algorigramme
 
@@ -1198,6 +1211,7 @@ flowchart TD
 
 
 
+
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
@@ -1226,13 +1240,13 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | Param Libelle caisse | W | Alpha |
-| B | Param Etat caisse | W | Alpha |
-| G | existe histo | W | Logical |
-| H | Type Caisse | W | Alpha |
-| N | Param VIL open sessions | W | Alpha |
-| Y | V N° caisse reception mini | W | Numeric |
-| Z | V N° caisse reception maxi | W | Numeric |
+| EN | Param Libelle caisse | W | Alpha |
+| EO | Param Etat caisse | W | Alpha |
+| ET | existe histo | W | Logical |
+| EU | Type Caisse | W | Alpha |
+| FA | Param VIL open sessions | W | Alpha |
+| FL | V N° caisse reception mini | W | Numeric |
+| FM | V N° caisse reception maxi | W | Numeric |
 
 </details>
 
@@ -1241,9 +1255,9 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| M | p.i.Terminal coffre2 | W | Numeric |
-| N | Param VIL open sessions | W | Alpha |
-| P | p.i.Hostl coffre2 | W | Unicode |
+| EZ | p.i.Terminal coffre2 | W | Numeric |
+| FA | Param VIL open sessions | W | Alpha |
+| FC | p.i.Hostl coffre2 | W | Unicode |
 
 </details>
 
@@ -1259,7 +1273,7 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| N | Param VIL open sessions | W | Alpha |
+| FA | Param VIL open sessions | W | Alpha |
 
 </details>
 
@@ -1307,10 +1321,10 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| E | Date ouverture | R | Date |
-| R | V Date comptable | R | Date |
-| U | V Date ouverture | R | Date |
-| W | V Date Fin session | R | Date |
+| ER | Date ouverture | R | Date |
+| FE | V Date comptable | R | Date |
+| FH | V Date ouverture | R | Date |
+| FJ | V Date Fin session | R | Date |
 
 </details>
 
@@ -1329,13 +1343,13 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | Existe session 90 | R | Logical |
-| B | Nbre devises en appro | R | Numeric |
-| D | Param devise locale | R | Alpha |
-| G | Nbre devises compte | R | Numeric |
-| N | Param VIL open sessions | R | Alpha |
-| S | V session active | R | Logical |
-| W | V Date Fin session | R | Date |
+| EN | Existe session 90 | R | Logical |
+| EO | Nbre devises en appro | R | Numeric |
+| EQ | Param devise locale | R | Alpha |
+| ET | Nbre devises compte | R | Numeric |
+| FA | Param VIL open sessions | R | Alpha |
+| FF | V session active | R | Logical |
+| FJ | V Date Fin session | R | Date |
 
 </details>
 
@@ -1344,9 +1358,9 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| BA | V Cloture en cours | R | Logical |
-| BD | V cloture auto | R | Alpha |
-| H | Autorisation_cloture_ne sert_pa | R | Logical |
+| FN | V Cloture en cours | R | Logical |
+| FQ | V cloture auto | R | Alpha |
+| EU | Autorisation_cloture_ne sert_pa | R | Logical |
 
 </details>
 
@@ -1358,8 +1372,8 @@ Variables recues du programme appelant ([Menu caisse GM - scroll (IDE 163)](ADH-
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| M | p.i.Terminal coffre2 | Numeric | - |
-| P | p.i.Hostl coffre2 | Unicode | - |
+| EZ | p.i.Terminal coffre2 | Numeric | - |
+| FC | p.i.Hostl coffre2 | Unicode | - |
 
 ### 11.2 Variables de session (13)
 
@@ -1367,19 +1381,19 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| R | V Date comptable | Date | - |
-| S | V session active | Logical | - |
-| T | V User ouverture | Alpha | - |
-| U | V Date ouverture | Date | - |
-| V | V Time ouverture | Time | - |
-| W | V Date Fin session | Date | - |
-| X | V Last Chrono | Numeric | - |
-| Y | V N° caisse reception mini | Numeric | - |
-| Z | V N° caisse reception maxi | Numeric | - |
-| BA | V Cloture en cours | Logical | - |
-| BC | V avec coffre 2 | Alpha | - |
-| BD | V cloture auto | Alpha | - |
-| BE | v.fin | Logical | - |
+| FE | V Date comptable | Date | - |
+| FF | V session active | Logical | - |
+| FG | V User ouverture | Alpha | - |
+| FH | V Date ouverture | Date | - |
+| FI | V Time ouverture | Time | - |
+| FJ | V Date Fin session | Date | - |
+| FK | V Last Chrono | Numeric | - |
+| FL | V N° caisse reception mini | Numeric | - |
+| FM | V N° caisse reception maxi | Numeric | - |
+| FN | V Cloture en cours | Logical | - |
+| FP | V avec coffre 2 | Alpha | - |
+| FQ | V cloture auto | Alpha | - |
+| FR | v.fin | Logical | 2x session |
 
 ### 11.3 Autres (16)
 
@@ -1387,59 +1401,59 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | Param Libelle caisse | Alpha | - |
-| B | Param Etat caisse | Alpha | - |
-| C | Param societe | Alpha | - |
-| D | Param devise locale | Alpha | - |
-| E | Param nbre decimale | Numeric | - |
-| F | Param masque montant | Alpha | - |
-| G | Param code village | Alpha | - |
-| H | Param nom village | Alpha | - |
-| I | Param masque cumul | Alpha | - |
-| J | Param Uni/Bi | Alpha | - |
-| K | Param Village TAI | Alpha | - |
-| L | Param Mode consultation | Logical | - |
-| N | Param VIL open sessions | Alpha | [T2](#t2), [T4](#t4), [T25](#t25) |
-| O | Param FROM_IMS | Alpha | - |
-| Q | i.Host courant coffre 2 ? | Logical | - |
-| BB | COFFRE 2 est ouvert | Logical | - |
+| EN | Param Libelle caisse | Alpha | - |
+| EO | Param Etat caisse | Alpha | - |
+| EP | Param societe | Alpha | - |
+| EQ | Param devise locale | Alpha | - |
+| ER | Param nbre decimale | Numeric | - |
+| ES | Param masque montant | Alpha | - |
+| ET | Param code village | Alpha | - |
+| EU | Param nom village | Alpha | - |
+| EV | Param masque cumul | Alpha | - |
+| EW | Param Uni/Bi | Alpha | - |
+| EX | Param Village TAI | Alpha | - |
+| EY | Param Mode consultation | Logical | - |
+| FA | Param VIL open sessions | Alpha | [121.1](#t2), [121.3](#t4), [121.6.11](#t25) |
+| FB | Param FROM_IMS | Alpha | - |
+| FD | i.Host courant coffre 2 ? | Logical | - |
+| FO | COFFRE 2 est ouvert | Logical | - |
 
 <details>
 <summary>Toutes les 31 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **M** | p.i.Terminal coffre2 | Numeric |
-| P0 | **P** | p.i.Hostl coffre2 | Unicode |
-| V. | **R** | V Date comptable | Date |
-| V. | **S** | V session active | Logical |
-| V. | **T** | V User ouverture | Alpha |
-| V. | **U** | V Date ouverture | Date |
-| V. | **V** | V Time ouverture | Time |
-| V. | **W** | V Date Fin session | Date |
-| V. | **X** | V Last Chrono | Numeric |
-| V. | **Y** | V N° caisse reception mini | Numeric |
-| V. | **Z** | V N° caisse reception maxi | Numeric |
-| V. | **BA** | V Cloture en cours | Logical |
-| V. | **BC** | V avec coffre 2 | Alpha |
-| V. | **BD** | V cloture auto | Alpha |
-| V. | **BE** | v.fin | Logical |
-| Autre | **A** | Param Libelle caisse | Alpha |
-| Autre | **B** | Param Etat caisse | Alpha |
-| Autre | **C** | Param societe | Alpha |
-| Autre | **D** | Param devise locale | Alpha |
-| Autre | **E** | Param nbre decimale | Numeric |
-| Autre | **F** | Param masque montant | Alpha |
-| Autre | **G** | Param code village | Alpha |
-| Autre | **H** | Param nom village | Alpha |
-| Autre | **I** | Param masque cumul | Alpha |
-| Autre | **J** | Param Uni/Bi | Alpha |
-| Autre | **K** | Param Village TAI | Alpha |
-| Autre | **L** | Param Mode consultation | Logical |
-| Autre | **N** | Param VIL open sessions | Alpha |
-| Autre | **O** | Param FROM_IMS | Alpha |
-| Autre | **Q** | i.Host courant coffre 2 ? | Logical |
-| Autre | **BB** | COFFRE 2 est ouvert | Logical |
+| P0 | **EZ** | p.i.Terminal coffre2 | Numeric |
+| P0 | **FC** | p.i.Hostl coffre2 | Unicode |
+| V. | **FE** | V Date comptable | Date |
+| V. | **FF** | V session active | Logical |
+| V. | **FG** | V User ouverture | Alpha |
+| V. | **FH** | V Date ouverture | Date |
+| V. | **FI** | V Time ouverture | Time |
+| V. | **FJ** | V Date Fin session | Date |
+| V. | **FK** | V Last Chrono | Numeric |
+| V. | **FL** | V N° caisse reception mini | Numeric |
+| V. | **FM** | V N° caisse reception maxi | Numeric |
+| V. | **FN** | V Cloture en cours | Logical |
+| V. | **FP** | V avec coffre 2 | Alpha |
+| V. | **FQ** | V cloture auto | Alpha |
+| V. | **FR** | v.fin | Logical |
+| Autre | **EN** | Param Libelle caisse | Alpha |
+| Autre | **EO** | Param Etat caisse | Alpha |
+| Autre | **EP** | Param societe | Alpha |
+| Autre | **EQ** | Param devise locale | Alpha |
+| Autre | **ER** | Param nbre decimale | Numeric |
+| Autre | **ES** | Param masque montant | Alpha |
+| Autre | **ET** | Param code village | Alpha |
+| Autre | **EU** | Param nom village | Alpha |
+| Autre | **EV** | Param masque cumul | Alpha |
+| Autre | **EW** | Param Uni/Bi | Alpha |
+| Autre | **EX** | Param Village TAI | Alpha |
+| Autre | **EY** | Param Mode consultation | Logical |
+| Autre | **FA** | Param VIL open sessions | Alpha |
+| Autre | **FB** | Param FROM_IMS | Alpha |
+| Autre | **FD** | i.Host courant coffre 2 ? | Logical |
+| Autre | **FO** | COFFRE 2 est ouvert | Logical |
 
 </details>
 
@@ -1451,25 +1465,25 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 1 | 5 |
 | CONSTANTE | 1 | 0 |
-| CONDITION | 1 | 0 |
 | CAST_LOGIQUE | 2 | 0 |
 | OTHER | 2 | 0 |
 | REFERENCE_VG | 1 | 0 |
 
 ### 12.2 Expressions cles par type
 
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 1 | `Param VIL open sessions [N]='O'` | [RM-001](#rm-RM-001) |
+
 #### CONSTANTE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CONSTANTE | 3 | `'D'` | - |
-
-#### CONDITION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 1 | `Param VIL open sessions [N]='O'` | - |
 
 #### CAST_LOGIQUE (2 expressions)
 
@@ -1482,8 +1496,8 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 6 | `NOT([AE])` | - |
-| OTHER | 4 | `[AE]` | - |
+| OTHER | 6 | `NOT(v.fin [BE])` | - |
+| OTHER | 4 | `v.fin [BE]` | - |
 
 #### REFERENCE_VG (1 expressions)
 
@@ -1621,7 +1635,7 @@ graph LR
 | Sous-programmes | 18 | Forte dependance |
 | Ecrans visibles | 2 | Quelques ecrans |
 | Code desactive | 0% (0 / 678) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -1681,4 +1695,4 @@ graph LR
 | [Reimpression tickets fermeture (IDE 151)](ADH-IDE-151.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 15:34*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:03*

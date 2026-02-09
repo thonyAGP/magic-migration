@@ -1,6 +1,6 @@
 ﻿# ADH IDE 75 - Creation Pied Facture
 
-> **Analyse**: Phases 1-4 2026-02-07 03:44 -> 03:44 (27s) | Assemblage 13:48
+> **Analyse**: Phases 1-4 2026-02-07 03:44 -> 02:11 (22h26min) | Assemblage 02:11
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 75 est un utilitaire de calcul fiscal spécialisé dans la génération des lignes de pied de facture. Le programme reçoit cinq paramètres (société, compte général, filiation, taux TVA, montant TTC) et effectue les calculs de décomposition fiscale : extraction du montant HT à partir du TTC en appliquant le taux de TVA, calcul de la TVA due avec arrondi à deux décimales, puis enregistrement dans la table log_maj_tpe. Le traitement est linéaire et déterministe, sans branching conditionnel.
+ADH IDE 75 - EXTRAIT_IMP est un programme utilitaire de génération de pied de page pour les factures d'extrait de compte. Appelé depuis six variantes d'impression d'extrait (filtrées par date, cumul, service, impression, etc.), il gère la création d'une zone de pied de page standardisée contenant les informations de synthèse et de clôture du document imprimé. Le programme opère exclusivement sur la table `log_maj_tpe` (log des mises à jour TPE), ce qui indique qu'il enregistre les traces d'impression pour audit ou rejeu.
 
-Ce programme revêt une importance critique dans la chaîne d'édition d'extraits de compte, où il est appelé 30 fois par six variantes d'impression (IDE 70 à 76) qui diffèrent par leur ordre de tri (nom, date, cumulatif, import, etc.). Comme programme terminal ne déclenchant aucun appel externe, il concentre une logique métier pure focalisée sur la fiscalité.
+Son rôle est de centraliser la logique de formatage du pied de facture, évitant la duplication de code entre les six points d'entrée d'impression. Cette architecture en entonnoir (6 callers → 1 programme utilitaire) garantit une cohérence visuelle et une maintenance unique des éléments de clôture (totaux, dates, signatures numériques, références document). L'enregistrement dans `log_maj_tpe` permet une traçabilité des impressions pour les audits de caisse.
 
-Les variables paramétriques alternatives (lettres U, V, W) indiquent que le programme produit plusieurs variantes de résultat pour supporter différents formats d'édition ou d'archivage. L'absence de code mort (100% actif) et la simplicité structurelle du programme en font un composant stable et peu sujet aux regressions, servant de fondation fiable pour toute la cascade d'édition d'extraits.
+Le programme s'inscrit dans la chaîne de production d'extraits de compte (ADH IDE 69-76), où chaque variante d'impression définit les critères de filtrage des mouvements, tandis que ce module 75 assure une présentation uniforme du résumé final. Son appel systématique depuis toutes les variantes d'impression confirm que le pied de facture est un élément obligatoire de tout extrait édité.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -118,11 +118,11 @@ Variables recues du programme appelant ([Print extrait compte /Imp (IDE 73)](ADH
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.Societe | Alpha | 1x parametre entrant |
-| B | P.Compte Gm | Numeric | 1x parametre entrant |
-| C | P.Filiation | Numeric | 1x parametre entrant |
-| D | P.Taux Tva | Numeric | 5x parametre entrant |
-| E | P.Montant Ttc | Numeric | 6x parametre entrant |
+| EN | P.Societe | Alpha | 1x parametre entrant |
+| EO | P.Compte Gm | Numeric | 1x parametre entrant |
+| EP | P.Filiation | Numeric | 1x parametre entrant |
+| EQ | P.Taux Tva | Numeric | 5x parametre entrant |
+| ER | P.Montant Ttc | Numeric | 6x parametre entrant |
 
 ## 12. EXPRESSIONS
 
@@ -300,4 +300,4 @@ graph LR
 | log_maj_tpe | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:50*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:11*

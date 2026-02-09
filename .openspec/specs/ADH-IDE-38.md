@@ -1,6 +1,6 @@
 ﻿# ADH IDE 38 - Program_38
 
-> **Analyse**: Phases 1-4 2026-02-07 06:44 -> 06:44 (16s) | Assemblage 13:11
+> **Analyse**: Phases 1-4 2026-02-07 06:44 -> 01:33 (18h48min) | Assemblage 01:33
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -23,11 +23,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 38 est un programme stub minimal et isolé du module de gestion de comptes (ADH). Avec une seule ligne de logique, zéro expressions et aucune interaction avec les tables de données, ce programme ne possède pas de fonction métier identifiable. Il n'est appelé par aucun autre programme et n'appelle rien, le classant comme orphelin potentiel complètement détaché de la chaîne d'intégration ADH.
+ADH IDE 38 est un **programme stub abandonné**, dépourvu de toute fonction métier. Constitué d'une seule ligne de logique sans interaction avec la base de données, il n'accède à aucune table et n'appelle aucun autre programme. Son absence de PublicName et son exclusion des composants partagés (ECF) le rendent non-callable via le système Magic standard.
 
-Ce programme se distingue nettement de ses voisins qui possèdent des logiques substantielles (ADH 34-37 dépassant 12-426 lignes avec des interactions de base de données). Son absence totale de code utile suggère qu'il s'agit d'un placeholder abandonné ou d'une place réservée jamais implémentée. Sans spécification métier, sans paramètres d'entrée et sans interface utilisateur, ADH IDE 38 devrait être soit supprimé, soit formellement classé comme code mort à nettoyer lors d'une maintenance d'architecture.
+Ce programme est formellement **orphelin confirmé** — aucun autre programme ne l'appelle, aucune chaîne d'exécution ne le référence. Il représente soit une réserve d'emplacement jamais implémentée, soit un placeholder supprimé du codebase actif sans être physiquement effacé du fichier source.
 
-L'analyse recommande une vérification urgente du statut de ce programme pour déterminer s'il répond à un besoin réel dans l'écosystème Magic ou s'il constitue simplement de la dette technique résiduelle du système ADH.
+Statut recommandé : **archivage ou suppression** lors d'un nettoyage d'architecture. Aucune migration ni adaptation n'est requise vers les langages modernes, puisqu'aucune logique métier substantielle n'existe à transporter.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -160,4 +160,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:13*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:35*

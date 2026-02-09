@@ -1,6 +1,6 @@
 ﻿# ADH IDE 243 - Histo ventes payantes
 
-> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 03:54 (34s) | Assemblage 03:54
+> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 03:54 (34s) | Assemblage 04:35
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,87 +18,15 @@
 | Taches | 22 (2 ecrans visibles) |
 | Tables modifiees | 4 |
 | Programmes appeles | 7 |
+| Complexite | **MOYENNE** (score 46/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Histo ventes payantes** assure la gestion complete de ce processus, accessible depuis [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md).
+ADH IDE 243 - Histo ventes payantes gère l'historique des transactions de vente dans le système de caisse. Ce programme est appelé lors de la création de nouvelles ventes (PMS-584, PMS-710, PMS-721) et depuis le menu de saisie/annulation (IDE 242). Il centralise l'enregistrement et le suivi des opérations commerciales payantes.
 
-Le flux de traitement s'organise en **7 blocs fonctionnels** :
+Le programme orchestre l'impression des tickets de vente via trois variantes (PMS28, LEX, PMS-584) et gère les ressources d'impression (Get Printer, Set Listing Number, Raz Current Printer). Il effectue également le déversement des transactions (IDE 247) pour synchroniser les données de caisse vers le serveur ou une base centrale.
 
-- **Traitement** (12 taches) : traitements metier divers
-- **Validation** (3 taches) : controles et verifications de coherence
-- **Creation** (2 taches) : insertion d'enregistrements en base (mouvements, prestations)
-- **Saisie** (2 taches) : ecrans de saisie utilisateur (formulaires, champs, donnees)
-- **Consultation** (1 tache) : ecrans de recherche, selection et consultation
-- **Impression** (1 tache) : generation de tickets et documents
-- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
-
-**Donnees modifiees** : 4 tables en ecriture (reseau_cloture___rec, compte_gm________cgm, Boo_ResultsRechercheHoraire, log_booker).
-
-**Logique metier** : 9 regles identifiees couvrant conditions metier, valeurs par defaut.
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Saisie (2 taches)
-
-- **243** - Liste des  ventes **[[ECRAN]](#ecran-t1)**
-- **243.8** - Saisie commentaire annulation **[[ECRAN]](#ecran-t12)**
-
-Delegue a : [Appel Print ticket vente PMS28 (IDE 233)](ADH-IDE-233.md), [ Print ticket vente LEX (IDE 235)](ADH-IDE-235.md), [ Print ticket vente PMS-584 (IDE 236)](ADH-IDE-236.md), [Deversement Transaction (IDE 247)](ADH-IDE-247.md)
-
-#### Phase 2 : Traitement (12 taches)
-
-- **243.1** - Deblocage cloture v1
-- **243.2** - Deblocage cloture v1
-- **243.3** - Test reseau
-- **243.4** - Test si cloture en cours
-- **243.4.1** - Blocage cloture v1
-- **243.4.2** - Blocage cloture v1
-- **243.6** - Gratuite ?  * Non Utilisée *
-- **243.9** - Maj tempo
-- **243.10** - Maj tempo
-- **243.11** - test
-- **243.11.1** - Maj tempo **[[ECRAN]](#ecran-t16)**
-- **243.14** - Envoi mail garantie
-
-Delegue a : [Set Listing Number (IDE 181)](ADH-IDE-181.md)
-
-#### Phase 3 : Calcul (1 tache)
-
-- **243.5** - Reaffichage infos compte
-
-#### Phase 4 : Consultation (1 tache)
-
-- **243.6.1** - Recherche imputation/ssimput
-
-#### Phase 5 : Validation (3 taches)
-
-- **243.7** - Verif
-- **243.12** - Verif
-- **243.13** - Verif ligne selectionnee
-
-#### Phase 6 : Impression (1 tache)
-
-- **243.15** - Vérif Ticket mobilité
-
-Delegue a : [Appel Print ticket vente PMS28 (IDE 233)](ADH-IDE-233.md), [ Print ticket vente LEX (IDE 235)](ADH-IDE-235.md), [ Print ticket vente PMS-584 (IDE 236)](ADH-IDE-236.md), [Get Printer (IDE 179)](ADH-IDE-179.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
-
-#### Phase 7 : Creation (2 taches)
-
-- **243.10.1** - Creation affectation trf
-- **243.9.1** - Creation affectation trf
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| reseau_cloture___rec | R/**W** (5 usages) | Donnees reseau/cloture |
-| Boo_ResultsRechercheHoraire | **W** (2 usages) | Index de recherche |
-| compte_gm________cgm | **W** (2 usages) | Comptes GM (generaux) |
-| log_booker | **W** (1 usages) |  |
-
-</details>
+La logique métier inclut un mécanisme de déblocage/blocage de clôture (6 tâches) avec test réseau et vérification d'état de clôture en cours. Les tables modifiées (reseau_cloture, compte_gm, log_booker) indiquent une interaction forte avec l'état de la clôture de caisse et la synchronisation Booker. Ce programme est donc critique pour l'intégrité des transactions et l'audit comptable de la caisse.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -108,7 +36,7 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Liste des  ventes
 
 ---
 
-#### <a id="t1"></a>243 - Liste des  ventes [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Liste des  ventes [ECRAN]
 
 **Role** : Saisie des donnees : Liste des  ventes.
 **Ecran** : 1802 x 274 DLU | [Voir mockup](#ecran-t1)
@@ -116,7 +44,7 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Liste des  ventes
 
 ---
 
-#### <a id="t12"></a>243.8 - Saisie commentaire annulation [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Saisie commentaire annulation [ECRAN]
 
 **Role** : Saisie des donnees : Saisie commentaire annulation.
 **Ecran** : 909 x 92 DLU (MDI) | [Voir mockup](#ecran-t12)
@@ -130,81 +58,81 @@ Traitements internes.
 
 ---
 
-#### <a id="t2"></a>243.1 - Deblocage cloture v1
+#### <a id="t2"></a>T2 - Deblocage cloture v1
 
 **Role** : Traitement : Deblocage cloture v1.
 **Variables liees** : CE (V0.Cloture en cours)
 
 ---
 
-#### <a id="t3"></a>243.2 - Deblocage cloture v1
+#### <a id="t3"></a>T3 - Deblocage cloture v1
 
 **Role** : Traitement : Deblocage cloture v1.
 **Variables liees** : CE (V0.Cloture en cours)
 
 ---
 
-#### <a id="t4"></a>243.3 - Test reseau
+#### <a id="t4"></a>T4 - Test reseau
 
 **Role** : Verification : Test reseau.
 **Variables liees** : CH (V0.Reseau)
 
 ---
 
-#### <a id="t5"></a>243.4 - Test si cloture en cours
+#### <a id="t5"></a>T5 - Test si cloture en cours
 
 **Role** : Verification : Test si cloture en cours.
 **Variables liees** : CE (V0.Cloture en cours)
 
 ---
 
-#### <a id="t6"></a>243.4.1 - Blocage cloture v1
+#### <a id="t6"></a>T6 - Blocage cloture v1
 
 **Role** : Traitement : Blocage cloture v1.
 **Variables liees** : CE (V0.Cloture en cours)
 
 ---
 
-#### <a id="t7"></a>243.4.2 - Blocage cloture v1
+#### <a id="t7"></a>T7 - Blocage cloture v1
 
 **Role** : Traitement : Blocage cloture v1.
 **Variables liees** : CE (V0.Cloture en cours)
 
 ---
 
-#### <a id="t9"></a>243.6 - Gratuite ?  * Non Utilisée *
+#### <a id="t9"></a>T9 - Gratuite ?  * Non Utilisée *
 
 **Role** : Traitement : Gratuite ?  * Non Utilisée *.
 **Variables liees** : BY (V0.Gratuite)
 
 ---
 
-#### <a id="t13"></a>243.9 - Maj tempo
+#### <a id="t13"></a>T13 - Maj tempo
 
 **Role** : Traitement : Maj tempo.
 
 ---
 
-#### <a id="t14"></a>243.10 - Maj tempo
+#### <a id="t14"></a>T14 - Maj tempo
 
 **Role** : Traitement : Maj tempo.
 
 ---
 
-#### <a id="t15"></a>243.11 - test
+#### <a id="t15"></a>T15 - test
 
 **Role** : Verification : test.
 
 ---
 
-#### <a id="t16"></a>243.11.1 - Maj tempo [[ECRAN]](#ecran-t16)
+#### <a id="t16"></a>T16 - Maj tempo [ECRAN]
 
 **Role** : Traitement : Maj tempo.
 **Ecran** : 526 x 0 DLU | [Voir mockup](#ecran-t16)
 
 ---
 
-#### <a id="t19"></a>243.14 - Envoi mail garantie
+#### <a id="t19"></a>T19 - Envoi mail garantie
 
 **Role** : Traitement : Envoi mail garantie.
 **Variables liees** : CR (v.Envoi ticket email), CS (v.Adresse Mail), CW (v.Flag envoi mail)
@@ -216,7 +144,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t8"></a>243.5 - Reaffichage infos compte
+#### <a id="t8"></a>T8 - Reaffichage infos compte
 
 **Role** : Reinitialisation : Reaffichage infos compte.
 **Variables liees** : D (P.Solde compte), G (P.Etat compte), CJ (V0.Chaine compte special)
@@ -228,7 +156,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t10"></a>243.6.1 - Recherche imputation/ssimput
+#### <a id="t10"></a>T10 - Recherche imputation/ssimput
 
 **Role** : Traitement : Recherche imputation/ssimput.
 
@@ -239,19 +167,19 @@ Controles de coherence : 3 taches verifient les donnees et conditions.
 
 ---
 
-#### <a id="t11"></a>243.7 - Verif
+#### <a id="t11"></a>T11 - Verif
 
 **Role** : Verification : Verif.
 
 ---
 
-#### <a id="t17"></a>243.12 - Verif
+#### <a id="t17"></a>T17 - Verif
 
 **Role** : Verification : Verif.
 
 ---
 
-#### <a id="t18"></a>243.13 - Verif ligne selectionnee
+#### <a id="t18"></a>T18 - Verif ligne selectionnee
 
 **Role** : Verification : Verif ligne selectionnee.
 **Variables liees** : CM (V0.Exist ligne à annuler ?), CN (V0.Existe ligne selectionnee ?)
@@ -263,7 +191,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t20"></a>243.15 - Vérif Ticket mobilité
+#### <a id="t20"></a>T20 - Vérif Ticket mobilité
 
 **Role** : Generation du document : Vérif Ticket mobilité.
 **Variables liees** : CP (V.N°Ticket Annulation), CR (v.Envoi ticket email), CX (v.Flag Vte en mobilité), CY (V.Numéro de ticket à rééditer), BP (L.Retour_Ticket)
@@ -276,13 +204,13 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t39"></a>243.10.1 - Creation affectation trf
+#### <a id="t39"></a>T39 - Creation affectation trf
 
 **Role** : Creation d'enregistrement : Creation affectation trf.
 
 ---
 
-#### <a id="t42"></a>243.9.1 - Creation affectation trf
+#### <a id="t42"></a>T42 - Creation affectation trf
 
 **Role** : Creation d'enregistrement : Creation affectation trf.
 
@@ -407,15 +335,15 @@ Insertion de nouveaux enregistrements en base.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 243 | 243 | Liste des  ventes | Type0 | 1802 | 274 | Saisie |
-| 2 | 243.8 | 243.8 | Saisie commentaire annulation | MDI | 909 | 92 | Saisie |
+| 1 | 243 | T1 | Liste des  ventes | Type0 | 1802 | 274 | Saisie |
+| 2 | 243.8 | T12 | Saisie commentaire annulation | MDI | 909 | 92 | Saisie |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>243 - Liste des  ventes
-**Tache** : [243](#t1) | **Type** : Type0 | **Dimensions** : 1802 x 274 DLU
+**Tache** : [T1](#t1) | **Type** : Type0 | **Dimensions** : 1802 x 274 DLU
 **Bloc** : Saisie | **Titre IDE** : Liste des  ventes
 
 <!-- FORM-DATA:
@@ -890,7 +818,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t12"></a>243.8 - Saisie commentaire annulation
-**Tache** : [243.8](#t12) | **Type** : MDI | **Dimensions** : 909 x 92 DLU
+**Tache** : [T12](#t12) | **Type** : MDI | **Dimensions** : 909 x 92 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie commentaire annulation
 
 <!-- FORM-DATA:
@@ -1052,9 +980,9 @@ Insertion de nouveaux enregistrements en base.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[243 Liste des ventes]
+    VF1[T1 Liste des ventes]
     style VF1 fill:#58a6ff
-    VF12[243.8 Saisie commentaire...]
+    VF12[T12 Saisie commentaire...]
     style VF12 fill:#58a6ff
     EXT233[IDE 233 Appel Print ti...]
     style EXT233 fill:#3fb950
@@ -1099,28 +1027,28 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **243.1** | [**Liste des  ventes** (243)](#t1) [mockup](#ecran-t1) | - | 1802x274 | Saisie |
-| 243.1.1 | [Saisie commentaire annulation (243.8)](#t12) [mockup](#ecran-t12) | MDI | 909x92 | |
-| **243.2** | [**Deblocage cloture v1** (243.1)](#t2) | MDI | - | Traitement |
-| 243.2.1 | [Deblocage cloture v1 (243.2)](#t3) | MDI | - | |
-| 243.2.2 | [Test reseau (243.3)](#t4) | MDI | - | |
-| 243.2.3 | [Test si cloture en cours (243.4)](#t5) | MDI | - | |
-| 243.2.4 | [Blocage cloture v1 (243.4.1)](#t6) | MDI | - | |
-| 243.2.5 | [Blocage cloture v1 (243.4.2)](#t7) | MDI | - | |
-| 243.2.6 | [Gratuite ?  * Non Utilisée * (243.6)](#t9) | MDI | - | |
-| 243.2.7 | [Maj tempo (243.9)](#t13) | - | - | |
-| 243.2.8 | [Maj tempo (243.10)](#t14) | - | - | |
-| 243.2.9 | [test (243.11)](#t15) | - | - | |
-| 243.2.10 | [Maj tempo (243.11.1)](#t16) [mockup](#ecran-t16) | - | 526x0 | |
-| 243.2.11 | [Envoi mail garantie (243.14)](#t19) | - | - | |
-| **243.3** | [**Reaffichage infos compte** (243.5)](#t8) | MDI | - | Calcul |
-| **243.4** | [**Recherche imputation/ssimput** (243.6.1)](#t10) | MDI | - | Consultation |
-| **243.5** | [**Verif** (243.7)](#t11) | - | - | Validation |
-| 243.5.1 | [Verif (243.12)](#t17) | - | - | |
-| 243.5.2 | [Verif ligne selectionnee (243.13)](#t18) | - | - | |
-| **243.6** | [**Vérif Ticket mobilité** (243.15)](#t20) | - | - | Impression |
-| **243.7** | [**Creation affectation trf** (243.10.1)](#t39) | - | - | Creation |
-| 243.7.1 | [Creation affectation trf (243.9.1)](#t42) | - | - | |
+| **243.1** | [**Liste des  ventes** (T1)](#t1) [mockup](#ecran-t1) | - | 1802x274 | Saisie |
+| 243.1.1 | [Saisie commentaire annulation (T12)](#t12) [mockup](#ecran-t12) | MDI | 909x92 | |
+| **243.2** | [**Deblocage cloture v1** (T2)](#t2) | MDI | - | Traitement |
+| 243.2.1 | [Deblocage cloture v1 (T3)](#t3) | MDI | - | |
+| 243.2.2 | [Test reseau (T4)](#t4) | MDI | - | |
+| 243.2.3 | [Test si cloture en cours (T5)](#t5) | MDI | - | |
+| 243.2.4 | [Blocage cloture v1 (T6)](#t6) | MDI | - | |
+| 243.2.5 | [Blocage cloture v1 (T7)](#t7) | MDI | - | |
+| 243.2.6 | [Gratuite ?  * Non Utilisée * (T9)](#t9) | MDI | - | |
+| 243.2.7 | [Maj tempo (T13)](#t13) | - | - | |
+| 243.2.8 | [Maj tempo (T14)](#t14) | - | - | |
+| 243.2.9 | [test (T15)](#t15) | - | - | |
+| 243.2.10 | [Maj tempo (T16)](#t16) [mockup](#ecran-t16) | - | 526x0 | |
+| 243.2.11 | [Envoi mail garantie (T19)](#t19) | - | - | |
+| **243.3** | [**Reaffichage infos compte** (T8)](#t8) | MDI | - | Calcul |
+| **243.4** | [**Recherche imputation/ssimput** (T10)](#t10) | MDI | - | Consultation |
+| **243.5** | [**Verif** (T11)](#t11) | - | - | Validation |
+| 243.5.1 | [Verif (T17)](#t17) | - | - | |
+| 243.5.2 | [Verif ligne selectionnee (T18)](#t18) | - | - | |
+| **243.6** | [**Vérif Ticket mobilité** (T20)](#t20) | - | - | Impression |
+| **243.7** | [**Creation affectation trf** (T39)](#t39) | - | - | Creation |
+| 243.7.1 | [Creation affectation trf (T42)](#t42) | - | - | |
 
 ### 9.4 Algorigramme
 
@@ -1128,29 +1056,41 @@ flowchart TD
 flowchart TD
     START([START])
     INIT[Init controles]
-    SAISIE[Saisie commentaire]
-    DECISION{annulation}
-    BR1[Traitement TRUE]
-    BR2[Traitement FALSE]
-    VALID[Validation]
-    UPDATE[MAJ 4 tables]
-    ENDOK([END OK])
+    START --> INIT
+    B1[Saisie (2t)]
+    INIT --> B1
+    B2[Traitement (12t)]
+    B1 --> B2
+    B3[Calcul (1t)]
+    B2 --> B3
+    B4[Consultation (1t)]
+    B3 --> B4
+    B5[Validation (3t)]
+    B4 --> B5
+    B6[Impression (1t)]
+    B5 --> B6
+    B7[Creation (2t)]
+    B6 --> B7
+    DECISION{L.Retour_Ticket}
+    B7 --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS[Traitement]
     ENDKO([END KO])
-
-    START --> INIT --> SAISIE --> DECISION
-    DECISION -->|TRUE| BR1 --> VALID
-    DECISION -->|FALSE| BR2 --> VALID
-    VALID --> UPDATE --> ENDOK
-    DECISION -->|KO| ENDKO
+    WRITE[MAJ 4 tables]
+    PROCESS --> WRITE
+    ENDOK([END OK])
+    WRITE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
     style ENDKO fill:#f85149,color:#fff
     style DECISION fill:#58a6ff,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -1161,30 +1101,30 @@ flowchart TD
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
 | 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R | **W** |   | 5 |
-| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
-| 34 | hebergement______heb | Hebergement (chambres) | DB | R |   |   | 3 |
-| 40 | comptable________cte |  | DB |   |   | L | 3 |
-| 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** |   | 2 |
-| 67 | tables___________tab |  | DB |   |   | L | 1 |
-| 70 | date_comptable___dat |  | DB | R |   |   | 1 |
-| 77 | articles_________art | Articles et stock | DB |   |   | L | 1 |
-| 79 | gratuites________gra |  | DB | R |   |   | 1 |
-| 89 | moyen_paiement___mop |  | DB |   |   | L | 3 |
-| 197 | articles_en_stock | Articles et stock | DB |   |   | L | 3 |
-| 263 | vente | Donnees de ventes | DB |   |   | L | 3 |
-| 285 | email |  | DB | R |   |   | 1 |
-| 400 | pv_cust_rentals |  | DB |   |   | L | 2 |
-| 473 | comptage_caisse | Sessions de caisse | TMP |   |   | L | 3 |
-| 596 | tempo_ecran_police | Table temporaire ecran | TMP |   |   | L | 3 |
-| 728 | arc_cc_total |  | DB |   |   | L | 1 |
-| 804 | valeur_credit_bar_defaut |  | DB |   |   | L | 3 |
-| 847 | stat_lieu_vente_date | Statistiques point de vente | TMP |   |   | L | 3 |
 | 899 | Boo_ResultsRechercheHoraire | Index de recherche | DB |   | **W** |   | 2 |
-| 910 | classification_memory |  | DB |   |   | L | 1 |
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** |   | 2 |
 | 911 | log_booker |  | DB |   | **W** |   | 1 |
 | 933 | taxe_add_vente | Donnees de ventes | DB | R |   | L | 6 |
 | 945 | Table_945 |  | MEM | R |   | L | 4 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB | R |   |   | 3 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
+| 79 | gratuites________gra |  | DB | R |   |   | 1 |
+| 285 | email |  | DB | R |   |   | 1 |
+| 70 | date_comptable___dat |  | DB | R |   |   | 1 |
+| 804 | valeur_credit_bar_defaut |  | DB |   |   | L | 3 |
+| 40 | comptable________cte |  | DB |   |   | L | 3 |
+| 89 | moyen_paiement___mop |  | DB |   |   | L | 3 |
+| 197 | articles_en_stock | Articles et stock | DB |   |   | L | 3 |
+| 473 | comptage_caisse | Sessions de caisse | TMP |   |   | L | 3 |
+| 847 | stat_lieu_vente_date | Statistiques point de vente | TMP |   |   | L | 3 |
+| 263 | vente | Donnees de ventes | DB |   |   | L | 3 |
+| 596 | tempo_ecran_police | Table temporaire ecran | TMP |   |   | L | 3 |
+| 400 | pv_cust_rentals |  | DB |   |   | L | 2 |
+| 728 | arc_cc_total |  | DB |   |   | L | 1 |
+| 910 | classification_memory |  | DB |   |   | L | 1 |
 | 1069 | Table_1069 |  | MEM |   |   | L | 1 |
+| 77 | articles_________art | Articles et stock | DB |   |   | L | 1 |
+| 67 | tables___________tab |  | DB |   |   | L | 1 |
 
 ### Colonnes par table (14 / 11 tables avec colonnes identifiees)
 
@@ -1199,45 +1139,9 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
+<summary>Table 899 - Boo_ResultsRechercheHoraire (**W**) - 2 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 34 - hebergement______heb (R) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | L.RetourOD | R | Logical |
-| B | L.Retour_Vente | R | Logical |
-| C | v.Ref article | R | Numeric |
-| D | v.Compte | R | Numeric |
-| E | v.Filiation | R | Numeric |
-| F | v.Service | R | Alpha |
-| G | v.Libelle art | R | Alpha |
-| H | v.Libelle supplement | R | Alpha |
-| I | v.Qte | R | Numeric |
-| J | v.Montant annul | R | Numeric |
-| K | v.Montant_Remise | R | Numeric |
-| L | v.Imputation | R | Numeric |
-| M | v.Sous imputation | R | Numeric |
-| N | v.Date operation vente | R | Date |
-| O | v.Heure operation vente | R | Time |
-| P | v.Type Article | R | Unicode |
-| Q | v.Sous Type article | R | Unicode |
-| R | v.Montant Gift Pass | R | Numeric |
-| S | v.Type Credit | R | Unicode |
-| T | v.Flag Application | R | Unicode |
-| U | v.Chrono | R | Numeric |
-| V | v.Moyen Paiement | R | Unicode |
-| W | v. retour vente_vrl_vsl | R | Logical |
-| X | v.retour article en stock | R | Logical |
-| Y | v.Transfert aller ? | R | Logical |
-| Z | v.Transfert retour ? | R | Logical |
-| BA | v. new package_id_out | R | Numeric |
-| BB | v. new package_id_out | R | Numeric |
 
 </details>
 
@@ -1249,45 +1153,6 @@ flowchart TD
 | CJ | V0.Chaine compte special | W | Alpha |
 | D | P.Solde compte | W | Numeric |
 | G | P.Etat compte | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 70 - date_comptable___dat (R) - 1 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| BL | V0.Date | R | Date |
-| F | P.Date fin sejour | R | Date |
-| H | P.Date solde | R | Date |
-| L | P.Date debut sejour | R | Date |
-| N | v.Date operation vente | R | Date |
-| P | date | R | Alpha |
-| R | V1.Date operation vente | R | Date |
-
-</details>
-
-<details>
-<summary>Table 79 - gratuites________gra (R) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 285 - email (R) - 1 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | Lien ticket | R | Logical |
-| B | Lien email | R | Logical |
-
-</details>
-
-<details>
-<summary>Table 899 - Boo_ResultsRechercheHoraire (**W**) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
@@ -1328,6 +1193,81 @@ flowchart TD
 
 </details>
 
+<details>
+<summary>Table 34 - hebergement______heb (R) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | L.RetourOD | R | Logical |
+| B | L.Retour_Vente | R | Logical |
+| C | v.Ref article | R | Numeric |
+| D | v.Compte | R | Numeric |
+| E | v.Filiation | R | Numeric |
+| F | v.Service | R | Alpha |
+| G | v.Libelle art | R | Alpha |
+| H | v.Libelle supplement | R | Alpha |
+| I | v.Qte | R | Numeric |
+| J | v.Montant annul | R | Numeric |
+| K | v.Montant_Remise | R | Numeric |
+| L | v.Imputation | R | Numeric |
+| M | v.Sous imputation | R | Numeric |
+| N | v.Date operation vente | R | Date |
+| O | v.Heure operation vente | R | Time |
+| P | v.Type Article | R | Unicode |
+| Q | v.Sous Type article | R | Unicode |
+| R | v.Montant Gift Pass | R | Numeric |
+| S | v.Type Credit | R | Unicode |
+| T | v.Flag Application | R | Unicode |
+| U | v.Chrono | R | Numeric |
+| V | v.Moyen Paiement | R | Unicode |
+| W | v. retour vente_vrl_vsl | R | Logical |
+| X | v.retour article en stock | R | Logical |
+| Y | v.Transfert aller ? | R | Logical |
+| Z | v.Transfert retour ? | R | Logical |
+| BA | v. new package_id_out | R | Numeric |
+| BB | v. new package_id_out | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 79 - gratuites________gra (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 285 - email (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | Lien ticket | R | Logical |
+| B | Lien email | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 70 - date_comptable___dat (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| BL | V0.Date | R | Date |
+| F | P.Date fin sejour | R | Date |
+| H | P.Date solde | R | Date |
+| L | P.Date debut sejour | R | Date |
+| N | v.Date operation vente | R | Date |
+| P | date | R | Alpha |
+| R | V1.Date operation vente | R | Date |
+
+</details>
+
 ## 11. VARIABLES
 
 ### 11.1 Parametres entrants (14)
@@ -1360,7 +1300,7 @@ Variables persistantes pendant toute la session.
 | CP | V.N°Ticket Annulation | Numeric | - |
 | CQ | v.Token.Id | Unicode | - |
 | CR | v.Envoi ticket email | Numeric | - |
-| CS | v.Adresse Mail | Unicode | [243.14](#t19) |
+| CS | v.Adresse Mail | Unicode | [T19](#t19) |
 | CT | v.Existe paiement OD | Logical | - |
 | CU | v.Existe paiement non OD | Logical | - |
 | CV | v.Fichier Duplicata | Alpha | - |
@@ -1393,14 +1333,14 @@ Variables diverses.
 | BE | GiftPass | Logical | - |
 | BF | montant_GiftPass | Numeric | - |
 | BG | id_annulation | Numeric | 1x refs |
-| BH | annulation | Alpha | [243.8](#t12) |
+| BH | annulation | Alpha | [T12](#t12) |
 | BI | Commentaire_Annulation | Unicode | 2x refs |
 | BJ | flag_application | Alpha | - |
 | BK | num_souscription | Alpha | 3x refs |
 | BL | V0.Date | Date | 2x refs |
 | BM | V0.Heure | Time | 2x refs |
-| BN | V0.Motif annulation | Alpha | [243.8](#t12) |
-| BO | V0.Confirmer annulation | Numeric | [243.8](#t12) |
+| BN | V0.Motif annulation | Alpha | [T12](#t12) |
+| BO | V0.Confirmer annulation | Numeric | [T12](#t12) |
 | BP | L.Retour_Ticket | Logical | 5x refs |
 | BQ | L.Retour_Ticket-(VAD/VSL/VRL) | Logical | - |
 | BR | V0.Erreur ? | Logical | - |
@@ -1416,11 +1356,11 @@ Variables diverses.
 | CB | Vo.Num Autorisation | Alpha | - |
 | CC | V0.Transaction_Id | Alpha | - |
 | CD | V0.Deversement OK | Logical | 1x refs |
-| CE | V0.Cloture en cours | Logical | [243.4](#t5) |
+| CE | V0.Cloture en cours | Logical | [T5](#t5) |
 | CF | V0.Fin de tache ? | Alpha | - |
 | CG | V0.Code devise | Numeric | 1x refs |
 | CH | V0.Reseau | Alpha | - |
-| CI | V0.N° ticket VRL/VSL | Alpha | [243.15](#t20) |
+| CI | V0.N° ticket VRL/VSL | Alpha | [T20](#t20) |
 | CJ | V0.Chaine compte special | Alpha | - |
 | CK | V0.Chambre | Alpha | - |
 | CL | V0.Mode paiement | Alpha | - |
@@ -1892,4 +1832,4 @@ graph LR
 | [Set Listing Number (IDE 181)](ADH-IDE-181.md) | Sous-programme | 1x | Normale - Configuration impression |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:55*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:36*

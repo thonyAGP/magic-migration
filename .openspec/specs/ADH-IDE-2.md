@@ -1,6 +1,6 @@
 ﻿# ADH IDE 2 - Program_2
 
-> **Analyse**: Phases 1-4 2026-02-07 06:31 -> 06:31 (24s) | Assemblage 12:40
+> **Analyse**: Phases 1-4 2026-02-07 06:31 -> 01:00 (18h28min) | Assemblage 01:00
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -164,4 +164,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:40*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:00*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 5 - Alimentation Combos NATION P
 
-> **Analyse**: Phases 1-4 2026-02-07 03:37 -> 03:38 (33s) | Assemblage 12:42
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 01:03 (21h25min) | Assemblage 01:03
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 5 alimenté les listes déroulantes de nationalité (combos) utilisées par le système de gestion de caisse. Il lit une chaîne brute depuis la table `pms_footer_comment`, la formate en supprimant les espaces inutiles, et ajoute intelligemment des séparateurs (virgules) entre les occurrences multiples. Le programme construit ainsi une liste composée de codes et libellés de nationalité (variables `[C]` et `[D]`) qu'il expose comme paramètre global `NATIONALITEP` à destination du menu appelant (IDE 7 - Menu Data Catching).**
+ADH IDE 5 - Alimentation Combos NATION P est un programme de gestion des nationalités dans le système de gestion des adhérents. Il reçoit comme paramètre une nationalité et remplit des zones de combo (listes déroulantes) avec les données correspondantes. Ce programme agit comme un alimentateur de données pour les interfaces utilisateur qui nécessitent un sélecteur de nationalité, garantissant la cohérence des données affichées à l'écran.
 
-**Avant de finaliser le résultat, ADH IDE 5 appelle le programme IDE 6 (Suppression Carac interdit) pour nettoyer les caractères illégaux—notamment les tirets (`-`) qu'il remplace par des underscores (`_`). Cette normalisation assure que les patterns de nationalité (comme "FRANCE-EU" → "FRANCE_EU") respectent les contraintes de la base de données et de l'interface utilisateur, évitant les problèmes de sérialisation ou de parsing.**
+Le programme contient une unique tâche "Sélection Nationalité" qui traite l'intégration des données de nationalité dans les contrôles combo de l'interface. Il interagit avec ADH IDE 6 (Suppression Carac interdit) pour gérer les caractères non autorisés dans les données, assurant ainsi que les informations de nationalité affichées sont valides et conformes aux règles métier définies.
 
-**Ce programme joue un rôle auxiliaire dans le processus de "data catching" : il prépare et valide les données métier avant qu'elles ne soient exploitées par le formulaire de sélection de nationalité affiché en écran modal. Son exécution est rapide et sans risque de régression, étant donné la simplicité logique et l'absence de modifications de données.**
+Ce composant fait partie du flux de gestion des données maître pour les adhérents, appelé depuis le menu Data Catching (ADH IDE 7). Il s'inscrit dans une architecture modulaire où chaque écran de saisie dispose de programmes dédiés pour remplir dynamiquement ses listes de sélection avec les données appropriées.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -45,7 +45,19 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Trim (v.Chaine [A])&Trim (IF (Counter (0)=1,'',',')&[D]&' '&[C])
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim (v.Chaine [A])&Trim (IF (Counter (0)=1,'',',')&[D]&' '&[C])` |
+| **Si vrai** | Action conditionnelle |
+| **Variables** | EN (v.Chaine) |
+| **Expression source** | Expression 1 : `Trim (v.Chaine [A])&Trim (IF (Counter (0)=1,'',',')&[D]&' '&` |
+| **Exemple** | Si Trim (v.Chaine [A])&Trim (IF (Counter (0)=1,'',',')&[D]&' '&[C]) â†’ Action conditionnelle |
 
 ## 6. CONTEXTE
 
@@ -73,13 +85,20 @@ flowchart TD
     START([START])
     INIT[Init controles]
     SAISIE[Traitement principal]
+    DECISION{v.Chaine}
+    PROCESS[Traitement]
     ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
@@ -116,22 +135,22 @@ flowchart TD
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| OTHER | 1 | 0 |
 | CONCATENATION | 1 | 0 |
+| OTHER | 1 | 0 |
 
 ### 12.2 Expressions cles par type
-
-#### OTHER (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| OTHER | 2 | `SetParam ('NATIONALITEP',v.Chaine [A])` | - |
 
 #### CONCATENATION (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CONCATENATION | 1 | `Trim (v.Chaine [A])&Trim (IF (Counter (0)=1,'',',')&[D]&' '&[C])` | - |
+
+#### OTHER (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 2 | `SetParam ('NATIONALITEP',v.Chaine [A])` | - |
 
 <!-- TAB:Connexions -->
 
@@ -185,7 +204,7 @@ graph LR
 | Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 10) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -202,4 +221,4 @@ graph LR
 | [    Suppression Carac interdit (IDE 6)](ADH-IDE-6.md) | Sous-programme | 1x | Normale - Validation saisie |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:44*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:04*

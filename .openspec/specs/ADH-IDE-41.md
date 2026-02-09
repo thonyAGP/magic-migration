@@ -1,6 +1,6 @@
 ﻿# ADH IDE 41 - Program_41
 
-> **Analyse**: Phases 1-4 2026-02-07 06:45 -> 06:45 (15s) | Assemblage 13:13
+> **Analyse**: Phases 1-4 2026-02-07 06:45 -> 01:36 (18h51min) | Assemblage 01:36
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -23,11 +23,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 41 est un programme squelettique sans fonction apparente. Avec une seule tâche contenant une ligne de logique unique et aucune interaction avec les tables de données, ce programme ne traite ni ne manipule d'informations. Aucune variable locale ou globale n'est déclarée, et aucune expression de calcul ou règle métier n'est implémentée.
+ADH IDE 41 est un programme orphelin sans fonction active. Il contient une seule tâche avec une unique ligne de logique, aucune variable, aucun accès table, et aucun appelant identifié. C'est un numéro de programme réservé qui n'a jamais été implémenté ou qui a été vidé de son contenu originel.
 
-Le programme est actuellement orphelin : il ne possède ni appelants ni appelés dans la chaîne d'appels Magic. Son nom générique "Program_41" et son absence totale de contenu suggèrent qu'il s'agit soit d'un numéro de programme réservé mais jamais complété, soit d'un vestige de code hérité sans utilisation en production. Aucune forme utilisateur n'est définie pour accueillir une interaction.
+Contrairement aux autres projets Magic (PBP, REF, PBG, VIL) où le programme 41 possède des rôles spécifiques—validation de recherche personnel, navigation de compte, import d'identité, récupération de titre—ADH IDE 41 reste une coquille vide. Il ne s'inscrit dans aucune chaîne d'appels en production et n'appartient à aucun composant ECF partagé (ADH.ecf, REF.ecf, UTILS.ecf).
 
-Ce programme ne remplit apparemment aucun rôle fonctionnel dans l'architecture ADH et pourrait être candidat à une investigation complémentaire en environnement Magic IDE natif pour déterminer s'il doit être supprimé ou réimplémenté.
+Ce programme est candidat à la suppression ou à une investigation en environnement Magic natif pour déterminer s'il doit être supprimé définitivement, réimplémenté avec une logique métier spécifique, ou repurposé selon les besoins fonctionnels de l'ADH. En état actuel, il ne contribue à aucune opération de gestion de caisse ou de compte adhérent.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -160,4 +160,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:15*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:38*

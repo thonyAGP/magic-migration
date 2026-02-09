@@ -1,6 +1,6 @@
-﻿# ADH IDE 132 - Sessions ouvertes WS
+﻿# ADH IDE 132 - Historique session
 
-> **Analyse**: Phases 1-4 2026-02-07 07:04 -> 07:05 (16s) | Assemblage 07:09
+> **Analyse**: Phases 1-4 2026-02-08 03:08 -> 03:08 (4s) | Assemblage 03:08
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -12,28 +12,32 @@
 |----------|--------|
 | Projet | ADH |
 | IDE Position | 132 |
-| Nom Programme | Sessions ouvertes WS |
+| Nom Programme | Historique session |
 | Fichier source | `Prg_132.xml` |
-| Dossier IDE | Gestion |
-| Taches | 1 (0 ecrans visibles) |
+| Dossier IDE | Caisse |
+| Taches | 4 (0 ecrans visibles) |
 | Tables modifiees | 0 |
-| Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Sessions ouvertes WS** assure la gestion complete de ce processus.
+Le programme **ADH IDE 132 - Historique session** est un module de consultation en lecture seule qui affiche l'historique des sessions de caisse ouvertes et fermées. Appelé depuis la gestion caisse principale (IDE 121), il valide l'existence d'une session et son statut (ouvert ou fermé) avant de présenter la liste des sessions avec leurs dates, heures et utilisateurs associés. Son rôle est strictement informatif et auditif, sans aucune modification de données.
+
+La logique est extrêmement simple et compacte : deux variables booléennes (existence session + statut ouverture) et cinq expressions conditionnelles contrôlent l'affichage. Le programme ne lisait que depuis la table `histo_sessions_caisse` (vue sur `caisse_session`) sans écriture ni verrouillage, le rendant sûr pour accès concurrents et facilement intégrable dans un système moderne.
+
+Son intégration dans le flux de gestion caisse en fait un point de consultation essentiels, situé entre l'affichage des sessions actuelles (IDE 119) et la fermeture de caisse (IDE 131), offrant aux utilisateurs une traçabilité complète des opérations de caisse.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
-- **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 5
+- **Appele par**: [Gestion caisse (IDE 121)](ADH-IDE-121.md), [Gestion caisse 142 (IDE 298)](ADH-IDE-298.md)
+- **Appelle**: 1 programmes | **Tables**: 4 (W:0 R:3 L:1) | **Taches**: 4 | **Expressions**: 1
 
 <!-- TAB:Ecrans -->
 
@@ -53,87 +57,104 @@
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 1 taches]
-    ENDOK([END])
-    START --> PROCESS --> ENDOK
+    INIT[Init controles]
+    SAISIE[Affichage historique]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
 
-### Tables utilisees (1)
+### Tables utilisees (4)
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
 | 246 | histo_sessions_caisse | Sessions de caisse | DB | R |   |   | 1 |
+| 249 | histo_sessions_caisse_detail | Sessions de caisse | DB | R |   |   | 1 |
+| 250 | histo_sessions_caisse_devise | Sessions de caisse | DB | R |   |   | 1 |
+| 693 | devise_in | Devises / taux de change | DB |   |   | L | 2 |
 
-### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+### Colonnes par table (4 / 3 tables avec colonnes identifiees)
 
 <details>
 <summary>Table 246 - histo_sessions_caisse (R) - 1 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | Param existe session | R | Logical |
-| B | Param existe session ouverte | R | Logical |
+| A | Flag detail | R | Logical |
+| B | titre | R | Alpha |
+| C | V.Curseur | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 249 - histo_sessions_caisse_detail (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| EN | Flag detail | R | Logical |
+| EQ | Fin Historique | R | Logical |
+| EV | Total caisse | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 250 - histo_sessions_caisse_devise (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| EN | V.Curseur devises | R | Logical |
+| EO | Param devise locale | R | Alpha |
+| EQ | Fin Historique | R | Logical |
+| EV | Total caisse | R | Numeric |
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Autres (2)
+### 11.1 Autres (9)
 
 Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | Param existe session | Logical | 1x refs |
-| B | Param existe session ouverte | Logical | - |
+| EN | Param societe | Alpha | - |
+| EO | Param devise locale | Alpha | - |
+| EP | Param masque montant | Alpha | - |
+| EQ | Fin Historique | Logical | 1x refs |
+| ER | LastQuand | Alpha | - |
+| ES | Validation comptage chrono his | Numeric | - |
+| ET | Validation comptage chrono date | Date | - |
+| EU | Validation comptage chrono time | Time | - |
+| EV | Total caisse | Numeric | - |
 
 ## 12. EXPRESSIONS
 
-**5 / 5 expressions decodees (100%)**
+**1 / 1 expressions decodees (100%)**
 
 ### 12.1 Repartition par type
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONSTANTE | 1 | 0 |
-| CAST_LOGIQUE | 2 | 0 |
-| CONDITION | 1 | 0 |
 | OTHER | 1 | 0 |
 
 ### 12.2 Expressions cles par type
-
-#### CONSTANTE (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONSTANTE | 2 | `0` | - |
-
-#### CAST_LOGIQUE (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CAST_LOGIQUE | 3 | `'TRUE'LOG` | - |
-| CAST_LOGIQUE | 1 | `'FALSE'LOG` | - |
-
-#### CONDITION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 4 | `[C]=0` | - |
 
 #### OTHER (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 5 | `Param existe session [A] AND Param existe session o... [B]` | - |
+| OTHER | 1 | `Fin Historique [D]` | - |
 
 <!-- TAB:Connexions -->
 
@@ -141,39 +162,57 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Gestion caisse (IDE 121)](ADH-IDE-121.md) -> **Historique session (IDE 132)**
+
+Main -> ... -> [Gestion caisse 142 (IDE 298)](ADH-IDE-298.md) -> **Historique session (IDE 132)**
 
 ```mermaid
 graph LR
-    T132[132 Sessions ouvertes WS]
+    T132[132 Historique session]
     style T132 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T132
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC281[281 Fermeture Sessions]
+    style CC281 fill:#f59e0b
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC121[121 Gestion caisse]
+    style CC121 fill:#3fb950
+    CC298[298 Gestion caisse 142]
+    style CC298 fill:#3fb950
+    CC163 --> CC121
+    CC281 --> CC121
+    CC163 --> CC298
+    CC281 --> CC298
+    CC1 --> CC163
+    CC1 --> CC281
+    CC121 --> T132
+    CC298 --> T132
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [121](ADH-IDE-121.md) | Gestion caisse | 1 |
+| [298](ADH-IDE-298.md) | Gestion caisse 142 | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T132[132 Sessions ouvertes WS]
+    T132[132 Historique session]
     style T132 fill:#58a6ff
-    NONE[Aucun callee]
-    T132 -.-> NONE
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    C43[43 Recuperation du titre]
+    T132 --> C43
+    style C43 fill:#3fb950
 ```
 
 ### 13.4 Detail Callees avec contexte
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| - | (aucun) | - | - |
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -181,12 +220,12 @@ graph LR
 
 | Metrique | Valeur | Impact migration |
 |----------|--------|-----------------|
-| Lignes de logique | 10 | Programme compact |
-| Expressions | 5 | Peu de logique |
+| Lignes de logique | 142 | Programme compact |
+| Expressions | 1 | Peu de logique |
 | Tables WRITE | 0 | Impact faible |
-| Sous-programmes | 0 | Peu de dependances |
+| Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
-| Code desactive | 0% (0 / 10) | Code sain |
+| Code desactive | 0% (0 / 142) | Code sain |
 | Regles metier | 0 | Pas de regle identifiee |
 
 ### 14.2 Plan de migration par bloc
@@ -195,6 +234,7 @@ graph LR
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:09*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:12*

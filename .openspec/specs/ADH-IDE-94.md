@@ -1,6 +1,6 @@
 ﻿# ADH IDE 94 - Maj des lignes saisies archive
 
-> **Analyse**: Phases 1-4 2026-02-07 06:56 -> 06:56 (18s) | Assemblage 14:22
+> **Analyse**: Phases 1-4 2026-02-07 06:56 -> 02:34 (19h37min) | Assemblage 02:34
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,38 +19,60 @@
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 7/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Ce programme traite la mise à jour en masse des lignes archivées dans la table "projet". Il boucle sur l'ensemble des enregistrements de la table n746 (projet) et effectue une validation conditionnelle basée sur le flag "Flague [C]" pour déterminer si chaque ligne doit être marquée comme complète (TRUE) ou en attente (FALSE). Les modifications apportées incluent la capture de deux timestamps via la fonction Date(), la lecture des données clés (numéro de facture, nom du fichier PDF, société, compte) et la mise à jour des champs de statut.
+# ADH IDE 94 - Maj des lignes saisies archive
 
-Le programme est extrêmement simple dans sa structure : une seule tâche (Tache 94.1) de type batch sans interface utilisateur, composée de 14 expressions seulement et n'effectuant qu'une seule opération WRITE sur la table cible. Il n'appelle aucun autre programme et ne possède pas de callers directs, ce qui en fait un processus autonome typiquement destiné à être exécuté par un ordonnanceur ou un job de batch externe.
+**Rôle dans le flux Factures**
+Programme appelé depuis l'écran Factures (ADH IDE 89 - Table Compta&Vent) pour mettre à jour les lignes de facture archivées. Intervient après validation ou modification d'une saisie de facture pour synchroniser l'état archive avec les modifications effectuées.
 
-Cette opération remplit une fonction de consolidation archivistique : finaliser les entrées de projet après vérification, en les marquant comme traitées ou en attente pour audit et réconciliation. Les champs "Retour Compta" et "Retour Vente" [F et G] captent également le statut de retour des opérations comptables et commerciales, donnant une vue complète de la justification de chaque ligne archivée.
+**Logique métier**
+Parcourt les lignes saisies de la facture en cours et met à jour la table `projet` (stockage persistant des lignes archivées) avec les valeurs saisies, servant de point de synchronisation entre l'écran de saisie temporaire et l'archive définitive.
+
+**Impact en cascade**
+Opération d'écriture critique qui valide la persistance des lignes de facture. Son succès détermine si les modifications saisies deviennent durables dans la base de données projet. Appelé en fin de workflow de saisie pour confirmer l'archivage.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-1 regles identifiees:
+3 regles identifiees:
 
-### Autres (1 regles)
+### Autres (3 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Condition toujours vraie (flag actif)
+#### <a id="rm-RM-001"></a>[RM-001] Condition: [Y] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[Y]=0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 1 : `[Y]=0` |
+| **Exemple** | Si [Y]=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: [BH] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BH]=0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 2 : `[BH]=0` |
+| **Exemple** | Si [BH]=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition toujours vraie (flag actif)
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `P.Flague [C]` |
 | **Si vrai** | 'TRUE'LOG |
 | **Si faux** | 'FALSE'LOG) |
-| **Variables** | C (P.Flague) |
+| **Variables** | EP (P.Flague) |
 | **Expression source** | Expression 9 : `IF(P.Flague [C],'TRUE'LOG,'FALSE'LOG)` |
 | **Exemple** | Si P.Flague [C] â†’ 'TRUE'LOG. Sinon â†’ 'FALSE'LOG) |
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md)
 - **Appelle**: 0 programmes | **Tables**: 4 (W:1 R:0 L:3) | **Taches**: 1 | **Expressions**: 14
 
 <!-- TAB:Ecrans -->
@@ -122,15 +144,15 @@ flowchart TD
 
 ### 11.1 Parametres entrants (5)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | p.Societe | Unicode | 1x parametre entrant |
-| B | p.Compte | Numeric | 1x parametre entrant |
-| C | P.Flague | Logical | 1x parametre entrant |
-| D | p.No_Facture | Numeric | 1x parametre entrant |
-| E | p.NomFichPDF | Alpha | 1x parametre entrant |
+| EN | p.Societe | Unicode | 1x parametre entrant |
+| EO | p.Compte | Numeric | 1x parametre entrant |
+| EP | P.Flague | Logical | 1x parametre entrant |
+| EQ | p.No_Facture | Numeric | 1x parametre entrant |
+| ER | p.NomFichPDF | Alpha | 1x parametre entrant |
 
 ### 11.2 Variables de session (4)
 
@@ -138,10 +160,10 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| F | V retour Compta | Logical | - |
-| G | v Retour Vente | Logical | - |
-| H | v Trouvé Compta | Logical | - |
-| I | v Trouvé Vente | Logical | - |
+| ES | V retour Compta | Logical | - |
+| ET | v Retour Vente | Logical | - |
+| EU | v Trouvé Compta | Logical | - |
+| EV | v Trouvé Vente | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -151,18 +173,25 @@ Variables persistantes pendant toute la session.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 2 | 2 |
 | CAST_LOGIQUE | 1 | 5 |
 | DATE | 2 | 0 |
-| CONDITION | 2 | 0 |
 | OTHER | 9 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 2 | `[BH]=0` | [RM-002](#rm-RM-002) |
+| CONDITION | 1 | `[Y]=0` | [RM-001](#rm-RM-001) |
 
 #### CAST_LOGIQUE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CAST_LOGIQUE | 9 | `IF(P.Flague [C],'TRUE'LOG,'FALSE'LOG)` | [RM-001](#rm-RM-001) |
+| CAST_LOGIQUE | 9 | `IF(P.Flague [C],'TRUE'LOG,'FALSE'LOG)` | [RM-003](#rm-RM-003) |
 
 #### DATE (2 expressions)
 
@@ -171,18 +200,11 @@ Variables persistantes pendant toute la session.
 | DATE | 8 | `Date()` | - |
 | DATE | 4 | `Date()` | - |
 
-#### CONDITION (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 2 | `[AH]=0` | - |
-| CONDITION | 1 | `[Y]=0` | - |
-
 #### OTHER (9 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 12 | `[AC]` | - |
+| OTHER | 12 | `[BC]` | - |
 | OTHER | 11 | `[W]` | - |
 | OTHER | 14 | `[S]` | - |
 | OTHER | 13 | `[K]` | - |
@@ -195,22 +217,22 @@ Variables persistantes pendant toute la session.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md) -> **Maj des lignes saisies archive (IDE 94)**
 
 ```mermaid
 graph LR
     T94[94 Maj des lignes sais...]
     style T94 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T94
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC89[89 Factures Tble Compt...]
+    style CC89 fill:#8b5cf6
+    CC89 --> T94
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [89](ADH-IDE-89.md) | Factures (Tble Compta&Vent | 3 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -241,7 +263,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 63) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Regles metier | 3 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -252,4 +274,4 @@ graph LR
 | projet | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:24*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:34*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 105 - Maj des lignes saisies V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:48 (28s) | Assemblage 15:22
+> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 02:47 (22h58min) | Assemblage 02:47
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,17 +22,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-La veille a été exécutée. Maintenant, je peux analyser le programme Magic ADH IDE 105.
+# ADH IDE 105 - Maj des lignes saisies V3
 
----
+Programme de mise à jour des lignes comptables suite à des modifications de garanties ou factures. Il reçoit les paramètres identifiant une ligne comptable existante (clés societe/compte/filiation/service/numero) et met à jour les colonnes pertinentes dans la table `comptable________cte`. Appelé en tant que sous-tache lors de la validation de garanties (garantie sur compte) ou de la finalisation de factures (checkout ou gestion manuelle).
 
-**Programme ADH IDE 105 - Maj des lignes saisies V3**
+La logique effectue une validation des paramètres reçus, localise la ligne cible dans `comptable________cte`, puis applique les modifications. Le programme gère les cas d'erreur comme l'absence de ligne correspondante ou les violations de contraintes d'intégrité. Les modifications sont écrites directement dans la table, sans rollback automatique en cas de conflit concurrent.
 
-Le programme IDE 105 assure la mise à jour des lignes d'écritures comptables après modification des données de facture ou de garantie. Il intervient dans la chaîne de traitement des documents commerciaux (factures, garanties) en synchronisant les modifications vers la table `comptable________cte`, qui constitue le registre comptable centralisé. Ce programme est déclenché depuis trois points d'entrée critiques : la gestion des garanties sur compte PMS-584 (IDE 0), le checkout de factures (IDE 54), et l'interface comptable et vente V3 (IDE 97).
-
-Son rôle est de valider et mettre à jour les enregistrements comptables existants en fonction des changements apportés aux documents source. Plutôt que de créer de nouvelles lignes, il modifie les écritures existantes pour refléter les corrections, les annulations partielles, ou les réajustements de montants. Cette approche garantit la traçabilité et la cohérence des données comptables en conservant les références originales.
-
-L'intégration du programme dans trois workflows distincts (garanties, facturation, comptabilité) indique qu'il s'agit d'un composant transversal de synchronisation, appelé systématiquement après toute modification de document affectant les écritures. Son appartenance au bloc ADH.ecf (Sessions_Reprises) le rend accessible depuis d'autres projets si besoin.
+Utilisé dans le workflow comptable V3 (versioning indiqué par le suffixe) pour maintenir la cohérence des saisies manuelles. Le programme est appelé par des handlers de tâches supérieures qui orchestrent le flux global (garantie, facture) et s'attendent à ce que les mises à jour soient appliquées sans confirmation utilisateur.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -50,31 +46,80 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Maj des lignes sai
 
 ## 5. REGLES METIER
 
-2 regles identifiees:
+7 regles identifiees:
 
-### Autres (2 regles)
+### Autres (7 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Valeur par defaut si Trim(P.i.TypeReglement [G]) est vide
+#### <a id="rm-RM-001"></a>[RM-001] Condition composite: [BE]=0 AND NOT P.i.Facture ECO [H]
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BE]=0 AND NOT P.i.Facture ECO [H]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EU (P.i.Facture ECO) |
+| **Expression source** | Expression 1 : `[BE]=0 AND NOT P.i.Facture ECO [H]` |
+| **Exemple** | Si [BE]=0 AND NOT P.i.Facture ECO [H] â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition composite: [BP]=0 AND NOT P.i.Facture ECO [H]
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BP]=0 AND NOT P.i.Facture ECO [H]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EU (P.i.Facture ECO) |
+| **Expression source** | Expression 2 : `[BP]=0 AND NOT P.i.Facture ECO [H]` |
+| **Exemple** | Si [BP]=0 AND NOT P.i.Facture ECO [H] â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: [BC] AND Trim(P.i.TypeReglement [G]) different de 'D'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BC] AND Trim(P.i.TypeReglement [G])<>'D'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | ET (P.i.TypeReglement) |
+| **Expression source** | Expression 11 : `[BC] AND Trim(P.i.TypeReglement [G])<>'D'` |
+| **Exemple** | Si [BC] AND Trim(P.i.TypeReglement [G])<>'D' â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: [BJ] AND Trim(P.i.TypeReglement [G]) different de 'I'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BJ] AND Trim(P.i.TypeReglement [G])<>'I'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | ET (P.i.TypeReglement) |
+| **Expression source** | Expression 12 : `[BJ] AND Trim(P.i.TypeReglement [G])<>'I'` |
+| **Exemple** | Si [BJ] AND Trim(P.i.TypeReglement [G])<>'I' â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Condition: [Q] = 0 OR [BE] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[Q] = 0 OR [BE] = 0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 15 : `[Q] = 0 OR [BE] = 0` |
+| **Exemple** | Si [Q] = 0 OR [BE] = 0 â†’ Action si vrai |
+
+#### <a id="rm-RM-006"></a>[RM-006] Valeur par defaut si Trim(P.i.TypeReglement [G]) est vide
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `Trim(P.i.TypeReglement [G])=''` |
 | **Si vrai** | 'TRUE'LOG |
-| **Si faux** | IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ])) |
-| **Variables** | G (P.i.TypeReglement) |
+| **Si faux** | IF(Trim(P.i.TypeReglement [G])='I',[BC],[BJ])) |
+| **Variables** | ET (P.i.TypeReglement) |
 | **Expression source** | Expression 17 : `IF(Trim(P.i.TypeReglement [G])='','TRUE'LOG,IF(Trim(P.i.Type` |
-| **Exemple** | Si Trim(P.i.TypeReglement [G])='' â†’ 'TRUE'LOG. Sinon â†’ IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ])) |
+| **Exemple** | Si Trim(P.i.TypeReglement [G])='' â†’ 'TRUE'LOG. Sinon â†’ IF(Trim(P.i.TypeReglement [G])='I',[BC],[BJ])) |
 
-#### <a id="rm-RM-002"></a>[RM-002] Si Trim(P.i.TypeReglement [G])='I' alors [AC] sinon [AJ])
+#### <a id="rm-RM-007"></a>[RM-007] Si Trim(P.i.TypeReglement [G])='I' alors [BC] sinon [BJ])
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `Trim(P.i.TypeReglement [G])='I'` |
-| **Si vrai** | [AC] |
-| **Si faux** | [AJ]) |
-| **Variables** | G (P.i.TypeReglement) |
-| **Expression source** | Expression 18 : `IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ])` |
-| **Exemple** | Si Trim(P.i.TypeReglement [G])='I' â†’ [AC]. Sinon â†’ [AJ]) |
+| **Si vrai** | [BC] |
+| **Si faux** | [BJ]) |
+| **Variables** | ET (P.i.TypeReglement) |
+| **Expression source** | Expression 18 : `IF(Trim(P.i.TypeReglement [G])='I',[BC],[BJ])` |
+| **Exemple** | Si Trim(P.i.TypeReglement [G])='I' â†’ [BC]. Sinon â†’ [BJ]) |
 
 ## 6. CONTEXTE
 
@@ -165,14 +210,14 @@ Variables recues du programme appelant ([Garantie sur compte PMS-584 (IDE 0)](AD
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.i.Societe | Unicode | 1x parametre entrant |
-| B | P.i.Compte | Numeric | 1x parametre entrant |
-| C | P.i.Flague | Logical | - |
-| D | P.i.NumFac | Numeric | 1x parametre entrant |
-| E | P.i.NomFacPDF | Alpha | 1x parametre entrant |
-| F | P.i.SelectionManulle | Logical | 2x parametre entrant |
-| G | P.i.TypeReglement | Unicode | 5x parametre entrant |
-| H | P.i.Facture ECO | Logical | 2x parametre entrant |
+| EN | P.i.Societe | Unicode | 1x parametre entrant |
+| EO | P.i.Compte | Numeric | 1x parametre entrant |
+| EP | P.i.Flague | Logical | - |
+| EQ | P.i.NumFac | Numeric | 1x parametre entrant |
+| ER | P.i.NomFacPDF | Alpha | 1x parametre entrant |
+| ES | P.i.SelectionManulle | Logical | 2x parametre entrant |
+| ET | P.i.TypeReglement | Unicode | 5x parametre entrant |
+| EU | P.i.Facture ECO | Logical | 2x parametre entrant |
 
 ### 11.2 Variables de session (4)
 
@@ -180,10 +225,10 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| I | V retour Compta | Logical | - |
-| J | v Retour Vente | Logical | - |
-| K | v Trouvé Compta | Logical | - |
-| L | v Trouvé Vente | Logical | 1x session |
+| EV | V retour Compta | Logical | - |
+| EW | v Retour Vente | Logical | - |
+| EX | v Trouvé Compta | Logical | - |
+| EY | v Trouvé Vente | Logical | 1x session |
 
 ## 12. EXPRESSIONS
 
@@ -193,30 +238,30 @@ Variables persistantes pendant toute la session.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 7 | 6 |
 | CAST_LOGIQUE | 2 | 5 |
-| CONDITION | 7 | 5 |
 | DATE | 2 | 0 |
 | OTHER | 12 | 0 |
 
 ### 12.2 Expressions cles par type
 
-#### CAST_LOGIQUE (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CAST_LOGIQUE | 17 | `IF(Trim(P.i.TypeReglement [G])='','TRUE'LOG,IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ]))` | [RM-001](#rm-RM-001) |
-| CAST_LOGIQUE | 20 | `'FALSE'LOG` | - |
-
 #### CONDITION (7 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 18 | `IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ])` | [RM-002](#rm-RM-002) |
-| CONDITION | 11 | `[AC] AND Trim(P.i.TypeReglement [G])<>'D'` | - |
-| CONDITION | 12 | `[AJ] AND Trim(P.i.TypeReglement [G])<>'I'` | - |
-| CONDITION | 21 | `CndRange(Trim(P.i.TypeReglement [G])='',P.i.SelectionManulle [F])` | - |
-| CONDITION | 1 | `[AE]=0 AND NOT P.i.Facture ECO [H]` | - |
+| CONDITION | 12 | `[BJ] AND Trim(P.i.TypeReglement [G])<>'I'` | [RM-004](#rm-RM-004) |
+| CONDITION | 15 | `[Q] = 0 OR [BE] = 0` | [RM-005](#rm-RM-005) |
+| CONDITION | 18 | `IF(Trim(P.i.TypeReglement [G])='I',[BC],[BJ])` | [RM-007](#rm-RM-007) |
+| CONDITION | 1 | `[BE]=0 AND NOT P.i.Facture ECO [H]` | [RM-001](#rm-RM-001) |
+| CONDITION | 2 | `[BP]=0 AND NOT P.i.Facture ECO [H]` | [RM-002](#rm-RM-002) |
 | ... | | *+2 autres* | |
+
+#### CAST_LOGIQUE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 17 | `IF(Trim(P.i.TypeReglement [G])='','TRUE'LOG,IF(Trim(P.i.TypeReglement [G])='I',[BC],[BJ]))` | [RM-006](#rm-RM-006) |
+| CAST_LOGIQUE | 20 | `'FALSE'LOG` | - |
 
 #### DATE (2 expressions)
 
@@ -232,8 +277,8 @@ Variables persistantes pendant toute la session.
 | OTHER | 16 | `P.i.SelectionManulle [F]` | - |
 | OTHER | 14 | `[V]` | - |
 | OTHER | 13 | `[N]` | - |
-| OTHER | 23 | `[AO]` | - |
-| OTHER | 22 | `[AI]` | - |
+| OTHER | 23 | `[BO]` | - |
+| OTHER | 22 | `[BI]` | - |
 | ... | | *+7 autres* | |
 
 ### 12.3 Toutes les expressions (23)
@@ -241,24 +286,24 @@ Variables persistantes pendant toute la session.
 <details>
 <summary>Voir les 23 expressions</summary>
 
-#### CAST_LOGIQUE (2)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 17 | `IF(Trim(P.i.TypeReglement [G])='','TRUE'LOG,IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ]))` |
-| 20 | `'FALSE'LOG` |
-
 #### CONDITION (7)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 18 | `IF(Trim(P.i.TypeReglement [G])='I',[AC],[AJ])` |
-| 1 | `[AE]=0 AND NOT P.i.Facture ECO [H]` |
-| 2 | `[AP]=0 AND NOT P.i.Facture ECO [H]` |
-| 15 | `[Q] = 0 OR [AE] = 0` |
-| 11 | `[AC] AND Trim(P.i.TypeReglement [G])<>'D'` |
-| 12 | `[AJ] AND Trim(P.i.TypeReglement [G])<>'I'` |
+| 1 | `[BE]=0 AND NOT P.i.Facture ECO [H]` |
+| 2 | `[BP]=0 AND NOT P.i.Facture ECO [H]` |
+| 11 | `[BC] AND Trim(P.i.TypeReglement [G])<>'D'` |
+| 12 | `[BJ] AND Trim(P.i.TypeReglement [G])<>'I'` |
+| 15 | `[Q] = 0 OR [BE] = 0` |
+| 18 | `IF(Trim(P.i.TypeReglement [G])='I',[BC],[BJ])` |
 | 21 | `CndRange(Trim(P.i.TypeReglement [G])='',P.i.SelectionManulle [F])` |
+
+#### CAST_LOGIQUE (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 17 | `IF(Trim(P.i.TypeReglement [G])='','TRUE'LOG,IF(Trim(P.i.TypeReglement [G])='I',[BC],[BJ]))` |
+| 20 | `'FALSE'LOG` |
 
 #### DATE (2)
 
@@ -281,8 +326,8 @@ Variables persistantes pendant toute la session.
 | 14 | `[V]` |
 | 16 | `P.i.SelectionManulle [F]` |
 | 19 | `v Trouvé Vente [L]` |
-| 22 | `[AI]` |
-| 23 | `[AO]` |
+| 22 | `[BI]` |
+| 23 | `[BO]` |
 
 </details>
 
@@ -379,7 +424,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 81) | Code sain |
-| Regles metier | 2 | Quelques regles a preserver |
+| Regles metier | 7 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -396,4 +441,4 @@ graph LR
 | comptable________cte | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 15:23*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:48*

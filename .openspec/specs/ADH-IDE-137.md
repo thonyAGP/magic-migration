@@ -1,6 +1,6 @@
 ﻿# ADH IDE 137 - Ticket ouverture session
 
-> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:50 (30s) | Assemblage 15:36
+> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:16 (23h25min) | Assemblage 03:16
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 137 est le programme responsable de l'**édition du ticket d'ouverture de session** lors du démarrage d'une caisse. Le workflow principale lecture la date comptable puis exécute deux chemins d'impression parallèles (Printer 1 pour A4 et Printer 9 pour TMT88IV), générant des tickets identiques en différents formats. Pour chaque devise référencée en caisse (table devise_in), le programme accumule les montants et calcule l'équivalent en devise locale avec le change applicable. Le titre du ticket est récupéré dynamiquement via ADH IDE 43, tandis que la configuration imprimante est gérée par ADH IDE 179 (initialisation) et ADH IDE 182 (réinitialisation).
+## ADH IDE 137 - Ticket Ouverture Session
 
-Le programme manipule 8 tables critiques dont devise_in (6 accès), caisse_session_detail pour le numéro de session, et des tables optionnelles pour le Carnet Bar et TAI. Les données incluent les soldes cash et carte (variables W0 [R] et [S]), le montant de caisse au départ (variable W0 [K]), ainsi que les frais de change (variable W0 [U]) nécessaires pour la gestion multi-devise. Sans aucune condition complexe (architecture linéaire), le programme privilégie 23 tâches organisées hiérarchiquement pour structurer la logique métier d'ouverture.
+**ADH IDE 137** est un programme utilitaire chargé de générer les tickets d'ouverture de session pour la caisse. Exécuté lors du démarrage (Ouverture caisse IDE 122 ou version 143 IDE 297), il orchestr 23 tâches organisées en trois blocs : un bloc de traitement multi-devise qui accumule les soldes initiaux (caisse, cartes, montants devises), un bloc de calculs qui détermine les taux de change et frais appliqués, et enfin un bloc d'impression qui délègue au sous-programme Récupération du titre (IDE 43) avant de configurer l'imprimante (Get Printer IDE 179, Set Listing IDE 181, Raz Printer IDE 182) pour produire deux versions du ticket : une sortie Printer 1 (A4) et une Printer 9 (TMT88IV terminal).
 
-Appelé par ADH IDE 122 (Ouverture caisse) et ADH IDE 297 (Ouverture caisse 143) depuis la chaîne Main, ADH IDE 137 documente l'état initial de la caisse avant les opérations commerciales du jour. Les deux chemins d'impression permettent de produire un même ticket sur des formats différents (A4 vs TMT88IV), intégrant les vérifications parallèles de services annexes (Carnet Bar via table 266, TAI via table 463) pour une ouverture de caisse complète et traçable.
+Le programme accède uniquement en **lecture** à 6 tables bases de données (devise_in pour multi-devise, histo_sessions_caisse_detail pour les montants initiaux, date_comptable pour les dates de référence) sans modifier aucune donnée. Ses 17 variables de travail (W0) se composent des 9 paramètres reçus de l'appelant (société, devise locale, dates, montants initiaux) et des montants calculés par devise (soldes cash/carte, change/frais, versements/retraits). La logique est **100% linéaire** : aucune condition complexe, aucune branche morte, pure accumulation et édition de données.
+
+Au sein de la chaîne métier Gestion Caisse (Main → Menu 163 → Ouverture 122/297 → **137**), ce programme remplit un rôle **non-orphelin mais isolé** : appelé par 2 contextes seulement, il dépend de 4 utilitaires légers et n'impacte aucun programme aval (terminal leaf dans le callgraph). Complexité basse (18/100), profil 100% technique (impression batch), idéal pour migration vers une API REST de génération PDF.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +38,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Tableau recap [ECRAN]
+#### <a id="t1"></a>137 - Tableau recap [[ECRAN]](#ecran-t1)
 
 **Role** : Tache d'orchestration : point d'entree du programme (14 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 640 x 0 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -46,108 +48,108 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T4](#t4) | Normal | Traitement |
-| [T6](#t6) | Devise en caisse | Traitement |
-| [T7](#t7) | (sans nom) | Traitement |
-| [T8](#t8) | Devise en caisse | Traitement |
-| [T11](#t11) | Lecture historique session det | Traitement |
-| [T13](#t13) | Normal | Traitement |
-| [T15](#t15) | Devise en caisse | Traitement |
-| [T16](#t16) | (sans nom) | Traitement |
-| [T17](#t17) | Devise en caisse | Traitement |
-| [T20](#t20) | Lecture historique session det | Traitement |
-| [T21](#t21) | Existe Carnet Bar | Traitement |
-| [T22](#t22) | Existe TAI | Traitement |
-| [T23](#t23) | Session | Traitement |
+| [137.2.1](#t4) | Normal | Traitement |
+| [137.2.1.1.1](#t6) | Devise en caisse | Traitement |
+| [137.2.1.2](#t7) | (sans nom) | Traitement |
+| [137.2.1.2.1](#t8) | Devise en caisse | Traitement |
+| [137.2.1.5](#t11) | Lecture historique session det | Traitement |
+| [137.3.1](#t13) | Normal | Traitement |
+| [137.3.1.1.1](#t15) | Devise en caisse | Traitement |
+| [137.3.1.2](#t16) | (sans nom) | Traitement |
+| [137.3.1.2.1](#t17) | Devise en caisse | Traitement |
+| [137.3.1.5](#t20) | Lecture historique session det | Traitement |
+| [137.4](#t21) | Existe Carnet Bar | Traitement |
+| [137.5](#t22) | Existe TAI | Traitement |
+| [137.6](#t23) | Session | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t4"></a>T4 - Normal
+#### <a id="t4"></a>137.2.1 - Normal
 
 **Role** : Traitement : Normal.
 
 ---
 
-#### <a id="t6"></a>T6 - Devise en caisse
+#### <a id="t6"></a>137.2.1.1.1 - Devise en caisse
 
 **Role** : Traitement : Devise en caisse.
-**Variables liees** : E (P0 devise locale), K (W0 caisse depart), M (W0 pièce caisse Rec), N (W0 pièce caisse Dep)
+**Variables liees** : ER (P0 devise locale), EX (W0 caisse depart), EZ (W0 pièce caisse Rec), FA (W0 pièce caisse Dep)
 
 ---
 
-#### <a id="t7"></a>T7 - (sans nom)
+#### <a id="t7"></a>137.2.1.2 - (sans nom)
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t8"></a>T8 - Devise en caisse
+#### <a id="t8"></a>137.2.1.2.1 - Devise en caisse
 
 **Role** : Traitement : Devise en caisse.
-**Variables liees** : E (P0 devise locale), K (W0 caisse depart), M (W0 pièce caisse Rec), N (W0 pièce caisse Dep)
+**Variables liees** : ER (P0 devise locale), EX (W0 caisse depart), EZ (W0 pièce caisse Rec), FA (W0 pièce caisse Dep)
 
 ---
 
-#### <a id="t11"></a>T11 - Lecture historique session det
+#### <a id="t11"></a>137.2.1.5 - Lecture historique session det
 
 **Role** : Consultation/chargement : Lecture historique session det.
-**Variables liees** : I (P0 session), Z (W0 date debut session), BA (W0 heure debut session)
+**Variables liees** : EV (P0 session), FM (W0 date debut session), FN (W0 heure debut session)
 
 ---
 
-#### <a id="t13"></a>T13 - Normal
+#### <a id="t13"></a>137.3.1 - Normal
 
 **Role** : Traitement : Normal.
 
 ---
 
-#### <a id="t15"></a>T15 - Devise en caisse
+#### <a id="t15"></a>137.3.1.1.1 - Devise en caisse
 
 **Role** : Traitement : Devise en caisse.
-**Variables liees** : E (P0 devise locale), K (W0 caisse depart), M (W0 pièce caisse Rec), N (W0 pièce caisse Dep)
+**Variables liees** : ER (P0 devise locale), EX (W0 caisse depart), EZ (W0 pièce caisse Rec), FA (W0 pièce caisse Dep)
 
 ---
 
-#### <a id="t16"></a>T16 - (sans nom)
+#### <a id="t16"></a>137.3.1.2 - (sans nom)
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t17"></a>T17 - Devise en caisse
+#### <a id="t17"></a>137.3.1.2.1 - Devise en caisse
 
 **Role** : Traitement : Devise en caisse.
-**Variables liees** : E (P0 devise locale), K (W0 caisse depart), M (W0 pièce caisse Rec), N (W0 pièce caisse Dep)
+**Variables liees** : ER (P0 devise locale), EX (W0 caisse depart), EZ (W0 pièce caisse Rec), FA (W0 pièce caisse Dep)
 
 ---
 
-#### <a id="t20"></a>T20 - Lecture historique session det
+#### <a id="t20"></a>137.3.1.5 - Lecture historique session det
 
 **Role** : Consultation/chargement : Lecture historique session det.
-**Variables liees** : I (P0 session), Z (W0 date debut session), BA (W0 heure debut session)
+**Variables liees** : EV (P0 session), FM (W0 date debut session), FN (W0 heure debut session)
 
 ---
 
-#### <a id="t21"></a>T21 - Existe Carnet Bar
+#### <a id="t21"></a>137.4 - Existe Carnet Bar
 
 **Role** : Traitement : Existe Carnet Bar.
-**Variables liees** : W (W0 Existe Carnet Bar), X (W0 Existe TAI)
+**Variables liees** : FJ (W0 Existe Carnet Bar), FK (W0 Existe TAI)
 
 ---
 
-#### <a id="t22"></a>T22 - Existe TAI
+#### <a id="t22"></a>137.5 - Existe TAI
 
 **Role** : Traitement : Existe TAI.
-**Variables liees** : W (W0 Existe Carnet Bar), X (W0 Existe TAI)
+**Variables liees** : FJ (W0 Existe Carnet Bar), FK (W0 Existe TAI)
 
 ---
 
-#### <a id="t23"></a>T23 - Session
+#### <a id="t23"></a>137.6 - Session
 
 **Role** : Traitement : Session.
-**Variables liees** : I (P0 session), Z (W0 date debut session), BA (W0 heure debut session)
+**Variables liees** : EV (P0 session), FM (W0 date debut session), FN (W0 heure debut session)
 
 
 ### 3.2 Calcul (7 taches)
@@ -156,52 +158,52 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t2"></a>T2 - Lecture date comptable
+#### <a id="t2"></a>137.1 - Lecture date comptable
 
 **Role** : Traitement : Lecture date comptable.
-**Variables liees** : H (P0 date comptable), O (W0 date comptable), Z (W0 date debut session)
+**Variables liees** : EU (P0 date comptable), FB (W0 date comptable), FM (W0 date debut session)
 
 ---
 
-#### <a id="t5"></a>T5 - Calcul change
+#### <a id="t5"></a>137.2.1.1 - Calcul change
 
 **Role** : Calcul : Calcul change.
-**Variables liees** : T (W0 change), U (W0 frais de change)
+**Variables liees** : FG (W0 change), FH (W0 frais de change)
 
 ---
 
-#### <a id="t9"></a>T9 - Calcul change
+#### <a id="t9"></a>137.2.1.3 - Calcul change
 
 **Role** : Calcul : Calcul change.
-**Variables liees** : T (W0 change), U (W0 frais de change)
+**Variables liees** : FG (W0 change), FH (W0 frais de change)
 
 ---
 
-#### <a id="t10"></a>T10 - Calcul change
+#### <a id="t10"></a>137.2.1.4 - Calcul change
 
 **Role** : Calcul : Calcul change.
-**Variables liees** : T (W0 change), U (W0 frais de change)
+**Variables liees** : FG (W0 change), FH (W0 frais de change)
 
 ---
 
-#### <a id="t14"></a>T14 - Calcul change
+#### <a id="t14"></a>137.3.1.1 - Calcul change
 
 **Role** : Calcul : Calcul change.
-**Variables liees** : T (W0 change), U (W0 frais de change)
+**Variables liees** : FG (W0 change), FH (W0 frais de change)
 
 ---
 
-#### <a id="t18"></a>T18 - Calcul change
+#### <a id="t18"></a>137.3.1.3 - Calcul change
 
 **Role** : Calcul : Calcul change.
-**Variables liees** : T (W0 change), U (W0 frais de change)
+**Variables liees** : FG (W0 change), FH (W0 frais de change)
 
 ---
 
-#### <a id="t19"></a>T19 - Calcul change
+#### <a id="t19"></a>137.3.1.4 - Calcul change
 
 **Role** : Calcul : Calcul change.
-**Variables liees** : T (W0 change), U (W0 frais de change)
+**Variables liees** : FG (W0 change), FH (W0 frais de change)
 
 
 ### 3.3 Impression (2 taches)
@@ -210,14 +212,14 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t3"></a>T3 - Printer 1
+#### <a id="t3"></a>137.2 - Printer 1
 
 **Role** : Generation du document : Printer 1.
 **Delegue a** : [Get Printer (IDE 179)](ADH-IDE-179.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
 
 ---
 
-#### <a id="t12"></a>T12 - Printer 9
+#### <a id="t12"></a>137.3 - Printer 9
 
 **Role** : Generation du document : Printer 9.
 **Delegue a** : [Get Printer (IDE 179)](ADH-IDE-179.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
@@ -225,7 +227,41 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Programme d'impression - logique technique sans conditions metier)*
+3 regles identifiees:
+
+### Impression (2 regles)
+
+#### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 1 |
+| **Expression source** | Expression 7 : `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action si CURRENTPRINTERNUM = 1 |
+| **Impact** | [137.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n9
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 9 |
+| **Expression source** | Expression 8 : `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action si CURRENTPRINTERNUM = 9 |
+| **Impact** | [137.2 - Printer 1](#t3) |
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: W0 fin tache [V] egale 'F'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 fin tache [V]='F'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FI (W0 fin tache) |
+| **Expression source** | Expression 6 : `W0 fin tache [V]='F'` |
+| **Exemple** | Si W0 fin tache [V]='F' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -244,48 +280,55 @@ Generation des documents et tickets.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **137.1** | [**Tableau recap** (T1)](#t1) [mockup](#ecran-t1) | MDI | 640x0 | Traitement |
-| 137.1.1 | [Normal (T4)](#t4) | MDI | - | |
-| 137.1.2 | [Devise en caisse (T6)](#t6) | MDI | - | |
-| 137.1.3 | [(sans nom) (T7)](#t7) | MDI | - | |
-| 137.1.4 | [Devise en caisse (T8)](#t8) | MDI | - | |
-| 137.1.5 | [Lecture historique session det (T11)](#t11) | MDI | - | |
-| 137.1.6 | [Normal (T13)](#t13) | MDI | - | |
-| 137.1.7 | [Devise en caisse (T15)](#t15) | MDI | - | |
-| 137.1.8 | [(sans nom) (T16)](#t16) | MDI | - | |
-| 137.1.9 | [Devise en caisse (T17)](#t17) | MDI | - | |
-| 137.1.10 | [Lecture historique session det (T20)](#t20) | MDI | - | |
-| 137.1.11 | [Existe Carnet Bar (T21)](#t21) | MDI | - | |
-| 137.1.12 | [Existe TAI (T22)](#t22) | MDI | - | |
-| 137.1.13 | [Session (T23)](#t23) | MDI | - | |
-| **137.2** | [**Lecture date comptable** (T2)](#t2) | MDI | - | Calcul |
-| 137.2.1 | [Calcul change (T5)](#t5) | MDI | - | |
-| 137.2.2 | [Calcul change (T9)](#t9) | MDI | - | |
-| 137.2.3 | [Calcul change (T10)](#t10) | MDI | - | |
-| 137.2.4 | [Calcul change (T14)](#t14) | MDI | - | |
-| 137.2.5 | [Calcul change (T18)](#t18) | MDI | - | |
-| 137.2.6 | [Calcul change (T19)](#t19) | MDI | - | |
-| **137.3** | [**Printer 1** (T3)](#t3) | MDI | - | Impression |
-| 137.3.1 | [Printer 9 (T12)](#t12) | MDI | - | |
+| **137.1** | [**Tableau recap** (137)](#t1) [mockup](#ecran-t1) | MDI | 640x0 | Traitement |
+| 137.1.1 | [Normal (137.2.1)](#t4) | MDI | - | |
+| 137.1.2 | [Devise en caisse (137.2.1.1.1)](#t6) | MDI | - | |
+| 137.1.3 | [(sans nom) (137.2.1.2)](#t7) | MDI | - | |
+| 137.1.4 | [Devise en caisse (137.2.1.2.1)](#t8) | MDI | - | |
+| 137.1.5 | [Lecture historique session det (137.2.1.5)](#t11) | MDI | - | |
+| 137.1.6 | [Normal (137.3.1)](#t13) | MDI | - | |
+| 137.1.7 | [Devise en caisse (137.3.1.1.1)](#t15) | MDI | - | |
+| 137.1.8 | [(sans nom) (137.3.1.2)](#t16) | MDI | - | |
+| 137.1.9 | [Devise en caisse (137.3.1.2.1)](#t17) | MDI | - | |
+| 137.1.10 | [Lecture historique session det (137.3.1.5)](#t20) | MDI | - | |
+| 137.1.11 | [Existe Carnet Bar (137.4)](#t21) | MDI | - | |
+| 137.1.12 | [Existe TAI (137.5)](#t22) | MDI | - | |
+| 137.1.13 | [Session (137.6)](#t23) | MDI | - | |
+| **137.2** | [**Lecture date comptable** (137.1)](#t2) | MDI | - | Calcul |
+| 137.2.1 | [Calcul change (137.2.1.1)](#t5) | MDI | - | |
+| 137.2.2 | [Calcul change (137.2.1.3)](#t9) | MDI | - | |
+| 137.2.3 | [Calcul change (137.2.1.4)](#t10) | MDI | - | |
+| 137.2.4 | [Calcul change (137.3.1.1)](#t14) | MDI | - | |
+| 137.2.5 | [Calcul change (137.3.1.3)](#t18) | MDI | - | |
+| 137.2.6 | [Calcul change (137.3.1.4)](#t19) | MDI | - | |
+| **137.3** | [**Printer 1** (137.2)](#t3) | MDI | - | Impression |
+| 137.3.1 | [Printer 9 (137.3)](#t12) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (14t)]
-    START --> B1
-    B2[Calcul (7t)]
-    B1 --> B2
-    B3[Impression (2t)]
-    B2 --> B3
-    ENDOK([END])
-    B3 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{W0 fin tache}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -311,7 +354,7 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| BA | W0 heure debut session | R | Time |
+| FN | W0 heure debut session | R | Time |
 
 </details>
 
@@ -320,7 +363,7 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| E | P0 devise locale | R | Alpha |
+| ER | P0 devise locale | R | Alpha |
 
 </details>
 
@@ -351,9 +394,9 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| H | P0 date comptable | R | Date |
-| O | W0 date comptable | R | Date |
-| Z | W0 date debut session | R | Date |
+| EU | P0 date comptable | R | Date |
+| FB | W0 date comptable | R | Date |
+| FM | W0 date debut session | R | Date |
 
 </details>
 
@@ -362,10 +405,10 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| J | Edition detaillee | R | Logical |
-| K | W0 caisse depart | R | Numeric |
-| M | W0 pièce caisse Rec | R | Numeric |
-| N | W0 pièce caisse Dep | R | Numeric |
+| EW | Edition detaillee | R | Logical |
+| EX | W0 caisse depart | R | Numeric |
+| EZ | W0 pièce caisse Rec | R | Numeric |
+| FA | W0 pièce caisse Dep | R | Numeric |
 
 </details>
 
@@ -377,15 +420,15 @@ Variables recues du programme appelant ([Ouverture caisse (IDE 122)](ADH-IDE-122
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Alpha | - |
-| B | P0 nbre decimales | Numeric | - |
-| C | P0 nom village | Alpha | - |
-| D | P0 masque cumul | Alpha | - |
-| E | P0 devise locale | Alpha | - |
-| F | P0 Uni/Bilateral | Alpha | - |
-| G | P0 village TAI | Alpha | - |
-| H | P0 date comptable | Date | - |
-| I | P0 session | Numeric | - |
+| EN | P0 societe | Alpha | - |
+| EO | P0 nbre decimales | Numeric | - |
+| EP | P0 nom village | Alpha | - |
+| EQ | P0 masque cumul | Alpha | - |
+| ER | P0 devise locale | Alpha | - |
+| ES | P0 Uni/Bilateral | Alpha | - |
+| ET | P0 village TAI | Alpha | - |
+| EU | P0 date comptable | Date | - |
+| EV | P0 session | Numeric | - |
 
 ### 11.2 Variables de travail (17)
 
@@ -393,23 +436,23 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| K | W0 caisse depart | Numeric | - |
-| L | W0 apport coffre | Numeric | - |
-| M | W0 pièce caisse Rec | Numeric | - |
-| N | W0 pièce caisse Dep | Numeric | - |
-| O | W0 date comptable | Date | - |
-| P | W0 versement | Numeric | - |
-| Q | W0 retrait | Numeric | - |
-| R | W0 solde cash | Numeric | - |
-| S | W0 solde carte | Numeric | - |
-| T | W0 change | Numeric | - |
-| U | W0 frais de change | Numeric | - |
-| V | W0 fin tache | Alpha | 1x calcul interne |
-| W | W0 Existe Carnet Bar | Logical | - |
-| X | W0 Existe TAI | Logical | - |
-| Y | W0 titre | Alpha | 1x calcul interne |
-| Z | W0 date debut session | Date | - |
-| BA | W0 heure debut session | Time | - |
+| EX | W0 caisse depart | Numeric | - |
+| EY | W0 apport coffre | Numeric | - |
+| EZ | W0 pièce caisse Rec | Numeric | - |
+| FA | W0 pièce caisse Dep | Numeric | - |
+| FB | W0 date comptable | Date | - |
+| FC | W0 versement | Numeric | - |
+| FD | W0 retrait | Numeric | - |
+| FE | W0 solde cash | Numeric | - |
+| FF | W0 solde carte | Numeric | - |
+| FG | W0 change | Numeric | - |
+| FH | W0 frais de change | Numeric | - |
+| FI | W0 fin tache | Alpha | 1x calcul interne |
+| FJ | W0 Existe Carnet Bar | Logical | - |
+| FK | W0 Existe TAI | Logical | - |
+| FL | W0 titre | Alpha | 1x calcul interne |
+| FM | W0 date debut session | Date | - |
+| FN | W0 heure debut session | Time | - |
 
 ### 11.3 Autres (1)
 
@@ -417,40 +460,40 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| J | Edition detaillee | Logical | - |
+| EW | Edition detaillee | Logical | - |
 
 <details>
 <summary>Toutes les 27 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P0 societe | Alpha |
-| P0 | **B** | P0 nbre decimales | Numeric |
-| P0 | **C** | P0 nom village | Alpha |
-| P0 | **D** | P0 masque cumul | Alpha |
-| P0 | **E** | P0 devise locale | Alpha |
-| P0 | **F** | P0 Uni/Bilateral | Alpha |
-| P0 | **G** | P0 village TAI | Alpha |
-| P0 | **H** | P0 date comptable | Date |
-| P0 | **I** | P0 session | Numeric |
-| W0 | **K** | W0 caisse depart | Numeric |
-| W0 | **L** | W0 apport coffre | Numeric |
-| W0 | **M** | W0 pièce caisse Rec | Numeric |
-| W0 | **N** | W0 pièce caisse Dep | Numeric |
-| W0 | **O** | W0 date comptable | Date |
-| W0 | **P** | W0 versement | Numeric |
-| W0 | **Q** | W0 retrait | Numeric |
-| W0 | **R** | W0 solde cash | Numeric |
-| W0 | **S** | W0 solde carte | Numeric |
-| W0 | **T** | W0 change | Numeric |
-| W0 | **U** | W0 frais de change | Numeric |
-| W0 | **V** | W0 fin tache | Alpha |
-| W0 | **W** | W0 Existe Carnet Bar | Logical |
-| W0 | **X** | W0 Existe TAI | Logical |
-| W0 | **Y** | W0 titre | Alpha |
-| W0 | **Z** | W0 date debut session | Date |
-| W0 | **BA** | W0 heure debut session | Time |
-| Autre | **J** | Edition detaillee | Logical |
+| P0 | **EN** | P0 societe | Alpha |
+| P0 | **EO** | P0 nbre decimales | Numeric |
+| P0 | **EP** | P0 nom village | Alpha |
+| P0 | **EQ** | P0 masque cumul | Alpha |
+| P0 | **ER** | P0 devise locale | Alpha |
+| P0 | **ES** | P0 Uni/Bilateral | Alpha |
+| P0 | **ET** | P0 village TAI | Alpha |
+| P0 | **EU** | P0 date comptable | Date |
+| P0 | **EV** | P0 session | Numeric |
+| W0 | **EX** | W0 caisse depart | Numeric |
+| W0 | **EY** | W0 apport coffre | Numeric |
+| W0 | **EZ** | W0 pièce caisse Rec | Numeric |
+| W0 | **FA** | W0 pièce caisse Dep | Numeric |
+| W0 | **FB** | W0 date comptable | Date |
+| W0 | **FC** | W0 versement | Numeric |
+| W0 | **FD** | W0 retrait | Numeric |
+| W0 | **FE** | W0 solde cash | Numeric |
+| W0 | **FF** | W0 solde carte | Numeric |
+| W0 | **FG** | W0 change | Numeric |
+| W0 | **FH** | W0 frais de change | Numeric |
+| W0 | **FI** | W0 fin tache | Alpha |
+| W0 | **FJ** | W0 Existe Carnet Bar | Logical |
+| W0 | **FK** | W0 Existe TAI | Logical |
+| W0 | **FL** | W0 titre | Alpha |
+| W0 | **FM** | W0 date debut session | Date |
+| W0 | **FN** | W0 heure debut session | Time |
+| Autre | **EW** | Edition detaillee | Logical |
 
 </details>
 
@@ -462,14 +505,22 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 3 | 3 |
 | CONSTANTE | 3 | 0 |
 | DATE | 1 | 0 |
 | REFERENCE_VG | 1 | 0 |
-| CONDITION | 3 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
 | STRING | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 8 | `GetParam ('CURRENTPRINTERNUM')=9` | [RM-003](#rm-RM-003) |
+| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=1` | [RM-002](#rm-RM-002) |
+| CONDITION | 6 | `W0 fin tache [V]='F'` | [RM-001](#rm-RM-001) |
 
 #### CONSTANTE (3 expressions)
 
@@ -490,14 +541,6 @@ Variables diverses.
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | REFERENCE_VG | 2 | `VG2` | - |
-
-#### CONDITION (3 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 8 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
-| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
-| CONDITION | 6 | `W0 fin tache [V]='F'` | - |
 
 #### CAST_LOGIQUE (1 expressions)
 
@@ -601,7 +644,7 @@ graph LR
 | Sous-programmes | 4 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 382) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 3 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -632,4 +675,4 @@ graph LR
 | [Get Printer (IDE 179)](ADH-IDE-179.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 15:37*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:18*

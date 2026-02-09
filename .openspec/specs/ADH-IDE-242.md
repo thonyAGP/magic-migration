@@ -1,6 +1,6 @@
 ﻿# ADH IDE 242 - Menu Choix Saisie/Annul vente
 
-> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 03:54 (34s) | Assemblage 03:54
+> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 03:54 (34s) | Assemblage 04:35
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,43 +18,17 @@
 | Taches | 3 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 10 |
+| Complexite | **BASSE** (score 17/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Menu Choix Saisie/Annul vente** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md).
+# ADH IDE 242 - Menu Choix Saisie/Annul vente
 
-Le flux de traitement s'organise en **2 blocs fonctionnels** :
+**Rôle fonctionnel :** Programme de menu interactif permettant à l'utilisateur de choisir entre saisie d'une nouvelle vente ou annulation d'une vente existante. C'est un point de bifurcation critique dans le workflow de gestion des ventes qui s'exécute après l'ouverture de la caisse.
 
-- **Saisie** (2 taches) : ecrans de saisie utilisateur (formulaires, champs, donnees)
-- **Traitement** (1 tache) : traitements metier divers
+**Architecture technique :** Programme appelé depuis le Menu caisse GM (IDE 163) avec 3 points d'entrée supplémentaires pour les transactions PMS spécifiques (584, 710, 721). Contient 2 tâches principales : la saisie/annulation vente et la vérification de l'existence de ventes gratuites ou IGR. Modifie la table `comptable_gratuite` pour tracker les opérations de gratification. Propose 10 branches d'appel vers des variantes de ventes (Gift Pass, PMS-584/710/721, historiques payants/IGR/gratuits).
 
-**Donnees modifiees** : 1 tables en ecriture (comptable_gratuite).
-
-**Logique metier** : 1 regles identifiees couvrant conditions metier.
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Saisie (2 taches)
-
-- **242** - Saisie/Annulation vente **[[ECRAN]](#ecran-t1)**
-- **242.1** - Existe vente gratuite ou IGR ?
-
-Delegue a : [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md), [Histo ventes payantes (IDE 243)](ADH-IDE-243.md), [Histo ventes payantes /PMS-605 (IDE 244)](ADH-IDE-244.md), [Histo ventes payantes /PMS-623 (IDE 245)](ADH-IDE-245.md), [Histo ventes IGR (IDE 252)](ADH-IDE-252.md), [Histo ventes Gratuités (IDE 253)](ADH-IDE-253.md)
-
-#### Phase 2 : Traitement (1 tache)
-
-- **242.1.1** - (sans nom)
-
-Delegue a : [Appel programme (IDE 44)](ADH-IDE-44.md)
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| comptable_gratuite | R/**W** (2 usages) |  |
-
-</details>
+**Impact aval :** Agit comme un dispatcher qui canalise l'utilisateur vers l'un des 8 programmes de transaction spécialisés selon le type de vente choisi. Les historiques de ventes (IDE 243-245, 252-253) permettent l'annulation de transactions antérieures. Cette architecture décentralisée distribue la complexité métier sur des modules spécialisés plutôt que de la centraliser dans un monolithe.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -64,7 +38,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Saisie/Annulation 
 
 ---
 
-#### <a id="t1"></a>242 - Saisie/Annulation vente [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Saisie/Annulation vente [ECRAN]
 
 **Role** : Saisie des donnees : Saisie/Annulation vente.
 **Ecran** : 600 x 143 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -72,7 +46,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Saisie/Annulation 
 
 ---
 
-#### <a id="t2"></a>242.1 - Existe vente gratuite ou IGR ?
+#### <a id="t2"></a>T2 - Existe vente gratuite ou IGR ?
 
 **Role** : Saisie des donnees : Existe vente gratuite ou IGR ?.
 **Variables liees** : S (V.Existe IGR ?), T (V.Existe Gratuité ?)
@@ -85,7 +59,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t3"></a>242.1.1 - (sans nom)
+#### <a id="t3"></a>T3 - (sans nom)
 
 **Role** : Traitement interne.
 **Delegue a** : [Appel programme (IDE 44)](ADH-IDE-44.md)
@@ -121,14 +95,14 @@ Traitements internes.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 242 | 242 | Saisie/Annulation vente | MDI | 600 | 143 | Saisie |
+| 1 | 242 | T1 | Saisie/Annulation vente | MDI | 600 | 143 | Saisie |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>242 - Saisie/Annulation vente
-**Tache** : [242](#t1) | **Type** : MDI | **Dimensions** : 600 x 143 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 600 x 143 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie/Annulation vente
 
 <!-- FORM-DATA:
@@ -436,9 +410,9 @@ Ecran unique: **Saisie/Annulation vente**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **242.1** | [**Saisie/Annulation vente** (242)](#t1) [mockup](#ecran-t1) | MDI | 600x143 | Saisie |
-| 242.1.1 | [Existe vente gratuite ou IGR ? (242.1)](#t2) | - | - | |
-| **242.2** | [**(sans nom)** (242.1.1)](#t3) | - | - | Traitement |
+| **242.1** | [**Saisie/Annulation vente** (T1)](#t1) [mockup](#ecran-t1) | MDI | 600x143 | Saisie |
+| 242.1.1 | [Existe vente gratuite ou IGR ? (T2)](#t2) | - | - | |
+| **242.2** | [**(sans nom)** (T3)](#t3) | - | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -446,19 +420,23 @@ Ecran unique: **Saisie/Annulation vente**
 flowchart TD
     START([START])
     INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 1 tables]
+    START --> INIT
+    B1[Saisie (2t)]
+    INIT --> B1
+    B2[Traitement (1t)]
+    B1 --> B2
+    WRITE[MAJ 1 tables]
+    B2 --> WRITE
     ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
+    WRITE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -848,4 +826,4 @@ graph LR
 | [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:54*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:35*

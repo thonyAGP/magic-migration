@@ -1,6 +1,6 @@
 ﻿# ADH IDE 73 - Print extrait compte /Imp
 
-> **Analyse**: 2026-02-07 13:44
+> **Analyse**: 2026-02-08 02:10
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

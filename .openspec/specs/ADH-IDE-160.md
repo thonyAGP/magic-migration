@@ -1,6 +1,6 @@
 ﻿# ADH IDE 160 - Liste des GM
 
-> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:51 (28s) | Assemblage 07:18
+> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:43 (23h51min) | Assemblage 03:43
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,22 +14,25 @@
 | IDE Position | 160 |
 | Nom Programme | Liste des GM |
 | Fichier source | `Prg_160.xml` |
-| Dossier IDE | Identification |
+| Dossier IDE | General |
 | Taches | 2 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Liste des GM** assure la gestion complete de ce processus, accessible depuis [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [VAD validés à imprimer (IDE 0)](ADH-IDE-0.md).
+Basé sur le contexte fourni, je peux voir qu'il s'agit d'une tâche relative au projet **Lecteur_Magic** (migration Magic Unipaas vers moderne). Cependant, le programme **ADH IDE 160** mentionné dans votre requête ne correspond pas exactement à la documentation OpenSpec fournie.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Selon la mémoire globale, **ADH IDE 160** est documenté comme **GetCMP (Club Med Pass)** - un programme qui récupère les informations de carte Club Med Pass pour un compte. Ce programme a déjà été migré en API C# (endpoint `/api/members/club-med-pass/{societe}/{compte}/{filiation}`).
 
-- **Traitement** (2 taches) : traitements metier divers
+Avant de rédiger la description, j'ai besoin de clarifier :
 
-**Donnees modifiees** : 1 tables en ecriture (ez_card).
+1. **Confirmez-vous que c'est ADH IDE 160** ou s'agit-il d'un autre programme ADH ?
+2. **Quelle source utilisez-vous** : souhaitez-vous que je génère une description basée sur l'analyse Magic actuelle ou sur la documentation OpenSpec existante ?
+3. **Quel format** : simple paragraphe technique ou conforme au template de spec OpenSpec (section Fonctionnel/Technique) ?
 
-**Logique metier** : 1 regles identifiees couvrant conditions metier.
+Pouvez-vous clarifier ces points pour que je rédige une description précise et alignée avec vos standards ?
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -39,33 +42,116 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Liste des GM [ECRAN]
+#### <a id="t1"></a>160 - Liste des GM [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Liste des GM.
 **Ecran** : 1440 x 224 DLU (MDI) | [Voir mockup](#ecran-t1)
 
 ---
 
-#### <a id="t2"></a>T2 - Update Ezcard
+#### <a id="t2"></a>160.1 - Update Ezcard
 
 **Role** : Traitement : Update Ezcard.
 
 
 ## 5. REGLES METIER
 
-1 regles identifiees:
+10 regles identifiees:
 
-### Autres (1 regles)
+### Autres (10 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Traitement si Trim([AT]) est renseigne
+#### <a id="rm-RM-001"></a>[RM-001] Condition: [I]<>'---' AND Trim(CHG_PRV_v.num cmp [F]) different de
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `Trim([AT])<>'' AND Trim([AT])<>Trim([AH]) AND [AU]=1` |
-| **Si vrai** | [AT] |
+| **Condition** | `[I]<>'---' AND Trim(CHG_PRV_v.num cmp [F])<>''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (v.num cmp), ES (CHG_PRV_v.num cmp) |
+| **Expression source** | Expression 1 : `[I]<>'---' AND Trim(CHG_PRV_v.num cmp [F])<>''` |
+| **Exemple** | Si [I]<>'---' AND Trim(CHG_PRV_v.num cmp [F])<>'' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: [I]='---' OR Trim(CHG_PRV_v.num cmp [F]) egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[I]='---' OR Trim(CHG_PRV_v.num cmp [F])=''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (v.num cmp), ES (CHG_PRV_v.num cmp) |
+| **Expression source** | Expression 2 : `[I]='---' OR Trim(CHG_PRV_v.num cmp [F])=''` |
+| **Exemple** | Si [I]='---' OR Trim(CHG_PRV_v.num cmp [F])='' â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: [BG] egale 'O'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BG]='O'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 9 : `[BG]='O'` |
+| **Exemple** | Si [BG]='O' â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: Trim([BH]) different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([BH])<>''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 10 : `Trim([BH])<>''` |
+| **Exemple** | Si Trim([BH])<>'' â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Condition composite: [BI] AND ([BK]*1000+[BL]<>[BC]*1000+[BD] OR [BM]='O')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BI] AND ([BK]*1000+[BL]<>[BC]*1000+[BD] OR [BM]='O')` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 11 : `[BI] AND ([BK]*1000+[BL]<>[BC]*1000+[BD] OR [BM]='O')` |
+| **Exemple** | Si [BI] AND ([BK]*1000+[BL]<>[BC]*1000+[BD] OR [BM]='O') â†’ Action si vrai |
+
+#### <a id="rm-RM-006"></a>[RM-006] Condition composite: Trim([BT])<>'' AND Trim([BT])<>Trim([BH])
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([BT])<>'' AND Trim([BT])<>Trim([BH])` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 13 : `Trim([BT])<>'' AND Trim([BT])<>Trim([BH])` |
+| **Exemple** | Si Trim([BT])<>'' AND Trim([BT])<>Trim([BH]) â†’ Action si vrai |
+
+#### <a id="rm-RM-007"></a>[RM-007] Condition: Trim([BT])='' AND Trim([BH]) different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([BT])='' AND Trim([BH])<>''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 15 : `Trim([BT])='' AND Trim([BH])<>''` |
+| **Exemple** | Si Trim([BT])='' AND Trim([BH])<>'' â†’ Action si vrai |
+
+#### <a id="rm-RM-008"></a>[RM-008] Condition: [BU] egale 1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BU]=1` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 16 : `[BU]=1` |
+| **Exemple** | Si [BU]=1 â†’ Action si vrai |
+
+#### <a id="rm-RM-009"></a>[RM-009] Condition: [BU] different de 1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BU]<>1` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 17 : `[BU]<>1` |
+| **Exemple** | Si [BU]<>1 â†’ Action si vrai |
+
+#### <a id="rm-RM-010"></a>[RM-010] Traitement si Trim([BT]) est renseigne
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([BT])<>'' AND Trim([BT])<>Trim([BH]) AND [BU]=1` |
+| **Si vrai** | [BT] |
 | **Si faux** | '') |
-| **Expression source** | Expression 24 : `IF(Trim([AT])<>'' AND Trim([AT])<>Trim([AH]) AND [AU]=1,[AT]` |
-| **Exemple** | Si Trim([AT])<>'' AND Trim([AT])<>Trim([AH]) AND [AU]=1 â†’ [AT]. Sinon â†’ '') |
+| **Expression source** | Expression 24 : `IF(Trim([BT])<>'' AND Trim([BT])<>Trim([BH]) AND [BU]=1,[BT]` |
+| **Exemple** | Si Trim([BT])<>'' AND Trim([BT])<>Trim([BH]) AND [BU]=1 â†’ [BT]. Sinon â†’ '') |
 
 ## 6. CONTEXTE
 
@@ -80,14 +166,14 @@ Traitements internes.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 160 | T1 | Liste des GM | MDI | 1440 | 224 | Traitement |
+| 1 | 160 | 160 | Liste des GM | MDI | 1440 | 224 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>160 - Liste des GM
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1440 x 224 DLU
+**Tache** : [160](#t1) | **Type** : MDI | **Dimensions** : 1440 x 224 DLU
 **Bloc** : Traitement | **Titre IDE** : Liste des GM
 
 <!-- FORM-DATA:
@@ -320,22 +406,28 @@ Ecran unique: **Liste des GM**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **160.1** | [**Liste des GM** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1440x224 | Traitement |
-| 160.1.1 | [Update Ezcard (T2)](#t2) | - | - | |
+| **160.1** | [**Liste des GM** (160)](#t1) [mockup](#ecran-t1) | MDI | 1440x224 | Traitement |
+| 160.1.1 | [Update Ezcard (160.1)](#t2) | - | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 2 taches]
-    ENDOK([END])
-    START --> PROCESS --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -345,13 +437,22 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
+| 312 | ez_card |  | DB |   | **W** | L | 2 |
 | 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
 | 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   |   | L | 1 |
-| 312 | ez_card |  | DB |   | **W** | L | 2 |
 | 612 | tempo_present_excel | Table temporaire ecran | TMP |   |   | L | 1 |
 | 844 | stat_vendeur |  | TMP |   |   | L | 1 |
 
 ### Colonnes par table (2 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 312 - ez_card (**W**/L) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| EN | P.Card Id | W | Unicode |
+
+</details>
 
 <details>
 <summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
@@ -368,15 +469,6 @@ flowchart TD
 
 </details>
 
-<details>
-<summary>Table 312 - ez_card (**W**/L) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | P.Card Id | W | Unicode |
-
-</details>
-
 ## 11. VARIABLES
 
 ### 11.1 Variables de session (4)
@@ -385,10 +477,10 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | v.num cmp | Unicode | 3x session |
-| B | v.retour carte deja attribuee | Logical | - |
-| C | v.variable change en cours | Logical | - |
-| D | v.last good row | Numeric | - |
+| EN | v.num cmp | Unicode | 3x session |
+| EO | v.retour carte deja attribuee | Logical | - |
+| EP | v.variable change en cours | Logical | - |
+| EQ | v.last good row | Numeric | - |
 
 ### 11.2 Autres (3)
 
@@ -396,9 +488,9 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| E | CHG_REASON_v.num cmp | Numeric | - |
-| F | CHG_PRV_v.num cmp | Unicode | 2x refs |
-| G | retour confirmation | Numeric | - |
+| ER | CHG_REASON_v.num cmp | Numeric | - |
+| ES | CHG_PRV_v.num cmp | Unicode | 2x refs |
+| ET | retour confirmation | Numeric | - |
 
 ## 12. EXPRESSIONS
 
@@ -408,8 +500,8 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 11 | 5 |
 | CALCULATION | 1 | 0 |
+| CONDITION | 11 | 10 |
 | CONSTANTE | 1 | 0 |
 | OTHER | 7 | 0 |
 | REFERENCE_VG | 1 | 0 |
@@ -419,22 +511,22 @@ Variables diverses.
 
 ### 12.2 Expressions cles par type
 
-#### CONDITION (11 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 24 | `IF(Trim([AT])<>'' AND Trim([AT])<>Trim([AH]) AND [AU]=1,[AT],'')` | [RM-001](#rm-RM-001) |
-| CONDITION | 17 | `[AU]<>1` | - |
-| CONDITION | 16 | `[AU]=1` | - |
-| CONDITION | 15 | `Trim([AT])='' AND Trim([AH])<>''` | - |
-| CONDITION | 13 | `Trim([AT])<>'' AND Trim([AT])<>Trim([AH])` | - |
-| ... | | *+6 autres* | |
-
 #### CALCULATION (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CALCULATION | 7 | `CallProg('{160,-1}'PROG,[Y],[AC],[AD])` | - |
+| CALCULATION | 7 | `CallProg('{160,-1}'PROG,[Y],[BC],[BD])` | - |
+
+#### CONDITION (11 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 13 | `Trim([BT])<>'' AND Trim([BT])<>Trim([BH])` | [RM-006](#rm-RM-006) |
+| CONDITION | 24 | `IF(Trim([BT])<>'' AND Trim([BT])<>Trim([BH]) AND [BU]=1,[BT],'')` | [RM-010](#rm-RM-010) |
+| CONDITION | 15 | `Trim([BT])='' AND Trim([BH])<>''` | [RM-007](#rm-RM-007) |
+| CONDITION | 17 | `[BU]<>1` | [RM-009](#rm-RM-009) |
+| CONDITION | 16 | `[BU]=1` | [RM-008](#rm-RM-008) |
+| ... | | *+6 autres* | |
 
 #### CONSTANTE (1 expressions)
 
@@ -447,9 +539,9 @@ Variables diverses.
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | OTHER | 19 | `[U]` | - |
-| OTHER | 23 | `NOT([AQ])` | - |
+| OTHER | 23 | `NOT([BQ])` | - |
 | OTHER | 26 | `CurRow(0)` | - |
-| OTHER | 12 | `[AT]` | - |
+| OTHER | 12 | `[BT]` | - |
 | OTHER | 3 | `v.num cmp [A]` | - |
 | ... | | *+2 autres* | |
 
@@ -477,34 +569,34 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| FORMAT | 20 | `Str([AU],'#')` | - |
+| FORMAT | 20 | `Str([BU],'#')` | - |
 
 ### 12.3 Toutes les expressions (26)
 
 <details>
 <summary>Voir les 26 expressions</summary>
 
-#### CONDITION (11)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 1 | `[I]<>'---' AND Trim(CHG_PRV_v.num cmp [F])<>''` |
-| 2 | `[I]='---' OR Trim(CHG_PRV_v.num cmp [F])=''` |
-| 11 | `[AI] AND ([AK]*1000+[AL]<>[AC]*1000+[AD] OR [AM]='O')` |
-| 25 | `CtrlGoto('card_code',IF(CurRow(0)>[AR],CurRow(0)+1,CurRow(0)-1),0)` |
-| 24 | `IF(Trim([AT])<>'' AND Trim([AT])<>Trim([AH]) AND [AU]=1,[AT],'')` |
-| 9 | `[AG]='O'` |
-| 16 | `[AU]=1` |
-| 17 | `[AU]<>1` |
-| 10 | `Trim([AH])<>''` |
-| 13 | `Trim([AT])<>'' AND Trim([AT])<>Trim([AH])` |
-| 15 | `Trim([AT])='' AND Trim([AH])<>''` |
-
 #### CALCULATION (1)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 7 | `CallProg('{160,-1}'PROG,[Y],[AC],[AD])` |
+| 7 | `CallProg('{160,-1}'PROG,[Y],[BC],[BD])` |
+
+#### CONDITION (11)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 25 | `CtrlGoto('card_code',IF(CurRow(0)>[BR],CurRow(0)+1,CurRow(0)-1),0)` |
+| 1 | `[I]<>'---' AND Trim(CHG_PRV_v.num cmp [F])<>''` |
+| 2 | `[I]='---' OR Trim(CHG_PRV_v.num cmp [F])=''` |
+| 9 | `[BG]='O'` |
+| 10 | `Trim([BH])<>''` |
+| 11 | `[BI] AND ([BK]*1000+[BL]<>[BC]*1000+[BD] OR [BM]='O')` |
+| 13 | `Trim([BT])<>'' AND Trim([BT])<>Trim([BH])` |
+| 15 | `Trim([BT])='' AND Trim([BH])<>''` |
+| 16 | `[BU]=1` |
+| 17 | `[BU]<>1` |
+| 24 | `IF(Trim([BT])<>'' AND Trim([BT])<>Trim([BH]) AND [BU]=1,[BT],'')` |
 
 #### CONSTANTE (1)
 
@@ -517,11 +609,11 @@ Variables diverses.
 | IDE | Expression Decodee |
 |-----|-------------------|
 | 3 | `v.num cmp [A]` |
-| 6 | `[AC]` |
-| 8 | `[AH]` |
-| 12 | `[AT]` |
+| 6 | `[BC]` |
+| 8 | `[BH]` |
+| 12 | `[BT]` |
 | 19 | `[U]` |
-| 23 | `NOT([AQ])` |
+| 23 | `NOT([BQ])` |
 | 26 | `CurRow(0)` |
 
 #### REFERENCE_VG (1)
@@ -548,7 +640,7 @@ Variables diverses.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 20 | `Str([AU],'#')` |
+| 20 | `Str([BU],'#')` |
 
 </details>
 
@@ -604,7 +696,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0.9% (1 / 112) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Regles metier | 10 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -621,4 +713,4 @@ graph LR
 | ez_card | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:19*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:43*

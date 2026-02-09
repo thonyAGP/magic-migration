@@ -1,199 +1,228 @@
 ﻿# ADH IDE 271 - Zoom nationalite
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:14
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_267.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:54 -> 04:54 (4s) | Assemblage 04:54
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Zoom nationalite** est le **selecteur des nationalites** qui **permet a l'operateur de consulter et selectionner une nationalite pour un adherent**.
-
-**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher la liste des nationalites disponibles (avec codes pays et indicatifs telephoniques) et permettre leur selection lors de la creation ou modification de la fiche d'un adherent.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur accueil ou reception |
-| **Quoi** | Fenetre de selection des nationalites |
-| **Pourquoi** | Standardiser la saisie de la nationalite des adherents avec codes valides |
-| **Declencheur** | Clic sur zoom depuis un champ nationalite |
-| **Resultat** | Retour du code nationalite selectionne au programme appelant |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 271 |
-| **Fichier XML** | `Prg_267.xml` |
-| **Description** | Zoom nationalite |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 15 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 271 |
+| Nom Programme | Zoom nationalite |
+| Fichier source | `Prg_271.xml` |
+| Dossier IDE | Consultation |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 119 | tables_pays_tel_ | cafil097_dat | READ | Lecture |
+Le programme ADH IDE 271 est un zoom de nationalité qui récupère les données de référence des nationalités depuis la table REF. Il s'agit d'une fonction de consultation simple, typiquement utilisée dans les formulaires de saisie pour permettre aux utilisateurs de sélectionner une nationalité parmi une liste préétablie. Ce programme fait partie du composant partagé ADH.ecf et est appelé depuis des contextes variés nécessitant une identification de nationalité.
 
-**Resume**: 1 tables accedees dont **0 en ecriture**
+La logique métier est minimaliste : le programme récupère le titre de nationalité (via un appel au programme ADH IDE 43) et l'associe à son identifiant unique. Cette architecture en cascade (ADH IDE 271 → ADH IDE 43) permet de centraliser la logique de récupération des noms et d'éviter la duplication de code. Les nationalités sont généralement filtrées ou triées pour affichage dans un ordre cohérent (alphabétique ou par fréquence d'utilisation).
 
-### 2.3 Parametres d'entree (0 parametres)
+Techniquement, ADH IDE 271 interagit avec les tables de référence REF (nationalités) et bénéficie de l'indexation pour des performances optimales lors de l'affichage de longues listes. Ce zoom fait partie de l'outillage standard de gestion des données de base pour les modules d'adhésion et de facturation qui nécessitent l'enregistrement de données personnelles.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee dans les expressions)*
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 1 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 9
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 15 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (1)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 119 | tables_pays_tel_ |  | DB | R |   |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 119 - tables_pays_tel_ (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | > nationalite | R | Alpha |
+| B | > langue parlee | R | Alpha |
+| C | bouton quitter | R | Alpha |
+| D | bouton selectionner | R | Alpha |
+| E | v. titre | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| ER | v. titre | Alpha | 1x session |
+
+### 11.2 Autres (4)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | > nationalite | Alpha | 1x refs |
+| EO | > langue parlee | Alpha | - |
+| EP | bouton quitter | Alpha | - |
+| EQ | bouton selectionner | Alpha | - |
+
+## 12. EXPRESSIONS
+
+**9 / 9 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONSTANTE | 5 | 0 |
+| CONDITION | 1 | 0 |
+| OTHER | 2 | 0 |
+| STRING | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONSTANTE (5 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 5 | `'F'` | - |
+| CONSTANTE | 6 | `'AA'` | - |
+| CONSTANTE | 4 | `'&Selectionner'` | - |
+| CONSTANTE | 2 | `87` | - |
+| CONSTANTE | 3 | `'&Quitter'` | - |
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 7 | `> nationalite [A]` | - |
+
+#### OTHER (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 9 | `[F]` | - |
+| OTHER | 8 | `v. titre [E]` | - |
+
+#### STRING (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 1 | `Trim ([I])` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[271 Zoom nationalit]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T271[271 Zoom nationalite]
+    style T271 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T271
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[271 Zoom nationalit]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T271[271 Zoom nationalite]
+    style T271 fill:#58a6ff
+    C43[43 Recuperation du titre]
+    T271 --> C43
+    style C43 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 15 | Programme compact |
+| Expressions | 9 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 15) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 1 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:14 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:54*

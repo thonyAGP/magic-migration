@@ -1,31 +1,31 @@
-﻿# ADH IDE 151 - Devises finales F/F Qte WS
+﻿# ADH IDE 151 - Reimpression tickets fermeture
 
-> **Analyse**: 2026-02-07 07:15
+> **Analyse**: 2026-02-08 03:35
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Devises finales F/F Qte WS
+- **Fonction**: Reimpression tickets fermeture
 - **Tables modifiees**: 0
-- **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Complexite**: **BASSE** (5/100)
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 2 programme(s): Gestion caisse (IDE 121), Gestion caisse 142 (IDE 298)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
-| **Appelle** | (aucun) |
+| **Appele par** | [Gestion caisse (IDE 121)](ADH-IDE-121.md), [Gestion caisse 142 (IDE 298)](ADH-IDE-298.md) |
+| **Appelle** | [Tableau recap fermeture (IDE 154)](ADH-IDE-154.md), [Ticket fermeture session (IDE 138)](ADH-IDE-138.md), [Ticket appro remise (IDE 139)](ADH-IDE-139.md) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 1 |
-| Lignes Logic | 35 |
-| Expressions | 8 |
-| Tables |  |
+| Taches | 5 |
+| Lignes Logic | 152 |
+| Expressions | 6 |
+| Tables | 2 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

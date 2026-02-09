@@ -1,6 +1,6 @@
-﻿# ADH IDE 169 - Facturation appel
+﻿# ADH IDE 169 - Messages
 
-> **Analyse**: Phases 1-4 2026-02-03 10:54 -> 10:54 (16s) | Assemblage 07:22
+> **Analyse**: Phases 1-4 2026-02-07 03:52 -> 03:50 (23h57min) | Assemblage 03:50
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -12,348 +12,675 @@
 |----------|--------|
 | Projet | ADH |
 | IDE Position | 169 |
-| Nom Programme | Facturation appel |
+| Nom Programme | Messages |
 | Fichier source | `Prg_169.xml` |
-| Dossier IDE | Operations |
-| Taches | 6 (0 ecrans visibles) |
-| Tables modifiees | 3 |
-| Programmes appeles | 5 |
+| Dossier IDE | General |
+| Taches | 11 (1 ecrans visibles) |
+| Tables modifiees | 4 |
+| Programmes appeles | 2 |
+| Complexite | **BASSE** (score 25/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Facturation appel** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md).
+ADH IDE 169 est un programme de gestion des messages de système. Il assure la récupération et l'affichage de messages provenant de différentes sources (validations, échanges, transactions) en fonction du contexte applicatif. Le programme récupère le titre du message via ADH IDE 43, puis utilise la messagerie ADH IDE 170 pour traiter les communications. Il s'intègre dans le flux de caisse en captant les événements critiques (nouvelles ventes, garanties, extraits de compte) et en informant l'utilisateur via des messages contextualisés.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Le cœur du programme repose sur trois tâches principales : la détection des messages à traiter (Test si message), la vérification de la disponibilité réseau (Test réseau), et la gestion de l'historique (Écriture Historique). Ces tâches modifient quatre tables critiques : `compte_gm________cgm` (gestion de compte), `historik_station` (traçabilité station), `fichier_validation` (logs de validation), et `fichier_echanges` (logs d'échanges). Ce design modulaire permet d'intégrer des notifications dans chaque flux métier sans dupliquer la logique de messagerie.
 
-- **Traitement** (6 taches) : traitements metier divers
-
-**Donnees modifiees** : 3 tables en ecriture (reseau_cloture___rec, historique_pabx, coef__telephone__coe).
-
-**Logique metier** : 1 regles identifiees couvrant conditions metier.
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (6 taches)
-
-- **T1** - Facturation appel
-- **T2** - Historique appel
-- **T3** - Historique appel
-- **T4** - Recuperation coef
-- **T5** - Deblocage cloture
-- **T8** - Deblocage cloture
-
-Delegue a : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| reseau_cloture___rec | **W** (2 usages) | Donnees reseau/cloture |
-| historique_pabx | **W** (2 usages) | Historique / journal |
-| coef__telephone__coe | **W** (1 usages) |  |
-
-</details>
+ADH IDE 169 est appelé par 11 programmes distincts couvrant l'ensemble de la chaîne caisse : impressions de tickets, gestion des garanties, historiques de ventes (gratuits, IGR, payants), créations de garanties, extraits de compte et transferts. Cette centralisation garantit une cohérence des notifications et facilite le maintien d'une audit trail complète via les tables d'historique.
 
 ## 3. BLOCS FONCTIONNELS
 
-### 3.1 Traitement (6 taches)
+### 3.1 Traitement (7 taches)
 
 Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Facturation appel
+#### <a id="t1"></a>169 - message [[ECRAN]](#ecran-t1)
 
-**Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
+**Role** : Tache d'orchestration : point d'entree du programme (7 sous-taches). Coordonne l'enchainement des traitements.
+**Ecran** : 352 x 122 DLU (MDI) | [Voir mockup](#ecran-t1)
 
 <details>
-<summary>5 sous-taches directes</summary>
+<summary>6 sous-taches directes</summary>
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Historique appel | Traitement |
-| [T3](#t3) | Historique appel | Traitement |
-| [T4](#t4) | Recuperation coef | Traitement |
-| [T5](#t5) | Deblocage cloture | Traitement |
-| [T8](#t8) | Deblocage cloture | Traitement |
+| [169.1](#t2) | Recup. poste et ligne | Traitement |
+| [169.2](#t3) | Test reseau | Traitement |
+| [169.3](#t4) | Test si message | Traitement |
+| [169.4](#t5) | Message **[[ECRAN]](#ecran-t5)** | Traitement |
+| [169.4.1](#t6) | Ecriture Historique | Traitement |
+| [169.4.2](#t7) | Ecriture Historique | Traitement |
 
 </details>
-**Variables liees** : C (> date appel), D (> heure appel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
+**Variables liees** : EU (W0 message ?)
+**Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Messagerie (IDE 170)](ADH-IDE-170.md)
 
 ---
 
-#### <a id="t2"></a>T2 - Historique appel
+#### <a id="t2"></a>169.1 - Recup. poste et ligne
 
-**Role** : Consultation/chargement : Historique appel.
-**Variables liees** : C (> date appel), D (> heure appel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t3"></a>T3 - Historique appel
-
-**Role** : Consultation/chargement : Historique appel.
-**Variables liees** : C (> date appel), D (> heure appel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
+**Role** : Consultation/chargement : Recup. poste et ligne.
+**Variables liees** : EV (W0 n° poste), EW (W0 n° ligne)
+**Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Messagerie (IDE 170)](ADH-IDE-170.md)
 
 ---
 
-#### <a id="t4"></a>T4 - Recuperation coef
+#### <a id="t3"></a>169.2 - Test reseau
 
-**Role** : Consultation/chargement : Recuperation coef.
-**Variables liees** : V (w0 coeff tel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t5"></a>T5 - Deblocage cloture
-
-**Role** : Traitement : Deblocage cloture.
-**Variables liees** : W (w0 cloture en cours)
-**Delegue a** : [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
+**Role** : Verification : Test reseau.
+**Variables liees** : ET (W0 reseau)
+**Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Messagerie (IDE 170)](ADH-IDE-170.md)
 
 ---
 
-#### <a id="t8"></a>T8 - Deblocage cloture
+#### <a id="t4"></a>169.3 - Test si message
 
-**Role** : Traitement : Deblocage cloture.
-**Variables liees** : W (w0 cloture en cours)
-**Delegue a** : [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
+**Role** : Verification : Test si message.
+**Variables liees** : EU (W0 message ?)
+**Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Messagerie (IDE 170)](ADH-IDE-170.md)
+
+---
+
+#### <a id="t5"></a>169.4 - Message [[ECRAN]](#ecran-t5)
+
+**Role** : Traitement : Message.
+**Ecran** : 1066 x 209 DLU (MDI) | [Voir mockup](#ecran-t5)
+**Variables liees** : EU (W0 message ?)
+**Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Messagerie (IDE 170)](ADH-IDE-170.md)
+
+---
+
+#### <a id="t6"></a>169.4.1 - Ecriture Historique
+
+**Role** : Consultation/chargement : Ecriture Historique.
+**Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Messagerie (IDE 170)](ADH-IDE-170.md)
+
+---
+
+#### <a id="t7"></a>169.4.2 - Ecriture Historique
+
+**Role** : Consultation/chargement : Ecriture Historique.
+**Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Messagerie (IDE 170)](ADH-IDE-170.md)
+
+
+### 3.2 Validation (1 tache)
+
+Controles de coherence : 1 tache verifie les donnees et conditions.
+
+---
+
+#### <a id="t8"></a>169.4.3 - Maj Validation
+
+**Role** : Verification : Maj Validation.
+
+
+### 3.3 Creation (2 taches)
+
+Insertion de nouveaux enregistrements en base.
+
+---
+
+#### <a id="t9"></a>169.4.4 - Creation Echange
+
+**Role** : Creation d'enregistrement : Creation Echange.
+
+---
+
+#### <a id="t10"></a>169.4.5 - Creation Echange
+
+**Role** : Creation d'enregistrement : Creation Echange.
+
+
+### 3.4 Calcul (1 tache)
+
+Calculs metier : montants, stocks, compteurs.
+
+---
+
+#### <a id="t11"></a>169.5 - Deblocage compte
+
+**Role** : Traitement : Deblocage compte.
+**Variables liees** : EO (> compte)
 
 
 ## 5. REGLES METIER
 
-1 regles identifiees:
+3 regles identifiees:
 
-### Autres (1 regles)
+### Autres (3 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Si > GO [G] alors 'GO' sinon 'GM')
+#### <a id="rm-RM-001"></a>[RM-001] Condition: W0 reseau [G] different de 'R'
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `> GO [G]` |
-| **Si vrai** | 'GO' |
-| **Si faux** | 'GM') |
-| **Variables** | G (> GO) |
-| **Expression source** | Expression 4 : `IF (> GO [G],'GO','GM')` |
-| **Exemple** | Si > GO [G] â†’ 'GO'. Sinon â†’ 'GM') |
+| **Condition** | `W0 reseau [G]<>'R'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | ET (W0 reseau) |
+| **Expression source** | Expression 3 : `W0 reseau [G]<>'R'` |
+| **Exemple** | Si W0 reseau [G]<>'R' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: W0 fin tache [K] egale 'F'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 fin tache [K]='F'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EX (W0 fin tache) |
+| **Expression source** | Expression 4 : `W0 fin tache [K]='F'` |
+| **Exemple** | Si W0 fin tache [K]='F' â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: > village tel [D]='O' AND > Interface [F]='CLUB' AND > type triplet [E] egale '1'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> village tel [D]='O' AND > Interface [F]='CLUB' AND > type triplet [E]='1'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EQ (> village tel), ER (> type triplet), ES (> Interface) |
+| **Expression source** | Expression 6 : `> village tel [D]='O' AND > Interface [F]='CLUB' AND > type ` |
+| **Exemple** | Si > village tel [D]='O' AND > Interface [F]='CLUB' AND > type triplet [E]='1' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md)
-- **Appelle**: 5 programmes | **Tables**: 3 (W:3 R:0 L:0) | **Taches**: 6 | **Expressions**: 15
+- **Appele par**: [ Print ticket vente LEX (IDE 0)](ADH-IDE-0.md), [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [Histo ventes Gratuités (IDE 0)](ADH-IDE-0.md), [Histo ventes IGR (IDE 0)](ADH-IDE-0.md), [Histo ventes payantes /PMS-605 (IDE 0)](ADH-IDE-0.md), [Histo ventes payantes /PMS-623 (IDE 0)](ADH-IDE-0.md), [Print creation garanti PMS-584 (IDE 0)](ADH-IDE-0.md), [Print extrait compte /Service (IDE 0)](ADH-IDE-0.md), [Print transferts (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)
+- **Appelle**: 2 programmes | **Tables**: 7 (W:4 R:3 L:1) | **Taches**: 11 | **Expressions**: 6
 
 <!-- TAB:Ecrans -->
 
 ## 8. ECRANS
 
-*(Programme sans ecran visible)*
+### 8.1 Forms visibles (1 / 11)
+
+| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
+|---|----------|-------|-----|------|---------|---------|------|
+| 1 | 169.4 | 169.4 | Message | MDI | 1066 | 209 | Traitement |
+
+### 8.2 Mockups Ecrans
+
+---
+
+#### <a id="ecran-t5"></a>169.4 - Message
+**Tache** : [169.4](#t5) | **Type** : MDI | **Dimensions** : 1066 x 209 DLU
+**Bloc** : Traitement | **Titre IDE** : Message
+
+<!-- FORM-DATA:
+{
+    "width":  1066,
+    "vFactor":  8,
+    "type":  "MDI",
+    "hFactor":  8,
+    "controls":  [
+                     {
+                         "x":  1,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  2,
+                         "w":  1063,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  17,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  5,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  32,
+                         "w":  1058,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  21,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  295,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  38,
+                         "w":  42,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "Par",
+                         "parent":  null
+                     },
+                     {
+                         "x":  507,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  38,
+                         "w":  27,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "le",
+                         "parent":  null
+                     },
+                     {
+                         "x":  5,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  53,
+                         "w":  1058,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  120,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  0,
+                         "type":  "label",
+                         "var":  "",
+                         "y":  185,
+                         "w":  1064,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  24,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  15,
+                         "type":  "table",
+                         "var":  "",
+                         "name":  "",
+                         "titleH":  12,
+                         "color":  "110",
+                         "w":  874,
+                         "y":  62,
+                         "fmt":  "",
+                         "parent":  null,
+                         "text":  "",
+                         "rowH":  14,
+                         "h":  99,
+                         "cols":  [
+                                      {
+                                          "title":  "Messages",
+                                          "layer":  1,
+                                          "w":  843
+                                      }
+                                  ],
+                         "rows":  1
+                     },
+                     {
+                         "x":  546,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  38,
+                         "w":  139,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  695,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  38,
+                         "w":  75,
+                         "fmt":  "HH:MM",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  349,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  38,
+                         "w":  139,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "7",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  19,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  77,
+                         "w":  826,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  11,
+                         "color":  "110",
+                         "text":  "",
+                         "parent":  14
+                     },
+                     {
+                         "x":  8,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  189,
+                         "w":  226,
+                         "fmt":  "\\A\u0026bandonner",
+                         "name":  "Btn Abandonner",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  242,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  189,
+                         "w":  280,
+                         "fmt":  "\u0026Suppression Tous Messages",
+                         "name":  "Btn Supprimer",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  824,
+                         "type":  "button",
+                         "var":  "",
+                         "y":  189,
+                         "w":  226,
+                         "fmt":  "\u0026Gestion Messages",
+                         "name":  "Btn Maj",
+                         "h":  18,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  7,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  6,
+                         "w":  267,
+                         "fmt":  "20",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  779,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  6,
+                         "w":  278,
+                         "fmt":  "WWW DD MMM YYYYT",
+                         "name":  "",
+                         "h":  8,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  1
+                     },
+                     {
+                         "x":  896,
+                         "type":  "image",
+                         "var":  "",
+                         "y":  85,
+                         "w":  160,
+                         "fmt":  "",
+                         "name":  "",
+                         "h":  53,
+                         "color":  "",
+                         "text":  "",
+                         "parent":  null
+                     },
+                     {
+                         "x":  19,
+                         "type":  "edit",
+                         "var":  "",
+                         "y":  174,
+                         "w":  826,
+                         "fmt":  "30",
+                         "name":  "",
+                         "h":  10,
+                         "color":  "2",
+                         "text":  "",
+                         "parent":  null
+                     }
+                 ],
+    "taskId":  "169.4",
+    "height":  209
+}
+-->
+
+<details>
+<summary><strong>Champs : 7 champs</strong></summary>
+
+| Pos (x,y) | Nom | Variable | Type |
+|-----------|-----|----------|------|
+| 546,38 | (sans nom) | - | edit |
+| 695,38 | HH:MM | - | edit |
+| 349,38 | (sans nom) | - | edit |
+| 19,77 | (sans nom) | - | edit |
+| 7,6 | 20 | - | edit |
+| 779,6 | WWW DD MMM YYYYT | - | edit |
+| 19,174 | 30 | - | edit |
+
+</details>
+
+<details>
+<summary><strong>Boutons : 3 boutons</strong></summary>
+
+| Bouton | Pos (x,y) | Action |
+|--------|-----------|--------|
+| \Abandonner | 8,189 | Annule et retour au menu |
+| Suppression Tous Messages | 242,189 | Supprime l'element selectionne |
+| Gestion Messages | 824,189 | Bouton fonctionnel |
+
+</details>
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (6 taches)
+Ecran unique: **Message**
+
+### 9.3 Structure hierarchique (11 taches)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **169.1** | [**Facturation appel** (T1)](#t1) | MDI | - | Traitement |
-| 169.1.1 | [Historique appel (T2)](#t2) | MDI | - | |
-| 169.1.2 | [Historique appel (T3)](#t3) | MDI | - | |
-| 169.1.3 | [Recuperation coef (T4)](#t4) | MDI | - | |
-| 169.1.4 | [Deblocage cloture (T5)](#t5) | MDI | - | |
-| 169.1.5 | [Deblocage cloture (T8)](#t8) | MDI | - | |
+| **169.1** | [**message** (169)](#t1) [mockup](#ecran-t1) | MDI | 352x122 | Traitement |
+| 169.1.1 | [Recup. poste et ligne (169.1)](#t2) | MDI | - | |
+| 169.1.2 | [Test reseau (169.2)](#t3) | MDI | - | |
+| 169.1.3 | [Test si message (169.3)](#t4) | MDI | - | |
+| 169.1.4 | [Message (169.4)](#t5) [mockup](#ecran-t5) | MDI | 1066x209 | |
+| 169.1.5 | [Ecriture Historique (169.4.1)](#t6) | MDI | - | |
+| 169.1.6 | [Ecriture Historique (169.4.2)](#t7) | MDI | - | |
+| **169.2** | [**Maj Validation** (169.4.3)](#t8) | MDI | - | Validation |
+| **169.3** | [**Creation Echange** (169.4.4)](#t9) | MDI | - | Creation |
+| 169.3.1 | [Creation Echange (169.4.5)](#t10) | MDI | - | |
+| **169.4** | [**Deblocage compte** (169.5)](#t11) | MDI | - | Calcul |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 6 taches]
-    ENDOK([END])
-    START --> PROCESS --> ENDOK
+    INIT[Init controles]
+    SAISIE[Message]
+    DECISION{W0 reseau}
+    PROCESS[Traitement]
+    UPDATE[MAJ 4 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
 
-### Tables utilisees (3)
+### Tables utilisees (7)
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB |   | **W** |   | 2 |
-| 155 | historique_pabx | Historique / journal | DB |   | **W** |   | 2 |
-| 157 | coef__telephone__coe |  | DB |   | **W** |   | 1 |
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** |   | 2 |
+| 136 | fichier_echanges |  | DB |   | **W** |   | 2 |
+| 88 | historik_station | Historique / journal | DB |   | **W** |   | 2 |
+| 131 | fichier_validation |  | DB |   | **W** |   | 1 |
+| 123 | fichier_messagerie |  | DB | R |   | L | 4 |
+| 80 | codes_autocom____aut |  | DB | R |   |   | 1 |
+| 36 | client_gm |  | DB | R |   |   | 1 |
 
-### Colonnes par table (2 / 3 tables avec colonnes identifiees)
+### Colonnes par table (3 / 7 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 23 - reseau_cloture___rec (**W**) - 2 usages</summary>
+<summary>Table 47 - compte_gm________cgm (**W**) - 2 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| W | w0 cloture en cours | W | Logical |
-| X | w0 test reseau | W | Alpha |
+| EO | > compte | W | Numeric |
 
 </details>
 
 <details>
-<summary>Table 155 - historique_pabx (**W**) - 2 usages</summary>
+<summary>Table 136 - fichier_echanges (**W**) - 2 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
-<summary>Table 157 - coef__telephone__coe (**W**) - 1 usages</summary>
+<summary>Table 88 - historik_station (**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 131 - fichier_validation (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 123 - fichier_messagerie (R/L) - 4 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| V | w0 coeff tel | W | Numeric |
+| A | W1 ret lien message | R | Numeric |
+| B | W1 fin tache | R | Alpha |
+
+</details>
+
+<details>
+<summary>Table 80 - codes_autocom____aut (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 36 - client_gm (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 effacement | R | Alpha |
+| B | W1 fin tache | R | Alpha |
+| C | Btn Abandonner | R | Alpha |
+| D | Btn Supprimer | R | Alpha |
+| E | Btn Maj | R | Alpha |
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Variables de travail (7)
+### 11.1 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EY | v. titre | Alpha | 1x session |
+
+### 11.2 Variables de travail (5)
 
 Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| T | w0 numero de tel | Alpha | - |
-| U | w0 qualite | Alpha | 1x calcul interne |
-| V | w0 coeff tel | Numeric | 1x calcul interne |
-| W | w0 cloture en cours | Logical | - |
-| X | w0 test reseau | Alpha | 1x calcul interne |
-| Y | w0 gratuite | Logical | - |
-| Z | w0 raison gratuite | Alpha | - |
+| ET | W0 reseau | Alpha | [169.2](#t3) |
+| EU | W0 message ? | Alpha | - |
+| EV | W0 n° poste | Numeric | - |
+| EW | W0 n° ligne | Numeric | - |
+| EX | W0 fin tache | Alpha | 1x calcul interne |
 
-### 11.2 Autres (19)
+### 11.3 Autres (6)
 
 Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > societe | Alpha | - |
-| B | > prefixe | Alpha | - |
-| C | > date appel | Date | [T1](#t1), [T2](#t2), [T3](#t3) |
-| D | > heure appel | Time | [T1](#t1), [T2](#t2), [T3](#t3) |
-| E | > Nom | Alpha | 2x refs |
-| F | > Prenom | Alpha | 1x refs |
-| G | > GO | Logical | 1x refs |
-| H | > compte fictif | Logical | 3x refs |
-| I | > fin | Alpha | - |
-| J | > numero de compte | Numeric | - |
-| K | > filiation | Numeric | - |
-| L | > montant | Numeric | 1x refs |
-| M | > solde du compte | Numeric | - |
-| N | < Quitter | Logical | - |
-| O | > devise local | Alpha | - |
-| P | > Masque | Alpha | - |
-| Q | > annulation | Logical | 1x refs |
-| R | > duree | Time | - |
-| S | > nombre decimal | Numeric | 1x refs |
-
-<details>
-<summary>Toutes les 26 variables (liste complete)</summary>
-
-| Cat | Lettre | Nom Variable | Type |
-|-----|--------|--------------|------|
-| W0 | **T** | w0 numero de tel | Alpha |
-| W0 | **U** | w0 qualite | Alpha |
-| W0 | **V** | w0 coeff tel | Numeric |
-| W0 | **W** | w0 cloture en cours | Logical |
-| W0 | **X** | w0 test reseau | Alpha |
-| W0 | **Y** | w0 gratuite | Logical |
-| W0 | **Z** | w0 raison gratuite | Alpha |
-| Autre | **A** | > societe | Alpha |
-| Autre | **B** | > prefixe | Alpha |
-| Autre | **C** | > date appel | Date |
-| Autre | **D** | > heure appel | Time |
-| Autre | **E** | > Nom | Alpha |
-| Autre | **F** | > Prenom | Alpha |
-| Autre | **G** | > GO | Logical |
-| Autre | **H** | > compte fictif | Logical |
-| Autre | **I** | > fin | Alpha |
-| Autre | **J** | > numero de compte | Numeric |
-| Autre | **K** | > filiation | Numeric |
-| Autre | **L** | > montant | Numeric |
-| Autre | **M** | > solde du compte | Numeric |
-| Autre | **N** | < Quitter | Logical |
-| Autre | **O** | > devise local | Alpha |
-| Autre | **P** | > Masque | Alpha |
-| Autre | **Q** | > annulation | Logical |
-| Autre | **R** | > duree | Time |
-| Autre | **S** | > nombre decimal | Numeric |
-
-</details>
+| EN | > societe | Alpha | - |
+| EO | > compte | Numeric | - |
+| EP | > filiation | Numeric | - |
+| EQ | > village tel | Alpha | 1x refs |
+| ER | > type triplet | Alpha | 1x refs |
+| ES | > Interface | Alpha | 1x refs |
 
 ## 12. EXPRESSIONS
 
-**15 / 15 expressions decodees (100%)**
+**6 / 6 expressions decodees (100%)**
 
 ### 12.1 Repartition par type
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 7 | 5 |
-| CONSTANTE | 1 | 0 |
-| NEGATION | 3 | 0 |
-| CAST_LOGIQUE | 2 | 0 |
-| REFERENCE_VG | 1 | 0 |
-| CONCATENATION | 1 | 0 |
+| CONDITION | 3 | 3 |
+| CONSTANTE | 2 | 0 |
+| STRING | 1 | 0 |
 
 ### 12.2 Expressions cles par type
 
-#### CONDITION (7 expressions)
+#### CONDITION (3 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 4 | `IF (> GO [G],'GO','GM')` | [RM-001](#rm-RM-001) |
-| CONDITION | 6 | `w0 test reseau [X]<>'R'` | - |
-| CONDITION | 12 | `> date appel [C]` | - |
-| CONDITION | 13 | `> heure appel [D]` | - |
-| CONDITION | 7 | `Round (> montant [L]*w0 coeff tel [V],15,> nombre decimal [S])` | - |
-| ... | | *+2 autres* | |
+| CONDITION | 6 | `> village tel [D]='O' AND > Interface [F]='CLUB' AND > type triplet [E]='1'` | [RM-003](#rm-RM-003) |
+| CONDITION | 4 | `W0 fin tache [K]='F'` | [RM-002](#rm-RM-002) |
+| CONDITION | 3 | `W0 reseau [G]<>'R'` | [RM-001](#rm-RM-001) |
 
-#### CONSTANTE (1 expressions)
+#### CONSTANTE (2 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CONSTANTE | 5 | `'F'` | - |
+| CONSTANTE | 2 | `124` | - |
 
-#### NEGATION (3 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 14 | `NOT VG6` | - |
-| NEGATION | 9 | `NOT (> annulation [Q])` | - |
-| NEGATION | 2 | `NOT (> compte fictif [H])` | - |
-
-#### CAST_LOGIQUE (2 expressions)
+#### STRING (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CAST_LOGIQUE | 11 | `'FALSE'LOG` | - |
-| CAST_LOGIQUE | 8 | `'TRUE'LOG` | - |
-
-#### REFERENCE_VG (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| REFERENCE_VG | 15 | `VG6` | - |
-
-#### CONCATENATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONCATENATION | 10 | `Trim (> Nom [E])&' '&Trim (> Prenom [F])` | - |
+| STRING | 1 | `Trim (v. titre [L])` | - |
 
 <!-- TAB:Connexions -->
 
@@ -361,61 +688,79 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md) -> **Facturation appel (IDE 169)**
+Main -> ... -> [ Print ticket vente LEX (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Histo ventes Gratuités (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Histo ventes IGR (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Histo ventes payantes /PMS-605 (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Histo ventes payantes /PMS-623 (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Print creation garanti PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Print extrait compte /Service (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Print transferts (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md) -> **Messages (IDE 169)**
+
+Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Messages (IDE 169)**
 
 ```mermaid
 graph LR
-    T169[169 Facturation appel]
+    T169[169 Messages]
     style T169 fill:#58a6ff
-    CC1[1 Main Program]
-    style CC1 fill:#8b5cf6
-    CC33[33 Visualisation Appel]
-    style CC33 fill:#f59e0b
-    CC22[22 Menu caisse GM - sc...]
-    style CC22 fill:#3fb950
-    CC33 --> CC22
-    CC1 --> CC33
-    CC22 --> T169
+    CALLER163[163 Menu caisse GM - s...]
+    CALLER163 --> T169
+    style CALLER163 fill:#3fb950
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [22](ADH-IDE-22.md) | Menu caisse GM - scroll @ | 1 |
+| [0](ADH-IDE-0.md) |  Print ticket vente LEX | 1 |
+| [0](ADH-IDE-0.md) | Garantie sur compte PMS-584 | 1 |
+| [0](ADH-IDE-0.md) | Histo ventes Gratuités | 1 |
+| [0](ADH-IDE-0.md) | Histo ventes IGR | 1 |
+| [0](ADH-IDE-0.md) | Histo ventes payantes /PMS-605 | 1 |
+| [0](ADH-IDE-0.md) | Histo ventes payantes /PMS-623 | 1 |
+| [0](ADH-IDE-0.md) | Print creation garanti PMS-584 | 1 |
+| [0](ADH-IDE-0.md) | Print extrait compte /Service | 1 |
+| [0](ADH-IDE-0.md) | Print transferts | 1 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-584 | 1 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-710 | 1 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-721 | 1 |
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T169[169 Facturation appel]
+    T169[169 Messages]
     style T169 fill:#58a6ff
-    C16[16 Creation O.D]
-    T169 --> C16
-    style C16 fill:#3fb950
-    C17[17 Deblocage compte GM]
-    T169 --> C17
-    style C17 fill:#3fb950
-    C18[18 Test reseau]
-    T169 --> C18
-    style C18 fill:#3fb950
-    C19[19 Test si cloture en ...]
-    T169 --> C19
-    style C19 fill:#3fb950
-    C36[36 Zoom GOGM]
-    T169 --> C36
-    style C36 fill:#3fb950
+    C43[43 Recuperation du titre]
+    T169 --> C43
+    style C43 fill:#3fb950
+    C170[170 Messagerie]
+    T169 --> C170
+    style C170 fill:#3fb950
 ```
 
 ### 13.4 Detail Callees avec contexte
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| [16](ADH-IDE-16.md) |   Creation O.D | 1 | Sous-programme |
-| [17](ADH-IDE-17.md) |   Deblocage compte GM | 1 | Sous-programme |
-| [18](ADH-IDE-18.md) |   Test reseau | 1 | Sous-programme |
-| [19](ADH-IDE-19.md) |   Test si cloture en cours | 1 | Fermeture session |
-| [36](ADH-IDE-36.md) | Zoom GO/GM | 1 | Selection/consultation |
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
+| [170](ADH-IDE-170.md) | Messagerie | 1 | Sous-programme |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -423,34 +768,48 @@ graph LR
 
 | Metrique | Valeur | Impact migration |
 |----------|--------|-----------------|
-| Lignes de logique | 116 | Programme compact |
-| Expressions | 15 | Peu de logique |
-| Tables WRITE | 3 | Impact modere |
-| Sous-programmes | 5 | Peu de dependances |
-| Ecrans visibles | 0 | Ecran unique ou traitement batch |
-| Code desactive | 0% (0 / 116) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Lignes de logique | 179 | Programme compact |
+| Expressions | 6 | Peu de logique |
+| Tables WRITE | 4 | Impact modere |
+| Sous-programmes | 2 | Peu de dependances |
+| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 179) | Code sain |
+| Regles metier | 3 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
-#### Traitement (6 taches: 0 ecran, 6 traitements)
+#### Traitement (7 taches: 2 ecrans, 5 traitements)
 
-- **Strategie** : 6 service(s) backend injectable(s) (Domain Services).
-- 5 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
+- **Strategie** : Orchestrateur avec 2 ecrans (Razor/React) et 5 traitements backend (services).
+- Les ecrans deviennent des composants UI, les traitements invisibles deviennent des services injectables.
+- 2 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
 - Decomposer les taches en services unitaires testables.
+
+#### Validation (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : FluentValidation avec validators specifiques.
+- Chaque tache de validation -> un validator injectable
+
+#### Creation (2 taches: 0 ecran, 2 traitements)
+
+- **Strategie** : Repository pattern avec Entity Framework Core.
+- Insertion via `IRepository<T>.CreateAsync()`
+
+#### Calcul (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : Services de calcul purs (Domain Services).
+- Migrer la logique de calcul (stock, compteurs, montants)
 
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
-| reseau_cloture___rec | Table WRITE (Database) | 2x | Schema + repository |
-| historique_pabx | Table WRITE (Database) | 2x | Schema + repository |
-| coef__telephone__coe | Table WRITE (Database) | 1x | Schema + repository |
-| [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md) | Sous-programme | 1x | Normale - Fermeture session |
-| [Zoom GO/GM (IDE 36)](ADH-IDE-36.md) | Sous-programme | 1x | Normale - Selection/consultation |
-| [  Test reseau (IDE 18)](ADH-IDE-18.md) | Sous-programme | 1x | Normale - Sous-programme |
-| [  Creation O.D (IDE 16)](ADH-IDE-16.md) | Sous-programme | 1x | Normale - Sous-programme |
-| [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md) | Sous-programme | 1x | Normale - Sous-programme |
+| compte_gm________cgm | Table WRITE (Database) | 2x | Schema + repository |
+| historik_station | Table WRITE (Database) | 2x | Schema + repository |
+| fichier_validation | Table WRITE (Database) | 1x | Schema + repository |
+| fichier_echanges | Table WRITE (Database) | 2x | Schema + repository |
+| [Messagerie (IDE 170)](ADH-IDE-170.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:22*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:50*

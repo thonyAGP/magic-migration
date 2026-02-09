@@ -1,206 +1,424 @@
-﻿# ADH IDE 40 - Comptes de depot
+﻿# ADH IDE 40 - Comptes de depôt
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:00
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_36.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 01:36 -> 01:36 (4s) | Assemblage 01:36
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-**Comptes de depot** est le **module de gestion des comptes de depot** qui **permet de consulter, creer et gerer les depots d'objets de valeur des adherents**.
-
-**Objectif metier** : Gerer l'ensemble des operations liees aux depots d'objets de valeur (coffres, objets precieux, devises). Ce programme est le point d'entree principal pour la gestion des depots, permettant de visualiser les comptes de depot existants, d'en creer de nouveaux, et de suivre l'historique des mouvements. Il accede a 9 tables et comprend 25 taches pour couvrir l'ensemble des operations CRUD sur les depots.
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur caisse ou gestionnaire back-office |
-| **Quoi** | Gestion complete des comptes de depot d'objets de valeur |
-| **Pourquoi** | Permettre le suivi et la gestion des objets deposes par les adherents |
-| **Declencheur** | Acces depuis le menu de gestion des adherents ou selection d'un adherent |
-| **Resultat** | Affichage, creation ou modification des comptes de depot |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (9 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (25 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 40 |
-| **Fichier XML** | `Prg_36.xml` |
-| **Description** | Comptes de depôt |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 25 |
-| **Lignes logique** | 480 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 40 |
+| Nom Programme | Comptes de depôt |
+| Fichier source | `Prg_40.xml` |
+| Dossier IDE | Comptabilite |
+| Taches | 25 (0 ecrans visibles) |
+| Tables modifiees | 6 |
+| Programmes appeles | 12 |
+| Complexite | **MOYENNE** (score 48/100) |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 41 | depot_objets_____doa | cafil019_dat | WRITE | Ecriture |
-| 42 | depot_devises____dda | cafil020_dat | WRITE | Ecriture |
-| 43 | solde_devises____sda | cafil021_dat | WRITE | Ecriture |
-| 47 | compte_gm________cgm | cafil025_dat | WRITE | Ecriture |
-| 50 | moyens_reglement_mor | cafil028_dat | READ | Lecture |
-| 67 | tables___________tab | cafil045_dat | LINK | Jointure |
-| 367 | pms_print_param_default | pmsprintparamdefault | WRITE | Ecriture |
-| 456 | tai_demarrage | taistart | READ/WRITE | Lecture+Ecriture |
+ADH IDE 40 gère les dépôts de garanties liés aux comptes clients, permettant de visualiser et modifier les objets et devises en dépôt. Le programme offre une interface pour consulter les dépôts existants, ajouter ou retirer des objets (bijoux, documents, etc.) et gérer les soldes en différentes devises. Les données sont stockées dans trois tables principales : `depot_objets` (inventaire des objets déposés), `depot_devises` (montants en devises), et `solde_devises` (soldes disponibles).
 
-**Resume**: 9 tables accedees dont **6 en ecriture**
+L'interface de saisie utilise un zoom sur les modes de paiement et types d'objets pour faciliter la navigation. Le programme communique avec plusieurs utilitaires d'impression via les programmes "Get Printer", "Set Listing Number" et "Raz Printer" pour permettre à l'utilisateur de choisir son imprimante et personnaliser les paramètres d'édition avant impression.
 
-### 2.3 Parametres d'entree (0 parametres)
+Les tâches clés incluent la récupération du titre du compte (via IDE 43), l'édition des extraits de dépôts (IDE 39, 172), et la gestion des sélections d'impression via un menu dédié (IDE 180-183). Le programme valide les mouvements de dépôt avant écriture en base et synchronise les soldes entre les tables `compte_gm` et `solde_devises`.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+3 regles identifiees:
+
+### Autres (3 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: W0 reseau [I] different de 'R'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 reseau [I]<>'R'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EV (W0 reseau) |
+| **Expression source** | Expression 1 : `W0 reseau [I]<>'R'` |
+| **Exemple** | Si W0 reseau [I]<>'R' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: W0 fin de tache [J] egale 'F'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 fin de tache [J]='F'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EW (W0 fin de tache) |
+| **Expression source** | Expression 3 : `W0 fin de tache [J]='F'` |
+| **Exemple** | Si W0 fin de tache [J]='F' â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: > societe [A] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> societe [A]=''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (> societe) |
+| **Expression source** | Expression 5 : `> societe [A]=''` |
+| **Exemple** | Si > societe [A]='' â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)
+- **Appelle**: 12 programmes | **Tables**: 8 (W:6 R:2 L:1) | **Taches**: 25 | **Expressions**: 5
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>25 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{W0 fin de tache}
+    PROCESS[Traitement]
+    UPDATE[MAJ 6 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 25 |
-| **Lignes logique** | 480 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 9 |
-| **Tables en ecriture** | 6 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (8)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 456 | tai_demarrage |  | DB | R | **W** |   | 3 |
+| 41 | depot_objets_____doa | Depots et garanties | DB |   | **W** |   | 5 |
+| 43 | solde_devises____sda | Devises / taux de change | DB |   | **W** |   | 4 |
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** |   | 2 |
+| 42 | depot_devises____dda | Depots et garanties | DB |   | **W** |   | 2 |
+| 367 | pms_print_param_default |  | DB |   | **W** |   | 1 |
+| 50 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 1 |
+| 67 | tables___________tab |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (4 / 7 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 456 - tai_demarrage (R/**W**) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 41 - depot_objets_____doa (**W**) - 5 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W2 Description depot | W | Alpha |
+| B | W2 choix action | W | Alpha |
+| C | W2 confirm-retrait | W | Logical |
+| D | W2 fin-tâche | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 43 - solde_devises____sda (**W**) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W2 action | W | Alpha |
+| B | W2 fin-tâche | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 47 - compte_gm________cgm (**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 42 - depot_devises____dda (**W**) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| EN | W2 Description depot | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 367 - pms_print_param_default (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 50 - moyens_reglement_mor (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W2 devise | R | Alpha |
+| B | W2 mode de paiement | R | Alpha |
+| C | W2 quantite | R | Numeric |
+| D | W2 validation devise | R | Alpha |
+| E | W2 test-lien-MRE uni | R | Numeric |
+| F | W2 test-lien-DEV | R | Numeric |
+| G | Btn valider | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| FE | v. titre | Alpha | - |
+
+### 11.2 Variables de travail (2)
+
+Variables internes au programme.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EV | W0 reseau | Alpha | 1x calcul interne |
+| EW | W0 fin de tache | Alpha | 1x calcul interne |
+
+### 11.3 Autres (17)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | > societe | Alpha | 1x refs |
+| EO | > code adherent | Numeric | - |
+| EP | > filiation | Numeric | - |
+| EQ | > devise locale | Alpha | - |
+| ER | > nb decimale | Numeric | - |
+| ES | > masque montant | Alpha | - |
+| ET | > nom village | Alpha | - |
+| EU | > change uni/bi ? | Alpha | - |
+| EX | W1 devise | Alpha | - |
+| EY | W1 mode paiement | Alpha | - |
+| EZ | W1 quantite devise | Numeric | - |
+| FA | PW1 date session | Date | - |
+| FB | PW1 heure session | Time | - |
+| FC | PW1 user | Alpha | - |
+| FD | bouton quitter | Alpha | - |
+| FF | W1 code scelle | Unicode | - |
+| FG | W1 Scelle retire | Logical | - |
+
+<details>
+<summary>Toutes les 20 variables (liste complete)</summary>
+
+| Cat | Lettre | Nom Variable | Type |
+|-----|--------|--------------|------|
+| W0 | **EV** | W0 reseau | Alpha |
+| W0 | **EW** | W0 fin de tache | Alpha |
+| V. | **FE** | v. titre | Alpha |
+| Autre | **EN** | > societe | Alpha |
+| Autre | **EO** | > code adherent | Numeric |
+| Autre | **EP** | > filiation | Numeric |
+| Autre | **EQ** | > devise locale | Alpha |
+| Autre | **ER** | > nb decimale | Numeric |
+| Autre | **ES** | > masque montant | Alpha |
+| Autre | **ET** | > nom village | Alpha |
+| Autre | **EU** | > change uni/bi ? | Alpha |
+| Autre | **EX** | W1 devise | Alpha |
+| Autre | **EY** | W1 mode paiement | Alpha |
+| Autre | **EZ** | W1 quantite devise | Numeric |
+| Autre | **FA** | PW1 date session | Date |
+| Autre | **FB** | PW1 heure session | Time |
+| Autre | **FC** | PW1 user | Alpha |
+| Autre | **FD** | bouton quitter | Alpha |
+| Autre | **FF** | W1 code scelle | Unicode |
+| Autre | **FG** | W1 Scelle retire | Logical |
+
+</details>
+
+## 12. EXPRESSIONS
+
+**5 / 5 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 3 | 3 |
+| CONSTANTE | 2 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 5 | `> societe [A]=''` | [RM-003](#rm-RM-003) |
+| CONDITION | 3 | `W0 fin de tache [J]='F'` | [RM-002](#rm-RM-002) |
+| CONDITION | 1 | `W0 reseau [I]<>'R'` | [RM-001](#rm-RM-001) |
+
+#### CONSTANTE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 4 | `'C'` | - |
+| CONSTANTE | 2 | `'F'` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Comptes de depôt (IDE 40)**
 
 ```mermaid
 graph LR
-    T[40 Comptes de depô]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T40[40 Comptes de depôt]
+    style T40 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#3fb950
+    CC1 --> CC163
+    CC163 --> T40
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[40 Comptes de depô]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T40[40 Comptes de depôt]
+    style T40 fill:#58a6ff
+    C44[44 Appel programme]
+    T40 --> C44
+    style C44 fill:#3fb950
+    C179[179 Get Printer]
+    T40 --> C179
+    style C179 fill:#3fb950
+    C181[181 Set Listing Number]
+    T40 --> C181
+    style C181 fill:#3fb950
+    C43[43 Recuperation du titre]
+    T40 --> C43
+    style C43 fill:#3fb950
+    C183[183 Other Listing]
+    T40 --> C183
+    style C183 fill:#3fb950
+    C263[263 Zoom modes de paie...]
+    T40 --> C263
+    style C263 fill:#3fb950
+    C39[39 Print extrait ObjDe...]
+    T40 --> C39
+    style C39 fill:#3fb950
+    C172[172 Print Depot ObjDevSce]
+    T40 --> C172
+    style C172 fill:#3fb950
+    C180[180 Printer choice]
+    T40 --> C180
+    style C180 fill:#3fb950
+    C182[182 Raz Current Printer]
+    T40 --> C182
+    style C182 fill:#3fb950
+    C262[262 Zoom des types dob...]
+    T40 --> C262
+    style C262 fill:#3fb950
+    C266[266 Zoom des all devises]
+    T40 --> C266
+    style C266 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [44](ADH-IDE-44.md) | Appel programme | 3 | Sous-programme |
+| [179](ADH-IDE-179.md) | Get Printer | 3 | Impression ticket/document |
+| [181](ADH-IDE-181.md) | Set Listing Number | 3 | Configuration impression |
+| [43](ADH-IDE-43.md) | Recuperation du titre | 2 | Recuperation donnees |
+| [183](ADH-IDE-183.md) | Other Listing | 2 | Configuration impression |
+| [263](ADH-IDE-263.md) | Zoom modes de paiement | 2 | Selection/consultation |
+| [39](ADH-IDE-39.md) | Print extrait ObjDevSce | 1 | Impression ticket/document |
+| [172](ADH-IDE-172.md) | Print Depot Obj/Dev/Sce | 1 | Impression ticket/document |
+| [180](ADH-IDE-180.md) | Printer choice | 1 | Impression ticket/document |
+| [182](ADH-IDE-182.md) | Raz Current Printer | 1 | Impression ticket/document |
+| [262](ADH-IDE-262.md) | Zoom  des types d'objets | 1 | Selection/consultation |
+| [266](ADH-IDE-266.md) | Zoom des all devises | 1 | Selection/consultation |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 480 | Taille moyenne |
+| Expressions | 5 | Peu de logique |
+| Tables WRITE | 6 | Fort impact donnees |
+| Sous-programmes | 12 | Forte dependance |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 480) | Code sain |
+| Regles metier | 3 | Quelques regles a preserver |
+
+### 14.2 Plan de migration par bloc
+
+### 14.3 Dependances critiques
+
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| depot_objets_____doa | Table WRITE (Database) | 5x | Schema + repository |
+| depot_devises____dda | Table WRITE (Database) | 2x | Schema + repository |
+| solde_devises____sda | Table WRITE (Database) | 4x | Schema + repository |
+| compte_gm________cgm | Table WRITE (Database) | 2x | Schema + repository |
+| pms_print_param_default | Table WRITE (Database) | 1x | Schema + repository |
+| tai_demarrage | Table WRITE (Database) | 2x | Schema + repository |
+| [Set Listing Number (IDE 181)](ADH-IDE-181.md) | Sous-programme | 3x | **CRITIQUE** - Configuration impression |
+| [Get Printer (IDE 179)](ADH-IDE-179.md) | Sous-programme | 3x | **CRITIQUE** - Impression ticket/document |
+| [Appel programme (IDE 44)](ADH-IDE-44.md) | Sous-programme | 3x | **CRITIQUE** - Sous-programme |
+| [Zoom modes de paiement (IDE 263)](ADH-IDE-263.md) | Sous-programme | 2x | Haute - Selection/consultation |
+| [Other Listing (IDE 183)](ADH-IDE-183.md) | Sous-programme | 2x | Haute - Configuration impression |
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 2x | Haute - Recuperation donnees |
+| [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
+| [Zoom  des types d'objets (IDE 262)](ADH-IDE-262.md) | Sous-programme | 1x | Normale - Selection/consultation |
+| [Zoom des all devises (IDE 266)](ADH-IDE-266.md) | Sous-programme | 1x | Normale - Selection/consultation |
+| [Print extrait ObjDevSce (IDE 39)](ADH-IDE-39.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-
-## NOTES MIGRATION
-
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 25 | Complexe |
-| Tables | 9 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **MOYENNE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
-
----
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:00 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:36*

@@ -1,6 +1,6 @@
-﻿# ADH IDE 136 - Generation tableau recap WS
+﻿# ADH IDE 136 - Generation ticket WS
 
-> **Analyse**: Phases 1-4 2026-02-07 07:10 -> 07:10 (15s) | Assemblage 07:10
+> **Analyse**: Phases 1-4 2026-02-08 03:13 -> 03:14 (4s) | Assemblage 03:14
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -12,28 +12,44 @@
 |----------|--------|
 | Projet | ADH |
 | IDE Position | 136 |
-| Nom Programme | Generation tableau recap WS |
+| Nom Programme | Generation ticket WS |
 | Fichier source | `Prg_136.xml` |
-| Dossier IDE | Gestion |
-| Taches | 1 (0 ecrans visibles) |
-| Tables modifiees | 0 |
+| Dossier IDE | Impression |
+| Taches | 3 (0 ecrans visibles) |
+| Tables modifiees | 2 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 7/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Generation tableau recap WS** assure la gestion complete de ce processus.
+ADH IDE 136 est un programme de génération de tableau récapitulatif (ticket WS) qui consolide les données de session de caisse pour audit et reporting. Appelé 7 fois lors de l'ouverture de caisse (IDE 122) et 7 fois lors de la fermeture (IDE 131), il lit la table des devises (devise_in) et les paramètres de session (date, numéro, montants par type: monnaie locale, cartes, chèques, ordres de dépôt) pour produire un tableau structuré avec totaux consolidés par devise et conversion en devise locale avec taux du jour.
+
+Le programme est architecturalement très simple — une seule tâche, 98 lignes de logique linéaire, zéro branchements — mais joue un rôle critique dans la conformité audit. À l'ouverture, il crée une preuve du solde initial de caisse et trace les devises disponibles ; à la fermeture, il génère l'état final permettant la réconciliation automatique entre les montants comptés physiquement et les calculs du système pour identifier les écarts. Le format "WS" (Web Service ou Worksheet) est destiné à être transmis au siège sous forme de fichier texte/CSV ou buffer XML/JSON pour archivage et contrôle de gestion.
+
+Son intégration dans le workflow caisse est stricte : IDE 136 s'exécute immédiatement après la mise à jour du détail session (IDE 134) à l'ouverture, et immédiatement avant les validations finales et l'archivage à la fermeture. Bien que détecté potentiellement comme orphelin (pas de PublicName visible ou appel dynamique), il est hautement utilisé en étant appelé 14 fois par cycle caisse complet, ce qui en fait l'un des programmes les plus sollicités de la gestion caisse.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: Param montant produits [F] different de 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Param montant produits [F]<>0` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EQ (Param montant), ES (Param montant produits) |
+| **Expression source** | Expression 17 : `Param montant produits [F]<>0` |
+| **Exemple** | Si Param montant produits [F]<>0 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
-- **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 30
+- **Appele par**: [Ouverture caisse (IDE 122)](ADH-IDE-122.md), [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Ouverture caisse 143 (IDE 297)](ADH-IDE-297.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md)
+- **Appelle**: 0 programmes | **Tables**: 3 (W:2 R:1 L:0) | **Taches**: 3 | **Expressions**: 17
 
 <!-- TAB:Ecrans -->
 
@@ -53,140 +69,112 @@
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 1 taches]
-    ENDOK([END])
-    START --> PROCESS --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{aram montant produits}
+    PROCESS[Traitement]
+    UPDATE[MAJ 2 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
 
-### Tables utilisees (2)
+### Tables utilisees (3)
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 510 | pv_discounts |  | TMP |   |   | L | 1 |
-| 693 | devise_in | Devises / taux de change | DB | R |   |   | 1 |
+| 512 | pv_equip_histo | Historique / journal | TMP |   | **W** |   | 1 |
+| 511 | pv_invoicedisplaytmp |  | TMP |   | **W** |   | 1 |
+| 196 | gestion_article_session | Articles et stock | DB | R |   |   | 1 |
 
-### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+### Colonnes par table (2 / 3 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 693 - devise_in (R) - 1 usages</summary>
+<summary>Table 512 - pv_equip_histo (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 511 - pv_invoicedisplaytmp (**W**) - 1 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | Param date comptable | R | Date |
-| B | Param numero session | R | Numeric |
-| C | Param type | R | Alpha |
-| D | Param type appro_vers_coffre | R | Alpha |
-| E | Param mode de paiement | R | Alpha |
-| F | Param avec change | R | Alpha |
-| G | Param code devise | R | Alpha |
-| H | Param quantite devise | R | Numeric |
-| I | Param taux devise | R | Numeric |
-| J | Param montant | R | Numeric |
-| K | Param montant monnaie | R | Numeric |
-| L | Param montant produits | R | Numeric |
-| M | Param montant cartes | R | Numeric |
-| N | Param montant chèque | R | Numeric |
-| O | Param montant od | R | Numeric |
-| P | Param societe | R | Alpha |
-| Q | Param compte village | R | Numeric |
-| R | Param filiation | R | Numeric |
-| S | Param imputation | R | Numeric |
-| T | Param sous imputation | R | Numeric |
-| U | Param libelle | R | Alpha |
-| V | Param libelle complementaire | R | Alpha |
-| W | Param nom GM | R | Alpha |
-| X | Param quantite article | R | Numeric |
-| Y | Param prix article | R | Numeric |
+| A | Param chrono session | W | Numeric |
+| B | Param Quand | W | Alpha |
+| C | Param Type | W | Alpha |
+| D | Param montant | W | Numeric |
+| E | Param montant monnaie | W | Numeric |
+| F | Param montant produits | W | Numeric |
+| G | Param montant cartes | W | Numeric |
+| H | Param montant cheques | W | Numeric |
+| I | Param montant od | W | Numeric |
+| J | Param nbre devise | W | Numeric |
+| K | Param commentaire ecart | W | Alpha |
+| L | Param commentaire ecart devise | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 196 - gestion_article_session (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| EN | Param chrono session | R | Numeric |
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Autres (25)
+### 11.1 Autres (12)
 
 Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | Param date comptable | Date | 1x refs |
-| B | Param numero session | Numeric | 1x refs |
-| C | Param type | Alpha | 2x refs |
-| D | Param type appro_vers_coffre | Alpha | - |
-| E | Param mode de paiement | Alpha | 1x refs |
-| F | Param avec change | Alpha | 1x refs |
-| G | Param code devise | Alpha | 1x refs |
-| H | Param quantite devise | Numeric | 1x refs |
-| I | Param taux devise | Numeric | 1x refs |
-| J | Param montant | Numeric | 6x refs |
-| K | Param montant monnaie | Numeric | 1x refs |
-| L | Param montant produits | Numeric | 1x refs |
-| M | Param montant cartes | Numeric | 1x refs |
-| N | Param montant chèque | Numeric | 1x refs |
-| O | Param montant od | Numeric | 1x refs |
-| P | Param societe | Alpha | 1x refs |
-| Q | Param compte village | Numeric | 1x refs |
-| R | Param filiation | Numeric | 1x refs |
-| S | Param imputation | Numeric | 1x refs |
-| T | Param sous imputation | Numeric | 1x refs |
-| U | Param libelle | Alpha | 2x refs |
-| V | Param libelle complementaire | Alpha | - |
-| W | Param nom GM | Alpha | 1x refs |
-| X | Param quantite article | Numeric | 1x refs |
-| Y | Param prix article | Numeric | 1x refs |
-
-<details>
-<summary>Toutes les 25 variables (liste complete)</summary>
-
-| Cat | Lettre | Nom Variable | Type |
-|-----|--------|--------------|------|
-| Autre | **A** | Param date comptable | Date |
-| Autre | **B** | Param numero session | Numeric |
-| Autre | **C** | Param type | Alpha |
-| Autre | **D** | Param type appro_vers_coffre | Alpha |
-| Autre | **E** | Param mode de paiement | Alpha |
-| Autre | **F** | Param avec change | Alpha |
-| Autre | **G** | Param code devise | Alpha |
-| Autre | **H** | Param quantite devise | Numeric |
-| Autre | **I** | Param taux devise | Numeric |
-| Autre | **J** | Param montant | Numeric |
-| Autre | **K** | Param montant monnaie | Numeric |
-| Autre | **L** | Param montant produits | Numeric |
-| Autre | **M** | Param montant cartes | Numeric |
-| Autre | **N** | Param montant chèque | Numeric |
-| Autre | **O** | Param montant od | Numeric |
-| Autre | **P** | Param societe | Alpha |
-| Autre | **Q** | Param compte village | Numeric |
-| Autre | **R** | Param filiation | Numeric |
-| Autre | **S** | Param imputation | Numeric |
-| Autre | **T** | Param sous imputation | Numeric |
-| Autre | **U** | Param libelle | Alpha |
-| Autre | **V** | Param libelle complementaire | Alpha |
-| Autre | **W** | Param nom GM | Alpha |
-| Autre | **X** | Param quantite article | Numeric |
-| Autre | **Y** | Param prix article | Numeric |
-
-</details>
+| EN | Param chrono session | Numeric | 1x refs |
+| EO | Param Quand | Alpha | 1x refs |
+| EP | Param Type | Alpha | 1x refs |
+| EQ | Param montant | Numeric | 7x refs |
+| ER | Param montant monnaie | Numeric | 1x refs |
+| ES | Param montant produits | Numeric | 2x refs |
+| ET | Param montant cartes | Numeric | 1x refs |
+| EU | Param montant cheques | Numeric | 1x refs |
+| EV | Param montant od | Numeric | 1x refs |
+| EW | Param nbre devise | Numeric | 1x refs |
+| EX | Param commentaire ecart | Alpha | 1x refs |
+| EY | Param commentaire ecart devise | Alpha | - |
 
 ## 12. EXPRESSIONS
 
-**30 / 30 expressions decodees (100%)**
+**17 / 17 expressions decodees (100%)**
 
 ### 12.1 Repartition par type
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
 | CALCULATION | 1 | 0 |
-| CONSTANTE | 2 | 0 |
+| CONDITION | 1 | 5 |
+| DATE | 1 | 0 |
 | REFERENCE_VG | 1 | 0 |
-| OTHER | 26 | 0 |
+| OTHER | 13 | 0 |
 
 ### 12.2 Expressions cles par type
 
@@ -194,88 +182,36 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CALCULATION | 1 | `[AA]+1` | - |
+| CALCULATION | 3 | `[O]+1` | - |
 
-#### CONSTANTE (2 expressions)
+#### CONDITION (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONSTANTE | 4 | `'T'` | - |
-| CONSTANTE | 3 | `'FRA'` | - |
+| CONDITION | 17 | `Param montant produits [F]<>0` | [RM-001](#rm-RM-001) |
+
+#### DATE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 6 | `Date ()` | - |
 
 #### REFERENCE_VG (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| REFERENCE_VG | 2 | `VG1` | - |
+| REFERENCE_VG | 1 | `VG1` | - |
 
-#### OTHER (26 expressions)
+#### OTHER (13 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 21 | `Param societe [P]` | - |
-| OTHER | 22 | `Param compte village [Q]` | - |
-| OTHER | 23 | `Param filiation [R]` | - |
-| OTHER | 18 | `Param montant cartes [M]` | - |
-| OTHER | 19 | `Param montant chèque [N]` | - |
-| ... | | *+21 autres* | |
-
-### 12.3 Toutes les expressions (30)
-
-<details>
-<summary>Voir les 30 expressions</summary>
-
-#### CALCULATION (1)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 1 | `[AA]+1` |
-
-#### CONSTANTE (2)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 3 | `'FRA'` |
-| 4 | `'T'` |
-
-#### REFERENCE_VG (1)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 2 | `VG1` |
-
-#### OTHER (26)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 5 | `Param date comptable [A]` |
-| 6 | `Param numero session [B]` |
-| 7 | `Param type [C]` |
-| 8 | `[BG]` |
-| 9 | `Param type appro_vers_... [D]` |
-| 10 | `Param mode de paiement [E]` |
-| 11 | `Param avec change [F]` |
-| 12 | `Param code devise [G]` |
-| 13 | `Param quantite devise [H]` |
-| 14 | `Param taux devise [I]` |
-| 15 | `Param montant [J]` |
-| 16 | `Param montant monnaie [K]` |
-| 17 | `Param montant produits [L]` |
-| 18 | `Param montant cartes [M]` |
-| 19 | `Param montant chèque [N]` |
-| 20 | `Param montant od [O]` |
-| 21 | `Param societe [P]` |
-| 22 | `Param compte village [Q]` |
-| 23 | `Param filiation [R]` |
-| 24 | `Param imputation [S]` |
-| 25 | `Param sous imputation [T]` |
-| 26 | `Param libelle [U]` |
-| 27 | `Param libelle compleme... [V]` |
-| 28 | `Param nom GM [W]` |
-| 29 | `Param quantite article [X]` |
-| 30 | `Param prix article [Y]` |
-
-</details>
+| OTHER | 13 | `Param montant od [I]` | - |
+| OTHER | 12 | `Param montant cheques [H]` | - |
+| OTHER | 11 | `Param montant cartes [G]` | - |
+| OTHER | 16 | `Param commentaire ecar... [L]` | - |
+| OTHER | 15 | `Param nbre devise [J]` | - |
+| ... | | *+8 autres* | |
 
 <!-- TAB:Connexions -->
 
@@ -283,28 +219,70 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Ouverture caisse (IDE 122)](ADH-IDE-122.md) -> **Generation ticket WS (IDE 136)**
+
+Main -> ... -> [Fermeture caisse (IDE 131)](ADH-IDE-131.md) -> **Generation ticket WS (IDE 136)**
+
+Main -> ... -> [Ouverture caisse 143 (IDE 297)](ADH-IDE-297.md) -> **Generation ticket WS (IDE 136)**
+
+Main -> ... -> [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md) -> **Generation ticket WS (IDE 136)**
 
 ```mermaid
 graph LR
-    T136[136 Generation tableau...]
+    T136[136 Generation ticket WS]
     style T136 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T136
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC281[281 Fermeture Sessions]
+    style CC281 fill:#f59e0b
+    CC298[298 Gestion caisse 142]
+    style CC298 fill:#f59e0b
+    CC121[121 Gestion caisse]
+    style CC121 fill:#f59e0b
+    CC131[131 Fermeture caisse]
+    style CC131 fill:#3fb950
+    CC122[122 Ouverture caisse]
+    style CC122 fill:#3fb950
+    CC299[299 Fermeture caisse 144]
+    style CC299 fill:#3fb950
+    CC297[297 Ouverture caisse 143]
+    style CC297 fill:#3fb950
+    CC121 --> CC122
+    CC298 --> CC122
+    CC121 --> CC131
+    CC298 --> CC131
+    CC121 --> CC297
+    CC298 --> CC297
+    CC121 --> CC299
+    CC298 --> CC299
+    CC163 --> CC121
+    CC281 --> CC121
+    CC163 --> CC298
+    CC281 --> CC298
+    CC1 --> CC163
+    CC1 --> CC281
+    CC122 --> T136
+    CC131 --> T136
+    CC297 --> T136
+    CC299 --> T136
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [122](ADH-IDE-122.md) | Ouverture caisse | 7 |
+| [131](ADH-IDE-131.md) | Fermeture caisse | 7 |
+| [297](ADH-IDE-297.md) | Ouverture caisse 143 | 7 |
+| [299](ADH-IDE-299.md) | Fermeture caisse 144 | 7 |
 
 ### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T136[136 Generation tableau...]
+    T136[136 Generation ticket WS]
     style T136 fill:#58a6ff
     NONE[Aucun callee]
     T136 -.-> NONE
@@ -323,13 +301,13 @@ graph LR
 
 | Metrique | Valeur | Impact migration |
 |----------|--------|-----------------|
-| Lignes de logique | 98 | Programme compact |
-| Expressions | 30 | Peu de logique |
-| Tables WRITE | 0 | Impact faible |
+| Lignes de logique | 86 | Programme compact |
+| Expressions | 17 | Peu de logique |
+| Tables WRITE | 2 | Impact faible |
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
-| Code desactive | 0% (0 / 98) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Code desactive | 0% (0 / 86) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -337,6 +315,8 @@ graph LR
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
+| pv_invoicedisplaytmp | Table WRITE (Temp) | 1x | Schema + repository |
+| pv_equip_histo | Table WRITE (Temp) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:10*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:15*

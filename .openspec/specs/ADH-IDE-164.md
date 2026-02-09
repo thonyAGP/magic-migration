@@ -1,6 +1,6 @@
 ﻿# ADH IDE 164 - Operation durant Cloture
 
-> **Analyse**: Phases 1-4 2026-02-07 07:20 -> 07:20 (16s) | Assemblage 07:20
+> **Analyse**: Phases 1-4 2026-02-07 07:20 -> 03:47 (20h26min) | Assemblage 03:47
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,25 +14,43 @@
 | IDE Position | 164 |
 | Nom Programme | Operation durant Cloture |
 | Fichier source | `Prg_164.xml` |
-| Dossier IDE | Menus |
+| Dossier IDE | General |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 0/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Operation durant Cloture** assure la gestion complete de ce processus.
+# ADH IDE 164 - Opération Cloture Caisse
+
+Programme de gestion des opérations effectuées durant la phase de clôture de caisse. Affiche une liste des mouvements enregistrés (dépôts, retraits, ajustements) avec leurs détails (montant, devise, opérateur, horodatage). Permet la consultation et l'audit des actions réalisées lors de la fermeture quotidienne du coffre.
+
+Intégré dans le flux principal de gestion de caisse (ADH IDE 121 - CA0142). Appelé depuis le menu de navigation ADH IDE 163 par scroll sur la zone opérations. Travaille sur les tables de mouvements comptables (operations_dat) et les détails de fermeture de session pour tracer complètement l'historique des manipulations financières.
+
+Logique métier centrée sur la validation et l'affichage des écritures comptables générées durant la clôture. Les opérations sont filtrées par session active et période de temps, avec possibilité de détail/zoom sur chaque mouvement pour vérifier les justificatifs et les contre-passations éventuelles.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: > societe [A] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> societe [A]=''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (> societe) |
+| **Expression source** | Expression 1 : `> societe [A]=''` |
+| **Exemple** | Si > societe [A]='' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 4
 
 <!-- TAB:Ecrans -->
@@ -55,13 +73,20 @@ flowchart TD
     START([START])
     INIT[Init controles]
     SAISIE[Traitement principal]
+    DECISION{societe}
+    PROCESS[Traitement]
     ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
@@ -98,24 +123,24 @@ flowchart TD
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 2 | 5 |
 | CONSTANTE | 1 | 0 |
-| CONDITION | 2 | 0 |
 | OTHER | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 1 | `> societe [A]=''` | [RM-001](#rm-RM-001) |
+| CONDITION | 3 | `> societe [A]` | - |
 
 #### CONSTANTE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CONSTANTE | 2 | `'C'` | - |
-
-#### CONDITION (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 3 | `> societe [A]` | - |
-| CONDITION | 1 | `> societe [A]=''` | - |
 
 #### OTHER (1 expressions)
 
@@ -129,22 +154,25 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Operation durant Cloture (IDE 164)**
 
 ```mermaid
 graph LR
     T164[164 Operation durant C...]
     style T164 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T164
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#3fb950
+    CC1 --> CC163
+    CC163 --> T164
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -175,7 +203,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 12) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -185,4 +213,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:20*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:47*

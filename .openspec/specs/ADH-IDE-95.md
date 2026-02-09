@@ -1,6 +1,6 @@
 ﻿# ADH IDE 95 - Facture - Sejour archive
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:47 (30s) | Assemblage 14:24
+> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 02:34 (22h47min) | Assemblage 02:34
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Ce programme traite la génération d'écritures comptables et commerciales pour les factures d'hébergement archivées. Il reçoit les paramètres d'une réservation fermée (société, numéro de compte, filiale, date d'archivage) et crée automatiquement les entrées correspondantes dans les ledgers comptable et commercial, tout en gérant les allocations de gift pass et la mise à jour du rayon boutique associé. La logique se déploie en deux phases symétriques : une création d'écritures comptables suivie d'une création d'écritures commerciales, chacune entrelacée avec des mises à jour des flags d'hébergement temporaires.
+ADH IDE 95 - Facture Séjour archivé gère la création de lignes de facturation pour les séjours archivés. Ce programme est appelé depuis les interfaces de gestion des factures (ADH IDE 89 et 97) et traite les données de facturation comptable et commerciale. Il modifie deux tables principales : Affectation_Gift_Pass (pour gérer les allocations) et Rayons_Boutique (pour les articles de vente).
 
-C'est un programme terminal (aucun appel sortant) relativement simple avec 6 tâches et 261 lignes de logique 100% actives. Il modifie deux tables clés : **Affectation_Gift_Pass** (3 écritures pour tracker les pass) et **Rayons_Boutique** (2 écritures pour l'inventaire boutique). Le flux suit un ordre strict : réception des inputs → création des enregistrements de base → enregistrements comptables + flag update → enregistrements commerciaux + flag final, garantissant une cohérence entre les trois domaines (comptabilité, vente, inventaire).
+Le flux principal comporte 6 tâches orchestrées. La tâche "Hebergement" initialise le contexte et charge les données du séjour. Ensuite, "Création" valide la logique métier et prépare les lignes. Les deux tâches "Creation Lg Compta" et "Creation Lg Vente" génèrent respectivement les lignes comptables et commerciales avec les montants et références. Les tâches "Maj Hebergement Temp" synchronisent l'état temporaire avec les modifications effectuées.
 
-Appelé depuis les deux versions du programme Factures (IDE 89 et 97), ce programme joue un rôle de finaliseur : une fois qu'une facture d'hébergement est marquée comme archivée, ses mouvements financiers et d'inventaire se cristallisent dans les tables permanentes via ce processus batch coordonné.
+Ce programme s'inscrit dans la chaîne de facturation en fin de séjour, transformant les données opérationnelles (hébergement, services) en écritures comptables pour archivage. Il garantit la traçabilité complète entre les opérations initiales et leur enregistrement financier définitif.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Hebergement [ECRAN]
+#### <a id="t1"></a>95 - Hebergement [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t1)
@@ -46,32 +46,32 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Création | Traitement |
-| [T4](#t4) | Maj Hebergement Temp | Traitement |
-| [T6](#t6) | Maj Hebergement Temp | Traitement |
+| [95.1](#t2) | Création | Traitement |
+| [95.2.1](#t4) | Maj Hebergement Temp | Traitement |
+| [95.3.1](#t6) | Maj Hebergement Temp | Traitement |
 
 </details>
-**Variables liees** : E (V.Lien Hebergement_Pro)
+**Variables liees** : ER (V.Lien Hebergement_Pro)
 
 ---
 
-#### <a id="t2"></a>T2 - Création
+#### <a id="t2"></a>95.1 - Création
 
 **Role** : Traitement : Création.
 
 ---
 
-#### <a id="t4"></a>T4 - Maj Hebergement Temp
+#### <a id="t4"></a>95.2.1 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
-**Variables liees** : E (V.Lien Hebergement_Pro)
+**Variables liees** : ER (V.Lien Hebergement_Pro)
 
 ---
 
-#### <a id="t6"></a>T6 - Maj Hebergement Temp
+#### <a id="t6"></a>95.3.1 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
-**Variables liees** : E (V.Lien Hebergement_Pro)
+**Variables liees** : ER (V.Lien Hebergement_Pro)
 
 
 ### 3.2 Calcul (1 tache)
@@ -80,7 +80,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t3"></a>T3 - Creation Lg Compta [ECRAN]
+#### <a id="t3"></a>95.2 - Creation Lg Compta [[ECRAN]](#ecran-t3)
 
 **Role** : Creation d'enregistrement : Creation Lg Compta.
 **Ecran** : 1009 x 0 DLU | [Voir mockup](#ecran-t3)
@@ -92,7 +92,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Creation Lg Vente)
 
 ---
 
-#### <a id="t5"></a>T5 - Creation Lg Vente [ECRAN]
+#### <a id="t5"></a>95.3 - Creation Lg Vente [[ECRAN]](#ecran-t5)
 
 **Role** : Saisie des donnees : Creation Lg Vente.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t5)
@@ -119,34 +119,32 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Creation Lg Vente)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **95.1** | [**Hebergement** (T1)](#t1) [mockup](#ecran-t1) | - | 630x0 | Traitement |
-| 95.1.1 | [Création (T2)](#t2) | - | - | |
-| 95.1.2 | [Maj Hebergement Temp (T4)](#t4) | - | - | |
-| 95.1.3 | [Maj Hebergement Temp (T6)](#t6) | - | - | |
-| **95.2** | [**Creation Lg Compta** (T3)](#t3) [mockup](#ecran-t3) | - | 1009x0 | Calcul |
-| **95.3** | [**Creation Lg Vente** (T5)](#t5) [mockup](#ecran-t5) | - | 630x0 | Saisie |
+| **95.1** | [**Hebergement** (95)](#t1) [mockup](#ecran-t1) | - | 630x0 | Traitement |
+| 95.1.1 | [Création (95.1)](#t2) | - | - | |
+| 95.1.2 | [Maj Hebergement Temp (95.2.1)](#t4) | - | - | |
+| 95.1.3 | [Maj Hebergement Temp (95.3.1)](#t6) | - | - | |
+| **95.2** | [**Creation Lg Compta** (95.2)](#t3) [mockup](#ecran-t3) | - | 1009x0 | Calcul |
+| **95.3** | [**Creation Lg Vente** (95.3)](#t5) [mockup](#ecran-t5) | - | 630x0 | Saisie |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (4t)]
-    START --> B1
-    B2[Calcul (1t)]
-    B1 --> B2
-    B3[Saisie (1t)]
-    B2 --> B3
-    WRITE[MAJ 2 tables]
-    B3 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 2 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -193,10 +191,10 @@ Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](AD
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.i.Société | Alpha | 1x parametre entrant |
-| B | P.i.Num compte | Numeric | 1x parametre entrant |
-| C | P.i.Fliliation | Numeric | 1x parametre entrant |
-| D | P.i.Date Purge | Date | 1x parametre entrant |
+| EN | P.i.Société | Alpha | 1x parametre entrant |
+| EO | P.i.Num compte | Numeric | 1x parametre entrant |
+| EP | P.i.Fliliation | Numeric | 1x parametre entrant |
+| EQ | P.i.Date Purge | Date | 1x parametre entrant |
 
 ### 11.2 Variables de session (1)
 
@@ -204,7 +202,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| E | V.Lien Hebergement_Pro | Logical | - |
+| ER | V.Lien Hebergement_Pro | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -338,4 +336,4 @@ graph LR
 | Rayons_Boutique | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:26*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:35*

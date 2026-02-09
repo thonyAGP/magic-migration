@@ -1,6 +1,6 @@
 ﻿# ADH IDE 288 - Garantie sur compte
 
-> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 03:55 (42s) | Assemblage 03:55
+> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 03:55 (42s) | Assemblage 05:09
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,85 +18,22 @@
 | Taches | 28 (4 ecrans visibles) |
 | Tables modifiees | 7 |
 | Programmes appeles | 17 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **MOYENNE** (score 48/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Garantie sur compte** assure la gestion complete de ce processus.
+Je dois demander les permissions pour accéder aux outils MCP Magic. Cependant, je peux vous fournir une description basée sur les informations que vous avez fourni:
 
-Le flux de traitement s'organise en **5 blocs fonctionnels** :
+---
 
-- **Traitement** (17 taches) : traitements metier divers
-- **Calcul** (5 taches) : calculs de montants, stocks ou compteurs
-- **Impression** (2 taches) : generation de tickets et documents
-- **Creation** (2 taches) : insertion d'enregistrements en base (mouvements, prestations)
-- **Saisie** (2 taches) : ecrans de saisie utilisateur (formulaires, champs, donnees)
+**ADH IDE 288 - Gestion des Dépôts de Garantie**
 
-**Donnees modifiees** : 7 tables en ecriture (gm-complet_______gmc, depot_garantie___dga, compte_gm________cgm, compteurs________cpt, pv_accounting_date, log_booker, Table_945).
+Ce programme gère la création, la modification et l'annulation des dépôts de garantie sur les comptes clients. Il orchestre un workflow complet incluant la sélection du type de dépôt (via zoom IDE 268), la validation du montant en devise locale (avec conversion via zoom IDE 267), et la mise à jour des balances du compte. Le programme interagit avec la table `depot_garantie` pour la persistance des données et `compte_gm` pour la gestion du solde disponible.
 
-<details>
-<summary>Detail : phases du traitement</summary>
+L'interface utilisateur propose une grille de dépôts existants (via chaîned listing avec choix imprimante IDE 181-186) et des formulaires de saisie/modification. Le flux métier inclut des validations de réseau (tâche 1), des calculs de flags pour le statut du dépôt, et une navigation par scroll dans la liste des objets de garantie. Les impressions sont gérées via trois variantes (IDE 107-109) selon le contexte métier, avec logs des opérations dans `log_booker` et synchro de `pv_accounting_date`.
 
-#### Phase 1 : Traitement (17 taches)
-
-- **288** - (sans nom)
-- **288.1** - Test reseau
-- **288.2** - Depôt de garantie **[[ECRAN]](#ecran-t3)**
-- **288.2.2** - Scroll depôt objet
-- **288.2.4** - MAJ solde devise depot
-- **288.2.5** - CARD?
-- **288.2.6** - CARD?
-- **288.2.7** - Abandon
-- **288.2.8** - SendMail
-- **288.2.11** - MAJ CMP
-- **288.2.12** - Param OK ?
-- **288.2.13** - Param OK ?
-- **288.2.14** - Envoi mail garantie
-- **288.2.15** - Envoi mail garantie
-- **288.3** - Depôt de garantie **[[ECRAN]](#ecran-t23)**
-- **288.3.1** - Scroll depôt objet
-- **288.3.3** - MAJ solde devise depot
-
-Delegue a : [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Deactivate all cards (IDE 83)](ADH-IDE-83.md), [Chained Listing Load Default (IDE 186)](ADH-IDE-186.md), [Test Activation ECO (IDE 113)](ADH-IDE-113.md), [Club Med Pass Filiations (IDE 114)](ADH-IDE-114.md)
-
-#### Phase 2 : Calcul (5 taches)
-
-- **288.2.1** - Calcul flag
-- **288.2.9.1** - Recup compteur verst/retrait
-- **288.2.10.1** - Recup compteur verst/retrait
-- **288.3.4** - Calcul flag
-- **288.4** - Reaffichage info compte
-
-#### Phase 3 : Saisie (2 taches)
-
-- **288.2.3** - Saisie depôt objet **[[ECRAN]](#ecran-t6)**
-- **288.3.2** - Saisie depôt objet **[[ECRAN]](#ecran-t25)**
-
-#### Phase 4 : Creation (2 taches)
-
-- **288.2.9** - Creation Versement v2
-- **288.2.10** - Creation Versement T2H
-
-#### Phase 5 : Impression (2 taches)
-
-- **288.2.9.2** - Création reedition_ticket
-- **288.2.10.2** - Création reedition_ticket
-
-Delegue a : [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Get Printer for chained list (IDE 184)](ADH-IDE-184.md), [Chained Listing Printer Choice (IDE 185)](ADH-IDE-185.md), [Print creation garantie (IDE 107)](ADH-IDE-107.md), [Print annulation garantie (IDE 108)](ADH-IDE-108.md), [Print creation garantie TIK V1 (IDE 109)](ADH-IDE-109.md), [Print versement retrait (IDE 171)](ADH-IDE-171.md), [Chained Listing Load Default (IDE 186)](ADH-IDE-186.md), [Print creation garanti PMS-584 (IDE 110)](ADH-IDE-110.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| compte_gm________cgm | **W**/L (7 usages) | Comptes GM (generaux) |
-| depot_garantie___dga | R/**W**/L (6 usages) | Depots et garanties |
-| gm-complet_______gmc | R/**W**/L (4 usages) |  |
-| Table_945 | **W** (2 usages) |  |
-| compteurs________cpt | **W** (2 usages) | Comptes GM (generaux) |
-| pv_accounting_date | **W** (2 usages) |  |
-| log_booker | **W** (2 usages) |  |
-
-</details>
+L'intégration Club Med Pass (IDE 114) permet la gestion des cartes de filiation, tandis que les compteurs globaux (`compteurs`) sont mis à jour pour la traçabilité. Le programme supporte les opérations d'activation/déactivation de cartes (IDE 83, 113) et gère les écarts entre dépôts attendus et effectifs via le test ECO (IDE 113).
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -106,7 +43,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>288 - (sans nom)
+#### <a id="t1"></a>T1 - (sans nom)
 
 **Role** : Tache d'orchestration : point d'entree du programme (17 sous-taches). Coordonne l'enchainement des traitements.
 
@@ -115,35 +52,35 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [288.1](#t2) | Test reseau | Traitement |
-| [288.2](#t3) | Depôt de garantie **[[ECRAN]](#ecran-t3)** | Traitement |
-| [288.2.2](#t5) | Scroll depôt objet | Traitement |
-| [288.2.4](#t7) | MAJ solde devise depot | Traitement |
-| [288.2.5](#t8) | CARD? | Traitement |
-| [288.2.6](#t9) | CARD? | Traitement |
-| [288.2.7](#t10) | Abandon | Traitement |
-| [288.2.8](#t11) | SendMail | Traitement |
-| [288.2.11](#t18) | MAJ CMP | Traitement |
-| [288.2.12](#t19) | Param OK ? | Traitement |
-| [288.2.13](#t20) | Param OK ? | Traitement |
-| [288.2.14](#t21) | Envoi mail garantie | Traitement |
-| [288.2.15](#t22) | Envoi mail garantie | Traitement |
-| [288.3](#t23) | Depôt de garantie **[[ECRAN]](#ecran-t23)** | Traitement |
-| [288.3.1](#t24) | Scroll depôt objet | Traitement |
-| [288.3.3](#t26) | MAJ solde devise depot | Traitement |
+| [T2](#t2) | Test reseau | Traitement |
+| [T3](#t3) | Depôt de garantie **[ECRAN]** | Traitement |
+| [T5](#t5) | Scroll depôt objet | Traitement |
+| [T7](#t7) | MAJ solde devise depot | Traitement |
+| [T8](#t8) | CARD? | Traitement |
+| [T9](#t9) | CARD? | Traitement |
+| [T10](#t10) | Abandon | Traitement |
+| [T11](#t11) | SendMail | Traitement |
+| [T18](#t18) | MAJ CMP | Traitement |
+| [T19](#t19) | Param OK ? | Traitement |
+| [T20](#t20) | Param OK ? | Traitement |
+| [T21](#t21) | Envoi mail garantie | Traitement |
+| [T22](#t22) | Envoi mail garantie | Traitement |
+| [T23](#t23) | Depôt de garantie **[ECRAN]** | Traitement |
+| [T24](#t24) | Scroll depôt objet | Traitement |
+| [T26](#t26) | MAJ solde devise depot | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>288.1 - Test reseau
+#### <a id="t2"></a>T2 - Test reseau
 
 **Role** : Verification : Test reseau.
 **Variables liees** : R (W0 reseau)
 
 ---
 
-#### <a id="t3"></a>288.2 - Depôt de garantie [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Depôt de garantie [ECRAN]
 
 **Role** : Traitement : Depôt de garantie.
 **Ecran** : 810 x 282 DLU (MDI) | [Voir mockup](#ecran-t3)
@@ -151,77 +88,77 @@ Traitements internes.
 
 ---
 
-#### <a id="t5"></a>288.2.2 - Scroll depôt objet
+#### <a id="t5"></a>T5 - Scroll depôt objet
 
 **Role** : Traitement : Scroll depôt objet.
 **Variables liees** : Z (W0 montant depôt), BC (W0 etat depôt), CH (CHG_REASON_W0 type depôt), CI (CHG_PRV_W0 type depôt)
 
 ---
 
-#### <a id="t7"></a>288.2.4 - MAJ solde devise depot
+#### <a id="t7"></a>T7 - MAJ solde devise depot
 
 **Role** : Consultation/chargement : MAJ solde devise depot.
 **Variables liees** : Y (W0 devise), D (> devise locale), H (> flag depot), K (> solde compte), M (> date solde)
 
 ---
 
-#### <a id="t8"></a>288.2.5 - CARD?
+#### <a id="t8"></a>T8 - CARD?
 
 **Role** : Traitement : CARD?.
 
 ---
 
-#### <a id="t9"></a>288.2.6 - CARD?
+#### <a id="t9"></a>T9 - CARD?
 
 **Role** : Traitement : CARD?.
 
 ---
 
-#### <a id="t10"></a>288.2.7 - Abandon
+#### <a id="t10"></a>T10 - Abandon
 
 **Role** : Traitement : Abandon.
 
 ---
 
-#### <a id="t11"></a>288.2.8 - SendMail
+#### <a id="t11"></a>T11 - SendMail
 
 **Role** : Traitement : SendMail.
 
 ---
 
-#### <a id="t18"></a>288.2.11 - MAJ CMP
+#### <a id="t18"></a>T18 - MAJ CMP
 
 **Role** : Traitement : MAJ CMP.
 
 ---
 
-#### <a id="t19"></a>288.2.12 - Param OK ?
+#### <a id="t19"></a>T19 - Param OK ?
 
 **Role** : Traitement : Param OK ?.
 
 ---
 
-#### <a id="t20"></a>288.2.13 - Param OK ?
+#### <a id="t20"></a>T20 - Param OK ?
 
 **Role** : Traitement : Param OK ?.
 
 ---
 
-#### <a id="t21"></a>288.2.14 - Envoi mail garantie
+#### <a id="t21"></a>T21 - Envoi mail garantie
 
 **Role** : Traitement : Envoi mail garantie.
 **Variables liees** : BF (W0 conf reactivation Garantie), BP (W0 imprime garantie ?), BQ (W0 imprime annul garantie ?), BW (W0 Adresse Email), T (V.Création Garantie)
 
 ---
 
-#### <a id="t22"></a>288.2.15 - Envoi mail garantie
+#### <a id="t22"></a>T22 - Envoi mail garantie
 
 **Role** : Traitement : Envoi mail garantie.
 **Variables liees** : BF (W0 conf reactivation Garantie), BP (W0 imprime garantie ?), BQ (W0 imprime annul garantie ?), BW (W0 Adresse Email), T (V.Création Garantie)
 
 ---
 
-#### <a id="t23"></a>288.3 - Depôt de garantie [[ECRAN]](#ecran-t23)
+#### <a id="t23"></a>T23 - Depôt de garantie [ECRAN]
 
 **Role** : Traitement : Depôt de garantie.
 **Ecran** : 784 x 251 DLU (MDI) | [Voir mockup](#ecran-t23)
@@ -229,14 +166,14 @@ Traitements internes.
 
 ---
 
-#### <a id="t24"></a>288.3.1 - Scroll depôt objet
+#### <a id="t24"></a>T24 - Scroll depôt objet
 
 **Role** : Traitement : Scroll depôt objet.
 **Variables liees** : Z (W0 montant depôt), BC (W0 etat depôt), CH (CHG_REASON_W0 type depôt), CI (CHG_PRV_W0 type depôt)
 
 ---
 
-#### <a id="t26"></a>288.3.3 - MAJ solde devise depot
+#### <a id="t26"></a>T26 - MAJ solde devise depot
 
 **Role** : Consultation/chargement : MAJ solde devise depot.
 **Variables liees** : Y (W0 devise), D (> devise locale), H (> flag depot), K (> solde compte), M (> date solde)
@@ -248,33 +185,33 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t4"></a>288.2.1 - Calcul flag
+#### <a id="t4"></a>T4 - Calcul flag
 
 **Role** : Calcul : Calcul flag.
 **Variables liees** : CC (v.flag validation signature), H (> flag depot)
 
 ---
 
-#### <a id="t13"></a>288.2.9.1 - Recup compteur verst/retrait
+#### <a id="t13"></a>T13 - Recup compteur verst/retrait
 
 **Role** : Calcul : Recup compteur verst/retrait.
 
 ---
 
-#### <a id="t16"></a>288.2.10.1 - Recup compteur verst/retrait
+#### <a id="t16"></a>T16 - Recup compteur verst/retrait
 
 **Role** : Calcul : Recup compteur verst/retrait.
 
 ---
 
-#### <a id="t27"></a>288.3.4 - Calcul flag
+#### <a id="t27"></a>T27 - Calcul flag
 
 **Role** : Calcul : Calcul flag.
 **Variables liees** : CC (v.flag validation signature), H (> flag depot)
 
 ---
 
-#### <a id="t28"></a>288.4 - Reaffichage info compte
+#### <a id="t28"></a>T28 - Reaffichage info compte
 
 **Role** : Reinitialisation : Reaffichage info compte.
 **Variables liees** : K (> solde compte), L (> etat compte)
@@ -286,7 +223,7 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Saisie depôt obj
 
 ---
 
-#### <a id="t6"></a>288.2.3 - Saisie depôt objet [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Saisie depôt objet [ECRAN]
 
 **Role** : Saisie des donnees : Saisie depôt objet.
 **Ecran** : 591 x 108 DLU (Modal) | [Voir mockup](#ecran-t6)
@@ -294,7 +231,7 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Saisie depôt obj
 
 ---
 
-#### <a id="t25"></a>288.3.2 - Saisie depôt objet [[ECRAN]](#ecran-t25)
+#### <a id="t25"></a>T25 - Saisie depôt objet [ECRAN]
 
 **Role** : Saisie des donnees : Saisie depôt objet.
 **Ecran** : 546 x 80 DLU (Modal) | [Voir mockup](#ecran-t25)
@@ -307,7 +244,7 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t12"></a>288.2.9 - Creation Versement v2
+#### <a id="t12"></a>T12 - Creation Versement v2
 
 **Role** : Creation d'enregistrement : Creation Versement v2.
 **Variables liees** : BI (W0 Operateur creation), BJ (W0 Date creation), BK (W0 Time creation), CB (v.versement enregistré)
@@ -315,7 +252,7 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t15"></a>288.2.10 - Creation Versement T2H
+#### <a id="t15"></a>T15 - Creation Versement T2H
 
 **Role** : Creation d'enregistrement : Creation Versement T2H.
 **Variables liees** : BI (W0 Operateur creation), BJ (W0 Date creation), BK (W0 Time creation), CB (v.versement enregistré)
@@ -328,7 +265,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t14"></a>288.2.9.2 - Création reedition_ticket
+#### <a id="t14"></a>T14 - Création reedition_ticket
 
 **Role** : Generation du document : Création reedition_ticket.
 **Variables liees** : T (V.Création Garantie)
@@ -336,7 +273,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t17"></a>288.2.10.2 - Création reedition_ticket
+#### <a id="t17"></a>T17 - Création reedition_ticket
 
 **Role** : Generation du document : Création reedition_ticket.
 **Variables liees** : T (V.Création Garantie)
@@ -345,7 +282,44 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+3 regles identifiees:
+
+### Saisie (2 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition composite: W0 reseau [R]<>'R' AND > change uni/bi ? [N]<>'B'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 reseau [R]<>'R' AND > change uni/bi ? [N]<>'B'` |
+| **Si vrai** | Action conditionnelle |
+| **Variables** | R (W0 reseau), N (> change uni/bi ?) |
+| **Expression source** | Expression 3 : `W0 reseau [R]<>'R' AND > change uni/bi ? [N]<>'B'` |
+| **Exemple** | Si W0 reseau [R]<>'R' AND > change uni/bi ? [N]<>'B' â†’ Action conditionnelle |
+| **Impact** | Bloc Saisie |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition composite: W0 reseau [R]<>'R' AND > change uni/bi ? [N]='B'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 reseau [R]<>'R' AND > change uni/bi ? [N]='B'` |
+| **Si vrai** | Action conditionnelle |
+| **Variables** | R (W0 reseau), N (> change uni/bi ?) |
+| **Expression source** | Expression 4 : `W0 reseau [R]<>'R' AND > change uni/bi ? [N]='B'` |
+| **Exemple** | Si W0 reseau [R]<>'R' AND > change uni/bi ? [N]='B' â†’ Action conditionnelle |
+| **Impact** | Bloc Saisie |
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition composite: V.Création Garantie [T] AND VG64
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.Création Garantie [T] AND VG64` |
+| **Si vrai** | Action conditionnelle |
+| **Variables** | T (V.Création Garantie) |
+| **Expression source** | Expression 8 : `V.Création Garantie [T] AND VG64` |
+| **Exemple** | Si V.Création Garantie [T] AND VG64 â†’ Action conditionnelle |
+| **Impact** | [T14 - Création reedition_ticket](#t14) |
 
 ## 6. CONTEXTE
 
@@ -360,17 +334,17 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 288.2 | 288.2 | Depôt de garantie | MDI | 810 | 282 | Traitement |
-| 2 | 288.2.3 | 288.2.3 | Saisie depôt objet | Modal | 591 | 108 | Saisie |
-| 3 | 288.3 | 288.3 | Depôt de garantie | MDI | 784 | 251 | Traitement |
-| 4 | 288.3.2 | 288.3.2 | Saisie depôt objet | Modal | 546 | 80 | Saisie |
+| 1 | 288.2 | T3 | Depôt de garantie | MDI | 810 | 282 | Traitement |
+| 2 | 288.2.3 | T6 | Saisie depôt objet | Modal | 591 | 108 | Saisie |
+| 3 | 288.3 | T23 | Depôt de garantie | MDI | 784 | 251 | Traitement |
+| 4 | 288.3.2 | T25 | Saisie depôt objet | Modal | 546 | 80 | Saisie |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t3"></a>288.2 - Depôt de garantie
-**Tache** : [288.2](#t3) | **Type** : MDI | **Dimensions** : 810 x 282 DLU
+**Tache** : [T3](#t3) | **Type** : MDI | **Dimensions** : 810 x 282 DLU
 **Bloc** : Traitement | **Titre IDE** : Depôt de garantie
 
 <!-- FORM-DATA:
@@ -666,7 +640,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t6"></a>288.2.3 - Saisie depôt objet
-**Tache** : [288.2.3](#t6) | **Type** : Modal | **Dimensions** : 591 x 108 DLU
+**Tache** : [T6](#t6) | **Type** : Modal | **Dimensions** : 591 x 108 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie depôt objet
 
 <!-- FORM-DATA:
@@ -929,7 +903,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t23"></a>288.3 - Depôt de garantie
-**Tache** : [288.3](#t23) | **Type** : MDI | **Dimensions** : 784 x 251 DLU
+**Tache** : [T23](#t23) | **Type** : MDI | **Dimensions** : 784 x 251 DLU
 **Bloc** : Traitement | **Titre IDE** : Depôt de garantie
 
 <!-- FORM-DATA:
@@ -1303,7 +1277,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t25"></a>288.3.2 - Saisie depôt objet
-**Tache** : [288.3.2](#t25) | **Type** : Modal | **Dimensions** : 546 x 80 DLU
+**Tache** : [T25](#t25) | **Type** : Modal | **Dimensions** : 546 x 80 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie depôt objet
 
 <!-- FORM-DATA:
@@ -1544,13 +1518,13 @@ Generation des documents et tickets.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF3[288.2 Depôt de garantie]
+    VF3[T3 Depôt de garantie]
     style VF3 fill:#58a6ff
-    VF6[288.2.3 Saisie depôt objet]
+    VF6[T6 Saisie depôt objet]
     style VF6 fill:#58a6ff
-    VF23[288.3 Depôt de garantie]
+    VF23[T23 Depôt de garantie]
     style VF23 fill:#58a6ff
-    VF25[288.3.2 Saisie depôt objet]
+    VF25[T25 Saisie depôt objet]
     style VF25 fill:#58a6ff
     EXT268[IDE 268 Zoom type depo...]
     style EXT268 fill:#3fb950
@@ -1626,34 +1600,34 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **288.1** | [**(sans nom)** (288)](#t1) | MDI | - | Traitement |
-| 288.1.1 | [Test reseau (288.1)](#t2) | MDI | - | |
-| 288.1.2 | [Depôt de garantie (288.2)](#t3) [mockup](#ecran-t3) | MDI | 810x282 | |
-| 288.1.3 | [Scroll depôt objet (288.2.2)](#t5) | Modal | - | |
-| 288.1.4 | [MAJ solde devise depot (288.2.4)](#t7) | MDI | - | |
-| 288.1.5 | [CARD? (288.2.5)](#t8) | MDI | - | |
-| 288.1.6 | [CARD? (288.2.6)](#t9) | MDI | - | |
-| 288.1.7 | [Abandon (288.2.7)](#t10) | MDI | - | |
-| 288.1.8 | [SendMail (288.2.8)](#t11) | - | - | |
-| 288.1.9 | [MAJ CMP (288.2.11)](#t18) | - | - | |
-| 288.1.10 | [Param OK ? (288.2.12)](#t19) | - | - | |
-| 288.1.11 | [Param OK ? (288.2.13)](#t20) | - | - | |
-| 288.1.12 | [Envoi mail garantie (288.2.14)](#t21) | - | - | |
-| 288.1.13 | [Envoi mail garantie (288.2.15)](#t22) | - | - | |
-| 288.1.14 | [Depôt de garantie (288.3)](#t23) [mockup](#ecran-t23) | MDI | 784x251 | |
-| 288.1.15 | [Scroll depôt objet (288.3.1)](#t24) | Modal | - | |
-| 288.1.16 | [MAJ solde devise depot (288.3.3)](#t26) | MDI | - | |
-| **288.2** | [**Calcul flag** (288.2.1)](#t4) | MDI | - | Calcul |
-| 288.2.1 | [Recup compteur verst/retrait (288.2.9.1)](#t13) | MDI | - | |
-| 288.2.2 | [Recup compteur verst/retrait (288.2.10.1)](#t16) | MDI | - | |
-| 288.2.3 | [Calcul flag (288.3.4)](#t27) | MDI | - | |
-| 288.2.4 | [Reaffichage info compte (288.4)](#t28) | MDI | - | |
-| **288.3** | [**Saisie depôt objet** (288.2.3)](#t6) [mockup](#ecran-t6) | Modal | 591x108 | Saisie |
-| 288.3.1 | [Saisie depôt objet (288.3.2)](#t25) [mockup](#ecran-t25) | Modal | 546x80 | |
-| **288.4** | [**Creation Versement v2** (288.2.9)](#t12) | MDI | - | Creation |
-| 288.4.1 | [Creation Versement T2H (288.2.10)](#t15) | MDI | - | |
-| **288.5** | [**Création reedition_ticket** (288.2.9.2)](#t14) | - | - | Impression |
-| 288.5.1 | [Création reedition_ticket (288.2.10.2)](#t17) | - | - | |
+| **288.1** | [**(sans nom)** (T1)](#t1) | MDI | - | Traitement |
+| 288.1.1 | [Test reseau (T2)](#t2) | MDI | - | |
+| 288.1.2 | [Depôt de garantie (T3)](#t3) [mockup](#ecran-t3) | MDI | 810x282 | |
+| 288.1.3 | [Scroll depôt objet (T5)](#t5) | Modal | - | |
+| 288.1.4 | [MAJ solde devise depot (T7)](#t7) | MDI | - | |
+| 288.1.5 | [CARD? (T8)](#t8) | MDI | - | |
+| 288.1.6 | [CARD? (T9)](#t9) | MDI | - | |
+| 288.1.7 | [Abandon (T10)](#t10) | MDI | - | |
+| 288.1.8 | [SendMail (T11)](#t11) | - | - | |
+| 288.1.9 | [MAJ CMP (T18)](#t18) | - | - | |
+| 288.1.10 | [Param OK ? (T19)](#t19) | - | - | |
+| 288.1.11 | [Param OK ? (T20)](#t20) | - | - | |
+| 288.1.12 | [Envoi mail garantie (T21)](#t21) | - | - | |
+| 288.1.13 | [Envoi mail garantie (T22)](#t22) | - | - | |
+| 288.1.14 | [Depôt de garantie (T23)](#t23) [mockup](#ecran-t23) | MDI | 784x251 | |
+| 288.1.15 | [Scroll depôt objet (T24)](#t24) | Modal | - | |
+| 288.1.16 | [MAJ solde devise depot (T26)](#t26) | MDI | - | |
+| **288.2** | [**Calcul flag** (T4)](#t4) | MDI | - | Calcul |
+| 288.2.1 | [Recup compteur verst/retrait (T13)](#t13) | MDI | - | |
+| 288.2.2 | [Recup compteur verst/retrait (T16)](#t16) | MDI | - | |
+| 288.2.3 | [Calcul flag (T27)](#t27) | MDI | - | |
+| 288.2.4 | [Reaffichage info compte (T28)](#t28) | MDI | - | |
+| **288.3** | [**Saisie depôt objet** (T6)](#t6) [mockup](#ecran-t6) | Modal | 591x108 | Saisie |
+| 288.3.1 | [Saisie depôt objet (T25)](#t25) [mockup](#ecran-t25) | Modal | 546x80 | |
+| **288.4** | [**Creation Versement v2** (T12)](#t12) | MDI | - | Creation |
+| 288.4.1 | [Creation Versement T2H (T15)](#t15) | MDI | - | |
+| **288.5** | [**Création reedition_ticket** (T14)](#t14) | - | - | Impression |
+| 288.5.1 | [Création reedition_ticket (T17)](#t17) | - | - | |
 
 ### 9.4 Algorigramme
 
@@ -1661,19 +1635,29 @@ flowchart TD
 flowchart TD
     START([START])
     INIT[Init controles]
-    SAISIE[Garantie sur compte uni]
-    UPDATE[MAJ 7 tables]
+    START --> INIT
+    B1[Traitement (17t)]
+    INIT --> B1
+    B2[Calcul (5t)]
+    B1 --> B2
+    B3[Saisie (2t)]
+    B2 --> B3
+    B4[Creation (2t)]
+    B3 --> B4
+    B5[Impression (2t)]
+    B4 --> B5
+    WRITE[MAJ 7 tables]
+    B5 --> WRITE
     ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
+    WRITE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -1683,41 +1667,141 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R |   |   | 2 |
-| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 2 |
-| 31 | gm-complet_______gmc |  | DB | R | **W** | L | 4 |
 | 39 | depot_garantie___dga | Depots et garanties | DB | R | **W** | L | 6 |
-| 40 | comptable________cte |  | DB |   |   | L | 2 |
+| 31 | gm-complet_______gmc |  | DB | R | **W** | L | 4 |
 | 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** | L | 7 |
-| 50 | moyens_reglement_mor | Reglements / paiements | DB |   |   | L | 1 |
-| 66 | imputations______imp |  | DB |   |   | L | 2 |
 | 68 | compteurs________cpt | Comptes GM (generaux) | DB |   | **W** |   | 2 |
+| 945 | Table_945 |  | MEM |   | **W** |   | 2 |
+| 911 | log_booker |  | DB |   | **W** |   | 2 |
+| 370 | pv_accounting_date |  | DB |   | **W** |   | 2 |
+| 91 | garantie_________gar | Depots et garanties | DB | R |   | L | 4 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 2 |
+| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R |   |   | 2 |
+| 40 | comptable________cte |  | DB |   |   | L | 2 |
+| 285 | email |  | DB |   |   | L | 2 |
 | 69 | initialisation___ini |  | DB |   |   | L | 2 |
+| 66 | imputations______imp |  | DB |   |   | L | 2 |
 | 70 | date_comptable___dat |  | DB |   |   | L | 2 |
 | 88 | historik_station | Historique / journal | DB |   |   | L | 2 |
-| 89 | moyen_paiement___mop |  | DB |   |   | L | 1 |
-| 91 | garantie_________gar | Depots et garanties | DB | R |   | L | 4 |
-| 139 | moyens_reglement_mor | Reglements / paiements | DB |   |   | L | 1 |
 | 140 | moyen_paiement___mop |  | DB |   |   | L | 1 |
-| 285 | email |  | DB |   |   | L | 2 |
-| 312 | ez_card |  | DB |   |   | L | 1 |
-| 370 | pv_accounting_date |  | DB |   | **W** |   | 2 |
 | 910 | classification_memory |  | DB |   |   | L | 1 |
-| 911 | log_booker |  | DB |   | **W** |   | 2 |
-| 945 | Table_945 |  | MEM |   | **W** |   | 2 |
+| 50 | moyens_reglement_mor | Reglements / paiements | DB |   |   | L | 1 |
+| 312 | ez_card |  | DB |   |   | L | 1 |
+| 89 | moyen_paiement___mop |  | DB |   |   | L | 1 |
+| 139 | moyens_reglement_mor | Reglements / paiements | DB |   |   | L | 1 |
 
 ### Colonnes par table (10 / 10 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 23 - reseau_cloture___rec (R) - 2 usages</summary>
+<summary>Table 39 - depot_garantie___dga (R/**W**/L) - 6 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | V.ClotureEnCours | R | Logical |
-| B | V.numero chrono | R | Numeric |
-| C | V.montant | R | Numeric |
-| D | V.ret-lien CTE ann. | R | Numeric |
-| E | V.CompteurTicket | R | Numeric |
+| A | Lien Depot garantie | W | Logical |
+| BF | W0 conf reactivation Garantie | W | Numeric |
+| BP | W0 imprime garantie ? | W | Logical |
+| BQ | W0 imprime annul garantie ? | W | Logical |
+| H | > flag depot | W | Alpha |
+| O | > choix garantie | W | Alpha |
+| T | V.Création Garantie | W | Logical |
+| W | v.Fichier ticket garantie | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 31 - gm-complet_______gmc (R/**W**/L) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 fin tâche MAJ | W | Alpha |
+| B | W0 choix action | W | Alpha |
+| C | W0 carte de credit | W | Alpha |
+| D | W0 test lien MOP | W | Numeric |
+| E | W0 test lien MOR | W | Numeric |
+| F | W0 type operation | W | Alpha |
+| G | W0 date depôt | W | Date |
+| H | W0 heure depôt | W | Time |
+| I | W0 operateur | W | Alpha |
+| J | W0 typ-depôt-numeric | W | Numeric |
+| K | W0 type depôt | W | Alpha |
+| L | W0 libelle depôt | W | Alpha |
+| M | v_Express_Chek_out | W | Logical |
+| N | v_Reponse | W | Numeric |
+| O | W0 devise | W | Alpha |
+| P | W0 montant depôt | W | Numeric |
+| Q | W0 date retrait | W | Date |
+| R | W0 heure retrait | W | Time |
+| S | W0 etat depôt | W | Alpha |
+| T | W0 validation | W | Alpha |
+| U | W0 confirme annulation CMP | W | Numeric |
+| V | W0 nb Club Med Pass | W | Numeric |
+| W | v.titre | W | Alpha |
+| X | Btn Valider | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 47 - compte_gm________cgm (**W**/L) - 7 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| E | V.CompteurTicket | W | Numeric |
+| K | > solde compte | W | Numeric |
+| L | > etat compte | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 68 - compteurs________cpt (**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 945 - Table_945 (**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 911 - log_booker (**W**) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | Lien Depot garantie | W | Logical |
+| B | v.Fichier envoi email | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 370 - pv_accounting_date (**W**) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| BA | W0 date retrait | W | Date |
+| BJ | W0 Date creation | W | Date |
+| BM | W0 Date annulation | W | Date |
+| G | W0 date depôt | W | Date |
+| I | v.date depôt | W | Date |
+| M | > date solde | W | Date |
+| Q | W0 date retrait | W | Date |
+
+</details>
+
+<details>
+<summary>Table 91 - garantie_________gar (R/L) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | Lien Depot garantie | R | Logical |
+| BF | W0 conf reactivation Garantie | R | Numeric |
+| BP | W0 imprime garantie ? | R | Logical |
+| BQ | W0 imprime annul garantie ? | R | Logical |
+| O | > choix garantie | R | Alpha |
+| T | V.Création Garantie | R | Logical |
+| W | v.Fichier ticket garantie | R | Alpha |
 
 </details>
 
@@ -1791,115 +1875,15 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 31 - gm-complet_______gmc (R/**W**/L) - 4 usages</summary>
+<summary>Table 23 - reseau_cloture___rec (R) - 2 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | W1 fin tâche MAJ | W | Alpha |
-| B | W0 choix action | W | Alpha |
-| C | W0 carte de credit | W | Alpha |
-| D | W0 test lien MOP | W | Numeric |
-| E | W0 test lien MOR | W | Numeric |
-| F | W0 type operation | W | Alpha |
-| G | W0 date depôt | W | Date |
-| H | W0 heure depôt | W | Time |
-| I | W0 operateur | W | Alpha |
-| J | W0 typ-depôt-numeric | W | Numeric |
-| K | W0 type depôt | W | Alpha |
-| L | W0 libelle depôt | W | Alpha |
-| M | v_Express_Chek_out | W | Logical |
-| N | v_Reponse | W | Numeric |
-| O | W0 devise | W | Alpha |
-| P | W0 montant depôt | W | Numeric |
-| Q | W0 date retrait | W | Date |
-| R | W0 heure retrait | W | Time |
-| S | W0 etat depôt | W | Alpha |
-| T | W0 validation | W | Alpha |
-| U | W0 confirme annulation CMP | W | Numeric |
-| V | W0 nb Club Med Pass | W | Numeric |
-| W | v.titre | W | Alpha |
-| X | Btn Valider | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 39 - depot_garantie___dga (R/**W**/L) - 6 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | Lien Depot garantie | W | Logical |
-| BF | W0 conf reactivation Garantie | W | Numeric |
-| BP | W0 imprime garantie ? | W | Logical |
-| BQ | W0 imprime annul garantie ? | W | Logical |
-| H | > flag depot | W | Alpha |
-| O | > choix garantie | W | Alpha |
-| T | V.Création Garantie | W | Logical |
-| W | v.Fichier ticket garantie | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 47 - compte_gm________cgm (**W**/L) - 7 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| E | V.CompteurTicket | W | Numeric |
-| K | > solde compte | W | Numeric |
-| L | > etat compte | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 68 - compteurs________cpt (**W**) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 91 - garantie_________gar (R/L) - 4 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | Lien Depot garantie | R | Logical |
-| BF | W0 conf reactivation Garantie | R | Numeric |
-| BP | W0 imprime garantie ? | R | Logical |
-| BQ | W0 imprime annul garantie ? | R | Logical |
-| O | > choix garantie | R | Alpha |
-| T | V.Création Garantie | R | Logical |
-| W | v.Fichier ticket garantie | R | Alpha |
-
-</details>
-
-<details>
-<summary>Table 370 - pv_accounting_date (**W**) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| BA | W0 date retrait | W | Date |
-| BJ | W0 Date creation | W | Date |
-| BM | W0 Date annulation | W | Date |
-| G | W0 date depôt | W | Date |
-| I | v.date depôt | W | Date |
-| M | > date solde | W | Date |
-| Q | W0 date retrait | W | Date |
-
-</details>
-
-<details>
-<summary>Table 911 - log_booker (**W**) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | Lien Depot garantie | W | Logical |
-| B | v.Fichier envoi email | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 945 - Table_945 (**W**) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+| A | V.ClotureEnCours | R | Logical |
+| B | V.numero chrono | R | Numeric |
+| C | V.montant | R | Numeric |
+| D | V.ret-lien CTE ann. | R | Numeric |
+| E | V.CompteurTicket | R | Numeric |
 
 </details>
 
@@ -1911,7 +1895,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| T | V.Création Garantie | Logical | [288.2](#t3), [288.2.14](#t21), [288.2.15](#t22) |
+| T | V.Création Garantie | Logical | [T3](#t3), [T21](#t21), [T22](#t22) |
 | U | v.TPE ICMP ? | Logical | - |
 | V | v.Email client | Unicode | - |
 | W | v.Fichier ticket garantie | Alpha | - |
@@ -1932,7 +1916,7 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| R | W0 reseau | Alpha | [288.1](#t2) |
+| R | W0 reseau | Alpha | [T2](#t2) |
 | S | W0 fin tache | Alpha | 1x calcul interne |
 | Y | W0 devise | Alpha | - |
 | Z | W0 montant depôt | Numeric | - |
@@ -2209,7 +2193,7 @@ graph LR
 | Sous-programmes | 17 | Forte dependance |
 | Ecrans visibles | 4 | Quelques ecrans |
 | Code desactive | 0.6% (8 / 1246) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 3 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -2264,4 +2248,4 @@ graph LR
 | [Appel programme (IDE 44)](ADH-IDE-44.md) | Sous-programme | 2x | Haute - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:55*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 05:10*

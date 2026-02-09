@@ -1,6 +1,6 @@
 ﻿# ADH IDE 43 - Recuperation du titre
 
-> **Analyse**: 2026-02-07 13:15
+> **Analyse**: 2026-02-08 01:41
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -9,13 +9,13 @@
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
 - **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 20 programme(s): Transferts (IDE 0), Menu changement compte (IDE 37),  Saisie date (IDE 68), Menu impression des appels (IDE 214), Visu du contenu d'un poste (IDE 215), Zoom sur table des gratuites (IDE 256), Zoom articles (IDE 257), Zoom mode paiement change GM (IDE 258), Zoom modes de paiement (IDE 259), Zoom moyen de règlement (IDE 260), Zoom des types de taux (IDE 261), Zoom  des types d'objets (IDE 262), Zoom modes de paiement (IDE 263), Zoom devise solde compte (IDE 264), Zoom devise (IDE 265), Zoom des all devises (IDE 266), Zoom devises (IDE 267), Zoom type depot garantie (IDE 268), Zoom services village (IDE 269), Zoom sur modes de paiement a/v (IDE 270)
+- **Raison**: Appele par 20 programme(s): Affichage sessions (IDE 119), Change GM (IDE 25), Gestion forfait TAI LOCAL (IDE 173), Bi  Change GM Achat (IDE 293), Bi  Change GM Vente (IDE 294), Solde compte fin sejour (IDE 193), Garantie sur compte PMS-584 (IDE 0), Fusion (IDE 28), Comptes de depôt (IDE 40), Garantie sur compte (IDE 111), Garantie sur compte PMS-584 (IDE 112), Saisie contenu caisse (IDE 120), Apport coffre (IDE 123), Menu caisse GM - scroll (IDE 163), Messagerie (IDE 170), Affectation code autocom (IDE 209), Menu telephone (IDE 217), Zoom modes de paiement (IDE 272), Garantie sur compte (IDE 288), Transaction Nouv vente PMS-584 (IDE 0)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Transferts (IDE 0)](ADH-IDE-0.md), [Menu changement compte (IDE 37)](ADH-IDE-37.md), [ Saisie date (IDE 68)](ADH-IDE-68.md), [Menu impression des appels (IDE 214)](ADH-IDE-214.md), [Visu du contenu d'un poste (IDE 215)](ADH-IDE-215.md), [Zoom sur table des gratuites (IDE 256)](ADH-IDE-256.md), [Zoom articles (IDE 257)](ADH-IDE-257.md), [Zoom mode paiement change GM (IDE 258)](ADH-IDE-258.md), [Zoom modes de paiement (IDE 259)](ADH-IDE-259.md), [Zoom moyen de règlement (IDE 260)](ADH-IDE-260.md), [Zoom des types de taux (IDE 261)](ADH-IDE-261.md), [Zoom  des types d'objets (IDE 262)](ADH-IDE-262.md), [Zoom modes de paiement (IDE 263)](ADH-IDE-263.md), [Zoom devise solde compte (IDE 264)](ADH-IDE-264.md), [Zoom devise (IDE 265)](ADH-IDE-265.md), [Zoom des all devises (IDE 266)](ADH-IDE-266.md), [Zoom devises (IDE 267)](ADH-IDE-267.md), [Zoom type depot garantie (IDE 268)](ADH-IDE-268.md), [Zoom services village (IDE 269)](ADH-IDE-269.md), [Zoom sur modes de paiement a/v (IDE 270)](ADH-IDE-270.md) |
+| **Appele par** | [Affichage sessions (IDE 119)](ADH-IDE-119.md), [Change GM (IDE 25)](ADH-IDE-25.md), [Gestion forfait TAI LOCAL (IDE 173)](ADH-IDE-173.md), [Bi  Change GM Achat (IDE 293)](ADH-IDE-293.md), [Bi  Change GM Vente (IDE 294)](ADH-IDE-294.md), [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md), [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [Fusion (IDE 28)](ADH-IDE-28.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md), [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Saisie contenu caisse (IDE 120)](ADH-IDE-120.md), [Apport coffre (IDE 123)](ADH-IDE-123.md), [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Messagerie (IDE 170)](ADH-IDE-170.md), [Affectation code autocom (IDE 209)](ADH-IDE-209.md), [Menu telephone (IDE 217)](ADH-IDE-217.md), [Zoom modes de paiement (IDE 272)](ADH-IDE-272.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 250 - Lancement Choix Chambre
 
-> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 03:54 (35s) | Assemblage 03:54
+> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 04:39 (24h44min) | Assemblage 04:39
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -17,17 +17,23 @@
 | Dossier IDE | Navigation |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
-| Programmes appeles | 1 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Lancement Choix Chambre** assure la gestion complete de ce processus, accessible depuis [Print reçu change (IDE 290)](ADH-IDE-290.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md).
+# ADH IDE 250 - Lancement Choix Chambre
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Program permettant de lancer le processus de sélection/affectation de chambre pour un client. Interface de point d'entrée dans le flux de gestion des réservations, affichant probablement les options disponibles ou demandant les critères de choix (type chambre, nombre personnes, préférences).
 
-- **Consultation** (1 tache) : ecrans de recherche, selection et consultation
+Logiquement situées après la validation de la réservation (ADH IDE 249 ou antérieur), ce programme prépare les données nécessaires pour la tâche de choix chambre proprement dite. Utilise vraisemblablement des tables REF pour les types de chambres, tarifs, et disponibilités.
 
-**Logique metier** : 1 regles identifiees couvrant conditions metier.
+Les deux tâches mentionnées (Création/Affichage change) suggèrent une double fonction : soit initialiser une nouvelle session de choix chambre, soit afficher le résultat d'un changement de chambre déjà effectué. Interface utilisateur probablement simple avec formulaire de saisie ou tableau de résultats.
+
+---
+
+**Besoin d'accès aux données techniques (tables, expressions, paramètres) pour affiner cette analyse ?**
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -41,7 +47,6 @@ Ecrans de recherche et consultation.
 
 **Role** : Reinitialisation : Creation/Affichage change.
 **Ecran** : 874 x 210 DLU (MDI) | [Voir mockup](#ecran-t1)
-**Delegue a** : [Choix PYR (plusieurs chambres) (IDE 248)](ADH-IDE-248.md)
 
 
 ## 5. REGLES METIER
@@ -57,14 +62,14 @@ Ecrans de recherche et consultation.
 | **Condition** | `Retour [A]` |
 | **Si vrai** | 'Retour Ok !' |
 | **Si faux** | 'Retour Non Ok !') |
-| **Variables** | A (Retour) |
+| **Variables** | EN (Retour) |
 | **Expression source** | Expression 4 : `IF(Retour [A],'Retour Ok !','Retour Non Ok !')` |
 | **Exemple** | Si Retour [A] â†’ 'Retour Ok !'. Sinon â†’ 'Retour Non Ok !') |
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Print reçu change (IDE 290)](ADH-IDE-290.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md)
-- **Appelle**: 1 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 4
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 4
 
 <!-- TAB:Ecrans -->
 
@@ -147,37 +152,22 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Print reçu change (IDE 290)](ADH-IDE-290.md) -> **Lancement Choix Chambre (IDE 250)**
-
-Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Lancement Choix Chambre (IDE 250)**
-
-Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md) -> **Lancement Choix Chambre (IDE 250)**
-
-Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md) -> **Lancement Choix Chambre (IDE 250)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T250[250 Lancement Choix Ch...]
     style T250 fill:#58a6ff
-    CC295[295 Menu change bilateral]
-    style CC295 fill:#8b5cf6
-    CC293[293 Bi Change GM Achat]
-    style CC293 fill:#f59e0b
-    CC290[290 Print reçu change]
-    style CC290 fill:#3fb950
-    CC293 --> CC290
-    CC295 --> CC293
-    CC290 --> T250
+    NONE[Aucun caller]
+    NONE -.-> T250
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [290](ADH-IDE-290.md) | Print reçu change | 7 |
-| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-584 | 3 |
-| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-710 | 3 |
-| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-721 | 3 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -185,16 +175,16 @@ graph LR
 graph LR
     T250[250 Lancement Choix Ch...]
     style T250 fill:#58a6ff
-    C248[248 Choix PYR plusieur...]
-    T250 --> C248
-    style C248 fill:#3fb950
+    NONE[Aucun callee]
+    T250 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.4 Detail Callees avec contexte
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| [248](ADH-IDE-248.md) | Choix PYR (plusieurs chambres) | 1 | Selection/consultation |
+| - | (aucun) | - | - |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -205,7 +195,7 @@ graph LR
 | Lignes de logique | 5 | Programme compact |
 | Expressions | 4 | Peu de logique |
 | Tables WRITE | 0 | Impact faible |
-| Sous-programmes | 1 | Peu de dependances |
+| Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 5) | Code sain |
 | Regles metier | 1 | Quelques regles a preserver |
@@ -221,7 +211,6 @@ graph LR
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
-| [Choix PYR (plusieurs chambres) (IDE 248)](ADH-IDE-248.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:55*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:39*

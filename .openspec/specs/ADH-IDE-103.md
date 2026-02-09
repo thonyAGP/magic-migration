@@ -1,6 +1,6 @@
 ﻿# ADH IDE 103 - Facture - Sejour archive V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:48 (27s) | Assemblage 15:18
+> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 02:42 (22h54min) | Assemblage 02:42
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 103** archive les factures de séjour client en créant les écritures comptables et commerciales associées. Appelé depuis le module de garantie sur compte (IDE 0), ce programme batch traite trois opérations principales : création d'un enregistrement de bon/cadeau dans Affectation_Gift_Pass, génération d'une ligne comptable dans Rayons_Boutique avec les montants et détails financiers, et génération d'une ligne de vente pour l'historique commercial. Le flux repose sur 6 tâches hiérarchisées qui maintiennent la synchronisation entre hébergement temporaire et les modifications comptables et commerciales.
+ADH IDE 103 archive les factures de séjour client en créant les écritures comptables et commerciales qui garantissent la traçabilité financière. Le programme est appelé par le module Garantie sur compte (IDE 0) et traite trois opérations successives : création d'un enregistrement dans la table Affectation_Gift_Pass avec les paramètres de société/compte/filiation, génération de la ligne comptable correspondante dans Rayons_Boutique, puis enregistrement de la transaction commerciale pour l'historique des ventes.
 
-La logique métier utilise les paramètres d'entrée (société, numéro de compte, filiation) pour filtrer et valider les données avant modification. Les deux tâches finales "Maj Hebergement Temp" mettent à jour l'enregistrement d'hébergement temporaire pour refléter l'impact comptable et commercial, assurant la cohérence globale du dossier client. Le programme ne possède aucune dépendance descendante (terminal) et reste simple en complexité, avec 270 lignes de code actif sans désactivation.
+Le flux métier se compose de six tâches organisées en trois blocs. Le bloc traitement orchestre la création et synchronisation de l'hébergement à travers trois mises à jour successives (création initiale, puis deux mises à jour temporaires d'état). Le bloc calcul génère la ligne comptable avec les montants financiers associés. Le bloc saisie enregistre la dimension commerciale avec un écran de saisie (630x0 DLU) pour finaliser la transaction.
 
-Ce programme constitue une pièce maître du processus d'archivage : il clôt proprement les factures clients, assure la traçabilité complète à travers les modules comptable et commercial, et maintient l'intégrité des données temporaires. Son isolation fonctionnelle (pas d'appels sortants) en fait un composant fiable pour le cycle de vie de la facturation en hébergement.
+Programme isolé et de basse complexité (270 lignes, 0% code désactivé), ADH IDE 103 n'appelle aucun programme externe et repose sur une logique linéaire sans boucles ni branchements complexes. Son rôle critique dans le cycle de facturation des séjours archivés et son absence de dépendances descendantes en font un composant fiable pour maintenir l'intégrité comptable et commerciale.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Hebergement [ECRAN]
+#### <a id="t1"></a>103 - Hebergement [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t1)
@@ -46,32 +46,32 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Création | Traitement |
-| [T4](#t4) | Maj Hebergement Temp | Traitement |
-| [T6](#t6) | Maj Hebergement Temp | Traitement |
+| [103.1](#t2) | Création | Traitement |
+| [103.2.1](#t4) | Maj Hebergement Temp | Traitement |
+| [103.3.1](#t6) | Maj Hebergement Temp | Traitement |
 
 </details>
-**Variables liees** : D (V.Lien Hebergement_Pro)
+**Variables liees** : EQ (V.Lien Hebergement_Pro)
 
 ---
 
-#### <a id="t2"></a>T2 - Création
+#### <a id="t2"></a>103.1 - Création
 
 **Role** : Traitement : Création.
 
 ---
 
-#### <a id="t4"></a>T4 - Maj Hebergement Temp
+#### <a id="t4"></a>103.2.1 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
-**Variables liees** : D (V.Lien Hebergement_Pro)
+**Variables liees** : EQ (V.Lien Hebergement_Pro)
 
 ---
 
-#### <a id="t6"></a>T6 - Maj Hebergement Temp
+#### <a id="t6"></a>103.3.1 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
-**Variables liees** : D (V.Lien Hebergement_Pro)
+**Variables liees** : EQ (V.Lien Hebergement_Pro)
 
 
 ### 3.2 Calcul (1 tache)
@@ -80,7 +80,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t3"></a>T3 - Creation Lg Compta
+#### <a id="t3"></a>103.2 - Creation Lg Compta
 
 **Role** : Creation d'enregistrement : Creation Lg Compta.
 
@@ -91,7 +91,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Creation Lg Vente)
 
 ---
 
-#### <a id="t5"></a>T5 - Creation Lg Vente [ECRAN]
+#### <a id="t5"></a>103.3 - Creation Lg Vente [[ECRAN]](#ecran-t5)
 
 **Role** : Saisie des donnees : Creation Lg Vente.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t5)
@@ -118,34 +118,32 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Creation Lg Vente)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **103.1** | [**Hebergement** (T1)](#t1) [mockup](#ecran-t1) | - | 630x0 | Traitement |
-| 103.1.1 | [Création (T2)](#t2) | - | - | |
-| 103.1.2 | [Maj Hebergement Temp (T4)](#t4) | - | - | |
-| 103.1.3 | [Maj Hebergement Temp (T6)](#t6) | - | - | |
-| **103.2** | [**Creation Lg Compta** (T3)](#t3) | - | - | Calcul |
-| **103.3** | [**Creation Lg Vente** (T5)](#t5) [mockup](#ecran-t5) | - | 630x0 | Saisie |
+| **103.1** | [**Hebergement** (103)](#t1) [mockup](#ecran-t1) | - | 630x0 | Traitement |
+| 103.1.1 | [Création (103.1)](#t2) | - | - | |
+| 103.1.2 | [Maj Hebergement Temp (103.2.1)](#t4) | - | - | |
+| 103.1.3 | [Maj Hebergement Temp (103.3.1)](#t6) | - | - | |
+| **103.2** | [**Creation Lg Compta** (103.2)](#t3) | - | - | Calcul |
+| **103.3** | [**Creation Lg Vente** (103.3)](#t5) [mockup](#ecran-t5) | - | 630x0 | Saisie |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (4t)]
-    START --> B1
-    B2[Calcul (1t)]
-    B1 --> B2
-    B3[Saisie (1t)]
-    B2 --> B3
-    WRITE[MAJ 2 tables]
-    B3 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 2 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -192,9 +190,9 @@ Variables recues du programme appelant ([Garantie sur compte PMS-584 (IDE 0)](AD
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.Société | Alpha | 1x parametre entrant |
-| B | P.Num compte | Numeric | 1x parametre entrant |
-| C | P.Fliliation | Numeric | 1x parametre entrant |
+| EN | P.Société | Alpha | 1x parametre entrant |
+| EO | P.Num compte | Numeric | 1x parametre entrant |
+| EP | P.Fliliation | Numeric | 1x parametre entrant |
 
 ### 11.2 Variables de session (1)
 
@@ -202,7 +200,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| D | V.Lien Hebergement_Pro | Logical | - |
+| EQ | V.Lien Hebergement_Pro | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -305,4 +303,4 @@ graph LR
 | Rayons_Boutique | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 15:20*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:46*

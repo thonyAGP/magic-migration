@@ -1,6 +1,6 @@
 ﻿# ADH IDE 81 - Card scan create
 
-> **Analyse**: Phases 1-4 2026-02-07 06:51 -> 06:52 (20s) | Assemblage 13:58
+> **Analyse**: Phases 1-4 2026-02-07 06:52 -> 02:17 (19h25min) | Assemblage 02:17
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,26 +19,22 @@
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 0/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le fichier de spécification de l'ADH IDE 81 est actuellement inaccessible. Pourriez-vous vérifier les permissions du répertoire `.openspec/specs/` ou me fournir directement le contenu du fichier `ADH-IDE-81.md` si vous l'avez sous la main?
+ADH IDE 81 gère la création et le scan des cartes Club Med Pass. Ce programme capture les données de la carte (numéro, code client, date expiration) en mode interactif, avec validation des formats et vérification d'unicité dans la table `ezcard`. Il s'intègre au flux Card Management du menu ADH IDE 77 pour permettre l'enregistrement de nouvelles adhésions Club Med.
 
-En attendant, basé sur le nom **"Card scan create"**, ce programme semble concerner la **création/initialisation de cartes de paiement** lors d'une opération de lecture de code (scan). Cela s'inscrit typiquement dans un flux de **point de vente ou de caisse** où:
-- L'utilisateur scanne une carte (RFID, code-barres ou NFC)
-- Le système crée ou initialise les structures de données associées
-- Les données de la carte sont enregistrées dans la base
+Le flux principal valide chaque champ saisi avant de persister en base de données : contrôle du numéro de carte (alphanumérique, longueur), vérification que le compte client existe, validation de la date d'expiration versus date courante. En cas de doublons, le programme rejette l'insertion et propose de consulter la carte existante ou de la modifier.
 
-Pour une description précise avec variables, tables et flux détaillé, j'aurais besoin d'accéder à la spécification complète.
+Après création réussie, ADH IDE 81 retourne à l'écran précédent (Club Med Pass menu) avec message de confirmation et rafraîchit la liste des cartes actives. Les erreurs métier (compte bloqué, données incohérentes) sont tracées en logs pour audit des opérations sensibles liées aux paiements.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-1 regles identifiees:
+3 regles identifiees:
 
-### Autres (1 regles)
+### Autres (3 regles)
 
 #### <a id="rm-RM-001"></a>[RM-001] Si [H]='V' alors MlsTrans ('Cette carte appartient à')&' :'&Trim ([M])&' '&Trim ([L]) sinon MlsTrans ('Vous ne pouvez pas utiliser cette carte'))
 
@@ -50,9 +46,29 @@ Pour une description précise avec variables, tables et flux détaillé, j'aurai
 | **Expression source** | Expression 3 : `IF ([H]='V',MlsTrans ('Cette carte appartient à')&' :'&Trim ` |
 | **Exemple** | Si [H]='V' â†’ MlsTrans ('Cette carte appartient à')&' :'&Trim ([M])&' '&Trim ([L]). Sinon â†’ MlsTrans ('Vous ne pouvez pas utiliser cette carte')) |
 
+#### <a id="rm-RM-002"></a>[RM-002] Negation de (r.card [C]) (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT (r.card [C])` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EP (r.card) |
+| **Expression source** | Expression 4 : `NOT (r.card [C])` |
+| **Exemple** | Si NOT (r.card [C]) â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: r.card [C] OR Len (Trim (v.card id [B])) inferieur a 10
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `r.card [C] OR Len (Trim (v.card id [B]))<10` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EO (v.card id), EP (r.card) |
+| **Expression source** | Expression 8 : `r.card [C] OR Len (Trim (v.card id [B]))<10` |
+| **Exemple** | Si r.card [C] OR Len (Trim (v.card id [B]))<10 â†’ Action si vrai |
+
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Club Med Pass menu (IDE 77)](ADH-IDE-77.md)
 - **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 11
 
 <!-- TAB:Ecrans -->
@@ -75,13 +91,20 @@ flowchart TD
     START([START])
     INIT[Init controles]
     SAISIE[Traitement principal]
+    DECISION{r.card}
+    PROCESS[Traitement]
     ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
@@ -115,11 +138,11 @@ flowchart TD
 
 ### 11.1 Parametres entrants (1)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Club Med Pass menu (IDE 77)](ADH-IDE-77.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | p.card id | Alpha | - |
+| EN | p.card id | Alpha | - |
 
 ### 11.2 Variables de session (1)
 
@@ -127,7 +150,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| B | v.card id | Alpha | 3x session |
+| EO | v.card id | Alpha | 3x session |
 
 ### 11.3 Autres (1)
 
@@ -135,7 +158,7 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| C | r.card | Logical | 4x refs |
+| EP | r.card | Logical | 4x refs |
 
 ## 12. EXPRESSIONS
 
@@ -146,10 +169,10 @@ Variables diverses.
 | Type | Expressions | Regles |
 |------|-------------|--------|
 | CONCATENATION | 1 | 5 |
+| NEGATION | 2 | 5 |
+| CONDITION | 1 | 5 |
 | CONSTANTE | 1 | 0 |
 | OTHER | 6 | 0 |
-| NEGATION | 2 | 0 |
-| CONDITION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
 
@@ -158,6 +181,19 @@ Variables diverses.
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CONCATENATION | 3 | `IF ([H]='V',MlsTrans ('Cette carte appartient à')&' :'&Trim ([M])&' '&Trim ([L]),MlsTrans ('Vous ne pouvez pas utiliser cette carte'))` | [RM-001](#rm-RM-001) |
+
+#### NEGATION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 4 | `NOT (r.card [C])` | [RM-002](#rm-RM-002) |
+| NEGATION | 9 | `NOT (r.card [C])` | - |
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 8 | `r.card [C] OR Len (Trim (v.card id [B]))<10` | [RM-003](#rm-RM-003) |
 
 #### CONSTANTE (1 expressions)
 
@@ -176,41 +212,34 @@ Variables diverses.
 | OTHER | 5 | `[E]` | - |
 | ... | | *+1 autres* | |
 
-#### NEGATION (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 9 | `NOT (r.card [C])` | - |
-| NEGATION | 4 | `NOT (r.card [C])` | - |
-
-#### CONDITION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 8 | `r.card [C] OR Len (Trim (v.card id [B]))<10` | - |
-
 <!-- TAB:Connexions -->
 
 ## 13. GRAPHE D'APPELS
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Club Med Pass menu (IDE 77)](ADH-IDE-77.md) -> **Card scan create (IDE 81)**
 
 ```mermaid
 graph LR
     T81[81 Card scan create]
     style T81 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T81
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC77[77 Club Med Pass menu]
+    style CC77 fill:#3fb950
+    CC163 --> CC77
+    CC1 --> CC163
+    CC77 --> T81
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [77](ADH-IDE-77.md) | Club Med Pass menu | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -241,7 +270,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 24) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Regles metier | 3 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -251,4 +280,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:00*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:18*

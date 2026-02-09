@@ -1,6 +1,6 @@
 ﻿# ADH IDE 114 - Club Med Pass Filiations
 
-> **Analyse**: Phases 1-4 2026-02-07 03:49 -> 03:49 (28s) | Assemblage 07:03
+> **Analyse**: Phases 1-4 2026-02-07 03:49 -> 02:54 (23h04min) | Assemblage 02:54
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,22 +14,19 @@
 | IDE Position | 114 |
 | Nom Programme | Club Med Pass Filiations |
 | Fichier source | `Prg_114.xml` |
-| Dossier IDE | Garantie |
+| Dossier IDE | General |
 | Taches | 2 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Club Med Pass Filiations** assure la gestion complete de ce processus, accessible depuis [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md).
+**ADH IDE 114 - Club Med Pass Filiations** gère l'interface de création et de modification des numéros de Club Med Pass pour les comptes clients. Le programme affiche une grille MDI permettant de saisir ou mettre à jour les données de passe (numéro, statut, dates), en lisant les informations clients depuis deux tables référence (gm-recherche et compte_gm). La mise à jour des modifications s'effectue dans la table ez_card via la tâche enfant "Update Ezcard", qui enregistre le nouveau numéro de passe pour chaque client traité.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Les règles métier principales concernent la détection des changements (comparaison ancien/nouveau numéro), la validation des saisies avec flags de permission, et l'affichage contextuel des dates de séjour passé/actuel/futur. Le programme applique des formats de présentation conditionnels selon les valeurs numériques et utilise la traduction multilingue pour les libellés d'interface.
 
-- **Traitement** (2 taches) : traitements metier divers
-
-**Donnees modifiees** : 1 tables en ecriture (ez_card).
-
-**Logique metier** : 3 regles identifiees couvrant conditions metier.
+Le programme est très simple et terminal—il n'appelle aucun sous-programme Magic—mais reçoit ses appels depuis quatre autres programmes (IDE 111, 112, 163, 288) tous liés à la gestion des garanties et menus caisse. Cette architecture faible-couplage en fait un candidat idéal pour une migration vers un composant React avec backend .NET pour la persistence.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -39,23 +36,23 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Création des Club Med Pass [ECRAN]
+#### <a id="t1"></a>114 - Création des Club Med Pass [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Création des Club Med Pass.
 **Ecran** : 1102 x 227 DLU (MDI) | [Voir mockup](#ecran-t1)
 
 ---
 
-#### <a id="t2"></a>T2 - Update Ezcard
+#### <a id="t2"></a>114.1 - Update Ezcard
 
 **Role** : Traitement : Update Ezcard.
 
 
 ## 5. REGLES METIER
 
-3 regles identifiees:
+9 regles identifiees:
 
-### Autres (3 regles)
+### Autres (9 regles)
 
 #### <a id="rm-RM-001"></a>[RM-001] Traitement conditionnel si [P]>0,Str ([P],'###'),IF ([Q] est a zero
 
@@ -77,15 +74,70 @@ Traitements internes.
 | **Expression source** | Expression 9 : `IF ([O]<Date (),MlsTrans ('dernier sejour :'),IF ([N]>Date (` |
 | **Exemple** | Si [O]<Date () â†’ MlsTrans ('dernier sejour :') |
 
-#### <a id="rm-RM-003"></a>[RM-003] Traitement si Trim([AD]) est renseigne
+#### <a id="rm-RM-003"></a>[RM-003] Condition: [K] egale 0
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `Trim([AD])<>'' AND Trim([AD])<>Trim([R]) AND [AE]=1` |
-| **Si vrai** | [AD] |
+| **Condition** | `[K]=0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 12 : `[K]=0` |
+| **Exemple** | Si [K]=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition composite: [S] AND (v.num cmp [D]*1000+[K]<>[V]*1000+[W] OR [X]='O')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[S] AND (v.num cmp [D]*1000+[K]<>[V]*1000+[W] OR [X]='O')` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EQ (v.num cmp) |
+| **Expression source** | Expression 13 : `[S] AND (v.num cmp [D]*1000+[K]<>[V]*1000+[W] OR [X]='O')` |
+| **Exemple** | Si [S] AND (v.num cmp [D]*1000+[K]<>[V]*1000+[W] OR [X]='O') â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Condition composite: Trim([BD])<>'' AND Trim([BD])<>Trim([R])
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([BD])<>'' AND Trim([BD])<>Trim([R])` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 19 : `Trim([BD])<>'' AND Trim([BD])<>Trim([R])` |
+| **Exemple** | Si Trim([BD])<>'' AND Trim([BD])<>Trim([R]) â†’ Action si vrai |
+
+#### <a id="rm-RM-006"></a>[RM-006] Condition: Trim([BD])='' AND Trim([R]) different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([BD])='' AND Trim([R])<>''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 21 : `Trim([BD])='' AND Trim([R])<>''` |
+| **Exemple** | Si Trim([BD])='' AND Trim([R])<>'' â†’ Action si vrai |
+
+#### <a id="rm-RM-007"></a>[RM-007] Traitement si Trim([BD]) est renseigne
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([BD])<>'' AND Trim([BD])<>Trim([R]) AND [BE]=1` |
+| **Si vrai** | [BD] |
 | **Si faux** | '') |
-| **Expression source** | Expression 22 : `IF(Trim([AD])<>'' AND Trim([AD])<>Trim([R]) AND [AE]=1,[AD],` |
-| **Exemple** | Si Trim([AD])<>'' AND Trim([AD])<>Trim([R]) AND [AE]=1 â†’ [AD]. Sinon â†’ '') |
+| **Expression source** | Expression 22 : `IF(Trim([BD])<>'' AND Trim([BD])<>Trim([R]) AND [BE]=1,[BD],` |
+| **Exemple** | Si Trim([BD])<>'' AND Trim([BD])<>Trim([R]) AND [BE]=1 â†’ [BD]. Sinon â†’ '') |
+
+#### <a id="rm-RM-008"></a>[RM-008] Condition: [BE] egale 1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BE]=1` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 23 : `[BE]=1` |
+| **Exemple** | Si [BE]=1 â†’ Action si vrai |
+
+#### <a id="rm-RM-009"></a>[RM-009] Condition: [BE] different de 1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BE]<>1` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 24 : `[BE]<>1` |
+| **Exemple** | Si [BE]<>1 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -100,14 +152,14 @@ Traitements internes.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 114 | T1 | Création des Club Med Pass | MDI | 1102 | 227 | Traitement |
+| 1 | 114 | 114 | Création des Club Med Pass | MDI | 1102 | 227 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>114 - Création des Club Med Pass
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1102 x 227 DLU
+**Tache** : [114](#t1) | **Type** : MDI | **Dimensions** : 1102 x 227 DLU
 **Bloc** : Traitement | **Titre IDE** : Création des Club Med Pass
 
 <!-- FORM-DATA:
@@ -467,22 +519,28 @@ Ecran unique: **Création des Club Med Pass**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **114.1** | [**Création des Club Med Pass** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1102x227 | Traitement |
-| 114.1.1 | [Update Ezcard (T2)](#t2) | - | - | |
+| **114.1** | [**Création des Club Med Pass** (114)](#t1) [mockup](#ecran-t1) | MDI | 1102x227 | Traitement |
+| 114.1.1 | [Update Ezcard (114.1)](#t2) | - | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 2 taches]
-    ENDOK([END])
-    START --> PROCESS --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -492,11 +550,20 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
+| 312 | ez_card |  | DB |   | **W** | L | 2 |
 | 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
 | 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   |   | L | 1 |
-| 312 | ez_card |  | DB |   | **W** | L | 2 |
 
 ### Colonnes par table (3 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 312 - ez_card (**W**/L) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| EN | P.Card Id | W | Unicode |
+
+</details>
 
 <details>
 <summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
@@ -515,15 +582,6 @@ flowchart TD
 
 </details>
 
-<details>
-<summary>Table 312 - ez_card (**W**/L) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | P.Card Id | W | Unicode |
-
-</details>
-
 ## 11. VARIABLES
 
 ### 11.1 Parametres entrants (2)
@@ -532,8 +590,8 @@ Variables recues du programme appelant ([Garantie sur compte (IDE 111)](ADH-IDE-
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P. Societe | Unicode | 1x parametre entrant |
-| B | P.Compte | Numeric | 1x parametre entrant |
+| EN | P. Societe | Unicode | 1x parametre entrant |
+| EO | P.Compte | Numeric | 1x parametre entrant |
 
 ### 11.2 Variables de session (4)
 
@@ -541,10 +599,10 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| C | v. nom & prenom | Alpha | 1x session |
-| D | v.num cmp | Unicode | 2x session |
-| F | v.var change en cours | Logical | 1x session |
-| I | v.confirmation | Numeric | - |
+| EP | v. nom & prenom | Alpha | 1x session |
+| EQ | v.num cmp | Unicode | 2x session |
+| ES | v.var change en cours | Logical | 1x session |
+| EV | v.confirmation | Numeric | - |
 
 ### 11.3 Autres (3)
 
@@ -552,9 +610,9 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| E | N° CMP Existe déjà ? | Logical | 1x refs |
-| G | CHG_REASON_v.num cmp | Numeric | - |
-| H | CHG_PRV_v.num cmp | Unicode | - |
+| ER | N° CMP Existe déjà ? | Logical | 1x refs |
+| ET | CHG_REASON_v.num cmp | Numeric | - |
+| EU | CHG_PRV_v.num cmp | Unicode | - |
 
 ## 12. EXPRESSIONS
 
@@ -564,8 +622,8 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 10 | 3 |
 | CALCULATION | 1 | 0 |
+| CONDITION | 10 | 9 |
 | CONSTANTE | 2 | 0 |
 | DATE | 1 | 0 |
 | REFERENCE_VG | 1 | 0 |
@@ -575,22 +633,22 @@ Variables diverses.
 
 ### 12.2 Expressions cles par type
 
-#### CONDITION (10 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 9 | `IF ([O]<Date (),MlsTrans ('dernier sejour :'),IF ([N]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))` | [RM-002](#rm-RM-002) |
-| CONDITION | 6 | `IF ([P]>0,Str ([P],'###'),IF ([Q]=0,'',Str ([P],'##')))` | [RM-001](#rm-RM-001) |
-| CONDITION | 22 | `IF(Trim([AD])<>'' AND Trim([AD])<>Trim([R]) AND [AE]=1,[AD],'')` | [RM-003](#rm-RM-003) |
-| CONDITION | 24 | `[AE]<>1` | - |
-| CONDITION | 19 | `Trim([AD])<>'' AND Trim([AD])<>Trim([R])` | - |
-| ... | | *+5 autres* | |
-
 #### CALCULATION (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CALCULATION | 16 | `CallProg('{160,-1}'PROG,v. nom & prenom [C],v.num cmp [D],[K])` | - |
+
+#### CONDITION (10 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 21 | `Trim([BD])='' AND Trim([R])<>''` | [RM-006](#rm-RM-006) |
+| CONDITION | 19 | `Trim([BD])<>'' AND Trim([BD])<>Trim([R])` | [RM-005](#rm-RM-005) |
+| CONDITION | 22 | `IF(Trim([BD])<>'' AND Trim([BD])<>Trim([R]) AND [BE]=1,[BD],'')` | [RM-007](#rm-RM-007) |
+| CONDITION | 24 | `[BE]<>1` | [RM-009](#rm-RM-009) |
+| CONDITION | 23 | `[BE]=1` | [RM-008](#rm-RM-008) |
+| ... | | *+5 autres* | |
 
 #### CONSTANTE (2 expressions)
 
@@ -616,7 +674,7 @@ Variables diverses.
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | OTHER | 14 | `[R]` | - |
-| OTHER | 17 | `[AD]` | - |
+| OTHER | 17 | `[BD]` | - |
 | OTHER | 25 | `NOT([Y])` | - |
 | OTHER | 11 | `MlsTrans ('au')` | - |
 | OTHER | 3 | `P. Societe [A]` | - |
@@ -640,26 +698,26 @@ Variables diverses.
 <details>
 <summary>Voir les 25 expressions</summary>
 
-#### CONDITION (10)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 13 | `[S] AND (v.num cmp [D]*1000+[K]<>[V]*1000+[W] OR [X]='O')` |
-| 6 | `IF ([P]>0,Str ([P],'###'),IF ([Q]=0,'',Str ([P],'##')))` |
-| 7 | `IF ([P]>0,'ans',IF ([Q]=0,'','mois'))` |
-| 9 | `IF ([O]<Date (),MlsTrans ('dernier sejour :'),IF ([N]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))` |
-| 22 | `IF(Trim([AD])<>'' AND Trim([AD])<>Trim([R]) AND [AE]=1,[AD],'')` |
-| 12 | `[K]=0` |
-| 23 | `[AE]=1` |
-| 24 | `[AE]<>1` |
-| 19 | `Trim([AD])<>'' AND Trim([AD])<>Trim([R])` |
-| 21 | `Trim([AD])='' AND Trim([R])<>''` |
-
 #### CALCULATION (1)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
 | 16 | `CallProg('{160,-1}'PROG,v. nom & prenom [C],v.num cmp [D],[K])` |
+
+#### CONDITION (10)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 6 | `IF ([P]>0,Str ([P],'###'),IF ([Q]=0,'',Str ([P],'##')))` |
+| 7 | `IF ([P]>0,'ans',IF ([Q]=0,'','mois'))` |
+| 9 | `IF ([O]<Date (),MlsTrans ('dernier sejour :'),IF ([N]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))` |
+| 12 | `[K]=0` |
+| 13 | `[S] AND (v.num cmp [D]*1000+[K]<>[V]*1000+[W] OR [X]='O')` |
+| 19 | `Trim([BD])<>'' AND Trim([BD])<>Trim([R])` |
+| 21 | `Trim([BD])='' AND Trim([R])<>''` |
+| 22 | `IF(Trim([BD])<>'' AND Trim([BD])<>Trim([R]) AND [BE]=1,[BD],'')` |
+| 23 | `[BE]=1` |
+| 24 | `[BE]<>1` |
 
 #### CONSTANTE (2)
 
@@ -689,7 +747,7 @@ Variables diverses.
 | 10 | `MlsTrans ('du')` |
 | 11 | `MlsTrans ('au')` |
 | 14 | `[R]` |
-| 17 | `[AD]` |
+| 17 | `[BD]` |
 | 25 | `NOT([Y])` |
 
 #### CAST_LOGIQUE (2)
@@ -783,7 +841,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 90) | Code sain |
-| Regles metier | 3 | Quelques regles a preserver |
+| Regles metier | 9 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -800,4 +858,4 @@ graph LR
 | ez_card | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:03*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:56*

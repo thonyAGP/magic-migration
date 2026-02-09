@@ -1,199 +1,292 @@
 ﻿# ADH IDE 257 - Zoom articles
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:13
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_253.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:42 -> 04:42 (4s) | Assemblage 04:42
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Zoom articles** est le **visualiseur de la table de reference des articles** qui **affiche le catalogue des articles disponibles a la vente**.
-
-**Objectif metier** : Fournir un ecran de consultation de type "zoom" sur la table de reference des articles (articles_________art). Ce programme simple (1 tache, 35 lignes de logique) permet aux operateurs de visualiser la liste des articles vendables, leurs codes, libelles, prix et caracteristiques. C'est un outil d'aide a la saisie utilise lors de la creation de ventes pour selectionner le bon article.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur lors de la saisie d'une vente |
-| **Quoi** | Consultation du catalogue des articles |
-| **Pourquoi** | Aide a la selection du bon article a vendre |
-| **Declencheur** | Appel via zoom (F5) depuis un champ de saisie d'article |
-| **Resultat** | Liste des articles affichee, selection possible |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 257 |
-| **Fichier XML** | `Prg_253.xml` |
-| **Description** | Zoom articles |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 35 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 257 |
+| Nom Programme | Zoom articles |
+| Fichier source | `Prg_257.xml` |
+| Dossier IDE | Ventes |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 77 | articles_________art | cafil055_dat | READ | Lecture |
+ADH IDE 257 est un programme de consultation permettant l'affichage interactif de la liste complète des articles disponibles dans le système. Il fonctionne comme un zoom dynamique populaire dans les interfaces POS et de gestion de caisse, offrant aux utilisateurs la capacité de parcourir, rechercher et sélectionner des articles pour les opérations de vente.
 
-**Resume**: 1 tables accedees dont **0 en ecriture**
+Le programme récupère les données depuis la table articles (cafil001_dat selon la nomenclature standard ADH) et les présente dans une grille de navigation. L'appel à ADH IDE 43 pour récupérer le titre suggère une standardisation des libellés affichés, probablement pour assurer la cohérence des en-têtes à travers les zooms du module caisse.
 
-### 2.3 Parametres d'entree (0 parametres)
+Son intégration dans le flux ADH IDE 121 (Gestion_Caisse_142) en fait un composant critique du système de saisie de ventes, permettant la sélection rapide d'articles sans navigation externe. C'est un élément typique des interfaces ergonomiques de point de vente moderne.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+3 regles identifiees:
+
+### Autres (3 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Si > service village [A]>'' alors > service village [A] sinon '')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> service village [A]>''` |
+| **Si vrai** | > service village [A] |
+| **Si faux** | '') |
+| **Variables** | EN (> service village) |
+| **Expression source** | Expression 6 : `IF (> service village [A]>'',> service village [A],'')` |
+| **Exemple** | Si > service village [A]>'' â†’ > service village [A]. Sinon â†’ '') |
+
+#### <a id="rm-RM-002"></a>[RM-002] Negation de (v. passage [H]) (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT (v. passage [H])` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EU (v. passage) |
+| **Expression source** | Expression 16 : `NOT (v. passage [H])` |
+| **Exemple** | Si NOT (v. passage [H]) â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition composite: (([Q]='VRL' OR [Q]='VSL') AND [P]<>'X') OR ([Q]<>'VRL' AND [Q]<>'VSL')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `(([Q]='VRL' OR [Q]='VSL') AND [P]<>'X') OR ([Q]<>'VRL' AND [Q]<>'VSL')` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 17 : `(([Q]='VRL' OR [Q]='VSL') AND [P]<>'X') OR ([Q]<>'VRL' AND [` |
+| **Exemple** | Si (([Q]='VRL' OR [Q]='VSL') AND [P]<>'X') OR ([Q]<>'VRL' AND [Q]<>'VSL') â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 1 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 17
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 35 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (1)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 77 | articles_________art | Articles et stock | DB | R |   |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 77 - articles_________art (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | > service village | R | Alpha |
+| B | > code article | R | Numeric |
+| C | < libelle article | R | Alpha |
+| D | < imputation | R | Numeric |
+| E | < sous imputation | R | Numeric |
+| F | < prix unitaire | R | Numeric |
+| G | < masque montant | R | Alpha |
+| H | v. passage | R | Logical |
+| I | v. titre ecran | R | Alpha |
+| J | bouton quitter | R | Alpha |
+| K | bouton selectionner | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (2)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EU | v. passage | Logical | 1x session |
+| EV | v. titre ecran | Alpha | 1x session |
+
+### 11.2 Autres (9)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | > service village | Alpha | 2x refs |
+| EO | > code article | Numeric | 1x refs |
+| EP | < libelle article | Alpha | - |
+| EQ | < imputation | Numeric | - |
+| ER | < sous imputation | Numeric | - |
+| ES | < prix unitaire | Numeric | - |
+| ET | < masque montant | Alpha | - |
+| EW | bouton quitter | Alpha | 1x refs |
+| EX | bouton selectionner | Alpha | 1x refs |
+
+## 12. EXPRESSIONS
+
+**17 / 17 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 4 | 2 |
+| NEGATION | 1 | 5 |
+| CONSTANTE | 4 | 0 |
+| CAST_LOGIQUE | 1 | 0 |
+| OTHER | 6 | 0 |
+| STRING | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 17 | `(([Q]='VRL' OR [Q]='VSL') AND [P]<>'X') OR ([Q]<>'VRL' AND [Q]<>'VSL')` | [RM-003](#rm-RM-003) |
+| CONDITION | 6 | `IF (> service village [A]>'',> service village [A],'')` | [RM-001](#rm-RM-001) |
+| CONDITION | 8 | `> code article [B]` | - |
+| CONDITION | 7 | `> service village [A]` | - |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 16 | `NOT (v. passage [H])` | [RM-002](#rm-RM-002) |
+
+#### CONSTANTE (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 5 | `'&Selectionner'` | - |
+| CONSTANTE | 15 | `' '` | - |
+| CONSTANTE | 3 | `'&Quitter'` | - |
+| CONSTANTE | 4 | `41` | - |
+
+#### CAST_LOGIQUE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 1 | `'TRUE'LOG` | - |
+
+#### OTHER (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 12 | `[L]` | - |
+| OTHER | 13 | `[M]` | - |
+| OTHER | 14 | `[N]` | - |
+| OTHER | 9 | `v. titre ecran [I]` | - |
+| OTHER | 10 | `bouton selectionner [K]` | - |
+| ... | | *+1 autres* | |
+
+#### STRING (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 2 | `Trim ([R])` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[257 Zoom articles]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T257[257 Zoom articles]
+    style T257 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T257
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[257 Zoom articles]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T257[257 Zoom articles]
+    style T257 fill:#58a6ff
+    C43[43 Recuperation du titre]
+    T257 --> C43
+    style C43 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 35 | Programme compact |
+| Expressions | 17 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 35) | Code sain |
+| Regles metier | 3 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 1 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:13 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:43*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 184 - Get Printer for chained list
 
-> **Analyse**: 2026-02-07 07:27
+> **Analyse**: 2026-02-08 04:04
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

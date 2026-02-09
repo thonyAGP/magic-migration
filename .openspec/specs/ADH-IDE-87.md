@@ -1,6 +1,6 @@
 ﻿# ADH IDE 87 - Print Plafonds alloués
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:46 (29s) | Assemblage 14:07
+> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 02:22 (22h35min) | Assemblage 02:22
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 87 - Print Plafonds alloués** est un programme d'édition transactionnel chargé d'imprimer les plafonds de dépenses alloués aux adhérents Club Med après modification. Appelé depuis IDE 86 (Bar Limit), il récupère d'abord la devise locale via IDE 21, puis initialise le contexte d'adhérent avec les variables de formatage appropriées. Le programme exécute ensuite une boucle multi-imprimantes qui teste la configuration courante (CURRENTPRINTERNUM) et envoie le reçu détaillé vers l'imprimante active, en accumulant les totaux via les tables bl_detail (table 19), gm-complet (table 31) et ez_card (table 312).
+Le programme **ADH IDE 87 - Print Plafonds alloués** est un utilitaire d'impression intégré au workflow de gestion des limites de crédit (Bar Limit). Il récupère dynamiquement la devise locale via **ADH IDE 21** avant de générer et d'imprimer un document récapitulatif des plafonds alloués à un compte membre.
 
-La structure interne articule 14 tâches organisées en trois phases : un splash screen d'attente (Veuillez patienter), une tâche d'initialisation qui charge la devise locale et les masques de formatage, puis une boucle de 5 imprimantes possibles (Printer 1, 4, 5, 8, 9) avec éditions enfantes (edition extrait compte) qui formatent et envoient le document. Chaque imprimante dispose d'une ou deux sous-tâches d'édition, probablement pour gérer les réimpressions ou variations de format (reçu client vs archive). Le programme est 100% actif (aucune ligne désactivée) et utilise des expressions très simples pour détecter l'imprimante courante via des appels au paramètre global GetParam.
+Son flux d'exécution débute par une tâche d'attente utilisateur, suivie d'une initialisation du contexte village (données de localisation/configuration). Ensuite, il alimente le gestionnaire d'impression (Printer 1) avec les données de plafonds formatées, puis exécute deux cycles d'édition/impression d'extrait de compte (tâches 3 et 4), permettant ainsi une visualisation du compte avant impression du détail plafond. Les tâches finales (Printer 4) gèrent les dernières phases d'impression et fermeture du gestionnaire.
 
-L'intégration avec IDE 86 est étroite : les données adhérent, masques et devise sont transmises en scope partagé, permettant une édition immédiate sans re-requête. Ce flux de clôture transactionnel garantit une traçabilité complète — chaque modification de plafond dans Bar Limit génère obligatoirement un reçu imprimé, validant ainsi la transaction. Le zéro ligne morte et la logique linéaire rendent ce programme simple mais critique dans la chaîne de caisse Club Med.
+Ce programme est typiquement appelé quand un agent caisse consulte ou valide les limites crédit d'un compte (ADH IDE 86 - Bar Limit). Il assure une traçabilité papier des plafonds autorisés, avec contexte devise pour éviter les ambiguïtés monétaires sur le ticket imprimé.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Veuillez patienter... [ECRAN]
+#### <a id="t1"></a>87 - Veuillez patienter... [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -49,11 +49,11 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t2"></a>T2 - Init village [ECRAN]
+#### <a id="t2"></a>87.1 - Init village [[ECRAN]](#ecran-t2)
 
 **Role** : Reinitialisation : Init village.
 **Ecran** : 274 x 204 DLU (MDI) | [Voir mockup](#ecran-t2)
-**Variables liees** : F (W0 nom village)
+**Variables liees** : ES (W0 nom village)
 
 
 ### 3.3 Impression (12 taches)
@@ -62,84 +62,84 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t3"></a>T3 - Printer 1 [ECRAN]
+#### <a id="t3"></a>87.2 - Printer 1 [[ECRAN]](#ecran-t3)
 
 **Role** : Generation du document : Printer 1.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t3)
 
 ---
 
-#### <a id="t4"></a>T4 - edition extrait compte [ECRAN]
+#### <a id="t4"></a>87.2.1 - edition extrait compte [[ECRAN]](#ecran-t4)
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t4)
 
 ---
 
-#### <a id="t5"></a>T5 - edition extrait compte [ECRAN]
+#### <a id="t5"></a>87.2.2 - edition extrait compte [[ECRAN]](#ecran-t5)
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t5)
 
 ---
 
-#### <a id="t6"></a>T6 - Printer 4 [ECRAN]
+#### <a id="t6"></a>87.3 - Printer 4 [[ECRAN]](#ecran-t6)
 
 **Role** : Generation du document : Printer 4.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t6)
 
 ---
 
-#### <a id="t7"></a>T7 - edition extrait compte [ECRAN]
+#### <a id="t7"></a>87.3.1 - edition extrait compte [[ECRAN]](#ecran-t7)
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>T8 - edition extrait compte [ECRAN]
+#### <a id="t8"></a>87.3.2 - edition extrait compte [[ECRAN]](#ecran-t8)
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t9"></a>T9 - Printer 5 [ECRAN]
+#### <a id="t9"></a>87.4 - Printer 5 [[ECRAN]](#ecran-t9)
 
 **Role** : Generation du document : Printer 5.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t10"></a>T10 - edition extrait compte [ECRAN]
+#### <a id="t10"></a>87.4.1 - edition extrait compte [[ECRAN]](#ecran-t10)
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t10)
 
 ---
 
-#### <a id="t11"></a>T11 - Printer 8 [ECRAN]
+#### <a id="t11"></a>87.5 - Printer 8 [[ECRAN]](#ecran-t11)
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t12"></a>T12 - edition extrait compte [ECRAN]
+#### <a id="t12"></a>87.5.1 - edition extrait compte [[ECRAN]](#ecran-t12)
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t12)
 
 ---
 
-#### <a id="t13"></a>T13 - Printer 9 [ECRAN]
+#### <a id="t13"></a>87.6 - Printer 9 [[ECRAN]](#ecran-t13)
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t13)
 
 ---
 
-#### <a id="t14"></a>T14 - edition extrait compte [ECRAN]
+#### <a id="t14"></a>87.6.1 - edition extrait compte [[ECRAN]](#ecran-t14)
 
 **Role** : Generation du document : edition extrait compte.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t14)
@@ -147,7 +147,59 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Programme d'impression - logique technique sans conditions metier)*
+5 regles identifiees:
+
+### Impression (5 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Verification que l'imprimante courante est la n1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 1 |
+| **Expression source** | Expression 3 : `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action si CURRENTPRINTERNUM = 1 |
+| **Impact** | [87.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n4
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 4 |
+| **Expression source** | Expression 4 : `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=4 â†’ Action si CURRENTPRINTERNUM = 4 |
+| **Impact** | [87.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n5
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 5 |
+| **Expression source** | Expression 5 : `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=5 â†’ Action si CURRENTPRINTERNUM = 5 |
+| **Impact** | [87.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-004"></a>[RM-004] Verification que l'imprimante courante est la n8
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 8 |
+| **Expression source** | Expression 6 : `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=8 â†’ Action si CURRENTPRINTERNUM = 8 |
+| **Impact** | [87.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-005"></a>[RM-005] Verification que l'imprimante courante est la n9
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 9 |
+| **Expression source** | Expression 7 : `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action si CURRENTPRINTERNUM = 9 |
+| **Impact** | [87.2 - Printer 1](#t3) |
 
 ## 6. CONTEXTE
 
@@ -162,14 +214,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 87 | T1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+| 1 | 87 | 87 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>87 - Veuillez patienter...
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [87](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -258,39 +310,39 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **87.1** | [**Veuillez patienter...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
-| **87.2** | [**Init village** (T2)](#t2) [mockup](#ecran-t2) | MDI | 274x204 | Initialisation |
-| **87.3** | [**Printer 1** (T3)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | Impression |
-| 87.3.1 | [edition extrait compte (T4)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
-| 87.3.2 | [edition extrait compte (T5)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
-| 87.3.3 | [Printer 4 (T6)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
-| 87.3.4 | [edition extrait compte (T7)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
-| 87.3.5 | [edition extrait compte (T8)](#t8) [mockup](#ecran-t8) | MDI | 1058x791 | |
-| 87.3.6 | [Printer 5 (T9)](#t9) [mockup](#ecran-t9) | MDI | 1058x791 | |
-| 87.3.7 | [edition extrait compte (T10)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
-| 87.3.8 | [Printer 8 (T11)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
-| 87.3.9 | [edition extrait compte (T12)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
-| 87.3.10 | [Printer 9 (T13)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
-| 87.3.11 | [edition extrait compte (T14)](#t14) [mockup](#ecran-t14) | MDI | 1058x791 | |
+| **87.1** | [**Veuillez patienter...** (87)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
+| **87.2** | [**Init village** (87.1)](#t2) [mockup](#ecran-t2) | MDI | 274x204 | Initialisation |
+| **87.3** | [**Printer 1** (87.2)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | Impression |
+| 87.3.1 | [edition extrait compte (87.2.1)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
+| 87.3.2 | [edition extrait compte (87.2.2)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
+| 87.3.3 | [Printer 4 (87.3)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
+| 87.3.4 | [edition extrait compte (87.3.1)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
+| 87.3.5 | [edition extrait compte (87.3.2)](#t8) [mockup](#ecran-t8) | MDI | 1058x791 | |
+| 87.3.6 | [Printer 5 (87.4)](#t9) [mockup](#ecran-t9) | MDI | 1058x791 | |
+| 87.3.7 | [edition extrait compte (87.4.1)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
+| 87.3.8 | [Printer 8 (87.5)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
+| 87.3.9 | [edition extrait compte (87.5.1)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
+| 87.3.10 | [Printer 9 (87.6)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
+| 87.3.11 | [edition extrait compte (87.6.1)](#t14) [mockup](#ecran-t14) | MDI | 1058x791 | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (1t)]
-    START --> B1
-    B2[Initialisation (1t)]
-    B1 --> B2
-    B3[Impression (12t)]
-    B2 --> B3
-    ENDOK([END])
-    B3 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -329,11 +381,11 @@ Variables recues du programme appelant ([Bar Limit (IDE 86)](ADH-IDE-86.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Alpha | - |
-| B | P0 code adherent | Numeric | - |
-| C | P0 filiation | Numeric | - |
-| D | P0 masque montant | Alpha | - |
-| E | P0 masque cumul | Alpha | - |
+| EN | P0 societe | Alpha | - |
+| EO | P0 code adherent | Numeric | - |
+| EP | P0 filiation | Numeric | - |
+| EQ | P0 masque montant | Alpha | - |
+| ER | P0 masque cumul | Alpha | - |
 
 ### 11.2 Variables de travail (9)
 
@@ -341,15 +393,15 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| F | W0 nom village | Alpha | - |
-| G | W0 nom | Alpha | - |
-| H | W0 prenom | Alpha | - |
-| I | W0 titre | Alpha | - |
-| J | W0 n° adherent | Numeric | - |
-| K | W0 lettre contrôle | Alpha | - |
-| L | W0 filiation | Numeric | - |
-| M | W0 langue parlee | Alpha | - |
-| N | W0 devise locale | Alpha | - |
+| ES | W0 nom village | Alpha | - |
+| ET | W0 nom | Alpha | - |
+| EU | W0 prenom | Alpha | - |
+| EV | W0 titre | Alpha | - |
+| EW | W0 n° adherent | Numeric | - |
+| EX | W0 lettre contrôle | Alpha | - |
+| EY | W0 filiation | Numeric | - |
+| EZ | W0 langue parlee | Alpha | - |
+| FA | W0 devise locale | Alpha | - |
 
 ## 12. EXPRESSIONS
 
@@ -359,11 +411,21 @@ Variables internes au programme.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 5 | 5 |
 | OTHER | 2 | 0 |
-| CONDITION | 5 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (5 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 6 | `GetParam ('CURRENTPRINTERNUM')=8` | [RM-004](#rm-RM-004) |
+| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=9` | [RM-005](#rm-RM-005) |
+| CONDITION | 5 | `GetParam ('CURRENTPRINTERNUM')=5` | [RM-003](#rm-RM-003) |
+| CONDITION | 3 | `GetParam ('CURRENTPRINTERNUM')=1` | [RM-001](#rm-RM-001) |
+| CONDITION | 4 | `GetParam ('CURRENTPRINTERNUM')=4` | [RM-002](#rm-RM-002) |
 
 #### OTHER (2 expressions)
 
@@ -371,16 +433,6 @@ Variables internes au programme.
 |------|-----|------------|-------|
 | OTHER | 2 | `SetCrsr (2)` | - |
 | OTHER | 1 | `SetCrsr (1)` | - |
-
-#### CONDITION (5 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 6 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
-| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
-| CONDITION | 5 | `GetParam ('CURRENTPRINTERNUM')=5` | - |
-| CONDITION | 3 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
-| CONDITION | 4 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
 
 #### CAST_LOGIQUE (1 expressions)
 
@@ -449,7 +501,7 @@ graph LR
 | Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 281) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 5 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -475,4 +527,4 @@ graph LR
 | [Recupere devise local (IDE 21)](ADH-IDE-21.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:10*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:22*

@@ -1,201 +1,234 @@
 ﻿# ADH IDE 52 - Creation adresse_village
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:01
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_48.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 01:48 -> 01:48 (4s) | Assemblage 01:48
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Creation adresse_village** est un **module de gestion des adresses** qui **cree ou met a jour les adresses associees aux villages de vacances**.
-
-**Objectif metier** : Gerer le referentiel des adresses des villages en croisant plusieurs sources de donnees. Le programme lit la table de configuration `cafil045_dat`, utilise les informations budgetaires (`pv_budget`) et met a jour la table des employes disponibles (`Boo_AvailibleEmployees`). Cela permet d'associer correctement les adresses aux structures operationnelles du village.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Administrateur systeme ou processus d'initialisation village |
-| **Quoi** | Creer et associer les adresses aux entites du village |
-| **Pourquoi** | Maintenir un referentiel d'adresses coherent pour les villages |
-| **Declencheur** | Creation d'un nouveau village ou mise a jour de configuration |
-| **Resultat** | Adresses village creees et associees aux structures (employes, budgets) |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (4 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (2 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 52 |
-| **Fichier XML** | `Prg_48.xml` |
-| **Description** | Creation adresse_village |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 2 |
-| **Lignes logique** | 61 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 52 |
+| Nom Programme | Creation adresse_village |
+| Fichier source | `Prg_52.xml` |
+| Dossier IDE | General |
+| Taches | 2 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 67 | tables___________tab | cafil045_dat | READ | Lecture |
-| 372 | pv_budget | pv_budget_dat | LINK | Jointure |
-| 904 | Boo_AvailibleEmployees | Boo_AvailibleEmployees | LINK/WRITE | Jointure+Ecriture |
+ADH IDE 52 crée une adresse village dans la table Boo_AvailibleEmployees. Ce programme gère la création d'une nouvelle entrée en collectant les informations nécessaires via formulaire, puis valide et enregistre les données en base de données. Il intervient dans le workflow de gestion des employés disponibles du village.
 
-**Resume**: 4 tables accedees dont **1 en ecriture**
+Le programme reçoit probablement les paramètres relatifs au village et aux coordonnées adresse depuis le formulaire utilisateur (IDE 166 Menu). Il effectue les vérifications de cohérence avant d'écrire dans la table Boo_AvailibleEmployees, notamment la vérification de l'unicité si l'adresse existe déjà.
 
-### 2.3 Parametres d'entree (0 parametres)
+Une fois l'enregistrement effectué, le programme retourne un statut de succès/erreur au programme appelant pour confirmation utilisateur. Ce type de programme est typique des opérations CRUD (Create-Read-Update-Delete) dans une application de gestion RH.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition composite: Counter(0)=1 AND NOT [BC]
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Counter(0)=1 AND NOT [BC]` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 6 : `Counter(0)=1 AND NOT [BC]` |
+| **Exemple** | Si Counter(0)=1 AND NOT [BC] â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Start (IDE 166)](ADH-IDE-166.md)
+- **Appelle**: 0 programmes | **Tables**: 3 (W:1 R:1 L:2) | **Taches**: 2 | **Expressions**: 8
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>2 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 2 |
-| **Lignes logique** | 61 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 4 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (3)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 904 | Boo_AvailibleEmployees |  | DB |   | **W** | L | 2 |
+| 67 | tables___________tab |  | DB | R |   |   | 1 |
+| 372 | pv_budget |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 904 - Boo_AvailibleEmployees (**W**/L) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 67 - tables___________tab (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | V Lien Adresse Village Defaut | R | Logical |
+| B | v lien adresse village | R | Logical |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (2)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | V Lien Adresse Village Defaut | Logical | - |
+| EO | v lien adresse village | Logical | - |
+
+## 12. EXPRESSIONS
+
+**8 / 8 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 1 | 5 |
+| CONSTANTE | 4 | 0 |
+| OTHER | 1 | 0 |
+| STRING | 2 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 6 | `Counter(0)=1 AND NOT [BC]` | [RM-001](#rm-RM-001) |
+
+#### CONSTANTE (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 4 | `''` | - |
+| CONSTANTE | 5 | `''` | - |
+| CONSTANTE | 1 | `'VSERV'` | - |
+| CONSTANTE | 2 | `'O'` | - |
+
+#### OTHER (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 8 | `NOT([BE])` | - |
+
+#### STRING (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 7 | `Trim([C])` | - |
+| STRING | 3 | `Trim([C])` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Start (IDE 166)](ADH-IDE-166.md) -> **Creation adresse_village (IDE 52)**
 
 ```mermaid
 graph LR
-    T[52 Creation adress]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T52[52 Creation adresse_vi...]
+    style T52 fill:#58a6ff
+    CC166[166 Start]
+    style CC166 fill:#8b5cf6
+    CC166 --> T52
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [166](ADH-IDE-166.md) | Start | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[52 Creation adress]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T52[52 Creation adresse_vi...]
+    style T52 fill:#58a6ff
+    NONE[Aucun callee]
+    T52 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 61 | Programme compact |
+| Expressions | 8 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 61) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 2 | Simple |
-| Tables | 4 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| Boo_AvailibleEmployees | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:01 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:48*

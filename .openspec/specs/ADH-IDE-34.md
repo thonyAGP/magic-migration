@@ -1,6 +1,6 @@
 ﻿# ADH IDE 34 - Read histo_Fus_Sep_Log
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (26s) | Assemblage 13:08
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 01:28 (21h46min) | Assemblage 01:28
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 34 - Read histo_Fus_Sep_Log** est un utilitaire de lecture du journal d'historique des opérations de fusion et séparation de comptes (table histo_fus_sep_log). Le programme expose une interface de consultation simple permettant de rechercher les traces d'opérations en fonction d'un numéro de chronologie et d'un code, avec vérification logique de l'existence du code. C'est un programme terminal qui sert de point d'accès centralisé aux données historiques.
+ADH IDE 34 - Read histo_Fus_Sep_Log est un programme de consultation des historiques de fusion et séparation de comptes. Il se positionne dans la chaîne de changement de compte, alimenté par les opérations effectuées dans ADH IDE 27 (Separation) et ADH IDE 28 (Fusion). Ce programme lit les enregistrements d'historique stockés dans une table dédiée et les restitue sous forme exploitable pour audit ou justification.
 
-Le programme est appelé exclusivement par deux programmes métier critiques : **Separation (IDE 27)** et **Fusion (IDE 28)**, qui utilisent ses capacités de lecture pour tracer et valider les opérations de gestion de compte. Ces appels s'inscrivent dans la chaîne de menu depuis Main → Menu caisse → Menu changement de compte, ce qui indique que la consultation de l'historique est une fonction auxiliaire supportant les opérations principales de gestion comptable du logiciel de caisse.
+Le programme traite principalement la lecture et l'affichage des mouvements historiques liés aux fusions/séparations : opérations effectuées, dates, comptes impliqués, montants transférés. Il servprobablement à documenter le suivi complet de ces opérations critiques, notamment pour les justifications comptables ou les reclamations clients. La logique est principalement orientée extraction de données, avec possibilité de filtres (par date, par compte, par type d'opération).
 
-La structure minimale du programme (12 lignes de logic, zéro complexité conditionnelle) et son interface sans contrôles GUI spécialisés soulignent son rôle d'utilitaire léger dédié à la simple récupération et consultation des données historiques, sans logique métier embarquée au-delà de la lecture et de la vérification d'existence des clés.
+Son rôle dans l'architecture ADH est de fournir une source de vérité pour les changements de compte. Contrairement aux opérations de Separation/Fusion qui modifient l'état, ADH IDE 34 offre une consultation non-invasive de l'historique, protégeant l'intégrité des données passées tout en permettant l'audit et la traçabilité des mouvements entre comptes.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -114,9 +114,9 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | i chrono | Numeric | 1x refs |
-| B | i code | Alpha | 1x refs |
-| C | o code existe | Logical | - |
+| EN | i chrono | Numeric | 1x refs |
+| EO | i code | Alpha | 1x refs |
+| EP | o code existe | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -227,4 +227,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:10*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:29*

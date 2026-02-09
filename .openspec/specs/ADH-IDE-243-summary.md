@@ -1,6 +1,6 @@
 ﻿# ADH IDE 243 - Histo ventes payantes
 
-> **Analyse**: 2026-02-07 03:54
+> **Analyse**: 2026-02-08 04:35
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

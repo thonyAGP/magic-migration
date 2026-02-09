@@ -1,6 +1,6 @@
 ﻿# ADH IDE 45 - Recuperation langue
 
-> **Analyse**: Phases 1-4 2026-02-07 06:47 -> 06:47 (17s) | Assemblage 13:18
+> **Analyse**: Phases 1-4 2026-02-07 06:47 -> 01:43 (18h55min) | Assemblage 01:43
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,15 +19,14 @@
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 0/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme ADH IDE 45 récupère la langue de l'application actuellement active. Ce programme est un utilitaire simple qui interroge les paramètres globaux ou la configuration système pour déterminer quelle langue l'utilisateur a sélectionnée. Il retourne généralement un code langue (ex: "FR", "ES", "EN") qui est utilisé par les autres programmes pour adapter l'affichage et les messages.
+Le programme ADH IDE 45 assure la récupération de la langue de l'utilisateur connecté, probablement pour initialiser l'interface lors du démarrage de la session. Appelé depuis le Main Program et le menu initial (IDE 166), il interroge les tables de configuration pour charger les préférences linguistiques stockées dans la base de données.
 
-Ce programme est appelé par d'autres modules qui ont besoin de connaître la langue courante pour afficher les textes appropriés. Il centralise la récupération de cette information, évitant ainsi que chaque programme ne duplique cette logique. C'est un composant clé du système de localisation de l'application.
+Cette fonction est critique dans le flux d'authentification et de démarrage de la caisse. Elle alimente les variables globales de langue utilisées par l'ensemble des écrans subsèquents, garantissant que tous les textes, messages d'erreur et interfaces s'affichent dans la langue configurée.
 
-ADH IDE 45 fait partie du bloc utilitaire partagé du projet, accessible à travers la chaîne d'appels principale. Son rôle est purement informatif — il n'effectue aucune modification de configuration, il consulte simplement l'état courant et le retourne aux programmes appelants.
+Le programme s'intègre dans la chaîne de gestion de session ADH, directement après vérification des credentials et avant l'affichage du menu principal de gestion de caisse (ADH IDE 121). C'est une dépendance essentiellement implicite du flux utilisateur - sans langage chargé, les écrans suivants ne pourraient pas s'afficher correctement.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -49,7 +48,7 @@ ADH IDE 45 fait partie du bloc utilitaire partagé du projet, accessible à trav
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Main Program (IDE 1)](ADH-IDE-1.md), [Start (IDE 166)](ADH-IDE-166.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 13
 
 <!-- TAB:Ecrans -->
@@ -173,22 +172,28 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Main Program (IDE 1)](ADH-IDE-1.md) -> **Recuperation langue (IDE 45)**
+
+Main -> ... -> [Start (IDE 166)](ADH-IDE-166.md) -> **Recuperation langue (IDE 45)**
 
 ```mermaid
 graph LR
     T45[45 Recuperation langue]
     style T45 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T45
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC166[166 Start]
+    style CC166 fill:#8b5cf6
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC1 --> T45
+    CC166 --> T45
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [1](ADH-IDE-1.md) | Main Program | 1 |
+| [166](ADH-IDE-166.md) | Start | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -229,4 +234,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:18*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:43*

@@ -1,31 +1,31 @@
-﻿# ADH IDE 132 - Sessions ouvertes WS
+﻿# ADH IDE 132 - Historique session
 
-> **Analyse**: 2026-02-07 07:09
+> **Analyse**: 2026-02-08 03:08
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Sessions ouvertes WS
+- **Fonction**: Historique session
 - **Tables modifiees**: 0
-- **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Complexite**: **BASSE** (5/100)
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 2 programme(s): Gestion caisse (IDE 121), Gestion caisse 142 (IDE 298)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
-| **Appelle** | (aucun) |
+| **Appele par** | [Gestion caisse (IDE 121)](ADH-IDE-121.md), [Gestion caisse 142 (IDE 298)](ADH-IDE-298.md) |
+| **Appelle** | [Recuperation du titre (IDE 43)](ADH-IDE-43.md) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 1 |
-| Lignes Logic | 10 |
-| Expressions | 5 |
-| Tables |  |
+| Taches | 4 |
+| Lignes Logic | 142 |
+| Expressions | 1 |
+| Tables | 4 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

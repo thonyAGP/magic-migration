@@ -1,6 +1,6 @@
 ﻿# ADH IDE 97 - Factures (Tble Compta&Vent) V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 03:47 (27s) | Assemblage 14:27
+> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 02:36 (22h48min) | Assemblage 02:36
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Programme 97 - Factures (Tble Compta&Vent) V3** est l'orchestrateur central du cycle complet de facturation clients, coordinant la création d'une facture depuis sa validation initiale jusqu'à son export PDF/email. Appelé depuis trois contextes différents (menu caisse, consultation solde compte, fin de séjour), il orchestre un workflow structuré en 21 tâches imbriquées qui validant l'absence de doublons, collectent les données d'hébergement et boutique via un formulaire interactif (tâche 97.3), calculent les montants TTC/NET avec remises appliquées, et consolidant l'ensemble avant édition. Le cœur du programme repose sur la table maj_appli_tpe (ID 866) qu'il sollicite 10 fois (4 lectures, 6 écritures), servant de source de vérité unique pour les flags d'édition, les montants et les statuts de facturation.
+ADH IDE 97 gère la création et la modification complète des factures (comptables et ventes) pour les clients. Le programme orchestre un workflow multi-étapes : vérification des données initiales, création de l'en-tête facture, ajout des lignes de vente (hébergement, boutique, gift pass), calcul des montants avec TVA, et génération du pied de facture. Il interagit avec une chaîne de 13 programmes spécialisés couvrant l'incrémentation des numéros, la vérification des droits boutique, et les mises à jour en base.
 
-Le flux de donnée suit un processus précis : validation préalable contre les factures existantes (tâche 97.2), saisie interactive des détails hébergement dans la tâche 97.3 génération autant de sous-formulaires qu'il existe lignes de ventes, édition ligne à ligne des ventes et articles boutique avec vérifications de cohérence (tâche 97.3.1, puis 97.3.1.1), puis massivement le flagage collectif (tâche 97.3.2, 112 lignes) orchestrant 6 mises à jour consécutives de maj_appli_tpe avant de déclencher les traitements aval (incrémentation numéro facture via IDE 58, archivage via IDE 105/106). Finalement, l'export PDF est délégué à IDE 98 (EditFactureTva) tandis qu'un audit trail est gravé dans log_booker si email envoyé.
+Le cœur du programme traite quatre domaines transversaux : (1) **Hébergement** - récupération des séjours et valorisation via les tarifs applicables, (2) **Ventes** - lignes boutique avec vérification des stocks et droits d'accès, (3) **Gift Pass** - affectations Club Med à facturer, (4) **Comptabilité** - totaux par rayons, calcul TVA, et archivage temporaire. Les tables `comptable________cte` et `maj_appli_tpe` sont modifiées directement pour mettre à jour les soldes clients et l'historique des opérations.
 
-Ce programme est critique car il opère comme point d'intégration entre le moteur comptable (table comptable_cte 40) et le moteur commercial (rayons boutique 870, configurations hébergement 868), tout en étant le garant de la cohérence des données de facturation à travers 14 programmes appelés dont plusieurs sont répétés (IDE 58, 91 appelés 2 fois chacun), ce qui en ferait un point de défaillance majeur si la logique conditionnelle complexe de sélection archive/courant (RM-003) ou le flagage collectif divergent.
+Le programme gère également les états temporaires (flag ligne boutique, archivage séjour) et assure la traçabilité via la table `log_booker`. Il s'intègre au flux caisse principal (appelé depuis les menus IDE 163, 190, 193) et supporte les éditions factures (IDE 98) et les recherches d'adresses email (IDE 226) pour envois clients.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,11 +36,11 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t1"></a>T1 - Edition de Facture [ECRAN]
+#### <a id="t1"></a>97 - Edition de Facture [[ECRAN]](#ecran-t1)
 
 **Role** : Generation du document : Edition de Facture.
 **Ecran** : 881 x 427 DLU | [Voir mockup](#ecran-t1)
-**Variables liees** : H (V.Lien Pied de facture), I (V.Existe facture ?), P (V.Facture Sans Nom), Q (V.Facture Sans Adresse), S (V.No Facture)
+**Variables liees** : EU (V.Lien Pied de facture), EV (V.Existe facture ?), FC (V.Facture Sans Nom), FD (V.Facture Sans Adresse), FF (V.No Facture)
 
 
 ### 3.2 Initialisation (1 tache)
@@ -49,10 +49,10 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t2"></a>T2 - Raz tempo facture
+#### <a id="t2"></a>97.1 - Raz tempo facture
 
 **Role** : Reinitialisation : Raz tempo facture.
-**Variables liees** : H (V.Lien Pied de facture), I (V.Existe facture ?), P (V.Facture Sans Nom), Q (V.Facture Sans Adresse), S (V.No Facture)
+**Variables liees** : EU (V.Lien Pied de facture), EV (V.Existe facture ?), FC (V.Facture Sans Nom), FD (V.Facture Sans Adresse), FF (V.No Facture)
 
 
 ### 3.3 Validation (4 taches)
@@ -61,32 +61,32 @@ Controles de coherence : 4 taches verifient les donnees et conditions.
 
 ---
 
-#### <a id="t3"></a>T3 - verif non flaguee
+#### <a id="t3"></a>97.2 - verif non flaguee
 
 **Role** : Verification : verif non flaguee.
-**Variables liees** : BH (V.Existe flaguee ?)
+**Variables liees** : FU (V.Existe flaguee ?)
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t7"></a>T7 - Controle ttc
+#### <a id="t7"></a>97.3.1.1.1 - Controle ttc
 
 **Role** : Verification : Controle ttc.
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t11"></a>T11 - verif boutique
+#### <a id="t11"></a>97.3.4 - verif boutique
 
 **Role** : Verification : verif boutique.
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t13"></a>T13 - verif non flaguee
+#### <a id="t13"></a>97.5 - verif non flaguee
 
 **Role** : Verification : verif non flaguee.
-**Variables liees** : BH (V.Existe flaguee ?)
+**Variables liees** : FU (V.Existe flaguee ?)
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 
@@ -96,80 +96,80 @@ Traitements internes.
 
 ---
 
-#### <a id="t4"></a>T4 - Hebergement [ECRAN]
+#### <a id="t4"></a>97.3 - Hebergement [[ECRAN]](#ecran-t4)
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 866 x 250 DLU | [Voir mockup](#ecran-t4)
-**Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
+**Variables liees** : FK (V.Date Début Hebergement), FL (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t6"></a>T6 - Lignes boutique [ECRAN]
+#### <a id="t6"></a>97.3.1.1 - Lignes boutique [[ECRAN]](#ecran-t6)
 
 **Role** : Traitement : Lignes boutique.
 **Ecran** : 704 x 239 DLU | [Voir mockup](#ecran-t6)
 
 ---
 
-#### <a id="t8"></a>T8 - Suppr fact pro boutique
+#### <a id="t8"></a>97.3.1.1.2 - Suppr fact pro boutique
 
 **Role** : Traitement : Suppr fact pro boutique.
-**Variables liees** : H (V.Lien Pied de facture), I (V.Existe facture ?), P (V.Facture Sans Nom), Q (V.Facture Sans Adresse), S (V.No Facture)
+**Variables liees** : EU (V.Lien Pied de facture), EV (V.Existe facture ?), FC (V.Facture Sans Nom), FD (V.Facture Sans Adresse), FF (V.No Facture)
 
 ---
 
-#### <a id="t9"></a>T9 - Flag All [ECRAN]
+#### <a id="t9"></a>97.3.2 - Flag All [[ECRAN]](#ecran-t9)
 
 **Role** : Traitement : Flag All.
 **Ecran** : 541 x 291 DLU | [Voir mockup](#ecran-t9)
-**Variables liees** : BH (V.Existe flaguee ?)
+**Variables liees** : FU (V.Existe flaguee ?)
 
 ---
 
-#### <a id="t10"></a>T10 - Pied de Facture [ECRAN]
+#### <a id="t10"></a>97.3.3 - Pied de Facture [[ECRAN]](#ecran-t10)
 
 **Role** : Traitement : Pied de Facture.
 **Ecran** : 207 x 102 DLU | [Voir mockup](#ecran-t10)
-**Variables liees** : H (V.Lien Pied de facture), I (V.Existe facture ?), P (V.Facture Sans Nom), Q (V.Facture Sans Adresse), S (V.No Facture)
+**Variables liees** : EU (V.Lien Pied de facture), EV (V.Existe facture ?), FC (V.Facture Sans Nom), FD (V.Facture Sans Adresse), FF (V.No Facture)
 
 ---
 
-#### <a id="t14"></a>T14 - SQL parcourt facture [ECRAN]
+#### <a id="t14"></a>97.6 - SQL parcourt facture [[ECRAN]](#ecran-t14)
 
 **Role** : Traitement : SQL parcourt facture.
 **Ecran** : 609 x 195 DLU | [Voir mockup](#ecran-t14)
-**Variables liees** : H (V.Lien Pied de facture), I (V.Existe facture ?), P (V.Facture Sans Nom), Q (V.Facture Sans Adresse), S (V.No Facture)
+**Variables liees** : EU (V.Lien Pied de facture), EV (V.Existe facture ?), FC (V.Facture Sans Nom), FD (V.Facture Sans Adresse), FF (V.No Facture)
 
 ---
 
-#### <a id="t15"></a>T15 - SendMail
+#### <a id="t15"></a>97.6.1 - SendMail
 
 **Role** : Traitement : SendMail.
 
 ---
 
-#### <a id="t16"></a>T16 - Saisir un email [ECRAN]
+#### <a id="t16"></a>97.6.2 - Saisir un email [[ECRAN]](#ecran-t16)
 
 **Role** : Traitement : Saisir un email.
 **Ecran** : 320 x 55 DLU | [Voir mockup](#ecran-t16)
-**Variables liees** : BK (V.ConfirmEnvoieMail?)
+**Variables liees** : FX (V.ConfirmEnvoieMail?)
 
 ---
 
-#### <a id="t17"></a>T17 - VisuHebergement tempo
+#### <a id="t17"></a>97.7 - VisuHebergement tempo
 
 **Role** : Traitement : VisuHebergement tempo.
 
 ---
 
-#### <a id="t18"></a>T18 - visu Fac_tva [ECRAN]
+#### <a id="t18"></a>97.8 - visu Fac_tva [[ECRAN]](#ecran-t18)
 
 **Role** : Traitement : visu Fac_tva.
 **Ecran** : 457 x 200 DLU | [Voir mockup](#ecran-t18)
 
 ---
 
-#### <a id="t19"></a>T19 - Confirmation [ECRAN]
+#### <a id="t19"></a>97.9 - Confirmation [[ECRAN]](#ecran-t19)
 
 **Role** : Traitement : Confirmation.
 **Ecran** : 397 x 110 DLU (Type6) | [Voir mockup](#ecran-t19)
@@ -181,7 +181,7 @@ L'operateur saisit les donnees de la transaction via 3 ecrans (Ventes, Maj des l
 
 ---
 
-#### <a id="t5"></a>T5 - Ventes [ECRAN]
+#### <a id="t5"></a>97.3.1 - Ventes [[ECRAN]](#ecran-t5)
 
 **Role** : Saisie des donnees : Ventes.
 **Ecran** : 650 x 233 DLU | [Voir mockup](#ecran-t5)
@@ -189,7 +189,7 @@ L'operateur saisit les donnees de la transaction via 3 ecrans (Ventes, Maj des l
 
 ---
 
-#### <a id="t20"></a>T20 - Maj des lignes saisies [ECRAN]
+#### <a id="t20"></a>97.10 - Maj des lignes saisies [[ECRAN]](#ecran-t20)
 
 **Role** : Saisie des donnees : Maj des lignes saisies.
 **Ecran** : 562 x 0 DLU | [Voir mockup](#ecran-t20)
@@ -197,7 +197,7 @@ L'operateur saisit les donnees de la transaction via 3 ecrans (Ventes, Maj des l
 
 ---
 
-#### <a id="t21"></a>T21 - Abondonner lignes saisies V3 [ECRAN]
+#### <a id="t21"></a>97.11 - Abondonner lignes saisies V3 [[ECRAN]](#ecran-t21)
 
 **Role** : Saisie des donnees : Abondonner lignes saisies V3.
 **Ecran** : 562 x 0 DLU | [Voir mockup](#ecran-t21)
@@ -210,53 +210,254 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t12"></a>T12 - Recherche si Fact déjà éditée
+#### <a id="t12"></a>97.4 - Recherche si Fact déjà éditée
 
 **Role** : Traitement : Recherche si Fact déjà éditée.
-**Variables liees** : H (V.Lien Pied de facture), I (V.Existe facture ?), P (V.Facture Sans Nom), Q (V.Facture Sans Adresse), S (V.No Facture)
+**Variables liees** : EU (V.Lien Pied de facture), EV (V.Existe facture ?), FC (V.Facture Sans Nom), FD (V.Facture Sans Adresse), FF (V.No Facture)
 **Delegue a** : [Recherche Adresse Mail (IDE 226)](ADH-IDE-226.md)
 
 
 ## 5. REGLES METIER
 
-3 regles identifiees:
+25 regles identifiees:
 
-### Initialisation (1 regles)
+### Validation (1 regles)
 
-#### <a id="rm-RM-003"></a>[RM-003] Si B.Raz [BF] alors V.Existe flaguee ? [BH] sinon IF(P.i.Archive [E],Trim(V.Fact déjà editée [W])&' '&Trim(V.Service [V])&' '&Trim(V.Pos , [U]),Trim([AG])&' '&Trim([AI])&' '&Trim([AH])))
-
-| Element | Detail |
-|---------|--------|
-| **Condition** | `B.Raz [BF]` |
-| **Si vrai** | V.Existe flaguee ? [BH] |
-| **Si faux** | IF(P.i.Archive [E],Trim(V.Fact déjà editée [W])&' '&Trim(V.Service [V])&' '&Trim(V.Pos , [U]),Trim([AG])&' '&Trim([AI])&' '&Trim([AH]))) |
-| **Variables** | E (P.i.Archive), U (V.Pos ,), V (V.Service), W (V.Fact déjà editée), BH (V.Existe flaguee ?), BF (B.Raz) |
-| **Expression source** | Expression 79 : `IF(B.Raz [BF],V.Existe flaguee ? [BH],IF(P.i.Archive [E],Tri` |
-| **Exemple** | Si B.Raz [BF] â†’ V.Existe flaguee ? [BH] |
-| **Impact** | [T9 - Flag All](#t9) |
-
-### Autres (2 regles)
-
-#### <a id="rm-RM-001"></a>[RM-001] Si P.i.Archive [E] alors V.Ville [M] sinon [AD])
+#### <a id="rm-RM-006"></a>[RM-006] Si P.i.Archive [E] alors V.Ville [M] sinon B.Valider [BD])
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `P.i.Archive [E]` |
 | **Si vrai** | V.Ville [M] |
-| **Si faux** | [AD]) |
-| **Variables** | E (P.i.Archive), M (V.Ville) |
-| **Expression source** | Expression 34 : `IF(P.i.Archive [E],V.Ville [M],[AD])` |
-| **Exemple** | Si P.i.Archive [E] â†’ V.Ville [M]. Sinon â†’ [AD]) |
+| **Si faux** | B.Valider [BD]) |
+| **Variables** | ER (P.i.Archive), EZ (V.Ville), FQ (B.Valider) |
+| **Expression source** | Expression 34 : `IF(P.i.Archive [E],V.Ville [M],B.Valider [BD])` |
+| **Exemple** | Si P.i.Archive [E] â†’ V.Ville [M]. Sinon â†’ B.Valider [BD]) |
+| **Impact** | Bloc Validation |
 
-#### <a id="rm-RM-002"></a>[RM-002] Si [CD] <> '' alors [CD] & ' Adresse' sinon 'Adresse')
+### Autres (24 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition composite: NOT([DA]) OR [DP]
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `[CD] <> ''` |
-| **Si vrai** | [CD] & ' Adresse' |
+| **Condition** | `NOT([DA]) OR [DP]` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 16 : `NOT([DA]) OR [DP]` |
+| **Exemple** | Si NOT([DA]) OR [DP] â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: [DA] AND NOT([DP]) AND [DU] superieur a 2
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[DA] AND NOT([DP]) AND [DU] > 2` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 17 : `[DA] AND NOT([DP]) AND [DU] > 2` |
+| **Exemple** | Si [DA] AND NOT([DP]) AND [DU] > 2 â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Negation de [DQ] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT [DQ]` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 28 : `NOT [DQ]` |
+| **Exemple** | Si NOT [DQ] â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: [DU] superieur a 2
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[DU] > 2` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 29 : `[DU] > 2` |
+| **Exemple** | Si [DU] > 2 â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Negation de P.i.Archive [E] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT P.i.Archive [E]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | ER (P.i.Archive) |
+| **Expression source** | Expression 32 : `NOT P.i.Archive [E]` |
+| **Exemple** | Si NOT P.i.Archive [E] â†’ Action si vrai |
+
+#### <a id="rm-RM-007"></a>[RM-007] Condition: Trim([CN]) egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([CN])=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 37 : `Trim([CN])=''` |
+| **Exemple** | Si Trim([CN])='' â†’ Action si vrai |
+
+#### <a id="rm-RM-008"></a>[RM-008] Condition: Trim([CO]) egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([CO])=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 38 : `Trim([CO])=''` |
+| **Exemple** | Si Trim([CO])='' â†’ Action si vrai |
+
+#### <a id="rm-RM-009"></a>[RM-009] Condition: Trim([CP]) egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([CP])=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 39 : `Trim([CP])=''` |
+| **Exemple** | Si Trim([CP])='' â†’ Action si vrai |
+
+#### <a id="rm-RM-010"></a>[RM-010] Condition: Trim([CQ]) egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([CQ])=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 40 : `Trim([CQ])=''` |
+| **Exemple** | Si Trim([CQ])='' â†’ Action si vrai |
+
+#### <a id="rm-RM-011"></a>[RM-011] Condition: Trim([CR])='' AND [DW] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([CR])='' AND [DW]=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 41 : `Trim([CR])='' AND [DW]=''` |
+| **Exemple** | Si Trim([CR])='' AND [DW]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-012"></a>[RM-012] Si [DD] <> '' alors [DD] & ' Adresse' sinon 'Adresse')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[DD] <> ''` |
+| **Si vrai** | [DD] & ' Adresse' |
 | **Si faux** | 'Adresse') |
-| **Expression source** | Expression 46 : `IF([CD] <> '',[CD] & ' Adresse','Adresse')` |
-| **Exemple** | Si [CD] <> '' â†’ [CD] & ' Adresse'. Sinon â†’ 'Adresse') |
+| **Expression source** | Expression 46 : `IF([DD] <> '',[DD] & ' Adresse','Adresse')` |
+| **Exemple** | Si [DD] <> '' â†’ [DD] & ' Adresse'. Sinon â†’ 'Adresse') |
+
+#### <a id="rm-RM-013"></a>[RM-013] Condition: Trim([DD]) different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([DD]) <> ''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 51 : `Trim([DD]) <> ''` |
+| **Exemple** | Si Trim([DD]) <> '' â†’ Action si vrai |
+
+#### <a id="rm-RM-014"></a>[RM-014] Condition composite: NOT([DI]) OR ([DI] AND [DE]=0)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT([DI]) OR ([DI] AND [DE]=0)` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 52 : `NOT([DI]) OR ([DI] AND [DE]=0)` |
+| **Exemple** | Si NOT([DI]) OR ([DI] AND [DE]=0) â†’ Action si vrai |
+
+#### <a id="rm-RM-015"></a>[RM-015] Negation de [CF] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT [CF]` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 55 : `NOT [CF]` |
+| **Exemple** | Si NOT [CF] â†’ Action si vrai |
+
+#### <a id="rm-RM-016"></a>[RM-016] Condition: [DU] egale 1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[DU] = 1` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 65 : `[DU] = 1` |
+| **Exemple** | Si [DU] = 1 â†’ Action si vrai |
+
+#### <a id="rm-RM-017"></a>[RM-017] Condition: [DU] = 1 OR [DU] egale 2
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[DU] = 1 OR [DU] = 2` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 66 : `[DU] = 1 OR [DU] = 2` |
+| **Exemple** | Si [DU] = 1 OR [DU] = 2 â†’ Action si vrai |
+
+#### <a id="rm-RM-018"></a>[RM-018] Condition: [DU] egale 2
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[DU] = 2` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 67 : `[DU] = 2` |
+| **Exemple** | Si [DU] = 2 â†’ Action si vrai |
+
+#### <a id="rm-RM-019"></a>[RM-019] Condition: [CN] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[CN]=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 71 : `[CN]=''` |
+| **Exemple** | Si [CN]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-020"></a>[RM-020] Condition composite: VG53 AND [DI] AND NOT(P.i.Archive [E])
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `VG53 AND [DI] AND NOT(P.i.Archive [E])` |
+| **Si vrai** | Action si vrai |
+| **Variables** | ER (P.i.Archive) |
+| **Expression source** | Expression 73 : `VG53 AND [DI] AND NOT(P.i.Archive [E])` |
+| **Exemple** | Si VG53 AND [DI] AND NOT(P.i.Archive [E]) â†’ Action si vrai |
+
+#### <a id="rm-RM-021"></a>[RM-021] Condition: [CO] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[CO]=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 74 : `[CO]=''` |
+| **Exemple** | Si [CO]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-022"></a>[RM-022] Condition: [CP] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[CP]=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 75 : `[CP]=''` |
+| **Exemple** | Si [CP]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-023"></a>[RM-023] Condition: [CQ] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[CQ]=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 76 : `[CQ]=''` |
+| **Exemple** | Si [CQ]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-024"></a>[RM-024] Condition: [DW] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[DW]=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 77 : `[DW]=''` |
+| **Exemple** | Si [DW]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-025"></a>[RM-025] Si [CF] alors [CH] sinon IF(P.i.Archive [E],Trim(V.Fact déjà editée [W])&' '&Trim(V.Service [V])&' '&Trim(V.Pos , [U]),Trim(V.Existe non facturee ? [BG])&' '&Trim(V.Erreur addresse ? [BI])&' '&Trim(V.Existe flaguee ? [BH])))
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[CF]` |
+| **Si vrai** | [CH] |
+| **Si faux** | IF(P.i.Archive [E],Trim(V.Fact déjà editée [W])&' '&Trim(V.Service [V])&' '&Trim(V.Pos , [U]),Trim(V.Existe non facturee ? [BG])&' '&Trim(V.Erreur addresse ? [BI])&' '&Trim(V.Existe flaguee ? [BH]))) |
+| **Variables** | ER (P.i.Archive), FH (V.Pos ,), FI (V.Service), FJ (V.Fact déjà editée), FT (V.Existe non facturee ?), FU (V.Existe flaguee ?), FV (V.Erreur addresse ?) |
+| **Expression source** | Expression 79 : `IF([CF],[CH],IF(P.i.Archive [E],Trim(V.Fact déjà editée [W])` |
+| **Exemple** | Si [CF] â†’ [CH] |
+| **Impact** | [97.3.2 - Flag All](#t9) |
 
 ## 6. CONTEXTE
 
@@ -271,21 +472,21 @@ Ecrans de recherche et consultation.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 97 | T1 | Edition de Facture | Type0 | 881 | 427 | Impression |
-| 2 | 97.3 | T4 | Hebergement | Type0 | 866 | 250 | Traitement |
-| 3 | 97.3.1 | T5 | Ventes | Type0 | 650 | 233 | Saisie |
-| 4 | 97.3.1.1 | T6 | Lignes boutique | Type0 | 704 | 239 | Traitement |
-| 5 | 97.3.3 | T10 | Pied de Facture | Type0 | 207 | 102 | Traitement |
-| 6 | 97.6.2 | T16 | Saisir un email | Type0 | 320 | 55 | Traitement |
-| 7 | 97.8 | T18 | visu Fac_tva | Type0 | 457 | 200 | Traitement |
-| 8 | 97.9 | T19 | Confirmation | Type6 | 397 | 110 | Traitement |
+| 1 | 97 | 97 | Edition de Facture | Type0 | 881 | 427 | Impression |
+| 2 | 97.3 | 97.3 | Hebergement | Type0 | 866 | 250 | Traitement |
+| 3 | 97.3.1 | 97.3.1 | Ventes | Type0 | 650 | 233 | Saisie |
+| 4 | 97.3.1.1 | 97.3.1.1 | Lignes boutique | Type0 | 704 | 239 | Traitement |
+| 5 | 97.3.3 | 97.3.3 | Pied de Facture | Type0 | 207 | 102 | Traitement |
+| 6 | 97.6.2 | 97.6.2 | Saisir un email | Type0 | 320 | 55 | Traitement |
+| 7 | 97.8 | 97.8 | visu Fac_tva | Type0 | 457 | 200 | Traitement |
+| 8 | 97.9 | 97.9 | Confirmation | Type6 | 397 | 110 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>97 - Edition de Facture
-**Tache** : [T1](#t1) | **Type** : Type0 | **Dimensions** : 881 x 427 DLU
+**Tache** : [97](#t1) | **Type** : Type0 | **Dimensions** : 881 x 427 DLU
 **Bloc** : Impression | **Titre IDE** : Edition de Facture
 
 <!-- FORM-DATA:
@@ -882,7 +1083,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t4"></a>97.3 - Hebergement
-**Tache** : [T4](#t4) | **Type** : Type0 | **Dimensions** : 866 x 250 DLU
+**Tache** : [97.3](#t4) | **Type** : Type0 | **Dimensions** : 866 x 250 DLU
 **Bloc** : Traitement | **Titre IDE** : Hebergement
 
 <!-- FORM-DATA:
@@ -1002,7 +1203,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t5"></a>97.3.1 - Ventes
-**Tache** : [T5](#t5) | **Type** : Type0 | **Dimensions** : 650 x 233 DLU
+**Tache** : [97.3.1](#t5) | **Type** : Type0 | **Dimensions** : 650 x 233 DLU
 **Bloc** : Saisie | **Titre IDE** : Ventes
 
 <!-- FORM-DATA:
@@ -1278,7 +1479,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t6"></a>97.3.1.1 - Lignes boutique
-**Tache** : [T6](#t6) | **Type** : Type0 | **Dimensions** : 704 x 239 DLU
+**Tache** : [97.3.1.1](#t6) | **Type** : Type0 | **Dimensions** : 704 x 239 DLU
 **Bloc** : Traitement | **Titre IDE** : Lignes boutique
 
 <!-- FORM-DATA:
@@ -1612,7 +1813,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t10"></a>97.3.3 - Pied de Facture
-**Tache** : [T10](#t10) | **Type** : Type0 | **Dimensions** : 207 x 102 DLU
+**Tache** : [97.3.3](#t10) | **Type** : Type0 | **Dimensions** : 207 x 102 DLU
 **Bloc** : Traitement | **Titre IDE** : Pied de Facture
 
 <!-- FORM-DATA:
@@ -1746,7 +1947,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t16"></a>97.6.2 - Saisir un email
-**Tache** : [T16](#t16) | **Type** : Type0 | **Dimensions** : 320 x 55 DLU
+**Tache** : [97.6.2](#t16) | **Type** : Type0 | **Dimensions** : 320 x 55 DLU
 **Bloc** : Traitement | **Titre IDE** : Saisir un email
 
 <!-- FORM-DATA:
@@ -1822,7 +2023,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t18"></a>97.8 - visu Fac_tva
-**Tache** : [T18](#t18) | **Type** : Type0 | **Dimensions** : 457 x 200 DLU
+**Tache** : [97.8](#t18) | **Type** : Type0 | **Dimensions** : 457 x 200 DLU
 **Bloc** : Traitement | **Titre IDE** : visu Fac_tva
 
 <!-- FORM-DATA:
@@ -1962,7 +2163,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t19"></a>97.9 - Confirmation
-**Tache** : [T19](#t19) | **Type** : Type6 | **Dimensions** : 397 x 110 DLU
+**Tache** : [97.9](#t19) | **Type** : Type6 | **Dimensions** : 397 x 110 DLU
 **Bloc** : Traitement | **Titre IDE** : Confirmation
 
 <!-- FORM-DATA:
@@ -2049,21 +2250,21 @@ Ecrans de recherche et consultation.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[T1 Edition de Facture]
+    VF1[97 Edition de Facture]
     style VF1 fill:#58a6ff
-    VF4[T4 Hebergement]
+    VF4[97.3 Hebergement]
     style VF4 fill:#58a6ff
-    VF5[T5 Ventes]
+    VF5[97.3.1 Ventes]
     style VF5 fill:#58a6ff
-    VF6[T6 Lignes boutique]
+    VF6[97.3.1.1 Lignes boutique]
     style VF6 fill:#58a6ff
-    VF10[T10 Pied de Facture]
+    VF10[97.3.3 Pied de Facture]
     style VF10 fill:#58a6ff
-    VF16[T16 Saisir un email]
+    VF16[97.6.2 Saisir un email]
     style VF16 fill:#58a6ff
-    VF18[T18 visu Fac_tva]
+    VF18[97.8 visu Fac_tva]
     style VF18 fill:#58a6ff
-    VF19[T19 Confirmation]
+    VF19[97.9 Confirmation]
     style VF19 fill:#58a6ff
     EXT58[IDE 58 Incremente N° d...]
     style EXT58 fill:#3fb950
@@ -2130,55 +2331,54 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **97.1** | [**Edition de Facture** (T1)](#t1) [mockup](#ecran-t1) | - | 881x427 | Impression |
-| **97.2** | [**Raz tempo facture** (T2)](#t2) | - | - | Initialisation |
-| **97.3** | [**verif non flaguee** (T3)](#t3) | - | - | Validation |
-| 97.3.1 | [Controle ttc (T7)](#t7) | - | - | |
-| 97.3.2 | [verif boutique (T11)](#t11) | - | - | |
-| 97.3.3 | [verif non flaguee (T13)](#t13) | - | - | |
-| **97.4** | [**Hebergement** (T4)](#t4) [mockup](#ecran-t4) | - | 866x250 | Traitement |
-| 97.4.1 | [Lignes boutique (T6)](#t6) [mockup](#ecran-t6) | - | 704x239 | |
-| 97.4.2 | [Suppr fact pro boutique (T8)](#t8) | - | - | |
-| 97.4.3 | [Flag All (T9)](#t9) [mockup](#ecran-t9) | - | 541x291 | |
-| 97.4.4 | [Pied de Facture (T10)](#t10) [mockup](#ecran-t10) | - | 207x102 | |
-| 97.4.5 | [SQL parcourt facture (T14)](#t14) [mockup](#ecran-t14) | - | 609x195 | |
-| 97.4.6 | [SendMail (T15)](#t15) | - | - | |
-| 97.4.7 | [Saisir un email (T16)](#t16) [mockup](#ecran-t16) | - | 320x55 | |
-| 97.4.8 | [VisuHebergement tempo (T17)](#t17) | - | - | |
-| 97.4.9 | [visu Fac_tva (T18)](#t18) [mockup](#ecran-t18) | - | 457x200 | |
-| 97.4.10 | [Confirmation (T19)](#t19) [mockup](#ecran-t19) | Type6 | 397x110 | |
-| **97.5** | [**Ventes** (T5)](#t5) [mockup](#ecran-t5) | - | 650x233 | Saisie |
-| 97.5.1 | [Maj des lignes saisies (T20)](#t20) [mockup](#ecran-t20) | - | 562x0 | |
-| 97.5.2 | [Abondonner lignes saisies V3 (T21)](#t21) [mockup](#ecran-t21) | - | 562x0 | |
-| **97.6** | [**Recherche si Fact déjà éditée** (T12)](#t12) | - | - | Consultation |
+| **97.1** | [**Edition de Facture** (97)](#t1) [mockup](#ecran-t1) | - | 881x427 | Impression |
+| **97.2** | [**Raz tempo facture** (97.1)](#t2) | - | - | Initialisation |
+| **97.3** | [**verif non flaguee** (97.2)](#t3) | - | - | Validation |
+| 97.3.1 | [Controle ttc (97.3.1.1.1)](#t7) | - | - | |
+| 97.3.2 | [verif boutique (97.3.4)](#t11) | - | - | |
+| 97.3.3 | [verif non flaguee (97.5)](#t13) | - | - | |
+| **97.4** | [**Hebergement** (97.3)](#t4) [mockup](#ecran-t4) | - | 866x250 | Traitement |
+| 97.4.1 | [Lignes boutique (97.3.1.1)](#t6) [mockup](#ecran-t6) | - | 704x239 | |
+| 97.4.2 | [Suppr fact pro boutique (97.3.1.1.2)](#t8) | - | - | |
+| 97.4.3 | [Flag All (97.3.2)](#t9) [mockup](#ecran-t9) | - | 541x291 | |
+| 97.4.4 | [Pied de Facture (97.3.3)](#t10) [mockup](#ecran-t10) | - | 207x102 | |
+| 97.4.5 | [SQL parcourt facture (97.6)](#t14) [mockup](#ecran-t14) | - | 609x195 | |
+| 97.4.6 | [SendMail (97.6.1)](#t15) | - | - | |
+| 97.4.7 | [Saisir un email (97.6.2)](#t16) [mockup](#ecran-t16) | - | 320x55 | |
+| 97.4.8 | [VisuHebergement tempo (97.7)](#t17) | - | - | |
+| 97.4.9 | [visu Fac_tva (97.8)](#t18) [mockup](#ecran-t18) | - | 457x200 | |
+| 97.4.10 | [Confirmation (97.9)](#t19) [mockup](#ecran-t19) | Type6 | 397x110 | |
+| **97.5** | [**Ventes** (97.3.1)](#t5) [mockup](#ecran-t5) | - | 650x233 | Saisie |
+| 97.5.1 | [Maj des lignes saisies (97.10)](#t20) [mockup](#ecran-t20) | - | 562x0 | |
+| 97.5.2 | [Abondonner lignes saisies V3 (97.11)](#t21) [mockup](#ecran-t21) | - | 562x0 | |
+| **97.6** | [**Recherche si Fact déjà éditée** (97.4)](#t12) | - | - | Consultation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Impression (1t)]
-    START --> B1
-    B2[Initialisation (1t)]
-    B1 --> B2
-    B3[Validation (4t)]
-    B2 --> B3
-    B4[Traitement (11t)]
-    B3 --> B4
-    B5[Saisie (3t)]
-    B4 --> B5
-    B6[Consultation (1t)]
-    B5 --> B6
-    WRITE[MAJ 5 tables]
-    B6 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[Hebergement]
+    DECISION{P.i.Archive}
+    PROCESS[Traitement]
+    UPDATE[MAJ 5 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -2232,11 +2432,11 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | v.Existe ligne boutique ? | W | Logical |
-| E | V.Boutique manquante ? | W | Logical |
-| G | V.TTC toutes lignes boutique | W | Numeric |
-| H | V.Existe ligne detail boutique | W | Logical |
-| L | V.ligne boutique manquante ? | W | Logical |
+| EN | v.Existe ligne boutique ? | W | Logical |
+| ER | V.Boutique manquante ? | W | Logical |
+| ET | V.TTC toutes lignes boutique | W | Numeric |
+| EU | V.Existe ligne detail boutique | W | Logical |
+| EY | V.ligne boutique manquante ? | W | Logical |
 
 </details>
 
@@ -2329,12 +2529,12 @@ Variables recues du programme appelant ([Menu caisse GM - scroll (IDE 163)](ADH-
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.i.Societe | Alpha | 1x parametre entrant |
-| B | P.i.Code_Gm | Numeric | 2x parametre entrant |
-| C | P.i.Filiation | Numeric | 1x parametre entrant |
-| D | P.i.Application | Alpha | - |
-| E | P.i.Archive | Logical | 13x parametre entrant |
-| F | P.i.Date Purge | Date | 1x parametre entrant |
+| EN | P.i.Societe | Alpha | 1x parametre entrant |
+| EO | P.i.Code_Gm | Numeric | 2x parametre entrant |
+| EP | P.i.Filiation | Numeric | 1x parametre entrant |
+| EQ | P.i.Application | Alpha | - |
+| ER | P.i.Archive | Logical | 13x parametre entrant |
+| ES | P.i.Date Purge | Date | 1x parametre entrant |
 
 ### 11.2 Variables de session (28)
 
@@ -2342,34 +2542,34 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| G | V.Lien Gm_Complet | Logical | - |
-| H | V.Lien Pied de facture | Logical | [T1](#t1), [T2](#t2), [T10](#t10) |
-| I | V.Existe facture ? | Logical | [T1](#t1), [T2](#t2), [T10](#t10) |
-| J | V.Nom | Alpha | - |
-| K | V.Adresse | Alpha | - |
-| L | V.CP | Alpha | 1x session |
-| M | V.Ville | Alpha | 1x session |
-| N | V.Pays | Unicode | 2x session |
-| O | V.Telephone | Alpha | 1x session |
-| P | V.Facture Sans Nom | Logical | 1x session |
-| Q | V.Facture Sans Adresse | Logical | - |
-| R | V.Reponse Imprimer | Numeric | - |
-| S | V.No Facture | Numeric | [T1](#t1), [T2](#t2), [T10](#t10) |
-| T | V.Nom Fichier PDF | Alpha | - |
-| U | V.Pos , | Numeric | 1x session |
-| V | V.Service | Alpha | 1x session |
-| W | V.Fact déjà editée | Logical | [T12](#t12) |
-| X | V.Date Début Hebergement | Date | [T4](#t4), [T17](#t17) |
-| Y | V.Date Fin Hebergement | Date | [T4](#t4), [T17](#t17) |
-| Z | v.MessageValidationIdentite | Unicode | - |
-| BA | v.NbrChampsVides | Numeric | 1x session |
-| BB | v.PaysLibelle | Unicode | 1x session |
-| BC | v.CompteSpecial ? | Logical | 1x session |
-| BG | V.Existe non facturee ? | Logical | - |
-| BH | V.Existe flaguee ? | Logical | [T3](#t3), [T13](#t13) |
-| BI | V.Erreur addresse ? | Logical | 1x session |
-| BJ | V.Au moins une facture ? | Logical | [T1](#t1), [T2](#t2), [T10](#t10) |
-| BK | V.ConfirmEnvoieMail? | Numeric | 1x session |
+| ET | V.Lien Gm_Complet | Logical | - |
+| EU | V.Lien Pied de facture | Logical | [97](#t1), [97.1](#t2), [97.3.3](#t10) |
+| EV | V.Existe facture ? | Logical | [97](#t1), [97.1](#t2), [97.3.3](#t10) |
+| EW | V.Nom | Alpha | - |
+| EX | V.Adresse | Alpha | - |
+| EY | V.CP | Alpha | 1x session |
+| EZ | V.Ville | Alpha | 1x session |
+| FA | V.Pays | Unicode | 2x session |
+| FB | V.Telephone | Alpha | 1x session |
+| FC | V.Facture Sans Nom | Logical | 1x session |
+| FD | V.Facture Sans Adresse | Logical | - |
+| FE | V.Reponse Imprimer | Numeric | - |
+| FF | V.No Facture | Numeric | [97](#t1), [97.1](#t2), [97.3.3](#t10) |
+| FG | V.Nom Fichier PDF | Alpha | - |
+| FH | V.Pos , | Numeric | 1x session |
+| FI | V.Service | Alpha | 1x session |
+| FJ | V.Fact déjà editée | Logical | [97.4](#t12) |
+| FK | V.Date Début Hebergement | Date | [97.3](#t4), [97.7](#t17) |
+| FL | V.Date Fin Hebergement | Date | [97.3](#t4), [97.7](#t17) |
+| FM | v.MessageValidationIdentite | Unicode | - |
+| FN | v.NbrChampsVides | Numeric | 1x session |
+| FO | v.PaysLibelle | Unicode | 1x session |
+| FP | v.CompteSpecial ? | Logical | - |
+| FT | V.Existe non facturee ? | Logical | 1x session |
+| FU | V.Existe flaguee ? | Logical | [97.2](#t3), [97.5](#t13) |
+| FV | V.Erreur addresse ? | Logical | 1x session |
+| FW | V.Au moins une facture ? | Logical | [97](#t1), [97.1](#t2), [97.3.3](#t10) |
+| FX | V.ConfirmEnvoieMail? | Numeric | 1x session |
 
 ### 11.3 Autres (4)
 
@@ -2377,54 +2577,54 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| BD | B.Valider | Alpha | 1x refs |
-| BE | B.Quitter | Alpha | - |
-| BF | B.Raz | Alpha | 8x refs |
-| BL | PopupResult | Numeric | 1x refs |
+| FQ | B.Valider | Alpha | 1x refs |
+| FR | B.Quitter | Alpha | 1x refs |
+| FS | B.Raz | Alpha | 1x refs |
+| FY | PopupResult | Numeric | 1x refs |
 
 <details>
 <summary>Toutes les 38 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P.i.Societe | Alpha |
-| P0 | **B** | P.i.Code_Gm | Numeric |
-| P0 | **C** | P.i.Filiation | Numeric |
-| P0 | **D** | P.i.Application | Alpha |
-| P0 | **E** | P.i.Archive | Logical |
-| P0 | **F** | P.i.Date Purge | Date |
-| V. | **G** | V.Lien Gm_Complet | Logical |
-| V. | **H** | V.Lien Pied de facture | Logical |
-| V. | **I** | V.Existe facture ? | Logical |
-| V. | **J** | V.Nom | Alpha |
-| V. | **K** | V.Adresse | Alpha |
-| V. | **L** | V.CP | Alpha |
-| V. | **M** | V.Ville | Alpha |
-| V. | **N** | V.Pays | Unicode |
-| V. | **O** | V.Telephone | Alpha |
-| V. | **P** | V.Facture Sans Nom | Logical |
-| V. | **Q** | V.Facture Sans Adresse | Logical |
-| V. | **R** | V.Reponse Imprimer | Numeric |
-| V. | **S** | V.No Facture | Numeric |
-| V. | **T** | V.Nom Fichier PDF | Alpha |
-| V. | **U** | V.Pos , | Numeric |
-| V. | **V** | V.Service | Alpha |
-| V. | **W** | V.Fact déjà editée | Logical |
-| V. | **X** | V.Date Début Hebergement | Date |
-| V. | **Y** | V.Date Fin Hebergement | Date |
-| V. | **Z** | v.MessageValidationIdentite | Unicode |
-| V. | **BA** | v.NbrChampsVides | Numeric |
-| V. | **BB** | v.PaysLibelle | Unicode |
-| V. | **BC** | v.CompteSpecial ? | Logical |
-| V. | **BG** | V.Existe non facturee ? | Logical |
-| V. | **BH** | V.Existe flaguee ? | Logical |
-| V. | **BI** | V.Erreur addresse ? | Logical |
-| V. | **BJ** | V.Au moins une facture ? | Logical |
-| V. | **BK** | V.ConfirmEnvoieMail? | Numeric |
-| Autre | **BD** | B.Valider | Alpha |
-| Autre | **BE** | B.Quitter | Alpha |
-| Autre | **BF** | B.Raz | Alpha |
-| Autre | **BL** | PopupResult | Numeric |
+| P0 | **EN** | P.i.Societe | Alpha |
+| P0 | **EO** | P.i.Code_Gm | Numeric |
+| P0 | **EP** | P.i.Filiation | Numeric |
+| P0 | **EQ** | P.i.Application | Alpha |
+| P0 | **ER** | P.i.Archive | Logical |
+| P0 | **ES** | P.i.Date Purge | Date |
+| V. | **ET** | V.Lien Gm_Complet | Logical |
+| V. | **EU** | V.Lien Pied de facture | Logical |
+| V. | **EV** | V.Existe facture ? | Logical |
+| V. | **EW** | V.Nom | Alpha |
+| V. | **EX** | V.Adresse | Alpha |
+| V. | **EY** | V.CP | Alpha |
+| V. | **EZ** | V.Ville | Alpha |
+| V. | **FA** | V.Pays | Unicode |
+| V. | **FB** | V.Telephone | Alpha |
+| V. | **FC** | V.Facture Sans Nom | Logical |
+| V. | **FD** | V.Facture Sans Adresse | Logical |
+| V. | **FE** | V.Reponse Imprimer | Numeric |
+| V. | **FF** | V.No Facture | Numeric |
+| V. | **FG** | V.Nom Fichier PDF | Alpha |
+| V. | **FH** | V.Pos , | Numeric |
+| V. | **FI** | V.Service | Alpha |
+| V. | **FJ** | V.Fact déjà editée | Logical |
+| V. | **FK** | V.Date Début Hebergement | Date |
+| V. | **FL** | V.Date Fin Hebergement | Date |
+| V. | **FM** | v.MessageValidationIdentite | Unicode |
+| V. | **FN** | v.NbrChampsVides | Numeric |
+| V. | **FO** | v.PaysLibelle | Unicode |
+| V. | **FP** | v.CompteSpecial ? | Logical |
+| V. | **FT** | V.Existe non facturee ? | Logical |
+| V. | **FU** | V.Existe flaguee ? | Logical |
+| V. | **FV** | V.Erreur addresse ? | Logical |
+| V. | **FW** | V.Au moins une facture ? | Logical |
+| V. | **FX** | V.ConfirmEnvoieMail? | Numeric |
+| Autre | **FQ** | B.Valider | Alpha |
+| Autre | **FR** | B.Quitter | Alpha |
+| Autre | **FS** | B.Raz | Alpha |
+| Autre | **FY** | PopupResult | Numeric |
 
 </details>
 
@@ -2437,15 +2637,15 @@ Variables diverses.
 | Type | Expressions | Regles |
 |------|-------------|--------|
 | CALCULATION | 2 | 0 |
-| CONDITION | 30 | 3 |
+| CONDITION | 32 | 22 |
+| NEGATION | 4 | 3 |
+| CONCATENATION | 1 | 0 |
 | CONSTANTE | 8 | 0 |
 | FORMAT | 6 | 0 |
 | DATE | 1 | 0 |
-| OTHER | 23 | 0 |
+| OTHER | 21 | 0 |
 | REFERENCE_VG | 1 | 0 |
 | CAST_LOGIQUE | 8 | 0 |
-| NEGATION | 4 | 0 |
-| CONCATENATION | 1 | 0 |
 | STRING | 1 | 0 |
 
 ### 12.2 Expressions cles par type
@@ -2454,19 +2654,34 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CALCULATION | 45 | `[CE]+1` | - |
-| CALCULATION | 18 | `MID(GetParam('SERVICE'),4,[BY]-4)` | - |
+| CALCULATION | 45 | `[DE]+1` | - |
+| CALCULATION | 18 | `MID(GetParam('SERVICE'),4,[CY]-4)` | - |
 
-#### CONDITION (30 expressions)
+#### CONDITION (32 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 46 | `IF([CD] <> '',[CD] & ' Adresse','Adresse')` | [RM-002](#rm-RM-002) |
-| CONDITION | 79 | `IF(B.Raz [BF],V.Existe flaguee ? [BH],IF(P.i.Archive [E],Trim(V.Fact déjà editée [W])&' '&Trim(V.Service [V])&' '&Trim(V.Pos , [U]),Trim([AG])&' '&Trim([AI])&' '&Trim([AH])))` | [RM-003](#rm-RM-003) |
-| CONDITION | 34 | `IF(P.i.Archive [E],V.Ville [M],[AD])` | [RM-001](#rm-RM-001) |
-| CONDITION | 75 | `[BP]=''` | - |
-| CONDITION | 71 | `[BN]=''` | - |
-| ... | | *+25 autres* | |
+| CONDITION | 66 | `[DU] = 1 OR [DU] = 2` | [RM-017](#rm-RM-017) |
+| CONDITION | 67 | `[DU] = 2` | [RM-018](#rm-RM-018) |
+| CONDITION | 71 | `[CN]=''` | [RM-019](#rm-RM-019) |
+| CONDITION | 51 | `Trim([DD]) <> ''` | [RM-013](#rm-RM-013) |
+| CONDITION | 52 | `NOT([DI]) OR ([DI] AND [DE]=0)` | [RM-014](#rm-RM-014) |
+| ... | | *+27 autres* | |
+
+#### NEGATION (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 55 | `NOT [CF]` | [RM-015](#rm-RM-015) |
+| NEGATION | 32 | `NOT P.i.Archive [E]` | [RM-005](#rm-RM-005) |
+| NEGATION | 28 | `NOT [DQ]` | [RM-003](#rm-RM-003) |
+| NEGATION | 70 | `NOT [CF]` | - |
+
+#### CONCATENATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 50 | `'Merci de renseigner ' & IF([DE]> 1 ,'les champs ', 'le champ ') & Trim([DD])` | - |
 
 #### CONSTANTE (8 expressions)
 
@@ -2483,11 +2698,11 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| FORMAT | 9 | `StrBuild(MlsTrans('Numéro d''adhérent @1@'),IF(P.i.Archive [E],Str(V.Facture Sans Nom [P],'10Z'),Str([AJ],'10Z')))` | - |
+| FORMAT | 9 | `StrBuild(MlsTrans('Numéro d''adhérent @1@'),IF(P.i.Archive [E],Str(V.Facture Sans Nom [P],'10Z'),Str(V.Au moins une facture ? [BJ],'10Z')))` | - |
 | FORMAT | 20 | `InStr(GetParam('SERVICE'),',')` | - |
-| FORMAT | 60 | `'à ' & TStr(v.CompteSpecial ? [BC],'HH:MM')` | - |
-| FORMAT | 14 | `Trim([AS]) &Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BW],'8P0'))&'_F.pdf'` | - |
-| FORMAT | 15 | `Trim([AS]) &Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BW],'8P0'))&'_NF.pdf'` | - |
+| FORMAT | 60 | `'à ' & TStr([CC],'HH:MM')` | - |
+| FORMAT | 14 | `Trim([BS]) &Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CW],'8P0'))&'_F.pdf'` | - |
+| FORMAT | 15 | `Trim([BS]) &Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CW],'8P0'))&'_NF.pdf'` | - |
 | ... | | *+1 autres* | |
 
 #### DATE (1 expressions)
@@ -2496,16 +2711,16 @@ Variables diverses.
 |------|-----|------------|-------|
 | DATE | 22 | `Date()` | - |
 
-#### OTHER (23 expressions)
+#### OTHER (21 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 42 | `[CI]` | - |
-| OTHER | 53 | `v.NbrChampsVides [BA]` | - |
+| OTHER | 42 | `[DI]` | - |
+| OTHER | 53 | `[CA]` | - |
 | OTHER | 33 | `P.i.Archive [E]` | - |
-| OTHER | 30 | `[CQ]` | - |
-| OTHER | 31 | `[CS]` | - |
-| ... | | *+18 autres* | |
+| OTHER | 30 | `[DQ]` | - |
+| OTHER | 31 | `[DS]` | - |
+| ... | | *+16 autres* | |
 
 #### REFERENCE_VG (1 expressions)
 
@@ -2524,26 +2739,11 @@ Variables diverses.
 | CAST_LOGIQUE | 25 | `'FALSE'LOG` | - |
 | ... | | *+3 autres* | |
 
-#### NEGATION (4 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 55 | `NOT B.Raz [BF]` | - |
-| NEGATION | 70 | `NOT B.Raz [BF]` | - |
-| NEGATION | 28 | `NOT [CQ]` | - |
-| NEGATION | 32 | `NOT P.i.Archive [E]` | - |
-
-#### CONCATENATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONCATENATION | 50 | `'Merci de renseigner ' & IF([CE]> 1 ,'les champs ', 'le champ ') & Trim([CD])` | - |
-
 #### STRING (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| STRING | 61 | `'Par ' & Trim(B.Valider [BD])` | - |
+| STRING | 61 | `'Par ' & Trim([CD])` | - |
 
 ### 12.3 Toutes les expressions (85)
 
@@ -2554,43 +2754,60 @@ Variables diverses.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 18 | `MID(GetParam('SERVICE'),4,[BY]-4)` |
-| 45 | `[CE]+1` |
+| 18 | `MID(GetParam('SERVICE'),4,[CY]-4)` |
+| 45 | `[DE]+1` |
 
-#### CONDITION (30)
+#### CONDITION (32)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 34 | `IF(P.i.Archive [E],V.Ville [M],[AD])` |
-| 35 | `IF(P.i.Archive [E],V.Pays [N],[AE])` |
-| 36 | `IF(P.i.Archive [E],V.Telephone [O],[AF])` |
-| 46 | `IF([CD] <> '',[CD] & ' Adresse','Adresse')` |
-| 47 | `IF([CD] <> '',[CD] & ' CP','CP')` |
-| 48 | `IF([CD] <> '',[CD] & ' Ville','Ville')` |
-| 49 | `IF([CD] <> '',[CD] & ' Pays','Pays')` |
+| 16 | `NOT([DA]) OR [DP]` |
+| 17 | `[DA] AND NOT([DP]) AND [DU] > 2` |
+| 29 | `[DU] > 2` |
+| 34 | `IF(P.i.Archive [E],V.Ville [M],B.Valider [BD])` |
+| 35 | `IF(P.i.Archive [E],V.Pays [N],B.Quitter [BE])` |
+| 36 | `IF(P.i.Archive [E],V.Telephone [O],B.Raz [BF])` |
+| 37 | `Trim([CN])=''` |
+| 38 | `Trim([CO])=''` |
+| 39 | `Trim([CP])=''` |
+| 40 | `Trim([CQ])=''` |
+| 41 | `Trim([CR])='' AND [DW]=''` |
+| 46 | `IF([DD] <> '',[DD] & ' Adresse','Adresse')` |
+| 47 | `IF([DD] <> '',[DD] & ' CP','CP')` |
+| 48 | `IF([DD] <> '',[DD] & ' Ville','Ville')` |
+| 49 | `IF([DD] <> '',[DD] & ' Pays','Pays')` |
+| 51 | `Trim([DD]) <> ''` |
+| 52 | `NOT([DI]) OR ([DI] AND [DE]=0)` |
+| 65 | `[DU] = 1` |
+| 66 | `[DU] = 1 OR [DU] = 2` |
+| 67 | `[DU] = 2` |
+| 71 | `[CN]=''` |
+| 73 | `VG53 AND [DI] AND NOT(P.i.Archive [E])` |
+| 74 | `[CO]=''` |
+| 75 | `[CP]=''` |
+| 76 | `[CQ]=''` |
+| 77 | `[DW]=''` |
 | 78 | `IF(P.i.Archive [E],V.No Facture [S],V.CP [L])` |
-| 79 | `IF(B.Raz [BF],V.Existe flaguee ? [BH],IF(P.i.Archive [E],Trim(V.Fact déjà editée [W])&' '&Trim(V.Service [V])&' '&Trim(V.Pos , [U]),Trim([AG])&' '&Trim([AI])&' '&Trim([AH])))` |
-| 80 | `IF(B.Raz [BF],V.Erreur addresse ? [BI],IF(P.i.Archive [E],Trim(V.Date Début Hebergement [X])&' '&Trim(V.Date Fin Hebergement [Y]),Trim([AK])&' '&Trim([AL])))` |
-| 81 | `IF(B.Raz [BF],V.Au moins une facture ? [BJ],IF(P.i.Archive [E],Trim(v.MessageValidationIde... [Z]),Trim([AM])))` |
-| 82 | `IF(B.Raz [BF],V.ConfirmEnvoieMail? [BK],IF(P.i.Archive [E],Trim([AA]),Trim([AO])))` |
-| 83 | `IF(B.Raz [BF],[BM],IF(P.i.Archive [E],Trim([AB]),Trim([AQ])))` |
-| 17 | `[CA] AND NOT([CP]) AND [CU] > 2` |
-| 29 | `[CU] > 2` |
-| 52 | `NOT([CI]) OR ([CI] AND [CE]=0)` |
-| 65 | `[CU] = 1` |
-| 66 | `[CU] = 1 OR [CU] = 2` |
-| 67 | `[CU] = 2` |
-| 71 | `[BN]=''` |
-| 74 | `[BO]=''` |
-| 75 | `[BP]=''` |
-| 76 | `[BQ]=''` |
-| 77 | `[CW]=''` |
-| 37 | `Trim([BN])=''` |
-| 38 | `Trim([BO])=''` |
-| 39 | `Trim([BP])=''` |
-| 40 | `Trim([BQ])=''` |
-| 41 | `Trim([BR])='' AND [CW]=''` |
-| 51 | `Trim([CD]) <> ''` |
+| 79 | `IF([CF],[CH],IF(P.i.Archive [E],Trim(V.Fact déjà editée [W])&' '&Trim(V.Service [V])&' '&Trim(V.Pos , [U]),Trim(V.Existe non facturee ? [BG])&' '&Trim(V.Erreur addresse ? [BI])&' '&Trim(V.Existe flaguee ? [BH])))` |
+| 80 | `IF([CF],[CI],IF(P.i.Archive [E],Trim(V.Date Début Hebergement [X])&' '&Trim(V.Date Fin Hebergement [Y]),Trim(V.ConfirmEnvoieMail? [BK])&' '&Trim(PopupResult [BL])))` |
+| 81 | `IF([CF],[CJ],IF(P.i.Archive [E],Trim(v.MessageValidationIde... [Z]),Trim([BM])))` |
+| 82 | `IF([CF],[CK],IF(P.i.Archive [E],Trim(v.NbrChampsVides [BA]),Trim([BO])))` |
+| 83 | `IF([CF],[CM],IF(P.i.Archive [E],Trim(v.PaysLibelle [BB]),Trim([BQ])))` |
+
+#### NEGATION (4)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 28 | `NOT [DQ]` |
+| 32 | `NOT P.i.Archive [E]` |
+| 55 | `NOT [CF]` |
+| 70 | `NOT [CF]` |
+
+#### CONCATENATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 50 | `'Merci de renseigner ' & IF([DE]> 1 ,'les champs ', 'le champ ') & Trim([DD])` |
 
 #### CONSTANTE (8)
 
@@ -2609,12 +2826,12 @@ Variables diverses.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 14 | `Trim([AS]) &Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BW],'8P0'))&'_F.pdf'` |
-| 15 | `Trim([AS]) &Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BW],'8P0'))&'_NF.pdf'` |
-| 59 | `'le : ' & DStr(v.PaysLibelle [BB],'DD/MM/YY')` |
-| 9 | `StrBuild(MlsTrans('Numéro d''adhérent @1@'),IF(P.i.Archive [E],Str(V.Facture Sans Nom [P],'10Z'),Str([AJ],'10Z')))` |
+| 14 | `Trim([BS]) &Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CW],'8P0'))&'_F.pdf'` |
+| 15 | `Trim([BS]) &Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CW],'8P0'))&'_NF.pdf'` |
+| 59 | `'le : ' & DStr([CB],'DD/MM/YY')` |
+| 9 | `StrBuild(MlsTrans('Numéro d''adhérent @1@'),IF(P.i.Archive [E],Str(V.Facture Sans Nom [P],'10Z'),Str(V.Au moins une facture ? [BJ],'10Z')))` |
 | 20 | `InStr(GetParam('SERVICE'),',')` |
-| 60 | `'à ' & TStr(v.CompteSpecial ? [BC],'HH:MM')` |
+| 60 | `'à ' & TStr([CC],'HH:MM')` |
 
 #### DATE (1)
 
@@ -2622,7 +2839,7 @@ Variables diverses.
 |-----|-------------------|
 | 22 | `Date()` |
 
-#### OTHER (23)
+#### OTHER (21)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
@@ -2634,21 +2851,19 @@ Variables diverses.
 | 7 | `P.i.Code_Gm [B]` |
 | 8 | `V.Existe facture ? [I]` |
 | 13 | `MlsTrans('Confirmez vous l''édition de cette facture ?')` |
-| 16 | `NOT([CA]) OR [CP]` |
-| 19 | `[BR]` |
-| 23 | `[BW]` |
-| 27 | `[CP]` |
-| 30 | `[CQ]` |
-| 31 | `[CS]` |
+| 19 | `[CR]` |
+| 23 | `[CW]` |
+| 27 | `[DP]` |
+| 30 | `[DQ]` |
+| 31 | `[DS]` |
 | 33 | `P.i.Archive [E]` |
-| 42 | `[CI]` |
-| 53 | `v.NbrChampsVides [BA]` |
-| 54 | `PopupResult [BL]` |
-| 62 | `B.Raz [BF]` |
+| 42 | `[DI]` |
+| 53 | `[CA]` |
+| 54 | `[CL]` |
+| 62 | `[CF]` |
 | 72 | `NOT(VG53)` |
-| 73 | `VG53 AND [CI] AND NOT(P.i.Archive [E])` |
-| 84 | `[CH]` |
-| 85 | `NOT([CI])` |
+| 84 | `[DH]` |
+| 85 | `NOT([DI])` |
 
 #### REFERENCE_VG (1)
 
@@ -2669,26 +2884,11 @@ Variables diverses.
 | 63 | `'TRUE'LOG` |
 | 64 | `'FALSE'LOG` |
 
-#### NEGATION (4)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 28 | `NOT [CQ]` |
-| 32 | `NOT P.i.Archive [E]` |
-| 55 | `NOT B.Raz [BF]` |
-| 70 | `NOT B.Raz [BF]` |
-
-#### CONCATENATION (1)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 50 | `'Merci de renseigner ' & IF([CE]> 1 ,'les champs ', 'le champ ') & Trim([CD])` |
-
 #### STRING (1)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 61 | `'Par ' & Trim(B.Valider [BD])` |
+| 61 | `'Par ' & Trim([CD])` |
 
 </details>
 
@@ -2818,7 +3018,7 @@ graph LR
 | Sous-programmes | 14 | Forte dependance |
 | Ecrans visibles | 8 | Interface complexe multi-ecrans |
 | Code desactive | 0.8% (6 / 799) | Code sain |
-| Regles metier | 3 | Quelques regles a preserver |
+| Regles metier | 25 | Logique metier riche |
 
 ### 14.2 Plan de migration par bloc
 
@@ -2874,4 +3074,4 @@ graph LR
 | [Facture - Sejour archive (IDE 95)](ADH-IDE-95.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:29*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:37*

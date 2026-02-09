@@ -1,6 +1,6 @@
 ﻿# ADH IDE 295 - Menu change bilateral
 
-> **Analyse**: Phases 1-4 2026-02-07 03:55 -> 03:55 (36s) | Assemblage 03:55
+> **Analyse**: Phases 1-4 2026-02-07 03:55 -> 05:12 (25h16min) | Assemblage 05:12
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -17,16 +17,19 @@
 | Dossier IDE | Change |
 | Taches | 1 (1 ecrans visibles) |
 | Tables modifiees | 0 |
-| Programmes appeles | 4 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Programmes appeles | 2 |
+| Complexite | **BASSE** (score 5/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Menu change bilateral** assure la gestion complete de ce processus.
+# ADH IDE 295 - Menu Change Bilateral
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Menu de sélection pour les opérations de change bilatéral. Ce programme affiche une grille de choix permettant à l'utilisateur de naviguer vers les différentes devises disponibles. Il récupère le titre de l'écran via ADH IDE 43 (GET_TITLE) et bascule vers le programme de gestion de change spécifique (ADH IDE 44) selon la devise sélectionnée.
 
-- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
+Structure type menu : présentation des devises avec leurs taux de change actuels, sélection par curseur, validation et branchement conditionnel. Les paramètres sont transmis au programme appelé pour maintenir le contexte de la transaction (société, compte, filiation). Tâche principale OCA (Online Call Action) gère l'interface utilisateur et les transitions entre écrans.
+
+Le programme agit comme point d'entrée au module change bilatéral, centralisant l'accès aux opérations de conversion devises avant délégation aux programmes spécialisés de calcul et validation des équivalences.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -40,17 +43,39 @@ Calculs metier : montants, stocks, compteurs.
 
 **Role** : Consultation/chargement : OCA  Menu solde d'un compte.
 **Ecran** : 608 x 159 DLU (MDI) | [Voir mockup](#ecran-t1)
-**Variables liees** : I (P0 solde compte), J (P0 etat compte), K (P0 date du solde)
+**Variables liees** : EV (P0 solde compte), EW (P0 etat compte), EX (P0 date du solde)
 
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+2 regles identifiees:
+
+### Autres (2 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: W0 choix action [P] egale '1'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [P]='1'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FC (W0 choix action) |
+| **Expression source** | Expression 6 : `W0 choix action [P]='1'` |
+| **Exemple** | Si W0 choix action [P]='1' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: W0 choix action [P] egale '2'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [P]='2'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FC (W0 choix action) |
+| **Expression source** | Expression 7 : `W0 choix action [P]='2'` |
+| **Exemple** | Si W0 choix action [P]='2' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
 - **Appele par**: (aucun)
-- **Appelle**: 4 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 7
+- **Appelle**: 2 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 7
 
 <!-- TAB:Ecrans -->
 
@@ -330,13 +355,20 @@ flowchart TD
     START([START])
     INIT[Init controles]
     SAISIE[Traitement principal]
+    DECISION{W0 choix action}
+    PROCESS[Traitement]
     ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
@@ -361,21 +393,21 @@ Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Alpha | - |
-| B | P0 code GM | Numeric | - |
-| C | P0 filiation | Numeric | - |
-| D | P0 devise locale | Alpha | - |
-| E | P0 nb decimale | Numeric | - |
-| F | P0 masque montant | Alpha | - |
-| G | P0 code retour | Alpha | - |
-| H | P0 nom du village | Alpha | - |
-| I | P0 solde compte | Numeric | - |
-| J | P0 etat compte | Alpha | - |
-| K | P0 date du solde | Date | - |
-| L | P0 garanti O/N | Alpha | - |
-| M | P0 telephone | Alpha | - |
-| N | P0 fax | Alpha | - |
-| O | P0 nouvelle caisse | Alpha | - |
+| EN | P0 societe | Alpha | - |
+| EO | P0 code GM | Numeric | - |
+| EP | P0 filiation | Numeric | - |
+| EQ | P0 devise locale | Alpha | - |
+| ER | P0 nb decimale | Numeric | - |
+| ES | P0 masque montant | Alpha | - |
+| ET | P0 code retour | Alpha | - |
+| EU | P0 nom du village | Alpha | - |
+| EV | P0 solde compte | Numeric | - |
+| EW | P0 etat compte | Alpha | - |
+| EX | P0 date du solde | Date | - |
+| EY | P0 garanti O/N | Alpha | - |
+| EZ | P0 telephone | Alpha | - |
+| FA | P0 fax | Alpha | - |
+| FB | P0 nouvelle caisse | Alpha | - |
 
 ### 11.2 Variables de session (1)
 
@@ -383,7 +415,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| Q | v. titre ecran | Alpha | 1x session |
+| FD | v. titre ecran | Alpha | 1x session |
 
 ### 11.3 Variables de travail (1)
 
@@ -391,30 +423,30 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| P | W0 choix action | Alpha | 2x calcul interne |
+| FC | W0 choix action | Alpha | 2x calcul interne |
 
 <details>
 <summary>Toutes les 17 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P0 societe | Alpha |
-| P0 | **B** | P0 code GM | Numeric |
-| P0 | **C** | P0 filiation | Numeric |
-| P0 | **D** | P0 devise locale | Alpha |
-| P0 | **E** | P0 nb decimale | Numeric |
-| P0 | **F** | P0 masque montant | Alpha |
-| P0 | **G** | P0 code retour | Alpha |
-| P0 | **H** | P0 nom du village | Alpha |
-| P0 | **I** | P0 solde compte | Numeric |
-| P0 | **J** | P0 etat compte | Alpha |
-| P0 | **K** | P0 date du solde | Date |
-| P0 | **L** | P0 garanti O/N | Alpha |
-| P0 | **M** | P0 telephone | Alpha |
-| P0 | **N** | P0 fax | Alpha |
-| P0 | **O** | P0 nouvelle caisse | Alpha |
-| W0 | **P** | W0 choix action | Alpha |
-| V. | **Q** | v. titre ecran | Alpha |
+| P0 | **EN** | P0 societe | Alpha |
+| P0 | **EO** | P0 code GM | Numeric |
+| P0 | **EP** | P0 filiation | Numeric |
+| P0 | **EQ** | P0 devise locale | Alpha |
+| P0 | **ER** | P0 nb decimale | Numeric |
+| P0 | **ES** | P0 masque montant | Alpha |
+| P0 | **ET** | P0 code retour | Alpha |
+| P0 | **EU** | P0 nom du village | Alpha |
+| P0 | **EV** | P0 solde compte | Numeric |
+| P0 | **EW** | P0 etat compte | Alpha |
+| P0 | **EX** | P0 date du solde | Date |
+| P0 | **EY** | P0 garanti O/N | Alpha |
+| P0 | **EZ** | P0 telephone | Alpha |
+| P0 | **FA** | P0 fax | Alpha |
+| P0 | **FB** | P0 nouvelle caisse | Alpha |
+| W0 | **FC** | W0 choix action | Alpha |
+| V. | **FD** | v. titre ecran | Alpha |
 
 </details>
 
@@ -426,13 +458,20 @@ Variables internes au programme.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 2 | 2 |
 | CONSTANTE | 2 | 0 |
 | DATE | 1 | 0 |
 | REFERENCE_VG | 1 | 0 |
-| CONDITION | 2 | 0 |
 | STRING | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 7 | `W0 choix action [P]='2'` | [RM-002](#rm-RM-002) |
+| CONDITION | 6 | `W0 choix action [P]='1'` | [RM-001](#rm-RM-001) |
 
 #### CONSTANTE (2 expressions)
 
@@ -452,13 +491,6 @@ Variables internes au programme.
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | REFERENCE_VG | 2 | `VG2` | - |
-
-#### CONDITION (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 7 | `W0 choix action [P]='2'` | - |
-| CONDITION | 6 | `W0 choix action [P]='1'` | - |
 
 #### STRING (1 expressions)
 
@@ -501,12 +533,6 @@ graph LR
     C44[44 Appel programme]
     T295 --> C44
     style C44 fill:#3fb950
-    C293[293 Bi Change GM Achat]
-    T295 --> C293
-    style C293 fill:#3fb950
-    C294[294 Bi Change GM Vente]
-    T295 --> C294
-    style C294 fill:#3fb950
 ```
 
 ### 13.4 Detail Callees avec contexte
@@ -515,8 +541,6 @@ graph LR
 |-----|---------------|--------|----------|
 | [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 | [44](ADH-IDE-44.md) | Appel programme | 1 | Sous-programme |
-| [293](ADH-IDE-293.md) | Bi  Change GM Achat | 1 | Sous-programme |
-| [294](ADH-IDE-294.md) | Bi  Change GM Vente | 1 | Sous-programme |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -527,10 +551,10 @@ graph LR
 | Lignes de logique | 26 | Programme compact |
 | Expressions | 7 | Peu de logique |
 | Tables WRITE | 0 | Impact faible |
-| Sous-programmes | 4 | Peu de dependances |
+| Sous-programmes | 2 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 26) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 2 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -543,10 +567,8 @@ graph LR
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
-| [Bi  Change GM Achat (IDE 293)](ADH-IDE-293.md) | Sous-programme | 1x | Normale - Sous-programme |
-| [Bi  Change GM Vente (IDE 294)](ADH-IDE-294.md) | Sous-programme | 1x | Normale - Sous-programme |
-| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 | [Appel programme (IDE 44)](ADH-IDE-44.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:55*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 05:13*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 83 - Deactivate all cards
 
-> **Analyse**: Phases 1-4 2026-02-07 06:52 -> 06:53 (16s) | Assemblage 14:02
+> **Analyse**: Phases 1-4 2026-02-07 06:53 -> 02:19 (19h26min) | Assemblage 02:19
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,15 +19,16 @@
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 7/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme ADH IDE 83 effectue une désactivation en masse de cartes dans la table `ez_card`. Il accepte trois paramètres : la société (p.societe), un code à 8 chiffres (p.code-8chiffres) pour filtrer les cartes concernées, et un compteur de cartes valides (p.nb carte valides) qui s'incrémente au fur et traitement. Le programme utilise des codes statut 'O' et 'V' pour contrôler l'état des cartes, probablement représentant des états « Annulé » et « Valide ».
+# ADH IDE 83 - Deactivate all cards
 
-La logique métier intègre un enregistrement temporel (date et heure courantes) pour tracer l'opération de désactivation, et s'appuie sur une variable globale (VG1) pour coordonner l'exécution. Ce programme constitue une opération de maintenance critique pour gérer le cycle de vie des cartes de paiement ou d'accès dans le système ADH, permettant de désactiver sélectivement des cartes en fonction de critères de société et de code.
+Programme de gestion administrative des cartes Club Med. Appelé depuis les écrans de garantie (ADH IDE 111, 112, 288) et solde fin de séjour (ADH IDE 193) pour désactiver l'ensemble des cartes associées à un compte membre lors de la clôture de son séjour ou en cas de problème de garantie.
 
-Le programme apparaît comme orphelin potentiel sans appelants directs détectés, suggérant qu'il est invoqué soit par son nom public (si défini), soit depuis un module externe du projet ADH.
+La logique désactive toutes les ezcard liées au compte en mettant à jour la table `ez_card` avec le statut d'opposition 'O' (Opposition). Cette désactivation en masse empêche tout achat ou transaction ultérieure avec ces cartes, protégeant le compte du club contre les fraudes post-départ.
+
+Opération transactionnelle critique qui doit garantir la cohérence des données : une carte ne peut pas rester active si le compte est fermé ou en litige. Le programme est appelé systématiquement dans le workflow de fermeture de caisse (ADH IDE 121) et lors des traitements de fin de séjour pour assurer que les droits d'accès sont révoqués immédiatement.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -37,7 +38,7 @@ Le programme apparaît comme orphelin potentiel sans appelants directs détecté
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md), [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 8
 
 <!-- TAB:Ecrans -->
@@ -100,13 +101,13 @@ flowchart TD
 
 ### 11.1 Parametres entrants (3)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Garantie sur compte (IDE 111)](ADH-IDE-111.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | p.societe | Alpha | 1x parametre entrant |
-| B | p.code-8chiffres | Numeric | 1x parametre entrant |
-| C | p.nb carte valides | Numeric | 1x parametre entrant |
+| EN | p.societe | Alpha | 1x parametre entrant |
+| EO | p.code-8chiffres | Numeric | 1x parametre entrant |
+| EP | p.nb carte valides | Numeric | 1x parametre entrant |
 
 ## 12. EXPRESSIONS
 
@@ -163,22 +164,63 @@ Variables recues en parametre.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Garantie sur compte (IDE 111)](ADH-IDE-111.md) -> **Deactivate all cards (IDE 83)**
+
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md) -> **Deactivate all cards (IDE 83)**
+
+Main -> ... -> [Garantie sur compte (IDE 288)](ADH-IDE-288.md) -> **Deactivate all cards (IDE 83)**
+
+Main -> ... -> [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md) -> **Deactivate all cards (IDE 83)**
 
 ```mermaid
 graph LR
     T83[83 Deactivate all cards]
     style T83 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T83
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC174[174 VersementRetrait]
+    style CC174 fill:#f59e0b
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#f59e0b
+    CC111[111 Garantie sur compte]
+    style CC111 fill:#3fb950
+    CC112[112 Garantie sur compt...]
+    style CC112 fill:#3fb950
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#3fb950
+    CC288[288 Garantie sur compte]
+    style CC288 fill:#3fb950
+    CC163 --> CC111
+    CC174 --> CC111
+    CC190 --> CC111
+    CC163 --> CC112
+    CC174 --> CC112
+    CC190 --> CC112
+    CC163 --> CC193
+    CC174 --> CC193
+    CC190 --> CC193
+    CC163 --> CC288
+    CC174 --> CC288
+    CC190 --> CC288
+    CC1 --> CC163
+    CC1 --> CC174
+    CC1 --> CC190
+    CC111 --> T83
+    CC112 --> T83
+    CC193 --> T83
+    CC288 --> T83
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [111](ADH-IDE-111.md) | Garantie sur compte | 2 |
+| [112](ADH-IDE-112.md) | Garantie sur compte PMS-584 | 2 |
+| [288](ADH-IDE-288.md) | Garantie sur compte | 2 |
+| [193](ADH-IDE-193.md) | Solde compte fin sejour | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -220,4 +262,4 @@ graph LR
 | ez_card | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:03*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:20*

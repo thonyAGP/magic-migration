@@ -1,6 +1,6 @@
 ﻿# ADH IDE 71 - Print extrait compte /Date
 
-> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 03:43 (28s) | Assemblage 13:43
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 02:08 (22h24min) | Assemblage 02:08
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 71 - Print extrait compte /Date** est un programme de génération et d'impression d'extraits de compte. Il reçoit les appels de plusieurs programmes spécialisés dans la consultation de soldes (IDE 69 pour l'extrait standard, IDE 53 pour le checkout décalé, IDE 64 et 287 pour les soldes). Son rôle est de préparer les données comptables de l'adhérent, récupérer les paramètres d'impression (devise locale via IDE 21, imprimante via IDE 179) et orchestrer l'édition complète du document.
+ADH IDE 71 affiche un extrait de compte filtré par date. Le programme récupère d'abord le nom de l'adhérent et la devise locale (EUR par défaut), puis configure l'imprimante pour débuter l'édition. L'extraction date est formattée selon les paramètres locaux avant affichage.
 
-Le processus suit une séquence logique : récupération du nom de l'adhérent, configuration de l'imprimante cible (tâche "Printer 1"), génération du corps du document "extrait compte", ajout du pied de page en appelant IDE 75, et finalisation avec un récapitulatif des frais supplémentaires. Le programme met à jour la table `log_maj_tpe` pour tracer les opérations d'impression effectuées, garantissant un audit des éditions critiques.
+Le flux d'impression gère trois éléments distincts : l'en-tête avec infos adhérent, le détail des mouvements triés par date de la période sélectionnée, et le pied de facture qui récapitule les totaux. Chaque section déclenche des sous-programmes : IDE 179 valide la disponibilité imprimante, IDE 181 positionne le numéro de ligne d'édition, IDE 182 réinitialise après utilisation.
 
-La gestion de l'imprimante est centralisée : utilisation des services IDE 181 (Set Listing Number) et 182 (Raz Current Printer) pour initialiser et réinitialiser l'état de sortie. Cela assure que chaque édition est isolée et que l'imprimante revient à un état connu après impression, évitant les chevauchements de documents ou les configurations résiduelles.
+Le programme enregistre systématiquement dans `log_maj_tpe` chaque impression lancée, permettant la traçabilité des éditions. Il est appelé depuis quatre points d'entrée (IDE 69, 53, 64, 287) avec le même paramètre date, ce qui en fait le point centralisé d'édition extraits datés du module Adhérents.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Veuillez patienter... [ECRAN]
+#### <a id="t1"></a>71 - Veuillez patienter... [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 432 x 60 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -46,25 +46,25 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | recup nom adherent | Traitement |
-| [T16](#t16) | Veuillez patienter... **[ECRAN]** | Traitement |
-| [T18](#t18) | Veuillez patienter... **[ECRAN]** | Traitement |
-| [T22](#t22) | Veuillez patienter... **[ECRAN]** | Traitement |
+| [71.1](#t2) | recup nom adherent | Traitement |
+| [71.4.1](#t16) | Veuillez patienter... **[[ECRAN]](#ecran-t16)** | Traitement |
+| [71.5.1](#t18) | Veuillez patienter... **[[ECRAN]](#ecran-t18)** | Traitement |
+| [71.6.1](#t22) | Veuillez patienter... **[[ECRAN]](#ecran-t22)** | Traitement |
 
 </details>
 **Delegue a** : [Recupere devise local (IDE 21)](ADH-IDE-21.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md)
 
 ---
 
-#### <a id="t2"></a>T2 - recup nom adherent
+#### <a id="t2"></a>71.1 - recup nom adherent
 
 **Role** : Consultation/chargement : recup nom adherent.
-**Variables liees** : S (W0 nom adherent), T (W0 prenom adherent), U (W0 n° adherent)
+**Variables liees** : FF (W0 nom adherent), FG (W0 prenom adherent), FH (W0 n° adherent)
 **Delegue a** : [Recupere devise local (IDE 21)](ADH-IDE-21.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md)
 
 ---
 
-#### <a id="t16"></a>T16 - Veuillez patienter... [ECRAN]
+#### <a id="t16"></a>71.4.1 - Veuillez patienter... [[ECRAN]](#ecran-t16)
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t16)
@@ -72,7 +72,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t18"></a>T18 - Veuillez patienter... [ECRAN]
+#### <a id="t18"></a>71.5.1 - Veuillez patienter... [[ECRAN]](#ecran-t18)
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t18)
@@ -80,7 +80,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t22"></a>T22 - Veuillez patienter... [ECRAN]
+#### <a id="t22"></a>71.6.1 - Veuillez patienter... [[ECRAN]](#ecran-t22)
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t22)
@@ -93,136 +93,210 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t3"></a>T3 - Printer 1
+#### <a id="t3"></a>71.2 - Printer 1
 
 **Role** : Generation du document : Printer 1.
 
 ---
 
-#### <a id="t4"></a>T4 - edition extrait compte
+#### <a id="t4"></a>71.2.1 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
-**Variables liees** : B (P0 n° compte), H (P0 edition Tva V2), O (P. Edition Auto), X (W0 masque extrait), BD (v. Libelle edition)
+**Variables liees** : EO (P0 n° compte), EU (P0 edition Tva V2), FB (P. Edition Auto), FK (W0 masque extrait), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t5"></a>T5 - Edition du pied
+#### <a id="t5"></a>71.2.1.1 - Edition du pied
 
 **Role** : Generation du document : Edition du pied.
-**Variables liees** : H (P0 edition Tva V2), O (P. Edition Auto), BD (v. Libelle edition)
+**Variables liees** : EU (P0 edition Tva V2), FB (P. Edition Auto), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t6"></a>T6 - Edition recap Free Etra
+#### <a id="t6"></a>71.2.1.2 - Edition recap Free Etra
 
 **Role** : Generation du document : Edition recap Free Etra.
-**Variables liees** : H (P0 edition Tva V2), O (P. Edition Auto), BD (v. Libelle edition)
+**Variables liees** : EU (P0 edition Tva V2), FB (P. Edition Auto), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t7"></a>T7 - edition extrait compte
+#### <a id="t7"></a>71.2.2 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
-**Variables liees** : B (P0 n° compte), H (P0 edition Tva V2), O (P. Edition Auto), X (W0 masque extrait), BD (v. Libelle edition)
+**Variables liees** : EO (P0 n° compte), EU (P0 edition Tva V2), FB (P. Edition Auto), FK (W0 masque extrait), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t8"></a>T8 - Edition du pied
+#### <a id="t8"></a>71.2.2.1 - Edition du pied
 
 **Role** : Generation du document : Edition du pied.
-**Variables liees** : H (P0 edition Tva V2), O (P. Edition Auto), BD (v. Libelle edition)
+**Variables liees** : EU (P0 edition Tva V2), FB (P. Edition Auto), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t9"></a>T9 - Edition recap Free Etra
+#### <a id="t9"></a>71.2.2.2 - Edition recap Free Etra
 
 **Role** : Generation du document : Edition recap Free Etra.
-**Variables liees** : H (P0 edition Tva V2), O (P. Edition Auto), BD (v. Libelle edition)
+**Variables liees** : EU (P0 edition Tva V2), FB (P. Edition Auto), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t10"></a>T10 - Printer 4
+#### <a id="t10"></a>71.3 - Printer 4
 
 **Role** : Generation du document : Printer 4.
 
 ---
 
-#### <a id="t11"></a>T11 - edition extrait compte
+#### <a id="t11"></a>71.3.1 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
-**Variables liees** : B (P0 n° compte), H (P0 edition Tva V2), O (P. Edition Auto), X (W0 masque extrait), BD (v. Libelle edition)
+**Variables liees** : EO (P0 n° compte), EU (P0 edition Tva V2), FB (P. Edition Auto), FK (W0 masque extrait), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t12"></a>T12 - edition extrait compte
+#### <a id="t12"></a>71.3.2 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
-**Variables liees** : B (P0 n° compte), H (P0 edition Tva V2), O (P. Edition Auto), X (W0 masque extrait), BD (v. Libelle edition)
+**Variables liees** : EO (P0 n° compte), EU (P0 edition Tva V2), FB (P. Edition Auto), FK (W0 masque extrait), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t13"></a>T13 - Edition du pied
+#### <a id="t13"></a>71.3.2.1 - Edition du pied
 
 **Role** : Generation du document : Edition du pied.
-**Variables liees** : H (P0 edition Tva V2), O (P. Edition Auto), BD (v. Libelle edition)
+**Variables liees** : EU (P0 edition Tva V2), FB (P. Edition Auto), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t14"></a>T14 - Edition recap Free Etra
+#### <a id="t14"></a>71.3.2.2 - Edition recap Free Etra
 
 **Role** : Generation du document : Edition recap Free Etra.
-**Variables liees** : H (P0 edition Tva V2), O (P. Edition Auto), BD (v. Libelle edition)
+**Variables liees** : EU (P0 edition Tva V2), FB (P. Edition Auto), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t15"></a>T15 - Printer 6
+#### <a id="t15"></a>71.4 - Printer 6
 
 **Role** : Generation du document : Printer 6.
 
 ---
 
-#### <a id="t17"></a>T17 - Printer 8
+#### <a id="t17"></a>71.5 - Printer 8
 
 **Role** : Generation du document : Printer 8.
 
 ---
 
-#### <a id="t19"></a>T19 - Edition du pied
+#### <a id="t19"></a>71.5.1.1 - Edition du pied
 
 **Role** : Generation du document : Edition du pied.
-**Variables liees** : H (P0 edition Tva V2), O (P. Edition Auto), BD (v. Libelle edition)
+**Variables liees** : EU (P0 edition Tva V2), FB (P. Edition Auto), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t20"></a>T20 - Edition recap Free Etra
+#### <a id="t20"></a>71.5.1.2 - Edition recap Free Etra
 
 **Role** : Generation du document : Edition recap Free Etra.
-**Variables liees** : H (P0 edition Tva V2), O (P. Edition Auto), BD (v. Libelle edition)
+**Variables liees** : EU (P0 edition Tva V2), FB (P. Edition Auto), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t21"></a>T21 - Printer 9
+#### <a id="t21"></a>71.6 - Printer 9
 
 **Role** : Generation du document : Printer 9.
 
 ---
 
-#### <a id="t23"></a>T23 - Edition du pied
+#### <a id="t23"></a>71.6.1.1 - Edition du pied
 
 **Role** : Generation du document : Edition du pied.
-**Variables liees** : H (P0 edition Tva V2), O (P. Edition Auto), BD (v. Libelle edition)
+**Variables liees** : EU (P0 edition Tva V2), FB (P. Edition Auto), FQ (v. Libelle edition)
 
 ---
 
-#### <a id="t24"></a>T24 - Edition recap Free Etra
+#### <a id="t24"></a>71.6.1.2 - Edition recap Free Etra
 
 **Role** : Generation du document : Edition recap Free Etra.
-**Variables liees** : H (P0 edition Tva V2), O (P. Edition Auto), BD (v. Libelle edition)
+**Variables liees** : EU (P0 edition Tva V2), FB (P. Edition Auto), FQ (v. Libelle edition)
 
 
 ## 5. REGLES METIER
 
-*(Programme d'impression - logique technique sans conditions metier)*
+7 regles identifiees:
+
+### Impression (5 regles)
+
+#### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 1 |
+| **Expression source** | Expression 5 : `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action si CURRENTPRINTERNUM = 1 |
+| **Impact** | [71.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n4
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 4 |
+| **Expression source** | Expression 6 : `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=4 â†’ Action si CURRENTPRINTERNUM = 4 |
+| **Impact** | [71.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-004"></a>[RM-004] Verification que l'imprimante courante est la n6
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=6` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 6 |
+| **Expression source** | Expression 7 : `GetParam ('CURRENTPRINTERNUM')=6` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=6 â†’ Action si CURRENTPRINTERNUM = 6 |
+| **Impact** | [71.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-005"></a>[RM-005] Verification que l'imprimante courante est la n8
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 8 |
+| **Expression source** | Expression 8 : `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=8 â†’ Action si CURRENTPRINTERNUM = 8 |
+| **Impact** | [71.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-006"></a>[RM-006] Verification que l'imprimante courante est la n9
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 9 |
+| **Expression source** | Expression 9 : `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action si CURRENTPRINTERNUM = 9 |
+| **Impact** | [71.2 - Printer 1](#t3) |
+
+### Autres (2 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition composite: IsComponent () AND NOT(P_Appel Direct [N])
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IsComponent () AND NOT(P_Appel Direct [N])` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FA (P_Appel Direct) |
+| **Expression source** | Expression 2 : `IsComponent () AND NOT(P_Appel Direct [N])` |
+| **Exemple** | Si IsComponent () AND NOT(P_Appel Direct [N]) â†’ Action si vrai |
+
+#### <a id="rm-RM-007"></a>[RM-007] Negation de P_FormatPDF [I] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT P_FormatPDF [I]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EV (P_FormatPDF) |
+| **Expression source** | Expression 12 : `NOT P_FormatPDF [I]` |
+| **Exemple** | Si NOT P_FormatPDF [I] â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -241,50 +315,57 @@ Generation des documents et tickets.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **71.1** | [**Veuillez patienter...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 432x60 | Traitement |
-| 71.1.1 | [recup nom adherent (T2)](#t2) | MDI | - | |
-| 71.1.2 | [Veuillez patienter... (T16)](#t16) [mockup](#ecran-t16) | MDI | 422x56 | |
-| 71.1.3 | [Veuillez patienter... (T18)](#t18) [mockup](#ecran-t18) | MDI | 422x56 | |
-| 71.1.4 | [Veuillez patienter... (T22)](#t22) [mockup](#ecran-t22) | MDI | 422x56 | |
-| **71.2** | [**Printer 1** (T3)](#t3) | MDI | - | Impression |
-| 71.2.1 | [edition extrait compte (T4)](#t4) | MDI | - | |
-| 71.2.2 | [Edition du pied (T5)](#t5) | - | - | |
-| 71.2.3 | [Edition recap Free Etra (T6)](#t6) | - | - | |
-| 71.2.4 | [edition extrait compte (T7)](#t7) | MDI | - | |
-| 71.2.5 | [Edition du pied (T8)](#t8) | - | - | |
-| 71.2.6 | [Edition recap Free Etra (T9)](#t9) | - | - | |
-| 71.2.7 | [Printer 4 (T10)](#t10) | MDI | - | |
-| 71.2.8 | [edition extrait compte (T11)](#t11) | MDI | - | |
-| 71.2.9 | [edition extrait compte (T12)](#t12) | MDI | - | |
-| 71.2.10 | [Edition du pied (T13)](#t13) | - | - | |
-| 71.2.11 | [Edition recap Free Etra (T14)](#t14) | - | - | |
-| 71.2.12 | [Printer 6 (T15)](#t15) | MDI | - | |
-| 71.2.13 | [Printer 8 (T17)](#t17) | MDI | - | |
-| 71.2.14 | [Edition du pied (T19)](#t19) | - | - | |
-| 71.2.15 | [Edition recap Free Etra (T20)](#t20) | - | - | |
-| 71.2.16 | [Printer 9 (T21)](#t21) | MDI | - | |
-| 71.2.17 | [Edition du pied (T23)](#t23) | - | - | |
-| 71.2.18 | [Edition recap Free Etra (T24)](#t24) | - | - | |
+| **71.1** | [**Veuillez patienter...** (71)](#t1) [mockup](#ecran-t1) | MDI | 432x60 | Traitement |
+| 71.1.1 | [recup nom adherent (71.1)](#t2) | MDI | - | |
+| 71.1.2 | [Veuillez patienter... (71.4.1)](#t16) [mockup](#ecran-t16) | MDI | 422x56 | |
+| 71.1.3 | [Veuillez patienter... (71.5.1)](#t18) [mockup](#ecran-t18) | MDI | 422x56 | |
+| 71.1.4 | [Veuillez patienter... (71.6.1)](#t22) [mockup](#ecran-t22) | MDI | 422x56 | |
+| **71.2** | [**Printer 1** (71.2)](#t3) | MDI | - | Impression |
+| 71.2.1 | [edition extrait compte (71.2.1)](#t4) | MDI | - | |
+| 71.2.2 | [Edition du pied (71.2.1.1)](#t5) | - | - | |
+| 71.2.3 | [Edition recap Free Etra (71.2.1.2)](#t6) | - | - | |
+| 71.2.4 | [edition extrait compte (71.2.2)](#t7) | MDI | - | |
+| 71.2.5 | [Edition du pied (71.2.2.1)](#t8) | - | - | |
+| 71.2.6 | [Edition recap Free Etra (71.2.2.2)](#t9) | - | - | |
+| 71.2.7 | [Printer 4 (71.3)](#t10) | MDI | - | |
+| 71.2.8 | [edition extrait compte (71.3.1)](#t11) | MDI | - | |
+| 71.2.9 | [edition extrait compte (71.3.2)](#t12) | MDI | - | |
+| 71.2.10 | [Edition du pied (71.3.2.1)](#t13) | - | - | |
+| 71.2.11 | [Edition recap Free Etra (71.3.2.2)](#t14) | - | - | |
+| 71.2.12 | [Printer 6 (71.4)](#t15) | MDI | - | |
+| 71.2.13 | [Printer 8 (71.5)](#t17) | MDI | - | |
+| 71.2.14 | [Edition du pied (71.5.1.1)](#t19) | - | - | |
+| 71.2.15 | [Edition recap Free Etra (71.5.1.2)](#t20) | - | - | |
+| 71.2.16 | [Printer 9 (71.6)](#t21) | MDI | - | |
+| 71.2.17 | [Edition du pied (71.6.1.1)](#t23) | - | - | |
+| 71.2.18 | [Edition recap Free Etra (71.6.1.2)](#t24) | - | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (5t)]
-    START --> B1
-    B2[Impression (19t)]
-    B1 --> B2
-    WRITE[MAJ 1 tables]
-    B2 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[Printer 8]
+    DECISION{P_Appel Direct}
+    PROCESS[Traitement]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -353,17 +434,17 @@ Variables recues du programme appelant ([Extrait de compte (IDE 69)](ADH-IDE-69.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Alpha | - |
-| B | P0 n° compte | Numeric | - |
-| C | P0 filiation | Numeric | - |
-| D | P0 masque montant | Alpha | 1x parametre entrant |
-| E | P0 nom village | Alpha | - |
-| F | P0 fictif | Logical | - |
-| G | P0 date comptable | Date | - |
-| H | P0 edition Tva V2 | Logical | - |
-| O | P. Edition Auto | Logical | - |
-| P | P.i.Nom Fichier I/O | Unicode | - |
-| Q | P. Sans annulations | Logical | - |
+| EN | P0 societe | Alpha | - |
+| EO | P0 n° compte | Numeric | - |
+| EP | P0 filiation | Numeric | - |
+| EQ | P0 masque montant | Alpha | 1x parametre entrant |
+| ER | P0 nom village | Alpha | - |
+| ES | P0 fictif | Logical | - |
+| ET | P0 date comptable | Date | - |
+| EU | P0 edition Tva V2 | Logical | - |
+| FB | P. Edition Auto | Logical | - |
+| FC | P.i.Nom Fichier I/O | Unicode | - |
+| FD | P. Sans annulations | Logical | - |
 
 ### 11.2 Variables de session (2)
 
@@ -371,8 +452,8 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| BD | v. Libelle edition | Alpha | - |
-| BE | v. Libelle Categ | Alpha | - |
+| FQ | v. Libelle edition | Alpha | - |
+| FR | v. Libelle Categ | Alpha | - |
 
 ### 11.3 Variables de travail (13)
 
@@ -380,19 +461,19 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| R | W0 titre | Alpha | - |
-| S | W0 nom adherent | Alpha | - |
-| T | W0 prenom adherent | Alpha | - |
-| U | W0 n° adherent | Numeric | - |
-| V | W0 lettre contrôle | Alpha | - |
-| W | W0 filiation | Numeric | - |
-| X | W0 masque extrait | Alpha | - |
-| Y | W0 langue parlee | Alpha | - |
-| Z | W0 chambre | Alpha | - |
-| BA | W0 Date debut Sejour | Date | - |
-| BB | W0 Fin debut Sejour | Date | - |
-| BC | W0 code inscription | Unicode | - |
-| BF | W0 devise locale | Alpha | - |
+| FE | W0 titre | Alpha | - |
+| FF | W0 nom adherent | Alpha | - |
+| FG | W0 prenom adherent | Alpha | - |
+| FH | W0 n° adherent | Numeric | - |
+| FI | W0 lettre contrôle | Alpha | - |
+| FJ | W0 filiation | Numeric | - |
+| FK | W0 masque extrait | Alpha | - |
+| FL | W0 langue parlee | Alpha | - |
+| FM | W0 chambre | Alpha | - |
+| FN | W0 Date debut Sejour | Date | - |
+| FO | W0 Fin debut Sejour | Date | - |
+| FP | W0 code inscription | Unicode | - |
+| FS | W0 devise locale | Alpha | - |
 
 ### 11.4 Autres (6)
 
@@ -400,50 +481,50 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| I | P_FormatPDF | Logical | 1x refs |
-| J | P_Chemin | Alpha | - |
-| K | P_NomFichierPDF | Alpha | - |
-| L | P_Print or Mail | Alpha | - |
-| M | P_Print GIFT PASS | Logical | - |
-| N | P_Appel Direct | Logical | 1x refs |
+| EV | P_FormatPDF | Logical | 1x refs |
+| EW | P_Chemin | Alpha | - |
+| EX | P_NomFichierPDF | Alpha | - |
+| EY | P_Print or Mail | Alpha | - |
+| EZ | P_Print GIFT PASS | Logical | - |
+| FA | P_Appel Direct | Logical | 1x refs |
 
 <details>
 <summary>Toutes les 32 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P0 societe | Alpha |
-| P0 | **B** | P0 n° compte | Numeric |
-| P0 | **C** | P0 filiation | Numeric |
-| P0 | **D** | P0 masque montant | Alpha |
-| P0 | **E** | P0 nom village | Alpha |
-| P0 | **F** | P0 fictif | Logical |
-| P0 | **G** | P0 date comptable | Date |
-| P0 | **H** | P0 edition Tva V2 | Logical |
-| P0 | **O** | P. Edition Auto | Logical |
-| P0 | **P** | P.i.Nom Fichier I/O | Unicode |
-| P0 | **Q** | P. Sans annulations | Logical |
-| W0 | **R** | W0 titre | Alpha |
-| W0 | **S** | W0 nom adherent | Alpha |
-| W0 | **T** | W0 prenom adherent | Alpha |
-| W0 | **U** | W0 n° adherent | Numeric |
-| W0 | **V** | W0 lettre contrôle | Alpha |
-| W0 | **W** | W0 filiation | Numeric |
-| W0 | **X** | W0 masque extrait | Alpha |
-| W0 | **Y** | W0 langue parlee | Alpha |
-| W0 | **Z** | W0 chambre | Alpha |
-| W0 | **BA** | W0 Date debut Sejour | Date |
-| W0 | **BB** | W0 Fin debut Sejour | Date |
-| W0 | **BC** | W0 code inscription | Unicode |
-| W0 | **BF** | W0 devise locale | Alpha |
-| V. | **BD** | v. Libelle edition | Alpha |
-| V. | **BE** | v. Libelle Categ | Alpha |
-| Autre | **I** | P_FormatPDF | Logical |
-| Autre | **J** | P_Chemin | Alpha |
-| Autre | **K** | P_NomFichierPDF | Alpha |
-| Autre | **L** | P_Print or Mail | Alpha |
-| Autre | **M** | P_Print GIFT PASS | Logical |
-| Autre | **N** | P_Appel Direct | Logical |
+| P0 | **EN** | P0 societe | Alpha |
+| P0 | **EO** | P0 n° compte | Numeric |
+| P0 | **EP** | P0 filiation | Numeric |
+| P0 | **EQ** | P0 masque montant | Alpha |
+| P0 | **ER** | P0 nom village | Alpha |
+| P0 | **ES** | P0 fictif | Logical |
+| P0 | **ET** | P0 date comptable | Date |
+| P0 | **EU** | P0 edition Tva V2 | Logical |
+| P0 | **FB** | P. Edition Auto | Logical |
+| P0 | **FC** | P.i.Nom Fichier I/O | Unicode |
+| P0 | **FD** | P. Sans annulations | Logical |
+| W0 | **FE** | W0 titre | Alpha |
+| W0 | **FF** | W0 nom adherent | Alpha |
+| W0 | **FG** | W0 prenom adherent | Alpha |
+| W0 | **FH** | W0 n° adherent | Numeric |
+| W0 | **FI** | W0 lettre contrôle | Alpha |
+| W0 | **FJ** | W0 filiation | Numeric |
+| W0 | **FK** | W0 masque extrait | Alpha |
+| W0 | **FL** | W0 langue parlee | Alpha |
+| W0 | **FM** | W0 chambre | Alpha |
+| W0 | **FN** | W0 Date debut Sejour | Date |
+| W0 | **FO** | W0 Fin debut Sejour | Date |
+| W0 | **FP** | W0 code inscription | Unicode |
+| W0 | **FS** | W0 devise locale | Alpha |
+| V. | **FQ** | v. Libelle edition | Alpha |
+| V. | **FR** | v. Libelle Categ | Alpha |
+| Autre | **EV** | P_FormatPDF | Logical |
+| Autre | **EW** | P_Chemin | Alpha |
+| Autre | **EX** | P_NomFichierPDF | Alpha |
+| Autre | **EY** | P_Print or Mail | Alpha |
+| Autre | **EZ** | P_Print GIFT PASS | Logical |
+| Autre | **FA** | P_Appel Direct | Logical |
 
 </details>
 
@@ -456,10 +537,10 @@ Variables diverses.
 | Type | Expressions | Regles |
 |------|-------------|--------|
 | CALCULATION | 1 | 0 |
+| CONDITION | 6 | 6 |
+| NEGATION | 1 | 5 |
 | CONSTANTE | 2 | 0 |
-| OTHER | 5 | 0 |
-| CONDITION | 5 | 0 |
-| NEGATION | 1 | 0 |
+| OTHER | 4 | 0 |
 | CAST_LOGIQUE | 2 | 0 |
 
 ### 12.2 Expressions cles par type
@@ -470,6 +551,23 @@ Variables diverses.
 |------|-----|------------|-------|
 | CALCULATION | 10 | `Left (P0 masque montant [D],Len (RTrim (P0 masque montant [D]))-1)` | - |
 
+#### CONDITION (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=6` | [RM-004](#rm-RM-004) |
+| CONDITION | 8 | `GetParam ('CURRENTPRINTERNUM')=8` | [RM-005](#rm-RM-005) |
+| CONDITION | 9 | `GetParam ('CURRENTPRINTERNUM')=9` | [RM-006](#rm-RM-006) |
+| CONDITION | 2 | `IsComponent () AND NOT(P_Appel Direct [N])` | [RM-001](#rm-RM-001) |
+| CONDITION | 5 | `GetParam ('CURRENTPRINTERNUM')=1` | [RM-002](#rm-RM-002) |
+| ... | | *+1 autres* | |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 12 | `NOT P_FormatPDF [I]` | [RM-007](#rm-RM-007) |
+
 #### CONSTANTE (2 expressions)
 
 | Type | IDE | Expression | Regle |
@@ -477,31 +575,14 @@ Variables diverses.
 | CONSTANTE | 15 | `'Par Date / By Date'` | - |
 | CONSTANTE | 14 | `'Extrait de compte / Account statement'` | - |
 
-#### OTHER (5 expressions)
+#### OTHER (4 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | OTHER | 4 | `SetCrsr (2)` | - |
 | OTHER | 11 | `DbDel ('{867,4}'DSOURCE,'')` | - |
-| OTHER | 3 | `SetCrsr (1)` | - |
 | OTHER | 1 | `GetParam ('LISTINGNUMPRINTERCHOICE')` | - |
-| OTHER | 2 | `IsComponent () AND NOT(P_Appel Direct [N])` | - |
-
-#### CONDITION (5 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 8 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
-| CONDITION | 9 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
-| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=6` | - |
-| CONDITION | 5 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
-| CONDITION | 6 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
-
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 12 | `NOT P_FormatPDF [I]` | - |
+| OTHER | 3 | `SetCrsr (1)` | - |
 
 #### CAST_LOGIQUE (2 expressions)
 
@@ -626,7 +707,7 @@ graph LR
 | Sous-programmes | 5 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0.1% (1 / 780) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 7 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -654,4 +735,4 @@ graph LR
 | [Get Printer (IDE 179)](ADH-IDE-179.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:44*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:09*

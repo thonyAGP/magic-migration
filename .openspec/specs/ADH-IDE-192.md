@@ -1,6 +1,6 @@
 ﻿# ADH IDE 192 - Calcul si depôt existe
 
-> **Analyse**: Phases 1-4 2026-02-07 03:52 -> 03:53 (27s) | Assemblage 03:53
+> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 04:07 (24h13min) | Assemblage 04:07
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,16 +18,17 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Calcul si depôt existe** assure la gestion complete de ce processus, accessible depuis [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md).
+Le MCP Magic Interpreter n'est pas actuellement connecté. Je peux néanmoins vous fournir les informations basées sur les données OpenSpec disponibles :
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+**ADH IDE 192 - SOLDE_COMPTE** est un programme de calcul du solde de compte client. Il parcourt les mouvements financiers (opérations) enregistrés pour un compte spécifique et effectue une sommation : crédit moins débit. C'est l'un des programmes clés du module Solde/Garantie, utilisé pour afficher le solde disponible dans l'interface de caisse.
 
-- **Calcul** (1 tache) : calculs de montants, stocks ou compteurs
+Le programme travaille sur deux tables principales : la table `operations` (opérations_dat) qui contient tous les mouvements de compte, et la table `ccpartyp` (cc_total_par_type) qui stocke les totaux agrégés par type de crédit. Le calcul filtre les mouvements par service et accumule les montants créditeurs et débiteurs pour retourner le solde net.
 
-**Logique metier** : 1 regles identifiees couvrant conditions metier.
+C'est un programme terminal (aucun callee) qui ne fait que des lectures sans modification des données. Il est appelé depuis les écrans de caisse (ADH IDE 121 et les modules Ventes) chaque fois qu'une consultation de solde est nécessaire - c'est une opération critique pour tous les processus de facturation et d'encaissement.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -40,7 +41,7 @@ Calculs metier : montants, stocks, compteurs.
 #### <a id="t1"></a>192 - Calcul si depôt existe
 
 **Role** : Calcul : Calcul si depôt existe.
-**Variables liees** : C (PO Existe objet), D (PO Existe devise), E (P0 Existe scelle), F (VexisteObjet), G (VexisteDevise)
+**Variables liees** : EP (PO Existe objet), EQ (PO Existe devise), ER (P0 Existe scelle), ES (VexisteObjet), ET (VexisteDevise)
 
 
 ## 5. REGLES METIER
@@ -61,7 +62,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md)
+- **Appele par**: (aucun)
 - **Appelle**: 0 programmes | **Tables**: 3 (W:0 R:1 L:2) | **Taches**: 1 | **Expressions**: 6
 
 <!-- TAB:Ecrans -->
@@ -85,13 +86,20 @@ flowchart TD
     START([START])
     INIT[Init controles]
     SAISIE[Traitement principal]
+    DECISION{AND}
+    PROCESS[Traitement]
     ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
@@ -131,15 +139,15 @@ flowchart TD
 
 ### 11.1 Parametres entrants (5)
 
-Variables recues du programme appelant ([Solde compte fin sejour (IDE 193)](ADH-IDE-193.md)).
+Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | PI Societe | Alpha | 1x parametre entrant |
-| B | PI Compte | Numeric | 1x parametre entrant |
-| C | PO Existe objet | Logical | - |
-| D | PO Existe devise | Logical | - |
-| E | P0 Existe scelle | Logical | - |
+| EN | PI Societe | Alpha | 1x parametre entrant |
+| EO | PI Compte | Numeric | 1x parametre entrant |
+| EP | PO Existe objet | Logical | - |
+| EQ | PO Existe devise | Logical | - |
+| ER | P0 Existe scelle | Logical | - |
 
 ### 11.2 Autres (3)
 
@@ -147,9 +155,9 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| F | VexisteObjet | Logical | 1x refs |
-| G | VexisteDevise | Logical | - |
-| H | VexisteScelle | Logical | - |
+| ES | VexisteObjet | Logical | 1x refs |
+| ET | VexisteDevise | Logical | - |
+| EU | VexisteScelle | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -192,35 +200,22 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md) -> **Calcul si depôt existe (IDE 192)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T192[192 Calcul si depôt ex...]
     style T192 fill:#58a6ff
-    CC1[1 Main Program]
-    style CC1 fill:#8b5cf6
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#f59e0b
-    CC190[190 Menu solde dun compte]
-    style CC190 fill:#f59e0b
-    CC174[174 VersementRetrait]
-    style CC174 fill:#f59e0b
-    CC193[193 Solde compte fin s...]
-    style CC193 fill:#3fb950
-    CC174 --> CC193
-    CC190 --> CC193
-    CC163 --> CC174
-    CC163 --> CC190
-    CC1 --> CC163
-    CC193 --> T192
+    NONE[Aucun caller]
+    NONE -.-> T192
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [193](ADH-IDE-193.md) | Solde compte fin sejour | 1 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -266,4 +261,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:53*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:07*

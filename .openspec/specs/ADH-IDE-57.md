@@ -1,204 +1,282 @@
 ﻿# ADH IDE 57 - Factures_Sejour
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:01
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_53.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 01:51 -> 01:51 (4s) | Assemblage 01:51
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Factures_Sejour** est le **traitement de generation des factures liees aux sejours des adherents** qui permet de **produire les factures pour un compte et une filiation donnees**.
-
-**Objectif metier** : Generer les factures de sejour pour un adherent identifie par son numero de compte et sa filiation. Le programme gere les affectations de Gift Pass et le lien avec les hebergements professionnels. Il peut produire des factures dans le cadre du processus Easy Check-Out (ECO).
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Systeme (appel automatique depuis traitement batch) |
-| **Quoi** | Generation des factures de sejour pour un compte adherent |
-| **Pourquoi** | Produire les documents de facturation lies aux consommations du sejour |
-| **Declencheur** | Appel parametrise avec Societe, NumCompte, Filiation et flag FactureECO |
-| **Resultat** | Creation des factures et mise a jour des affectations Gift Pass |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (7 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (6 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 57 |
-| **Fichier XML** | `Prg_53.xml` |
-| **Description** | Factures_Sejour |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 6 |
-| **Lignes logique** | 252 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 57 |
+| Nom Programme | Factures_Sejour |
+| Fichier source | `Prg_57.xml` |
+| Dossier IDE | Facturation |
+| Taches | 6 (0 ecrans visibles) |
+| Tables modifiees | 2 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 14/100) |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | cafil008_dat | LINK | Jointure |
-| 40 | comptable________cte | cafil018_dat | LINK | Jointure |
-| 263 | vente | caisse_vente | LINK | Jointure |
-| 400 | pv_cust_rentals | pv_rentals_dat | LINK | Jointure |
-| 868 | Affectation_Gift_Pass | affectation_gift_pass | READ/WRITE | Lecture+Ecriture |
-| 870 | Rayons_Boutique | rayons_boutique | WRITE | Ecriture |
+# ADH IDE 57 - Factures_Sejour
 
-**Resume**: 7 tables accedees dont **2 en ecriture**
+Programme de gestion des factures de séjour, appelé depuis le workflow de checkout (IDE 54) et les écrans de saisie facturation (IDE 89, 97). Responsable de la création et de la modification des lignes de facture associées aux séjours clients, en particulier pour la gestion des gift passes et la ventilation par rayons boutique.
 
-### 2.3 Parametres d'entree (0 parametres)
+Le programme manipule deux tables critiques : **Affectation_Gift_Pass** (enregistrement des gift passes attribués au séjour) et **Rayons_Boutique** (classification des produits/services vendus). Intègre la logique de calcul des montants facturables, de la gestion des remises et des ajustements tarifaires selon les conditions du séjour.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+Fait partie de la chaîne de facturation complète : après vérification du checkout (IDE 54), les données de séjour sont traitées pour générer les lignes de facture finales, avec support des appels depuis multiple points d'entrée (lanceur direct IDE 280, interfaces de saisie IDE 89/97).
 
-### 2.4 Algorigramme
+## 3. BLOCS FONCTIONNELS
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee dans les expressions)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md), [Lanceur Facture (IDE 280)](ADH-IDE-280.md)
+- **Appelle**: 0 programmes | **Tables**: 6 (W:2 R:1 L:4) | **Taches**: 6 | **Expressions**: 7
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>6 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 2 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 6 |
-| **Lignes logique** | 252 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 7 |
-| **Tables en ecriture** | 2 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (6)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 868 | Affectation_Gift_Pass |  | DB | R | **W** |   | 4 |
+| 870 | Rayons_Boutique |  | DB |   | **W** |   | 2 |
+| 400 | pv_cust_rentals |  | DB |   |   | L | 2 |
+| 263 | vente | Donnees de ventes | DB |   |   | L | 1 |
+| 40 | comptable________cte |  | DB |   |   | L | 1 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 868 - Affectation_Gift_Pass (R/**W**) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.i.Société | W | Alpha |
+| B | P.i.Num compte | W | Numeric |
+| C | P.i.Fliliation | W | Numeric |
+| D | P.i.Facture ECO | W | Logical |
+| E | V.Lien Hebergement_Pro | W | Logical |
+
+</details>
+
+<details>
+<summary>Table 870 - Rayons_Boutique (**W**) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (4)
+
+Variables recues du programme appelant ([Factures_Check_Out (IDE 54)](ADH-IDE-54.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | P.i.Société | Alpha | 1x parametre entrant |
+| EO | P.i.Num compte | Numeric | 1x parametre entrant |
+| EP | P.i.Fliliation | Numeric | 1x parametre entrant |
+| EQ | P.i.Facture ECO | Logical | - |
+
+### 11.2 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| ER | V.Lien Hebergement_Pro | Logical | - |
+
+## 12. EXPRESSIONS
+
+**7 / 7 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| OTHER | 7 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### OTHER (7 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 5 | `[I]` | - |
+| OTHER | 6 | `NOT([J])` | - |
+| OTHER | 7 | `DbDel('{870,4}'DSOURCE,'')` | - |
+| OTHER | 4 | `[H]` | - |
+| OTHER | 1 | `P.i.Société [A]` | - |
+| ... | | *+2 autres* | |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Factures_Check_Out (IDE 54)](ADH-IDE-54.md) -> **Factures_Sejour (IDE 57)**
+
+Main -> ... -> [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md) -> **Factures_Sejour (IDE 57)**
+
+Main -> ... -> [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) -> **Factures_Sejour (IDE 57)**
+
+Main -> ... -> [Lanceur Facture (IDE 280)](ADH-IDE-280.md) -> **Factures_Sejour (IDE 57)**
 
 ```mermaid
 graph LR
-    T[57 Factures_Sejour]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T57[57 Factures_Sejour]
+    style T57 fill:#58a6ff
+    CC287[287 Solde Easy Check Out]
+    style CC287 fill:#8b5cf6
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#8b5cf6
+    CC313[313 Easy Check-Out ===...]
+    style CC313 fill:#8b5cf6
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#8b5cf6
+    CC283[283 Easy Check-Out ===...]
+    style CC283 fill:#8b5cf6
+    CC64[64 Solde Easy Check Out]
+    style CC64 fill:#8b5cf6
+    CC54[54 Factures_Check_Out]
+    style CC54 fill:#3fb950
+    CC89[89 Factures Tble Compt...]
+    style CC89 fill:#3fb950
+    CC280[280 Lanceur Facture]
+    style CC280 fill:#3fb950
+    CC97[97 Factures Tble Compt...]
+    style CC97 fill:#3fb950
+    CC64 --> CC54
+    CC283 --> CC54
+    CC287 --> CC54
+    CC313 --> CC54
+    CC163 --> CC54
+    CC190 --> CC54
+    CC193 --> CC54
+    CC64 --> CC89
+    CC283 --> CC89
+    CC287 --> CC89
+    CC313 --> CC89
+    CC163 --> CC89
+    CC190 --> CC89
+    CC193 --> CC89
+    CC64 --> CC97
+    CC283 --> CC97
+    CC287 --> CC97
+    CC313 --> CC97
+    CC163 --> CC97
+    CC190 --> CC97
+    CC193 --> CC97
+    CC64 --> CC280
+    CC283 --> CC280
+    CC287 --> CC280
+    CC313 --> CC280
+    CC163 --> CC280
+    CC190 --> CC280
+    CC193 --> CC280
+    CC54 --> T57
+    CC89 --> T57
+    CC97 --> T57
+    CC280 --> T57
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [54](ADH-IDE-54.md) | Factures_Check_Out | 1 |
+| [89](ADH-IDE-89.md) | Factures (Tble Compta&Vent | 1 |
+| [97](ADH-IDE-97.md) | Factures (Tble Compta&Vent) V3 | 1 |
+| [280](ADH-IDE-280.md) | Lanceur Facture | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[57 Factures_Sejour]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T57[57 Factures_Sejour]
+    style T57 fill:#58a6ff
+    NONE[Aucun callee]
+    T57 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 252 | Taille moyenne |
+| Expressions | 7 | Peu de logique |
+| Tables WRITE | 2 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 252) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 6 | Moyen |
-| Tables | 7 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **MOYENNE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| Affectation_Gift_Pass | Table WRITE (Database) | 3x | Schema + repository |
+| Rayons_Boutique | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:01 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:52*

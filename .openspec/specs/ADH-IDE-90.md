@@ -1,6 +1,6 @@
 ﻿# ADH IDE 90 - Edition Facture Tva(Compta&Ve)
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:46 (28s) | Assemblage 14:13
+> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 02:27 (22h41min) | Assemblage 02:27
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 90** est un programme d'édition de factures TVA destiné à la comptabilité et à la vente. Il traite les factures avec un détail des montants HT et TTC en fonction de leurs taux de TVA respectifs. Le programme est appelé depuis trois points critiques : la table Compta&Vent (IDE 89), le flux de sortie facture lors du checkout (IDE 54), et le menu de lancement direct d'édition (IDE 279). Cette position centrale en aval du processus de vente indique son rôle de finalisation comptable.
+# ADH IDE 90 - Edition Facture TVA (Compta & Ventes)
 
-La structure interne du programme repose sur quatre tâches principales : **Edition Facture Tva(Ventes)** qui oriente la logique selon le contexte client/fournisseur, **Edition** qui construit le corps de la facture avec groupement par taux TVA, **Edition du Pied** qui intègre les totaux par taux et le total général, et **Total Général** qui calcule et valide la cohérence comptable. Cette architecture en cascade garantit que chaque ligne facture est classée correctement avant les calculs d'agrégation au niveau pied de document.
+Programme de génération et d'édition de factures avec calcul automatique de la TVA. Appelé depuis trois points d'entrée : le tableau de gestion comptable/ventes (IDE 89), le workflow Easy Checkout (IDE 54), ou le menu de lancement manuel (IDE 279). Reçoit en paramètres les références de compte et filiation pour identifier la facture à traiter, puis structure les données pour l'impression.
 
-Le programme manipule les données brutes de vente (lignages, montants unitaires, quantités) en les transformant en format de sortie réglementairement conforme, avec séparation des montants HT par catégorie TVA et calcul des montants TTC correspondants. Les éditions générées alimentent vraisemblablement les processus de reporting comptable et les remises d'impôt (TVA collectée/déductible).
+Décomposé en quatre tâches principales : la tâche principale "Edition Facture TVA (Ventes)" initialise le contexte et récupère les lignes de facture, la tâche "Edition" formate les détails articles avec montants unitaires et totaux, la tâche "Edition du Pied" calcule et affiche les totaux (HT, TVA, TTC) ainsi que les informations de paiement, et la tâche "Total Général" consolide les montants finaux pour la mise en page.
+
+Utilise les tables REF de paramétrage (devises, moyens de paiement, taux TVA) et accède aux données de facturation stockées dans les tables opérationnelles. Produit une édition formatée prête pour impression thermique ou PDF, avec gestion des cas limites (facture vide, arrondis fiscaux, montants zéro).
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,10 +38,10 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t1"></a>T1 - Edition Facture Tva(Ventes)
+#### <a id="t1"></a>90 - Edition Facture Tva(Ventes)
 
 **Role** : Saisie des donnees : Edition Facture Tva(Ventes).
-**Variables liees** : E (P.Num Facture), G (P.Facture sans Nom), H (P.Facture sans Adresse), I (P.Facture flaguee)
+**Variables liees** : ER (P.Num Facture), ET (P.Facture sans Nom), EU (P.Facture sans Adresse), EV (P.Facture flaguee)
 
 
 ### 3.2 Impression (2 taches)
@@ -48,13 +50,13 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>T2 - Edition
+#### <a id="t2"></a>90.1 - Edition
 
 **Role** : Generation du document : Edition.
 
 ---
 
-#### <a id="t3"></a>T3 - Edition du Pied
+#### <a id="t3"></a>90.1.1 - Edition du Pied
 
 **Role** : Generation du document : Edition du Pied.
 
@@ -65,7 +67,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t4"></a>T4 - Total Général
+#### <a id="t4"></a>90.1.1.1 - Total Général
 
 **Role** : Traitement : Total Général.
 
@@ -103,29 +105,29 @@ Traitements internes.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **90.1** | [**Edition Facture Tva(Ventes)** (T1)](#t1) | - | - | Saisie |
-| **90.2** | [**Edition** (T2)](#t2) | - | - | Impression |
-| 90.2.1 | [Edition du Pied (T3)](#t3) | - | - | |
-| **90.3** | [**Total Général** (T4)](#t4) | - | - | Traitement |
+| **90.1** | [**Edition Facture Tva(Ventes)** (90)](#t1) | - | - | Saisie |
+| **90.2** | [**Edition** (90.1)](#t2) | - | - | Impression |
+| 90.2.1 | [Edition du Pied (90.1.1)](#t3) | - | - | |
+| **90.3** | [**Total Général** (90.1.1.1)](#t4) | - | - | Traitement |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Saisie (1t)]
-    START --> B1
-    B2[Impression (2t)]
-    B1 --> B2
-    B3[Traitement (1t)]
-    B2 --> B3
-    ENDOK([END])
-    B3 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -188,18 +190,18 @@ Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](AD
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.Societe | Alpha | - |
-| B | P.Compte GM | Numeric | - |
-| C | P.Filiation | Numeric | - |
-| D | P.Nom Fichier PDF | Alpha | - |
-| E | P.Num Facture | Numeric | [T1](#t1) |
-| F | P.Service | Alpha | - |
-| G | P.Facture sans Nom | Logical | - |
-| H | P.Facture sans Adresse | Logical | - |
-| I | P.Facture flaguee | Logical | - |
-| J | P.Archive | Logical | - |
-| K | P.Easy Check Out | Logical | - |
-| L | P.Reediter | Logical | - |
+| EN | P.Societe | Alpha | - |
+| EO | P.Compte GM | Numeric | - |
+| EP | P.Filiation | Numeric | - |
+| EQ | P.Nom Fichier PDF | Alpha | - |
+| ER | P.Num Facture | Numeric | [90](#t1) |
+| ES | P.Service | Alpha | - |
+| ET | P.Facture sans Nom | Logical | - |
+| EU | P.Facture sans Adresse | Logical | - |
+| EV | P.Facture flaguee | Logical | - |
+| EW | P.Archive | Logical | - |
+| EX | P.Easy Check Out | Logical | - |
+| EY | P.Reediter | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -362,4 +364,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:16*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:28*

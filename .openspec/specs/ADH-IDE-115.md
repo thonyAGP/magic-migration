@@ -1,201 +1,330 @@
 ﻿# ADH IDE 115 - Création des Club Med Pass
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:04
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_111.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 02:56 -> 02:56 (4s) | Assemblage 02:56
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Creation des Club Med Pass** est le **programme de generation des cartes d'identification client** qui **cree les supports de paiement et d'acces personnalises pour chaque membre du sejour**.
-
-**Objectif metier** : Generer les Club Med Pass (cartes EZ Card) pour les clients a leur arrivee au village, permettant l'identification, l'acces aux installations et le paiement sans numeraire dans toutes les boutiques et points de vente du resort. Le programme associe chaque carte au dossier client (GM) et initialise le compte de depenses.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur reception ou systeme automatique check-in |
-| **Quoi** | Generation et association des cartes Club Med Pass (EZ Card) |
-| **Pourquoi** | Permettre identification, acces et paiement cashless pendant le sejour |
-| **Declencheur** | Check-in client ou demande de carte supplementaire |
-| **Resultat** | Carte EZ activee et liee au compte client dans la table tempo_caisses |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (4 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (2 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 115 |
-| **Fichier XML** | `Prg_111.xml` |
-| **Description** | Création des Club Med Pass |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 2 |
-| **Lignes logique** | 55 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 115 |
+| Nom Programme | Création des Club Med Pass |
+| Fichier source | `Prg_115.xml` |
+| Dossier IDE | General |
+| Taches | 2 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
-| 312 | ez_card | ezcard | LINK | Jointure |
-| 480 | tempo_caisses_1 | %club_user%_caisse_last_session_1 | LINK/WRITE | Jointure+Ecriture |
+Le programme **ADH IDE 115** gère la création et l'initialisation des Club Med Pass (cartes de crédit Club Med). C'est un programme de maintenance qui permet d'ajouter de nouveaux Club Med Pass au système avec les informations de base (code carte, statut, limites de crédit).
 
-**Resume**: 4 tables accedees dont **1 en ecriture**
+Le programme interagit principalement avec la table `ezcard` (ez_card) pour insérer les nouveaux enregistrements de cartes. Il valide les données saisies (unicité du code, format valide) et initialise les champs par défaut comme le statut actif et les limites de crédit associées au type de carte.
 
-### 2.3 Parametres d'entree (0 parametres)
+Cette tâche est généralement exécutée par l'administrateur de la caisse lors de l'onboarding de nouveaux membres ou lors de l'émission de nouvelles cartes. Le programme fait partie du module **Members** de la solution ADH (Adhérents/Gestion Caisse) et se situe en aval du programme ADH IDE 160 (GetCMP - récupération des informations Club Med Pass).
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+5 regles identifiees:
+
+### Autres (5 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Traitement conditionnel si [U]>0,Str ([U],'###'),IF ([V] est a zero
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[U]>0` |
+| **Si vrai** | Str ([U] |
+| **Si faux** | '###'),IF ([V]=0,'',Str ([U],'##'))) |
+| **Expression source** | Expression 8 : `IF ([U]>0,Str ([U],'###'),IF ([V]=0,'',Str ([U],'##')))` |
+| **Exemple** | Si [U]>0 â†’ Str ([U]. Sinon â†’ '###'),IF ([V]=0,'',Str ([U],'##'))) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Si [T]<Date () alors MlsTrans ('dernier sejour :') sinon IF ([S]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[T]<Date ()` |
+| **Si vrai** | MlsTrans ('dernier sejour :') |
+| **Si faux** | IF ([S]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours'))) |
+| **Expression source** | Expression 11 : `IF ([T]<Date (),MlsTrans ('dernier sejour :'),IF ([S]>Date (` |
+| **Exemple** | Si [T]<Date () â†’ MlsTrans ('dernier sejour :') |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: [P] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[P]=0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 14 : `[P]=0` |
+| **Exemple** | Si [P]=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: Len(Trim([X])) inferieur a 10
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Len(Trim([X]))<10` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 15 : `Len(Trim([X]))<10` |
+| **Exemple** | Si Len(Trim([X]))<10 â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Condition: [X] different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[X]<>''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 16 : `[X]<>''` |
+| **Exemple** | Si [X]<>'' â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 3 (W:1 R:1 L:2) | **Taches**: 2 | **Expressions**: 20
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>2 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 2 |
-| **Lignes logique** | 55 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 4 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (3)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 480 | tempo_caisses_1 | Table temporaire ecran | TMP |   | **W** | L | 2 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
+| 312 | ez_card |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 480 - tempo_caisses_1 (**W**/L) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | p. societe | R | Alpha |
+| B | p. code adherent | R | Numeric |
+| C | P.Ecran Validé ? | R | Logical |
+| D | < solde compte | R | Numeric |
+| E | < etat compte | R | Alpha |
+| F | < date solde | R | Date |
+| G | < garanti O/N | R | Alpha |
+| H | v. nom & prenom | R | Alpha |
+| I | N° CMP Existe déjà ? | R | Logical |
+| J | V.N° CMP Déjà Saisi ? | R | Logical |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (3)
+
+Variables recues en parametre.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | p. societe | Alpha | 1x parametre entrant |
+| EO | p. code adherent | Numeric | 1x parametre entrant |
+| EP | P.Ecran Validé ? | Logical | - |
+
+### 11.2 Variables de session (2)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EU | v. nom & prenom | Alpha | - |
+| EW | V.N° CMP Déjà Saisi ? | Logical | 1x session |
+
+### 11.3 Autres (5)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EQ | < solde compte | Numeric | - |
+| ER | < etat compte | Alpha | - |
+| ES | < date solde | Date | - |
+| ET | < garanti O/N | Alpha | - |
+| EV | N° CMP Existe déjà ? | Logical | - |
+
+## 12. EXPRESSIONS
+
+**20 / 20 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 6 | 5 |
+| CONSTANTE | 1 | 0 |
+| DATE | 1 | 0 |
+| OTHER | 9 | 0 |
+| REFERENCE_VG | 1 | 0 |
+| CAST_LOGIQUE | 1 | 0 |
+| CONCATENATION | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 14 | `[P]=0` | [RM-003](#rm-RM-003) |
+| CONDITION | 15 | `Len(Trim([X]))<10` | [RM-004](#rm-RM-004) |
+| CONDITION | 16 | `[X]<>''` | [RM-005](#rm-RM-005) |
+| CONDITION | 8 | `IF ([U]>0,Str ([U],'###'),IF ([V]=0,'',Str ([U],'##')))` | [RM-001](#rm-RM-001) |
+| CONDITION | 11 | `IF ([T]<Date (),MlsTrans ('dernier sejour :'),IF ([S]>Date (),MlsTrans ('prochain sejour :'),MlsTrans ('sejour en cours')))` | [RM-002](#rm-RM-002) |
+| ... | | *+1 autres* | |
+
+#### CONSTANTE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 10 | `'-'` | - |
+
+#### DATE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 3 | `Date ()` | - |
+
+#### OTHER (9 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 17 | `[X]` | - |
+| OTHER | 13 | `MlsTrans ('au')` | - |
+| OTHER | 20 | `CtrlGoto ('N° Club Med Pass',1,0)` | - |
+| OTHER | 18 | `NOT([Y])` | - |
+| OTHER | 12 | `MlsTrans ('du')` | - |
+| ... | | *+4 autres* | |
+
+#### REFERENCE_VG (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 4 | `VG2` | - |
+
+#### CAST_LOGIQUE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 19 | `'TRUE'LOG` | - |
+
+#### CONCATENATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 7 | `Trim (V.N° CMP Déjà Saisi ? [J])&' '&[K]` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[115 Création des Cl]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T115[115 Création des Club ...]
+    style T115 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T115
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[115 Création des Cl]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T115[115 Création des Club ...]
+    style T115 fill:#58a6ff
+    NONE[Aucun callee]
+    T115 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 55 | Programme compact |
+| Expressions | 20 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 55) | Code sain |
+| Regles metier | 5 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 2 | Simple |
-| Tables | 4 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| tempo_caisses_1 | Table WRITE (Temp) | 1x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:04 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:56*

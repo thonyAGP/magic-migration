@@ -1,6 +1,6 @@
 ﻿# ADH IDE 187 - Program_186
 
-> **Analyse**: Phases 1-4 2026-02-07 07:28 -> 07:28 (16s) | Assemblage 07:28
+> **Analyse**: Phases 1-4 2026-02-08 04:05 -> 04:05 (4s) | Assemblage 04:05
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,21 +14,26 @@
 | IDE Position | 187 |
 | Nom Programme | Program_186 |
 | Fichier source | `Prg_187.xml` |
-| Dossier IDE | Printer |
+| Dossier IDE | General |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Program_186** assure la gestion complete de ce processus.
+ADH IDE 187 (Program_186) est un programme de gestion d'impression situé dans le dossier "Printer". Il s'agit d'un programme minimal avec une seule tâche et aucun écran visible, servant probablement de traitement en arrière-plan ou d'utilitaire pour la gestion des périphériques d'impression. Le programme ne possède ni logique complexe (0 expressions), ni modifications de tables (0 écritures), ni appels de sous-programmes, le rendant très autonome et sans dépendances.
+
+Ce programme présente un statut d'**orphelin potentiel** : aucun autre programme ne l'appelle directement, et il ne possède pas de nom public identifié permettant un appel dynamique via `ProgIdx()`. Il n'est pas référencé dans les composants partagés (ECF), suggérant qu'il n'est pas appelé depuis d'autres projets comme PBP ou PVE. Son absence de callers combinée à son absence de contenu fonctionnel identifié laisse supposer qu'il pourrait être du code mort ou un conteneur placeholder pour des opérations d'impression non documentées.
+
+Compte tenu de son profil ultra-simplifié (1 ligne de logique, aucune règle métier, aucune interaction avec les données), la migration de ce programme serait triviale. Cependant, avant toute suppression ou archivage, il faudrait vérifier s'il n'est pas appelé dynamiquement via des mécanismes Magic non détectés par l'analyse statique (comme des appels `ProgIdx()` ou des chaînes de programme construites à l'exécution).
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -155,4 +160,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:28*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:06*

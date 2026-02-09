@@ -1,199 +1,230 @@
 ﻿# ADH IDE 251 - Creation pied Ticket
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:13
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_247.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:39 -> 04:39 (4s) | Assemblage 04:39
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Creation pied Ticket** est le **generateur de pied de ticket** qui **cree la partie inferieure du ticket de caisse contenant les informations TPE et les signatures**.
-
-**Objectif metier** : Generer le contenu du pied de ticket (footer) incluant les informations de paiement par carte bancaire (TPE), les logs de mise a jour TPE, et eventuellement les zones de signature. Ce programme (50 lignes de logique) ecrit dans la table log_maj_tpe pour tracer les operations de terminal de paiement associees au ticket.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Systeme d'impression (appel automatique lors impression ticket) |
-| **Quoi** | Generation du pied de ticket avec infos TPE |
-| **Pourquoi** | Completer le ticket avec les informations de paiement electronique |
-| **Declencheur** | Appel depuis les programmes d'impression de ticket |
-| **Resultat** | Pied de ticket genere, log TPE enregistre |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 251 |
-| **Fichier XML** | `Prg_247.xml` |
-| **Description** | Creation pied Ticket |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 50 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 251 |
+| Nom Programme | Creation pied Ticket |
+| Fichier source | `Prg_251.xml` |
+| Dossier IDE | Impression |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 867 | log_maj_tpe | log_maj_tpe | WRITE | Ecriture |
+**ADH IDE 251 - Création pied Ticket** génère le footer du ticket de caisse (impression) en enrichissant les données avec les informations de terminal TPE (Terminal de Paiement Électronique). Le programme enregistre une trace dans la table `log_maj_tpe` pour assurer la traçabilité des opérations de paiement effectuées à la caisse.
 
-**Resume**: 1 tables accedees dont **1 en ecriture**
+Comportement de base : accepte les données du ticket en cours, ajoute les informations spécifiques TPE (numéro terminal, date/heure d'opération, signature si nécessaire) et écrit un enregistrement de log pour audit. Aucun paramètre d'entrée, une seule table manipulée en écriture.
 
-### 2.3 Parametres d'entree (0 parametres)
+⚠️ **Alerte migration** : Le programme est actuellement orphelin (aucun appelant détecté). À vérifier si c'est intentionnel ou si un lien dynamique `ProgIdx('nom')` le sollicite. Logique simple et isolée, facilement migrée en utilitaire standalone une fois l'usage clarifiée.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee dans les expressions)*
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 13
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 50 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (1)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 867 | log_maj_tpe |  | DB |   | **W** |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 867 - log_maj_tpe (**W**) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.Societe | W | Alpha |
+| B | P.Compte_Gm | W | Numeric |
+| C | P.filiation | W | Numeric |
+| D | P.Taux | W | Numeric |
+| E | P.Montant Ht | W | Numeric |
+| F | P.Montant Tva | W | Numeric |
+| G | P.Montant Ttc | W | Numeric |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (7)
+
+Variables recues en parametre.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | P.Societe | Alpha | - |
+| EO | P.Compte_Gm | Numeric | 1x parametre entrant |
+| EP | P.filiation | Numeric | - |
+| EQ | P.Taux | Numeric | 1x parametre entrant |
+| ER | P.Montant Ht | Numeric | 2x parametre entrant |
+| ES | P.Montant Tva | Numeric | 2x parametre entrant |
+| ET | P.Montant Ttc | Numeric | 2x parametre entrant |
+
+## 12. EXPRESSIONS
+
+**13 / 13 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CALCULATION | 6 | 0 |
+| CONSTANTE | 4 | 0 |
+| OTHER | 2 | 0 |
+| STRING | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CALCULATION (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CALCULATION | 7 | `[W]+P.Montant Ht [E]` | - |
+| CALCULATION | 8 | `[X]+P.Montant Tva [F]` | - |
+| CALCULATION | 9 | `[Y]+P.Montant Ttc [G]` | - |
+| CALCULATION | 3 | `[N]+P.Montant Ht [E]` | - |
+| CALCULATION | 4 | `[O]+P.Montant Tva [F]` | - |
+| ... | | *+1 autres* | |
+
+#### CONSTANTE (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 11 | `'TICK'` | - |
+| CONSTANTE | 13 | `0` | - |
+| CONSTANTE | 6 | `999` | - |
+| CONSTANTE | 10 | `'C'` | - |
+
+#### OTHER (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 12 | `P.Compte_Gm [B]` | - |
+| OTHER | 2 | `P.Taux [D]` | - |
+
+#### STRING (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 1 | `Val(Fill ('9',10),'10')` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[251 Creation pied T]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T251[251 Creation pied Ticket]
+    style T251 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T251
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[251 Creation pied T]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T251[251 Creation pied Ticket]
+    style T251 fill:#58a6ff
+    NONE[Aucun callee]
+    T251 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 50 | Programme compact |
+| Expressions | 13 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 50) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 1 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| log_maj_tpe | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:13 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:40*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 296 - Print versement/retrait bi
 
-> **Analyse**: Phases 1-4 2026-02-07 03:55 -> 03:55 (33s) | Assemblage 03:55
+> **Analyse**: Phases 1-4 2026-02-07 03:55 -> 03:55 (33s) | Assemblage 05:13
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,42 +18,16 @@
 | Taches | 13 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 1 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 12/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Print versement/retrait bi** assure la gestion complete de ce processus.
+**ADH IDE 296 - Print versement/retrait bi** gère l'impression des reçus de versement et retrait bilatéraux dans le système de caisse. Le programme initialise l'imprimante via un appel à ADH IDE 182 (Raz Current Printer), puis structure le flux d'impression sur plusieurs tâches organisées pour afficher l'état d'avancement à l'utilisateur.
 
-Le flux de traitement s'organise en **2 blocs fonctionnels** :
+La logique d'impression suit un pattern standardisé avec six tâches distinctes. La première tâche affiche un message "Veuillez patienter" pendant le traitement. Les quatre tâches intermédiaires (Printer 1, Impression reçu, etc.) gèrent les différentes étapes d'impression du reçu de versement/retrait, avec une tâche répétée deux fois pour traiter les deux volets du document bilatéral. La dernière tâche (Printer 4) finalise le processus d'impression.
 
-- **Traitement** (8 taches) : traitements metier divers
-- **Impression** (5 taches) : generation de tickets et documents
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (8 taches)
-
-- **296** - Veuillez patienter ... **[[ECRAN]](#ecran-t1)**
-- **296.1.1** - Impression reçu verst/retrait **[[ECRAN]](#ecran-t3)**
-- **296.1.2** - Impression reçu verst/retrait **[[ECRAN]](#ecran-t4)**
-- **296.2.1** - Impression reçu verst/retrait **[[ECRAN]](#ecran-t6)**
-- **296.2.2** - Impression reçu verst/retrait **[[ECRAN]](#ecran-t7)**
-- **296.3.1** - Impression reçu verst/retrait **[[ECRAN]](#ecran-t9)**
-- **296.4.1** - Impression reçu verst/retrait **[[ECRAN]](#ecran-t11)**
-- **296.5.1** - Impression reçu verst/retrait **[[ECRAN]](#ecran-t13)**
-
-#### Phase 2 : Impression (5 taches)
-
-- **296.1** - Printer 1 **[[ECRAN]](#ecran-t2)**
-- **296.2** - Printer 4 **[[ECRAN]](#ecran-t5)**
-- **296.3** - Printer 5 **[[ECRAN]](#ecran-t8)**
-- **296.4** - Printer 8 **[[ECRAN]](#ecran-t10)**
-- **296.5** - Printer 9 **[[ECRAN]](#ecran-t12)**
-
-Delegue a : [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
-
-</details>
+Ce programme fait partie des utilitaires de caisse ADH.ecf, exploités par les modules d'opérations de change et de gestion des dépôts pour produire les preuves imprimées des transactions de trésorerie. Le pattern structuré en tâches séquentielles garantit que chaque étape d'impression (initialisation, mise en forme, impression volet 1, volet 2, finalization) s'exécute dans l'ordre correct.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -63,7 +37,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>296 - Veuillez patienter ... [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Veuillez patienter ... [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (8 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -73,61 +47,61 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [296.1.1](#t3) | Impression reçu verst/retrait **[[ECRAN]](#ecran-t3)** | Traitement |
-| [296.1.2](#t4) | Impression reçu verst/retrait **[[ECRAN]](#ecran-t4)** | Traitement |
-| [296.2.1](#t6) | Impression reçu verst/retrait **[[ECRAN]](#ecran-t6)** | Traitement |
-| [296.2.2](#t7) | Impression reçu verst/retrait **[[ECRAN]](#ecran-t7)** | Traitement |
-| [296.3.1](#t9) | Impression reçu verst/retrait **[[ECRAN]](#ecran-t9)** | Traitement |
-| [296.4.1](#t11) | Impression reçu verst/retrait **[[ECRAN]](#ecran-t11)** | Traitement |
-| [296.5.1](#t13) | Impression reçu verst/retrait **[[ECRAN]](#ecran-t13)** | Traitement |
+| [T3](#t3) | Impression reçu verst/retrait **[ECRAN]** | Traitement |
+| [T4](#t4) | Impression reçu verst/retrait **[ECRAN]** | Traitement |
+| [T6](#t6) | Impression reçu verst/retrait **[ECRAN]** | Traitement |
+| [T7](#t7) | Impression reçu verst/retrait **[ECRAN]** | Traitement |
+| [T9](#t9) | Impression reçu verst/retrait **[ECRAN]** | Traitement |
+| [T11](#t11) | Impression reçu verst/retrait **[ECRAN]** | Traitement |
+| [T13](#t13) | Impression reçu verst/retrait **[ECRAN]** | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t3"></a>296.1.1 - Impression reçu verst/retrait [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Impression reçu verst/retrait [ECRAN]
 
 **Role** : Generation du document : Impression reçu verst/retrait.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t3)
 
 ---
 
-#### <a id="t4"></a>296.1.2 - Impression reçu verst/retrait [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Impression reçu verst/retrait [ECRAN]
 
 **Role** : Generation du document : Impression reçu verst/retrait.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t4)
 
 ---
 
-#### <a id="t6"></a>296.2.1 - Impression reçu verst/retrait [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Impression reçu verst/retrait [ECRAN]
 
 **Role** : Generation du document : Impression reçu verst/retrait.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t6)
 
 ---
 
-#### <a id="t7"></a>296.2.2 - Impression reçu verst/retrait [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - Impression reçu verst/retrait [ECRAN]
 
 **Role** : Generation du document : Impression reçu verst/retrait.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t9"></a>296.3.1 - Impression reçu verst/retrait [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Impression reçu verst/retrait [ECRAN]
 
 **Role** : Generation du document : Impression reçu verst/retrait.
 **Ecran** : 357 x 103 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t11"></a>296.4.1 - Impression reçu verst/retrait [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Impression reçu verst/retrait [ECRAN]
 
 **Role** : Generation du document : Impression reçu verst/retrait.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t13"></a>296.5.1 - Impression reçu verst/retrait [[ECRAN]](#ecran-t13)
+#### <a id="t13"></a>T13 - Impression reçu verst/retrait [ECRAN]
 
 **Role** : Generation du document : Impression reçu verst/retrait.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t13)
@@ -139,7 +113,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>296.1 - Printer 1 [[ECRAN]](#ecran-t2)
+#### <a id="t2"></a>T2 - Printer 1 [ECRAN]
 
 **Role** : Generation du document : Printer 1.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t2)
@@ -147,7 +121,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t5"></a>296.2 - Printer 4 [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Printer 4 [ECRAN]
 
 **Role** : Generation du document : Printer 4.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t5)
@@ -155,7 +129,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t8"></a>296.3 - Printer 5 [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Printer 5 [ECRAN]
 
 **Role** : Generation du document : Printer 5.
 **Ecran** : 357 x 103 DLU (MDI) | [Voir mockup](#ecran-t8)
@@ -163,7 +137,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t10"></a>296.4 - Printer 8 [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - Printer 8 [ECRAN]
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t10)
@@ -171,7 +145,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t12"></a>296.5 - Printer 9 [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - Printer 9 [ECRAN]
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 1058 x 791 DLU (MDI) | [Voir mockup](#ecran-t12)
@@ -180,7 +154,59 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+5 regles identifiees:
+
+### Impression (5 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Verification que l'imprimante courante est la n1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 3 : `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action conditionnelle |
+| **Impact** | [T2 - Printer 1](#t2) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n4
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 4 : `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=4 â†’ Action conditionnelle |
+| **Impact** | [T2 - Printer 1](#t2) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n5
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 5 : `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=5 â†’ Action conditionnelle |
+| **Impact** | [T2 - Printer 1](#t2) |
+
+#### <a id="rm-RM-004"></a>[RM-004] Verification que l'imprimante courante est la n8
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 6 : `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=8 â†’ Action conditionnelle |
+| **Impact** | [T2 - Printer 1](#t2) |
+
+#### <a id="rm-RM-005"></a>[RM-005] Verification que l'imprimante courante est la n9
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 7 : `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action conditionnelle |
+| **Impact** | [T2 - Printer 1](#t2) |
 
 ## 6. CONTEXTE
 
@@ -195,14 +221,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 296 | 296 | Veuillez patienter ... | MDI | 424 | 56 | Traitement |
+| 1 | 296 | T1 | Veuillez patienter ... | MDI | 424 | 56 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>296 - Veuillez patienter ...
-**Tache** : [296](#t1) | **Type** : MDI | **Dimensions** : 424 x 56 DLU
+**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 424 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter ...
 
 <!-- FORM-DATA:
@@ -291,19 +317,19 @@ Ecran unique: **Veuillez patienter ...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **296.1** | [**Veuillez patienter ...** (296)](#t1) [mockup](#ecran-t1) | MDI | 424x56 | Traitement |
-| 296.1.1 | [Impression reçu verst/retrait (296.1.1)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | |
-| 296.1.2 | [Impression reçu verst/retrait (296.1.2)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
-| 296.1.3 | [Impression reçu verst/retrait (296.2.1)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
-| 296.1.4 | [Impression reçu verst/retrait (296.2.2)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
-| 296.1.5 | [Impression reçu verst/retrait (296.3.1)](#t9) [mockup](#ecran-t9) | MDI | 357x103 | |
-| 296.1.6 | [Impression reçu verst/retrait (296.4.1)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
-| 296.1.7 | [Impression reçu verst/retrait (296.5.1)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
-| **296.2** | [**Printer 1** (296.1)](#t2) [mockup](#ecran-t2) | MDI | 1058x791 | Impression |
-| 296.2.1 | [Printer 4 (296.2)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
-| 296.2.2 | [Printer 5 (296.3)](#t8) [mockup](#ecran-t8) | MDI | 357x103 | |
-| 296.2.3 | [Printer 8 (296.4)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
-| 296.2.4 | [Printer 9 (296.5)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
+| **296.1** | [**Veuillez patienter ...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 424x56 | Traitement |
+| 296.1.1 | [Impression reçu verst/retrait (T3)](#t3) [mockup](#ecran-t3) | MDI | 1058x791 | |
+| 296.1.2 | [Impression reçu verst/retrait (T4)](#t4) [mockup](#ecran-t4) | MDI | 1058x791 | |
+| 296.1.3 | [Impression reçu verst/retrait (T6)](#t6) [mockup](#ecran-t6) | MDI | 1058x791 | |
+| 296.1.4 | [Impression reçu verst/retrait (T7)](#t7) [mockup](#ecran-t7) | MDI | 1058x791 | |
+| 296.1.5 | [Impression reçu verst/retrait (T9)](#t9) [mockup](#ecran-t9) | MDI | 357x103 | |
+| 296.1.6 | [Impression reçu verst/retrait (T11)](#t11) [mockup](#ecran-t11) | MDI | 1058x791 | |
+| 296.1.7 | [Impression reçu verst/retrait (T13)](#t13) [mockup](#ecran-t13) | MDI | 1058x791 | |
+| **296.2** | [**Printer 1** (T2)](#t2) [mockup](#ecran-t2) | MDI | 1058x791 | Impression |
+| 296.2.1 | [Printer 4 (T5)](#t5) [mockup](#ecran-t5) | MDI | 1058x791 | |
+| 296.2.2 | [Printer 5 (T8)](#t8) [mockup](#ecran-t8) | MDI | 357x103 | |
+| 296.2.3 | [Printer 8 (T10)](#t10) [mockup](#ecran-t10) | MDI | 1058x791 | |
+| 296.2.4 | [Printer 9 (T12)](#t12) [mockup](#ecran-t12) | MDI | 1058x791 | |
 
 ### 9.4 Algorigramme
 
@@ -311,18 +337,20 @@ Ecran unique: **Veuillez patienter ...**
 flowchart TD
     START([START])
     INIT[Init controles]
-    SAISIE[Traitement principal]
+    START --> INIT
+    B1[Traitement (8t)]
+    INIT --> B1
+    B2[Impression (5t)]
+    B1 --> B2
     ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    B2 --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -332,8 +360,8 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 30 | gm-recherche_____gmr | Index de recherche | DB |   |   | L | 7 |
 | 40 | comptable________cte |  | DB | R |   |   | 7 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB |   |   | L | 7 |
 
 ### Colonnes par table (1 / 1 tables avec colonnes identifiees)
 
@@ -463,7 +491,7 @@ graph LR
 | Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 233) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 5 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -485,4 +513,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:55*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 05:13*

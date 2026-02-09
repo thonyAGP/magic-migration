@@ -1,6 +1,6 @@
 ﻿# ADH IDE 242 - Menu Choix Saisie/Annul vente
 
-> **Analyse**: 2026-02-07 03:54
+> **Analyse**: 2026-02-08 04:35
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

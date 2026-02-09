@@ -1,6 +1,6 @@
 ﻿# ADH IDE 238 - Transaction Nouv vente PMS-584
 
-> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:54 (29s) | Assemblage 03:54
+> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:54 (29s) | Assemblage 04:33
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,159 +18,15 @@
 | Taches | 63 (12 ecrans visibles) |
 | Tables modifiees | 11 |
 | Programmes appeles | 20 |
+| Complexite | **HAUTE** (score 85/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Transaction Nouv vente PMS-584** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md).
+ADH IDE 238 est le programme de saisie transactionnelle principal pour les ventes au guichet de la caisse. Il capture l'intégralité du flux commercial : sélection articles/services, vérification soldes (Gift Pass, Resort Credit), calcul des totaux, puis gestion complète du paiement (choix moyen de règlement, TPE, chèques). Le programme valide les caractères saisis, calcule les stocks en temps réel, applique la fidelisation/remises, et gère les cas exceptionnels (refus TPE, articles non vendables).
 
-Le flux de traitement s'organise en **10 blocs fonctionnels** :
+Une fois la transaction acceptée, le programme orchestrate l'impression du ticket via une logique de file d'attente (Get Printer → Set Listing Number → Print ticket), supporte plusieurs formats (PMS-584 standard vs. LEX spécifique), et enregistre les écarts caisse par lieu de vente. Il interfacce avec le système Booker pour les vols/hébergements, gère les dépôts en monnaie (deversement), et met à jour les compteurs clés (cpt) nécessaires à la fermeture caisse.
 
-- **Traitement** (27 taches) : traitements metier divers
-- **Saisie** (9 taches) : ecrans de saisie utilisateur (formulaires, champs, donnees)
-- **Creation** (7 taches) : insertion d'enregistrements en base (mouvements, prestations)
-- **Reglement** (5 taches) : gestion des moyens de paiement et reglements
-- **Calcul** (5 taches) : calculs de montants, stocks ou compteurs
-- **Transfert** (4 taches) : transferts de donnees entre modules ou deversements
-- **Initialisation** (3 taches) : reinitialisation d'etats et de variables de travail
-- **Validation** (1 tache) : controles et verifications de coherence
-- **Impression** (1 tache) : generation de tickets et documents
-- **Consultation** (1 tache) : ecrans de recherche, selection et consultation
-
-**Donnees modifiees** : 11 tables en ecriture (reseau_cloture___rec, prestations, mvt_prestation___mpr, compte_gm________cgm, compteurs________cpt, tempo_ecran_police, stat_lieu_vente_date, Boo_ResultsRechercheHoraire, log_booker, Table_945, Table_1037).
-
-**Logique metier** : 19 regles identifiees couvrant conditions metier, calculs avec pourcentages, positionnement dynamique d'UI, valeurs par defaut.
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Saisie (9 taches)
-
-- **238** - Saisie transaction **[[ECRAN]](#ecran-t1)**
-- **238.4** - Saisie Bilaterale **[[ECRAN]](#ecran-t8)**
-- **238.5** - Saisie mode de règlement **[[ECRAN]](#ecran-t9)**
-- **238.7** - Saisie Commentaires **[[ECRAN]](#ecran-t11)**
-- **238.8** - VRL : Saisie identité **[[ECRAN]](#ecran-t12)**
-- **238.13.1** - Saisie dates forfait **[[ECRAN]](#ecran-t20)**
-- **238.22** - Affiche saisie **[[ECRAN]](#ecran-t31)**
-- **238.41** - Affiche saisie **[[ECRAN]](#ecran-t54)**
-- **238.41.2.1** - Ligne vente
-
-Delegue a : [ Print ticket vente PMS-584 (IDE 236)](ADH-IDE-236.md), [ Print ticket vente LEX (IDE 235)](ADH-IDE-235.md), [Deversement Transaction (IDE 247)](ADH-IDE-247.md)
-
-#### Phase 2 : Initialisation (3 taches)
-
-- **238.1** - RAZ LCO liberation
-- **238.6** - RAZ 269
-- **238.24** - RAZ 269
-
-Delegue a : [Reinit Aff PYR (IDE 249)](ADH-IDE-249.md)
-
-#### Phase 3 : Reglement (5 taches)
-
-- **238.2** - Reglements suite a refus TPE **[[ECRAN]](#ecran-t3)**
-- **238.2.3** - Verif reglement tpe
-- **238.21** - Creation reglement
-- **238.26** - Changement MOP multi paiement
-- **238.37** - Vérif Mop Mobilité
-
-Delegue a : [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md), [Gestion Chèque (IDE 228)](ADH-IDE-228.md)
-
-#### Phase 4 : Validation (1 tache)
-
-- **238.2.1** - verif reg restant
-
-Delegue a : [    SP Caractères Interdits (IDE 84)](ADH-IDE-84.md)
-
-#### Phase 5 : Creation (7 taches)
-
-- **238.2.2** - creation règlement
-- **238.16** - Creation prestation
-- **238.20** - Creation Tempo
-- **238.21.1** - Creation
-- **238.40** - Creation_heure_liberation
-- **238.41.1** - Creation Tempo
-- **238.41.2.6** - Creation prestation
-
-#### Phase 6 : Traitement (27 taches)
-
-- **238.3** - Dé-Affecition
-- **238.9** - Test si cloture en cours
-- **238.9.1** - Blocage cloture v1
-- **238.9.2** - Blocage cloture v1
-- **238.11** - Test reseau
-- **238.12** - Forfait
-- **238.13** - (sans nom) **[[ECRAN]](#ecran-t19)**
-- **238.14** - Effacement forfait
-- **238.15** - Effacement mvt forfait
-- **238.17** - Deblocage cloture v1
-- **238.18** - Deblocage cloture
-- **238.19** - Gratuite ?
-- **238.23** - garantie?
-- **238.31.1** - Supprime enregs non affectés
-- **238.32** - Affectation Auto
-- **238.33** - MaJ Num Chèque
-- **238.34** - Vérif. existe vte OD
-- **238.35** - Envoi mail garantie
-- **238.36** - Envoi mail garantie
-- **238.38** - Libération du logement **[[ECRAN]](#ecran-t51)**
-- **238.39** - Récup nb chambre /LCO **[[ECRAN]](#ecran-t52)**
-- **238.41.2** - Suppression fich dépend.
-- **238.41.2.2** - Heure libération
-- **238.41.2.3** - Heure libération
-- **238.41.2.4** - Effacement forfait
-- **238.41.2.5** - Effacement mvt forfait
-- **238.41.2.7** - Supprime enregs non affectés
-
-Delegue a : [Solde Gift Pass (IDE 241)](ADH-IDE-241.md), [    SP Caractères Interdits (IDE 84)](ADH-IDE-84.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Get Fidelisation et Remise (IDE 225)](ADH-IDE-225.md), [Get Matricule (IDE 227)](ADH-IDE-227.md), [Gestion Chèque (IDE 228)](ADH-IDE-228.md), [Solde Resort Credit (IDE 254)](ADH-IDE-254.md)
-
-#### Phase 7 : Calcul (5 taches)
-
-- **238.10** - Reaffichage infos compte
-- **238.27** - calcul nombre carte
-- **238.29** - Compte Enregs affectés
-- **238.31.2** - Compte Enregs affectés
-- **238.31.3** - Compte Enregs affectés
-
-Delegue a : [Solde Gift Pass (IDE 241)](ADH-IDE-241.md), [Calcul stock produit WS (IDE 149)](ADH-IDE-149.md), [Solde Resort Credit (IDE 254)](ADH-IDE-254.md)
-
-#### Phase 8 : Consultation (1 tache)
-
-- **238.19.1** - Recherche imputation/ssimput
-
-Delegue a : [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md), [Selection Vols /t Ville à côté (IDE 277)](ADH-IDE-277.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Get Fidelisation et Remise (IDE 225)](ADH-IDE-225.md), [Get Matricule (IDE 227)](ADH-IDE-227.md), [Choix PYR (plusieurs chambres) (IDE 248)](ADH-IDE-248.md), [Zoom articles (IDE 257)](ADH-IDE-257.md)
-
-#### Phase 9 : Impression (1 tache)
-
-- **238.25** - Increment Num. Ticket(VRL/VSL)
-
-Delegue a : [ Print ticket vente PMS-584 (IDE 236)](ADH-IDE-236.md), [ Print ticket vente LEX (IDE 235)](ADH-IDE-235.md), [Get Printer (IDE 179)](ADH-IDE-179.md), [Printer choice (IDE 180)](ADH-IDE-180.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md)
-
-#### Phase 10 : Transfert (4 taches)
-
-- **238.28** - Raz Affectation Transfert
-- **238.30** - Type transfert **[[ECRAN]](#ecran-t39)**
-- **238.30.1** - Affiche Transfert A/R **[[ECRAN]](#ecran-t40)**
-- **238.31** - Affectation PAX / Transfert **[[ECRAN]](#ecran-t41)**
-
-Delegue a : [Deversement Transaction (IDE 247)](ADH-IDE-247.md)
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| stat_lieu_vente_date | **W**/L (14 usages) | Statistiques point de vente |
-| tempo_ecran_police | R/**W**/L (11 usages) | Table temporaire ecran |
-| Boo_ResultsRechercheHoraire | R/**W** (9 usages) | Index de recherche |
-| reseau_cloture___rec | R/**W** (5 usages) | Donnees reseau/cloture |
-| prestations | R/**W** (5 usages) | Prestations/services vendus |
-| Table_1037 | **W** (4 usages) |  |
-| mvt_prestation___mpr | **W**/L (3 usages) | Prestations/services vendus |
-| compte_gm________cgm | **W** (2 usages) | Comptes GM (generaux) |
-| log_booker | **W** (1 usages) |  |
-| compteurs________cpt | **W** (1 usages) | Comptes GM (generaux) |
-| Table_945 | **W** (1 usages) |  |
-
-</details>
+La structure à 6 sous-tâches maîtrise les étapes critiques : initialisation de la transaction, validation des règlements avant refus TPE, vérification des soldes restants post-paiement, et déversement final des fonds. Les 11 tables modifiées couvrent l'historique ventes (prestations/mvt_prestation), les comptes mouvementés (compte_gm), les statistiques (stat_lieu_vente_date), et la cache locale (tempo_ecran_police).
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -180,7 +36,7 @@ L'operateur saisit les donnees de la transaction via 8 ecrans (Saisie transactio
 
 ---
 
-#### <a id="t1"></a>238 - Saisie transaction [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Saisie transaction [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (9 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 1112 x 279 DLU (Modal) | [Voir mockup](#ecran-t1)
@@ -190,14 +46,14 @@ L'operateur saisit les donnees de la transaction via 8 ecrans (Saisie transactio
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [238.4](#t8) | Saisie Bilaterale **[[ECRAN]](#ecran-t8)** | Saisie |
-| [238.5](#t9) | Saisie mode de règlement **[[ECRAN]](#ecran-t9)** | Saisie |
-| [238.7](#t11) | Saisie Commentaires **[[ECRAN]](#ecran-t11)** | Saisie |
-| [238.8](#t12) | VRL : Saisie identité **[[ECRAN]](#ecran-t12)** | Saisie |
-| [238.13.1](#t20) | Saisie dates forfait **[[ECRAN]](#ecran-t20)** | Saisie |
-| [238.22](#t31) | Affiche saisie **[[ECRAN]](#ecran-t31)** | Saisie |
-| [238.41](#t54) | Affiche saisie **[[ECRAN]](#ecran-t54)** | Saisie |
-| [238.41.2.1](#t57) | Ligne vente | Saisie |
+| [T8](#t8) | Saisie Bilaterale **[ECRAN]** | Saisie |
+| [T9](#t9) | Saisie mode de règlement **[ECRAN]** | Saisie |
+| [T11](#t11) | Saisie Commentaires **[ECRAN]** | Saisie |
+| [T12](#t12) | VRL : Saisie identité **[ECRAN]** | Saisie |
+| [T20](#t20) | Saisie dates forfait **[ECRAN]** | Saisie |
+| [T31](#t31) | Affiche saisie **[ECRAN]** | Saisie |
+| [T54](#t54) | Affiche saisie **[ECRAN]** | Saisie |
+| [T57](#t57) | Ligne vente | Saisie |
 
 </details>
 **Variables liees** : R (W0 FIN SAISIE OD), CD (W0 b.Saisie PAX), EA (W0 Forcer Transaction Manuelle), ED (W0 Fin Transaction TPE), FD (V Nbre de Ligne Saisies)
@@ -205,7 +61,7 @@ L'operateur saisit les donnees de la transaction via 8 ecrans (Saisie transactio
 
 ---
 
-#### <a id="t8"></a>238.4 - Saisie Bilaterale [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Saisie Bilaterale [ECRAN]
 
 **Role** : Saisie des donnees : Saisie Bilaterale.
 **Ecran** : 326 x 249 DLU (Type6) | [Voir mockup](#ecran-t8)
@@ -214,7 +70,7 @@ L'operateur saisit les donnees de la transaction via 8 ecrans (Saisie transactio
 
 ---
 
-#### <a id="t9"></a>238.5 - Saisie mode de règlement [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Saisie mode de règlement [ECRAN]
 
 **Role** : Saisie des donnees : Saisie mode de règlement.
 **Ecran** : 506 x 250 DLU (Type6) | [Voir mockup](#ecran-t9)
@@ -223,7 +79,7 @@ L'operateur saisit les donnees de la transaction via 8 ecrans (Saisie transactio
 
 ---
 
-#### <a id="t11"></a>238.7 - Saisie Commentaires [[ECRAN]](#ecran-t11)
+#### <a id="t11"></a>T11 - Saisie Commentaires [ECRAN]
 
 **Role** : Saisie des donnees : Saisie Commentaires.
 **Ecran** : 772 x 169 DLU (Type6) | [Voir mockup](#ecran-t11)
@@ -232,7 +88,7 @@ L'operateur saisit les donnees de la transaction via 8 ecrans (Saisie transactio
 
 ---
 
-#### <a id="t12"></a>238.8 - VRL : Saisie identité [[ECRAN]](#ecran-t12)
+#### <a id="t12"></a>T12 - VRL : Saisie identité [ECRAN]
 
 **Role** : Saisie des donnees : VRL : Saisie identité.
 **Ecran** : 699 x 157 DLU (MDI) | [Voir mockup](#ecran-t12)
@@ -241,7 +97,7 @@ L'operateur saisit les donnees de la transaction via 8 ecrans (Saisie transactio
 
 ---
 
-#### <a id="t20"></a>238.13.1 - Saisie dates forfait [[ECRAN]](#ecran-t20)
+#### <a id="t20"></a>T20 - Saisie dates forfait [ECRAN]
 
 **Role** : Saisie des donnees : Saisie dates forfait.
 **Ecran** : 528 x 121 DLU (MDI) | [Voir mockup](#ecran-t20)
@@ -250,7 +106,7 @@ L'operateur saisit les donnees de la transaction via 8 ecrans (Saisie transactio
 
 ---
 
-#### <a id="t31"></a>238.22 - Affiche saisie [[ECRAN]](#ecran-t31)
+#### <a id="t31"></a>T31 - Affiche saisie [ECRAN]
 
 **Role** : Saisie des donnees : Affiche saisie.
 **Ecran** : 427 x 124 DLU (Modal) | [Voir mockup](#ecran-t31)
@@ -259,7 +115,7 @@ L'operateur saisit les donnees de la transaction via 8 ecrans (Saisie transactio
 
 ---
 
-#### <a id="t54"></a>238.41 - Affiche saisie [[ECRAN]](#ecran-t54)
+#### <a id="t54"></a>T54 - Affiche saisie [ECRAN]
 
 **Role** : Saisie des donnees : Affiche saisie.
 **Ecran** : 427 x 124 DLU (Modal) | [Voir mockup](#ecran-t54)
@@ -268,7 +124,7 @@ L'operateur saisit les donnees de la transaction via 8 ecrans (Saisie transactio
 
 ---
 
-#### <a id="t57"></a>238.41.2.1 - Ligne vente
+#### <a id="t57"></a>T57 - Ligne vente
 
 **Role** : Saisie des donnees : Ligne vente.
 **Variables liees** : HB (P.Toute ligne), HE (P.i.num ligne a modifier), HF (P.i.nr ligne a supprimer), EF (W0 Total_Vente), FD (V Nbre de Ligne Saisies)
@@ -281,21 +137,21 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t2"></a>238.1 - RAZ LCO liberation
+#### <a id="t2"></a>T2 - RAZ LCO liberation
 
 **Role** : Reinitialisation : RAZ LCO liberation.
 **Delegue a** : [Reinit Aff PYR (IDE 249)](ADH-IDE-249.md)
 
 ---
 
-#### <a id="t10"></a>238.6 - RAZ 269
+#### <a id="t10"></a>T10 - RAZ 269
 
 **Role** : Reinitialisation : RAZ 269.
 **Delegue a** : [Reinit Aff PYR (IDE 249)](ADH-IDE-249.md)
 
 ---
 
-#### <a id="t33"></a>238.24 - RAZ 269
+#### <a id="t33"></a>T33 - RAZ 269
 
 **Role** : Reinitialisation : RAZ 269.
 **Delegue a** : [Reinit Aff PYR (IDE 249)](ADH-IDE-249.md)
@@ -307,7 +163,7 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ---
 
-#### <a id="t3"></a>238.2 - Reglements suite a refus TPE [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Reglements suite a refus TPE [ECRAN]
 
 **Role** : Gestion du reglement : Reglements suite a refus TPE.
 **Ecran** : 708 x 256 DLU (Type6) | [Voir mockup](#ecran-t3)
@@ -315,7 +171,7 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ---
 
-#### <a id="t6"></a>238.2.3 - Verif reglement tpe
+#### <a id="t6"></a>T6 - Verif reglement tpe
 
 **Role** : Gestion du reglement : Verif reglement tpe.
 **Variables liees** : EU (V.Reglement premier article), FE (v Nbre ligne de reglement Saisi), FG (V.Total reglement ligne), FH (V.Multi reglement ligne)
@@ -323,7 +179,7 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ---
 
-#### <a id="t29"></a>238.21 - Creation reglement
+#### <a id="t29"></a>T29 - Creation reglement
 
 **Role** : Gestion du reglement : Creation reglement.
 **Variables liees** : EU (V.Reglement premier article), FE (v Nbre ligne de reglement Saisi), FG (V.Total reglement ligne), FH (V.Multi reglement ligne)
@@ -331,7 +187,7 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ---
 
-#### <a id="t35"></a>238.26 - Changement MOP multi paiement
+#### <a id="t35"></a>T35 - Changement MOP multi paiement
 
 **Role** : Gestion du reglement : Changement MOP multi paiement.
 **Variables liees** : DH (W0 mode de paiement), FC (v Réponse mode paiement), FH (V.Multi reglement ligne), GD (v.Existe paiement OD), GE (v.Existe paiement $CARD)
@@ -339,7 +195,7 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ---
 
-#### <a id="t50"></a>238.37 - Vérif Mop Mobilité
+#### <a id="t50"></a>T50 - Vérif Mop Mobilité
 
 **Role** : Traitement : Vérif Mop Mobilité.
 **Variables liees** : GJ (v.Vérif Mop Mobilité)
@@ -352,7 +208,7 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ---
 
-#### <a id="t4"></a>238.2.1 - verif reg restant
+#### <a id="t4"></a>T4 - verif reg restant
 
 **Role** : Verification : verif reg restant.
 
@@ -363,43 +219,43 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t5"></a>238.2.2 - creation règlement
+#### <a id="t5"></a>T5 - creation règlement
 
 **Role** : Creation d'enregistrement : creation règlement.
 
 ---
 
-#### <a id="t23"></a>238.16 - Creation prestation
+#### <a id="t23"></a>T23 - Creation prestation
 
 **Role** : Creation d'enregistrement : Creation prestation.
 
 ---
 
-#### <a id="t28"></a>238.20 - Creation Tempo
+#### <a id="t28"></a>T28 - Creation Tempo
 
 **Role** : Creation d'enregistrement : Creation Tempo.
 
 ---
 
-#### <a id="t30"></a>238.21.1 - Creation
+#### <a id="t30"></a>T30 - Creation
 
 **Role** : Creation d'enregistrement : Creation.
 
 ---
 
-#### <a id="t53"></a>238.40 - Creation_heure_liberation
+#### <a id="t53"></a>T53 - Creation_heure_liberation
 
 **Role** : Creation d'enregistrement : Creation_heure_liberation.
 
 ---
 
-#### <a id="t55"></a>238.41.1 - Creation Tempo
+#### <a id="t55"></a>T55 - Creation Tempo
 
 **Role** : Creation d'enregistrement : Creation Tempo.
 
 ---
 
-#### <a id="t62"></a>238.41.2.6 - Creation prestation
+#### <a id="t62"></a>T62 - Creation prestation
 
 **Role** : Creation d'enregistrement : Creation prestation.
 
@@ -410,137 +266,137 @@ Traitements internes.
 
 ---
 
-#### <a id="t7"></a>238.3 - Dé-Affecition
+#### <a id="t7"></a>T7 - Dé-Affecition
 
 **Role** : Traitement : Dé-Affecition.
 
 ---
 
-#### <a id="t13"></a>238.9 - Test si cloture en cours
+#### <a id="t13"></a>T13 - Test si cloture en cours
 
 **Role** : Verification : Test si cloture en cours.
 **Variables liees** : T (W0 Cloture en cours), GQ (v.annuler imputation en cours?)
 
 ---
 
-#### <a id="t14"></a>238.9.1 - Blocage cloture v1
+#### <a id="t14"></a>T14 - Blocage cloture v1
 
 **Role** : Traitement : Blocage cloture v1.
 **Variables liees** : T (W0 Cloture en cours)
 
 ---
 
-#### <a id="t15"></a>238.9.2 - Blocage cloture v1
+#### <a id="t15"></a>T15 - Blocage cloture v1
 
 **Role** : Traitement : Blocage cloture v1.
 **Variables liees** : T (W0 Cloture en cours)
 
 ---
 
-#### <a id="t17"></a>238.11 - Test reseau
+#### <a id="t17"></a>T17 - Test reseau
 
 **Role** : Verification : Test reseau.
 **Variables liees** : DO (W0 reseau)
 
 ---
 
-#### <a id="t18"></a>238.12 - Forfait
+#### <a id="t18"></a>T18 - Forfait
 
 **Role** : Traitement : Forfait.
 **Variables liees** : DQ (W0 forfait (O/N)), DS (W0 forfait date(O/N)), DT (W0 code forfait)
 
 ---
 
-#### <a id="t19"></a>238.13 - (sans nom) [[ECRAN]](#ecran-t19)
+#### <a id="t19"></a>T19 - (sans nom) [ECRAN]
 
 **Role** : Traitement interne.
 **Ecran** : 116 x 32 DLU (Modal) | [Voir mockup](#ecran-t19)
 
 ---
 
-#### <a id="t21"></a>238.14 - Effacement forfait
+#### <a id="t21"></a>T21 - Effacement forfait
 
 **Role** : Traitement : Effacement forfait.
 **Variables liees** : DQ (W0 forfait (O/N)), DR (W0 effacement (O/N)), DS (W0 forfait date(O/N)), DT (W0 code forfait)
 
 ---
 
-#### <a id="t22"></a>238.15 - Effacement mvt forfait
+#### <a id="t22"></a>T22 - Effacement mvt forfait
 
 **Role** : Traitement : Effacement mvt forfait.
 **Variables liees** : DQ (W0 forfait (O/N)), DR (W0 effacement (O/N)), DS (W0 forfait date(O/N)), DT (W0 code forfait)
 
 ---
 
-#### <a id="t24"></a>238.17 - Deblocage cloture v1
+#### <a id="t24"></a>T24 - Deblocage cloture v1
 
 **Role** : Traitement : Deblocage cloture v1.
 **Variables liees** : T (W0 Cloture en cours)
 
 ---
 
-#### <a id="t25"></a>238.18 - Deblocage cloture
+#### <a id="t25"></a>T25 - Deblocage cloture
 
 **Role** : Traitement : Deblocage cloture.
 **Variables liees** : T (W0 Cloture en cours)
 
 ---
 
-#### <a id="t26"></a>238.19 - Gratuite ?
+#### <a id="t26"></a>T26 - Gratuite ?
 
 **Role** : Traitement : Gratuite ?.
 **Variables liees** : DW (W0 gratuite ?)
 
 ---
 
-#### <a id="t32"></a>238.23 - garantie?
+#### <a id="t32"></a>T32 - garantie?
 
 **Role** : Traitement : garantie?.
 
 ---
 
-#### <a id="t42"></a>238.31.1 - Supprime enregs non affectés
+#### <a id="t42"></a>T42 - Supprime enregs non affectés
 
 **Role** : Traitement : Supprime enregs non affectés.
 **Variables liees** : HF (P.i.nr ligne a supprimer)
 
 ---
 
-#### <a id="t45"></a>238.32 - Affectation Auto
+#### <a id="t45"></a>T45 - Affectation Auto
 
 **Role** : Traitement : Affectation Auto.
 **Variables liees** : FL (V.Num Autorisation)
 
 ---
 
-#### <a id="t46"></a>238.33 - MaJ Num Chèque
+#### <a id="t46"></a>T46 - MaJ Num Chèque
 
 **Role** : Traitement : MaJ Num Chèque.
 
 ---
 
-#### <a id="t47"></a>238.34 - Vérif. existe vte OD
+#### <a id="t47"></a>T47 - Vérif. existe vte OD
 
 **Role** : Traitement : Vérif. existe vte OD.
 **Variables liees** : GD (v.Existe paiement OD), GE (v.Existe paiement $CARD), GV (v. pied stype existe?), GW (v. pied type existe?), DI (Existe mode de paiement)
 
 ---
 
-#### <a id="t48"></a>238.35 - Envoi mail garantie
+#### <a id="t48"></a>T48 - Envoi mail garantie
 
 **Role** : Traitement : Envoi mail garantie.
 **Variables liees** : GF (v.Email client), GH (v.decline envoi mail)
 
 ---
 
-#### <a id="t49"></a>238.36 - Envoi mail garantie
+#### <a id="t49"></a>T49 - Envoi mail garantie
 
 **Role** : Traitement : Envoi mail garantie.
 **Variables liees** : GF (v.Email client), GH (v.decline envoi mail)
 
 ---
 
-#### <a id="t51"></a>238.38 - Libération du logement [[ECRAN]](#ecran-t51)
+#### <a id="t51"></a>T51 - Libération du logement [ECRAN]
 
 **Role** : Traitement : Libération du logement.
 **Ecran** : 123 x 151 DLU | [Voir mockup](#ecran-t51)
@@ -548,7 +404,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t52"></a>238.39 - Récup nb chambre /LCO [[ECRAN]](#ecran-t52)
+#### <a id="t52"></a>T52 - Récup nb chambre /LCO [ECRAN]
 
 **Role** : Traitement : Récup nb chambre /LCO.
 **Ecran** : 123 x 89 DLU | [Voir mockup](#ecran-t52)
@@ -556,42 +412,42 @@ Traitements internes.
 
 ---
 
-#### <a id="t56"></a>238.41.2 - Suppression fich dépend.
+#### <a id="t56"></a>T56 - Suppression fich dépend.
 
 **Role** : Traitement : Suppression fich dépend..
 **Variables liees** : GI (v.Fichier ticket vente), GR (v.confirm suppression ligne)
 
 ---
 
-#### <a id="t58"></a>238.41.2.2 - Heure libération
+#### <a id="t58"></a>T58 - Heure libération
 
 **Role** : Traitement : Heure libération.
 **Variables liees** : BP (W0 Heure du transfert Aller), BY (W0 Heure du transfert Retour), GM (v.Date/heure alpha), GP (v.Flag abandon libération)
 
 ---
 
-#### <a id="t59"></a>238.41.2.3 - Heure libération
+#### <a id="t59"></a>T59 - Heure libération
 
 **Role** : Traitement : Heure libération.
 **Variables liees** : BP (W0 Heure du transfert Aller), BY (W0 Heure du transfert Retour), GM (v.Date/heure alpha), GP (v.Flag abandon libération)
 
 ---
 
-#### <a id="t60"></a>238.41.2.4 - Effacement forfait
+#### <a id="t60"></a>T60 - Effacement forfait
 
 **Role** : Traitement : Effacement forfait.
 **Variables liees** : DQ (W0 forfait (O/N)), DR (W0 effacement (O/N)), DS (W0 forfait date(O/N)), DT (W0 code forfait)
 
 ---
 
-#### <a id="t61"></a>238.41.2.5 - Effacement mvt forfait
+#### <a id="t61"></a>T61 - Effacement mvt forfait
 
 **Role** : Traitement : Effacement mvt forfait.
 **Variables liees** : DQ (W0 forfait (O/N)), DR (W0 effacement (O/N)), DS (W0 forfait date(O/N)), DT (W0 code forfait)
 
 ---
 
-#### <a id="t63"></a>238.41.2.7 - Supprime enregs non affectés
+#### <a id="t63"></a>T63 - Supprime enregs non affectés
 
 **Role** : Traitement : Supprime enregs non affectés.
 **Variables liees** : HF (P.i.nr ligne a supprimer)
@@ -603,7 +459,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t16"></a>238.10 - Reaffichage infos compte
+#### <a id="t16"></a>T16 - Reaffichage infos compte
 
 **Role** : Reinitialisation : Reaffichage infos compte.
 **Variables liees** : D (P0 solde compte), H (P0 etat compte), EI (W0 Compte garanti)
@@ -611,7 +467,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t36"></a>238.27 - calcul nombre carte
+#### <a id="t36"></a>T36 - calcul nombre carte
 
 **Role** : Calcul : calcul nombre carte.
 **Variables liees** : FO (V.Total carte), FQ (V.Nombre de carte)
@@ -619,7 +475,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t38"></a>238.29 - Compte Enregs affectés
+#### <a id="t38"></a>T38 - Compte Enregs affectés
 
 **Role** : Traitement : Compte Enregs affectés.
 **Variables liees** : D (P0 solde compte), H (P0 etat compte), EI (W0 Compte garanti)
@@ -627,7 +483,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t43"></a>238.31.2 - Compte Enregs affectés
+#### <a id="t43"></a>T43 - Compte Enregs affectés
 
 **Role** : Traitement : Compte Enregs affectés.
 **Variables liees** : D (P0 solde compte), H (P0 etat compte), EI (W0 Compte garanti)
@@ -635,7 +491,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t44"></a>238.31.3 - Compte Enregs affectés
+#### <a id="t44"></a>T44 - Compte Enregs affectés
 
 **Role** : Traitement : Compte Enregs affectés.
 **Variables liees** : D (P0 solde compte), H (P0 etat compte), EI (W0 Compte garanti)
@@ -648,7 +504,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t27"></a>238.19.1 - Recherche imputation/ssimput
+#### <a id="t27"></a>T27 - Recherche imputation/ssimput
 
 **Role** : Traitement : Recherche imputation/ssimput.
 **Delegue a** : [Selection Vols /t Ville à côté (IDE 277)](ADH-IDE-277.md), [Choix PYR (plusieurs chambres) (IDE 248)](ADH-IDE-248.md), [Zoom articles (IDE 257)](ADH-IDE-257.md)
@@ -660,7 +516,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t34"></a>238.25 - Increment Num. Ticket(VRL/VSL)
+#### <a id="t34"></a>T34 - Increment Num. Ticket(VRL/VSL)
 
 **Role** : Generation du document : Increment Num. Ticket(VRL/VSL).
 **Variables liees** : EY (v.IncrémentTicket(VRL/VSL) OK), FA (v.NumeroTicket(VRL/VSL))
@@ -673,14 +529,14 @@ Transfert de donnees entre modules.
 
 ---
 
-#### <a id="t37"></a>238.28 - Raz Affectation Transfert
+#### <a id="t37"></a>T37 - Raz Affectation Transfert
 
 **Role** : Reinitialisation : Raz Affectation Transfert.
 **Variables liees** : BN (W0 Sens du transfert Aller), BO (W0 Date du transfert Aller), BP (W0 Heure du transfert Aller), BQ (W0 b.Date du transfert), BW (W0 Sens du transfert Retour)
 
 ---
 
-#### <a id="t39"></a>238.30 - Type transfert [[ECRAN]](#ecran-t39)
+#### <a id="t39"></a>T39 - Type transfert [ECRAN]
 
 **Role** : Transfert de donnees : Type transfert.
 **Ecran** : 722 x 292 DLU (Type6) | [Voir mockup](#ecran-t39)
@@ -688,7 +544,7 @@ Transfert de donnees entre modules.
 
 ---
 
-#### <a id="t40"></a>238.30.1 - Affiche Transfert A/R [[ECRAN]](#ecran-t40)
+#### <a id="t40"></a>T40 - Affiche Transfert A/R [ECRAN]
 
 **Role** : Reinitialisation : Affiche Transfert A/R.
 **Ecran** : 681 x 205 DLU (Type6) | [Voir mockup](#ecran-t40)
@@ -696,7 +552,7 @@ Transfert de donnees entre modules.
 
 ---
 
-#### <a id="t41"></a>238.31 - Affectation PAX / Transfert [[ECRAN]](#ecran-t41)
+#### <a id="t41"></a>T41 - Affectation PAX / Transfert [ECRAN]
 
 **Role** : Transfert de donnees : Affectation PAX / Transfert.
 **Ecran** : 1056 x 281 DLU | [Voir mockup](#ecran-t41)
@@ -791,7 +647,7 @@ Transfert de donnees entre modules.
 | **Variables** | FG (V.Total reglement ligne), FJ (V.Id transaction PMS) |
 | **Expression source** | Expression 156 : `IF(V.Total reglement ligne [FG],V.Id transaction PMS [FJ],VG` |
 | **Exemple** | Si V.Total reglement ligne [FG] â†’ V.Id transaction PMS [FJ]. Sinon â†’ VG18) |
-| **Impact** | [238.41.2.1 - Ligne vente](#t57) |
+| **Impact** | [T57 - Ligne vente](#t57) |
 
 #### <a id="rm-RM-017"></a>[RM-017] Condition toujours fausse (flag inactif)
 
@@ -829,7 +685,7 @@ Transfert de donnees entre modules.
 | **Variables** | B (P0 devise locale), C (P0 masque montant), D (P0 solde compte), E (P0 code GM) |
 | **Expression source** | Expression 93 : `IF(NOT(VG89),IF(VG7 OR VG35 OR VG87,'P0 masque montant [C]'F` |
 | **Exemple** | Si NOT(VG89) â†’ IF(VG7 OR VG35 OR VG87 |
-| **Impact** | [238.29 - Compte Enregs affectés](#t38) |
+| **Impact** | [T38 - Compte Enregs affectés](#t38) |
 
 ### Autres (9 regles)
 
@@ -897,7 +753,7 @@ Transfert de donnees entre modules.
 | **Variables** | GP (v.Flag abandon libération) |
 | **Expression source** | Expression 227 : `IF (NOT(v.Flag abandon libération [GP]),132.875,105.875)` |
 | **Exemple** | Si NOT(v.Flag abandon libération [GP]) â†’ 132.875. Sinon â†’ 105.875) |
-| **Impact** | [238.38 - Libération du logement](#t51) |
+| **Impact** | [T51 - Libération du logement](#t51) |
 
 #### <a id="rm-RM-016"></a>[RM-016] Si v.SoldeGiftPass [W] vaut 'ANN' alors 'O', sinon 'N'
 
@@ -943,25 +799,25 @@ Transfert de donnees entre modules.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 238 | 238 | Saisie transaction | Modal | 1112 | 279 | Saisie |
-| 2 | 238.2 | 238.2 | Reglements suite a refus TPE | Type6 | 708 | 256 | Reglement |
-| 3 | 238.4 | 238.4 | Saisie Bilaterale | Type6 | 326 | 249 | Saisie |
-| 4 | 238.5 | 238.5 | Saisie mode de règlement | Type6 | 506 | 250 | Saisie |
-| 5 | 238.7 | 238.7 | Saisie Commentaires | Type6 | 772 | 169 | Saisie |
-| 6 | 238.8 | 238.8 | VRL : Saisie identité | MDI | 699 | 157 | Saisie |
-| 7 | 238.13.1 | 238.13.1 | Saisie dates forfait | MDI | 528 | 121 | Saisie |
-| 8 | 238.22 | 238.22 | Affiche saisie | Modal | 427 | 124 | Saisie |
-| 9 | 238.30 | 238.30 | Type transfert | Type6 | 722 | 292 | Transfert |
-| 10 | 238.30.1 | 238.30.1 | Affiche Transfert A/R | Type6 | 681 | 205 | Transfert |
-| 11 | 238.31 | 238.31 | Affectation PAX / Transfert | Type0 | 1056 | 281 | Transfert |
-| 12 | 238.38 | 238.38 | Libération du logement | Type0 | 123 | 151 | Traitement |
+| 1 | 238 | T1 | Saisie transaction | Modal | 1112 | 279 | Saisie |
+| 2 | 238.2 | T3 | Reglements suite a refus TPE | Type6 | 708 | 256 | Reglement |
+| 3 | 238.4 | T8 | Saisie Bilaterale | Type6 | 326 | 249 | Saisie |
+| 4 | 238.5 | T9 | Saisie mode de règlement | Type6 | 506 | 250 | Saisie |
+| 5 | 238.7 | T11 | Saisie Commentaires | Type6 | 772 | 169 | Saisie |
+| 6 | 238.8 | T12 | VRL : Saisie identité | MDI | 699 | 157 | Saisie |
+| 7 | 238.13.1 | T20 | Saisie dates forfait | MDI | 528 | 121 | Saisie |
+| 8 | 238.22 | T31 | Affiche saisie | Modal | 427 | 124 | Saisie |
+| 9 | 238.30 | T39 | Type transfert | Type6 | 722 | 292 | Transfert |
+| 10 | 238.30.1 | T40 | Affiche Transfert A/R | Type6 | 681 | 205 | Transfert |
+| 11 | 238.31 | T41 | Affectation PAX / Transfert | Type0 | 1056 | 281 | Transfert |
+| 12 | 238.38 | T51 | Libération du logement | Type0 | 123 | 151 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>238 - Saisie transaction
-**Tache** : [238](#t1) | **Type** : Modal | **Dimensions** : 1112 x 279 DLU
+**Tache** : [T1](#t1) | **Type** : Modal | **Dimensions** : 1112 x 279 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie transaction
 
 <!-- FORM-DATA:
@@ -1470,7 +1326,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t3"></a>238.2 - Reglements suite a refus TPE
-**Tache** : [238.2](#t3) | **Type** : Type6 | **Dimensions** : 708 x 256 DLU
+**Tache** : [T3](#t3) | **Type** : Type6 | **Dimensions** : 708 x 256 DLU
 **Bloc** : Reglement | **Titre IDE** : Reglements suite a refus TPE
 
 <!-- FORM-DATA:
@@ -1789,7 +1645,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t8"></a>238.4 - Saisie Bilaterale
-**Tache** : [238.4](#t8) | **Type** : Type6 | **Dimensions** : 326 x 249 DLU
+**Tache** : [T8](#t8) | **Type** : Type6 | **Dimensions** : 326 x 249 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie Bilaterale
 
 <!-- FORM-DATA:
@@ -2021,7 +1877,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t9"></a>238.5 - Saisie mode de règlement
-**Tache** : [238.5](#t9) | **Type** : Type6 | **Dimensions** : 506 x 250 DLU
+**Tache** : [T9](#t9) | **Type** : Type6 | **Dimensions** : 506 x 250 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie mode de règlement
 
 <!-- FORM-DATA:
@@ -2272,7 +2128,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t11"></a>238.7 - Saisie Commentaires
-**Tache** : [238.7](#t11) | **Type** : Type6 | **Dimensions** : 772 x 169 DLU
+**Tache** : [T11](#t11) | **Type** : Type6 | **Dimensions** : 772 x 169 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie Commentaires
 
 <!-- FORM-DATA:
@@ -2539,7 +2395,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t12"></a>238.8 - VRL : Saisie identité
-**Tache** : [238.8](#t12) | **Type** : MDI | **Dimensions** : 699 x 157 DLU
+**Tache** : [T12](#t12) | **Type** : MDI | **Dimensions** : 699 x 157 DLU
 **Bloc** : Saisie | **Titre IDE** : VRL : Saisie identité
 
 <!-- FORM-DATA:
@@ -2846,7 +2702,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t20"></a>238.13.1 - Saisie dates forfait
-**Tache** : [238.13.1](#t20) | **Type** : MDI | **Dimensions** : 528 x 121 DLU
+**Tache** : [T20](#t20) | **Type** : MDI | **Dimensions** : 528 x 121 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie dates forfait
 
 <!-- FORM-DATA:
@@ -3043,7 +2899,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t31"></a>238.22 - Affiche saisie
-**Tache** : [238.22](#t31) | **Type** : Modal | **Dimensions** : 427 x 124 DLU
+**Tache** : [T31](#t31) | **Type** : Modal | **Dimensions** : 427 x 124 DLU
 **Bloc** : Saisie | **Titre IDE** : Affiche saisie
 
 <!-- FORM-DATA:
@@ -3302,7 +3158,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t39"></a>238.30 - Type transfert
-**Tache** : [238.30](#t39) | **Type** : Type6 | **Dimensions** : 722 x 292 DLU
+**Tache** : [T39](#t39) | **Type** : Type6 | **Dimensions** : 722 x 292 DLU
 **Bloc** : Transfert | **Titre IDE** : Type transfert
 
 <!-- FORM-DATA:
@@ -3485,7 +3341,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t40"></a>238.30.1 - Affiche Transfert A/R
-**Tache** : [238.30.1](#t40) | **Type** : Type6 | **Dimensions** : 681 x 205 DLU
+**Tache** : [T40](#t40) | **Type** : Type6 | **Dimensions** : 681 x 205 DLU
 **Bloc** : Transfert | **Titre IDE** : Affiche Transfert A/R
 
 <!-- FORM-DATA:
@@ -4036,7 +3892,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t41"></a>238.31 - Affectation PAX / Transfert
-**Tache** : [238.31](#t41) | **Type** : Type0 | **Dimensions** : 1056 x 281 DLU
+**Tache** : [T41](#t41) | **Type** : Type0 | **Dimensions** : 1056 x 281 DLU
 **Bloc** : Transfert | **Titre IDE** : Affectation PAX / Transfert
 
 <!-- FORM-DATA:
@@ -4346,7 +4202,7 @@ Transfert de donnees entre modules.
 ---
 
 #### <a id="ecran-t51"></a>238.38 - Libération du logement
-**Tache** : [238.38](#t51) | **Type** : Type0 | **Dimensions** : 123 x 151 DLU
+**Tache** : [T51](#t51) | **Type** : Type0 | **Dimensions** : 123 x 151 DLU
 **Bloc** : Traitement | **Titre IDE** : Libération du logement
 
 <!-- FORM-DATA:
@@ -4470,29 +4326,29 @@ Transfert de donnees entre modules.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[238 Saisie transaction]
+    VF1[T1 Saisie transaction]
     style VF1 fill:#58a6ff
-    VF3[238.2 Reglements suite a ...]
+    VF3[T3 Reglements suite a ...]
     style VF3 fill:#58a6ff
-    VF8[238.4 Saisie Bilaterale]
+    VF8[T8 Saisie Bilaterale]
     style VF8 fill:#58a6ff
-    VF9[238.5 Saisie mode de règl...]
+    VF9[T9 Saisie mode de règl...]
     style VF9 fill:#58a6ff
-    VF11[238.7 Saisie Commentaires]
+    VF11[T11 Saisie Commentaires]
     style VF11 fill:#58a6ff
-    VF12[238.8 VRL : Saisie identité]
+    VF12[T12 VRL : Saisie identité]
     style VF12 fill:#58a6ff
-    VF20[238.13.1 Saisie dates forfait]
+    VF20[T20 Saisie dates forfait]
     style VF20 fill:#58a6ff
-    VF31[238.22 Affiche saisie]
+    VF31[T31 Affiche saisie]
     style VF31 fill:#58a6ff
-    VF39[238.30 Type transfert]
+    VF39[T39 Type transfert]
     style VF39 fill:#58a6ff
-    VF40[238.30.1 Affiche Transfert AR]
+    VF40[T40 Affiche Transfert AR]
     style VF40 fill:#58a6ff
-    VF41[238.31 Affectation PAX Tr...]
+    VF41[T41 Affectation PAX Tr...]
     style VF41 fill:#58a6ff
-    VF51[238.38 Libération du loge...]
+    VF51[T51 Libération du loge...]
     style VF51 fill:#58a6ff
     EXT152[IDE 152 Recup Classe e...]
     style EXT152 fill:#3fb950
@@ -4577,69 +4433,69 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **238.1** | [**Saisie transaction** (238)](#t1) [mockup](#ecran-t1) | Modal | 1112x279 | Saisie |
-| 238.1.1 | [Saisie Bilaterale (238.4)](#t8) [mockup](#ecran-t8) | Type6 | 326x249 | |
-| 238.1.2 | [Saisie mode de règlement (238.5)](#t9) [mockup](#ecran-t9) | Type6 | 506x250 | |
-| 238.1.3 | [Saisie Commentaires (238.7)](#t11) [mockup](#ecran-t11) | Type6 | 772x169 | |
-| 238.1.4 | [VRL : Saisie identité (238.8)](#t12) [mockup](#ecran-t12) | MDI | 699x157 | |
-| 238.1.5 | [Saisie dates forfait (238.13.1)](#t20) [mockup](#ecran-t20) | MDI | 528x121 | |
-| 238.1.6 | [Affiche saisie (238.22)](#t31) [mockup](#ecran-t31) | Modal | 427x124 | |
-| 238.1.7 | [Affiche saisie (238.41)](#t54) [mockup](#ecran-t54) | Modal | 427x124 | |
-| 238.1.8 | [Ligne vente (238.41.2.1)](#t57) | - | - | |
-| **238.2** | [**RAZ LCO liberation** (238.1)](#t2) | - | - | Initialisation |
-| 238.2.1 | [RAZ 269 (238.6)](#t10) | MDI | - | |
-| 238.2.2 | [RAZ 269 (238.24)](#t33) | MDI | - | |
-| **238.3** | [**Reglements suite a refus TPE** (238.2)](#t3) [mockup](#ecran-t3) | Type6 | 708x256 | Reglement |
-| 238.3.1 | [Verif reglement tpe (238.2.3)](#t6) | - | - | |
-| 238.3.2 | [Creation reglement (238.21)](#t29) | - | - | |
-| 238.3.3 | [Changement MOP multi paiement (238.26)](#t35) | - | - | |
-| 238.3.4 | [Vérif Mop Mobilité (238.37)](#t50) | - | - | |
-| **238.4** | [**verif reg restant** (238.2.1)](#t4) | - | - | Validation |
-| **238.5** | [**creation règlement** (238.2.2)](#t5) | - | - | Creation |
-| 238.5.1 | [Creation prestation (238.16)](#t23) | MDI | - | |
-| 238.5.2 | [Creation Tempo (238.20)](#t28) | MDI | - | |
-| 238.5.3 | [Creation (238.21.1)](#t30) | - | - | |
-| 238.5.4 | [Creation_heure_liberation (238.40)](#t53) | - | - | |
-| 238.5.5 | [Creation Tempo (238.41.1)](#t55) | MDI | - | |
-| 238.5.6 | [Creation prestation (238.41.2.6)](#t62) | MDI | - | |
-| **238.6** | [**Dé-Affecition** (238.3)](#t7) | - | - | Traitement |
-| 238.6.1 | [Test si cloture en cours (238.9)](#t13) | MDI | - | |
-| 238.6.2 | [Blocage cloture v1 (238.9.1)](#t14) | MDI | - | |
-| 238.6.3 | [Blocage cloture v1 (238.9.2)](#t15) | MDI | - | |
-| 238.6.4 | [Test reseau (238.11)](#t17) | MDI | - | |
-| 238.6.5 | [Forfait (238.12)](#t18) | MDI | - | |
-| 238.6.6 | [(sans nom) (238.13)](#t19) [mockup](#ecran-t19) | Modal | 116x32 | |
-| 238.6.7 | [Effacement forfait (238.14)](#t21) | MDI | - | |
-| 238.6.8 | [Effacement mvt forfait (238.15)](#t22) | MDI | - | |
-| 238.6.9 | [Deblocage cloture v1 (238.17)](#t24) | MDI | - | |
-| 238.6.10 | [Deblocage cloture (238.18)](#t25) | MDI | - | |
-| 238.6.11 | [Gratuite ? (238.19)](#t26) | MDI | - | |
-| 238.6.12 | [garantie? (238.23)](#t32) | MDI | - | |
-| 238.6.13 | [Supprime enregs non affectés (238.31.1)](#t42) | - | - | |
-| 238.6.14 | [Affectation Auto (238.32)](#t45) | - | - | |
-| 238.6.15 | [MaJ Num Chèque (238.33)](#t46) | - | - | |
-| 238.6.16 | [Vérif. existe vte OD (238.34)](#t47) | - | - | |
-| 238.6.17 | [Envoi mail garantie (238.35)](#t48) | - | - | |
-| 238.6.18 | [Envoi mail garantie (238.36)](#t49) | - | - | |
-| 238.6.19 | [Libération du logement (238.38)](#t51) [mockup](#ecran-t51) | - | 123x151 | |
-| 238.6.20 | [Récup nb chambre /LCO (238.39)](#t52) [mockup](#ecran-t52) | - | 123x89 | |
-| 238.6.21 | [Suppression fich dépend. (238.41.2)](#t56) | - | - | |
-| 238.6.22 | [Heure libération (238.41.2.2)](#t58) | - | - | |
-| 238.6.23 | [Heure libération (238.41.2.3)](#t59) | - | - | |
-| 238.6.24 | [Effacement forfait (238.41.2.4)](#t60) | MDI | - | |
-| 238.6.25 | [Effacement mvt forfait (238.41.2.5)](#t61) | MDI | - | |
-| 238.6.26 | [Supprime enregs non affectés (238.41.2.7)](#t63) | - | - | |
-| **238.7** | [**Reaffichage infos compte** (238.10)](#t16) | MDI | - | Calcul |
-| 238.7.1 | [calcul nombre carte (238.27)](#t36) | - | - | |
-| 238.7.2 | [Compte Enregs affectés (238.29)](#t38) | - | - | |
-| 238.7.3 | [Compte Enregs affectés (238.31.2)](#t43) | - | - | |
-| 238.7.4 | [Compte Enregs affectés (238.31.3)](#t44) | - | - | |
-| **238.8** | [**Recherche imputation/ssimput** (238.19.1)](#t27) | MDI | - | Consultation |
-| **238.9** | [**Increment Num. Ticket(VRL/VSL)** (238.25)](#t34) | - | - | Impression |
-| **238.10** | [**Raz Affectation Transfert** (238.28)](#t37) | - | - | Transfert |
-| 238.10.1 | [Type transfert (238.30)](#t39) [mockup](#ecran-t39) | Type6 | 722x292 | |
-| 238.10.2 | [Affiche Transfert A/R (238.30.1)](#t40) [mockup](#ecran-t40) | Type6 | 681x205 | |
-| 238.10.3 | [Affectation PAX / Transfert (238.31)](#t41) [mockup](#ecran-t41) | - | 1056x281 | |
+| **238.1** | [**Saisie transaction** (T1)](#t1) [mockup](#ecran-t1) | Modal | 1112x279 | Saisie |
+| 238.1.1 | [Saisie Bilaterale (T8)](#t8) [mockup](#ecran-t8) | Type6 | 326x249 | |
+| 238.1.2 | [Saisie mode de règlement (T9)](#t9) [mockup](#ecran-t9) | Type6 | 506x250 | |
+| 238.1.3 | [Saisie Commentaires (T11)](#t11) [mockup](#ecran-t11) | Type6 | 772x169 | |
+| 238.1.4 | [VRL : Saisie identité (T12)](#t12) [mockup](#ecran-t12) | MDI | 699x157 | |
+| 238.1.5 | [Saisie dates forfait (T20)](#t20) [mockup](#ecran-t20) | MDI | 528x121 | |
+| 238.1.6 | [Affiche saisie (T31)](#t31) [mockup](#ecran-t31) | Modal | 427x124 | |
+| 238.1.7 | [Affiche saisie (T54)](#t54) [mockup](#ecran-t54) | Modal | 427x124 | |
+| 238.1.8 | [Ligne vente (T57)](#t57) | - | - | |
+| **238.2** | [**RAZ LCO liberation** (T2)](#t2) | - | - | Initialisation |
+| 238.2.1 | [RAZ 269 (T10)](#t10) | MDI | - | |
+| 238.2.2 | [RAZ 269 (T33)](#t33) | MDI | - | |
+| **238.3** | [**Reglements suite a refus TPE** (T3)](#t3) [mockup](#ecran-t3) | Type6 | 708x256 | Reglement |
+| 238.3.1 | [Verif reglement tpe (T6)](#t6) | - | - | |
+| 238.3.2 | [Creation reglement (T29)](#t29) | - | - | |
+| 238.3.3 | [Changement MOP multi paiement (T35)](#t35) | - | - | |
+| 238.3.4 | [Vérif Mop Mobilité (T50)](#t50) | - | - | |
+| **238.4** | [**verif reg restant** (T4)](#t4) | - | - | Validation |
+| **238.5** | [**creation règlement** (T5)](#t5) | - | - | Creation |
+| 238.5.1 | [Creation prestation (T23)](#t23) | MDI | - | |
+| 238.5.2 | [Creation Tempo (T28)](#t28) | MDI | - | |
+| 238.5.3 | [Creation (T30)](#t30) | - | - | |
+| 238.5.4 | [Creation_heure_liberation (T53)](#t53) | - | - | |
+| 238.5.5 | [Creation Tempo (T55)](#t55) | MDI | - | |
+| 238.5.6 | [Creation prestation (T62)](#t62) | MDI | - | |
+| **238.6** | [**Dé-Affecition** (T7)](#t7) | - | - | Traitement |
+| 238.6.1 | [Test si cloture en cours (T13)](#t13) | MDI | - | |
+| 238.6.2 | [Blocage cloture v1 (T14)](#t14) | MDI | - | |
+| 238.6.3 | [Blocage cloture v1 (T15)](#t15) | MDI | - | |
+| 238.6.4 | [Test reseau (T17)](#t17) | MDI | - | |
+| 238.6.5 | [Forfait (T18)](#t18) | MDI | - | |
+| 238.6.6 | [(sans nom) (T19)](#t19) [mockup](#ecran-t19) | Modal | 116x32 | |
+| 238.6.7 | [Effacement forfait (T21)](#t21) | MDI | - | |
+| 238.6.8 | [Effacement mvt forfait (T22)](#t22) | MDI | - | |
+| 238.6.9 | [Deblocage cloture v1 (T24)](#t24) | MDI | - | |
+| 238.6.10 | [Deblocage cloture (T25)](#t25) | MDI | - | |
+| 238.6.11 | [Gratuite ? (T26)](#t26) | MDI | - | |
+| 238.6.12 | [garantie? (T32)](#t32) | MDI | - | |
+| 238.6.13 | [Supprime enregs non affectés (T42)](#t42) | - | - | |
+| 238.6.14 | [Affectation Auto (T45)](#t45) | - | - | |
+| 238.6.15 | [MaJ Num Chèque (T46)](#t46) | - | - | |
+| 238.6.16 | [Vérif. existe vte OD (T47)](#t47) | - | - | |
+| 238.6.17 | [Envoi mail garantie (T48)](#t48) | - | - | |
+| 238.6.18 | [Envoi mail garantie (T49)](#t49) | - | - | |
+| 238.6.19 | [Libération du logement (T51)](#t51) [mockup](#ecran-t51) | - | 123x151 | |
+| 238.6.20 | [Récup nb chambre /LCO (T52)](#t52) [mockup](#ecran-t52) | - | 123x89 | |
+| 238.6.21 | [Suppression fich dépend. (T56)](#t56) | - | - | |
+| 238.6.22 | [Heure libération (T58)](#t58) | - | - | |
+| 238.6.23 | [Heure libération (T59)](#t59) | - | - | |
+| 238.6.24 | [Effacement forfait (T60)](#t60) | MDI | - | |
+| 238.6.25 | [Effacement mvt forfait (T61)](#t61) | MDI | - | |
+| 238.6.26 | [Supprime enregs non affectés (T63)](#t63) | - | - | |
+| **238.7** | [**Reaffichage infos compte** (T16)](#t16) | MDI | - | Calcul |
+| 238.7.1 | [calcul nombre carte (T36)](#t36) | - | - | |
+| 238.7.2 | [Compte Enregs affectés (T38)](#t38) | - | - | |
+| 238.7.3 | [Compte Enregs affectés (T43)](#t43) | - | - | |
+| 238.7.4 | [Compte Enregs affectés (T44)](#t44) | - | - | |
+| **238.8** | [**Recherche imputation/ssimput** (T27)](#t27) | MDI | - | Consultation |
+| **238.9** | [**Increment Num. Ticket(VRL/VSL)** (T34)](#t34) | - | - | Impression |
+| **238.10** | [**Raz Affectation Transfert** (T37)](#t37) | - | - | Transfert |
+| 238.10.1 | [Type transfert (T39)](#t39) [mockup](#ecran-t39) | Type6 | 722x292 | |
+| 238.10.2 | [Affiche Transfert A/R (T40)](#t40) [mockup](#ecran-t40) | Type6 | 681x205 | |
+| 238.10.3 | [Affectation PAX / Transfert (T41)](#t41) [mockup](#ecran-t41) | - | 1056x281 | |
 
 ### 9.4 Algorigramme
 
@@ -4647,33 +4503,47 @@ flowchart TD
 flowchart TD
     START([START])
     INIT[Init controles]
-    SAISIE[Reglement suite a erre...]
-    DECISION{W0 code article}
-    BR1[Traitement VSL]
-    BR2[Traitement VRL]
-    BR3[Traitement LCO]
-    BR4[Traitement TRF]
-    VALID[Validation]
-    UPDATE[MAJ 11 tables]
-    ENDOK([END OK])
+    START --> INIT
+    B1[Saisie (9t)]
+    INIT --> B1
+    B2[Initialisation (3t)]
+    B1 --> B2
+    B3[Reglement (5t)]
+    B2 --> B3
+    B4[Validation (1t)]
+    B3 --> B4
+    B5[Creation (7t)]
+    B4 --> B5
+    B6[Traitement (27t)]
+    B5 --> B6
+    B7[Calcul (5t)]
+    B6 --> B7
+    B8[Consultation (1t)]
+    B7 --> B8
+    B9[Impression (1t)]
+    B8 --> B9
+    B10[Transfert (4t)]
+    B9 --> B10
+    DECISION{v.SoldeGiftPass}
+    B10 --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS[Traitement]
     ENDKO([END KO])
-
-    START --> INIT --> SAISIE --> DECISION
-    DECISION -->|VSL| BR1 --> VALID
-    DECISION -->|VRL| BR2 --> VALID
-    DECISION -->|LCO| BR3 --> VALID
-    DECISION -->|TRF| BR4 --> VALID
-    VALID --> UPDATE --> ENDOK
-    DECISION -->|KO| ENDKO
+    WRITE[MAJ 11 tables]
+    PROCESS --> WRITE
+    ENDOK([END OK])
+    WRITE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
     style ENDKO fill:#f85149,color:#fff
     style DECISION fill:#58a6ff,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -4683,57 +4553,77 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R | **W** |   | 5 |
-| 26 | comptes_speciaux_spc | Comptes GM (generaux) | DB |   |   | L | 1 |
-| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   | L | 3 |
-| 32 | prestations | Prestations/services vendus | DB | R | **W** |   | 5 |
-| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 1 |
-| 39 | depot_garantie___dga | Depots et garanties | DB | R |   |   | 1 |
-| 46 | mvt_prestation___mpr | Prestations/services vendus | DB |   | **W** | L | 3 |
-| 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** |   | 2 |
-| 50 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 4 |
-| 67 | tables___________tab |  | DB |   |   | L | 1 |
-| 68 | compteurs________cpt | Comptes GM (generaux) | DB |   | **W** |   | 1 |
-| 70 | date_comptable___dat |  | DB |   |   | L | 1 |
-| 77 | articles_________art | Articles et stock | DB | R |   | L | 5 |
-| 79 | gratuites________gra |  | DB | R |   |   | 1 |
-| 89 | moyen_paiement___mop |  | DB | R |   | L | 10 |
-| 96 | table_prestation_pre | Prestations/services vendus | DB | R |   | L | 2 |
-| 103 | logement_client__loc |  | DB | R |   |   | 1 |
-| 108 | code_logement____clo |  | DB |   |   | L | 1 |
-| 109 | table_utilisateurs |  | DB | R |   |   | 1 |
-| 139 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 1 |
-| 140 | moyen_paiement___mop |  | DB |   |   | L | 1 |
-| 197 | articles_en_stock | Articles et stock | DB |   |   | L | 2 |
-| 372 | pv_budget |  | DB |   |   | L | 1 |
 | 596 | tempo_ecran_police | Table temporaire ecran | TMP | R | **W** | L | 11 |
-| 697 | droits_applications | Droits operateur | DB |   |   | L | 1 |
-| 728 | arc_cc_total |  | DB |   |   | L | 1 |
-| 801 | moyens_reglement_complem | Reglements / paiements | DB |   |   | L | 1 |
-| 818 | Circuit supprime |  | DB |   |   | L | 1 |
-| 847 | stat_lieu_vente_date | Statistiques point de vente | TMP |   | **W** | L | 14 |
 | 899 | Boo_ResultsRechercheHoraire | Index de recherche | DB | R | **W** |   | 9 |
-| 910 | classification_memory |  | DB |   |   | L | 1 |
-| 911 | log_booker |  | DB |   | **W** |   | 1 |
-| 945 | Table_945 |  | MEM |   | **W** |   | 1 |
+| 32 | prestations | Prestations/services vendus | DB | R | **W** |   | 5 |
+| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R | **W** |   | 5 |
+| 847 | stat_lieu_vente_date | Statistiques point de vente | TMP |   | **W** | L | 14 |
+| 46 | mvt_prestation___mpr | Prestations/services vendus | DB |   | **W** | L | 3 |
 | 1037 | Table_1037 |  | MEM |   | **W** |   | 4 |
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** |   | 2 |
+| 945 | Table_945 |  | MEM |   | **W** |   | 1 |
+| 911 | log_booker |  | DB |   | **W** |   | 1 |
+| 68 | compteurs________cpt | Comptes GM (generaux) | DB |   | **W** |   | 1 |
+| 89 | moyen_paiement___mop |  | DB | R |   | L | 10 |
+| 77 | articles_________art | Articles et stock | DB | R |   | L | 5 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   | L | 3 |
+| 96 | table_prestation_pre | Prestations/services vendus | DB | R |   | L | 2 |
+| 50 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 4 |
+| 139 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 1 |
+| 79 | gratuites________gra |  | DB | R |   |   | 1 |
+| 39 | depot_garantie___dga | Depots et garanties | DB | R |   |   | 1 |
+| 109 | table_utilisateurs |  | DB | R |   |   | 1 |
+| 103 | logement_client__loc |  | DB | R |   |   | 1 |
+| 197 | articles_en_stock | Articles et stock | DB |   |   | L | 2 |
+| 67 | tables___________tab |  | DB |   |   | L | 1 |
+| 910 | classification_memory |  | DB |   |   | L | 1 |
+| 70 | date_comptable___dat |  | DB |   |   | L | 1 |
+| 818 | Circuit supprime |  | DB |   |   | L | 1 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 1 |
+| 140 | moyen_paiement___mop |  | DB |   |   | L | 1 |
+| 372 | pv_budget |  | DB |   |   | L | 1 |
+| 26 | comptes_speciaux_spc | Comptes GM (generaux) | DB |   |   | L | 1 |
+| 108 | code_logement____clo |  | DB |   |   | L | 1 |
+| 697 | droits_applications | Droits operateur | DB |   |   | L | 1 |
+| 801 | moyens_reglement_complem | Reglements / paiements | DB |   |   | L | 1 |
+| 728 | arc_cc_total |  | DB |   |   | L | 1 |
 
 ### Colonnes par table (23 / 21 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 23 - reseau_cloture___rec (R/**W**) - 5 usages</summary>
+<summary>Table 596 - tempo_ecran_police (R/**W**/L) - 11 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | W1 fin tache | W | Alpha |
-| B | W1 cloture en cours | W | Numeric |
+| A | P.i.lib_article locate | W | Alpha |
+| B | DETAIL | W | Alpha |
+| C | QUITTER | W | Alpha |
+| D | SUPPRIMER | W | Alpha |
+| E | v.bouton modif | W | Alpha |
+| F | v.bouton supprime | W | Alpha |
 
 </details>
 
 <details>
-<summary>Table 30 - gm-recherche_____gmr (R/L) - 3 usages</summary>
+<summary>Table 899 - Boo_ResultsRechercheHoraire (R/**W**) - 9 usages</summary>
 
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.i.tout | W | Logical |
+| B | v Concatenation | W | Alpha |
+| C | W1 Afficher cochés | W | Logical |
+| D | W1 Afficher filiation | W | Logical |
+| E | W1 B.Exit | W | Alpha |
+| F | W1 B.Tout décocher | W | Alpha |
+| G | W1 Nbre de Pax Enregistrés | W | Numeric |
+| H | W1 Names of non filiated ppl | W | Alpha |
+| I | CHG_REASON_W1 V Nom recherche | W | Numeric |
+| J | CHG_PRV_W1 V Nom recherche | W | Alpha |
+| K | CHG_REASON_W1 Afficher cochés | W | Numeric |
+| L | CHG_PRV_W1 Afficher cochés | W | Logical |
+| M | CHG_REASON_W1 Afficher filiati | W | Numeric |
+| N | CHG_PRV_W1 Afficher filiation | W | Logical |
+| O | v. response | W | Numeric |
 
 </details>
 
@@ -4750,12 +4640,23 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 39 - depot_garantie___dga (R) - 1 usages</summary>
+<summary>Table 23 - reseau_cloture___rec (R/**W**) - 5 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | V garantie trouvee | R | Logical |
-| B | v.Lien Depot garantie | R | Logical |
+| A | W1 fin tache | W | Alpha |
+| B | W1 cloture en cours | W | Numeric |
+
+</details>
+
+<details>
+<summary>Table 847 - stat_lieu_vente_date (**W**/L) - 14 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.Ligne | W | Numeric |
+| B | p.Mont-GiftPass | W | Numeric |
+| C | V.Existe ligne reglement multi? | W | Logical |
 
 </details>
 
@@ -4767,6 +4668,19 @@ flowchart TD
 </details>
 
 <details>
+<summary>Table 1037 - Table_1037 (**W**) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.O Abandon | W | Logical |
+| B | heb_nom_logement | W | Unicode |
+| C | v.Nb chambres saisies | W | Numeric |
+| D | CHG_REASON_Heure_liberation | W | Numeric |
+| E | CHG_PRV_Heure_liberation | W | Time |
+
+</details>
+
+<details>
 <summary>Table 47 - compte_gm________cgm (**W**) - 2 usages</summary>
 
 | Lettre | Variable | Acces | Type |
@@ -4774,6 +4688,70 @@ flowchart TD
 | D | P0 solde compte | W | Numeric |
 | EI | W0 Compte garanti | W | Logical |
 | H | P0 etat compte | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 945 - Table_945 (**W**) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.i.N° Ticket | W | Numeric |
+| B | P.i.Flag signature | W | Logical |
+| C | v.Lien ticket vente | W | Logical |
+
+</details>
+
+<details>
+<summary>Table 911 - log_booker (**W**) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.I..Num Ticket | W | Numeric |
+| B | v.Lien Depot garantie | W | Logical |
+| C | v.Fichier envoi mail | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 89 - moyen_paiement___mop (R/L) - 10 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.Toute ligne | R | Logical |
+| B | V.Confirmation Gift Pass ? | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 77 - articles_________art (R/L) - 5 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| BE | W0 nbre articles | R | Numeric |
+| HC | CHG_REASON_W0 nbre articles | R | Numeric |
+| HD | CHG_PRV_W0 nbre articles | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R/L) - 3 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 96 - table_prestation_pre (R/L) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
@@ -4793,20 +4771,13 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 77 - articles_________art (R/L) - 5 usages</summary>
+<summary>Table 139 - moyens_reglement_mor (R) - 1 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| BE | W0 nbre articles | R | Numeric |
-| HC | CHG_REASON_W0 nbre articles | R | Numeric |
-| HD | CHG_PRV_W0 nbre articles | R | Numeric |
+| A | v Montant cumulé saisie | R | Numeric |
+| B | b.abandonner | R | Alpha |
+| C | b.Valider | R | Alpha |
 
 </details>
 
@@ -4818,19 +4789,30 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 89 - moyen_paiement___mop (R/L) - 10 usages</summary>
+<summary>Table 39 - depot_garantie___dga (R) - 1 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | P.Toute ligne | R | Logical |
-| B | V.Confirmation Gift Pass ? | R | Numeric |
+| A | V garantie trouvee | R | Logical |
+| B | v.Lien Depot garantie | R | Logical |
 
 </details>
 
 <details>
-<summary>Table 96 - table_prestation_pre (R/L) - 2 usages</summary>
+<summary>Table 109 - table_utilisateurs (R) - 1 usages</summary>
 
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W2 Titre | R | Alpha |
+| B | W2 Nom | R | Alpha |
+| C | W2 Prenom | R | Alpha |
+| D | W2 Num rue | R | Alpha |
+| E | W2 Nom rue | R | Alpha |
+| F | W2 Commune | R | Alpha |
+| G | W2 CP | R | Alpha |
+| H | W2 Ville | R | Alpha |
+| I | Bouton Ok | R | Alpha |
+| J | V.Chaine OK | R | Alpha |
 
 </details>
 
@@ -5030,118 +5012,6 @@ flowchart TD
 
 </details>
 
-<details>
-<summary>Table 109 - table_utilisateurs (R) - 1 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W2 Titre | R | Alpha |
-| B | W2 Nom | R | Alpha |
-| C | W2 Prenom | R | Alpha |
-| D | W2 Num rue | R | Alpha |
-| E | W2 Nom rue | R | Alpha |
-| F | W2 Commune | R | Alpha |
-| G | W2 CP | R | Alpha |
-| H | W2 Ville | R | Alpha |
-| I | Bouton Ok | R | Alpha |
-| J | V.Chaine OK | R | Alpha |
-
-</details>
-
-<details>
-<summary>Table 139 - moyens_reglement_mor (R) - 1 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | v Montant cumulé saisie | R | Numeric |
-| B | b.abandonner | R | Alpha |
-| C | b.Valider | R | Alpha |
-
-</details>
-
-<details>
-<summary>Table 596 - tempo_ecran_police (R/**W**/L) - 11 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | P.i.lib_article locate | W | Alpha |
-| B | DETAIL | W | Alpha |
-| C | QUITTER | W | Alpha |
-| D | SUPPRIMER | W | Alpha |
-| E | v.bouton modif | W | Alpha |
-| F | v.bouton supprime | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 847 - stat_lieu_vente_date (**W**/L) - 14 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | P.Ligne | W | Numeric |
-| B | p.Mont-GiftPass | W | Numeric |
-| C | V.Existe ligne reglement multi? | W | Logical |
-
-</details>
-
-<details>
-<summary>Table 899 - Boo_ResultsRechercheHoraire (R/**W**) - 9 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | P.i.tout | W | Logical |
-| B | v Concatenation | W | Alpha |
-| C | W1 Afficher cochés | W | Logical |
-| D | W1 Afficher filiation | W | Logical |
-| E | W1 B.Exit | W | Alpha |
-| F | W1 B.Tout décocher | W | Alpha |
-| G | W1 Nbre de Pax Enregistrés | W | Numeric |
-| H | W1 Names of non filiated ppl | W | Alpha |
-| I | CHG_REASON_W1 V Nom recherche | W | Numeric |
-| J | CHG_PRV_W1 V Nom recherche | W | Alpha |
-| K | CHG_REASON_W1 Afficher cochés | W | Numeric |
-| L | CHG_PRV_W1 Afficher cochés | W | Logical |
-| M | CHG_REASON_W1 Afficher filiati | W | Numeric |
-| N | CHG_PRV_W1 Afficher filiation | W | Logical |
-| O | v. response | W | Numeric |
-
-</details>
-
-<details>
-<summary>Table 911 - log_booker (**W**) - 1 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | P.I..Num Ticket | W | Numeric |
-| B | v.Lien Depot garantie | W | Logical |
-| C | v.Fichier envoi mail | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 945 - Table_945 (**W**) - 1 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | P.i.N° Ticket | W | Numeric |
-| B | P.i.Flag signature | W | Logical |
-| C | v.Lien ticket vente | W | Logical |
-
-</details>
-
-<details>
-<summary>Table 1037 - Table_1037 (**W**) - 4 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | P.O Abandon | W | Logical |
-| B | heb_nom_logement | W | Unicode |
-| C | v.Nb chambres saisies | W | Numeric |
-| D | CHG_REASON_Heure_liberation | W | Numeric |
-| E | CHG_PRV_Heure_liberation | W | Time |
-
-</details>
-
 ## 11. VARIABLES
 
 ### 11.1 Parametres entrants (18)
@@ -5153,10 +5023,10 @@ Variables recues du programme appelant ([Menu caisse GM - scroll (IDE 163)](ADH-
 | A | P0 societe | Alpha | 2x parametre entrant |
 | B | P0 devise locale | Alpha | 3x parametre entrant |
 | C | P0 masque montant | Alpha | 3x parametre entrant |
-| D | P0 solde compte | Numeric | [238.10](#t16), [238.29](#t38), [238.31.2](#t43) |
+| D | P0 solde compte | Numeric | [T16](#t16), [T38](#t38), [T43](#t43) |
 | E | P0 code GM | Numeric | 4x parametre entrant |
 | F | P0 filiation | Numeric | 3x parametre entrant |
-| G | P0 date fin sejour | Date | [238.13.1](#t20) |
+| G | P0 date fin sejour | Date | [T20](#t20) |
 | H | P0 etat compte | Alpha | - |
 | I | P0 date solde | Date | - |
 | J | P0 garanti O/N | Alpha | - |
@@ -5166,8 +5036,8 @@ Variables recues du programme appelant ([Menu caisse GM - scroll (IDE 163)](ADH-
 | N | P0.Valide ? | Numeric | 1x parametre entrant |
 | O | P0.Nb decimales | Numeric | 2x parametre entrant |
 | HB | P.Toute ligne | Logical | - |
-| HE | P.i.num ligne a modifier | Numeric | [238.41.2.1](#t57) |
-| HF | P.i.nr ligne a supprimer | Numeric | [238.41.2.1](#t57) |
+| HE | P.i.num ligne a modifier | Numeric | [T57](#t57) |
+| HF | P.i.nr ligne a supprimer | Numeric | [T57](#t57) |
 
 ### 11.2 Variables de session (66)
 
@@ -5177,7 +5047,7 @@ Variables persistantes pendant toute la session.
 |--------|-----|------|-----------|
 | V | v.retour lien sous_type article | Alpha | - |
 | W | v.SoldeGiftPass | Numeric | 71x session |
-| BJ | v Sens Transfert Global | Alpha | [238.28](#t37), [238.30](#t39), [238.30.1](#t40) |
+| BJ | v Sens Transfert Global | Alpha | [T37](#t37), [T39](#t39), [T40](#t40) |
 | BK | v.Date activité VAE | Date | 1x session |
 | BL | v.VAE pendant le séjour ? | Logical | - |
 | BM | v.Matin/Après midi | Unicode | 1x session |
@@ -5194,20 +5064,20 @@ Variables persistantes pendant toute la session.
 | FA | v.NumeroTicket(VRL/VSL) | Numeric | - |
 | FB | v.NumeroTicket(VTE) | Numeric | - |
 | FC | v Réponse mode paiement | Numeric | - |
-| FD | V Nbre de Ligne Saisies | Numeric | [238.41.2.1](#t57) |
+| FD | V Nbre de Ligne Saisies | Numeric | [T57](#t57) |
 | FE | v Nbre ligne de reglement Saisi | Numeric | - |
 | FF | V.Num ligne vente | Numeric | - |
-| FG | V.Total reglement ligne | Numeric | [238.2](#t3), [238.2.3](#t6), [238.21](#t29) |
+| FG | V.Total reglement ligne | Numeric | [T3](#t3), [T6](#t6), [T29](#t29) |
 | FH | V.Multi reglement ligne | Logical | - |
 | FI | V.MOP TPE | Alpha | - |
-| FJ | V.Id transaction PMS | Alpha | [238](#t1) |
+| FJ | V.Id transaction PMS | Alpha | [T1](#t1) |
 | FK | V.Id transaction AXIS | Alpha | - |
 | FL | V.Num Autorisation | Alpha | - |
 | FM | V.Transaction TPE validee | Logical | - |
 | FN | V.Message erreur transac TPE | Alpha | - |
-| FO | V.Total carte | Numeric | [238.27](#t36) |
+| FO | V.Total carte | Numeric | [T36](#t36) |
 | FP | V.Transaction ok | Logical | 1x session |
-| FQ | V.Nombre de carte | Numeric | [238.27](#t36) |
+| FQ | V.Nombre de carte | Numeric | [T36](#t36) |
 | FS | v is the First time | Numeric | - |
 | FT | v.Montant-giftPass | Numeric | - |
 | FU | V.N°Ticket OD | Numeric | - |
@@ -5219,27 +5089,27 @@ Variables persistantes pendant toute la session.
 | GA | V.RC utilisé | Logical | 6x session |
 | GB | v.Token Id | Unicode | 10x session |
 | GC | v.Transaction Id | Unicode | 2x session |
-| GD | v.Existe paiement OD | Logical | [238.26](#t35) |
+| GD | v.Existe paiement OD | Logical | [T35](#t35) |
 | GE | v.Existe paiement $CARD | Logical | - |
 | GF | v.Email client | Alpha | 6x session |
 | GG | v.Stroke signature | Alpha | 1x session |
 | GH | v.decline envoi mail | Logical | - |
-| GI | v.Fichier ticket vente | Alpha | [238.25](#t34), [238.41.2.1](#t57) |
+| GI | v.Fichier ticket vente | Alpha | [T34](#t34), [T57](#t57) |
 | GJ | v.Vérif Mop Mobilité | Logical | - |
 | GK | v.Flag validation signature | Logical | - |
 | GL | v.Flag vente avec signature | Logical | - |
 | GM | v.Date/heure alpha | Alpha | - |
 | GN | v.Nb chambres /LCO | Numeric | - |
 | GO | v.Flag exist Vte LCO | Logical | - |
-| GP | v.Flag abandon libération | Logical | [238.38](#t51), [238.41.2.2](#t58), [238.41.2.3](#t59) |
+| GP | v.Flag abandon libération | Logical | [T51](#t51), [T58](#t58), [T59](#t59) |
 | GQ | v.annuler imputation en cours? | Numeric | - |
 | GR | v.confirm suppression ligne | Numeric | - |
 | GS | v.bouton detail TRF | Alpha | - |
 | GT | v.bouton detail PAX | Alpha | - |
 | GU | v.code article a mod | Numeric | 5x session |
 | GV | v. pied stype existe? | Logical | 2x session |
-| GW | v. pied type existe? | Logical | [238.30](#t39) |
-| GX | v. type a utiliser | Unicode | [238.30](#t39) |
+| GW | v. pied type existe? | Logical | [T39](#t39) |
+| GX | v. type a utiliser | Unicode | [T39](#t39) |
 | GY | v. stype a utiliser | Unicode | 1x session |
 
 ### 11.3 Variables de travail (89)
@@ -5248,12 +5118,12 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| R | W0 FIN SAISIE OD | Logical | [238](#t1), [238.4](#t8), [238.5](#t9) |
-| T | W0 Cloture en cours | Logical | [238.9](#t13), [238.9.1](#t14), [238.9.2](#t15) |
+| R | W0 FIN SAISIE OD | Logical | [T1](#t1), [T8](#t8), [T9](#t9) |
+| T | W0 Cloture en cours | Logical | [T13](#t13), [T14](#t14), [T15](#t15) |
 | U | W0 code article | Numeric | 6x calcul interne |
-| X | W0 imputation | Numeric | [238.19.1](#t27) |
+| X | W0 imputation | Numeric | [T27](#t27) |
 | Y | W0 sous-imput. | Numeric | - |
-| Z | W0 date d'achat | Date | [238.13.1](#t20) |
+| Z | W0 date d'achat | Date | [T20](#t20) |
 | BA | W0 annulation | Alpha | 2x calcul interne |
 | BB | W0 service village | Alpha | 4x calcul interne |
 | BC | W0 libelle article | Alpha | 2x calcul interne |
@@ -5266,12 +5136,12 @@ Variables internes au programme.
 | BN | W0 Sens du transfert Aller | Alpha | - |
 | BO | W0 Date du transfert Aller | Date | - |
 | BP | W0 Heure du transfert Aller | Time | - |
-| BQ | W0 b.Date du transfert | Alpha | [238.28](#t37), [238.30](#t39), [238.30.1](#t40) |
+| BQ | W0 b.Date du transfert | Alpha | [T37](#t37), [T39](#t39), [T40](#t40) |
 | BR | W0 Type d'endroit Aller | Alpha | - |
 | BS | W0 Code Gare/Aéroport Aller | Alpha | - |
 | BT | W0 Numéro du vol Aller | Alpha | 1x calcul interne |
 | BU | W0 Compagnie Aller | Alpha | - |
-| BV | W0 Commentaire Aller | Alpha | [238.7](#t11) |
+| BV | W0 Commentaire Aller | Alpha | [T11](#t11) |
 | BW | W0 Sens du transfert Retour | Alpha | - |
 | BX | W0 Date du transfert Retour | Date | - |
 | BY | W0 Heure du transfert Retour | Time | - |
@@ -5281,15 +5151,15 @@ Variables internes au programme.
 | CC | W0 Compagnie Retour | Alpha | 1x calcul interne |
 | CD | W0 b.Saisie PAX | Alpha | 1x calcul interne |
 | CE | W0 Nbre de PAX enregistré | Numeric | 1x calcul interne |
-| CF | W0 Commentaire Retour | Alpha | [238.7](#t11) |
+| CF | W0 Commentaire Retour | Alpha | [T11](#t11) |
 | CG | W0 montant avant reduction | Numeric | - |
 | CH | W0 Pourcentage reduction | Numeric | - |
 | CI | W0 Remise Obligatoire | Numeric | 1x calcul interne |
 | CJ | W0 Montant reduction | Numeric | - |
 | CK | W0.Date consommation | Date | - |
 | CL | W0.Date fin sejour | Date | 1x calcul interne |
-| CM | W0 Motif de non enreg NA | Numeric | [238.29](#t38), [238.31.1](#t42), [238.31.2](#t43) |
-| CN | W0 Commentaire | Alpha | [238.7](#t11) |
+| CM | W0 Motif de non enreg NA | Numeric | [T38](#t38), [T42](#t42), [T43](#t43) |
+| CN | W0 Commentaire | Alpha | [T11](#t11) |
 | CO | W0 Motif annulation | Alpha | 3x calcul interne |
 | CP | W0 Titre | Alpha | 9x calcul interne |
 | CQ | W0 Nom | Alpha | 6x calcul interne |
@@ -5300,7 +5170,7 @@ Variables internes au programme.
 | CV | W0 CP | Alpha | 2x calcul interne |
 | CW | W0 Ville | Alpha | 1x calcul interne |
 | CX | W0 Nb Chambres | Numeric | 1x calcul interne |
-| CY | W0 Chambre | Unicode | [238.39](#t52) |
+| CY | W0 Chambre | Unicode | [T52](#t52) |
 | CZ | W0 PYR Valide | Logical | 1x calcul interne |
 | DA | W0 Lib Bouton Chambre | Unicode | - |
 | DB | W0 Vendeur | Unicode | - |
@@ -5309,17 +5179,17 @@ Variables internes au programme.
 | DE | W0 article trouve | Logical | - |
 | DF | W0 Stock produit | Numeric | 3x calcul interne |
 | DG | W0 montant | Numeric | 4x calcul interne |
-| DH | W0 mode de paiement | Alpha | [238.5](#t9), [238.26](#t35) |
+| DH | W0 mode de paiement | Alpha | [T9](#t9), [T35](#t35) |
 | DJ | W0 Libelle MOP | Alpha | - |
-| DO | W0 reseau | Alpha | [238.11](#t17) |
+| DO | W0 reseau | Alpha | [T17](#t17) |
 | DP | W0 fin tache | Alpha | 7x calcul interne |
-| DQ | W0 forfait (O/N) | Alpha | [238.12](#t18), [238.13.1](#t20), [238.14](#t21) |
-| DR | W0 effacement (O/N) | Alpha | [238.14](#t21), [238.15](#t22), [238.41.2.4](#t60) |
-| DS | W0 forfait date(O/N) | Alpha | [238.12](#t18), [238.13.1](#t20), [238.14](#t21) |
-| DT | W0 code forfait | Alpha | [238.12](#t18), [238.13.1](#t20), [238.14](#t21) |
+| DQ | W0 forfait (O/N) | Alpha | [T18](#t18), [T20](#t20), [T21](#t21) |
+| DR | W0 effacement (O/N) | Alpha | [T21](#t21), [T22](#t22), [T60](#t60) |
+| DS | W0 forfait date(O/N) | Alpha | [T18](#t18), [T20](#t20), [T21](#t21) |
+| DT | W0 code forfait | Alpha | [T18](#t18), [T20](#t20), [T21](#t21) |
 | DU | W0 date debut | Date | - |
 | DV | W0 date fin | Date | - |
-| DW | W0 gratuite ? | Alpha | [238.19](#t26) |
+| DW | W0 gratuite ? | Alpha | [T26](#t26) |
 | DX | W0 ret lien special | Numeric | 1x calcul interne |
 | DY | W0 Code Devise | Numeric | 2x calcul interne |
 | DZ | W0 Retour Transmission TPE | Logical | - |
@@ -5335,7 +5205,7 @@ Variables internes au programme.
 | EK | W0 Abandon | Logical | - |
 | EL | W0 validation | Logical | - |
 | EM | W0 choix personne absente | Numeric | - |
-| EN | W0 choix transac manuelle | Numeric | [238](#t1) |
+| EN | W0 choix transac manuelle | Numeric | [T1](#t1) |
 | EP | W0 Lien Logement Lieu Séjour | Logical | - |
 
 ### 11.4 Autres (15)
@@ -5347,7 +5217,7 @@ Variables diverses.
 | P | Bouton IDENTITE | Alpha | - |
 | Q | Bouton ABANDON | Alpha | 18x refs |
 | S | Bouton FIN SAISIE OD | Alpha | - |
-| DI | Existe mode de paiement | Logical | [238.5](#t9), [238.26](#t35), [238.34](#t47) |
+| DI | Existe mode de paiement | Logical | [T9](#t9), [T35](#t35), [T47](#t47) |
 | DK | WO Classe MOP | Alpha | 1x refs |
 | DL | V0 memo-service | Alpha | - |
 | DM | V0 memo-nom GM | Alpha | - |
@@ -6331,4 +6201,4 @@ graph LR
 | [Get Matricule (IDE 227)](ADH-IDE-227.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:54*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:34*

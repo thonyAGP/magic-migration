@@ -1,6 +1,6 @@
 ﻿# ADH IDE 84 - SP Caractères Interdits
 
-> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 03:45 (27s) | Assemblage 14:03
+> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 02:20 (22h34min) | Assemblage 02:20
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 84 - Caractères Interdits** valide les saisies de transactions en vérifiant l'absence de caractères non autorisés dans les données utilisateur. Ce programme effectue un contrôle strictement nécessaire lors de l'enregistrement de nouvelles transactions de vente (GP, PMS-584, PMS-721, PMS-710) et de saisies génériques de transactions, garantissant que seuls les caractères valides sont acceptés avant la persistence des données.
+ADH IDE 84 - CARACT_INTERDIT est un utilitaire de validation de caractères interdits utilisé lors de la saisie de transactions commerciales. Le programme vérifie qu'une chaîne de caractères ne contient pas de caractères non autorisés ou invalides selon les règles métier de la caisse. Il est appelé principalement lors de la création de nouvelles ventes avec Gift Pass (IDE 237-240) et lors de la saisie manuelle de transactions (IDE 307, 310, 316).
 
-Le programme expose deux tâches principales : **Caractères Interdits** qui effectue la validation du contenu saisi, et **Verification Chaine** qui analyse la chaîne de caractères pour détecter les patterns interdits. Cette logique est appelée transversalement depuis sept programmes de transaction différents, ce qui en fait un service de validation centralisé pour l'intégrité des données de vente.
+Le programme expose une interface publique callable via `ProgIdx('CARACT_INTERDIT')` depuis d'autres modules. Il contient deux tâches principales : "Caractères Interdits" qui effectue la validation proprement dite en comparant la chaîne d'entrée contre une liste de caractères interdits, et "Vérification Chaîne" qui prépare ou post-traite les données de validation.
 
-En tant que module de validation métier, ADH IDE 84 intervient comme barrière d'entrée critique pour prévenir l'injection de caractères malformés ou incompatibles avec le système de caisse. Ses appels systématiques depuis la chaîne de saisie des transactions (237→84, 238→84, etc.) confirment son rôle de filtre obligatoire avant toute enregistrement transactionnel.
+Ce programme fait partie de la composante ADH.ecf (Sessions_Reprises) et est partagé entre plusieurs projets. Il s'inscrit dans la couche de validation métier de la gestion de caisse, garantissant l'intégrité des données de transactions avant leur enregistrement dans la base de données.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Caractères Interdits
+#### <a id="t1"></a>84 - Caractères Interdits
 
 **Role** : Traitement : Caractères Interdits.
 
@@ -47,14 +47,26 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ---
 
-#### <a id="t2"></a>T2 - Verification Chaine
+#### <a id="t2"></a>84.1 - Verification Chaine
 
 **Role** : Verification : Verification Chaine.
 
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: W0-Fin de Tache [D] egale 'F'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0-Fin de Tache [D]='F'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EQ (W0-Fin de Tache) |
+| **Expression source** | Expression 2 : `W0-Fin de Tache [D]='F'` |
+| **Exemple** | Si W0-Fin de Tache [D]='F' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -73,25 +85,34 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **84.1** | [**Caractères Interdits** (T1)](#t1) | MDI | - | Traitement |
-| **84.2** | [**Verification Chaine** (T2)](#t2) | MDI | - | Validation |
+| **84.1** | [**Caractères Interdits** (84)](#t1) | MDI | - | Traitement |
+| **84.2** | [**Verification Chaine** (84.1)](#t2) | MDI | - | Validation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (1t)]
-    START --> B1
-    B2[Validation (1t)]
-    B1 --> B2
-    ENDOK([END])
-    B2 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{W0-Fin de Tache}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -112,10 +133,10 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0-Code | Alpha | - |
-| B | P0-Accord Suite | Alpha | - |
-| C | P0-N/P | Alpha | - |
-| D | W0-Fin de Tache | Alpha | 1x refs |
+| EN | P0-Code | Alpha | - |
+| EO | P0-Accord Suite | Alpha | - |
+| EP | P0-N/P | Alpha | - |
+| EQ | W0-Fin de Tache | Alpha | 1x refs |
 
 ## 12. EXPRESSIONS
 
@@ -125,22 +146,22 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 1 | 5 |
 | CONSTANTE | 1 | 0 |
-| CONDITION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 2 | `W0-Fin de Tache [D]='F'` | [RM-001](#rm-RM-001) |
 
 #### CONSTANTE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CONSTANTE | 1 | `'F'` | - |
-
-#### CONDITION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 2 | `W0-Fin de Tache [D]='F'` | - |
 
 <!-- TAB:Connexions -->
 
@@ -245,7 +266,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 19) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -265,4 +286,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:04*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:20*

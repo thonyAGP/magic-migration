@@ -1,6 +1,6 @@
 ﻿# ADH IDE 21 - Recupere devise local
 
-> **Analyse**: Phases 1-4 2026-02-07 06:38 -> 06:38 (16s) | Assemblage 13:03
+> **Analyse**: Phases 1-4 2026-02-07 06:38 -> 01:21 (18h42min) | Assemblage 01:21
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,7 +19,6 @@
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 0/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
@@ -43,7 +42,7 @@ Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Print extrait compte /Service (IDE 0)](ADH-IDE-0.md), [Print C/O confirmation (IDE 17)](ADH-IDE-17.md), [Print extrait compte (IDE 18)](ADH-IDE-18.md), [Print extrait compte /Nom (IDE 70)](ADH-IDE-70.md), [Print extrait compte /Date (IDE 71)](ADH-IDE-71.md), [Print extrait compte /Cum (IDE 72)](ADH-IDE-72.md), [Print extrait compte /Imp (IDE 73)](ADH-IDE-73.md), [Print extrait DateImp /O (IDE 74)](ADH-IDE-74.md), [Print extrait compte /Service (IDE 76)](ADH-IDE-76.md), [    Print Plafonds alloués (IDE 87)](ADH-IDE-87.md), [Extrait Compte (IDE 301)](ADH-IDE-301.md), [Print extrait compte /Date (IDE 302)](ADH-IDE-302.md), [Print extrait compte /Cum (IDE 303)](ADH-IDE-303.md), [Print extrait compte /Imp (IDE 304)](ADH-IDE-304.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 1
 
 <!-- TAB:Ecrans -->
@@ -125,22 +124,100 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Print extrait compte /Service (IDE 0)](ADH-IDE-0.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print C/O confirmation (IDE 17)](ADH-IDE-17.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print extrait compte (IDE 18)](ADH-IDE-18.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print extrait compte /Nom (IDE 70)](ADH-IDE-70.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print extrait compte /Date (IDE 71)](ADH-IDE-71.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print extrait compte /Cum (IDE 72)](ADH-IDE-72.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print extrait compte /Imp (IDE 73)](ADH-IDE-73.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print extrait DateImp /O (IDE 74)](ADH-IDE-74.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print extrait compte /Service (IDE 76)](ADH-IDE-76.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [    Print Plafonds alloués (IDE 87)](ADH-IDE-87.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Extrait Compte (IDE 301)](ADH-IDE-301.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print extrait compte /Date (IDE 302)](ADH-IDE-302.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print extrait compte /Cum (IDE 303)](ADH-IDE-303.md) -> **Recupere devise local (IDE 21)**
+
+Main -> ... -> [Print extrait compte /Imp (IDE 304)](ADH-IDE-304.md) -> **Recupere devise local (IDE 21)**
 
 ```mermaid
 graph LR
     T21[21 Recupere devise local]
     style T21 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T21
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC69[69 Extrait de compte]
+    style CC69 fill:#8b5cf6
+    CC287[287 Solde Easy Check Out]
+    style CC287 fill:#8b5cf6
+    CC64[64 Solde Easy Check Out]
+    style CC64 fill:#8b5cf6
+    CC53[53 Extrait Easy Check ...]
+    style CC53 fill:#8b5cf6
+    CC7[7 Menu Data Catching]
+    style CC7 fill:#8b5cf6
+    CC17[17 Print CO confirmation]
+    style CC17 fill:#3fb950
+    CC18[18 Print extrait compte]
+    style CC18 fill:#3fb950
+    CC71[71 Print extrait compt...]
+    style CC71 fill:#3fb950
+    CC70[70 Print extrait compt...]
+    style CC70 fill:#3fb950
+    CC7 --> CC17
+    CC69 --> CC17
+    CC53 --> CC17
+    CC64 --> CC17
+    CC287 --> CC17
+    CC7 --> CC18
+    CC69 --> CC18
+    CC53 --> CC18
+    CC64 --> CC18
+    CC287 --> CC18
+    CC7 --> CC70
+    CC69 --> CC70
+    CC53 --> CC70
+    CC64 --> CC70
+    CC287 --> CC70
+    CC7 --> CC71
+    CC69 --> CC71
+    CC53 --> CC71
+    CC64 --> CC71
+    CC287 --> CC71
+    CC17 --> T21
+    CC18 --> T21
+    CC70 --> T21
+    CC71 --> T21
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [0](ADH-IDE-0.md) | Print extrait compte /Service | 1 |
+| [17](ADH-IDE-17.md) | Print C/O confirmation | 1 |
+| [18](ADH-IDE-18.md) | Print extrait compte | 1 |
+| [70](ADH-IDE-70.md) | Print extrait compte /Nom | 1 |
+| [71](ADH-IDE-71.md) | Print extrait compte /Date | 1 |
+| [72](ADH-IDE-72.md) | Print extrait compte /Cum | 1 |
+| [73](ADH-IDE-73.md) | Print extrait compte /Imp | 1 |
+| [74](ADH-IDE-74.md) | Print extrait DateImp /O | 1 |
+| [76](ADH-IDE-76.md) | Print extrait compte /Service | 1 |
+| [87](ADH-IDE-87.md) |     Print Plafonds alloués | 1 |
+| [301](ADH-IDE-301.md) | Extrait Compte | 1 |
+| [302](ADH-IDE-302.md) | Print extrait compte /Date | 1 |
+| [303](ADH-IDE-303.md) | Print extrait compte /Cum | 1 |
+| [304](ADH-IDE-304.md) | Print extrait compte /Imp | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -181,4 +258,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:03*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:21*

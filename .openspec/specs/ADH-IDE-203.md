@@ -1,6 +1,6 @@
 ﻿# ADH IDE 203 - Lecture autocom
 
-> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:53 (28s) | Assemblage 03:53
+> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 04:15 (24h21min) | Assemblage 04:15
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,14 +18,14 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Lecture autocom** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md).
+ADH IDE 203 effectue une lecture de codes d'autocom (autorisation de compensation) dans la table `codes_autocom____aut`. Le programme reçoit trois paramètres d'entrée (société, compte, filiation) et retourne le code d'autorisation trouvé, sa ligne, son poste, ainsi qu'un flag indiquant l'existence du code. C'est un programme de lookup minimal sans écran visible, avec une seule tâche contenant 22 lignes de logique métier.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Traitement** (1 tache) : traitements metier divers
+Ce programme est appelé par ADH IDE 163 (Menu caisse GM - scroll) comme sous-programme de traitement pour récupérer les informations d'autorisation nécessaires au workflow de compensation. Il n'appelle aucun autre programme et ne génère pas d'écran utilisateur, fonctionnant uniquement comme utilitaire de requête de données accessibles via les trois paramètres clés du profil du compte.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -42,11 +42,11 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)
+- **Appele par**: (aucun)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 7
 
 <!-- TAB:Ecrans -->
@@ -113,17 +113,17 @@ flowchart TD
 
 ### 11.1 Parametres entrants (7)
 
-Variables recues du programme appelant ([Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)).
+Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | PI societe | Alpha | 1x parametre entrant |
-| B | PI compte | Numeric | 1x parametre entrant |
-| C | PI filiation | Numeric | 1x parametre entrant |
-| D | PO code | Numeric | - |
-| E | PO ligne | Numeric | - |
-| F | PO poste | Numeric | - |
-| G | PO Existe à P | Logical | - |
+| EN | PI societe | Alpha | 1x parametre entrant |
+| EO | PI compte | Numeric | 1x parametre entrant |
+| EP | PI filiation | Numeric | 1x parametre entrant |
+| EQ | PO code | Numeric | - |
+| ER | PO ligne | Numeric | - |
+| ES | PO poste | Numeric | - |
+| ET | PO Existe à P | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -161,25 +161,22 @@ Variables recues du programme appelant ([Menu caisse GM - scroll (IDE 163)](ADH-
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Lecture autocom (IDE 203)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T203[203 Lecture autocom]
     style T203 fill:#58a6ff
-    CC1[1 Main Program]
-    style CC1 fill:#8b5cf6
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#3fb950
-    CC1 --> CC163
-    CC163 --> T203
+    NONE[Aucun caller]
+    NONE -.-> T203
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -225,4 +222,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:53*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:16*

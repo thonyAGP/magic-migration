@@ -1,6 +1,6 @@
 ﻿# ADH IDE 77 - Club Med Pass menu
 
-> **Analyse**: Phases 1-4 2026-02-07 03:44 -> 03:45 (28s) | Assemblage 13:51
+> **Analyse**: Phases 1-4 2026-02-07 03:45 -> 02:14 (22h29min) | Assemblage 02:14
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,13 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-# ADH IDE 77 - Club Med Pass Menu
+**ADH IDE 77 - Club Med Pass Menu** est le programme de gestion centralisée des cartes Club Med Pass (CMP). Il offre une interface menu permettant aux caissiers de consulter et gérer les cartes de crédit prépayées des clients. Le programme accède à la table `ez_card` pour lire/modifier les informations de carte (soldes, statuts, oppositions).
 
-Le programme gère l'interface de gestion des cartes Club Med Pass en caisse. Il affiche un menu permettant aux utilisateurs de consulter les transactions associées, gérer les oppositions de carte, et accéder aux fonctionnalités de lecture/création de cartes via les périphériques de scan. Le programme reçoit ses données du menu caisse principal (IDE 163) et coordonne les différentes opérations de traitement des cartes de crédit Club Med.
+Le flux principal comprend plusieurs fonctionnalités : consultation des transactions CMP via **ADH IDE 79** (balance crédit de conso), scan de carte via **ADH IDE 80**, création de nouvelle carte via **ADH IDE 81**, sélection d'affiliés via **ADH IDE 82**, gestion des limites de crédit via **ADH IDE 86**, et gestion des forfaits TAI locaux via **ADH IDE 173**. Chaque sous-programme est spécialisé dans une opération spécifique (lecture, création, opposition, suppression).
 
-Les tâches principales incluent l'affichage du menu initial, le traitement des sélections utilisateur, et le routage vers les modules spécialisés. Selon l'action sélectionnée, le programme appelle les modules de scan de carte (IDE 80, 81), de consultation du solde crédit (IDE 79), de gestion des limites (IDE 86), ou de gestion des forfaits (IDE 173). Chaque branche du menu délègue à un module métier dédié tout en maintenant le contexte de la transaction en cours.
-
-La gestion des impressions et du numérotage des tickets est centralisée à travers les appels aux modules d'impression (IDE 178-182), permettant une configuration cohérente des paramètres d'imprimante. Seule la table `ez_card` est modifiée directement par ce programme, principalement lors des opérations d'opposition ou de suppression de carte.
+Le programme intègre également les services d'impression : récupération de l'imprimante via **ADH IDE 179**, sélection du modèle via **ADH IDE 180**, numérotation des tickets via **ADH IDE 181**, et réinitialisation via **ADH IDE 182**. Cela permet aux caissiers d'éditer les reçus CMP et les documents associés directement depuis le menu, offrant un workflow complet de gestion des cartes prépayées.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -38,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Club Med Pass menu [ECRAN]
+#### <a id="t1"></a>77 - Club Med Pass menu [[ECRAN]](#ecran-t1)
 
 **Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 1056 x 256 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -48,19 +46,19 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Processing ... **[ECRAN]** | Traitement |
-| [T5](#t5) | Opposition Club Med Pass | Traitement |
-| [T6](#t6) | Delete Club Med Pass | Traitement |
-| [T8](#t8) | paramètre | Traitement |
-| [T9](#t9) | Club Med Pass menu **[ECRAN]** | Traitement |
+| [77.1](#t2) | Processing ... **[[ECRAN]](#ecran-t2)** | Traitement |
+| [77.3](#t5) | Opposition Club Med Pass | Traitement |
+| [77.4](#t6) | Delete Club Med Pass | Traitement |
+| [77.6](#t8) | paramètre | Traitement |
+| [77.7](#t9) | Club Med Pass menu **[[ECRAN]](#ecran-t9)** | Traitement |
 
 </details>
-**Variables liees** : Y (v.Club Med Pass ID), Z (V.ID Club Med Pass scannee)
+**Variables liees** : FL (v.Club Med Pass ID), FM (V.ID Club Med Pass scannee)
 **Delegue a** : [Appel programme (IDE 44)](ADH-IDE-44.md), [Print Ventes Club Med Pass (IDE 78)](ADH-IDE-78.md), [Balance Credit de conso (IDE 79)](ADH-IDE-79.md)
 
 ---
 
-#### <a id="t2"></a>T2 - Processing ... [ECRAN]
+#### <a id="t2"></a>77.1 - Processing ... [[ECRAN]](#ecran-t2)
 
 **Role** : Traitement : Processing ....
 **Ecran** : 129 x 64 DLU (MDI) | [Voir mockup](#ecran-t2)
@@ -68,34 +66,34 @@ Traitements internes.
 
 ---
 
-#### <a id="t5"></a>T5 - Opposition Club Med Pass
+#### <a id="t5"></a>77.3 - Opposition Club Med Pass
 
 **Role** : Traitement : Opposition Club Med Pass.
-**Variables liees** : Y (v.Club Med Pass ID), Z (V.ID Club Med Pass scannee)
+**Variables liees** : FL (v.Club Med Pass ID), FM (V.ID Club Med Pass scannee)
 **Delegue a** : [Appel programme (IDE 44)](ADH-IDE-44.md), [Balance Credit de conso (IDE 79)](ADH-IDE-79.md), [   Card scan read (IDE 80)](ADH-IDE-80.md)
 
 ---
 
-#### <a id="t6"></a>T6 - Delete Club Med Pass
+#### <a id="t6"></a>77.4 - Delete Club Med Pass
 
 **Role** : Traitement : Delete Club Med Pass.
-**Variables liees** : Y (v.Club Med Pass ID), Z (V.ID Club Med Pass scannee), BD (v.delete confirmation)
+**Variables liees** : FL (v.Club Med Pass ID), FM (V.ID Club Med Pass scannee), FQ (v.delete confirmation)
 **Delegue a** : [Appel programme (IDE 44)](ADH-IDE-44.md), [Balance Credit de conso (IDE 79)](ADH-IDE-79.md), [   Card scan read (IDE 80)](ADH-IDE-80.md)
 
 ---
 
-#### <a id="t8"></a>T8 - paramètre
+#### <a id="t8"></a>77.6 - paramètre
 
 **Role** : Traitement : paramètre.
 **Delegue a** : [Appel programme (IDE 44)](ADH-IDE-44.md), [Balance Credit de conso (IDE 79)](ADH-IDE-79.md), [   Card scan read (IDE 80)](ADH-IDE-80.md)
 
 ---
 
-#### <a id="t9"></a>T9 - Club Med Pass menu [ECRAN]
+#### <a id="t9"></a>77.7 - Club Med Pass menu [[ECRAN]](#ecran-t9)
 
 **Role** : Traitement : Club Med Pass menu.
 **Ecran** : 1050 x 73 DLU (Modal) | [Voir mockup](#ecran-t9)
-**Variables liees** : Y (v.Club Med Pass ID), Z (V.ID Club Med Pass scannee)
+**Variables liees** : FL (v.Club Med Pass ID), FM (V.ID Club Med Pass scannee)
 **Delegue a** : [Appel programme (IDE 44)](ADH-IDE-44.md), [Print Ventes Club Med Pass (IDE 78)](ADH-IDE-78.md), [Balance Credit de conso (IDE 79)](ADH-IDE-79.md)
 
 
@@ -105,16 +103,16 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Detail des transa
 
 ---
 
-#### <a id="t3"></a>T3 - Detail des transactions CMP [ECRAN]
+#### <a id="t3"></a>77.2 - Detail des transactions CMP [[ECRAN]](#ecran-t3)
 
 **Role** : Saisie des donnees : Detail des transactions CMP.
 **Ecran** : 1190 x 294 DLU (MDI) | [Voir mockup](#ecran-t3)
-**Variables liees** : BE (v.ez detail empty)
+**Variables liees** : FR (v.ez detail empty)
 **Delegue a** : [Print Ventes Club Med Pass (IDE 78)](ADH-IDE-78.md)
 
 ---
 
-#### <a id="t4"></a>T4 - Transactions details [ECRAN]
+#### <a id="t4"></a>77.2.1 - Transactions details [[ECRAN]](#ecran-t4)
 
 **Role** : Saisie des donnees : Transactions details.
 **Ecran** : 594 x 87 DLU (Modal) | [Voir mockup](#ecran-t4)
@@ -127,20 +125,44 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t7"></a>T7 - Create Club Med Pass
+#### <a id="t7"></a>77.5 - Create Club Med Pass
 
 **Role** : Traitement : Create Club Med Pass.
-**Variables liees** : Y (v.Club Med Pass ID), Z (V.ID Club Med Pass scannee), BF (v.ok to create)
+**Variables liees** : FL (v.Club Med Pass ID), FM (V.ID Club Med Pass scannee), FS (v.ok to create)
 **Delegue a** : [   Card scan create (IDE 81)](ADH-IDE-81.md)
 
 
 ## 5. REGLES METIER
 
-2 regles identifiees:
+22 regles identifiees:
 
-### Autres (2 regles)
+### Creation (1 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Si GetParam ('CODELANGUE')='FRA' alors 'Cette carte n''appartient pas a ce compte' sinon 'This card do not belong to this account')
+#### <a id="rm-RM-009"></a>[RM-009] Condition composite: v.Club Med Pass ID [Y]>'' AND v.ok to create [BF]
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `v.Club Med Pass ID [Y]>'' AND v.ok to create [BF]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FL (v.Club Med Pass ID), FS (v.ok to create) |
+| **Expression source** | Expression 20 : `v.Club Med Pass ID [Y]>'' AND v.ok to create [BF]` |
+| **Exemple** | Si v.Club Med Pass ID [Y]>'' AND v.ok to create [BF] â†’ Action si vrai |
+| **Impact** | [77 - Club Med Pass menu](#t1) |
+
+### Autres (21 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition composite: V.ID Club Med Pass sca... [Z]>'' AND V.Compte scanne [BM]<>P.Code 8 chiffres [B]
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.ID Club Med Pass sca... [Z]>'' AND V.Compte scanne [BM]<>P.Code 8 chiffres [B]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EO (P.Code 8 chiffres), FZ (V.Compte scanne) |
+| **Expression source** | Expression 2 : `V.ID Club Med Pass sca... [Z]>'' AND V.Compte scanne [BM]<>P` |
+| **Exemple** | Si V.ID Club Med Pass sca... [Z]>'' AND V.Compte scanne [BM]<>P.Code 8 chiffres [B] â†’ Action si vrai |
+| **Impact** | [77 - Club Med Pass menu](#t1) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Si GetParam ('CODELANGUE')='FRA' alors 'Cette carte n''appartient pas a ce compte' sinon 'This card do not belong to this account')
 
 | Element | Detail |
 |---------|--------|
@@ -150,15 +172,192 @@ Insertion de nouveaux enregistrements en base.
 | **Expression source** | Expression 3 : `IF (GetParam ('CODELANGUE')='FRA','Cette carte n''appartient` |
 | **Exemple** | Si GetParam ('CODELANGUE')='FRA' â†’ 'Cette carte n''appartient pas a ce compte'. Sinon â†’ 'This card do not belong to this account') |
 
-#### <a id="rm-RM-002"></a>[RM-002] Si [AJ]='O' alors IF ([AK]=0 sinon 'Bar Limit Activated for All','Bar Limit Activated under '&Trim (Str ([AK],'2'))),'Bar Limit Desactivated')
+#### <a id="rm-RM-003"></a>[RM-003] Condition: V.Status card [BA] egale 'V'
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `[AJ]='O'` |
-| **Si vrai** | IF ([AK]=0 |
-| **Si faux** | 'Bar Limit Activated for All','Bar Limit Activated under '&Trim (Str ([AK],'2'))),'Bar Limit Desactivated') |
-| **Expression source** | Expression 8 : `IF ([AJ]='O',IF ([AK]=0,'Bar Limit Activated for All','Bar L` |
-| **Exemple** | Si [AJ]='O' â†’ IF ([AK]=0 |
+| **Condition** | `V.Status card [BA]='V'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FN (V.Status card) |
+| **Expression source** | Expression 6 : `V.Status card [BA]='V'` |
+| **Exemple** | Si V.Status card [BA]='V' â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition composite: V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BP]='O' AND [BR]<=p.TAI.date fin sejour [M]
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BP]='O' AND [BR]<=p.TAI.date fin sejour [M]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EZ (p.TAI.date fin sejour), FN (V.Status card), FO (V.Other card valid) |
+| **Expression source** | Expression 7 : `V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND` |
+| **Exemple** | Si V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BP]='O' AND [BR]<=p.TAI.date fin sejour [M] â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Si v.Activation Bar Limit [BJ]='O' alors IF (v.Age Bar Limit [BK]=0 sinon 'Bar Limit Activated for All','Bar Limit Activated under '&Trim (Str (v.Age Bar Limit [BK],'2'))),'Bar Limit Desactivated')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `v.Activation Bar Limit [BJ]='O'` |
+| **Si vrai** | IF (v.Age Bar Limit [BK]=0 |
+| **Si faux** | 'Bar Limit Activated for All','Bar Limit Activated under '&Trim (Str (v.Age Bar Limit [BK],'2'))),'Bar Limit Desactivated') |
+| **Variables** | FW (v.Activation Bar Limit), FX (v.Age Bar Limit) |
+| **Expression source** | Expression 8 : `IF (v.Activation Bar Limit [BJ]='O',IF (v.Age Bar Limit [BK]` |
+| **Exemple** | Si v.Activation Bar Limit [BJ]='O' â†’ IF (v.Age Bar Limit [BK]=0 |
+
+#### <a id="rm-RM-006"></a>[RM-006] Condition: V.Action [BG] egale 'A'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.Action [BG]='A'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FT (V.Action) |
+| **Expression source** | Expression 15 : `V.Action [BG]='A'` |
+| **Exemple** | Si V.Action [BG]='A' â†’ Action si vrai |
+
+#### <a id="rm-RM-007"></a>[RM-007] Condition composite: [BP]<>'O' AND [BY]='Oui' AND IF ([BZ],[BZ],[BV]='O')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BP]<>'O' AND [BY]='Oui' AND IF ([BZ],[BZ],[BV]='O')` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 17 : `[BP]<>'O' AND [BY]='Oui' AND IF ([BZ],[BZ],[BV]='O')` |
+| **Exemple** | Si [BP]<>'O' AND [BY]='Oui' AND IF ([BZ],[BZ],[BV]='O') â†’ Action si vrai |
+
+#### <a id="rm-RM-008"></a>[RM-008] Condition composite: [BP]='O' OR [BY]='Non' OR [BV]='N' OR VG74
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BP]='O' OR [BY]='Non' OR [BV]='N' OR VG74` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 18 : `[BP]='O' OR [BY]='Non' OR [BV]='N' OR VG74` |
+| **Exemple** | Si [BP]='O' OR [BY]='Non' OR [BV]='N' OR VG74 â†’ Action si vrai |
+
+#### <a id="rm-RM-010"></a>[RM-010] Condition: V.Action [BG]='C' OR V.Action [BG] egale 'D'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.Action [BG]='C' OR V.Action [BG]='D'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FT (V.Action) |
+| **Expression source** | Expression 21 : `V.Action [BG]='C' OR V.Action [BG]='D'` |
+| **Exemple** | Si V.Action [BG]='C' OR V.Action [BG]='D' â†’ Action si vrai |
+
+#### <a id="rm-RM-011"></a>[RM-011] Condition: v.delete confirmation [BD] egale 6
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `v.delete confirmation [BD]=6` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FQ (v.delete confirmation) |
+| **Expression source** | Expression 23 : `v.delete confirmation [BD]=6` |
+| **Exemple** | Si v.delete confirmation [BD]=6 â†’ Action si vrai |
+| **Impact** | [77.4 - Delete Club Med Pass](#t6) |
+
+#### <a id="rm-RM-012"></a>[RM-012] Condition: V.Action [BG]='E' OR V.Action [BG] egale 'B'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.Action [BG]='E' OR V.Action [BG]='B'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FT (V.Action) |
+| **Expression source** | Expression 24 : `V.Action [BG]='E' OR V.Action [BG]='B'` |
+| **Exemple** | Si V.Action [BG]='E' OR V.Action [BG]='B' â†’ Action si vrai |
+
+#### <a id="rm-RM-013"></a>[RM-013] Condition: V.Action [BG] egale 'Z'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.Action [BG]='Z'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FT (V.Action) |
+| **Expression source** | Expression 27 : `V.Action [BG]='Z'` |
+| **Exemple** | Si V.Action [BG]='Z' â†’ Action si vrai |
+
+#### <a id="rm-RM-014"></a>[RM-014] Condition: V.Action [BG] egale 'F'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.Action [BG]='F'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FT (V.Action) |
+| **Expression source** | Expression 28 : `V.Action [BG]='F'` |
+| **Exemple** | Si V.Action [BG]='F' â†’ Action si vrai |
+
+#### <a id="rm-RM-015"></a>[RM-015] Condition: V.Action [BG] egale 'P'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.Action [BG]='P'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FT (V.Action) |
+| **Expression source** | Expression 29 : `V.Action [BG]='P'` |
+| **Exemple** | Si V.Action [BG]='P' â†’ Action si vrai |
+
+#### <a id="rm-RM-016"></a>[RM-016] Condition: V.Action [BG] egale 'G'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.Action [BG]='G'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FT (V.Action) |
+| **Expression source** | Expression 31 : `V.Action [BG]='G'` |
+| **Exemple** | Si V.Action [BG]='G' â†’ Action si vrai |
+
+#### <a id="rm-RM-017"></a>[RM-017] Condition: [CI] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[CI]=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 35 : `[CI]=''` |
+| **Exemple** | Si [CI]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-018"></a>[RM-018] Condition: [BV] different de 'O'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BV]<>'O'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 36 : `[BV]<>'O'` |
+| **Exemple** | Si [BV]<>'O' â†’ Action si vrai |
+
+#### <a id="rm-RM-019"></a>[RM-019] Condition: [CI]<>'' AND [BV] egale 'O'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[CI]<>'' AND [BV]='O'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 39 : `[CI]<>'' AND [BV]='O'` |
+| **Exemple** | Si [CI]<>'' AND [BV]='O' â†’ Action si vrai |
+
+#### <a id="rm-RM-020"></a>[RM-020] Condition: v.Club Med Pass ID [Y] different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `v.Club Med Pass ID [Y]<>''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FL (v.Club Med Pass ID) |
+| **Expression source** | Expression 40 : `v.Club Med Pass ID [Y]<>''` |
+| **Exemple** | Si v.Club Med Pass ID [Y]<>'' â†’ Action si vrai |
+| **Impact** | [77 - Club Med Pass menu](#t1) |
+
+#### <a id="rm-RM-021"></a>[RM-021] Condition composite: V.Choix action [BH]>'' AND (InStr ('ABEFGHPZ',V.Choix action [BH])>0 OR V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BQ]<>'S' AND [BP]='O' AND V.Choix action [BH]='D' OR V.Status card [BA]='V' AND V.Choix action [BH]='C' OR V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BR]<=p.TAI.date fin sejour [M] AND [BP]='O' AND V.Choix action [BH]='D')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V.Choix action [BH]>'' AND (InStr ('ABEFGHPZ',V.Choix action [BH])>0 OR V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BQ]<>'S' AND [BP]='O' AND V.Choix action [BH]='D' OR V.Status card [BA]='V' AND V.Choix action [BH]='C' OR V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BR]<=p.TAI.date fin sejour [M] AND [BP]='O' AND V.Choix action [BH]='D')` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EZ (p.TAI.date fin sejour), FN (V.Status card), FO (V.Other card valid), FU (V.Choix action) |
+| **Expression source** | Expression 45 : `V.Choix action [BH]>'' AND (InStr ('ABEFGHPZ',V.Choix action` |
+| **Exemple** | Si V.Choix action [BH]>'' AND (InStr ('ABEFGHPZ',V.Choix action [BH])>0 OR V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BQ]<>'S' AND [BP]='O' AND V.Choix action [BH]='D' OR V.Status card [BA]='V' AND V.Choix action [BH]='C' OR V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BR]<=p.TAI.date fin sejour [M] AND [BP]='O' AND V.Choix action [BH]='D') â†’ Action si vrai |
+
+#### <a id="rm-RM-022"></a>[RM-022] Negation de ExpCalc('45'EXP) (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT ExpCalc('45'EXP)` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 46 : `NOT ExpCalc('45'EXP)` |
+| **Exemple** | Si NOT ExpCalc('45'EXP) â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -173,18 +372,18 @@ Insertion de nouveaux enregistrements en base.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 77 | T1 | Club Med Pass menu | MDI | 1056 | 256 | Traitement |
-| 2 | 77.1 | T2 | Processing ... | MDI | 129 | 64 | Traitement |
-| 3 | 77.2 | T3 | Detail des transactions CMP | MDI | 1190 | 294 | Saisie |
-| 4 | 77.2.1 | T4 | Transactions details | Modal | 594 | 87 | Saisie |
-| 5 | 77.7 | T9 | Club Med Pass menu | Modal | 1050 | 73 | Traitement |
+| 1 | 77 | 77 | Club Med Pass menu | MDI | 1056 | 256 | Traitement |
+| 2 | 77.1 | 77.1 | Processing ... | MDI | 129 | 64 | Traitement |
+| 3 | 77.2 | 77.2 | Detail des transactions CMP | MDI | 1190 | 294 | Saisie |
+| 4 | 77.2.1 | 77.2.1 | Transactions details | Modal | 594 | 87 | Saisie |
+| 5 | 77.7 | 77.7 | Club Med Pass menu | Modal | 1050 | 73 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>77 - Club Med Pass menu
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1056 x 256 DLU
+**Tache** : [77](#t1) | **Type** : MDI | **Dimensions** : 1056 x 256 DLU
 **Bloc** : Traitement | **Titre IDE** : Club Med Pass menu
 
 <!-- FORM-DATA:
@@ -739,7 +938,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t2"></a>77.1 - Processing ...
-**Tache** : [T2](#t2) | **Type** : MDI | **Dimensions** : 129 x 64 DLU
+**Tache** : [77.1](#t2) | **Type** : MDI | **Dimensions** : 129 x 64 DLU
 **Bloc** : Traitement | **Titre IDE** : Processing ...
 
 <!-- FORM-DATA:
@@ -780,7 +979,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t3"></a>77.2 - Detail des transactions CMP
-**Tache** : [T3](#t3) | **Type** : MDI | **Dimensions** : 1190 x 294 DLU
+**Tache** : [77.2](#t3) | **Type** : MDI | **Dimensions** : 1190 x 294 DLU
 **Bloc** : Saisie | **Titre IDE** : Detail des transactions CMP
 
 <!-- FORM-DATA:
@@ -1131,7 +1330,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t4"></a>77.2.1 - Transactions details
-**Tache** : [T4](#t4) | **Type** : Modal | **Dimensions** : 594 x 87 DLU
+**Tache** : [77.2.1](#t4) | **Type** : Modal | **Dimensions** : 594 x 87 DLU
 **Bloc** : Saisie | **Titre IDE** : Transactions details
 
 <!-- FORM-DATA:
@@ -1290,7 +1489,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t9"></a>77.7 - Club Med Pass menu
-**Tache** : [T9](#t9) | **Type** : Modal | **Dimensions** : 1050 x 73 DLU
+**Tache** : [77.7](#t9) | **Type** : Modal | **Dimensions** : 1050 x 73 DLU
 **Bloc** : Traitement | **Titre IDE** : Club Med Pass menu
 
 <!-- FORM-DATA:
@@ -1471,15 +1670,15 @@ Insertion de nouveaux enregistrements en base.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[T1 Club Med Pass menu]
+    VF1[77 Club Med Pass menu]
     style VF1 fill:#58a6ff
-    VF2[T2 Processing ...]
+    VF2[77.1 Processing ...]
     style VF2 fill:#58a6ff
-    VF3[T3 Detail des transact...]
+    VF3[77.2 Detail des transact...]
     style VF3 fill:#58a6ff
-    VF4[T4 Transactions details]
+    VF4[77.2.1 Transactions details]
     style VF4 fill:#58a6ff
-    VF9[T9 Club Med Pass menu]
+    VF9[77.7 Club Med Pass menu]
     style VF9 fill:#58a6ff
     EXT44[IDE 44 Appel programme]
     style EXT44 fill:#3fb950
@@ -1540,37 +1739,42 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **77.1** | [**Club Med Pass menu** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1056x256 | Traitement |
-| 77.1.1 | [Processing ... (T2)](#t2) [mockup](#ecran-t2) | MDI | 129x64 | |
-| 77.1.2 | [Opposition Club Med Pass (T5)](#t5) | MDI | - | |
-| 77.1.3 | [Delete Club Med Pass (T6)](#t6) | MDI | - | |
-| 77.1.4 | [paramètre (T8)](#t8) | MDI | - | |
-| 77.1.5 | [Club Med Pass menu (T9)](#t9) [mockup](#ecran-t9) | Modal | 1050x73 | |
-| **77.2** | [**Detail des transactions CMP** (T3)](#t3) [mockup](#ecran-t3) | MDI | 1190x294 | Saisie |
-| 77.2.1 | [Transactions details (T4)](#t4) [mockup](#ecran-t4) | Modal | 594x87 | |
-| **77.3** | [**Create Club Med Pass** (T7)](#t7) | MDI | - | Creation |
+| **77.1** | [**Club Med Pass menu** (77)](#t1) [mockup](#ecran-t1) | MDI | 1056x256 | Traitement |
+| 77.1.1 | [Processing ... (77.1)](#t2) [mockup](#ecran-t2) | MDI | 129x64 | |
+| 77.1.2 | [Opposition Club Med Pass (77.3)](#t5) | MDI | - | |
+| 77.1.3 | [Delete Club Med Pass (77.4)](#t6) | MDI | - | |
+| 77.1.4 | [paramètre (77.6)](#t8) | MDI | - | |
+| 77.1.5 | [Club Med Pass menu (77.7)](#t9) [mockup](#ecran-t9) | Modal | 1050x73 | |
+| **77.2** | [**Detail des transactions CMP** (77.2)](#t3) [mockup](#ecran-t3) | MDI | 1190x294 | Saisie |
+| 77.2.1 | [Transactions details (77.2.1)](#t4) [mockup](#ecran-t4) | Modal | 594x87 | |
+| **77.3** | [**Create Club Med Pass** (77.5)](#t7) | MDI | - | Creation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (6t)]
-    START --> B1
-    B2[Saisie (2t)]
-    B1 --> B2
-    B3[Creation (1t)]
-    B2 --> B3
-    WRITE[MAJ 1 tables]
-    B3 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[CR lecture carte]
+    DECISION{V.Action}
+    PROCESS[Traitement]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -1598,9 +1802,9 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | r.other card valid | W | Logical |
-| BA | V.Status card | W | Alpha |
-| BB | V.Other card valid | W | Logical |
+| EN | r.other card valid | W | Logical |
+| FN | V.Status card | W | Alpha |
+| FO | V.Other card valid | W | Logical |
 
 </details>
 
@@ -1689,27 +1893,27 @@ Variables recues du programme appelant ([Menu caisse GM - scroll (IDE 163)](ADH-
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.Societe | Alpha | 1x parametre entrant |
-| B | P.Code 8 chiffres | Numeric | 2x parametre entrant |
-| C | P.Filiation | Numeric | 1x parametre entrant |
-| D | P.Masque montant | Alpha | - |
-| E | P.Masque cumul | Alpha | - |
-| F | P.TAI societe | Alpha | - |
-| G | P.TAI Devise locale | Alpha | - |
-| H | P.TAI Masque montant | Alpha | - |
-| I | P.TAI Solde compte | Numeric | - |
-| J | p.TAI.code GM | Numeric | - |
-| K | P.TAI Filiation | Numeric | - |
-| L | p.TAI.date deb sejour | Date | - |
-| M | p.TAI.date fin sejour | Date | 2x parametre entrant |
-| N | p.TAI.etat compte | Alpha | - |
-| O | p.TAI.date du solde | Date | - |
-| P | p.TAI.garantie O/N | Alpha | - |
-| Q | p.TAI.Nom prenom | Alpha | - |
-| R | p.TAI.Age | Alpha | - |
-| S | p.village TAI | Alpha | - |
-| T | P.Age num | Numeric | - |
-| U | P.Nb mois | Numeric | - |
+| EN | P.Societe | Alpha | 1x parametre entrant |
+| EO | P.Code 8 chiffres | Numeric | 2x parametre entrant |
+| EP | P.Filiation | Numeric | 1x parametre entrant |
+| EQ | P.Masque montant | Alpha | - |
+| ER | P.Masque cumul | Alpha | - |
+| ES | P.TAI societe | Alpha | - |
+| ET | P.TAI Devise locale | Alpha | - |
+| EU | P.TAI Masque montant | Alpha | - |
+| EV | P.TAI Solde compte | Numeric | - |
+| EW | p.TAI.code GM | Numeric | - |
+| EX | P.TAI Filiation | Numeric | - |
+| EY | p.TAI.date deb sejour | Date | - |
+| EZ | p.TAI.date fin sejour | Date | 2x parametre entrant |
+| FA | p.TAI.etat compte | Alpha | - |
+| FB | p.TAI.date du solde | Date | - |
+| FC | p.TAI.garantie O/N | Alpha | - |
+| FD | p.TAI.Nom prenom | Alpha | - |
+| FE | p.TAI.Age | Alpha | - |
+| FF | p.village TAI | Alpha | - |
+| FG | P.Age num | Numeric | - |
+| FH | P.Nb mois | Numeric | - |
 
 ### 11.2 Variables de session (19)
 
@@ -1717,71 +1921,71 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| V | V.TAI Obligatoire | Alpha | - |
-| W | V.Nom complet | Alpha | - |
-| X | V.Prenom complet | Alpha | - |
-| Y | v.Club Med Pass ID | Alpha | [T1](#t1), [T5](#t5), [T6](#t6) |
-| Z | V.ID Club Med Pass scannee | Alpha | - |
-| BA | V.Status card | Alpha | - |
-| BB | V.Other card valid | Logical | - |
-| BC | V.Date de naissance | Date | - |
-| BD | v.delete confirmation | Numeric | - |
-| BE | v.ez detail empty | Logical | - |
-| BF | v.ok to create | Logical | - |
-| BG | V.Action | Alpha | - |
-| BH | V.Choix action | Alpha | - |
-| BI | V.Age mineur | Numeric | 2x session |
-| BJ | v.Activation Bar Limit | Alpha | - |
-| BK | v.Age Bar Limit | Numeric | - |
-| BL | v.ActionPActive | Logical | - |
-| BM | V.Compte scanne | Numeric | - |
-| BN | V.Compte special | Logical | - |
+| FI | V.TAI Obligatoire | Alpha | - |
+| FJ | V.Nom complet | Alpha | - |
+| FK | V.Prenom complet | Alpha | - |
+| FL | v.Club Med Pass ID | Alpha | [77](#t1), [77.3](#t5), [77.4](#t6) |
+| FM | V.ID Club Med Pass scannee | Alpha | - |
+| FN | V.Status card | Alpha | 3x session |
+| FO | V.Other card valid | Logical | 3x session |
+| FP | V.Date de naissance | Date | 1x session |
+| FQ | v.delete confirmation | Numeric | 1x session |
+| FR | v.ez detail empty | Logical | [77.2](#t3), [77.2.1](#t4) |
+| FS | v.ok to create | Logical | [77.5](#t7) |
+| FT | V.Action | Alpha | 9x session |
+| FU | V.Choix action | Alpha | [77.2](#t3), [77.2.1](#t4) |
+| FV | V.Age mineur | Numeric | - |
+| FW | v.Activation Bar Limit | Alpha | 2x session |
+| FX | v.Age Bar Limit | Numeric | 2x session |
+| FY | v.ActionPActive | Logical | 1x session |
+| FZ | V.Compte scanne | Numeric | 1x session |
+| GA | V.Compte special | Logical | - |
 
 <details>
 <summary>Toutes les 40 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P.Societe | Alpha |
-| P0 | **B** | P.Code 8 chiffres | Numeric |
-| P0 | **C** | P.Filiation | Numeric |
-| P0 | **D** | P.Masque montant | Alpha |
-| P0 | **E** | P.Masque cumul | Alpha |
-| P0 | **F** | P.TAI societe | Alpha |
-| P0 | **G** | P.TAI Devise locale | Alpha |
-| P0 | **H** | P.TAI Masque montant | Alpha |
-| P0 | **I** | P.TAI Solde compte | Numeric |
-| P0 | **J** | p.TAI.code GM | Numeric |
-| P0 | **K** | P.TAI Filiation | Numeric |
-| P0 | **L** | p.TAI.date deb sejour | Date |
-| P0 | **M** | p.TAI.date fin sejour | Date |
-| P0 | **N** | p.TAI.etat compte | Alpha |
-| P0 | **O** | p.TAI.date du solde | Date |
-| P0 | **P** | p.TAI.garantie O/N | Alpha |
-| P0 | **Q** | p.TAI.Nom prenom | Alpha |
-| P0 | **R** | p.TAI.Age | Alpha |
-| P0 | **S** | p.village TAI | Alpha |
-| P0 | **T** | P.Age num | Numeric |
-| P0 | **U** | P.Nb mois | Numeric |
-| V. | **V** | V.TAI Obligatoire | Alpha |
-| V. | **W** | V.Nom complet | Alpha |
-| V. | **X** | V.Prenom complet | Alpha |
-| V. | **Y** | v.Club Med Pass ID | Alpha |
-| V. | **Z** | V.ID Club Med Pass scannee | Alpha |
-| V. | **BA** | V.Status card | Alpha |
-| V. | **BB** | V.Other card valid | Logical |
-| V. | **BC** | V.Date de naissance | Date |
-| V. | **BD** | v.delete confirmation | Numeric |
-| V. | **BE** | v.ez detail empty | Logical |
-| V. | **BF** | v.ok to create | Logical |
-| V. | **BG** | V.Action | Alpha |
-| V. | **BH** | V.Choix action | Alpha |
-| V. | **BI** | V.Age mineur | Numeric |
-| V. | **BJ** | v.Activation Bar Limit | Alpha |
-| V. | **BK** | v.Age Bar Limit | Numeric |
-| V. | **BL** | v.ActionPActive | Logical |
-| V. | **BM** | V.Compte scanne | Numeric |
-| V. | **BN** | V.Compte special | Logical |
+| P0 | **EN** | P.Societe | Alpha |
+| P0 | **EO** | P.Code 8 chiffres | Numeric |
+| P0 | **EP** | P.Filiation | Numeric |
+| P0 | **EQ** | P.Masque montant | Alpha |
+| P0 | **ER** | P.Masque cumul | Alpha |
+| P0 | **ES** | P.TAI societe | Alpha |
+| P0 | **ET** | P.TAI Devise locale | Alpha |
+| P0 | **EU** | P.TAI Masque montant | Alpha |
+| P0 | **EV** | P.TAI Solde compte | Numeric |
+| P0 | **EW** | p.TAI.code GM | Numeric |
+| P0 | **EX** | P.TAI Filiation | Numeric |
+| P0 | **EY** | p.TAI.date deb sejour | Date |
+| P0 | **EZ** | p.TAI.date fin sejour | Date |
+| P0 | **FA** | p.TAI.etat compte | Alpha |
+| P0 | **FB** | p.TAI.date du solde | Date |
+| P0 | **FC** | p.TAI.garantie O/N | Alpha |
+| P0 | **FD** | p.TAI.Nom prenom | Alpha |
+| P0 | **FE** | p.TAI.Age | Alpha |
+| P0 | **FF** | p.village TAI | Alpha |
+| P0 | **FG** | P.Age num | Numeric |
+| P0 | **FH** | P.Nb mois | Numeric |
+| V. | **FI** | V.TAI Obligatoire | Alpha |
+| V. | **FJ** | V.Nom complet | Alpha |
+| V. | **FK** | V.Prenom complet | Alpha |
+| V. | **FL** | v.Club Med Pass ID | Alpha |
+| V. | **FM** | V.ID Club Med Pass scannee | Alpha |
+| V. | **FN** | V.Status card | Alpha |
+| V. | **FO** | V.Other card valid | Logical |
+| V. | **FP** | V.Date de naissance | Date |
+| V. | **FQ** | v.delete confirmation | Numeric |
+| V. | **FR** | v.ez detail empty | Logical |
+| V. | **FS** | v.ok to create | Logical |
+| V. | **FT** | V.Action | Alpha |
+| V. | **FU** | V.Choix action | Alpha |
+| V. | **FV** | V.Age mineur | Numeric |
+| V. | **FW** | v.Activation Bar Limit | Alpha |
+| V. | **FX** | v.Age Bar Limit | Numeric |
+| V. | **FY** | v.ActionPActive | Logical |
+| V. | **FZ** | V.Compte scanne | Numeric |
+| V. | **GA** | V.Compte special | Logical |
 
 </details>
 
@@ -1793,13 +1997,13 @@ Variables persistantes pendant toute la session.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 28 | 2 |
+| CONDITION | 28 | 21 |
 | CAST_LOGIQUE | 1 | 0 |
+| NEGATION | 1 | 5 |
 | CONSTANTE | 5 | 0 |
 | DATE | 1 | 0 |
 | REFERENCE_VG | 1 | 0 |
 | OTHER | 9 | 0 |
-| NEGATION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
 
@@ -1807,18 +2011,24 @@ Variables persistantes pendant toute la session.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 8 | `IF ([AJ]='O',IF ([AK]=0,'Bar Limit Activated for All','Bar Limit Activated under '&Trim (Str ([AK],'2'))),'Bar Limit Desactivated')` | [RM-002](#rm-RM-002) |
-| CONDITION | 3 | `IF (GetParam ('CODELANGUE')='FRA','Cette carte n''appartient pas a ce compte','This card do not belong to this account')` | [RM-001](#rm-RM-001) |
-| CONDITION | 27 | `[AG]='Z'` | - |
-| CONDITION | 28 | `[AG]='F'` | - |
-| CONDITION | 29 | `[AG]='P'` | - |
+| CONDITION | 28 | `V.Action [BG]='F'` | [RM-014](#rm-RM-014) |
+| CONDITION | 29 | `V.Action [BG]='P'` | [RM-015](#rm-RM-015) |
+| CONDITION | 27 | `V.Action [BG]='Z'` | [RM-013](#rm-RM-013) |
+| CONDITION | 23 | `v.delete confirmation [BD]=6` | [RM-011](#rm-RM-011) |
+| CONDITION | 24 | `V.Action [BG]='E' OR V.Action [BG]='B'` | [RM-012](#rm-RM-012) |
 | ... | | *+23 autres* | |
 
 #### CAST_LOGIQUE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CAST_LOGIQUE | 9 | `IF ([AJ]='O',IF ([AK]=0,'TRUE'LOG,IF ([AC]=0,'FALSE'LOG,(Date ()-[AC])/365<[AK])),'FALSE'LOG) AND [AB]` | - |
+| CAST_LOGIQUE | 9 | `IF (v.Activation Bar Limit [BJ]='O',IF (v.Age Bar Limit [BK]=0,'TRUE'LOG,IF (V.Date de naissance [BC]=0,'FALSE'LOG,(Date ()-V.Date de naissance [BC])/365<v.Age Bar Limit [BK])),'FALSE'LOG) AND V.Other card valid [BB]` | - |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 46 | `NOT ExpCalc('45'EXP)` | [RM-022](#rm-RM-022) |
 
 #### CONSTANTE (5 expressions)
 
@@ -1846,18 +2056,12 @@ Variables persistantes pendant toute la session.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 38 | `NOT([AZ])` | - |
-| OTHER | 30 | `[AL]` | - |
+| OTHER | 38 | `NOT([BZ])` | - |
+| OTHER | 30 | `v.ActionPActive [BL]` | - |
 | OTHER | 43 | `V.ID Club Med Pass sca... [Z]` | - |
-| OTHER | 41 | `[AH]` | - |
-| OTHER | 26 | `[AE]` | - |
+| OTHER | 41 | `V.Choix action [BH]` | - |
+| OTHER | 26 | `v.ez detail empty [BE]` | - |
 | ... | | *+4 autres* | |
-
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 46 | `NOT ExpCalc('45'EXP)` | - |
 
 ### 12.3 Toutes les expressions (46)
 
@@ -1868,40 +2072,46 @@ Variables persistantes pendant toute la session.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
+| 2 | `V.ID Club Med Pass sca... [Z]>'' AND V.Compte scanne [BM]<>P.Code 8 chiffres [B]` |
 | 3 | `IF (GetParam ('CODELANGUE')='FRA','Cette carte n''appartient pas a ce compte','This card do not belong to this account')` |
-| 8 | `IF ([AJ]='O',IF ([AK]=0,'Bar Limit Activated for All','Bar Limit Activated under '&Trim (Str ([AK],'2'))),'Bar Limit Desactivated')` |
+| 6 | `V.Status card [BA]='V'` |
+| 7 | `V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BP]='O' AND [BR]<=p.TAI.date fin sejour [M]` |
+| 8 | `IF (v.Activation Bar Limit [BJ]='O',IF (v.Age Bar Limit [BK]=0,'Bar Limit Activated for All','Bar Limit Activated under '&Trim (Str (v.Age Bar Limit [BK],'2'))),'Bar Limit Desactivated')` |
+| 15 | `V.Action [BG]='A'` |
 | 16 | `IF (GetParam ('CODELANGUE')='FRA','Ce compte n''est pas garanti','This account is not guaranteed')` |
-| 22 | `IF (GetParam ('CODELANGUE')='FRA',IF ([AG]='C','Voulez vous desactiver cette carte ?','Voulez vous annuler cette opposition'),IF ([AG]='C','Do you want to deactivate this card ?','Do you want to cancel the opposition'))` |
+| 17 | `[BP]<>'O' AND [BY]='Oui' AND IF ([BZ],[BZ],[BV]='O')` |
+| 18 | `[BP]='O' OR [BY]='Non' OR [BV]='N' OR VG74` |
+| 20 | `v.Club Med Pass ID [Y]>'' AND v.ok to create [BF]` |
+| 21 | `V.Action [BG]='C' OR V.Action [BG]='D'` |
+| 22 | `IF (GetParam ('CODELANGUE')='FRA',IF (V.Action [BG]='C','Voulez vous desactiver cette carte ?','Voulez vous annuler cette opposition'),IF (V.Action [BG]='C','Do you want to deactivate this card ?','Do you want to cancel the opposition'))` |
+| 23 | `v.delete confirmation [BD]=6` |
+| 24 | `V.Action [BG]='E' OR V.Action [BG]='B'` |
 | 25 | `IF (GetParam ('CODELANGUE')='FRA','Il n''y a pas de transaction sur cette carte','There are no charges on this card')` |
+| 27 | `V.Action [BG]='Z'` |
+| 28 | `V.Action [BG]='F'` |
+| 29 | `V.Action [BG]='P'` |
+| 31 | `V.Action [BG]='G'` |
 | 32 | `IF (GetParam ('CODELANGUE')='FRA','Ce GM n''est pas logé','No room for this GM')` |
 | 33 | `IF (GetParam ('CODELANGUE')='FRA','Ce GM n''est pas validé','This GM is not validated')` |
 | 34 | `IF (GetParam ('CODELANGUE')='FRA','Ce compte n''est pas garanti','This account is not guaranteed')` |
-| 2 | `V.ID Club Med Pass sca... [Z]>'' AND [AM]<>P.Code 8 chiffres [B]` |
-| 6 | `[AA]='V'` |
-| 7 | `[AA]='O' AND NOT ([AB]) AND [AP]='O' AND [AR]<=p.TAI.date fin sejour [M]` |
-| 15 | `[AG]='A'` |
-| 17 | `[AP]<>'O' AND [AY]='Oui' AND IF ([AZ],[AZ],[AV]='O')` |
-| 18 | `[AP]='O' OR [AY]='Non' OR [AV]='N' OR VG74` |
-| 20 | `v.Club Med Pass ID [Y]>'' AND [AF]` |
-| 21 | `[AG]='C' OR [AG]='D'` |
-| 23 | `[AD]=6` |
-| 24 | `[AG]='E' OR [AG]='B'` |
-| 27 | `[AG]='Z'` |
-| 28 | `[AG]='F'` |
-| 29 | `[AG]='P'` |
-| 31 | `[AG]='G'` |
-| 35 | `V.Age mineur [BI]=''` |
-| 36 | `[AV]<>'O'` |
-| 37 | `[AP]<>'O' AND [AY]='Oui' AND IF ([AZ],[AZ],[AV]='O')` |
-| 39 | `V.Age mineur [BI]<>'' AND [AV]='O'` |
+| 35 | `[CI]=''` |
+| 36 | `[BV]<>'O'` |
+| 37 | `[BP]<>'O' AND [BY]='Oui' AND IF ([BZ],[BZ],[BV]='O')` |
+| 39 | `[CI]<>'' AND [BV]='O'` |
 | 40 | `v.Club Med Pass ID [Y]<>''` |
-| 45 | `[AH]>'' AND (InStr ('ABEFGHPZ',[AH])>0 OR [AA]='O' AND NOT ([AB]) AND [AQ]<>'S' AND [AP]='O' AND [AH]='D' OR [AA]='V' AND [AH]='C' OR [AA]='O' AND NOT ([AB]) AND [AR]<=p.TAI.date fin sejour [M] AND [AP]='O' AND [AH]='D')` |
+| 45 | `V.Choix action [BH]>'' AND (InStr ('ABEFGHPZ',V.Choix action [BH])>0 OR V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BQ]<>'S' AND [BP]='O' AND V.Choix action [BH]='D' OR V.Status card [BA]='V' AND V.Choix action [BH]='C' OR V.Status card [BA]='O' AND NOT (V.Other card valid [BB]) AND [BR]<=p.TAI.date fin sejour [M] AND [BP]='O' AND V.Choix action [BH]='D')` |
 
 #### CAST_LOGIQUE (1)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 9 | `IF ([AJ]='O',IF ([AK]=0,'TRUE'LOG,IF ([AC]=0,'FALSE'LOG,(Date ()-[AC])/365<[AK])),'FALSE'LOG) AND [AB]` |
+| 9 | `IF (v.Activation Bar Limit [BJ]='O',IF (v.Age Bar Limit [BK]=0,'TRUE'LOG,IF (V.Date de naissance [BC]=0,'FALSE'LOG,(Date ()-V.Date de naissance [BC])/365<v.Age Bar Limit [BK])),'FALSE'LOG) AND V.Other card valid [BB]` |
+
+#### NEGATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 46 | `NOT ExpCalc('45'EXP)` |
 
 #### CONSTANTE (5)
 
@@ -1932,18 +2142,12 @@ Variables persistantes pendant toute la session.
 | 10 | `P.Societe [A]` |
 | 11 | `P.Code 8 chiffres [B]` |
 | 12 | `P.Filiation [C]` |
-| 19 | `[AF]` |
-| 26 | `[AE]` |
-| 30 | `[AL]` |
-| 38 | `NOT([AZ])` |
-| 41 | `[AH]` |
+| 19 | `v.ok to create [BF]` |
+| 26 | `v.ez detail empty [BE]` |
+| 30 | `v.ActionPActive [BL]` |
+| 38 | `NOT([BZ])` |
+| 41 | `V.Choix action [BH]` |
 | 43 | `V.ID Club Med Pass sca... [Z]` |
-
-#### NEGATION (1)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 46 | `NOT ExpCalc('45'EXP)` |
 
 </details>
 
@@ -2046,7 +2250,7 @@ graph LR
 | Sous-programmes | 12 | Forte dependance |
 | Ecrans visibles | 5 | Quelques ecrans |
 | Code desactive | 0% (0 / 261) | Code sain |
-| Regles metier | 2 | Quelques regles a preserver |
+| Regles metier | 22 | Logique metier riche |
 
 ### 14.2 Plan de migration par bloc
 
@@ -2085,4 +2289,4 @@ graph LR
 | [   Select affilies (IDE 82)](ADH-IDE-82.md) | Sous-programme | 1x | Normale - Selection/consultation |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:51*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:14*

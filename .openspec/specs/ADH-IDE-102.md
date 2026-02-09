@@ -1,6 +1,6 @@
 ﻿# ADH IDE 102 - Maj lignes saisies archive V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 03:48 (27s) | Assemblage 15:17
+> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 02:42 (22h54min) | Assemblage 02:42
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme ADH IDE 102 met à jour les lignes saisies archivées dans la table `projet` (version). Appelé depuis le contexte "Garantie sur compte PMS-584" (IDE 0), ce programme traite les données de facturation archivées et effectue une mise à jour de masse des enregistrements. La présence du champ P.Flague (drapeau booléen) dans la condition principale suggère un traitement conditionnel basé sur un marqueur de statut pour identifier les lignes à traiter.
+ADH IDE 102 gère la mise à jour des lignes saisies dans l'archive V3 du module Garantie. Ce programme intervient lors de la consultation ou modification d'un dépôt de garantie existant, en synchronisant les enregistrements avec la table `projet` qui centralise les données de caution. Son rôle est de maintenir la cohérence entre l'interface de saisie et la base de données.
 
-Le programme modifie exclusivement la table `projet` via un UPDATE en mode Modification. Les variables principales manipulées sont la Société, le Compte, P.Flague, le Numéro de Facture et le Nom du Fichier PDF. Une règle métier contrôle la logique : évaluer le drapeau P.Flague pour chaque enregistrement, puis mettre à jour les colonnes de facturation avec les valeurs actuelles enrichies de la date du jour. Les variables de retour logiques indiquent les statuts de validation croisés avec Compta et Vente.
+Le flux d'appel provient du programme Garantie sur compte (ADH IDE 0, contexte PMS-584), qui lance ADH IDE 102 après validation des paramètres de dépôt. Le programme met à jour les colonnes pertinentes de la table `projet` avec les valeurs modifiées via l'interface, puis retourne le statut de succès/erreur au appelant.
 
-Le programme exécute une unique tâche contenant 63 lignes de logique sans conditionnel désactivé. Le flux est linéaire : accéder aux lignes saisies de la table version, évaluer le drapeau P.Flague pour chaque enregistrement, puis mettre à jour les colonnes de facturation. C'est un traitement d'archivage autonome et auto-contenu, sans dépendances externes, ce qui confirme qu'il gère entièrement la mise à jour dans son propre contexte.
+Les opérations incluent l'écriture de champs comme le montant du dépôt, la date de constitution, les commentaires, et éventuellement le statut de validité de la garantie. Le programme ne lit que les données déjà chargées en mémoire (variables locales ou globales), privilégiant la performance et la cohérence transactionnelle avec le reste du flux Garantie.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -44,18 +44,36 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Maj des lignes sai
 
 ## 5. REGLES METIER
 
-1 regles identifiees:
+3 regles identifiees:
 
-### Autres (1 regles)
+### Autres (3 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Condition toujours vraie (flag actif)
+#### <a id="rm-RM-001"></a>[RM-001] Condition: [Y] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[Y]=0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 1 : `[Y]=0` |
+| **Exemple** | Si [Y]=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: [BH] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BH]=0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 2 : `[BH]=0` |
+| **Exemple** | Si [BH]=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition toujours vraie (flag actif)
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `P.Flague [C]` |
 | **Si vrai** | 'TRUE'LOG |
 | **Si faux** | 'FALSE'LOG) |
-| **Variables** | C (P.Flague) |
+| **Variables** | EP (P.Flague) |
 | **Expression source** | Expression 9 : `IF(P.Flague [C],'TRUE'LOG,'FALSE'LOG)` |
 | **Exemple** | Si P.Flague [C] â†’ 'TRUE'LOG. Sinon â†’ 'FALSE'LOG) |
 
@@ -138,11 +156,11 @@ Variables recues du programme appelant ([Garantie sur compte PMS-584 (IDE 0)](AD
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | p.Societe | Unicode | 1x parametre entrant |
-| B | p.Compte | Numeric | 1x parametre entrant |
-| C | P.Flague | Logical | 1x parametre entrant |
-| D | p.No_Facture | Numeric | 1x parametre entrant |
-| E | p.NomFichPDF | Alpha | 1x parametre entrant |
+| EN | p.Societe | Unicode | 1x parametre entrant |
+| EO | p.Compte | Numeric | 1x parametre entrant |
+| EP | P.Flague | Logical | 1x parametre entrant |
+| EQ | p.No_Facture | Numeric | 1x parametre entrant |
+| ER | p.NomFichPDF | Alpha | 1x parametre entrant |
 
 ### 11.2 Variables de session (4)
 
@@ -150,10 +168,10 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| F | V retour Compta | Logical | - |
-| G | v Retour Vente | Logical | - |
-| H | v Trouvé Compta | Logical | - |
-| I | v Trouvé Vente | Logical | - |
+| ES | V retour Compta | Logical | - |
+| ET | v Retour Vente | Logical | - |
+| EU | v Trouvé Compta | Logical | - |
+| EV | v Trouvé Vente | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -163,18 +181,25 @@ Variables persistantes pendant toute la session.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 2 | 2 |
 | CAST_LOGIQUE | 1 | 5 |
 | DATE | 2 | 0 |
-| CONDITION | 2 | 0 |
 | OTHER | 9 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 2 | `[BH]=0` | [RM-002](#rm-RM-002) |
+| CONDITION | 1 | `[Y]=0` | [RM-001](#rm-RM-001) |
 
 #### CAST_LOGIQUE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CAST_LOGIQUE | 9 | `IF(P.Flague [C],'TRUE'LOG,'FALSE'LOG)` | [RM-001](#rm-RM-001) |
+| CAST_LOGIQUE | 9 | `IF(P.Flague [C],'TRUE'LOG,'FALSE'LOG)` | [RM-003](#rm-RM-003) |
 
 #### DATE (2 expressions)
 
@@ -183,18 +208,11 @@ Variables persistantes pendant toute la session.
 | DATE | 8 | `Date()` | - |
 | DATE | 4 | `Date()` | - |
 
-#### CONDITION (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 2 | `[AH]=0` | - |
-| CONDITION | 1 | `[Y]=0` | - |
-
 #### OTHER (9 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 12 | `[AC]` | - |
+| OTHER | 12 | `[BC]` | - |
 | OTHER | 11 | `[W]` | - |
 | OTHER | 14 | `[S]` | - |
 | OTHER | 13 | `[K]` | - |
@@ -250,7 +268,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 63) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Regles metier | 3 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -267,4 +285,4 @@ graph LR
 | projet | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 15:18*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:42*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 89 - Factures (Tble Compta&Vent
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:46 (29s) | Assemblage 14:13
+> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 02:27 (22h40min) | Assemblage 02:27
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -23,13 +23,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-# ADH IDE 89 - Factures (Table Compta & Ventes)
+# ADH IDE 89 - Factures (Table Compta&Ventes)
 
-Programme de gestion intégrée des factures couvrant les cycles de création, modification et édition. Pilote l'ensemble du workflow facturation en orchestrant 12 programmes appelés pour valider les données comptables, générer les documents et mettre à jour les références. Modifie 7 tables critiques incluant les compteurs, les rayons boutique et les paramètres de taxation.
+ADH IDE 89 gère la création et la mise à jour des factures de ventes, en coordonnant plusieurs tâches spécialisées pour traiter les différents types d'articles (hébergement, boutique, gift pass). Le programme appelle une chaîne de 12 programmes externes pour couvrir l'ensemble du cycle de facturation : création de l'en-tête (IDE 60), saisie des lignes (IDE 61), vérification boutique (IDE 91), édition TVA (IDE 90), et création du pied de facture (IDE 93). Les lignes saisies sont mises à jour dans les tables de vente et d'archive (IDE 94, 95), tandis que les compteurs sont incrémentés (IDE 58).
 
-Gère deux flux parallèles : factures de vente standard avec édition TVA comptable et factures de séjour hébergement avec archivage spécifique. Les 6 tâches principales couvrent la création des en-têtes/pieds facture, la saisie et mise à jour des lignes (versions courante et archivée), la gestion temporaire de l'hébergement, et l'incrémentation des numéros de facture avec vérification boutique.
+Les modifications portent sur 7 tables clés : la table comptable, les compteurs, les affectations de gift pass, les rayons boutique, et les paramètres de taxe additionnelle. Le flux traite séparément l'hébergement temporaire (mise à jour différée), les ventes boutique (avec flagging ligne), et les factures de séjour archivées. Cette architecture modulaire permet de traiter chaque étape de la facturation de manière isolée tout en maintenant la cohérence des données à travers les mises à jour transactionnelles.
 
-Valide les règles métier à chaque étape : vérification boutique avant enregistrement, flagging des lignes boutique, application des taxes additionnelles, et synchronisation des Gift Pass. Point d'intégration critique entre les modules comptables et ventes, garantissant la cohérence des données facturation dans le système.
+Le programme constitue le point d'entrée critique pour la génération de tous les documents de facturation clients, s'inscrivant dans un processus plus large qui inclut validation TVA, gestion des stocks boutique, et archivage des transactions historiques. Son orchestration de multiples tâches en cascade assure que chaque facture est complète et conforme avant d'être livrée au client.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -39,7 +39,7 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 ---
 
-#### <a id="t1"></a>T1 - Factures Bis(Ventes) [ECRAN]
+#### <a id="t1"></a>89 - Factures Bis(Ventes) [[ECRAN]](#ecran-t1)
 
 **Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 881 x 411 DLU | [Voir mockup](#ecran-t1)
@@ -49,18 +49,18 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Maj des lignes saisies **[ECRAN]** | Saisie |
-| [T7](#t7) | Creation Lg Vente **[ECRAN]** | Saisie |
-| [T11](#t11) | Ventes **[ECRAN]** | Saisie |
-| [T19](#t19) | Maj des lignes saisies **[ECRAN]** | Saisie |
-| [T26](#t26) | Creation Lg Vente **[ECRAN]** | Saisie |
+| [89.1](#t2) | Maj des lignes saisies **[[ECRAN]](#ecran-t2)** | Saisie |
+| [89.2.3](#t7) | Creation Lg Vente **[[ECRAN]](#ecran-t7)** | Saisie |
+| [89.4.1](#t11) | Ventes **[[ECRAN]](#ecran-t11)** | Saisie |
+| [89.6](#t19) | Maj des lignes saisies **[[ECRAN]](#ecran-t19)** | Saisie |
+| [89.9.3](#t26) | Creation Lg Vente **[[ECRAN]](#ecran-t26)** | Saisie |
 
 </details>
 **Delegue a** : [Maj des lignes saisies (IDE 61)](ADH-IDE-61.md), [Maj des lignes saisies archive (IDE 94)](ADH-IDE-94.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md)
 
 ---
 
-#### <a id="t2"></a>T2 - Maj des lignes saisies [ECRAN]
+#### <a id="t2"></a>89.1 - Maj des lignes saisies [[ECRAN]](#ecran-t2)
 
 **Role** : Saisie des donnees : Maj des lignes saisies.
 **Ecran** : 562 x 0 DLU | [Voir mockup](#ecran-t2)
@@ -68,16 +68,16 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 ---
 
-#### <a id="t7"></a>T7 - Creation Lg Vente [ECRAN]
+#### <a id="t7"></a>89.2.3 - Creation Lg Vente [[ECRAN]](#ecran-t7)
 
 **Role** : Saisie des donnees : Creation Lg Vente.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t7)
-**Variables liees** : I (v.ExistFactureVente)
+**Variables liees** : EV (v.ExistFactureVente)
 **Delegue a** : [Creation entete facture (IDE 60)](ADH-IDE-60.md), [Maj des lignes saisies (IDE 61)](ADH-IDE-61.md), [Creation Pied Facture (IDE 93)](ADH-IDE-93.md)
 
 ---
 
-#### <a id="t11"></a>T11 - Ventes [ECRAN]
+#### <a id="t11"></a>89.4.1 - Ventes [[ECRAN]](#ecran-t11)
 
 **Role** : Saisie des donnees : Ventes.
 **Ecran** : 650 x 233 DLU | [Voir mockup](#ecran-t11)
@@ -85,7 +85,7 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 ---
 
-#### <a id="t19"></a>T19 - Maj des lignes saisies [ECRAN]
+#### <a id="t19"></a>89.6 - Maj des lignes saisies [[ECRAN]](#ecran-t19)
 
 **Role** : Saisie des donnees : Maj des lignes saisies.
 **Ecran** : 562 x 0 DLU | [Voir mockup](#ecran-t19)
@@ -93,11 +93,11 @@ L'operateur saisit les donnees de la transaction via 6 ecrans (Factures Bis(Vent
 
 ---
 
-#### <a id="t26"></a>T26 - Creation Lg Vente [ECRAN]
+#### <a id="t26"></a>89.9.3 - Creation Lg Vente [[ECRAN]](#ecran-t26)
 
 **Role** : Saisie des donnees : Creation Lg Vente.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t26)
-**Variables liees** : I (v.ExistFactureVente)
+**Variables liees** : EV (v.ExistFactureVente)
 **Delegue a** : [Creation entete facture (IDE 60)](ADH-IDE-60.md), [Maj des lignes saisies (IDE 61)](ADH-IDE-61.md), [Creation Pied Facture (IDE 93)](ADH-IDE-93.md)
 
 
@@ -107,148 +107,148 @@ Traitements internes.
 
 ---
 
-#### <a id="t3"></a>T3 - Hebergement [ECRAN]
+#### <a id="t3"></a>89.2 - Hebergement [[ECRAN]](#ecran-t3)
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t3)
-**Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
+**Variables liees** : FK (V.Date Début Hebergement), FL (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t4"></a>T4 - Création
+#### <a id="t4"></a>89.2.1 - Création
 
 **Role** : Traitement : Création.
 
 ---
 
-#### <a id="t6"></a>T6 - Maj Hebergement Temp
+#### <a id="t6"></a>89.2.2.1 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
-**Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
+**Variables liees** : FK (V.Date Début Hebergement), FL (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t8"></a>T8 - Maj Hebergement Temp
+#### <a id="t8"></a>89.2.3.1 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
-**Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
+**Variables liees** : FK (V.Date Début Hebergement), FL (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t10"></a>T10 - Hebergement [ECRAN]
+#### <a id="t10"></a>89.4 - Hebergement [[ECRAN]](#ecran-t10)
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 866 x 250 DLU | [Voir mockup](#ecran-t10)
-**Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
+**Variables liees** : FK (V.Date Début Hebergement), FL (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t12"></a>T12 - Lignes boutique [ECRAN]
+#### <a id="t12"></a>89.4.1.1 - Lignes boutique [[ECRAN]](#ecran-t12)
 
 **Role** : Traitement : Lignes boutique.
 **Ecran** : 704 x 239 DLU | [Voir mockup](#ecran-t12)
 
 ---
 
-#### <a id="t14"></a>T14 - Suppr fact pro boutique
+#### <a id="t14"></a>89.4.1.1.2 - Suppr fact pro boutique
 
 **Role** : Traitement : Suppr fact pro boutique.
-**Variables liees** : G (V.Lien Pied de facture), H (V.EntetFacture?), I (v.ExistFactureVente), J (V.Existe facture ?), P (V.Facture Sans Nom)
+**Variables liees** : ET (V.Lien Pied de facture), EU (V.EntetFacture?), EV (v.ExistFactureVente), EW (V.Existe facture ?), FC (V.Facture Sans Nom)
 
 ---
 
-#### <a id="t15"></a>T15 - Flag All [ECRAN]
+#### <a id="t15"></a>89.4.2 - Flag All [[ECRAN]](#ecran-t15)
 
 **Role** : Traitement : Flag All.
 **Ecran** : 541 x 291 DLU | [Voir mockup](#ecran-t15)
-**Variables liees** : BD (V.Existe flaguee ?)
+**Variables liees** : FQ (V.Existe flaguee ?)
 
 ---
 
-#### <a id="t16"></a>T16 - Pied de Facture [ECRAN]
+#### <a id="t16"></a>89.4.3 - Pied de Facture [[ECRAN]](#ecran-t16)
 
 **Role** : Traitement : Pied de Facture.
 **Ecran** : 207 x 102 DLU | [Voir mockup](#ecran-t16)
-**Variables liees** : G (V.Lien Pied de facture), H (V.EntetFacture?), I (v.ExistFactureVente), J (V.Existe facture ?), P (V.Facture Sans Nom)
+**Variables liees** : ET (V.Lien Pied de facture), EU (V.EntetFacture?), EV (v.ExistFactureVente), EW (V.Existe facture ?), FC (V.Facture Sans Nom)
 
 ---
 
-#### <a id="t18"></a>T18 - Incremente N° de Facture
+#### <a id="t18"></a>89.5 - Incremente N° de Facture
 
 **Role** : Traitement : Incremente N° de Facture.
-**Variables liees** : G (V.Lien Pied de facture), H (V.EntetFacture?), I (v.ExistFactureVente), J (V.Existe facture ?), P (V.Facture Sans Nom)
+**Variables liees** : ET (V.Lien Pied de facture), EU (V.EntetFacture?), EV (v.ExistFactureVente), EW (V.Existe facture ?), FC (V.Facture Sans Nom)
 
 ---
 
-#### <a id="t22"></a>T22 - Hebergement [ECRAN]
+#### <a id="t22"></a>89.9 - Hebergement [[ECRAN]](#ecran-t22)
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 630 x 0 DLU | [Voir mockup](#ecran-t22)
-**Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
+**Variables liees** : FK (V.Date Début Hebergement), FL (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t23"></a>T23 - Création
+#### <a id="t23"></a>89.9.1 - Création
 
 **Role** : Traitement : Création.
 
 ---
 
-#### <a id="t25"></a>T25 - Maj Hebergement Temp
+#### <a id="t25"></a>89.9.2.1 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
-**Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
+**Variables liees** : FK (V.Date Début Hebergement), FL (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t27"></a>T27 - Maj Hebergement Temp
+#### <a id="t27"></a>89.9.3.1 - Maj Hebergement Temp
 
 **Role** : Traitement : Maj Hebergement Temp.
-**Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
+**Variables liees** : FK (V.Date Début Hebergement), FL (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t28"></a>T28 - Maj Hebergement Tempo [ECRAN]
+#### <a id="t28"></a>89.10 - Maj Hebergement Tempo [[ECRAN]](#ecran-t28)
 
 **Role** : Traitement : Maj Hebergement Tempo.
 **Ecran** : 672 x 0 DLU | [Voir mockup](#ecran-t28)
-**Variables liees** : X (V.Date Début Hebergement), Y (V.Date Fin Hebergement)
+**Variables liees** : FK (V.Date Début Hebergement), FL (V.Date Fin Hebergement)
 
 ---
 
-#### <a id="t29"></a>T29 - flag ligne boutique
+#### <a id="t29"></a>89.11 - flag ligne boutique
 
 **Role** : Traitement : flag ligne boutique.
-**Variables liees** : BD (V.Existe flaguee ?)
+**Variables liees** : FQ (V.Existe flaguee ?)
 
 ---
 
-#### <a id="t30"></a>T30 - flag ligne
+#### <a id="t30"></a>89.11.1 - flag ligne
 
 **Role** : Traitement : flag ligne.
-**Variables liees** : BD (V.Existe flaguee ?)
+**Variables liees** : FQ (V.Existe flaguee ?)
 
 ---
 
-#### <a id="t32"></a>T32 - chargement boutique
+#### <a id="t32"></a>89.13 - chargement boutique
 
 **Role** : Traitement : chargement boutique.
 
 ---
 
-#### <a id="t34"></a>T34 - SQL parcourt facture [ECRAN]
+#### <a id="t34"></a>89.15 - SQL parcourt facture [[ECRAN]](#ecran-t34)
 
 **Role** : Traitement : SQL parcourt facture.
 **Ecran** : 609 x 195 DLU | [Voir mockup](#ecran-t34)
-**Variables liees** : G (V.Lien Pied de facture), H (V.EntetFacture?), I (v.ExistFactureVente), J (V.Existe facture ?), P (V.Facture Sans Nom)
+**Variables liees** : ET (V.Lien Pied de facture), EU (V.EntetFacture?), EV (v.ExistFactureVente), EW (V.Existe facture ?), FC (V.Facture Sans Nom)
 
 ---
 
-#### <a id="t35"></a>T35 - SQL parcourt facture [ECRAN]
+#### <a id="t35"></a>89.16 - SQL parcourt facture [[ECRAN]](#ecran-t35)
 
 **Role** : Traitement : SQL parcourt facture.
 **Ecran** : 609 x 195 DLU | [Voir mockup](#ecran-t35)
-**Variables liees** : G (V.Lien Pied de facture), H (V.EntetFacture?), I (v.ExistFactureVente), J (V.Existe facture ?), P (V.Facture Sans Nom)
+**Variables liees** : ET (V.Lien Pied de facture), EU (V.EntetFacture?), EV (v.ExistFactureVente), EW (V.Existe facture ?), FC (V.Facture Sans Nom)
 
 
 ### 3.3 Calcul (2 taches)
@@ -257,14 +257,14 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t5"></a>T5 - Creation Lg Compta
+#### <a id="t5"></a>89.2.2 - Creation Lg Compta
 
 **Role** : Creation d'enregistrement : Creation Lg Compta.
 **Delegue a** : [Creation entete facture (IDE 60)](ADH-IDE-60.md), [Creation Pied Facture (IDE 93)](ADH-IDE-93.md)
 
 ---
 
-#### <a id="t24"></a>T24 - Creation Lg Compta
+#### <a id="t24"></a>89.9.2 - Creation Lg Compta
 
 **Role** : Creation d'enregistrement : Creation Lg Compta.
 **Delegue a** : [Creation entete facture (IDE 60)](ADH-IDE-60.md), [Creation Pied Facture (IDE 93)](ADH-IDE-93.md)
@@ -276,32 +276,32 @@ Controles de coherence : 4 taches verifient les donnees et conditions.
 
 ---
 
-#### <a id="t9"></a>T9 - verif non flaguee
+#### <a id="t9"></a>89.3 - verif non flaguee
 
 **Role** : Verification : verif non flaguee.
-**Variables liees** : BD (V.Existe flaguee ?)
+**Variables liees** : FQ (V.Existe flaguee ?)
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t13"></a>T13 - Controle ttc
+#### <a id="t13"></a>89.4.1.1.1 - Controle ttc
 
 **Role** : Verification : Controle ttc.
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t17"></a>T17 - verif boutique
+#### <a id="t17"></a>89.4.4 - verif boutique
 
 **Role** : Verification : verif boutique.
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t31"></a>T31 - verif non flaguee
+#### <a id="t31"></a>89.12 - verif non flaguee
 
 **Role** : Verification : verif non flaguee.
-**Variables liees** : BD (V.Existe flaguee ?)
+**Variables liees** : FQ (V.Existe flaguee ?)
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 
@@ -311,16 +311,16 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t20"></a>T20 - Creation Pied Facture [ECRAN]
+#### <a id="t20"></a>89.7 - Creation Pied Facture [[ECRAN]](#ecran-t20)
 
 **Role** : Creation d'enregistrement : Creation Pied Facture.
 **Ecran** : 586 x 0 DLU | [Voir mockup](#ecran-t20)
-**Variables liees** : G (V.Lien Pied de facture), H (V.EntetFacture?), I (v.ExistFactureVente), J (V.Existe facture ?), P (V.Facture Sans Nom)
+**Variables liees** : ET (V.Lien Pied de facture), EU (V.EntetFacture?), EV (v.ExistFactureVente), EW (V.Existe facture ?), FC (V.Facture Sans Nom)
 **Delegue a** : [Creation entete facture (IDE 60)](ADH-IDE-60.md), [Creation Pied Facture (IDE 93)](ADH-IDE-93.md)
 
 ---
 
-#### <a id="t33"></a>T33 - Creation entete
+#### <a id="t33"></a>89.14 - Creation entete
 
 **Role** : Creation d'enregistrement : Creation entete.
 **Delegue a** : [Creation entete facture (IDE 60)](ADH-IDE-60.md), [Creation Pied Facture (IDE 93)](ADH-IDE-93.md)
@@ -332,39 +332,121 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t21"></a>T21 - Recherche si Fact déjà éditée
+#### <a id="t21"></a>89.8 - Recherche si Fact déjà éditée
 
 **Role** : Traitement : Recherche si Fact déjà éditée.
-**Variables liees** : G (V.Lien Pied de facture), H (V.EntetFacture?), I (v.ExistFactureVente), J (V.Existe facture ?), P (V.Facture Sans Nom)
+**Variables liees** : ET (V.Lien Pied de facture), EU (V.EntetFacture?), EV (v.ExistFactureVente), EW (V.Existe facture ?), FC (V.Facture Sans Nom)
 
 
 ## 5. REGLES METIER
 
-2 regles identifiees:
+11 regles identifiees:
 
-### Autres (2 regles)
+### Autres (11 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Si v_num_Facture [BF] alors Trim(B.Quitter [BA]) sinon IF(P.Archive [E],Trim(V.Nom Fichier PDF [T])&' '&Trim(V.Pos , [U]),Trim([AG])&' '&Trim([AH])))
+#### <a id="rm-RM-001"></a>[RM-001] Si [CF] alors Trim([CA]) sinon IF(P.Archive [E],Trim(V.Nom Fichier PDF [T])&' '&Trim(V.Pos , [U]),Trim(v_Nom_fichierxx [BG])&' '&Trim([BH])))
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `v_num_Facture [BF]` |
-| **Si vrai** | Trim(B.Quitter [BA]) |
-| **Si faux** | IF(P.Archive [E],Trim(V.Nom Fichier PDF [T])&' '&Trim(V.Pos , [U]),Trim([AG])&' '&Trim([AH]))) |
-| **Variables** | E (P.Archive), K (V.Nom), T (V.Nom Fichier PDF), U (V.Pos ,), BA (B.Quitter), BF (v_num_Facture) |
-| **Expression source** | Expression 7 : `IF(v_num_Facture [BF],Trim(B.Quitter [BA]),IF(P.Archive [E],` |
-| **Exemple** | Si v_num_Facture [BF] â†’ Trim(B.Quitter [BA]) |
+| **Condition** | `[CF]` |
+| **Si vrai** | Trim([CA]) |
+| **Si faux** | IF(P.Archive [E],Trim(V.Nom Fichier PDF [T])&' '&Trim(V.Pos , [U]),Trim(v_Nom_fichierxx [BG])&' '&Trim([BH]))) |
+| **Variables** | ER (P.Archive), EX (V.Nom), FG (V.Nom Fichier PDF), FH (V.Pos ,), FT (v_Nom_fichierxx) |
+| **Expression source** | Expression 7 : `IF([CF],Trim([CA]),IF(P.Archive [E],Trim(V.Nom Fichier PDF [` |
+| **Exemple** | Si [CF] â†’ Trim([CA]) |
 
-#### <a id="rm-RM-002"></a>[RM-002] Si P.Archive [E] alors V.Nom [K] sinon B.Imprimer [Z])
+#### <a id="rm-RM-002"></a>[RM-002] Condition: [CN] egale 6
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[CN]=6` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 16 : `[CN]=6` |
+| **Exemple** | Si [CN]=6 â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Negation de [CZ] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT [CZ]` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 30 : `NOT [CZ]` |
+| **Exemple** | Si NOT [CZ] â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Negation de P.Archive [E] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT P.Archive [E]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | ER (P.Archive) |
+| **Expression source** | Expression 32 : `NOT P.Archive [E]` |
+| **Exemple** | Si NOT P.Archive [E] â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Si P.Archive [E] alors V.Nom [K] sinon B.Imprimer [Z])
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `P.Archive [E]` |
 | **Si vrai** | V.Nom [K] |
 | **Si faux** | B.Imprimer [Z]) |
-| **Variables** | E (P.Archive), K (V.Nom), Z (B.Imprimer) |
+| **Variables** | ER (P.Archive), EX (V.Nom), FM (B.Imprimer) |
 | **Expression source** | Expression 34 : `IF(P.Archive [E],V.Nom [K],B.Imprimer [Z])` |
 | **Exemple** | Si P.Archive [E] â†’ V.Nom [K]. Sinon â†’ B.Imprimer [Z]) |
+
+#### <a id="rm-RM-006"></a>[RM-006] Condition: Trim([CG]) egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([CG])=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 37 : `Trim([CG])=''` |
+| **Exemple** | Si Trim([CG])='' â†’ Action si vrai |
+
+#### <a id="rm-RM-007"></a>[RM-007] Condition: Trim([CH]) egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([CH])=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 38 : `Trim([CH])=''` |
+| **Exemple** | Si Trim([CH])='' â†’ Action si vrai |
+
+#### <a id="rm-RM-008"></a>[RM-008] Condition: Trim([CG])<>'' AND Trim([CH]) different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([CG])<>'' AND Trim([CH])<>''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 39 : `Trim([CG])<>'' AND Trim([CH])<>''` |
+| **Exemple** | Si Trim([CG])<>'' AND Trim([CH])<>'' â†’ Action si vrai |
+
+#### <a id="rm-RM-009"></a>[RM-009] Negation de [CF] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT [CF]` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 42 : `NOT [CF]` |
+| **Exemple** | Si NOT [CF] â†’ Action si vrai |
+
+#### <a id="rm-RM-010"></a>[RM-010] Condition composite: [BX] AND [CE]
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BX] AND [CE]` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 44 : `[BX] AND [CE]` |
+| **Exemple** | Si [BX] AND [CE] â†’ Action si vrai |
+
+#### <a id="rm-RM-011"></a>[RM-011] Condition composite: [CS] AND NOT(FileExist(Translate ('%club_exportdata%')&'PDF\'&Trim([CP])))
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[CS] AND NOT(FileExist(Translate ('%club_exportdata%')&'PDF\'&Trim([CP])))` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 45 : `[CS] AND NOT(FileExist(Translate ('%club_exportdata%')&'PDF\` |
+| **Exemple** | Si [CS] AND NOT(FileExist(Translate ('%club_exportdata%')&'PDF\'&Trim([CP]))) â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -379,18 +461,18 @@ Ecrans de recherche et consultation.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 89 | T1 | Factures Bis(Ventes) | Type0 | 881 | 411 | Saisie |
-| 2 | 89.4 | T10 | Hebergement | Type0 | 866 | 250 | Traitement |
-| 3 | 89.4.1 | T11 | Ventes | Type0 | 650 | 233 | Saisie |
-| 4 | 89.4.1.1 | T12 | Lignes boutique | Type0 | 704 | 239 | Traitement |
-| 5 | 89.4.3 | T16 | Pied de Facture | Type0 | 207 | 102 | Traitement |
+| 1 | 89 | 89 | Factures Bis(Ventes) | Type0 | 881 | 411 | Saisie |
+| 2 | 89.4 | 89.4 | Hebergement | Type0 | 866 | 250 | Traitement |
+| 3 | 89.4.1 | 89.4.1 | Ventes | Type0 | 650 | 233 | Saisie |
+| 4 | 89.4.1.1 | 89.4.1.1 | Lignes boutique | Type0 | 704 | 239 | Traitement |
+| 5 | 89.4.3 | 89.4.3 | Pied de Facture | Type0 | 207 | 102 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>89 - Factures Bis(Ventes)
-**Tache** : [T1](#t1) | **Type** : Type0 | **Dimensions** : 881 x 411 DLU
+**Tache** : [89](#t1) | **Type** : Type0 | **Dimensions** : 881 x 411 DLU
 **Bloc** : Saisie | **Titre IDE** : Factures Bis(Ventes)
 
 <!-- FORM-DATA:
@@ -827,7 +909,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t10"></a>89.4 - Hebergement
-**Tache** : [T10](#t10) | **Type** : Type0 | **Dimensions** : 866 x 250 DLU
+**Tache** : [89.4](#t10) | **Type** : Type0 | **Dimensions** : 866 x 250 DLU
 **Bloc** : Traitement | **Titre IDE** : Hebergement
 
 <!-- FORM-DATA:
@@ -974,7 +1056,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t11"></a>89.4.1 - Ventes
-**Tache** : [T11](#t11) | **Type** : Type0 | **Dimensions** : 650 x 233 DLU
+**Tache** : [89.4.1](#t11) | **Type** : Type0 | **Dimensions** : 650 x 233 DLU
 **Bloc** : Saisie | **Titre IDE** : Ventes
 
 <!-- FORM-DATA:
@@ -1250,7 +1332,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t12"></a>89.4.1.1 - Lignes boutique
-**Tache** : [T12](#t12) | **Type** : Type0 | **Dimensions** : 704 x 239 DLU
+**Tache** : [89.4.1.1](#t12) | **Type** : Type0 | **Dimensions** : 704 x 239 DLU
 **Bloc** : Traitement | **Titre IDE** : Lignes boutique
 
 <!-- FORM-DATA:
@@ -1584,7 +1666,7 @@ Ecrans de recherche et consultation.
 ---
 
 #### <a id="ecran-t16"></a>89.4.3 - Pied de Facture
-**Tache** : [T16](#t16) | **Type** : Type0 | **Dimensions** : 207 x 102 DLU
+**Tache** : [89.4.3](#t16) | **Type** : Type0 | **Dimensions** : 207 x 102 DLU
 **Bloc** : Traitement | **Titre IDE** : Pied de Facture
 
 <!-- FORM-DATA:
@@ -1723,15 +1805,15 @@ Ecrans de recherche et consultation.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[T1 Factures BisVentes]
+    VF1[89 Factures BisVentes]
     style VF1 fill:#58a6ff
-    VF10[T10 Hebergement]
+    VF10[89.4 Hebergement]
     style VF10 fill:#58a6ff
-    VF11[T11 Ventes]
+    VF11[89.4.1 Ventes]
     style VF11 fill:#58a6ff
-    VF12[T12 Lignes boutique]
+    VF12[89.4.1.1 Lignes boutique]
     style VF12 fill:#58a6ff
-    VF16[T16 Pied de Facture]
+    VF16[89.4.3 Pied de Facture]
     style VF16 fill:#58a6ff
     EXT60[IDE 60 Creation entete...]
     style EXT60 fill:#3fb950
@@ -1792,69 +1874,68 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **89.1** | [**Factures Bis(Ventes)** (T1)](#t1) [mockup](#ecran-t1) | - | 881x411 | Saisie |
-| 89.1.1 | [Maj des lignes saisies (T2)](#t2) [mockup](#ecran-t2) | - | 562x0 | |
-| 89.1.2 | [Creation Lg Vente (T7)](#t7) [mockup](#ecran-t7) | - | 630x0 | |
-| 89.1.3 | [Ventes (T11)](#t11) [mockup](#ecran-t11) | - | 650x233 | |
-| 89.1.4 | [Maj des lignes saisies (T19)](#t19) [mockup](#ecran-t19) | - | 562x0 | |
-| 89.1.5 | [Creation Lg Vente (T26)](#t26) [mockup](#ecran-t26) | - | 630x0 | |
-| **89.2** | [**Hebergement** (T3)](#t3) [mockup](#ecran-t3) | - | 630x0 | Traitement |
-| 89.2.1 | [Création (T4)](#t4) | - | - | |
-| 89.2.2 | [Maj Hebergement Temp (T6)](#t6) | - | - | |
-| 89.2.3 | [Maj Hebergement Temp (T8)](#t8) | - | - | |
-| 89.2.4 | [Hebergement (T10)](#t10) [mockup](#ecran-t10) | - | 866x250 | |
-| 89.2.5 | [Lignes boutique (T12)](#t12) [mockup](#ecran-t12) | - | 704x239 | |
-| 89.2.6 | [Suppr fact pro boutique (T14)](#t14) | - | - | |
-| 89.2.7 | [Flag All (T15)](#t15) [mockup](#ecran-t15) | - | 541x291 | |
-| 89.2.8 | [Pied de Facture (T16)](#t16) [mockup](#ecran-t16) | - | 207x102 | |
-| 89.2.9 | [Incremente N° de Facture (T18)](#t18) | - | - | |
-| 89.2.10 | [Hebergement (T22)](#t22) [mockup](#ecran-t22) | - | 630x0 | |
-| 89.2.11 | [Création (T23)](#t23) | - | - | |
-| 89.2.12 | [Maj Hebergement Temp (T25)](#t25) | - | - | |
-| 89.2.13 | [Maj Hebergement Temp (T27)](#t27) | - | - | |
-| 89.2.14 | [Maj Hebergement Tempo (T28)](#t28) [mockup](#ecran-t28) | - | 672x0 | |
-| 89.2.15 | [flag ligne boutique (T29)](#t29) | - | - | |
-| 89.2.16 | [flag ligne (T30)](#t30) | - | - | |
-| 89.2.17 | [chargement boutique (T32)](#t32) | - | - | |
-| 89.2.18 | [SQL parcourt facture (T34)](#t34) [mockup](#ecran-t34) | - | 609x195 | |
-| 89.2.19 | [SQL parcourt facture (T35)](#t35) [mockup](#ecran-t35) | - | 609x195 | |
-| **89.3** | [**Creation Lg Compta** (T5)](#t5) | - | - | Calcul |
-| 89.3.1 | [Creation Lg Compta (T24)](#t24) | - | - | |
-| **89.4** | [**verif non flaguee** (T9)](#t9) | - | - | Validation |
-| 89.4.1 | [Controle ttc (T13)](#t13) | - | - | |
-| 89.4.2 | [verif boutique (T17)](#t17) | - | - | |
-| 89.4.3 | [verif non flaguee (T31)](#t31) | - | - | |
-| **89.5** | [**Creation Pied Facture** (T20)](#t20) [mockup](#ecran-t20) | - | 586x0 | Creation |
-| 89.5.1 | [Creation entete (T33)](#t33) | - | - | |
-| **89.6** | [**Recherche si Fact déjà éditée** (T21)](#t21) | - | - | Consultation |
+| **89.1** | [**Factures Bis(Ventes)** (89)](#t1) [mockup](#ecran-t1) | - | 881x411 | Saisie |
+| 89.1.1 | [Maj des lignes saisies (89.1)](#t2) [mockup](#ecran-t2) | - | 562x0 | |
+| 89.1.2 | [Creation Lg Vente (89.2.3)](#t7) [mockup](#ecran-t7) | - | 630x0 | |
+| 89.1.3 | [Ventes (89.4.1)](#t11) [mockup](#ecran-t11) | - | 650x233 | |
+| 89.1.4 | [Maj des lignes saisies (89.6)](#t19) [mockup](#ecran-t19) | - | 562x0 | |
+| 89.1.5 | [Creation Lg Vente (89.9.3)](#t26) [mockup](#ecran-t26) | - | 630x0 | |
+| **89.2** | [**Hebergement** (89.2)](#t3) [mockup](#ecran-t3) | - | 630x0 | Traitement |
+| 89.2.1 | [Création (89.2.1)](#t4) | - | - | |
+| 89.2.2 | [Maj Hebergement Temp (89.2.2.1)](#t6) | - | - | |
+| 89.2.3 | [Maj Hebergement Temp (89.2.3.1)](#t8) | - | - | |
+| 89.2.4 | [Hebergement (89.4)](#t10) [mockup](#ecran-t10) | - | 866x250 | |
+| 89.2.5 | [Lignes boutique (89.4.1.1)](#t12) [mockup](#ecran-t12) | - | 704x239 | |
+| 89.2.6 | [Suppr fact pro boutique (89.4.1.1.2)](#t14) | - | - | |
+| 89.2.7 | [Flag All (89.4.2)](#t15) [mockup](#ecran-t15) | - | 541x291 | |
+| 89.2.8 | [Pied de Facture (89.4.3)](#t16) [mockup](#ecran-t16) | - | 207x102 | |
+| 89.2.9 | [Incremente N° de Facture (89.5)](#t18) | - | - | |
+| 89.2.10 | [Hebergement (89.9)](#t22) [mockup](#ecran-t22) | - | 630x0 | |
+| 89.2.11 | [Création (89.9.1)](#t23) | - | - | |
+| 89.2.12 | [Maj Hebergement Temp (89.9.2.1)](#t25) | - | - | |
+| 89.2.13 | [Maj Hebergement Temp (89.9.3.1)](#t27) | - | - | |
+| 89.2.14 | [Maj Hebergement Tempo (89.10)](#t28) [mockup](#ecran-t28) | - | 672x0 | |
+| 89.2.15 | [flag ligne boutique (89.11)](#t29) | - | - | |
+| 89.2.16 | [flag ligne (89.11.1)](#t30) | - | - | |
+| 89.2.17 | [chargement boutique (89.13)](#t32) | - | - | |
+| 89.2.18 | [SQL parcourt facture (89.15)](#t34) [mockup](#ecran-t34) | - | 609x195 | |
+| 89.2.19 | [SQL parcourt facture (89.16)](#t35) [mockup](#ecran-t35) | - | 609x195 | |
+| **89.3** | [**Creation Lg Compta** (89.2.2)](#t5) | - | - | Calcul |
+| 89.3.1 | [Creation Lg Compta (89.9.2)](#t24) | - | - | |
+| **89.4** | [**verif non flaguee** (89.3)](#t9) | - | - | Validation |
+| 89.4.1 | [Controle ttc (89.4.1.1.1)](#t13) | - | - | |
+| 89.4.2 | [verif boutique (89.4.4)](#t17) | - | - | |
+| 89.4.3 | [verif non flaguee (89.12)](#t31) | - | - | |
+| **89.5** | [**Creation Pied Facture** (89.7)](#t20) [mockup](#ecran-t20) | - | 586x0 | Creation |
+| 89.5.1 | [Creation entete (89.14)](#t33) | - | - | |
+| **89.6** | [**Recherche si Fact déjà éditée** (89.8)](#t21) | - | - | Consultation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Saisie (6t)]
-    START --> B1
-    B2[Traitement (20t)]
-    B1 --> B2
-    B3[Calcul (2t)]
-    B2 --> B3
-    B4[Validation (4t)]
-    B3 --> B4
-    B5[Creation (2t)]
-    B4 --> B5
-    B6[Consultation (1t)]
-    B5 --> B6
-    WRITE[MAJ 7 tables]
-    B6 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[Hebergement]
+    DECISION{P.Archive}
+    PROCESS[Traitement]
+    UPDATE[MAJ 7 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -1910,11 +1991,11 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | v.Existe ligne boutique ? | W | Logical |
-| E | V.Boutique manquante ? | W | Logical |
-| G | V.TTC toutes lignes boutique | W | Numeric |
-| H | V.Existe ligne detail boutique | W | Logical |
-| L | V.ligne boutique manquante ? | W | Logical |
+| EN | v.Existe ligne boutique ? | W | Logical |
+| ER | V.Boutique manquante ? | W | Logical |
+| ET | V.TTC toutes lignes boutique | W | Numeric |
+| EU | V.Existe ligne detail boutique | W | Logical |
+| EY | V.ligne boutique manquante ? | W | Logical |
 
 </details>
 
@@ -2020,11 +2101,11 @@ Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.Societe | Alpha | 2x parametre entrant |
-| B | P.Code_Gm | Numeric | 2x parametre entrant |
-| C | P.Filiation | Numeric | 2x parametre entrant |
-| D | P.Application | Alpha | - |
-| E | P.Archive | Logical | 10x parametre entrant |
+| EN | P.Societe | Alpha | 2x parametre entrant |
+| EO | P.Code_Gm | Numeric | 2x parametre entrant |
+| EP | P.Filiation | Numeric | 2x parametre entrant |
+| EQ | P.Application | Alpha | - |
+| ER | P.Archive | Logical | 10x parametre entrant |
 
 ### 11.2 Variables de session (23)
 
@@ -2032,29 +2113,29 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| F | V.Lien Gm_Complet | Logical | - |
-| G | V.Lien Pied de facture | Logical | [T1](#t1), [T16](#t16), [T18](#t18) |
-| H | V.EntetFacture? | Logical | 1x session |
-| I | v.ExistFactureVente | Logical | - |
-| J | V.Existe facture ? | Logical | - |
-| K | V.Nom | Alpha | 2x session |
-| L | V.Adresse | Alpha | 1x session |
-| M | V.CP | Alpha | 1x session |
-| N | V.Ville | Alpha | 1x session |
-| O | V.Telephone | Alpha | - |
-| P | V.Facture Sans Nom | Logical | - |
-| Q | V.Facture Sans Adresse | Logical | 1x session |
-| R | V.Reponse Imprimer | Numeric | 1x session |
-| S | V.No Facture | Numeric | [T1](#t1), [T16](#t16), [T18](#t18) |
-| T | V.Nom Fichier PDF | Alpha | 1x session |
-| U | V.Pos , | Numeric | 1x session |
-| V | V.Service | Alpha | 1x session |
-| W | V.Fact déjà editée | Logical | [T21](#t21) |
-| X | V.Date Début Hebergement | Date | - |
-| Y | V.Date Fin Hebergement | Date | - |
-| BC | V.Existe non facturee ? | Logical | 1x session |
-| BD | V.Existe flaguee ? | Logical | [T9](#t9), [T31](#t31) |
-| BE | V.Erreur addresse ? | Logical | 1x session |
+| ES | V.Lien Gm_Complet | Logical | - |
+| ET | V.Lien Pied de facture | Logical | [89](#t1), [89.4.3](#t16), [89.5](#t18) |
+| EU | V.EntetFacture? | Logical | 1x session |
+| EV | v.ExistFactureVente | Logical | - |
+| EW | V.Existe facture ? | Logical | - |
+| EX | V.Nom | Alpha | 2x session |
+| EY | V.Adresse | Alpha | 1x session |
+| EZ | V.CP | Alpha | 1x session |
+| FA | V.Ville | Alpha | 1x session |
+| FB | V.Telephone | Alpha | - |
+| FC | V.Facture Sans Nom | Logical | - |
+| FD | V.Facture Sans Adresse | Logical | 1x session |
+| FE | V.Reponse Imprimer | Numeric | 1x session |
+| FF | V.No Facture | Numeric | [89](#t1), [89.4.3](#t16), [89.5](#t18) |
+| FG | V.Nom Fichier PDF | Alpha | 1x session |
+| FH | V.Pos , | Numeric | 1x session |
+| FI | V.Service | Alpha | 1x session |
+| FJ | V.Fact déjà editée | Logical | [89.8](#t21) |
+| FK | V.Date Début Hebergement | Date | - |
+| FL | V.Date Fin Hebergement | Date | - |
+| FP | V.Existe non facturee ? | Logical | 1x session |
+| FQ | V.Existe flaguee ? | Logical | [89.3](#t9), [89.12](#t31) |
+| FR | V.Erreur addresse ? | Logical | 1x session |
 
 ### 11.3 Autres (5)
 
@@ -2062,50 +2143,50 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| Z | B.Imprimer | Alpha | 1x refs |
-| BA | B.Quitter | Alpha | 1x refs |
-| BB | B.Raz | Alpha | 1x refs |
-| BF | v_num_Facture | Numeric | 5x refs |
-| BG | v_Nom_fichierxx | Alpha | 2x refs |
+| FM | B.Imprimer | Alpha | 1x refs |
+| FN | B.Quitter | Alpha | 1x refs |
+| FO | B.Raz | Alpha | 1x refs |
+| FS | v_num_Facture | Numeric | 1x refs |
+| FT | v_Nom_fichierxx | Alpha | 1x refs |
 
 <details>
 <summary>Toutes les 33 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P.Societe | Alpha |
-| P0 | **B** | P.Code_Gm | Numeric |
-| P0 | **C** | P.Filiation | Numeric |
-| P0 | **D** | P.Application | Alpha |
-| P0 | **E** | P.Archive | Logical |
-| V. | **F** | V.Lien Gm_Complet | Logical |
-| V. | **G** | V.Lien Pied de facture | Logical |
-| V. | **H** | V.EntetFacture? | Logical |
-| V. | **I** | v.ExistFactureVente | Logical |
-| V. | **J** | V.Existe facture ? | Logical |
-| V. | **K** | V.Nom | Alpha |
-| V. | **L** | V.Adresse | Alpha |
-| V. | **M** | V.CP | Alpha |
-| V. | **N** | V.Ville | Alpha |
-| V. | **O** | V.Telephone | Alpha |
-| V. | **P** | V.Facture Sans Nom | Logical |
-| V. | **Q** | V.Facture Sans Adresse | Logical |
-| V. | **R** | V.Reponse Imprimer | Numeric |
-| V. | **S** | V.No Facture | Numeric |
-| V. | **T** | V.Nom Fichier PDF | Alpha |
-| V. | **U** | V.Pos , | Numeric |
-| V. | **V** | V.Service | Alpha |
-| V. | **W** | V.Fact déjà editée | Logical |
-| V. | **X** | V.Date Début Hebergement | Date |
-| V. | **Y** | V.Date Fin Hebergement | Date |
-| V. | **BC** | V.Existe non facturee ? | Logical |
-| V. | **BD** | V.Existe flaguee ? | Logical |
-| V. | **BE** | V.Erreur addresse ? | Logical |
-| Autre | **Z** | B.Imprimer | Alpha |
-| Autre | **BA** | B.Quitter | Alpha |
-| Autre | **BB** | B.Raz | Alpha |
-| Autre | **BF** | v_num_Facture | Numeric |
-| Autre | **BG** | v_Nom_fichierxx | Alpha |
+| P0 | **EN** | P.Societe | Alpha |
+| P0 | **EO** | P.Code_Gm | Numeric |
+| P0 | **EP** | P.Filiation | Numeric |
+| P0 | **EQ** | P.Application | Alpha |
+| P0 | **ER** | P.Archive | Logical |
+| V. | **ES** | V.Lien Gm_Complet | Logical |
+| V. | **ET** | V.Lien Pied de facture | Logical |
+| V. | **EU** | V.EntetFacture? | Logical |
+| V. | **EV** | v.ExistFactureVente | Logical |
+| V. | **EW** | V.Existe facture ? | Logical |
+| V. | **EX** | V.Nom | Alpha |
+| V. | **EY** | V.Adresse | Alpha |
+| V. | **EZ** | V.CP | Alpha |
+| V. | **FA** | V.Ville | Alpha |
+| V. | **FB** | V.Telephone | Alpha |
+| V. | **FC** | V.Facture Sans Nom | Logical |
+| V. | **FD** | V.Facture Sans Adresse | Logical |
+| V. | **FE** | V.Reponse Imprimer | Numeric |
+| V. | **FF** | V.No Facture | Numeric |
+| V. | **FG** | V.Nom Fichier PDF | Alpha |
+| V. | **FH** | V.Pos , | Numeric |
+| V. | **FI** | V.Service | Alpha |
+| V. | **FJ** | V.Fact déjà editée | Logical |
+| V. | **FK** | V.Date Début Hebergement | Date |
+| V. | **FL** | V.Date Fin Hebergement | Date |
+| V. | **FP** | V.Existe non facturee ? | Logical |
+| V. | **FQ** | V.Existe flaguee ? | Logical |
+| V. | **FR** | V.Erreur addresse ? | Logical |
+| Autre | **FM** | B.Imprimer | Alpha |
+| Autre | **FN** | B.Quitter | Alpha |
+| Autre | **FO** | B.Raz | Alpha |
+| Autre | **FS** | v_num_Facture | Numeric |
+| Autre | **FT** | v_Nom_fichierxx | Alpha |
 
 </details>
 
@@ -2118,15 +2199,15 @@ Variables diverses.
 | Type | Expressions | Regles |
 |------|-------------|--------|
 | CALCULATION | 2 | 0 |
-| CONDITION | 11 | 2 |
+| CONDITION | 12 | 7 |
+| NEGATION | 3 | 3 |
+| CONCATENATION | 2 | 5 |
 | CONSTANTE | 4 | 0 |
 | FORMAT | 4 | 0 |
 | DATE | 1 | 0 |
-| OTHER | 15 | 0 |
+| OTHER | 14 | 0 |
 | REFERENCE_VG | 1 | 0 |
 | CAST_LOGIQUE | 2 | 0 |
-| NEGATION | 3 | 0 |
-| CONCATENATION | 2 | 0 |
 
 ### 12.2 Expressions cles par type
 
@@ -2134,19 +2215,34 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CALCULATION | 43 | `CallProg('{96,-1}'PROG,P.Societe [A],P.Code_Gm [B],P.Filiation [C],[AY])` | - |
-| CALCULATION | 21 | `MID(GetParam('SERVICE'),4,[BQ]-4)` | - |
+| CALCULATION | 43 | `CallProg('{96,-1}'PROG,P.Societe [A],P.Code_Gm [B],P.Filiation [C],[BY])` | - |
+| CALCULATION | 21 | `MID(GetParam('SERVICE'),4,[CQ]-4)` | - |
 
-#### CONDITION (11 expressions)
+#### CONDITION (12 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 34 | `IF(P.Archive [E],V.Nom [K],B.Imprimer [Z])` | [RM-002](#rm-RM-002) |
-| CONDITION | 7 | `IF(v_num_Facture [BF],Trim(B.Quitter [BA]),IF(P.Archive [E],Trim(V.Nom Fichier PDF [T])&' '&Trim(V.Pos , [U]),Trim([AG])&' '&Trim([AH])))` | [RM-001](#rm-RM-001) |
-| CONDITION | 16 | `[BN]=6` | - |
-| CONDITION | 37 | `Trim(v_Nom_fichierxx [BG])=''` | - |
-| CONDITION | 39 | `Trim(v_Nom_fichierxx [BG])<>'' AND Trim([BH])<>''` | - |
-| ... | | *+6 autres* | |
+| CONDITION | 37 | `Trim([CG])=''` | [RM-006](#rm-RM-006) |
+| CONDITION | 34 | `IF(P.Archive [E],V.Nom [K],B.Imprimer [Z])` | [RM-005](#rm-RM-005) |
+| CONDITION | 38 | `Trim([CH])=''` | [RM-007](#rm-RM-007) |
+| CONDITION | 44 | `[BX] AND [CE]` | [RM-010](#rm-RM-010) |
+| CONDITION | 39 | `Trim([CG])<>'' AND Trim([CH])<>''` | [RM-008](#rm-RM-008) |
+| ... | | *+7 autres* | |
+
+#### NEGATION (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 42 | `NOT [CF]` | [RM-009](#rm-RM-009) |
+| NEGATION | 32 | `NOT P.Archive [E]` | [RM-004](#rm-RM-004) |
+| NEGATION | 30 | `NOT [CZ]` | [RM-003](#rm-RM-003) |
+
+#### CONCATENATION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 45 | `[CS] AND NOT(FileExist(Translate ('%club_exportdata%')&'PDF\'&Trim([CP])))` | [RM-011](#rm-RM-011) |
+| CONCATENATION | 27 | `Translate ('%club_exportdata%')&'PDF\'&Trim([CP])` | - |
 
 #### CONSTANTE (4 expressions)
 
@@ -2161,10 +2257,10 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| FORMAT | 11 | `'Numéro d''adhérent'&' '&IF(P.Archive [E],Trim(Str(V.Ville [N],'10Z')),Trim(Str([AF],'10Z')))` | - |
+| FORMAT | 11 | `'Numéro d''adhérent'&' '&IF(P.Archive [E],Trim(Str(V.Ville [N],'10Z')),Trim(Str(v_num_Facture [BF],'10Z')))` | - |
 | FORMAT | 22 | `InStr(GetParam('SERVICE'),',')` | - |
-| FORMAT | 17 | `Trim([AP])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BO],'8P0'))&'_F.pdf'` | - |
-| FORMAT | 18 | `Trim([AP])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BO],'8P0'))&'_NF.pdf'` | - |
+| FORMAT | 17 | `Trim([BP])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CO],'8P0'))&'_F.pdf'` | - |
+| FORMAT | 18 | `Trim([BP])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CO],'8P0'))&'_NF.pdf'` | - |
 
 #### DATE (1 expressions)
 
@@ -2172,16 +2268,16 @@ Variables diverses.
 |------|-----|------------|-------|
 | DATE | 24 | `Date()` | - |
 
-#### OTHER (15 expressions)
+#### OTHER (14 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 31 | `[BZ]` | - |
-| OTHER | 29 | `[BY]` | - |
-| OTHER | 25 | `[BO]` | - |
-| OTHER | 33 | `P.Archive [E]` | - |
-| OTHER | 44 | `[AX] AND V.Erreur addresse ? [BE]` | - |
-| ... | | *+10 autres* | |
+| OTHER | 29 | `[CY]` | - |
+| OTHER | 25 | `[CO]` | - |
+| OTHER | 20 | `[CS]` | - |
+| OTHER | 31 | `[CZ]` | - |
+| OTHER | 41 | `[CD]` | - |
+| ... | | *+9 autres* | |
 
 #### REFERENCE_VG (1 expressions)
 
@@ -2196,21 +2292,6 @@ Variables diverses.
 | CAST_LOGIQUE | 28 | `'FALSE'LOG` | - |
 | CAST_LOGIQUE | 26 | `'TRUE'LOG` | - |
 
-#### NEGATION (3 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 42 | `NOT v_num_Facture [BF]` | - |
-| NEGATION | 32 | `NOT P.Archive [E]` | - |
-| NEGATION | 30 | `NOT [BZ]` | - |
-
-#### CONCATENATION (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONCATENATION | 45 | `[BS] AND NOT(FileExist(Translate ('%club_exportdata%')&'PDF\'&Trim([BP])))` | - |
-| CONCATENATION | 27 | `Translate ('%club_exportdata%')&'PDF\'&Trim([BP])` | - |
-
 ### 12.3 Toutes les expressions (45)
 
 <details>
@@ -2220,24 +2301,40 @@ Variables diverses.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 21 | `MID(GetParam('SERVICE'),4,[BQ]-4)` |
-| 43 | `CallProg('{96,-1}'PROG,P.Societe [A],P.Code_Gm [B],P.Filiation [C],[AY])` |
+| 21 | `MID(GetParam('SERVICE'),4,[CQ]-4)` |
+| 43 | `CallProg('{96,-1}'PROG,P.Societe [A],P.Code_Gm [B],P.Filiation [C],[BY])` |
 
-#### CONDITION (11)
+#### CONDITION (12)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 7 | `IF(v_num_Facture [BF],Trim(B.Quitter [BA]),IF(P.Archive [E],Trim(V.Nom Fichier PDF [T])&' '&Trim(V.Pos , [U]),Trim([AG])&' '&Trim([AH])))` |
-| 8 | `IF(v_num_Facture [BF],Trim([AZ]),IF(P.Archive [E],Trim(V.No Facture [S])&' '&Trim(V.Reponse Imprimer [R])&' '&Trim(V.Facture Sans Adresse [Q]),Trim([AC])&' '&Trim([AE])&' '&Trim([AD])))` |
-| 9 | `IF(v_num_Facture [BF],Trim(B.Raz [BB]),IF(P.Archive [E],Trim(V.Service [V]),Trim([AI])))` |
-| 10 | `IF(v_num_Facture [BF],Trim(V.Existe non facturee ? [BC]),IF(P.Archive [E],Trim(V.Fact déjà editée [W]),Trim([AK])))` |
+| 7 | `IF([CF],Trim([CA]),IF(P.Archive [E],Trim(V.Nom Fichier PDF [T])&' '&Trim(V.Pos , [U]),Trim(v_Nom_fichierxx [BG])&' '&Trim([BH])))` |
+| 8 | `IF([CF],Trim([BZ]),IF(P.Archive [E],Trim(V.No Facture [S])&' '&Trim(V.Reponse Imprimer [R])&' '&Trim(V.Facture Sans Adresse [Q]),Trim(V.Existe non facturee ? [BC])&' '&Trim(V.Erreur addresse ? [BE])&' '&Trim(V.Existe flaguee ? [BD])))` |
+| 9 | `IF([CF],Trim([CB]),IF(P.Archive [E],Trim(V.Service [V]),Trim([BI])))` |
+| 10 | `IF([CF],Trim([CC]),IF(P.Archive [E],Trim(V.Fact déjà editée [W]),Trim([BK])))` |
+| 16 | `[CN]=6` |
 | 34 | `IF(P.Archive [E],V.Nom [K],B.Imprimer [Z])` |
-| 35 | `IF(P.Archive [E],V.Adresse [L],[AA])` |
-| 36 | `IF(P.Archive [E],V.CP [M],[AB])` |
-| 16 | `[BN]=6` |
-| 37 | `Trim(v_Nom_fichierxx [BG])=''` |
-| 38 | `Trim([BH])=''` |
-| 39 | `Trim(v_Nom_fichierxx [BG])<>'' AND Trim([BH])<>''` |
+| 35 | `IF(P.Archive [E],V.Adresse [L],B.Quitter [BA])` |
+| 36 | `IF(P.Archive [E],V.CP [M],B.Raz [BB])` |
+| 37 | `Trim([CG])=''` |
+| 38 | `Trim([CH])=''` |
+| 39 | `Trim([CG])<>'' AND Trim([CH])<>''` |
+| 44 | `[BX] AND [CE]` |
+
+#### NEGATION (3)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 30 | `NOT [CZ]` |
+| 32 | `NOT P.Archive [E]` |
+| 42 | `NOT [CF]` |
+
+#### CONCATENATION (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 45 | `[CS] AND NOT(FileExist(Translate ('%club_exportdata%')&'PDF\'&Trim([CP])))` |
+| 27 | `Translate ('%club_exportdata%')&'PDF\'&Trim([CP])` |
 
 #### CONSTANTE (4)
 
@@ -2252,9 +2349,9 @@ Variables diverses.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 17 | `Trim([AP])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BO],'8P0'))&'_F.pdf'` |
-| 18 | `Trim([AP])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BO],'8P0'))&'_NF.pdf'` |
-| 11 | `'Numéro d''adhérent'&' '&IF(P.Archive [E],Trim(Str(V.Ville [N],'10Z')),Trim(Str([AF],'10Z')))` |
+| 17 | `Trim([BP])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CO],'8P0'))&'_F.pdf'` |
+| 18 | `Trim([BP])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CO],'8P0'))&'_NF.pdf'` |
+| 11 | `'Numéro d''adhérent'&' '&IF(P.Archive [E],Trim(Str(V.Ville [N],'10Z')),Trim(Str(v_num_Facture [BF],'10Z')))` |
 | 22 | `InStr(GetParam('SERVICE'),',')` |
 
 #### DATE (1)
@@ -2263,7 +2360,7 @@ Variables diverses.
 |-----|-------------------|
 | 24 | `Date()` |
 
-#### OTHER (15)
+#### OTHER (14)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
@@ -2273,15 +2370,14 @@ Variables diverses.
 | 5 | `V.Lien Pied de facture [G]` |
 | 6 | `V.EntetFacture? [H]` |
 | 15 | `MlsTrans('Confirmez vous l''édition de cette facture ?')` |
-| 19 | `NOT([BS])` |
-| 20 | `[BS]` |
-| 25 | `[BO]` |
-| 29 | `[BY]` |
-| 31 | `[BZ]` |
+| 19 | `NOT([CS])` |
+| 20 | `[CS]` |
+| 25 | `[CO]` |
+| 29 | `[CY]` |
+| 31 | `[CZ]` |
 | 33 | `P.Archive [E]` |
-| 40 | `[AW]` |
-| 41 | `V.Existe flaguee ? [BD]` |
-| 44 | `[AX] AND V.Erreur addresse ? [BE]` |
+| 40 | `[BW]` |
+| 41 | `[CD]` |
 
 #### REFERENCE_VG (1)
 
@@ -2295,21 +2391,6 @@ Variables diverses.
 |-----|-------------------|
 | 26 | `'TRUE'LOG` |
 | 28 | `'FALSE'LOG` |
-
-#### NEGATION (3)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 30 | `NOT [BZ]` |
-| 32 | `NOT P.Archive [E]` |
-| 42 | `NOT v_num_Facture [BF]` |
-
-#### CONCATENATION (2)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 27 | `Translate ('%club_exportdata%')&'PDF\'&Trim([BP])` |
-| 45 | `[BS] AND NOT(FileExist(Translate ('%club_exportdata%')&'PDF\'&Trim([BP])))` |
 
 </details>
 
@@ -2409,7 +2490,7 @@ graph LR
 | Sous-programmes | 12 | Forte dependance |
 | Ecrans visibles | 5 | Quelques ecrans |
 | Code desactive | 0.3% (4 / 1383) | Code sain |
-| Regles metier | 2 | Quelques regles a preserver |
+| Regles metier | 11 | Logique metier riche |
 
 ### 14.2 Plan de migration par bloc
 
@@ -2468,4 +2549,4 @@ graph LR
 | [Facture - Sejour archive (IDE 95)](ADH-IDE-95.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:13*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:27*

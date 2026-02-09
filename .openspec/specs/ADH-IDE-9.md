@@ -1,6 +1,6 @@
 ﻿# ADH IDE 9 - System avail (top left corner
 
-> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 12:48
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 01:06 (21h26min) | Assemblage 01:06
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,13 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 9 - System avail (top left corner)**
+Ce programme affiche un indicateur de disponibilité système dans le coin supérieur gauche de l'interface ADH. Il consulte la variable globale **VG79** pour vérifier l'état opérationnel de l'application et enregistre chaque changement d'état dans la table d'audit **log_affec_auto_detail**. Le traitement est déclenchement lors du chargement du menu de saisie des données (IDe 7 - Menu Data Catching).
 
-Ce programme affiche un indicateur de disponibilité système dans le coin supérieur gauche de l'interface MDI. Appelé depuis le menu de saisie des données (IDE 7), il gère l'état du système via la variable globale VG79 et détermine si l'application est opérationnelle ou en mode dégradé.
+La logique est extrêmement compacte : 9 lignes de code distribuées dans une unique tâche sans écrans visibles. Le flux lit VG79, convertit la valeur en booléen normalisé, applique une inversion logique NOT pour certains usages de traçabilité, puis persiste le résultat dans la table d'audit. Aucun sous-programme n'est appelé, ce qui en fait un composant terminal sans impact sur d'autres modules.
 
-La logique principale évalue une condition booléenne (NOT variable C) pour établir le statut de disponibilité. Le résultat est enregistré dans la table `log_affec_auto_detail` pour traçabilité, ce qui permet de suivre les changements d'état du système et les périodes d'indisponibilité.
-
-C'est un composant léger sans dépendances descendantes : il n'appelle aucun autre programme et sert uniquement à l'affichage de l'état système. Son intégration au menu de saisie en fait un élément clé du tableau de bord utilisateur pour surveiller la disponibilité globale de l'application ADH.
+De point de vue de la migration vers .NET, c'est l'un des programmes les plus simples du projet ADH : logique métier triviale, une seule dépendance externe (VG79), une table d'audit basique. Transformation vers un service injectable C# peut se faire en quelques heures seulement, avec très peu de risque de régression.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -45,7 +43,18 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Negation de ([C]) (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT ([C])` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 3 : `NOT ([C])` |
+| **Exemple** | Si NOT ([C]) â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -117,11 +126,17 @@ flowchart TD
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| NEGATION | 1 | 5 |
 | REFERENCE_VG | 1 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
-| NEGATION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 3 | `NOT ([C])` | [RM-001](#rm-RM-001) |
 
 #### REFERENCE_VG (1 expressions)
 
@@ -134,12 +149,6 @@ flowchart TD
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CAST_LOGIQUE | 2 | `'TRUE'LOG` | - |
-
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 3 | `NOT ([C])` | - |
 
 <!-- TAB:Connexions -->
 
@@ -193,7 +202,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 9) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -209,4 +218,4 @@ graph LR
 | log_affec_auto_detail | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:49*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:08*

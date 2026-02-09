@@ -1,6 +1,6 @@
 ﻿# ADH IDE 23 - Print reçu change achat
 
-> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 03:41 (27s) | Assemblage 13:03
+> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 01:21 (21h40min) | Assemblage 01:21
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -70,7 +70,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Veuillez patienter ... [ECRAN]
+#### <a id="t1"></a>23 - Veuillez patienter ... [[ECRAN]](#ecran-t1)
 
 **Role** : Tache d'orchestration : point d'entree du programme (9 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -80,72 +80,72 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T3](#t3) | Impression reçu change | Traitement |
-| [T4](#t4) | Impression reçu change | Traitement |
-| [T6](#t6) | Impression reçu change | Traitement |
-| [T7](#t7) | Impression reçu change | Traitement |
-| [T9](#t9) | Veuillez patienter ... **[ECRAN]** | Traitement |
-| [T11](#t11) | Veuillez patienter... **[ECRAN]** | Traitement |
-| [T13](#t13) | Veuillez patienter... **[ECRAN]** | Traitement |
-| [T14](#t14) | Existe ligne | Traitement |
+| [23.1.1](#t3) | Impression reçu change | Traitement |
+| [23.1.2](#t4) | Impression reçu change | Traitement |
+| [23.2.1](#t6) | Impression reçu change | Traitement |
+| [23.2.2](#t7) | Impression reçu change | Traitement |
+| [23.3.1](#t9) | Veuillez patienter ... **[[ECRAN]](#ecran-t9)** | Traitement |
+| [23.4.1](#t11) | Veuillez patienter... **[[ECRAN]](#ecran-t11)** | Traitement |
+| [23.5.1](#t13) | Veuillez patienter... **[[ECRAN]](#ecran-t13)** | Traitement |
+| [23.6](#t14) | Existe ligne | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t3"></a>T3 - Impression reçu change
+#### <a id="t3"></a>23.1.1 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
-**Variables liees** : V (v. Frais de change (Libelle))
+**Variables liees** : FI (v. Frais de change (Libelle))
 
 ---
 
-#### <a id="t4"></a>T4 - Impression reçu change
+#### <a id="t4"></a>23.1.2 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
-**Variables liees** : V (v. Frais de change (Libelle))
+**Variables liees** : FI (v. Frais de change (Libelle))
 
 ---
 
-#### <a id="t6"></a>T6 - Impression reçu change
+#### <a id="t6"></a>23.2.1 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
-**Variables liees** : V (v. Frais de change (Libelle))
+**Variables liees** : FI (v. Frais de change (Libelle))
 
 ---
 
-#### <a id="t7"></a>T7 - Impression reçu change
+#### <a id="t7"></a>23.2.2 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
-**Variables liees** : V (v. Frais de change (Libelle))
+**Variables liees** : FI (v. Frais de change (Libelle))
 
 ---
 
-#### <a id="t9"></a>T9 - Veuillez patienter ... [ECRAN]
+#### <a id="t9"></a>23.3.1 - Veuillez patienter ... [[ECRAN]](#ecran-t9)
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t11"></a>T11 - Veuillez patienter... [ECRAN]
+#### <a id="t11"></a>23.4.1 - Veuillez patienter... [[ECRAN]](#ecran-t11)
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 57 DLU (MDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t13"></a>T13 - Veuillez patienter... [ECRAN]
+#### <a id="t13"></a>23.5.1 - Veuillez patienter... [[ECRAN]](#ecran-t13)
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 57 DLU (MDI) | [Voir mockup](#ecran-t13)
 
 ---
 
-#### <a id="t14"></a>T14 - Existe ligne
+#### <a id="t14"></a>23.6 - Existe ligne
 
 **Role** : Traitement : Existe ligne.
-**Variables liees** : Q (W0 existe ligne à editer), BD (V.Libellé ligne transaction), BE (V.Libellé ligne acceptation), BF (V.Edition ligne détail carte?)
+**Variables liees** : FD (W0 existe ligne à editer), FQ (V.Libellé ligne transaction), FR (V.Libellé ligne acceptation), FS (V.Edition ligne détail carte?)
 
 
 ### 3.2 Impression (5 taches)
@@ -154,33 +154,33 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t2"></a>T2 - Printer 1
+#### <a id="t2"></a>23.1 - Printer 1
 
 **Role** : Generation du document : Printer 1.
 
 ---
 
-#### <a id="t5"></a>T5 - Printer 4
+#### <a id="t5"></a>23.2 - Printer 4
 
 **Role** : Generation du document : Printer 4.
 
 ---
 
-#### <a id="t8"></a>T8 - Printer 5 [ECRAN]
+#### <a id="t8"></a>23.3 - Printer 5 [[ECRAN]](#ecran-t8)
 
 **Role** : Generation du document : Printer 5.
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t10"></a>T10 - Printer 8 [ECRAN]
+#### <a id="t10"></a>23.4 - Printer 8 [[ECRAN]](#ecran-t10)
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 422 x 57 DLU (MDI) | [Voir mockup](#ecran-t10)
 
 ---
 
-#### <a id="t12"></a>T12 - Printer 9 [ECRAN]
+#### <a id="t12"></a>23.5 - Printer 9 [[ECRAN]](#ecran-t12)
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 422 x 57 DLU (MDI) | [Voir mockup](#ecran-t12)
@@ -188,19 +188,80 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-1 regles identifiees:
+7 regles identifiees:
 
-### Autres (1 regles)
+### Impression (5 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Si [AL]='010' alors 'Opération N°' sinon 'Transaction N°')
+#### <a id="rm-RM-001"></a>[RM-001] Verification que l'imprimante courante est la n1
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `[AL]='010'` |
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 1 |
+| **Expression source** | Expression 7 : `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action si CURRENTPRINTERNUM = 1 |
+| **Impact** | [23.1 - Printer 1](#t2) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n4
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 4 |
+| **Expression source** | Expression 8 : `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=4 â†’ Action si CURRENTPRINTERNUM = 4 |
+| **Impact** | [23.1 - Printer 1](#t2) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n5
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 5 |
+| **Expression source** | Expression 9 : `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=5 â†’ Action si CURRENTPRINTERNUM = 5 |
+| **Impact** | [23.1 - Printer 1](#t2) |
+
+#### <a id="rm-RM-004"></a>[RM-004] Verification que l'imprimante courante est la n8
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 8 |
+| **Expression source** | Expression 10 : `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=8 â†’ Action si CURRENTPRINTERNUM = 8 |
+| **Impact** | [23.1 - Printer 1](#t2) |
+
+#### <a id="rm-RM-005"></a>[RM-005] Verification que l'imprimante courante est la n9
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 9 |
+| **Expression source** | Expression 11 : `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action si CURRENTPRINTERNUM = 9 |
+| **Impact** | [23.1 - Printer 1](#t2) |
+
+### Autres (2 regles)
+
+#### <a id="rm-RM-006"></a>[RM-006] Si [BL]='010' alors 'Opération N°' sinon 'Transaction N°')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BL]='010'` |
 | **Si vrai** | 'Opération N°' |
 | **Si faux** | 'Transaction N°') |
-| **Expression source** | Expression 16 : `IF ([AL]='010','Opération N°','Transaction N°')` |
-| **Exemple** | Si [AL]='010' â†’ 'Opération N°'. Sinon â†’ 'Transaction N°') |
+| **Expression source** | Expression 16 : `IF ([BL]='010','Opération N°','Transaction N°')` |
+| **Exemple** | Si [BL]='010' â†’ 'Opération N°'. Sinon â†’ 'Transaction N°') |
+
+#### <a id="rm-RM-007"></a>[RM-007] Condition composite: Trim([BZ])<>'' AND VG106
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([BZ])<>'' AND VG106` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 28 : `Trim([BZ])<>'' AND VG106` |
+| **Exemple** | Si Trim([BZ])<>'' AND VG106 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -215,16 +276,16 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 23 | T1 | Veuillez patienter ... | MDI | 422 | 56 | Traitement |
-| 2 | 23.4.1 | T11 | Veuillez patienter... | MDI | 422 | 57 | Traitement |
-| 3 | 23.5.1 | T13 | Veuillez patienter... | MDI | 422 | 57 | Traitement |
+| 1 | 23 | 23 | Veuillez patienter ... | MDI | 422 | 56 | Traitement |
+| 2 | 23.4.1 | 23.4.1 | Veuillez patienter... | MDI | 422 | 57 | Traitement |
+| 3 | 23.5.1 | 23.5.1 | Veuillez patienter... | MDI | 422 | 57 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>23 - Veuillez patienter ...
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [23](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter ...
 
 <!-- FORM-DATA:
@@ -308,7 +369,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t11"></a>23.4.1 - Veuillez patienter...
-**Tache** : [T11](#t11) | **Type** : MDI | **Dimensions** : 422 x 57 DLU
+**Tache** : [23.4.1](#t11) | **Type** : MDI | **Dimensions** : 422 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -392,7 +453,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t13"></a>23.5.1 - Veuillez patienter...
-**Tache** : [T13](#t13) | **Type** : MDI | **Dimensions** : 422 x 57 DLU
+**Tache** : [23.5.1](#t13) | **Type** : MDI | **Dimensions** : 422 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -481,11 +542,11 @@ Generation des documents et tickets.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF1[T1 Veuillez patienter ...]
+    VF1[23 Veuillez patienter ...]
     style VF1 fill:#58a6ff
-    VF11[T11 Veuillez patienter...]
+    VF11[23.4.1 Veuillez patienter...]
     style VF11 fill:#58a6ff
-    VF13[T13 Veuillez patienter...]
+    VF13[23.5.1 Veuillez patienter...]
     style VF13 fill:#58a6ff
     EXT22[IDE 22 Calcul equivalent]
     style EXT22 fill:#3fb950
@@ -506,37 +567,39 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **23.1** | [**Veuillez patienter ...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
-| 23.1.1 | [Impression reçu change (T3)](#t3) | MDI | - | |
-| 23.1.2 | [Impression reçu change (T4)](#t4) | MDI | - | |
-| 23.1.3 | [Impression reçu change (T6)](#t6) | MDI | - | |
-| 23.1.4 | [Impression reçu change (T7)](#t7) | MDI | - | |
-| 23.1.5 | [Veuillez patienter ... (T9)](#t9) [mockup](#ecran-t9) | MDI | 424x56 | |
-| 23.1.6 | [Veuillez patienter... (T11)](#t11) [mockup](#ecran-t11) | MDI | 422x57 | |
-| 23.1.7 | [Veuillez patienter... (T13)](#t13) [mockup](#ecran-t13) | MDI | 422x57 | |
-| 23.1.8 | [Existe ligne (T14)](#t14) | MDI | - | |
-| **23.2** | [**Printer 1** (T2)](#t2) | MDI | - | Impression |
-| 23.2.1 | [Printer 4 (T5)](#t5) | MDI | - | |
-| 23.2.2 | [Printer 5 (T8)](#t8) [mockup](#ecran-t8) | MDI | 424x56 | |
-| 23.2.3 | [Printer 8 (T10)](#t10) [mockup](#ecran-t10) | MDI | 422x57 | |
-| 23.2.4 | [Printer 9 (T12)](#t12) [mockup](#ecran-t12) | MDI | 422x57 | |
+| **23.1** | [**Veuillez patienter ...** (23)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
+| 23.1.1 | [Impression reçu change (23.1.1)](#t3) | MDI | - | |
+| 23.1.2 | [Impression reçu change (23.1.2)](#t4) | MDI | - | |
+| 23.1.3 | [Impression reçu change (23.2.1)](#t6) | MDI | - | |
+| 23.1.4 | [Impression reçu change (23.2.2)](#t7) | MDI | - | |
+| 23.1.5 | [Veuillez patienter ... (23.3.1)](#t9) [mockup](#ecran-t9) | MDI | 424x56 | |
+| 23.1.6 | [Veuillez patienter... (23.4.1)](#t11) [mockup](#ecran-t11) | MDI | 422x57 | |
+| 23.1.7 | [Veuillez patienter... (23.5.1)](#t13) [mockup](#ecran-t13) | MDI | 422x57 | |
+| 23.1.8 | [Existe ligne (23.6)](#t14) | MDI | - | |
+| **23.2** | [**Printer 1** (23.1)](#t2) | MDI | - | Impression |
+| 23.2.1 | [Printer 4 (23.2)](#t5) | MDI | - | |
+| 23.2.2 | [Printer 5 (23.3)](#t8) [mockup](#ecran-t8) | MDI | 424x56 | |
+| 23.2.3 | [Printer 8 (23.4)](#t10) [mockup](#ecran-t10) | MDI | 422x57 | |
+| 23.2.4 | [Printer 9 (23.5)](#t12) [mockup](#ecran-t12) | MDI | 422x57 | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (9t)]
-    START --> B1
-    B2[Impression (5t)]
-    B1 --> B2
-    ENDOK([END])
-    B2 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -631,20 +694,20 @@ Variables recues du programme appelant ([Solde compte fin sejour (IDE 193)](ADH-
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Alpha | 1x parametre entrant |
-| B | P0 n° adherent | Numeric | 1x parametre entrant |
-| C | P0 filiation | Numeric | 1x parametre entrant |
-| D | P0 date | Date | 1x parametre entrant |
-| E | P0 heure | Time | 1x parametre entrant |
-| F | P0 devise locale | Alpha | - |
-| G | P0 nb decimale | Numeric | - |
-| H | P0 masque montant | Alpha | - |
-| I | P0 nom village | Alpha | - |
-| J | P0 telephone | Alpha | - |
-| K | P0 fax | Alpha | - |
-| L | Pi.N° Ticket | Numeric | - |
-| M | Pi.id_transaction | Unicode | - |
-| N | Pi.id_acceptation | Unicode | - |
+| EN | P0 societe | Alpha | 1x parametre entrant |
+| EO | P0 n° adherent | Numeric | 1x parametre entrant |
+| EP | P0 filiation | Numeric | 1x parametre entrant |
+| EQ | P0 date | Date | 1x parametre entrant |
+| ER | P0 heure | Time | 1x parametre entrant |
+| ES | P0 devise locale | Alpha | - |
+| ET | P0 nb decimale | Numeric | - |
+| EU | P0 masque montant | Alpha | - |
+| EV | P0 nom village | Alpha | - |
+| EW | P0 telephone | Alpha | - |
+| EX | P0 fax | Alpha | - |
+| EY | Pi.N° Ticket | Numeric | - |
+| EZ | Pi.id_transaction | Unicode | - |
+| FA | Pi.id_acceptation | Unicode | - |
 
 ### 11.2 Variables de session (15)
 
@@ -652,21 +715,21 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| R | v. Operation (Libelle) | Alpha | - |
-| S | v. Mode paiement (Libelle) | Alpha | - |
-| T | v. Taux (Libelle) | Alpha | - |
-| U | v. Montant Devise Local Libelle | Alpha | - |
-| V | v. Frais de change (Libelle) | Alpha | - |
-| W | v.Soit (Libelle) | Alpha | - |
-| X | v. Achat de devise (Libelle) | Alpha | - |
-| Y | v.Message (Libelle) | Alpha | - |
-| Z | v. Paiement (Libelle) | Alpha | - |
-| BA | v. Devise (Libelle) | Alpha | 1x session |
-| BB | v.Montant Product | Numeric | - |
-| BC | v.Nombre de copies | Numeric | - |
-| BD | V.Libellé ligne transaction | Unicode | - |
-| BE | V.Libellé ligne acceptation | Unicode | - |
-| BF | V.Edition ligne détail carte? | Logical | - |
+| FE | v. Operation (Libelle) | Alpha | - |
+| FF | v. Mode paiement (Libelle) | Alpha | - |
+| FG | v. Taux (Libelle) | Alpha | - |
+| FH | v. Montant Devise Local Libelle | Alpha | - |
+| FI | v. Frais de change (Libelle) | Alpha | - |
+| FJ | v.Soit (Libelle) | Alpha | - |
+| FK | v. Achat de devise (Libelle) | Alpha | - |
+| FL | v.Message (Libelle) | Alpha | - |
+| FM | v. Paiement (Libelle) | Alpha | - |
+| FN | v. Devise (Libelle) | Alpha | - |
+| FO | v.Montant Product | Numeric | - |
+| FP | v.Nombre de copies | Numeric | - |
+| FQ | V.Libellé ligne transaction | Unicode | - |
+| FR | V.Libellé ligne acceptation | Unicode | - |
+| FS | V.Edition ligne détail carte? | Logical | - |
 
 ### 11.3 Variables de travail (3)
 
@@ -674,47 +737,47 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| O | W0 en-tête ? | Alpha | 1x calcul interne |
-| P | W0 fin tâche | Alpha | - |
-| Q | W0 existe ligne à editer | Logical | - |
+| FB | W0 en-tête ? | Alpha | 1x calcul interne |
+| FC | W0 fin tâche | Alpha | - |
+| FD | W0 existe ligne à editer | Logical | - |
 
 <details>
 <summary>Toutes les 32 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P0 societe | Alpha |
-| P0 | **B** | P0 n° adherent | Numeric |
-| P0 | **C** | P0 filiation | Numeric |
-| P0 | **D** | P0 date | Date |
-| P0 | **E** | P0 heure | Time |
-| P0 | **F** | P0 devise locale | Alpha |
-| P0 | **G** | P0 nb decimale | Numeric |
-| P0 | **H** | P0 masque montant | Alpha |
-| P0 | **I** | P0 nom village | Alpha |
-| P0 | **J** | P0 telephone | Alpha |
-| P0 | **K** | P0 fax | Alpha |
-| P0 | **L** | Pi.N° Ticket | Numeric |
-| P0 | **M** | Pi.id_transaction | Unicode |
-| P0 | **N** | Pi.id_acceptation | Unicode |
-| W0 | **O** | W0 en-tête ? | Alpha |
-| W0 | **P** | W0 fin tâche | Alpha |
-| W0 | **Q** | W0 existe ligne à editer | Logical |
-| V. | **R** | v. Operation (Libelle) | Alpha |
-| V. | **S** | v. Mode paiement (Libelle) | Alpha |
-| V. | **T** | v. Taux (Libelle) | Alpha |
-| V. | **U** | v. Montant Devise Local Libelle | Alpha |
-| V. | **V** | v. Frais de change (Libelle) | Alpha |
-| V. | **W** | v.Soit (Libelle) | Alpha |
-| V. | **X** | v. Achat de devise (Libelle) | Alpha |
-| V. | **Y** | v.Message (Libelle) | Alpha |
-| V. | **Z** | v. Paiement (Libelle) | Alpha |
-| V. | **BA** | v. Devise (Libelle) | Alpha |
-| V. | **BB** | v.Montant Product | Numeric |
-| V. | **BC** | v.Nombre de copies | Numeric |
-| V. | **BD** | V.Libellé ligne transaction | Unicode |
-| V. | **BE** | V.Libellé ligne acceptation | Unicode |
-| V. | **BF** | V.Edition ligne détail carte? | Logical |
+| P0 | **EN** | P0 societe | Alpha |
+| P0 | **EO** | P0 n° adherent | Numeric |
+| P0 | **EP** | P0 filiation | Numeric |
+| P0 | **EQ** | P0 date | Date |
+| P0 | **ER** | P0 heure | Time |
+| P0 | **ES** | P0 devise locale | Alpha |
+| P0 | **ET** | P0 nb decimale | Numeric |
+| P0 | **EU** | P0 masque montant | Alpha |
+| P0 | **EV** | P0 nom village | Alpha |
+| P0 | **EW** | P0 telephone | Alpha |
+| P0 | **EX** | P0 fax | Alpha |
+| P0 | **EY** | Pi.N° Ticket | Numeric |
+| P0 | **EZ** | Pi.id_transaction | Unicode |
+| P0 | **FA** | Pi.id_acceptation | Unicode |
+| W0 | **FB** | W0 en-tête ? | Alpha |
+| W0 | **FC** | W0 fin tâche | Alpha |
+| W0 | **FD** | W0 existe ligne à editer | Logical |
+| V. | **FE** | v. Operation (Libelle) | Alpha |
+| V. | **FF** | v. Mode paiement (Libelle) | Alpha |
+| V. | **FG** | v. Taux (Libelle) | Alpha |
+| V. | **FH** | v. Montant Devise Local Libelle | Alpha |
+| V. | **FI** | v. Frais de change (Libelle) | Alpha |
+| V. | **FJ** | v.Soit (Libelle) | Alpha |
+| V. | **FK** | v. Achat de devise (Libelle) | Alpha |
+| V. | **FL** | v.Message (Libelle) | Alpha |
+| V. | **FM** | v. Paiement (Libelle) | Alpha |
+| V. | **FN** | v. Devise (Libelle) | Alpha |
+| V. | **FO** | v.Montant Product | Numeric |
+| V. | **FP** | v.Nombre de copies | Numeric |
+| V. | **FQ** | V.Libellé ligne transaction | Unicode |
+| V. | **FR** | V.Libellé ligne acceptation | Unicode |
+| V. | **FS** | V.Edition ligne détail carte? | Logical |
 
 </details>
 
@@ -726,7 +789,7 @@ Variables internes au programme.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 16 | 5 |
+| CONDITION | 16 | 7 |
 | CONSTANTE | 2 | 0 |
 | OTHER | 9 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
@@ -738,11 +801,11 @@ Variables internes au programme.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 16 | `IF ([AL]='010','Opération N°','Transaction N°')` | [RM-001](#rm-RM-001) |
-| CONDITION | 8 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
-| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
-| CONDITION | 25 | `IF ([AL]='010','Devise','Currency')` | - |
-| CONDITION | 9 | `GetParam ('CURRENTPRINTERNUM')=5` | - |
+| CONDITION | 11 | `GetParam ('CURRENTPRINTERNUM')=9` | [RM-005](#rm-RM-005) |
+| CONDITION | 16 | `IF ([BL]='010','Opération N°','Transaction N°')` | [RM-006](#rm-RM-006) |
+| CONDITION | 28 | `Trim([BZ])<>'' AND VG106` | [RM-007](#rm-RM-007) |
+| CONDITION | 10 | `GetParam ('CURRENTPRINTERNUM')=8` | [RM-004](#rm-RM-004) |
+| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=1` | [RM-001](#rm-RM-001) |
 | ... | | *+11 autres* | |
 
 #### CONSTANTE (2 expressions)
@@ -773,8 +836,8 @@ Variables internes au programme.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| STRING | 30 | `'Autorisation Number : '&Trim(v. Devise (Libelle) [BA])` | - |
-| STRING | 29 | `'File Number : '&Trim([AZ])` | - |
+| STRING | 30 | `'Autorisation Number : '&Trim([CA])` | - |
+| STRING | 29 | `'File Number : '&Trim([BZ])` | - |
 
 ### 12.3 Toutes les expressions (30)
 
@@ -785,22 +848,22 @@ Variables internes au programme.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 16 | `IF ([AL]='010','Opération N°','Transaction N°')` |
-| 17 | `IF ([AL]='010','Mode de paiement','Payment method')` |
-| 18 | `IF ([AL]='010','Taux','Rate')` |
-| 19 | `IF ([AL]='010','Montant devise locale','Amount local currency')` |
-| 20 | `IF ([AL]='010','Frais de change','Change fees')` |
-| 21 | `IF ([AL]='010','Soit','Equal')` |
-| 22 | `IF ([AL]='010','ACHAT DE DEVISES','CURRENCY PURCHASE')` |
-| 23 | `IF ([AL]='010','Merci de votre visite','Thank you for your visit')` |
-| 24 | `IF ([AL]='010','Paiement','Payment')` |
-| 25 | `IF ([AL]='010','Devise','Currency')` |
 | 7 | `GetParam ('CURRENTPRINTERNUM')=1` |
 | 8 | `GetParam ('CURRENTPRINTERNUM')=4` |
 | 9 | `GetParam ('CURRENTPRINTERNUM')=5` |
 | 10 | `GetParam ('CURRENTPRINTERNUM')=8` |
 | 11 | `GetParam ('CURRENTPRINTERNUM')=9` |
-| 28 | `Trim([AZ])<>'' AND VG106` |
+| 16 | `IF ([BL]='010','Opération N°','Transaction N°')` |
+| 17 | `IF ([BL]='010','Mode de paiement','Payment method')` |
+| 18 | `IF ([BL]='010','Taux','Rate')` |
+| 19 | `IF ([BL]='010','Montant devise locale','Amount local currency')` |
+| 20 | `IF ([BL]='010','Frais de change','Change fees')` |
+| 21 | `IF ([BL]='010','Soit','Equal')` |
+| 22 | `IF ([BL]='010','ACHAT DE DEVISES','CURRENCY PURCHASE')` |
+| 23 | `IF ([BL]='010','Merci de votre visite','Thank you for your visit')` |
+| 24 | `IF ([BL]='010','Paiement','Payment')` |
+| 25 | `IF ([BL]='010','Devise','Currency')` |
+| 28 | `Trim([BZ])<>'' AND VG106` |
 
 #### CONSTANTE (2)
 
@@ -833,8 +896,8 @@ Variables internes au programme.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 29 | `'File Number : '&Trim([AZ])` |
-| 30 | `'Autorisation Number : '&Trim(v. Devise (Libelle) [BA])` |
+| 29 | `'File Number : '&Trim([BZ])` |
+| 30 | `'Autorisation Number : '&Trim([CA])` |
 
 </details>
 
@@ -916,7 +979,7 @@ graph LR
 | Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 3 | Quelques ecrans |
 | Code desactive | 0% (0 / 471) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Regles metier | 7 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -939,4 +1002,4 @@ graph LR
 | [Calcul equivalent (IDE 22)](ADH-IDE-22.md) | Sous-programme | 7x | **CRITIQUE** - Calcul de donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:03*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:21*

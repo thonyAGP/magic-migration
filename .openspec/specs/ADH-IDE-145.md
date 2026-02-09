@@ -1,6 +1,6 @@
 ﻿# ADH IDE 145 - Devises finales F/F Qte WS
 
-> **Analyse**: Phases 1-4 2026-02-07 07:13 -> 07:14 (16s) | Assemblage 07:14
+> **Analyse**: Phases 1-4 2026-02-08 03:28 -> 03:29 (4s) | Assemblage 03:29
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,25 +14,29 @@
 | IDE Position | 145 |
 | Nom Programme | Devises finales F/F Qte WS |
 | Fichier source | `Prg_145.xml` |
-| Dossier IDE | Gestion |
+| Dossier IDE | Change |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 0/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Devises finales F/F Qte WS** assure la gestion complete de ce processus.
+ADH IDE 145 réconcilie les devises physiques avec les quantités déclarées lors de la fermeture de caisse. Le programme reçoit en paramètres la liste des devises présentes dans le coffre (montant en euros, quantités pour chaque dénomination) et les compare avec les données de ticket (mouvements WS). Son rôle principal est de calculer les écarts devise par devise pour alimenter le rapport de fermeture.
+
+Le flux fonctionne en trois étapes : d'abord récupération des devises WS depuis la tâche appelante (IDE 147 ou paramètres directs), puis calcul des totaux par dénomination (billets et pièces séparés), enfin génération des écarts (physique - attendu). Ces écarts servent soit à alerter l'opérateur en cas de divergence significative, soit à valider l'équilibre du coffre avant clôture.
+
+Ce programme est appelé contextuellement : depuis IDE 131 (fermeture standard), IDE 147 (consultation historique devises), ou IDE 299 (fermeture variante). Il constitue une pièce clé de l'audit de caisse car il trace l'intégrité monétaire en fin de session et génère les justificatifs pour les écarts.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Devises des tickets WS (IDE 147)](ADH-IDE-147.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 8
 
 <!-- TAB:Ecrans -->
@@ -98,9 +102,9 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | Param code devise | Alpha | 1x refs |
-| B | Param mode paiement | Alpha | 1x refs |
-| C | Param quantite finale | Numeric | - |
+| EN | Param code devise | Alpha | 1x refs |
+| EO | Param mode paiement | Alpha | 1x refs |
+| EP | Param quantite finale | Numeric | - |
 
 ## 12. EXPRESSIONS
 
@@ -151,22 +155,70 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Fermeture caisse (IDE 131)](ADH-IDE-131.md) -> **Devises finales F/F Qte WS (IDE 145)**
+
+Main -> ... -> [Devises des tickets WS (IDE 147)](ADH-IDE-147.md) -> **Devises finales F/F Qte WS (IDE 145)**
+
+Main -> ... -> [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md) -> **Devises finales F/F Qte WS (IDE 145)**
 
 ```mermaid
 graph LR
     T145[145 Devises finales FF...]
     style T145 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T145
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC281[281 Fermeture Sessions]
+    style CC281 fill:#f59e0b
+    CC122[122 Ouverture caisse]
+    style CC122 fill:#f59e0b
+    CC297[297 Ouverture caisse 143]
+    style CC297 fill:#f59e0b
+    CC121[121 Gestion caisse]
+    style CC121 fill:#f59e0b
+    CC298[298 Gestion caisse 142]
+    style CC298 fill:#f59e0b
+    CC131[131 Fermeture caisse]
+    style CC131 fill:#3fb950
+    CC147[147 Devises des ticket...]
+    style CC147 fill:#3fb950
+    CC299[299 Fermeture caisse 144]
+    style CC299 fill:#3fb950
+    CC121 --> CC131
+    CC298 --> CC131
+    CC122 --> CC131
+    CC297 --> CC131
+    CC121 --> CC147
+    CC298 --> CC147
+    CC122 --> CC147
+    CC297 --> CC147
+    CC121 --> CC299
+    CC298 --> CC299
+    CC122 --> CC299
+    CC297 --> CC299
+    CC163 --> CC121
+    CC281 --> CC121
+    CC163 --> CC298
+    CC281 --> CC298
+    CC163 --> CC122
+    CC281 --> CC122
+    CC163 --> CC297
+    CC281 --> CC297
+    CC1 --> CC163
+    CC1 --> CC281
+    CC131 --> T145
+    CC147 --> T145
+    CC299 --> T145
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [131](ADH-IDE-131.md) | Fermeture caisse | 4 |
+| [147](ADH-IDE-147.md) | Devises des tickets WS | 2 |
+| [299](ADH-IDE-299.md) | Fermeture caisse 144 | 2 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -207,4 +259,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:14*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:29*

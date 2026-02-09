@@ -1,384 +1,751 @@
 ﻿# ADH IDE 1 - Main Program
 
-> **Version spec**: 4.1
-> **Analyse**: 2026-02-07 04:30
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_1.xml`
-> **Methode**: APEX + PDCA (Enrichie manuellement)
+> **Analyse**: Phases 1-4 2026-02-08 00:59 -> 00:59 (6s) | Assemblage 00:59
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Systeme (demarrage automatique) |
-| **Quoi** | Point d'entree principal du module ADH (Adherent/Caisse) |
-| **Pourquoi** | Initialiser l'environnement complet de l'application caisse avant affichage du menu principal |
-| **Declencheur** | Lancement de l'application ADH.ecf par l'utilisateur |
-| **Resultat** | Environnement initialise avec toutes les VG configurees, utilisateur authentifie, droits charges |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Charger la configuration village depuis table initialisation | Au demarrage |
-| RM-002 | Initialiser les droits utilisateur (IT, Caisse, RFI, FDM) | Apres authentification |
-| RM-003 | Configurer les modules actifs (VRL, ECI, TPE, Vente, Fidelisation) | Selon parametrage village |
-| RM-004 | Charger les parametres TPE et devise | Si interface TPE active |
-| RM-005 | Initialiser les lieux de sejour et combos | Configuration multi-sites |
-| RM-006 | Appeler le menu principal apres initialisation complete | Toutes VG chargees |
-
-### 1.3 Flux utilisateur
-
-1. Demarrage de l'application ADH
-2. Lecture de la table d'initialisation (cafil047 - initialisation.ini)
-3. Chargement de la configuration des tables (cafil045 - tables.tab)
-4. Initialisation des 100+ variables globales de configuration
-5. Appel des sous-programmes REF pour authentification utilisateur
-6. Configuration des modules actifs selon parametrage village
-7. Appel de la sous-tache "Get Code Village" pour identifier le site
-8. Appel de la sous-tache "Get delai expiration VAD" pour vente a distance
-9. Appel de la sous-tache "Get Outside/Inside Service" pour services externes
-10. Transfert vers le menu principal (IDE 165)
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Table initialisation inaccessible | Abandon avec message systeme |
-| Utilisateur non reconnu | Refus d'acces, retour login |
-| Droits insuffisants | Message d'avertissement, fonctions limitees |
-| Configuration TPE invalide | Module TPE desactive |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 1 |
-| **Fichier XML** | `Prg_1.xml` |
-| **Description** | Main Program - Point d'entree ADH |
-| **Module** | ADH (Adherent/Caisse) |
-| **Public Name** | (aucun - MainProgram) |
-| **Nombre taches** | 4 |
-| **Lignes logique** | 319 |
-| **Variables globales** | 115+ |
+| Projet | ADH |
+| IDE Position | 1 |
+| Nom Programme | Main Program |
+| Fichier source | `Prg_1.xml` |
+| Dossier IDE | General |
+| Taches | 4 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 5 |
+| Complexite | **BASSE** (score 15/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 67 | tables.tab | cafil045_dat | READ | Configuration generale des tables |
-| 69 | initialisation.ini | cafil047_dat | READ | Parametres d'initialisation village |
-| 372 | pv_budget | pv_budget_dat | LINK | Donnees budgetaires (jointure) |
+ADH IDE 1 est le point d'entrée principal du système de gestion de caisse du projet ADH. Ce programme assure les vérifications préalables à toute session de caisse : il vérifie que la session caisse est ouverte (appel à IDE 232), récupère la langue de l'utilisateur (IDE 45), et contrôle les droits d'accès au solde free ext (IDE 51). Ces vérifications garantissent que l'utilisateur a les permissions nécessaires avant d'accéder aux fonctionnalités principales.
 
-**Resume**: 3 tables accedees en lecture seule pour charger la configuration
+Une fois les validations effectuées, le programme initialise l'environnement utilisateur via le menu caisse avec scroll (IDE 163), puis dirige vers l'écran de démarrage principal (IDE 166). Ce flux séquentiel assure une initialisation cohérente et sécurisée de la session avant d'exposer les menus et écrans interactifs.
 
-### 2.3 Structure des taches
+Ce programme agit comme contrôleur de session : il n'exécute pas directement la logique métier mais orchestre les validations et les routages qui permettent aux programmes spécialisés (ventes, zooms, extraction de compte) d'opérer dans un contexte d'utilisateur valide et autorisé.
 
-| ISN_2 | Nom tache | Role |
-|-------|-----------|------|
-| 1 | Main Program | Tache principale: initialisation VG, appels REF, lancement menu |
-| 2 | Get Code Village | Recuperer le code du village courant depuis la configuration |
-| 3 | Get delai expiration VAD | Charger le delai d'expiration pour la Vente A Distance |
-| 4 | Get Outside/Inside Service | Determiner si les services sont internes ou externes |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Variables globales initialisees (principales)
+## 5. REGLES METIER
 
-| Variable | Type | Signification |
-|----------|------|---------------|
-| VG.LOGIN | Unicode(8) | Identifiant de connexion utilisateur |
-| VG.USER | Unicode(20) | Nom complet de l'utilisateur |
-| VG.CODE VILLAGE | Alpha(3) | Code du village actuel (ex: CAM, TEL) |
-| VG.CODE LANGUE USER | Unicode(3) | Langue de l'utilisateur (FRA, ENG, ESP) |
-| VG.DROIT ACCES IT ? | Logical | Droit acces module IT |
-| VG.DROIT ACCES CAISSE ? | Logical | Droit acces module Caisse |
-| VG.USER RFI / RESPONSABLE RECEP | Logical | Role RFI (Responsable Reception) |
-| VG.USER FRONT DESK MANAGER | Logical | Role Front Desk Manager |
-| VG.VRL ACTIF ? | Logical | Module VRL (Virtual Resort Lobby) actif |
-| VG.ECI ACTIF ? | Logical | Module ECI (Easy Check-In) actif |
-| VG.COMPTE CASH ACTIF ? | Logical | Gestion comptes cash activee |
-| VG.PROJ.INTERF.TPE ACTIF | Logical | Interface TPE (Terminal Paiement) active |
-| VG.TPE INTERFACE SUR TERMINAL | Logical | TPE interface sur le terminal courant |
-| VG.NUM TPE | Alpha(20) | Numero du terminal de paiement |
-| VG.NUM CAISSE | Alpha(8) | Numero de la caisse courante |
-| VG.CODE DEVISE TPE | Alpha(3) | Devise du TPE (EUR, USD, etc.) |
-| VG.VENTE ACTIF ? | Logical | Module vente boutique actif |
-| VG.TRANSFERT ACTIF | Logical | Transferts inter-comptes actifs |
-| VG.FIDELISATION ACTIF ? | Logical | Programme fidelite actif |
-| VG.TAXE SEJOUR ACTIF ? | Logical | Gestion taxe de sejour |
-| VG.FACTURE AVEC TVA | Logical | Facturation avec TVA |
-| VG.N version | Alpha(10) | Numero de version de l'application |
-| VG.Date version | Alpha(10) | Date de la version |
-| VG.MASQUE MONTANT | Alpha(16) | Format d'affichage des montants |
-| VG.NB LIEU SEJOUR | Numeric(1) | Nombre de lieux de sejour configures |
-| VG.LIEU SEJOUR DEFAUT | Alpha(1) | Lieu de sejour par defaut |
-| VG.COMBO LIEU SEJOUR | Alpha(2000) | Liste des lieux de sejour (combo) |
-| VG.Liste Vendeurs | Alpha(1000) | Liste des vendeurs autorises |
-| VG.Matricule User | Unicode(30) | Matricule de l'utilisateur connecte |
-| VG.Age Mineur | Numeric(3) | Age limite pour les mineurs |
+7 regles identifiees:
 
-### 2.5 Algorigramme
+### Autres (7 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: RunMode () <= 2
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `RunMode ()<=2` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 2 : `RunMode ()<=2` |
+| **Exemple** | Si RunMode ()<=2 â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition composite: RunMode ()<=2 OR IsComponent()
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `RunMode ()<=2 OR IsComponent()` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 3 : `RunMode ()<=2 OR IsComponent()` |
+| **Exemple** | Si RunMode ()<=2 OR IsComponent() â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition composite: 'Caisse Adhérent -V '&Trim(ExpCalc('17'EXP))&' - '&Trim(ExpCalc('18'EXP)) & IF(VG.PROJ.INTERF.TPE ACTIF [X] AND VG.TPE INTERFACE SUR T... [Y]<>'', ' - TPE : ' & VG.TPE INTERFACE SUR T... [Y], '')
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `'Caisse Adhérent -V '&Trim(ExpCalc('17'EXP))&' - '&Trim(ExpCalc('18'EXP)) & IF(VG.PROJ.INTERF.TPE ACTIF [X] AND VG.TPE INTERFACE SUR T... [Y]<>'', ' - TPE : ' & VG.TPE INTERFACE SUR T... [Y], '')` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FK (VG.PROJ.INTERF.TPE ACTIF) |
+| **Expression source** | Expression 16 : `'Caisse Adhérent -V '&Trim(ExpCalc('17'EXP))&' - '&Trim(ExpC` |
+| **Exemple** | Si 'Caisse Adhérent -V '&Trim(ExpCalc('17'EXP))&' - '&Trim(ExpCalc('18'EXP)) & IF(VG.PROJ.INTERF.TPE ACTIF [X] AND VG.TPE INTERFACE SUR T... [Y]<>'', ' - TPE : ' & VG.TPE INTERFACE SUR T... [Y], '') â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Negation de FileExist('%club_exportdata%'&'PDF') (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT FileExist('%club_exportdata%'&'PDF')` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 24 : `NOT FileExist('%club_exportdata%'&'PDF')` |
+| **Exemple** | Si NOT FileExist('%club_exportdata%'&'PDF') â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Verification: IsComponent
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `IsComponent()` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 51 : `IsComponent()` |
+| **Exemple** | Si IsComponent() â†’ Action si vrai |
+
+#### <a id="rm-RM-006"></a>[RM-006] Negation de VG.Interfaces OB [CZ] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT VG.Interfaces OB [CZ]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | HM (VG.Interfaces OB) |
+| **Expression source** | Expression 55 : `NOT VG.Interfaces OB [CZ]` |
+| **Exemple** | Si NOT VG.Interfaces OB [CZ] â†’ Action si vrai |
+
+#### <a id="rm-RM-007"></a>[RM-007] Condition composite: (Time()>= '21:00:00'TIME AND Time()<='21:02:00'TIME)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `(Time()>= '21:00:00'TIME AND Time()<='21:02:00'TIME)` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 84 : `(Time()>= '21:00:00'TIME AND Time()<='21:02:00'TIME)` |
+| **Exemple** | Si (Time()>= '21:00:00'TIME AND Time()<='21:02:00'TIME) â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 5 programmes | **Tables**: 3 (W:0 R:2 L:1) | **Taches**: 4 | **Expressions**: 87
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START Main ADH])
-    READ_INI[Lire tables initialisation]
-    INIT_VG[Initialiser 115+ VG]
-    AUTH[Authentifier utilisateur via REF]
-    CHECK_DROITS{Droits valides?}
-    LOAD_CONFIG[Charger config village]
-    CALL_VILLAGE[Tache 2: Get Code Village]
-    CALL_VAD[Tache 3: Get delai VAD]
-    CALL_SERVICE[Tache 4: Get Service In/Out]
-    CALL_MENU[Appeler Menu Principal IDE 165]
-    ENDOK([END])
-    ENDERROR([ACCES REFUSE])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{PE INTERFACE SUR T...}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> READ_INI --> INIT_VG --> AUTH --> CHECK_DROITS
-    CHECK_DROITS -->|OUI| LOAD_CONFIG --> CALL_VILLAGE --> CALL_VAD --> CALL_SERVICE --> CALL_MENU --> ENDOK
-    CHECK_DROITS -->|NON| ENDERROR
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#3fb950
-    style ENDERROR fill:#f85149
-    style AUTH fill:#58a6ff
-    style CHECK_DROITS fill:#ffeb3b
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.6 Appels externes (CallTask comp=4)
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Composant | obj | Programme appele | Role |
-|-----------|-----|------------------|------|
-| REF.ecf | 777 | Authentification | Valider login/password utilisateur |
-| REF.ecf | 795 | Lecture parametre | Lire un parametre de configuration |
-| REF.ecf | 776 | Init session | Initialiser la session utilisateur |
-| REF.ecf | 811 | Charge droits | Charger les droits utilisateur |
-| REF.ecf | 812 | Config terminal | Configurer le terminal courant |
+<!-- TAB:Donnees -->
 
-### 2.7 Appels internes (CallTask comp=-1)
+## 10. TABLES
 
-| obj | Tache | Role |
-|-----|-------|------|
-| 2 | Get Code Village | Sous-tache interne |
-| 3 | Get delai expiration VAD | Sous-tache interne |
-| 4 | Get Outside/Inside Service | Sous-tache interne |
-| 45 | Init TPE | Initialisation terminal paiement |
-| 51 | Init Combos | Charger les listes deroulantes |
-| 162 | Init Caisse | Configuration caisse courante |
-| 165 | Menu Principal | Afficher le menu principal ADH |
-| 328 | Init Fidelite | Charger module fidelisation |
+### Tables utilisees (3)
 
-### 2.8 Statistiques
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 69 | initialisation___ini |  | DB | R |   |   | 2 |
+| 67 | tables___________tab |  | DB | R |   |   | 1 |
+| 372 | pv_budget |  | DB |   |   | L | 1 |
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 4 |
-| **Handlers** | 11 (Record, Task, System, User, Timer) |
-| **Lignes logique** | 319 |
-| **Variables globales** | 115+ |
-| **Parametres** | 0 (MainProgram) |
-| **Tables accedees** | 3 |
-| **Tables en ecriture** | 0 |
-| **CallTask externes** | 50+ vers REF.ecf |
-| **CallTask internes** | 8 vers sous-taches |
+### Colonnes par table (2 / 2 tables avec colonnes identifiees)
 
----
+<details>
+<summary>Table 69 - initialisation___ini (R) - 2 usages</summary>
 
-<!-- TAB:Cartographie -->
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| FP | VG.CODE INITIALISATION TPE | R | Alpha |
 
-## CARTOGRAPHIE APPLICATIVE
+</details>
 
-### 3.1 Position dans l'application
+<details>
+<summary>Table 67 - tables___________tab (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P.Service | R | Alpha |
+| B | P.Service Interne ClubMed | R | Logical |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (2)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| IY | v.Service | Alpha | - |
+| IZ | v.Service Interne ClubMed? | Logical | - |
+
+### 11.2 Variables globales (113)
+
+Variables globales partagees entre programmes.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | VG.LOGIN | Unicode | 2x variable globale |
+| EO | VG.USER | Unicode | - |
+| EP | VG.Retour Chariot | Alpha | 1x variable globale |
+| EQ | VG.DROIT ACCES IT ? | Logical | - |
+| ER | VG.DROIT ACCES CAISSE ? | Logical | - |
+| ES | VG.BRAZIL DATACATCHING? | Logical | - |
+| ET | VG.USE MDR | Logical | - |
+| EU | VG.VRL ACTIF ? | Logical | - |
+| EV | VG.ECI ACTIF ? | Logical | - |
+| EW | VG.COMPTE CASH ACTIF ? | Logical | - |
+| EX | VG.IND SEJ PAYE ACTIF ? | Logical | - |
+| EY | VG.CODE LANGUE USER | Unicode | - |
+| EZ | VG.EFFECTIF ACTIF ? | Logical | - |
+| FA | VG.TAXE SEJOUR ACTIF ? | Logical | - |
+| FB | VG.N° version | Alpha | - |
+| FC | VG.Date version | Alpha | - |
+| FD | VG.FIDELISATION ACTIF ? | Logical | - |
+| FE | VG.CALCUL EFFECTIF 2 ACTIF? | Logical | - |
+| FF | VG.LIEU SEJOUR DEFAUT | Alpha | - |
+| FG | VG.FACTURE AVEC TVA | Logical | - |
+| FH | VG.NB LIEU SEJOUR | Numeric | - |
+| FI | VG.COMBO LIEU SEJOUR | Alpha | - |
+| FJ | VG.MASQUE MONTANT | Alpha | - |
+| FK | VG.PROJ.INTERF.TPE ACTIF | Logical | 1x variable globale |
+| FL | VG.TPE INTERFACE SUR TERMINAL | Logical | - |
+| FM | VG.NUM TPE | Alpha | - |
+| FN | VG.NUM CAISSE | Alpha | - |
+| FO | VG.CODE VILLAGE | Alpha | - |
+| FP | VG.CODE INITIALISATION TPE | Alpha | - |
+| FQ | VG CODE JOURNAL TPE | Alpha | - |
+| FR | VG.CODE DEVISE TPE | Alpha | - |
+| FS | VG.Easy Location | Alpha | - |
+| FT | VG.Easy  Cours | Alpha | - |
+| FU | VG.Easy Enfants | Alpha | - |
+| FV | VG VENTE ACTIF ? | Logical | 1x variable globale |
+| FW | VG TRANSFERT ACTIF | Logical | - |
+| FX | VG TRANSFERT 2.00 ? | Logical | - |
+| FY | VG FREE EXTRA | Logical | - |
+| FZ | VG GIFT PASS_V2.00 | Logical | - |
+| GA | VG DROIT SOLDE AVEC FREE EXTRA | Logical | - |
+| GB | VG.FACTURE AVEC TVA V2 | Logical | - |
+| GC | VG.PME | Logical | - |
+| GD | VG VENTE ACTIF ? | Logical | 1x variable globale |
+| GG | VG.CALCUL EFFECTIF 3 ACTIF? | Logical | - |
+| GH | VG.LEX_Libellé_extraits_compte | Logical | - |
+| GI | VG.USER RFI / RESPONSABLE RECEP | Logical | - |
+| GJ | VG.USER FRONT DESK MANAGER | Logical | - |
+| GK | VG.GARANTIE CROSS BORDER | Logical | - |
+| GL | VG.GARANTIE CROSS BORDER V2 | Logical | - |
+| GM | VG.Tickets bilingues TIK V1.00 | Logical | - |
+| GN | VG.Numero Ticket V1.00 | Logical | - |
+| GO | VG.Facture V3.00 | Logical | - |
+| GP | VG.Suivi CA Reception ACTIF | Logical | - |
+| GQ | VG.Gestion Cheques | Logical | - |
+| GR | VG.Gestion Remise | Logical | - |
+| GS | VG.Liste Vendeurs | Alpha | - |
+| GT | VG.Matricule User | Unicode | - |
+| GU | VG.Libellés Commerciaux V2.00 | Logical | - |
+| GV | VG.Gift Pass 3.00 | Logical | - |
+| GW | VG.Extrait de compte 1.00 | Logical | - |
+| GX | VG.Entete Paramétrable V1.00 | Logical | - |
+| GY | VG.ResortCredit 1.00 | Logical | - |
+| GZ | VG.Prise de Garantie V2.00 | Logical | - |
+| HA | VG Village à Cam | Alpha | - |
+| HB | VG Nom du Village | Alpha | - |
+| HC | VG Village à Tel | Alpha | - |
+| HD | VG Village à Bibop | Alpha | - |
+| HE | VG Tel à Cam | Alpha | - |
+| HF | VG Type de Triplet | Alpha | - |
+| HG | VG Type Interface (PABX) | Alpha | - |
+| HH | VG UNI.BI | Alpha | - |
+| HI | VG.AnnulationGiftPass | Logical | - |
+| HJ | VG.Identification CM Pass | Logical | - |
+| HK | VG.Age Mineur | Numeric | - |
+| HL | VG Edit Extrait Co V1.00 | Logical | - |
+| HM | VG.Interfaces OB | Logical | 2x variable globale |
+| HN | VG.Hostname au lieu de Term | Logical | - |
+| HO | VG.Numéro pseudo terminal | Numeric | - |
+| HP | VG Réception en mobilité V1.00 | Logical | - |
+| HQ | VG Email des reçus de vente V1 | Logical | - |
+| HR | VG SUPPORT (Tablette,WorkStatio | Alpha | - |
+| HS | VG Envoi Mail paiement VAD | Logical | - |
+| HT | VG délai expiration VAD | Numeric | - |
+| HU | VG Fusion Liste Operations | Logical | - |
+| HV | VG Contractor Recept | Logical | - |
+| HW | VG.VAE/Biking | Logical | - |
+| HY | VG.Modif ligne de vente actif ? | Logical | - |
+| HZ | VG.Gestion Taxes Additionnelles | Logical | - |
+| IA | VG.Verification PLBS par PES | Logical | - |
+| IB | VG.Annulation de Garantie | Logical | - |
+| IC | VG.Mail Vente Ass. 0 Soucis | Logical | - |
+| ID | VG.Gestion Garantie API CM | Logical | - |
+| IE | VG. Fusion 1.00 | Logical | - |
+| IF | VG. F.Police Maroc 2.00 | Logical | - |
+| IG | VG. F.Police Turquie 2.00 | Logical | - |
+| IH | VG. F.Police Portugal 1.00 | Logical | - |
+| II | VG.Facture THAI new | Logical | - |
+| IJ | VG.Séparation compte art LOC | Logical | - |
+| IK | VG.Reçu vente Japon | Logical | - |
+| IL | VG.Reçu Loi AGEC | Logical | - |
+| IM | VG. Gestion Pied Recu Vente | Logical | - |
+| IN | VG. Great Members Revamped | Logical | - |
+| IO | VG.Utilisation Odyssey | Logical | - |
+| IP | VG.Id Log Utilisation ADH | Numeric | - |
+| IQ | VG.Date Debut Log use ADH | Date | - |
+| IR | VG.Heure Debut Log use ADH | Time | - |
+| IS | VG.Info Additionnelles use ADH | Unicode | - |
+| IT | VG.ECI En cours de séjour | Logical | - |
+| IU | VG. Interface Galaxy Grèce | Logical | - |
+| IV | VG.Second Safe Control 1.00 | Logical | - |
+| IW | VG.Devise locale | Alpha | - |
+| IX | VG.Masque | Alpha | - |
+| JA | VG.Easy  Enfant | Alpha | - |
+
+### 11.3 Autres (3)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| GE | VG_TPE_V2.00 | Logical | - |
+| GF | VG_FAX_VISIBLE | Logical | - |
+| HX | VG-Exclusion GM sans nom | Logical | - |
+
+<details>
+<summary>Toutes les 118 variables (liste complete)</summary>
+
+| Cat | Lettre | Nom Variable | Type |
+|-----|--------|--------------|------|
+| V. | **IY** | v.Service | Alpha |
+| V. | **IZ** | v.Service Interne ClubMed? | Logical |
+| VG | **EN** | VG.LOGIN | Unicode |
+| VG | **EO** | VG.USER | Unicode |
+| VG | **EP** | VG.Retour Chariot | Alpha |
+| VG | **EQ** | VG.DROIT ACCES IT ? | Logical |
+| VG | **ER** | VG.DROIT ACCES CAISSE ? | Logical |
+| VG | **ES** | VG.BRAZIL DATACATCHING? | Logical |
+| VG | **ET** | VG.USE MDR | Logical |
+| VG | **EU** | VG.VRL ACTIF ? | Logical |
+| VG | **EV** | VG.ECI ACTIF ? | Logical |
+| VG | **EW** | VG.COMPTE CASH ACTIF ? | Logical |
+| VG | **EX** | VG.IND SEJ PAYE ACTIF ? | Logical |
+| VG | **EY** | VG.CODE LANGUE USER | Unicode |
+| VG | **EZ** | VG.EFFECTIF ACTIF ? | Logical |
+| VG | **FA** | VG.TAXE SEJOUR ACTIF ? | Logical |
+| VG | **FB** | VG.N° version | Alpha |
+| VG | **FC** | VG.Date version | Alpha |
+| VG | **FD** | VG.FIDELISATION ACTIF ? | Logical |
+| VG | **FE** | VG.CALCUL EFFECTIF 2 ACTIF? | Logical |
+| VG | **FF** | VG.LIEU SEJOUR DEFAUT | Alpha |
+| VG | **FG** | VG.FACTURE AVEC TVA | Logical |
+| VG | **FH** | VG.NB LIEU SEJOUR | Numeric |
+| VG | **FI** | VG.COMBO LIEU SEJOUR | Alpha |
+| VG | **FJ** | VG.MASQUE MONTANT | Alpha |
+| VG | **FK** | VG.PROJ.INTERF.TPE ACTIF | Logical |
+| VG | **FL** | VG.TPE INTERFACE SUR TERMINAL | Logical |
+| VG | **FM** | VG.NUM TPE | Alpha |
+| VG | **FN** | VG.NUM CAISSE | Alpha |
+| VG | **FO** | VG.CODE VILLAGE | Alpha |
+| VG | **FP** | VG.CODE INITIALISATION TPE | Alpha |
+| VG | **FQ** | VG CODE JOURNAL TPE | Alpha |
+| VG | **FR** | VG.CODE DEVISE TPE | Alpha |
+| VG | **FS** | VG.Easy Location | Alpha |
+| VG | **FT** | VG.Easy  Cours | Alpha |
+| VG | **FU** | VG.Easy Enfants | Alpha |
+| VG | **FV** | VG VENTE ACTIF ? | Logical |
+| VG | **FW** | VG TRANSFERT ACTIF | Logical |
+| VG | **FX** | VG TRANSFERT 2.00 ? | Logical |
+| VG | **FY** | VG FREE EXTRA | Logical |
+| VG | **FZ** | VG GIFT PASS_V2.00 | Logical |
+| VG | **GA** | VG DROIT SOLDE AVEC FREE EXTRA | Logical |
+| VG | **GB** | VG.FACTURE AVEC TVA V2 | Logical |
+| VG | **GC** | VG.PME | Logical |
+| VG | **GD** | VG VENTE ACTIF ? | Logical |
+| VG | **GG** | VG.CALCUL EFFECTIF 3 ACTIF? | Logical |
+| VG | **GH** | VG.LEX_Libellé_extraits_compte | Logical |
+| VG | **GI** | VG.USER RFI / RESPONSABLE RECEP | Logical |
+| VG | **GJ** | VG.USER FRONT DESK MANAGER | Logical |
+| VG | **GK** | VG.GARANTIE CROSS BORDER | Logical |
+| VG | **GL** | VG.GARANTIE CROSS BORDER V2 | Logical |
+| VG | **GM** | VG.Tickets bilingues TIK V1.00 | Logical |
+| VG | **GN** | VG.Numero Ticket V1.00 | Logical |
+| VG | **GO** | VG.Facture V3.00 | Logical |
+| VG | **GP** | VG.Suivi CA Reception ACTIF | Logical |
+| VG | **GQ** | VG.Gestion Cheques | Logical |
+| VG | **GR** | VG.Gestion Remise | Logical |
+| VG | **GS** | VG.Liste Vendeurs | Alpha |
+| VG | **GT** | VG.Matricule User | Unicode |
+| VG | **GU** | VG.Libellés Commerciaux V2.00 | Logical |
+| VG | **GV** | VG.Gift Pass 3.00 | Logical |
+| VG | **GW** | VG.Extrait de compte 1.00 | Logical |
+| VG | **GX** | VG.Entete Paramétrable V1.00 | Logical |
+| VG | **GY** | VG.ResortCredit 1.00 | Logical |
+| VG | **GZ** | VG.Prise de Garantie V2.00 | Logical |
+| VG | **HA** | VG Village à Cam | Alpha |
+| VG | **HB** | VG Nom du Village | Alpha |
+| VG | **HC** | VG Village à Tel | Alpha |
+| VG | **HD** | VG Village à Bibop | Alpha |
+| VG | **HE** | VG Tel à Cam | Alpha |
+| VG | **HF** | VG Type de Triplet | Alpha |
+| VG | **HG** | VG Type Interface (PABX) | Alpha |
+| VG | **HH** | VG UNI.BI | Alpha |
+| VG | **HI** | VG.AnnulationGiftPass | Logical |
+| VG | **HJ** | VG.Identification CM Pass | Logical |
+| VG | **HK** | VG.Age Mineur | Numeric |
+| VG | **HL** | VG Edit Extrait Co V1.00 | Logical |
+| VG | **HM** | VG.Interfaces OB | Logical |
+| VG | **HN** | VG.Hostname au lieu de Term | Logical |
+| VG | **HO** | VG.Numéro pseudo terminal | Numeric |
+| VG | **HP** | VG Réception en mobilité V1.00 | Logical |
+| VG | **HQ** | VG Email des reçus de vente V1 | Logical |
+| VG | **HR** | VG SUPPORT (Tablette,WorkStatio | Alpha |
+| VG | **HS** | VG Envoi Mail paiement VAD | Logical |
+| VG | **HT** | VG délai expiration VAD | Numeric |
+| VG | **HU** | VG Fusion Liste Operations | Logical |
+| VG | **HV** | VG Contractor Recept | Logical |
+| VG | **HW** | VG.VAE/Biking | Logical |
+| VG | **HY** | VG.Modif ligne de vente actif ? | Logical |
+| VG | **HZ** | VG.Gestion Taxes Additionnelles | Logical |
+| VG | **IA** | VG.Verification PLBS par PES | Logical |
+| VG | **IB** | VG.Annulation de Garantie | Logical |
+| VG | **IC** | VG.Mail Vente Ass. 0 Soucis | Logical |
+| VG | **ID** | VG.Gestion Garantie API CM | Logical |
+| VG | **IE** | VG. Fusion 1.00 | Logical |
+| VG | **IF** | VG. F.Police Maroc 2.00 | Logical |
+| VG | **IG** | VG. F.Police Turquie 2.00 | Logical |
+| VG | **IH** | VG. F.Police Portugal 1.00 | Logical |
+| VG | **II** | VG.Facture THAI new | Logical |
+| VG | **IJ** | VG.Séparation compte art LOC | Logical |
+| VG | **IK** | VG.Reçu vente Japon | Logical |
+| VG | **IL** | VG.Reçu Loi AGEC | Logical |
+| VG | **IM** | VG. Gestion Pied Recu Vente | Logical |
+| VG | **IN** | VG. Great Members Revamped | Logical |
+| VG | **IO** | VG.Utilisation Odyssey | Logical |
+| VG | **IP** | VG.Id Log Utilisation ADH | Numeric |
+| VG | **IQ** | VG.Date Debut Log use ADH | Date |
+| VG | **IR** | VG.Heure Debut Log use ADH | Time |
+| VG | **IS** | VG.Info Additionnelles use ADH | Unicode |
+| VG | **IT** | VG.ECI En cours de séjour | Logical |
+| VG | **IU** | VG. Interface Galaxy Grèce | Logical |
+| VG | **IV** | VG.Second Safe Control 1.00 | Logical |
+| VG | **IW** | VG.Devise locale | Alpha |
+| VG | **IX** | VG.Masque | Alpha |
+| VG | **JA** | VG.Easy  Enfant | Alpha |
+| Autre | **GE** | VG_TPE_V2.00 | Logical |
+| Autre | **GF** | VG_FAX_VISIBLE | Logical |
+| Autre | **HX** | VG-Exclusion GM sans nom | Logical |
+
+</details>
+
+## 12. EXPRESSIONS
+
+**87 / 87 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CALCULATION | 1 | 0 |
+| CONCATENATION | 2 | 5 |
+| CONDITION | 5 | 4 |
+| NEGATION | 2 | 2 |
+| CONSTANTE | 60 | 0 |
+| OTHER | 13 | 0 |
+| CAST_LOGIQUE | 3 | 0 |
+| FORMAT | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CALCULATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CALCULATION | 1 | `MnuShow ('Express Check-Out',VG VENTE ACTIF ? [BQ])` | - |
+
+#### CONCATENATION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 16 | `'Caisse Adhérent -V '&Trim(ExpCalc('17'EXP))&' - '&Trim(ExpCalc('18'EXP)) & IF(VG.PROJ.INTERF.TPE ACTIF [X] AND VG.TPE INTERFACE SUR T... [Y]<>'', ' - TPE : ' & VG.TPE INTERFACE SUR T... [Y], '')` | [RM-003](#rm-RM-003) |
+| CONCATENATION | 23 | `'cmd /c mkdir '&'%club_exportdata%'&'PDF'` | - |
+
+#### CONDITION (5 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 51 | `IsComponent()` | [RM-005](#rm-RM-005) |
+| CONDITION | 84 | `(Time()>= '21:00:00'TIME AND Time()<='21:02:00'TIME)` | [RM-007](#rm-RM-007) |
+| CONDITION | 2 | `RunMode ()<=2` | [RM-001](#rm-RM-001) |
+| CONDITION | 3 | `RunMode ()<=2 OR IsComponent()` | [RM-002](#rm-RM-002) |
+| CONDITION | 85 | `Time()>= '21:02:00'TIME` | - |
+
+#### NEGATION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 55 | `NOT VG.Interfaces OB [CZ]` | [RM-006](#rm-RM-006) |
+| NEGATION | 24 | `NOT FileExist('%club_exportdata%'&'PDF')` | [RM-004](#rm-RM-004) |
+
+#### CONSTANTE (60 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 60 | `'INS'` | - |
+| CONSTANTE | 59 | `'ITO'` | - |
+| CONSTANTE | 58 | `'PVMANAGE'` | - |
+| CONSTANTE | 62 | `'GTA'` | - |
+| CONSTANTE | 65 | `'GAC'` | - |
+| ... | | *+55 autres* | |
+
+#### OTHER (13 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 74 | `VG.Séparation compte a... [DW]` | - |
+| OTHER | 73 | `VG. F.Police Portugal ... [DU]` | - |
+| OTHER | 61 | `VG SUPPORT (Tablette,W... [DE]` | - |
+| OTHER | 87 | `GetParam ('AMOUNTFORMAT')` | - |
+| OTHER | 86 | `GetParam ('CURRENCYVALUE')` | - |
+| ... | | *+8 autres* | |
+
+#### CAST_LOGIQUE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 31 | `'TRUE'LOG` | - |
+| CAST_LOGIQUE | 6 | `CallProg(ProgIdx('hasRight','TRUE'LOG),VG.LOGIN [A],'ACCESALL')` | - |
+| CAST_LOGIQUE | 5 | `CallProg(ProgIdx('hasRight','TRUE'LOG),VG.LOGIN [A],'CAISSEADH')` | - |
+
+#### FORMAT (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 25 | `Str(VG.Hostname au lieu de... [DA],'8P0')` | - |
+
+### 12.3 Toutes les expressions (87)
+
+<details>
+<summary>Voir les 87 expressions</summary>
+
+#### CALCULATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 1 | `MnuShow ('Express Check-Out',VG VENTE ACTIF ? [BQ])` |
+
+#### CONCATENATION (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 23 | `'cmd /c mkdir '&'%club_exportdata%'&'PDF'` |
+| 16 | `'Caisse Adhérent -V '&Trim(ExpCalc('17'EXP))&' - '&Trim(ExpCalc('18'EXP)) & IF(VG.PROJ.INTERF.TPE ACTIF [X] AND VG.TPE INTERFACE SUR T... [Y]<>'', ' - TPE : ' & VG.TPE INTERFACE SUR T... [Y], '')` |
+
+#### CONDITION (5)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 2 | `RunMode ()<=2` |
+| 3 | `RunMode ()<=2 OR IsComponent()` |
+| 51 | `IsComponent()` |
+| 84 | `(Time()>= '21:00:00'TIME AND Time()<='21:02:00'TIME)` |
+| 85 | `Time()>= '21:02:00'TIME` |
+
+#### NEGATION (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 24 | `NOT FileExist('%club_exportdata%'&'PDF')` |
+| 55 | `NOT VG.Interfaces OB [CZ]` |
+
+#### CONSTANTE (60)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 7 | `'1.00'` |
+| 8 | `'2.00'` |
+| 9 | `'3.00'` |
+| 10 | `'CALC.EXE'` |
+| 11 | `'CA'` |
+| 12 | `'TAX'` |
+| 13 | `'4.11'` |
+| 14 | `'08/01/2026'` |
+| 17 | `'EFF'` |
+| 18 | `'LEX'` |
+| 19 | `'FTV'` |
+| 20 | `'TPE'` |
+| 21 | `'PME'` |
+| 22 | `'HEA'` |
+| 26 | `'I'` |
+| 27 | `'J'` |
+| 28 | `'VEN'` |
+| 29 | `'TRA'` |
+| 30 | `'FEX'` |
+| 32 | `'SUPERVISOR'` |
+| 33 | `'BGA'` |
+| 34 | `'TIK'` |
+| 35 | `'TEN'` |
+| 36 | `'SCR'` |
+| 37 | `'CHQ'` |
+| 38 | `'FEX'` |
+| 39 | `'RCR'` |
+| 40 | `'GAR'` |
+| 41 | `'AGP'` |
+| 42 | `'IDC'` |
+| 43 | `'EEX'` |
+| 44 | `'IOB'` |
+| 45 | `'T2H'` |
+| 46 | `'RMO'` |
+| 47 | `'RVM'` |
+| 48 | `'FLO'` |
+| 49 | `'TPR'` |
+| 50 | `'VAE'` |
+| 58 | `'PVMANAGE'` |
+| 59 | `'ITO'` |
+| 60 | `'INS'` |
+| 62 | `'GTA'` |
+| 63 | `'ANG'` |
+| 64 | `'AGC'` |
+| 65 | `'GAC'` |
+| 66 | `'FUS'` |
+| 67 | `'DGS'` |
+| 68 | `'FPT'` |
+| 69 | `'FPP'` |
+| 70 | `'FTB'` |
+| 71 | `'JSR'` |
+| 72 | `'SEP'` |
+| 75 | `'PRD'` |
+| 76 | `'GMR'` |
+| 77 | `'ODY'` |
+| 78 | `'ECI'` |
+| 79 | `'IGA'` |
+| 80 | `'SSC'` |
+| 82 | `0` |
+| 83 | `''` |
+
+#### OTHER (13)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 4 | `NOT(IsComponent())` |
+| 15 | `ASCIIChr(13)&ASCIIChr(10)` |
+| 52 | `GetPseudoTerminal()` |
+| 53 | `VG.Interfaces OB [CZ]` |
+| 54 | `Term ()` |
+| 56 | `VG.TPE INTERFACE SUR T... [Y]` |
+| 57 | `MID(GetHostName(),5,2)` |
+| 61 | `VG SUPPORT (Tablette,W... [DE]` |
+| 73 | `VG. F.Police Portugal ... [DU]` |
+| 74 | `VG.Séparation compte a... [DW]` |
+| 81 | `NOT(VG.Retour Chariot [C])` |
+| 86 | `GetParam ('CURRENCYVALUE')` |
+| 87 | `GetParam ('AMOUNTFORMAT')` |
+
+#### CAST_LOGIQUE (3)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 5 | `CallProg(ProgIdx('hasRight','TRUE'LOG),VG.LOGIN [A],'CAISSEADH')` |
+| 6 | `CallProg(ProgIdx('hasRight','TRUE'LOG),VG.LOGIN [A],'ACCESALL')` |
+| 31 | `'TRUE'LOG` |
+
+#### FORMAT (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 25 | `Str(VG.Hostname au lieu de... [DA],'8P0')` |
+
+</details>
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    APP([ADH.ecf])
-    MAIN[1 Main Program]
-    MENU[165 Menu Principal]
-    APP --> MAIN --> MENU
-    style APP fill:#8b5cf6
-    style MAIN fill:#58a6ff
-    style MENU fill:#f59e0b
+    T1[1 Main Program]
+    style T1 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T1
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-**Note**: ADH IDE 1 est le **MainProgram** du composant ADH.ecf. Il n'est appele par aucun autre programme car il est le point d'entree systeme.
+### 13.2 Callers
 
-### 3.2 Callers directs
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | POINT D'ENTREE SYSTEME | - |
-
-**Conclusion**: N'est PAS orphelin - c'est le MainProgram du composant ADH.ecf
-
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    MAIN[1 Main Program]
-    T2[1.2 Get Code Village]
-    T3[1.3 Get delai VAD]
-    T4[1.4 Get Service]
-    P45[45 Init TPE]
-    P51[51 Init Combos]
-    P162[162 Init Caisse]
-    P165[165 Menu Principal]
-    P328[328 Init Fidelite]
-
-    MAIN --> T2
-    MAIN --> T3
-    MAIN --> T4
-    MAIN --> P45
-    MAIN --> P51
-    MAIN --> P162
-    MAIN --> P165
-    MAIN --> P328
-
-    style MAIN fill:#58a6ff
-    style T2 fill:#3fb950
-    style T3 fill:#3fb950
-    style T4 fill:#3fb950
-    style P165 fill:#f59e0b
+    T1[1 Main Program]
+    style T1 fill:#58a6ff
+    C232[232 Verif session cais...]
+    T1 --> C232
+    style C232 fill:#3fb950
+    C45[45 Recuperation langue]
+    T1 --> C45
+    style C45 fill:#3fb950
+    C51[51 Recherche Droit Sol...]
+    T1 --> C51
+    style C51 fill:#3fb950
+    C163[163 Menu caisse GM - s...]
+    T1 --> C163
+    style C163 fill:#3fb950
+    C166[166 Start]
+    T1 --> C166
+    style C166 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Type | Role |
-|-----|-----|-----------|------|------|
-| 1 | 1.2 | Get Code Village | Sous-tache | Identifier le village courant |
-| 1 | 1.3 | Get delai expiration VAD | Sous-tache | Configurer Vente A Distance |
-| 1 | 1.4 | Get Outside/Inside Service | Sous-tache | Type de services |
-| 1 | 45 | Init TPE | Programme | Initialiser terminal paiement |
-| 1 | 51 | Init Combos | Programme | Charger listes deroulantes |
-| 1 | 162 | Init Caisse | Programme | Configuration caisse |
-| 1 | 165 | Menu Principal | Programme | Menu principal ADH |
-| 1 | 328 | Init Fidelite | Programme | Module fidelisation |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [232](ADH-IDE-232.md) | Verif session caisse ouverte | 2 | Controle/validation |
+| [45](ADH-IDE-45.md) | Recuperation langue | 1 | Recuperation donnees |
+| [51](ADH-IDE-51.md) | Recherche Droit Solde Free Ext | 1 | Verification solde |
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 | Navigation menu |
+| [166](ADH-IDE-166.md) | Start | 1 | Sous-programme |
 
-| ECF | obj | Role | Nb appels |
-|-----|-----|------|-----------|
-| REF.ecf | 777 | Authentification utilisateur | 1 |
-| REF.ecf | 795 | Lecture parametres | 40+ |
-| REF.ecf | 776 | Initialisation session | 2 |
-| REF.ecf | 811 | Chargement droits | 1 |
-| REF.ecf | 812 | Configuration terminal | 1 |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Type programme | MainProgram="Y" |
-| PublicName | Non defini (MainProgram n'en a pas besoin) |
-| ECF partage | OUI - ADH.ecf est le composant principal |
-| **Conclusion** | **NON ORPHELIN** - Point d'entree systeme ADH |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 319 | Taille moyenne |
+| Expressions | 87 | Logique moderee |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 5 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 2.2% (7 / 319) | Code sain |
+| Regles metier | 7 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 4 | Simple |
-| Tables | 3 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **MOYENNE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Verif session caisse ouverte (IDE 232)](ADH-IDE-232.md) | Sous-programme | 2x | Haute - Controle/validation |
+| [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) | Sous-programme | 1x | Normale - Navigation menu |
+| [Start (IDE 166)](ADH-IDE-166.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [Recuperation langue (IDE 45)](ADH-IDE-45.md) | Sous-programme | 1x | Normale - Recuperation donnees |
+| [Recherche Droit Solde Free Ext (IDE 51)](ADH-IDE-51.md) | Sous-programme | 1x | Normale - Verification solde |
 
 ---
-
-## REGLES METIER D'INITIALISATION
-
-### 5.1 Sequence d'initialisation obligatoire
-
-| Ordre | Action | Dependance |
-|-------|--------|------------|
-| 1 | Lire table initialisation (cafil047) | Aucune |
-| 2 | Lire table configuration (cafil045) | Aucune |
-| 3 | Authentifier utilisateur via REF | Tables chargees |
-| 4 | Charger droits utilisateur | Authentification reussie |
-| 5 | Initialiser variables globales | Droits charges |
-| 6 | Configurer modules actifs | VG initialisees |
-| 7 | Lancer menu principal | Tout initialise |
-
-### 5.2 Regles de configuration des modules
-
-| Module | Variable de controle | Condition d'activation |
-|--------|---------------------|------------------------|
-| TPE (Terminal Paiement) | VG.PROJ.INTERF.TPE ACTIF | Parametre village = True |
-| VRL (Virtual Resort Lobby) | VG.VRL ACTIF ? | Configuration ECI active |
-| ECI (Easy Check-In) | VG.ECI ACTIF ? | Module deploye sur le village |
-| Compte Cash | VG.COMPTE CASH ACTIF ? | Gestion cash activee |
-| Fidelisation | VG.FIDELISATION ACTIF ? | Programme fidelite du village |
-| Vente Boutique | VG.VENTE ACTIF ? | Point de vente configure |
-| Transferts | VG.TRANSFERT ACTIF | Transferts inter-comptes autorises |
-| Taxe Sejour | VG.TAXE SEJOUR ACTIF ? | Legislation locale applicable |
-
-### 5.3 Regles de droits utilisateur
-
-| Role | Variable | Acces |
-|------|----------|-------|
-| IT (Informatique) | VG.DROIT ACCES IT ? | Acces total configuration |
-| Caisse | VG.DROIT ACCES CAISSE ? | Operations de caisse |
-| RFI (Responsable Reception) | VG.USER RFI | Supervision reception |
-| FDM (Front Desk Manager) | VG.USER FRONT DESK MANAGER | Gestion front office |
-
-### 5.4 Regles de configuration village
-
-| Parametre | Variable | Usage |
-|-----------|----------|-------|
-| Code village | VG.CODE VILLAGE | Identification site (CAM, TEL, etc.) |
-| Nom village | VG Nom du Village | Affichage interface |
-| Langue par defaut | VG.CODE LANGUE USER | Internationalisation |
-| Devise | VG.CODE DEVISE TPE | Transactions monetaires |
-| Numero caisse | VG.NUM CAISSE | Identification terminal |
-| Format montant | VG.MASQUE MONTANT | Affichage montants |
-
-### 5.5 Contraintes d'integrite
-
-| Contrainte | Description | Action si violation |
-|------------|-------------|---------------------|
-| CI-001 | Table initialisation doit exister | Abandon demarrage |
-| CI-002 | Utilisateur doit etre authentifie | Retour ecran login |
-| CI-003 | Au moins un droit doit etre actif | Message avertissement |
-| CI-004 | Code village doit etre valide | Erreur fatale |
-| CI-005 | Configuration TPE coherente si active | Desactivation module |
-
-### 5.6 Ordre de priorite des sources de configuration
-
-1. **Table initialisation** (cafil047) - Configuration systeme
-2. **Profil utilisateur** (via REF) - Droits et preferences
-3. **Configuration village** (via tache 2) - Specificites locales
-4. **Valeurs par defaut** - Si aucune source disponible
-
----
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-02-07 04:30 | **V4.1** - Enrichissement metier complet (VG, regles, cartographie) | Claude |
-| 2026-01-27 22:58 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.1 - Enrichie avec analyse metier detaillee*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:00*

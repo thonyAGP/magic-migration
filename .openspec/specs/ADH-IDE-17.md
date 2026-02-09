@@ -1,6 +1,6 @@
 ﻿# ADH IDE 17 - Print C/O confirmation
 
-> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:40 (29s) | Assemblage 13:00
+> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 01:18 (21h38min) | Assemblage 01:18
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme ADH IDE 17 affiche un écran d'attente pendant la génération du reçu de confirmation de commande (C/O confirmation receipt). Il gère l'interface utilisateur en affichant des messages "Veuillez patienter" et "Please wait" pour informer l'utilisateur que le système traite la demande d'impression.
+ADH IDE 17 est un programme d'impression spécialisé dans la génération de confirmations de "Change/Checkout" (C/O). Il s'exécute après la saisie des opérations de change de devises dans le flux Data Catching, en récupérant d'abord la devise locale de référence via ADH IDE 21 pour afficher les montants dans la devise appropriée. Le programme affiche une succession d'écrans "Please wait" pendant le traitement des données, indiquant une séquence d'opérations en arrière-plan avant l'impression.
 
-Le flux principal récupère d'abord le nom de l'adhérent (adhérent account holder name) depuis la base de données, puis initialise l'imprimante réseau (Printer 9) pour préparer l'impression du document. Ces opérations sont orchestrées par des tâches séquentielles avec écrans d'attente intercalés pour améliorer la réactivité perçue de l'application.
+Le processus commence par la récupération du nom de l'adhérent depuis les tables de compte, suivi de la construction du document de confirmation contenant les détails de l'opération de change (montants, devises, taux appliqué). L'impression est dirigée vers l'imprimante 9, probablement une imprimante dédiée aux reçus ou confirmations situées en point de vente. Cette Architecture avec multiples écrans d'attente suggère que le programme effectue des validations, des calculs de taux de change ou des appels à des services externes avant de finaliser l'impression.
 
-Le programme dépend du IDE 21 pour récupérer la devise locale appropriée, nécessaire pour le formatage correct des montants monétaires sur le reçu. L'architecture privilégie l'expérience utilisateur en affichant des états transitoires plutôt que de bloquer sur une tâche longue unique, ce qui est typique des applications caisse interactives années 2000-2010.
+Le programme fait partie du flux transactionnel critique du point de vente, assurant que chaque opération de change produit une preuve écrite documentée pour l'adhérent et l'établissement. Son intégration avec IDE 21 (devise locale) confirme que les confirmations sont toujours générées dans le contexte de la devise de référence du club, avec affichage des équivalences si nécessaire.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Veuillez patienter... [ECRAN]
+#### <a id="t1"></a>17 - Veuillez patienter... [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 57 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -46,25 +46,25 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | récup nom adhérent | Traitement |
-| [T4](#t4) | Please wait **[ECRAN]** | Traitement |
-| [T5](#t5) | Please wait **[ECRAN]** | Traitement |
-| [T6](#t6) | Please wait **[ECRAN]** | Traitement |
+| [17.1](#t2) | récup nom adhérent | Traitement |
+| [17.2.1](#t4) | Please wait **[[ECRAN]](#ecran-t4)** | Traitement |
+| [17.2.2](#t5) | Please wait **[[ECRAN]](#ecran-t5)** | Traitement |
+| [17.2.3](#t6) | Please wait **[[ECRAN]](#ecran-t6)** | Traitement |
 
 </details>
 **Delegue a** : [Recupere devise local (IDE 21)](ADH-IDE-21.md)
 
 ---
 
-#### <a id="t2"></a>T2 - récup nom adhérent
+#### <a id="t2"></a>17.1 - récup nom adhérent
 
 **Role** : Traitement : récup nom adhérent.
-**Variables liees** : J (W0 nom adhérent), K (W0 prénom adhérent), L (W0 n° adhérent)
+**Variables liees** : EW (W0 nom adhérent), EX (W0 prénom adhérent), EY (W0 n° adhérent)
 **Delegue a** : [Recupere devise local (IDE 21)](ADH-IDE-21.md)
 
 ---
 
-#### <a id="t4"></a>T4 - Please wait [ECRAN]
+#### <a id="t4"></a>17.2.1 - Please wait [[ECRAN]](#ecran-t4)
 
 **Role** : Traitement : Please wait.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t4)
@@ -72,7 +72,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t5"></a>T5 - Please wait [ECRAN]
+#### <a id="t5"></a>17.2.2 - Please wait [[ECRAN]](#ecran-t5)
 
 **Role** : Traitement : Please wait.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t5)
@@ -80,7 +80,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t6"></a>T6 - Please wait [ECRAN]
+#### <a id="t6"></a>17.2.3 - Please wait [[ECRAN]](#ecran-t6)
 
 **Role** : Traitement : Please wait.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t6)
@@ -93,7 +93,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t3"></a>T3 - Printer 9
+#### <a id="t3"></a>17.2 - Printer 9
 
 **Role** : Generation du document : Printer 9.
 
@@ -115,14 +115,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 17 | T1 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
+| 1 | 17 | 17 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>17 - Veuillez patienter...
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
+**Tache** : [17](#t1) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -211,29 +211,31 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **17.1** | [**Veuillez patienter...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 424x57 | Traitement |
-| 17.1.1 | [récup nom adhérent (T2)](#t2) | MDI | - | |
-| 17.1.2 | [Please wait (T4)](#t4) [mockup](#ecran-t4) | MDI | 422x56 | |
-| 17.1.3 | [Please wait (T5)](#t5) [mockup](#ecran-t5) | MDI | 422x56 | |
-| 17.1.4 | [Please wait (T6)](#t6) [mockup](#ecran-t6) | MDI | 422x56 | |
-| **17.2** | [**Printer 9** (T3)](#t3) | MDI | - | Impression |
+| **17.1** | [**Veuillez patienter...** (17)](#t1) [mockup](#ecran-t1) | MDI | 424x57 | Traitement |
+| 17.1.1 | [récup nom adhérent (17.1)](#t2) | MDI | - | |
+| 17.1.2 | [Please wait (17.2.1)](#t4) [mockup](#ecran-t4) | MDI | 422x56 | |
+| 17.1.3 | [Please wait (17.2.2)](#t5) [mockup](#ecran-t5) | MDI | 422x56 | |
+| 17.1.4 | [Please wait (17.2.3)](#t6) [mockup](#ecran-t6) | MDI | 422x56 | |
+| **17.2** | [**Printer 9** (17.2)](#t3) | MDI | - | Impression |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (5t)]
-    START --> B1
-    B2[Impression (1t)]
-    B1 --> B2
-    ENDOK([END])
-    B2 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -275,13 +277,13 @@ Variables recues du programme appelant ([Menu Data Catching (IDE 7)](ADH-IDE-7.m
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 société | Alpha | - |
-| B | P0 n° compte | Numeric | - |
-| C | P0 filiation | Numeric | - |
-| D | P0 masque montant | Alpha | 1x parametre entrant |
-| E | P0 nom village | Alpha | - |
-| F | P0 fictif | Logical | - |
-| G | P0 date comptable | Date | - |
+| EN | P0 société | Alpha | - |
+| EO | P0 n° compte | Numeric | - |
+| EP | P0 filiation | Numeric | - |
+| EQ | P0 masque montant | Alpha | 1x parametre entrant |
+| ER | P0 nom village | Alpha | - |
+| ES | P0 fictif | Logical | - |
+| ET | P0 date comptable | Date | - |
 
 ### 11.2 Variables de travail (10)
 
@@ -289,39 +291,39 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| H | W0 imprimante | Numeric | - |
-| I | W0 titre | Alpha | - |
-| J | W0 nom adhérent | Alpha | - |
-| K | W0 prénom adhérent | Alpha | - |
-| L | W0 n° adhérent | Numeric | - |
-| M | W0 lettre contrôle | Alpha | - |
-| N | W0 filiation | Numeric | - |
-| O | W0 masque extrait | Alpha | - |
-| P | W0 langue parlée | Alpha | - |
-| Q | W0 devise locale | Alpha | - |
+| EU | W0 imprimante | Numeric | - |
+| EV | W0 titre | Alpha | - |
+| EW | W0 nom adhérent | Alpha | - |
+| EX | W0 prénom adhérent | Alpha | - |
+| EY | W0 n° adhérent | Numeric | - |
+| EZ | W0 lettre contrôle | Alpha | - |
+| FA | W0 filiation | Numeric | - |
+| FB | W0 masque extrait | Alpha | - |
+| FC | W0 langue parlée | Alpha | - |
+| FD | W0 devise locale | Alpha | - |
 
 <details>
 <summary>Toutes les 17 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P0 société | Alpha |
-| P0 | **B** | P0 n° compte | Numeric |
-| P0 | **C** | P0 filiation | Numeric |
-| P0 | **D** | P0 masque montant | Alpha |
-| P0 | **E** | P0 nom village | Alpha |
-| P0 | **F** | P0 fictif | Logical |
-| P0 | **G** | P0 date comptable | Date |
-| W0 | **H** | W0 imprimante | Numeric |
-| W0 | **I** | W0 titre | Alpha |
-| W0 | **J** | W0 nom adhérent | Alpha |
-| W0 | **K** | W0 prénom adhérent | Alpha |
-| W0 | **L** | W0 n° adhérent | Numeric |
-| W0 | **M** | W0 lettre contrôle | Alpha |
-| W0 | **N** | W0 filiation | Numeric |
-| W0 | **O** | W0 masque extrait | Alpha |
-| W0 | **P** | W0 langue parlée | Alpha |
-| W0 | **Q** | W0 devise locale | Alpha |
+| P0 | **EN** | P0 société | Alpha |
+| P0 | **EO** | P0 n° compte | Numeric |
+| P0 | **EP** | P0 filiation | Numeric |
+| P0 | **EQ** | P0 masque montant | Alpha |
+| P0 | **ER** | P0 nom village | Alpha |
+| P0 | **ES** | P0 fictif | Logical |
+| P0 | **ET** | P0 date comptable | Date |
+| W0 | **EU** | W0 imprimante | Numeric |
+| W0 | **EV** | W0 titre | Alpha |
+| W0 | **EW** | W0 nom adhérent | Alpha |
+| W0 | **EX** | W0 prénom adhérent | Alpha |
+| W0 | **EY** | W0 n° adhérent | Numeric |
+| W0 | **EZ** | W0 lettre contrôle | Alpha |
+| W0 | **FA** | W0 filiation | Numeric |
+| W0 | **FB** | W0 masque extrait | Alpha |
+| W0 | **FC** | W0 langue parlée | Alpha |
+| W0 | **FD** | W0 devise locale | Alpha |
 
 </details>
 
@@ -426,4 +428,4 @@ graph LR
 | [Recupere devise local (IDE 21)](ADH-IDE-21.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:00*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:19*

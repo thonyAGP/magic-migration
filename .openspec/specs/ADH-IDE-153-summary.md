@@ -1,31 +1,31 @@
-﻿# ADH IDE 153 - Devises finales F/F Qte WS
+﻿# ADH IDE 153 - Calcul du stock devise
 
-> **Analyse**: 2026-02-07 07:16
+> **Analyse**: 2026-02-08 03:36
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Devises finales F/F Qte WS
+- **Fonction**: Calcul du stock devise
 - **Tables modifiees**: 0
-- **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Complexite**: **BASSE** (7/100)
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 2 programme(s): Change GM (IDE 25), Bi  Change GM Vente (IDE 294)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
+| **Appele par** | [Change GM (IDE 25)](ADH-IDE-25.md), [Bi  Change GM Vente (IDE 294)](ADH-IDE-294.md) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 1 |
-| Lignes Logic | 35 |
-| Expressions | 8 |
-| Tables |  |
+| Taches | 7 |
+| Lignes Logic | 99 |
+| Expressions | 2 |
+| Tables | 6 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

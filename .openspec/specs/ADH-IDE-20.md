@@ -1,6 +1,6 @@
 ﻿# ADH IDE 20 - Definition monnaie
 
-> **Analyse**: Phases 1-4 2026-02-07 16:15 -> 16:16 (6s) | Assemblage 16:16
+> **Analyse**: Phases 1-4 2026-02-07 16:16 -> 01:21 (9h05min) | Assemblage 01:21
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,7 +19,6 @@
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 0/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
@@ -43,7 +42,7 @@ Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 4
 
 <!-- TAB:Ecrans -->
@@ -128,22 +127,25 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Definition monnaie (IDE 20)**
 
 ```mermaid
 graph LR
     T20[20 Definition monnaie]
     style T20 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T20
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#3fb950
+    CC1 --> CC163
+    CC163 --> T20
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -184,4 +186,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 16:16*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:21*

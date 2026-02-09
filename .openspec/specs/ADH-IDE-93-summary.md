@@ -1,6 +1,6 @@
 ﻿# ADH IDE 93 - Creation Pied Facture
 
-> **Analyse**: 2026-02-07 14:20
+> **Analyse**: 2026-02-08 02:32
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Creation Pied Facture
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 2 programme(s): Factures (Tble Compta&Vent (IDE 89), Factures_Check_Out (IDE 54)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
+| **Appele par** | [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md), [Factures_Check_Out (IDE 54)](ADH-IDE-54.md) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

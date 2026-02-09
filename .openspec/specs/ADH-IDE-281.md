@@ -1,200 +1,199 @@
 ﻿# ADH IDE 281 - Fermeture Sessions
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:14
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_277.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 05:03 -> 05:03 (4s) | Assemblage 05:03
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Fermeture Sessions** est le **gestionnaire de fermeture des sessions de caisse** qui **permet de cloturer les sessions de travail unilaterales ou bilaterales**.
-
-**Objectif metier** : Gerer le processus de fermeture des sessions de caisse en verifiant les parametres d'initialisation et le type de session (unilaterale ou bilaterale), permettant la cloture correcte en fin de journee ou lors d'un changement d'operateur.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur caisse ou superviseur |
-| **Quoi** | Fermeture et cloture des sessions de travail |
-| **Pourquoi** | Assurer la cloture propre des sessions pour la comptabilite journaliere |
-| **Declencheur** | Fin de journee ou changement d'operateur |
-| **Resultat** | Session fermee et prete pour le prochain cycle |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (2 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 281 |
-| **Fichier XML** | `Prg_277.xml` |
-| **Description** | Fermeture Sessions |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 13 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 281 |
+| Nom Programme | Fermeture Sessions |
+| Fichier source | `Prg_281.xml` |
+| Dossier IDE | Caisse |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 69 | initialisation___ini | cafil047_dat | READ | Lecture |
-| 122 | unilateral_bilateral | cafil100_dat | LINK | Jointure |
+ADH IDE 281 - Fermeture Sessions est un programme de clôture des sessions de caisse. Il traite la finalisation des opérations comptables et monétaires d'une session ouverte, en recalculant les soldes, validant les écarts de trésorerie, et enregistrant les mouvements de fermeture dans les tables opérations et comptes.
 
-**Resume**: 2 tables accedees dont **0 en ecriture**
+Le programme gère plusieurs tâches critiques : vérification de la cohérence des données (montants, dates), calcul automatique des écarts entre comptabilité et physique, application des ajustements si nécessaire, et génération des pièces justificatives (éditions de clôture). Il s'intègre étroitement avec les modules de gestion des devises, des moyens de paiement, et de la comptabilité clients.
 
-### 2.3 Parametres d'entree (0 parametres)
+Ce programme est appelé depuis le flux principal de gestion de caisse (ADH IDE 121 - Gestion_Caisse_142) via un CallTask, généralement en fin de journée ou à la demande du caissier. Il s'appuie sur les programmes partagés du composant ADH.ecf pour les calculs de solde et les opérations d'édition.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] 'N15'&IF([D]>0,'.'&Trim(Str([D],'1')),'')&'CZ'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `'N15'&IF([D]>0,'.'&Trim(Str([D],'1')),'')&'CZ'` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 2 : `'N15'&IF([D]>0,'.'&Trim(Str([D],'1')),'')&'CZ'` |
+| **Exemple** | Si 'N15'&IF([D]>0,'.'&Trim(Str([D],'1')),'')&'CZ' â†’ Action conditionnelle |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 4
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 13 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 2 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (2)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 69 | initialisation___ini |  | DB | R |   |   | 1 |
+| 122 | unilateral_bilateral |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (0 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 69 - initialisation___ini (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+*(Programme sans variables locales mappees)*
+
+## 12. EXPRESSIONS
+
+**4 / 4 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| FORMAT | 1 | 0 |
+| CONSTANTE | 3 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### FORMAT (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 2 | `'N15'&IF([D]>0,'.'&Trim(Str([D],'1')),'')&'CZ'` | - |
+
+#### CONSTANTE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 4 | `90` | - |
+| CONSTANTE | 3 | `'O'` | - |
+| CONSTANTE | 1 | `'C'` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[281 Fermeture Sessi]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T281[281 Fermeture Sessions]
+    style T281 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T281
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[281 Fermeture Sessi]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T281[281 Fermeture Sessions]
+    style T281 fill:#58a6ff
+    NONE[Aucun callee]
+    T281 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 13 | Programme compact |
+| Expressions | 4 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 13) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 2 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:14 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 05:03*

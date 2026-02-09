@@ -1,6 +1,6 @@
 ﻿# ADH IDE 64 - Solde Easy Check Out
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (27s) | Assemblage 13:36
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 01:59 (22h16min) | Assemblage 01:59
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Ce programme gère le **solde final du service Easy Check-Out (ECO)**, calculant et enregistrant les transactions de fin de période. Il intervient après toutes les opérations de paiement et facturation (IDE 55, 66, 283), consolidant les montants à payer ou rembourser pour chaque compte client. Le flux principal exécute le calcul du solde, génère les lignes d'écritures comptables, met à jour les compteurs (versements/retraits) et produit les documents de fin de période.
+ADH IDE 64 - **Solde Easy Check Out** est le programme central de clôture des transactions Easy Check-Out. Il recalcule le solde de chaque compte Club Med après les opérations de paiement ou de crédits appliqués, en consolidant les mouvements depuis les tables de ventes (ccpartyp, resort_credit, etc.). Le programme met à jour les lignes de solde et génère les écritures comptables correspondantes pour la réconciliation des comptes.
 
-**Les 6 tâches principales accomplissent** : (1) Solde Easy Check Out - calcul du solde par compte avec réconciliation des paiements, (2) Recalcul solde - ajustements et corrections si nécessaire, (3) Solde GM - traitement spécifique des comptes Gold Member, (4) Lignes de solde - génération des écritures dans `lignes_de_solde` pour la comptabilité, (5) Création comptable - écritures en `comptable` et `compte_gm`, (6) Récup compteur - mise à jour des compteurs de versements/retraits. Le programme modifie 13 tables incluant les données critiques de comptabilité et de configuration automatisée.
+Le flux de traitement enchaîne plusieurs sous-tâches critiques : d'abord le **Recalcul solde** qui agrège tous les débits/crédits par service et devise, puis **Solde GM** pour les adhérents Club Med Pass, suivi de la création des **Lignes de solde** (table sld) et des écritures **Creation comptable** pour la comptabilité analytique. Un mécanisme de récupération des compteurs (versements/retraits) alimenté par les lignes téléphone (lgn) permet de vérifier la cohérence avec les caissons.
 
-**Le programme alimente la chaîne de finalisation** en aval : les factures consolidées (IDE 54) pour la facturation client, l'édition & mail (IDE 65) pour la distribution des documents, et l'extraction de compte (IDE 71) pour l'archivage légal. C'est un **point critique de fin de période** qui garantit que tous les soldes sont correctement calculés, enregistrés et imputés avant clôture comptable.
+Le programme s'intègre dans la chaîne Easy Check-Out en aval (appelé par IDE 55, 66, 283) et en amont avec les éditions/impressions (appelle IDE 54, 65, 71) et les utilitaires d'impression (IDE 179, 181). Les multiples tables modifiées (cte, cgm, sld, lgn, cpt, cot, aut, sda, etc.) montrent son impact transversal sur la gestion caisse et la comptabilité, d'où l'importance critique du bon fonctionnement des calculs de solde et de la génération des écritures.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Solde Easy Check Out [ECRAN]
+#### <a id="t1"></a>64 - Solde Easy Check Out [[ECRAN]](#ecran-t1)
 
 **Role** : Tache d'orchestration : point d'entree du programme (15 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 458 x 195 DLU | [Voir mockup](#ecran-t1)
@@ -46,116 +46,116 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T3](#t3) | Solde GM | Traitement |
-| [T4](#t4) | Lignes de solde **[ECRAN]** | Traitement |
-| [T10](#t10) | (sans nom) | Traitement |
-| [T11](#t11) | Mise opposition des CAM | Traitement |
-| [T14](#t14) | Liberation Ligne | Traitement |
-| [T15](#t15) | Liberation Poste | Traitement |
-| [T16](#t16) | Mise opposition des CAM | Traitement |
-| [T20](#t20) | Liberation Ligne | Traitement |
-| [T21](#t21) | Liberation Ligne | Traitement |
-| [T22](#t22) | Liberation Poste | Traitement |
-| [T23](#t23) | Désactiver Club Med Pass | Traitement |
-| [T24](#t24) | Log Facture | Traitement |
-| [T25](#t25) | Mail | Traitement |
-| [T26](#t26) | Création Ligne Log **[ECRAN]** | Traitement |
+| [64.1.1](#t3) | Solde GM | Traitement |
+| [64.2](#t4) | Lignes de solde **[[ECRAN]](#ecran-t4)** | Traitement |
+| [64.6](#t10) | (sans nom) | Traitement |
+| [64.6.1](#t11) | Mise opposition des CAM | Traitement |
+| [64.6.1.3](#t14) | Liberation Ligne | Traitement |
+| [64.6.1.4](#t15) | Liberation Poste | Traitement |
+| [64.7](#t16) | Mise opposition des CAM | Traitement |
+| [64.7.4](#t20) | Liberation Ligne | Traitement |
+| [64.7.5](#t21) | Liberation Ligne | Traitement |
+| [64.7.6](#t22) | Liberation Poste | Traitement |
+| [64.8](#t23) | Désactiver Club Med Pass | Traitement |
+| [64.9](#t24) | Log Facture | Traitement |
+| [64.10](#t25) | Mail | Traitement |
+| [64.11](#t26) | Création Ligne Log **[[ECRAN]](#ecran-t26)** | Traitement |
 
 </details>
-**Variables liees** : I (v.Date_Solde), J (v.Heure-Solde), M (v.Ligne_Solde), W (v.Solde du compte)
+**Variables liees** : EV (v.Date_Solde), EW (v.Heure-Solde), EZ (v.Ligne_Solde), FJ (v.Solde du compte)
 
 ---
 
-#### <a id="t3"></a>T3 - Solde GM
+#### <a id="t3"></a>64.1.1 - Solde GM
 
 **Role** : Consultation/chargement : Solde GM.
-**Variables liees** : I (v.Date_Solde), J (v.Heure-Solde), M (v.Ligne_Solde), W (v.Solde du compte)
+**Variables liees** : EV (v.Date_Solde), EW (v.Heure-Solde), EZ (v.Ligne_Solde), FJ (v.Solde du compte)
 
 ---
 
-#### <a id="t4"></a>T4 - Lignes de solde [ECRAN]
+#### <a id="t4"></a>64.2 - Lignes de solde [[ECRAN]](#ecran-t4)
 
 **Role** : Consultation/chargement : Lignes de solde.
 **Ecran** : 640 x 110 DLU (MDI) | [Voir mockup](#ecran-t4)
-**Variables liees** : I (v.Date_Solde), J (v.Heure-Solde), M (v.Ligne_Solde), W (v.Solde du compte)
+**Variables liees** : EV (v.Date_Solde), EW (v.Heure-Solde), EZ (v.Ligne_Solde), FJ (v.Solde du compte)
 
 ---
 
-#### <a id="t10"></a>T10 - (sans nom)
+#### <a id="t10"></a>64.6 - (sans nom)
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t11"></a>T11 - Mise opposition des CAM
+#### <a id="t11"></a>64.6.1 - Mise opposition des CAM
 
 **Role** : Traitement : Mise opposition des CAM.
 
 ---
 
-#### <a id="t14"></a>T14 - Liberation Ligne
+#### <a id="t14"></a>64.6.1.3 - Liberation Ligne
 
 **Role** : Traitement : Liberation Ligne.
-**Variables liees** : M (v.Ligne_Solde)
+**Variables liees** : EZ (v.Ligne_Solde)
 
 ---
 
-#### <a id="t15"></a>T15 - Liberation Poste
+#### <a id="t15"></a>64.6.1.4 - Liberation Poste
 
 **Role** : Traitement : Liberation Poste.
 
 ---
 
-#### <a id="t16"></a>T16 - Mise opposition des CAM
+#### <a id="t16"></a>64.7 - Mise opposition des CAM
 
 **Role** : Traitement : Mise opposition des CAM.
 
 ---
 
-#### <a id="t20"></a>T20 - Liberation Ligne
+#### <a id="t20"></a>64.7.4 - Liberation Ligne
 
 **Role** : Traitement : Liberation Ligne.
-**Variables liees** : M (v.Ligne_Solde)
+**Variables liees** : EZ (v.Ligne_Solde)
 
 ---
 
-#### <a id="t21"></a>T21 - Liberation Ligne
+#### <a id="t21"></a>64.7.5 - Liberation Ligne
 
 **Role** : Traitement : Liberation Ligne.
-**Variables liees** : M (v.Ligne_Solde)
+**Variables liees** : EZ (v.Ligne_Solde)
 
 ---
 
-#### <a id="t22"></a>T22 - Liberation Poste
+#### <a id="t22"></a>64.7.6 - Liberation Poste
 
 **Role** : Traitement : Liberation Poste.
 
 ---
 
-#### <a id="t23"></a>T23 - Désactiver Club Med Pass
+#### <a id="t23"></a>64.8 - Désactiver Club Med Pass
 
 **Role** : Traitement : Désactiver Club Med Pass.
 
 ---
 
-#### <a id="t24"></a>T24 - Log Facture
+#### <a id="t24"></a>64.9 - Log Facture
 
 **Role** : Traitement : Log Facture.
 
 ---
 
-#### <a id="t25"></a>T25 - Mail
+#### <a id="t25"></a>64.10 - Mail
 
 **Role** : Traitement : Mail.
-**Variables liees** : S (v.Evoi_mail), X (v.MailAtachedFiles)
+**Variables liees** : FF (v.Evoi_mail), FK (v.MailAtachedFiles)
 
 ---
 
-#### <a id="t26"></a>T26 - Création Ligne Log [ECRAN]
+#### <a id="t26"></a>64.11 - Création Ligne Log [[ECRAN]](#ecran-t26)
 
 **Role** : Traitement : Création Ligne Log.
 **Ecran** : 315 x 0 DLU | [Voir mockup](#ecran-t26)
-**Variables liees** : M (v.Ligne_Solde)
+**Variables liees** : EZ (v.Ligne_Solde)
 
 
 ### 3.2 Calcul (8 taches)
@@ -164,53 +164,53 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t2"></a>T2 - Recalcul solde
+#### <a id="t2"></a>64.1 - Recalcul solde
 
 **Role** : Calcul : Recalcul solde.
-**Variables liees** : I (v.Date_Solde), J (v.Heure-Solde), M (v.Ligne_Solde), W (v.Solde du compte)
+**Variables liees** : EV (v.Date_Solde), EW (v.Heure-Solde), EZ (v.Ligne_Solde), FJ (v.Solde du compte)
 
 ---
 
-#### <a id="t5"></a>T5 - Creation comptable [ECRAN]
+#### <a id="t5"></a>64.3 - Creation comptable [[ECRAN]](#ecran-t5)
 
 **Role** : Creation d'enregistrement : Creation comptable.
 **Ecran** : 426 x 98 DLU (MDI) | [Voir mockup](#ecran-t5)
 
 ---
 
-#### <a id="t6"></a>T6 - Recup compteur verst/retrait
+#### <a id="t6"></a>64.3.1 - Recup compteur verst/retrait
 
 **Role** : Calcul : Recup compteur verst/retrait.
 
 ---
 
-#### <a id="t7"></a>T7 - Creation comptable [ECRAN]
+#### <a id="t7"></a>64.4 - Creation comptable [[ECRAN]](#ecran-t7)
 
 **Role** : Creation d'enregistrement : Creation comptable.
 **Ecran** : 426 x 98 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>T8 - Recup compteur verst/retrait
+#### <a id="t8"></a>64.4.1 - Recup compteur verst/retrait
 
 **Role** : Calcul : Recup compteur verst/retrait.
 
 ---
 
-#### <a id="t9"></a>T9 - MàJ compte et depôt garantie
+#### <a id="t9"></a>64.5 - MàJ compte et depôt garantie
 
 **Role** : Traitement : MàJ compte et depôt garantie.
-**Variables liees** : D (P.i.Num Compte Test), O (v.MajCompte), W (v.Solde du compte)
+**Variables liees** : EQ (P.i.Num Compte Test), FB (v.MajCompte), FJ (v.Solde du compte)
 
 ---
 
-#### <a id="t13"></a>T13 - Decrementation Compteur Tel
+#### <a id="t13"></a>64.6.1.2 - Decrementation Compteur Tel
 
 **Role** : Calcul : Decrementation Compteur Tel.
 
 ---
 
-#### <a id="t19"></a>T19 - Decrementation Compteur Tel
+#### <a id="t19"></a>64.7.3 - Decrementation Compteur Tel
 
 **Role** : Calcul : Decrementation Compteur Tel.
 
@@ -221,50 +221,116 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t12"></a>T12 - Creation commande
+#### <a id="t12"></a>64.6.1.1 - Creation commande
 
 **Role** : Creation d'enregistrement : Creation commande.
 
 ---
 
-#### <a id="t17"></a>T17 - Creation commande
+#### <a id="t17"></a>64.7.1 - Creation commande
 
 **Role** : Creation d'enregistrement : Creation commande.
 
 ---
 
-#### <a id="t18"></a>T18 - Creation commande
+#### <a id="t18"></a>64.7.2 - Creation commande
 
 **Role** : Creation d'enregistrement : Creation commande.
 
 
 ## 5. REGLES METIER
 
-2 regles identifiees:
+9 regles identifiees:
 
-### Autres (2 regles)
+### Autres (9 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Traitement si Trim(v.NomFact_PDF_Autres [L]) est renseigne
+#### <a id="rm-RM-001"></a>[RM-001] Condition: Trim(v.NomFact_PDF_OD [K])&Trim(v.NomFact_PDF_Autres [L]) different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim(v.NomFact_PDF_OD [K])&Trim(v.NomFact_PDF_Autres [L])<>''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EX (v.NomFact_PDF_OD), EY (v.NomFact_PDF_Autres) |
+| **Expression source** | Expression 5 : `Trim(v.NomFact_PDF_OD [K])&Trim(v.NomFact_PDF_Autres [L])<>'` |
+| **Exemple** | Si Trim(v.NomFact_PDF_OD [K])&Trim(v.NomFact_PDF_Autres [L])<>'' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition composite: (VG43 OR VG94) AND NOT(P.i.Test PES [E])
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `(VG43 OR VG94) AND NOT(P.i.Test PES [E])` |
+| **Si vrai** | Action si vrai |
+| **Variables** | ER (P.i.Test PES) |
+| **Expression source** | Expression 8 : `(VG43 OR VG94) AND NOT(P.i.Test PES [E])` |
+| **Exemple** | Si (VG43 OR VG94) AND NOT(P.i.Test PES [E]) â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: (VG43 OR VG94) AND [CD] inferieur a 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `(VG43 OR VG94) AND [CD]<0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 10 : `(VG43 OR VG94) AND [CD]<0` |
+| **Exemple** | Si (VG43 OR VG94) AND [CD]<0 â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition composite: VG94 AND NOT(VG23)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `VG94 AND NOT(VG23)` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 12 : `VG94 AND NOT(VG23)` |
+| **Exemple** | Si VG94 AND NOT(VG23) â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Traitement si Trim(v.NomFact_PDF_Autres [L]) est renseigne
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `Trim(v.NomFact_PDF_Autres [L])<>''` |
 | **Si vrai** | 'A'&Trim(v.NomFact_PDF_Autres [L]) |
 | **Si faux** | v.NomFact_PDF_OD [K]) |
-| **Variables** | K (v.NomFact_PDF_OD), L (v.NomFact_PDF_Autres) |
+| **Variables** | EX (v.NomFact_PDF_OD), EY (v.NomFact_PDF_Autres) |
 | **Expression source** | Expression 14 : `IF(Trim(v.NomFact_PDF_Autres [L])<>'','A'&Trim(v.NomFact_PDF` |
 | **Exemple** | Si Trim(v.NomFact_PDF_Autres [L])<>'' â†’ 'A'&Trim(v.NomFact_PDF_Autres [L]). Sinon â†’ v.NomFact_PDF_OD [K]) |
 
-#### <a id="rm-RM-002"></a>[RM-002] Condition toujours vraie (flag actif)
+#### <a id="rm-RM-006"></a>[RM-006] Condition: Trim([BJ])<>'' AND Trim([CE]) different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([BJ])<>'' AND Trim([CE])<>''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 17 : `Trim([BJ])<>'' AND Trim([CE])<>''` |
+| **Exemple** | Si Trim([BJ])<>'' AND Trim([CE])<>'' â†’ Action si vrai |
+
+#### <a id="rm-RM-007"></a>[RM-007] Condition composite: VG76 AND NOT P.i.Edition Auto [C]
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `VG76 AND NOT P.i.Edition Auto [C]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EP (P.i.Edition Auto) |
+| **Expression source** | Expression 23 : `VG76 AND NOT P.i.Edition Auto [C]` |
+| **Exemple** | Si VG76 AND NOT P.i.Edition Auto [C] â†’ Action si vrai |
+
+#### <a id="rm-RM-008"></a>[RM-008] Condition toujours vraie (flag actif)
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `P.i.Edition Auto [C]` |
 | **Si vrai** | 'TRUE'LOG |
 | **Si faux** | 'FALSE'LOG) |
-| **Variables** | C (P.i.Edition Auto) |
+| **Variables** | EP (P.i.Edition Auto) |
 | **Expression source** | Expression 24 : `IF(P.i.Edition Auto [C],'TRUE'LOG,'FALSE'LOG)` |
 | **Exemple** | Si P.i.Edition Auto [C] â†’ 'TRUE'LOG. Sinon â†’ 'FALSE'LOG) |
+
+#### <a id="rm-RM-009"></a>[RM-009] Negation de VG78 (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT VG78` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 32 : `NOT VG78` |
+| **Exemple** | Si NOT VG78 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -279,14 +345,14 @@ Insertion de nouveaux enregistrements en base.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 64 | T1 | Solde Easy Check Out | Type0 | 458 | 195 | Traitement |
+| 1 | 64 | 64 | Solde Easy Check Out | Type0 | 458 | 195 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>64 - Solde Easy Check Out
-**Tache** : [T1](#t1) | **Type** : Type0 | **Dimensions** : 458 x 195 DLU
+**Tache** : [64](#t1) | **Type** : Type0 | **Dimensions** : 458 x 195 DLU
 **Bloc** : Traitement | **Titre IDE** : Solde Easy Check Out
 
 <!-- FORM-DATA:
@@ -412,54 +478,62 @@ Ecran unique: **Solde Easy Check Out**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **64.1** | [**Solde Easy Check Out** (T1)](#t1) [mockup](#ecran-t1) | - | 458x195 | Traitement |
-| 64.1.1 | [Solde GM (T3)](#t3) | SDI | - | |
-| 64.1.2 | [Lignes de solde (T4)](#t4) [mockup](#ecran-t4) | MDI | 640x110 | |
-| 64.1.3 | [(sans nom) (T10)](#t10) | MDI | - | |
-| 64.1.4 | [Mise opposition des CAM (T11)](#t11) | MDI | - | |
-| 64.1.5 | [Liberation Ligne (T14)](#t14) | MDI | - | |
-| 64.1.6 | [Liberation Poste (T15)](#t15) | MDI | - | |
-| 64.1.7 | [Mise opposition des CAM (T16)](#t16) | MDI | - | |
-| 64.1.8 | [Liberation Ligne (T20)](#t20) | MDI | - | |
-| 64.1.9 | [Liberation Ligne (T21)](#t21) | MDI | - | |
-| 64.1.10 | [Liberation Poste (T22)](#t22) | MDI | - | |
-| 64.1.11 | [Désactiver Club Med Pass (T23)](#t23) | MDI | - | |
-| 64.1.12 | [Log Facture (T24)](#t24) | - | - | |
-| 64.1.13 | [Mail (T25)](#t25) | - | - | |
-| 64.1.14 | [Création Ligne Log (T26)](#t26) [mockup](#ecran-t26) | - | 315x0 | |
-| **64.2** | [**Recalcul solde** (T2)](#t2) | SDI | - | Calcul |
-| 64.2.1 | [Creation comptable (T5)](#t5) [mockup](#ecran-t5) | MDI | 426x98 | |
-| 64.2.2 | [Recup compteur verst/retrait (T6)](#t6) | MDI | - | |
-| 64.2.3 | [Creation comptable (T7)](#t7) [mockup](#ecran-t7) | MDI | 426x98 | |
-| 64.2.4 | [Recup compteur verst/retrait (T8)](#t8) | MDI | - | |
-| 64.2.5 | [MàJ compte et depôt garantie (T9)](#t9) | MDI | - | |
-| 64.2.6 | [Decrementation Compteur Tel (T13)](#t13) | MDI | - | |
-| 64.2.7 | [Decrementation Compteur Tel (T19)](#t19) | MDI | - | |
-| **64.3** | [**Creation commande** (T12)](#t12) | MDI | - | Creation |
-| 64.3.1 | [Creation commande (T17)](#t17) | MDI | - | |
-| 64.3.2 | [Creation commande (T18)](#t18) | MDI | - | |
+| **64.1** | [**Solde Easy Check Out** (64)](#t1) [mockup](#ecran-t1) | - | 458x195 | Traitement |
+| 64.1.1 | [Solde GM (64.1.1)](#t3) | SDI | - | |
+| 64.1.2 | [Lignes de solde (64.2)](#t4) [mockup](#ecran-t4) | MDI | 640x110 | |
+| 64.1.3 | [(sans nom) (64.6)](#t10) | MDI | - | |
+| 64.1.4 | [Mise opposition des CAM (64.6.1)](#t11) | MDI | - | |
+| 64.1.5 | [Liberation Ligne (64.6.1.3)](#t14) | MDI | - | |
+| 64.1.6 | [Liberation Poste (64.6.1.4)](#t15) | MDI | - | |
+| 64.1.7 | [Mise opposition des CAM (64.7)](#t16) | MDI | - | |
+| 64.1.8 | [Liberation Ligne (64.7.4)](#t20) | MDI | - | |
+| 64.1.9 | [Liberation Ligne (64.7.5)](#t21) | MDI | - | |
+| 64.1.10 | [Liberation Poste (64.7.6)](#t22) | MDI | - | |
+| 64.1.11 | [Désactiver Club Med Pass (64.8)](#t23) | MDI | - | |
+| 64.1.12 | [Log Facture (64.9)](#t24) | - | - | |
+| 64.1.13 | [Mail (64.10)](#t25) | - | - | |
+| 64.1.14 | [Création Ligne Log (64.11)](#t26) [mockup](#ecran-t26) | - | 315x0 | |
+| **64.2** | [**Recalcul solde** (64.1)](#t2) | SDI | - | Calcul |
+| 64.2.1 | [Creation comptable (64.3)](#t5) [mockup](#ecran-t5) | MDI | 426x98 | |
+| 64.2.2 | [Recup compteur verst/retrait (64.3.1)](#t6) | MDI | - | |
+| 64.2.3 | [Creation comptable (64.4)](#t7) [mockup](#ecran-t7) | MDI | 426x98 | |
+| 64.2.4 | [Recup compteur verst/retrait (64.4.1)](#t8) | MDI | - | |
+| 64.2.5 | [MàJ compte et depôt garantie (64.5)](#t9) | MDI | - | |
+| 64.2.6 | [Decrementation Compteur Tel (64.6.1.2)](#t13) | MDI | - | |
+| 64.2.7 | [Decrementation Compteur Tel (64.7.3)](#t19) | MDI | - | |
+| **64.3** | [**Creation commande** (64.6.1.1)](#t12) | MDI | - | Creation |
+| 64.3.1 | [Creation commande (64.7.1)](#t17) | MDI | - | |
+| 64.3.2 | [Creation commande (64.7.2)](#t18) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (15t)]
-    START --> B1
-    B2[Calcul (8t)]
-    B1 --> B2
-    B3[Creation (3t)]
-    B2 --> B3
-    WRITE[MAJ 13 tables]
-    B3 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{P.i.Edition Auto}
+    BR1[Traitement TRUE]
+    BR2[Traitement FALSE]
+    VALID[Validation]
+    UPDATE[MAJ 13 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|TRUE| BR1 --> VALID
+    DECISION -->|FALSE| BR2 --> VALID
+    VALID --> UPDATE --> ENDOK
+    DECISION -->|KO| ENDKO
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -499,7 +573,7 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | v.ChronoComptable | W | Numeric |
+| EN | v.ChronoComptable | W | Numeric |
 
 </details>
 
@@ -533,9 +607,9 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| D | P.i.Num Compte Test | W | Numeric |
-| O | v.MajCompte | W | Logical |
-| W | v.Solde du compte | W | Numeric |
+| EQ | P.i.Num Compte Test | W | Numeric |
+| FB | v.MajCompte | W | Logical |
+| FJ | v.Solde du compte | W | Numeric |
 
 </details>
 
@@ -551,8 +625,8 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | W1 nom fichier ascii | W | Alpha |
-| Y | v.NomFichierPDF | W | Alpha |
+| EN | W1 nom fichier ascii | W | Alpha |
+| FL | v.NomFichierPDF | W | Alpha |
 
 </details>
 
@@ -568,11 +642,11 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | V Solde GM | W | Numeric |
-| I | v.Date_Solde | W | Date |
-| J | v.Heure-Solde | W | Time |
-| M | v.Ligne_Solde | W | Logical |
-| W | v.Solde du compte | W | Numeric |
+| EN | V Solde GM | W | Numeric |
+| EV | v.Date_Solde | W | Date |
+| EW | v.Heure-Solde | W | Time |
+| EZ | v.Ligne_Solde | W | Logical |
+| FJ | v.Solde du compte | W | Numeric |
 
 </details>
 
@@ -581,7 +655,7 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| M | v.Ligne_Solde | W | Logical |
+| EZ | v.Ligne_Solde | W | Logical |
 
 </details>
 
@@ -590,7 +664,7 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| Q | v.NbCard | W | Numeric |
+| FD | v.NbCard | W | Numeric |
 
 </details>
 
@@ -661,11 +735,11 @@ Variables recues du programme appelant ([Easy Check-Out === V2.00 (IDE 55)](ADH-
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.i.Date Fin Sejour | Date | 1x parametre entrant |
-| B | P.i.Clause Where | Alpha | - |
-| C | P.i.Edition Auto | Logical | 7x parametre entrant |
-| D | P.i.Num Compte Test | Numeric | [T6](#t6), [T8](#t8), [T9](#t9) |
-| E | P.i.Test PES | Logical | 3x parametre entrant |
+| EN | P.i.Date Fin Sejour | Date | 1x parametre entrant |
+| EO | P.i.Clause Where | Alpha | - |
+| EP | P.i.Edition Auto | Logical | 7x parametre entrant |
+| EQ | P.i.Num Compte Test | Numeric | [64.3.1](#t6), [64.4.1](#t8), [64.5](#t9) |
+| ER | P.i.Test PES | Logical | 3x parametre entrant |
 
 ### 11.2 Variables de session (22)
 
@@ -673,61 +747,61 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| F | v.Transaction Validée | Logical | 1x session |
-| G | v.Message Erreur | Alpha | 1x session |
-| H | v.Id_Dossier_Pms | Alpha | 1x session |
-| I | v.Date_Solde | Date | - |
-| J | v.Heure-Solde | Time | 1x session |
-| K | v.NomFact_PDF_OD | Alpha | 2x session |
-| L | v.NomFact_PDF_Autres | Alpha | 2x session |
-| M | v.Ligne_Solde | Logical | - |
-| N | v.MajExtrait | Logical | - |
-| O | v.MajCompte | Logical | - |
-| P | v.MajTel | Numeric | - |
-| Q | v.NbCard | Numeric | - |
-| R | v.Fact | Logical | - |
-| S | v.Evoi_mail | Logical | - |
-| T | v.Num dossier Axis | Alpha | - |
-| U | v.Num Autorisation | Alpha | - |
-| V | v.MOP | Alpha | - |
-| W | v.Solde du compte | Numeric | - |
-| X | v.MailAtachedFiles | Alpha | - |
-| Y | v.NomFichierPDF | Alpha | - |
-| Z | v.Access Token | Unicode | - |
-| BA | v.Token Expiration Time | Time | - |
+| ES | v.Transaction Validée | Logical | 1x session |
+| ET | v.Message Erreur | Alpha | 1x session |
+| EU | v.Id_Dossier_Pms | Alpha | 1x session |
+| EV | v.Date_Solde | Date | - |
+| EW | v.Heure-Solde | Time | 1x session |
+| EX | v.NomFact_PDF_OD | Alpha | 2x session |
+| EY | v.NomFact_PDF_Autres | Alpha | 2x session |
+| EZ | v.Ligne_Solde | Logical | - |
+| FA | v.MajExtrait | Logical | - |
+| FB | v.MajCompte | Logical | - |
+| FC | v.MajTel | Numeric | - |
+| FD | v.NbCard | Numeric | - |
+| FE | v.Fact | Logical | - |
+| FF | v.Evoi_mail | Logical | - |
+| FG | v.Num dossier Axis | Alpha | - |
+| FH | v.Num Autorisation | Alpha | - |
+| FI | v.MOP | Alpha | - |
+| FJ | v.Solde du compte | Numeric | - |
+| FK | v.MailAtachedFiles | Alpha | - |
+| FL | v.NomFichierPDF | Alpha | - |
+| FM | v.Access Token | Unicode | - |
+| FN | v.Token Expiration Time | Time | - |
 
 <details>
 <summary>Toutes les 27 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P.i.Date Fin Sejour | Date |
-| P0 | **B** | P.i.Clause Where | Alpha |
-| P0 | **C** | P.i.Edition Auto | Logical |
-| P0 | **D** | P.i.Num Compte Test | Numeric |
-| P0 | **E** | P.i.Test PES | Logical |
-| V. | **F** | v.Transaction Validée | Logical |
-| V. | **G** | v.Message Erreur | Alpha |
-| V. | **H** | v.Id_Dossier_Pms | Alpha |
-| V. | **I** | v.Date_Solde | Date |
-| V. | **J** | v.Heure-Solde | Time |
-| V. | **K** | v.NomFact_PDF_OD | Alpha |
-| V. | **L** | v.NomFact_PDF_Autres | Alpha |
-| V. | **M** | v.Ligne_Solde | Logical |
-| V. | **N** | v.MajExtrait | Logical |
-| V. | **O** | v.MajCompte | Logical |
-| V. | **P** | v.MajTel | Numeric |
-| V. | **Q** | v.NbCard | Numeric |
-| V. | **R** | v.Fact | Logical |
-| V. | **S** | v.Evoi_mail | Logical |
-| V. | **T** | v.Num dossier Axis | Alpha |
-| V. | **U** | v.Num Autorisation | Alpha |
-| V. | **V** | v.MOP | Alpha |
-| V. | **W** | v.Solde du compte | Numeric |
-| V. | **X** | v.MailAtachedFiles | Alpha |
-| V. | **Y** | v.NomFichierPDF | Alpha |
-| V. | **Z** | v.Access Token | Unicode |
-| V. | **BA** | v.Token Expiration Time | Time |
+| P0 | **EN** | P.i.Date Fin Sejour | Date |
+| P0 | **EO** | P.i.Clause Where | Alpha |
+| P0 | **EP** | P.i.Edition Auto | Logical |
+| P0 | **EQ** | P.i.Num Compte Test | Numeric |
+| P0 | **ER** | P.i.Test PES | Logical |
+| V. | **ES** | v.Transaction Validée | Logical |
+| V. | **ET** | v.Message Erreur | Alpha |
+| V. | **EU** | v.Id_Dossier_Pms | Alpha |
+| V. | **EV** | v.Date_Solde | Date |
+| V. | **EW** | v.Heure-Solde | Time |
+| V. | **EX** | v.NomFact_PDF_OD | Alpha |
+| V. | **EY** | v.NomFact_PDF_Autres | Alpha |
+| V. | **EZ** | v.Ligne_Solde | Logical |
+| V. | **FA** | v.MajExtrait | Logical |
+| V. | **FB** | v.MajCompte | Logical |
+| V. | **FC** | v.MajTel | Numeric |
+| V. | **FD** | v.NbCard | Numeric |
+| V. | **FE** | v.Fact | Logical |
+| V. | **FF** | v.Evoi_mail | Logical |
+| V. | **FG** | v.Num dossier Axis | Alpha |
+| V. | **FH** | v.Num Autorisation | Alpha |
+| V. | **FI** | v.MOP | Alpha |
+| V. | **FJ** | v.Solde du compte | Numeric |
+| V. | **FK** | v.MailAtachedFiles | Alpha |
+| V. | **FL** | v.NomFichierPDF | Alpha |
+| V. | **FM** | v.Access Token | Unicode |
+| V. | **FN** | v.Token Expiration Time | Time |
 
 </details>
 
@@ -740,15 +814,15 @@ Variables persistantes pendant toute la session.
 | Type | Expressions | Regles |
 |------|-------------|--------|
 | CALCULATION | 2 | 0 |
-| CONDITION | 8 | 5 |
+| CONCATENATION | 1 | 5 |
+| CONDITION | 11 | 6 |
 | CAST_LOGIQUE | 6 | 5 |
+| NEGATION | 1 | 5 |
 | CONSTANTE | 7 | 0 |
 | DATE | 1 | 0 |
 | FORMAT | 1 | 0 |
-| OTHER | 13 | 0 |
+| OTHER | 10 | 0 |
 | REFERENCE_VG | 3 | 0 |
-| NEGATION | 1 | 0 |
-| CONCATENATION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
 
@@ -756,30 +830,42 @@ Variables persistantes pendant toute la session.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CALCULATION | 42 | `[BD]*-1` | - |
+| CALCULATION | 42 | `[CD]*-1` | - |
 | CALCULATION | 6 | `'00/00/0000'DATE` | - |
 
-#### CONDITION (8 expressions)
+#### CONCATENATION (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 14 | `IF(Trim(v.NomFact_PDF_Autres [L])<>'','A'&Trim(v.NomFact_PDF_Autres [L]),v.NomFact_PDF_OD [K])` | [RM-001](#rm-RM-001) |
-| CONDITION | 10 | `(VG43 OR VG94) AND [BD]<0` | - |
-| CONDITION | 34 | `CndRange(P.i.Num Compte Test [D]<>0,P.i.Num Compte Test [D])` | - |
-| CONDITION | 17 | `Trim([AJ])<>'' AND Trim([BE])<>''` | - |
-| CONDITION | 30 | `IF(P.i.Edition Auto [C],'EditionPDF','')` | - |
-| ... | | *+3 autres* | |
+| CONCATENATION | 5 | `Trim(v.NomFact_PDF_OD [K])&Trim(v.NomFact_PDF_Autres [L])<>''` | [RM-001](#rm-RM-001) |
+
+#### CONDITION (11 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 14 | `IF(Trim(v.NomFact_PDF_Autres [L])<>'','A'&Trim(v.NomFact_PDF_Autres [L]),v.NomFact_PDF_OD [K])` | [RM-005](#rm-RM-005) |
+| CONDITION | 17 | `Trim([BJ])<>'' AND Trim([CE])<>''` | [RM-006](#rm-RM-006) |
+| CONDITION | 23 | `VG76 AND NOT P.i.Edition Auto [C]` | [RM-007](#rm-RM-007) |
+| CONDITION | 8 | `(VG43 OR VG94) AND NOT(P.i.Test PES [E])` | [RM-002](#rm-RM-002) |
+| CONDITION | 10 | `(VG43 OR VG94) AND [CD]<0` | [RM-003](#rm-RM-003) |
+| ... | | *+6 autres* | |
 
 #### CAST_LOGIQUE (6 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CAST_LOGIQUE | 24 | `IF(P.i.Edition Auto [C],'TRUE'LOG,'FALSE'LOG)` | [RM-002](#rm-RM-002) |
+| CAST_LOGIQUE | 24 | `IF(P.i.Edition Auto [C],'TRUE'LOG,'FALSE'LOG)` | [RM-008](#rm-RM-008) |
 | CAST_LOGIQUE | 28 | `'TRUE'LOG` | - |
 | CAST_LOGIQUE | 43 | `'FALSE'LOG` | - |
 | CAST_LOGIQUE | 22 | `INIPut('CompressPDF=N','FALSE'LOG)` | - |
 | CAST_LOGIQUE | 18 | `'TRUE'LOG` | - |
 | ... | | *+1 autres* | |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 32 | `NOT VG78` | [RM-009](#rm-RM-009) |
 
 #### CONSTANTE (7 expressions)
 
@@ -804,16 +890,16 @@ Variables persistantes pendant toute la session.
 |------|-----|------------|-------|
 | FORMAT | 26 | `'EXTCOMPTE_'&DStr(Date(),'YYYYMMDD')&'_'&TStr(Time(),'HHMM')&'.pdf'` | - |
 
-#### OTHER (13 expressions)
+#### OTHER (10 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 20 | `P.i.Edition Auto [C]` | - |
 | OTHER | 16 | `Time()` | - |
-| OTHER | 12 | `VG94 AND NOT(VG23)` | - |
+| OTHER | 9 | `P.i.Test PES [E]` | - |
+| OTHER | 20 | `P.i.Edition Auto [C]` | - |
 | OTHER | 39 | `P.i.Test PES [E]` | - |
 | OTHER | 38 | `v.Heure-Solde [J]` | - |
-| ... | | *+8 autres* | |
+| ... | | *+5 autres* | |
 
 #### REFERENCE_VG (3 expressions)
 
@@ -822,18 +908,6 @@ Variables persistantes pendant toute la session.
 | REFERENCE_VG | 36 | `VG3` | - |
 | REFERENCE_VG | 33 | `VG78` | - |
 | REFERENCE_VG | 11 | `VG23` | - |
-
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 32 | `NOT VG78` | - |
-
-#### CONCATENATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONCATENATION | 5 | `Trim(v.NomFact_PDF_OD [K])&Trim(v.NomFact_PDF_Autres [L])<>''` | - |
 
 ### 12.3 Toutes les expressions (43)
 
@@ -845,20 +919,29 @@ Variables persistantes pendant toute la session.
 | IDE | Expression Decodee |
 |-----|-------------------|
 | 6 | `'00/00/0000'DATE` |
-| 42 | `[BD]*-1` |
+| 42 | `[CD]*-1` |
 
-#### CONDITION (8)
+#### CONCATENATION (1)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
+| 5 | `Trim(v.NomFact_PDF_OD [K])&Trim(v.NomFact_PDF_Autres [L])<>''` |
+
+#### CONDITION (11)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 8 | `(VG43 OR VG94) AND NOT(P.i.Test PES [E])` |
+| 10 | `(VG43 OR VG94) AND [CD]<0` |
+| 12 | `VG94 AND NOT(VG23)` |
 | 14 | `IF(Trim(v.NomFact_PDF_Autres [L])<>'','A'&Trim(v.NomFact_PDF_Autres [L]),v.NomFact_PDF_OD [K])` |
+| 17 | `Trim([BJ])<>'' AND Trim([CE])<>''` |
+| 23 | `VG76 AND NOT P.i.Edition Auto [C]` |
 | 25 | `IF(P.i.Edition Auto [C],Translate('%club_exportdata%')&'Easy_Check_Out\','')` |
 | 27 | `IF(P.i.Edition Auto [C],'E','P')` |
-| 29 | `IF(P.i.Edition Auto [C],Trim([BF]),'')` |
+| 29 | `IF(P.i.Edition Auto [C],Trim([CF]),'')` |
 | 30 | `IF(P.i.Edition Auto [C],'EditionPDF','')` |
-| 10 | `(VG43 OR VG94) AND [BD]<0` |
 | 34 | `CndRange(P.i.Num Compte Test [D]<>0,P.i.Num Compte Test [D])` |
-| 17 | `Trim([AJ])<>'' AND Trim([BE])<>''` |
 
 #### CAST_LOGIQUE (6)
 
@@ -870,6 +953,12 @@ Variables persistantes pendant toute la session.
 | 22 | `INIPut('CompressPDF=N','FALSE'LOG)` |
 | 28 | `'TRUE'LOG` |
 | 43 | `'FALSE'LOG` |
+
+#### NEGATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 32 | `NOT VG78` |
 
 #### CONSTANTE (7)
 
@@ -895,21 +984,18 @@ Variables persistantes pendant toute la session.
 |-----|-------------------|
 | 26 | `'EXTCOMPTE_'&DStr(Date(),'YYYYMMDD')&'_'&TStr(Time(),'HHMM')&'.pdf'` |
 
-#### OTHER (13)
+#### OTHER (10)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
 | 1 | `v.Transaction Validée [F]` |
 | 2 | `v.Message Erreur [G]` |
 | 3 | `v.Id_Dossier_Pms [H]` |
-| 4 | `[AN]` |
+| 4 | `[BN]` |
 | 7 | `P.i.Date Fin Sejour [A]` |
-| 8 | `(VG43 OR VG94) AND NOT(P.i.Test PES [E])` |
 | 9 | `P.i.Test PES [E]` |
-| 12 | `VG94 AND NOT(VG23)` |
 | 16 | `Time()` |
 | 20 | `P.i.Edition Auto [C]` |
-| 23 | `VG76 AND NOT P.i.Edition Auto [C]` |
 | 38 | `v.Heure-Solde [J]` |
 | 39 | `P.i.Test PES [E]` |
 
@@ -920,18 +1006,6 @@ Variables persistantes pendant toute la session.
 | 11 | `VG23` |
 | 33 | `VG78` |
 | 36 | `VG3` |
-
-#### NEGATION (1)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 32 | `NOT VG78` |
-
-#### CONCATENATION (1)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 5 | `Trim(v.NomFact_PDF_OD [K])&Trim(v.NomFact_PDF_Autres [L])<>''` |
 
 </details>
 
@@ -1015,7 +1089,7 @@ graph LR
 | Sous-programmes | 5 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0.2% (1 / 626) | Code sain |
-| Regles metier | 2 | Quelques regles a preserver |
+| Regles metier | 9 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -1060,4 +1134,4 @@ graph LR
 | [Edition & Mail Easy Check Out (IDE 65)](ADH-IDE-65.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:36*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:00*

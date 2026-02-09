@@ -1,6 +1,6 @@
 ﻿# ADH IDE 65 - Edition & Mail Easy Check Out
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (26s) | Assemblage 13:36
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 02:00 (22h16min) | Assemblage 02:00
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme **ADH IDE 65** gère l'édition et l'envoi par email des reçus de fin de séjour Easy Check-Out. Orchestrateur central du workflow de départ, il récupère les données d'hébergement, calcule les totaux par mode de paiement (VISA, AMEX) et génère un document de synthèse avec options d'attachements. Le programme applique les paramètres de configuration stockés dans la table `pv_budget` (édition automatique, environnement test, date/heure d'émission) et valide l'absence d'erreurs avant de poursuivre.
+ADH IDE 65 - EDITION & MAIL EASY CHECK OUT - Gère l'édition et l'envoi de récapitulatif de sortie pour les clients en easy check-out. Ce programme est appelé depuis quatre points d'entrée distincts (récap trait, solde, reedition, solde secondaire) et centralise toute la logique d'impression/émission de documents relatifs au processus de sortie simplifiée. Il modifie la table log_booker pour tracer les opérations effectuées.
 
-Après édition du reçu, le programme crée une entrée email dans la table `log_booker` pour transmission au client, mais uniquement si l'édition automatique est activée et que l'environnement n'est pas un test PES. Cette séparation entre édition et mailing garantit un contrôle granulaire : éditions d'erreurs seules, suppressions de test, ou workflows partiels selon les flags configurés. Les tâches sont hiérarchisées (édition principale avec gestion d'annulation embarquée, puis mailing secondaire) pour maximiser la lisibilité et la maintenabilité du flux.
+Le programme structure son traitement autour de quatre tâches principales : d'abord l'édition du récapitulatif avec formatage des données de sortie, puis l'express check-out qui valide les pré-conditions de sortie rapide, suivi de la création et envoi du mail de confirmation au client, et enfin un mécanisme d'annulation permettant de revenir en arrière sur une opération d'easy check-out (correction d'erreur, changement d'avis client). Cette architecture modulaire permet de réutiliser les briques logiques depuis plusieurs chemins d'appel.
 
-Le programme est un **nœud terminal** (aucun appel sortant) appelé par 4 programmes amont (IDE 56, 64, 67, 287) qui représentent différentes étapes de la transaction hôtelière. Ses 116 lignes sans code mort, réparties sur 4 tâches, reflètent une implémentation mature et stable, avec traçabilité complète en audit pour conformité.
+Le circuit de traitement implique une validation stricte de l'état du compte (solde, dépôts de sécurité), la génération dynamique du contenu d'édition (tickets, extraits, totaux), et l'intégration avec le système d'envoi mail pour notification client en temps réel. Les traces dans log_booker permettent l'audit complet du processus easy check-out, facilitant le support client et le diagnostic de dysfonctionnements.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,10 +36,10 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t1"></a>T1 - Edition & Mail Easy Check Out
+#### <a id="t1"></a>65 - Edition & Mail Easy Check Out
 
 **Role** : Generation du document : Edition & Mail Easy Check Out.
-**Variables liees** : B (P.i.Edition Auto), D (P.i.Date Edition)
+**Variables liees** : EO (P.i.Edition Auto), EQ (P.i.Date Edition)
 
 
 ### 3.2 Traitement (2 taches)
@@ -48,14 +48,14 @@ Traitements internes.
 
 ---
 
-#### <a id="t2"></a>T2 - Express Check-Out [ECRAN]
+#### <a id="t2"></a>65.1 - Express Check-Out [[ECRAN]](#ecran-t2)
 
 **Role** : Traitement : Express Check-Out.
 **Ecran** : 218 x 66 DLU | [Voir mockup](#ecran-t2)
 
 ---
 
-#### <a id="t4"></a>T4 - Annulation ECO
+#### <a id="t4"></a>65.1.1 - Annulation ECO
 
 **Role** : Traitement : Annulation ECO.
 
@@ -66,14 +66,27 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t3"></a>T3 - Creation Envoi Mail
+#### <a id="t3"></a>65.2 - Creation Envoi Mail
 
 **Role** : Creation d'enregistrement : Creation Envoi Mail.
 
 
 ## 5. REGLES METIER
 
-*(Programme d'impression - logique technique sans conditions metier)*
+1 regles identifiees:
+
+### Impression (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition composite: P.i.Edition Auto [B] AND NOT(P.i.Test PES [C])
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P.i.Edition Auto [B] AND NOT(P.i.Test PES [C])` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EO (P.i.Edition Auto), EP (P.i.Test PES) |
+| **Expression source** | Expression 4 : `P.i.Edition Auto [B] AND NOT(P.i.Test PES [C])` |
+| **Exemple** | Si P.i.Edition Auto [B] AND NOT(P.i.Test PES [C]) â†’ Action si vrai |
+| **Impact** | [65 - Edition & Mail Easy Check Out](#t1) |
 
 ## 6. CONTEXTE
 
@@ -92,32 +105,37 @@ Insertion de nouveaux enregistrements en base.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **65.1** | [**Edition & Mail Easy Check Out** (T1)](#t1) | - | - | Impression |
-| **65.2** | [**Express Check-Out** (T2)](#t2) [mockup](#ecran-t2) | - | 218x66 | Traitement |
-| 65.2.1 | [Annulation ECO (T4)](#t4) | - | - | |
-| **65.3** | [**Creation Envoi Mail** (T3)](#t3) | - | - | Creation |
+| **65.1** | [**Edition & Mail Easy Check Out** (65)](#t1) | - | - | Impression |
+| **65.2** | [**Express Check-Out** (65.1)](#t2) [mockup](#ecran-t2) | - | 218x66 | Traitement |
+| 65.2.1 | [Annulation ECO (65.1.1)](#t4) | - | - | |
+| **65.3** | [**Creation Envoi Mail** (65.2)](#t3) | - | - | Creation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Impression (1t)]
-    START --> B1
-    B2[Traitement (2t)]
-    B1 --> B2
-    B3[Creation (1t)]
-    B2 --> B3
-    WRITE[MAJ 1 tables]
-    B3 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{P.i.Test PES}
+    PROCESS[Traitement]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -178,10 +196,10 @@ Variables recues du programme appelant ([Récap Trait Easy Check-Out (IDE 56)](A
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.i.Erreurs Seules | Logical | - |
-| B | P.i.Edition Auto | Logical | 2x parametre entrant |
-| C | P.i.Test PES | Logical | 1x parametre entrant |
-| D | P.i.Date Edition | Date | - |
+| EN | P.i.Erreurs Seules | Logical | - |
+| EO | P.i.Edition Auto | Logical | 2x parametre entrant |
+| EP | P.i.Test PES | Logical | 1x parametre entrant |
+| EQ | P.i.Date Edition | Date | - |
 
 ### 11.2 Variables de session (3)
 
@@ -189,9 +207,9 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| E | v.Date | Date | - |
-| F | v.Time | Time | - |
-| G | v.Piece Jointe | Logical | - |
+| ER | v.Date | Date | - |
+| ES | v.Time | Time | - |
+| ET | v.Piece Jointe | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -201,10 +219,17 @@ Variables persistantes pendant toute la session.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 1 | 5 |
 | DATE | 1 | 0 |
-| OTHER | 3 | 0 |
+| OTHER | 2 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 4 | `P.i.Edition Auto [B] AND NOT(P.i.Test PES [C])` | [RM-001](#rm-RM-001) |
 
 #### DATE (1 expressions)
 
@@ -212,11 +237,10 @@ Variables persistantes pendant toute la session.
 |------|-----|------------|-------|
 | DATE | 1 | `Date()` | - |
 
-#### OTHER (3 expressions)
+#### OTHER (2 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 4 | `P.i.Edition Auto [B] AND NOT(P.i.Test PES [C])` | - |
 | OTHER | 3 | `P.i.Edition Auto [B]` | - |
 | OTHER | 2 | `Time()` | - |
 
@@ -320,7 +344,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 116) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -347,4 +371,4 @@ graph LR
 | log_booker | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:38*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:00*

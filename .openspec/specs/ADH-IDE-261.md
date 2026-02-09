@@ -1,200 +1,236 @@
 ﻿# ADH IDE 261 - Zoom des types de taux
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:13
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_257.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:45 -> 04:45 (4s) | Assemblage 04:45
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Zoom des types de taux** est le **selecteur des types de taux de change** qui **permet a l'operateur de consulter et selectionner un type de taux pour les operations de change**.
-
-**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les differents types de taux de change disponibles (taux achat, taux vente, taux moyen, etc.) et permettre leur selection lors de la configuration ou de l'execution d'operations de change monetaire.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur caisse ou gestionnaire change |
-| **Quoi** | Fenetre de selection des types de taux de change |
-| **Pourquoi** | Permettre le choix du type de taux adapte pour les operations de change |
-| **Declencheur** | Clic sur zoom depuis un champ type de taux |
-| **Resultat** | Retour du type de taux selectionne au programme appelant |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (2 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 261 |
-| **Fichier XML** | `Prg_257.xml` |
-| **Description** | Zoom des types de taux |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 28 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 261 |
+| Nom Programme | Zoom des types de taux |
+| Fichier source | `Prg_261.xml` |
+| Dossier IDE | Change |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 124 | type_taux_change | cafil102_dat | READ | Lecture |
-| 139 | moyens_reglement_mor | cafil117_dat | LINK | Jointure |
+ADH IDE 261 est un programme de consultation affichant la liste des types de taux de change disponibles dans le système. C'est un zoom de référence typique qui se limite à la lecture de données, sans modification possible. Le programme récupère les informations depuis la table `cafil028_dat` (types taux change) et les présente sous forme de grille pour sélection utilisateur.
 
-**Resume**: 2 tables accedees dont **0 en ecriture**
+La logique est minimaliste : après appel du titre via ADH IDE 43, le programme charge simplement les types de taux existants et permet à l'utilisateur de sélectionner l'un d'entre eux pour retour à l'appelant. Aucun calcul ni traitement métier complexe, juste une présentation structurée des données de référence.
 
-### 2.3 Parametres d'entree (0 parametres)
+Ce zoom s'intègre dans le workflow de gestion des devises et des taux de change (modules ADH IDE 20-25), offrant une interface pratique pour choisir parmi les types de taux sans avoir à connaître les codes internes. Son appel depuis ADH IDE 43 crée une chaîne de consultation rapide et efficace des données de base.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee dans les expressions)*
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 1 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 10
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 28 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 2 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (2)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 124 | type_taux_change | Devises / taux de change | DB | R |   |   | 1 |
+| 139 | moyens_reglement_mor | Reglements / paiements | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 124 - type_taux_change (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | > societe | R | Alpha |
+| B | > devise | R | Alpha |
+| C | > type operation | R | Alpha |
+| D | > mode paiement | R | Alpha |
+| E | < Type Taux | R | Numeric |
+| F | v. titre | R | Alpha |
+| G | bouton selectionner | R | Alpha |
+| H | bouton quitter | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| ES | v. titre | Alpha | - |
+
+### 11.2 Autres (7)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | > societe | Alpha | 1x refs |
+| EO | > devise | Alpha | 1x refs |
+| EP | > type operation | Alpha | 1x refs |
+| EQ | > mode paiement | Alpha | 1x refs |
+| ER | < Type Taux | Numeric | - |
+| ET | bouton selectionner | Alpha | - |
+| EU | bouton quitter | Alpha | 1x refs |
+
+## 12. EXPRESSIONS
+
+**10 / 10 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONSTANTE | 4 | 0 |
+| CONDITION | 4 | 0 |
+| OTHER | 1 | 0 |
+| STRING | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONSTANTE (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 4 | `'&Selectionner'` | - |
+| CONSTANTE | 6 | `'O'` | - |
+| CONSTANTE | 2 | `8` | - |
+| CONSTANTE | 3 | `'&Quitter'` | - |
+
+#### CONDITION (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 8 | `> type operation [C]` | - |
+| CONDITION | 9 | `> mode paiement [D]` | - |
+| CONDITION | 5 | `> societe [A]` | - |
+| CONDITION | 7 | `> devise [B]` | - |
+
+#### OTHER (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 10 | `bouton quitter [H]` | - |
+
+#### STRING (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 1 | `Trim ([Q])` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[261 Zoom des types ]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T261[261 Zoom des types de ...]
+    style T261 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T261
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[261 Zoom des types ]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T261[261 Zoom des types de ...]
+    style T261 fill:#58a6ff
+    C43[43 Recuperation du titre]
+    T261 --> C43
+    style C43 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 28 | Programme compact |
+| Expressions | 10 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 28) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 2 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:13 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:46*

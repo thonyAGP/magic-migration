@@ -1,6 +1,6 @@
 ﻿# ADH IDE 184 - Get Printer for chained list
 
-> **Analyse**: Phases 1-4 2026-02-07 07:26 -> 07:27 (16s) | Assemblage 07:27
+> **Analyse**: Phases 1-4 2026-02-08 04:04 -> 04:04 (4s) | Assemblage 04:04
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,21 +14,26 @@
 | IDE Position | 184 |
 | Nom Programme | Get Printer for chained list |
 | Fichier source | `Prg_184.xml` |
-| Dossier IDE | Printer |
+| Dossier IDE | Impression |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Get Printer for chained list** assure la gestion complete de ce processus.
+ADH IDE 184 est un utilitaire de gestion d'imprimantes pour l'affichage de listes chaînées. Ce programme récupère les paramètres de configuration de l'imprimante et les applique au contexte de restitution, permettant l'impression formatée de données structurées en listes. Il intervient dans le flux de caisse comme composant support pour les impressions de tickets et d'extraits de compte.
+
+Le programme fonctionne en consultation de tables de configuration (typiquement les paramètres imprimante stockés en base) et en renvoi d'un identifiant ou d'une référence utilisable par les programmes appelants. C'est un programme appelé (callee) par les modules d'édition et d'impression (ADH IDE 178 GET_PRINTER, ADH IDE 229 PRINT_TICKET, ADH IDE 180 SET_LIST_NUMBER), formant une chaîne de responsabilités pour l'initialisation des ressources d'impression.
+
+Ce type de composant correspond au pattern des programmes partagés dans ADH.ecf - une fonction utilitaire de bas niveau, sans interface utilisateur visible, servant de point de passage obligé pour tous les flux d'impression de la caisse. Son intégration dans la solution C# .NET se fait via un service `PrinterConfigurationService` centralisant la logique de récupération des configurations.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -173,4 +178,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:27*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:05*

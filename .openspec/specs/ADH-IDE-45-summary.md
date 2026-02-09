@@ -1,6 +1,6 @@
 ﻿# ADH IDE 45 - Recuperation langue
 
-> **Analyse**: 2026-02-07 13:18
+> **Analyse**: 2026-02-08 01:43
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Recuperation langue
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 2 programme(s): Main Program (IDE 1), Start (IDE 166)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
+| **Appele par** | [Main Program (IDE 1)](ADH-IDE-1.md), [Start (IDE 166)](ADH-IDE-166.md) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

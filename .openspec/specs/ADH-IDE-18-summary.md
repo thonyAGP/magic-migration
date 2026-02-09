@@ -1,6 +1,6 @@
 ﻿# ADH IDE 18 - Print extrait compte
 
-> **Analyse**: 2026-02-07 13:00
+> **Analyse**: 2026-02-08 01:19
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

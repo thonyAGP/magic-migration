@@ -1,6 +1,6 @@
 ﻿# ADH IDE 162 - Selection filiations
 
-> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:51 (27s) | Assemblage 07:19
+> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:45 (23h54min) | Assemblage 03:45
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,42 +14,19 @@
 | IDE Position | 162 |
 | Nom Programme | Selection filiations |
 | Fichier source | `Prg_162.xml` |
-| Dossier IDE | Menus |
+| Dossier IDE | Consultation |
 | Taches | 2 (1 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Selection filiations** assure la gestion complete de ce processus, accessible depuis [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md).
+ADH IDE 162 est un programme de sélection des filiations accessible depuis le flux de vente (IDE 240). Il gère l'interface utilisateur permettant à l'opérateur de choisir une ou plusieurs filiations parmi celles disponibles pour le compte du client. Le programme modifie la table temporaire 1047 qui stocke les sélections de filiations.
 
-Le flux de traitement s'organise en **2 blocs fonctionnels** :
+Le flux se divise en deux tâches principales : la première affiche l'écran de sélection avec la liste des filiations disponibles, tandis que la seconde initialise les variables temporaires contenant les sélections effectuées. Cette interface est cruciale dans le workflow de création de vente, car le choix de la filiation conditionne les services accessibles et les tarifs appliqués.
 
-- **Consultation** (1 tache) : ecrans de recherche, selection et consultation
-- **Traitement** (1 tache) : traitements metier divers
-
-**Donnees modifiees** : 1 tables en ecriture (Table_1047).
-
-**Logique metier** : 2 regles identifiees couvrant conditions metier.
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (1 tache)
-
-- **T1** - Sélection filiations **[ECRAN]**
-
-#### Phase 2 : Consultation (1 tache)
-
-- **T2** - Init tmp selections
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| Table_1047 | **W**/L (2 usages) |  |
-
-</details>
+Une fois les filiations sélectionnées, le programme retourne au flux parent (IDE 240) avec les données stockées en table 1047, permettant à la transaction de vente de continuer avec les bons paramètres de filiation. C'est un point de contrôle clé du processus de facturation, assurant que chaque vente est associée à la bonne filiation du compte client.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -59,11 +36,11 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Sélection filiations [ECRAN]
+#### <a id="t1"></a>162 - Sélection filiations [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Sélection filiations.
 **Ecran** : 1238 x 284 DLU (MDI) | [Voir mockup](#ecran-t1)
-**Variables liees** : E (P.i.o.Nombre filiations cochées)
+**Variables liees** : ER (P.i.o.Nombre filiations cochées)
 
 
 ### 3.2 Consultation (1 tache)
@@ -72,16 +49,16 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t2"></a>T2 - Init tmp selections
+#### <a id="t2"></a>162.1 - Init tmp selections
 
 **Role** : Selection par l'operateur : Init tmp selections.
 
 
 ## 5. REGLES METIER
 
-2 regles identifiees:
+3 regles identifiees:
 
-### Autres (2 regles)
+### Autres (3 regles)
 
 #### <a id="rm-RM-001"></a>[RM-001] Traitement conditionnel si [M]>0,Str ([M],'###')&' ans',IF ([N] est a zero
 
@@ -100,10 +77,19 @@ Ecrans de recherche et consultation.
 | **Condition** | `P.i.Texte info [D]<>''` |
 | **Si vrai** | P.i.Texte info [D] |
 | **Si faux** | 'Veuillez sélectionner les filiations concernées') |
-| **Variables** | D (P.i.Texte info) |
+| **Variables** | EQ (P.i.Texte info) |
 | **Expression source** | Expression 9 : `IF(P.i.Texte info [D]<>'',P.i.Texte info [D],'Veuillez sélec` |
 | **Exemple** | Si P.i.Texte info [D]<>'' â†’ P.i.Texte info [D]. Sinon â†’ 'Veuillez sélectionner les filiations concernées') |
-| **Impact** | [T1 - Sélection filiations](#t1) |
+| **Impact** | [162 - Sélection filiations](#t1) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Negation de [Q] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT [Q]` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 14 : `NOT [Q]` |
+| **Exemple** | Si NOT [Q] â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -118,14 +104,14 @@ Ecrans de recherche et consultation.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 162 | T1 | Sélection filiations | MDI | 1238 | 284 | Traitement |
+| 1 | 162 | 162 | Sélection filiations | MDI | 1238 | 284 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>162 - Sélection filiations
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 1238 x 284 DLU
+**Tache** : [162](#t1) | **Type** : MDI | **Dimensions** : 1238 x 284 DLU
 **Bloc** : Traitement | **Titre IDE** : Sélection filiations
 
 <!-- FORM-DATA:
@@ -346,22 +332,28 @@ Ecran unique: **Sélection filiations**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **162.1** | [**Sélection filiations** (T1)](#t1) [mockup](#ecran-t1) | MDI | 1238x284 | Traitement |
-| **162.2** | [**Init tmp selections** (T2)](#t2) | - | - | Consultation |
+| **162.1** | [**Sélection filiations** (162)](#t1) [mockup](#ecran-t1) | MDI | 1238x284 | Traitement |
+| **162.2** | [**Init tmp selections** (162.1)](#t2) | - | - | Consultation |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 2 taches]
-    ENDOK([END])
-    START --> PROCESS --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -371,10 +363,17 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
 | 1047 | Table_1047 |  | MEM |   | **W** | L | 2 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
 
 ### Colonnes par table (1 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 1047 - Table_1047 (**W**/L) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
 
 <details>
 <summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
@@ -393,13 +392,6 @@ flowchart TD
 
 </details>
 
-<details>
-<summary>Table 1047 - Table_1047 (**W**/L) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
 ## 11. VARIABLES
 
 ### 11.1 Parametres entrants (5)
@@ -408,11 +400,11 @@ Variables recues du programme appelant ([Transaction Nouv vente PMS-710 (IDE 240
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.i.Societe | Unicode | 1x parametre entrant |
-| B | P.i.Compte | Numeric | 3x parametre entrant |
-| C | P.i.Filiation | Numeric | - |
-| D | P.i.Texte info | Alpha | 1x parametre entrant |
-| E | P.i.o.Nombre filiations cochées | Numeric | - |
+| EN | P.i.Societe | Unicode | 1x parametre entrant |
+| EO | P.i.Compte | Numeric | 3x parametre entrant |
+| EP | P.i.Filiation | Numeric | - |
+| EQ | P.i.Texte info | Alpha | 1x parametre entrant |
+| ER | P.i.o.Nombre filiations cochées | Numeric | - |
 
 ### 11.2 Variables de session (2)
 
@@ -420,8 +412,8 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| F | v.nom & prenom | Alpha | - |
-| G | v.nombre original | Numeric | - |
+| ES | v.nom & prenom | Alpha | - |
+| ET | v.nombre original | Numeric | - |
 
 ### 11.3 Autres (2)
 
@@ -429,8 +421,8 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| H | CHG_REASON_Selectionne | Numeric | 2x refs |
-| I | CHG_PRV_Selectionne | Logical | 1x refs |
+| EU | CHG_REASON_Selectionne | Numeric | 2x refs |
+| EV | CHG_PRV_Selectionne | Logical | 1x refs |
 
 ## 12. EXPRESSIONS
 
@@ -444,9 +436,9 @@ Variables diverses.
 | CALCULATION | 2 | 0 |
 | CONCATENATION | 2 | 5 |
 | CONDITION | 2 | 5 |
+| NEGATION | 1 | 5 |
 | CONSTANTE | 2 | 0 |
 | OTHER | 4 | 0 |
-| NEGATION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
 
@@ -479,6 +471,12 @@ Variables diverses.
 | CONDITION | 9 | `IF(P.i.Texte info [D]<>'',P.i.Texte info [D],'Veuillez sélectionner les filiations concernées')` | [RM-002](#rm-RM-002) |
 | CONDITION | 16 | `P.i.o.Nombre filiation... [E]<>[R]` | - |
 
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 14 | `NOT [Q]` | [RM-003](#rm-RM-003) |
+
 #### CONSTANTE (2 expressions)
 
 | Type | IDE | Expression | Regle |
@@ -494,12 +492,6 @@ Variables diverses.
 | OTHER | 15 | `P.i.o.Nombre filiation... [E]` | - |
 | OTHER | 1 | `P.i.Societe [A]` | - |
 | OTHER | 2 | `P.i.Compte [B]` | - |
-
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 14 | `NOT [Q]` | - |
 
 <!-- TAB:Connexions -->
 
@@ -563,7 +555,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 44) | Code sain |
-| Regles metier | 2 | Quelques regles a preserver |
+| Regles metier | 3 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -583,4 +575,4 @@ graph LR
 | Table_1047 | Table WRITE (Memory) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:19*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:46*

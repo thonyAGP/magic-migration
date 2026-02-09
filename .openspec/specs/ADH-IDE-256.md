@@ -1,199 +1,266 @@
 ﻿# ADH IDE 256 - Zoom sur table des gratuites
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:13
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_252.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:41 -> 04:41 (4s) | Assemblage 04:41
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Zoom sur table des gratuites** est le **visualiseur de la table de reference des gratuites** qui **affiche le detail des types de gratuites disponibles dans le systeme**.
-
-**Objectif metier** : Fournir un ecran de consultation de type "zoom" sur la table de reference des gratuites (tables_gratuites_tgr). Ce programme simple (1 tache, 23 lignes de logique) permet aux operateurs de visualiser les differents codes de gratuites disponibles, leurs libelles et conditions d'application. C'est un outil d'aide a la saisie utilise lors de la creation de ventes gratuites.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur lors de la saisie d'une vente gratuite |
-| **Quoi** | Consultation de la table de reference des gratuites |
-| **Pourquoi** | Aide a la selection du bon code de gratuite |
-| **Declencheur** | Appel via zoom (F5) depuis un champ de saisie de gratuite |
-| **Resultat** | Liste des gratuites affichee, selection possible |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 256 |
-| **Fichier XML** | `Prg_252.xml` |
-| **Description** | Zoom sur table des gratuites |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 23 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 256 |
+| Nom Programme | Zoom sur table des gratuites |
+| Fichier source | `Prg_256.xml` |
+| Dossier IDE | Consultation |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 95 | tables_gratuites_tgr | cafil073_dat | READ | Lecture |
+Le programme ADH IDE 256 est un zoom permettant de consulter et gérer la table des gratuités. Il s'agit d'une interface de référence qui récupère les données de la table des gratuités (likely `cafil069_dat` ou équivalent) pour affichage en grille.
 
-**Resume**: 1 tables accedees dont **0 en ecriture**
+Ce programme est appelé depuis ADH IDE 43, qui gère la récupération du titre ou du contexte à afficher. Le flux de navigation suggère que c'est un zoom secondaire, accessible depuis un menu ou une recherche dans les tables de paramétrage caisse.
 
-### 2.3 Parametres d'entree (0 parametres)
+Comme zoom de table de référence, ADH IDE 256 implémente probablement un pattern Browse classique : affichage multi-colonnes des gratuités (code, libellé, description), recherche/filtrage, et possibilité de sélectionner une gratuité pour retour à l'écran appelant. C'est un composant réutilisable du système de gestion caisse.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Negation de (v. passage SE [E]) (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT (v. passage SE [E])` |
+| **Si vrai** | Action si vrai |
+| **Variables** | ER (v. passage SE) |
+| **Expression source** | Expression 1 : `NOT (v. passage SE [E])` |
+| **Exemple** | Si NOT (v. passage SE [E]) â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 1 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 10
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{v. passage SE}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 23 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (1)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 95 | tables_gratuites_tgr |  | DB | R |   |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 95 - tables_gratuites_tgr (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | > societe | R | Alpha |
+| B | <> imputation | R | Numeric |
+| C | <> sous imputation | R | Numeric |
+| D | <> libelle | R | Alpha |
+| E | v. passage SE | R | Logical |
+| F | V. titre | R | Alpha |
+| G | bouton quitter | R | Alpha |
+| H | bouton selectionner | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (2)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| ER | v. passage SE | Logical | 1x session |
+| ES | V. titre | Alpha | - |
+
+### 11.2 Autres (6)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | > societe | Alpha | 1x refs |
+| EO | <> imputation | Numeric | - |
+| EP | <> sous imputation | Numeric | - |
+| EQ | <> libelle | Alpha | - |
+| ET | bouton quitter | Alpha | 1x refs |
+| EU | bouton selectionner | Alpha | 1x refs |
+
+## 12. EXPRESSIONS
+
+**10 / 10 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| NEGATION | 1 | 5 |
+| CONSTANTE | 3 | 0 |
+| CAST_LOGIQUE | 1 | 0 |
+| CONDITION | 1 | 0 |
+| OTHER | 3 | 0 |
+| STRING | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 1 | `NOT (v. passage SE [E])` | [RM-001](#rm-RM-001) |
+
+#### CONSTANTE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 6 | `19` | - |
+| CONSTANTE | 4 | `'&Quitter'` | - |
+| CONSTANTE | 3 | `'&Selectionner'` | - |
+
+#### CAST_LOGIQUE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 2 | `'TRUE'LOG` | - |
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 7 | `> societe [A]` | - |
+
+#### OTHER (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 10 | `[I]` | - |
+| OTHER | 9 | `bouton selectionner [H]` | - |
+| OTHER | 8 | `bouton quitter [G]` | - |
+
+#### STRING (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 5 | `Trim ([J])` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[256 Zoom sur table ]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T256[256 Zoom sur table des...]
+    style T256 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T256
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[256 Zoom sur table ]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T256[256 Zoom sur table des...]
+    style T256 fill:#58a6ff
+    C43[43 Recuperation du titre]
+    T256 --> C43
+    style C43 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 23 | Programme compact |
+| Expressions | 10 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 23) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 1 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:13 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:42*

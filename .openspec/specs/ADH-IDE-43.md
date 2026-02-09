@@ -1,6 +1,6 @@
 ﻿# ADH IDE 43 - Recuperation du titre
 
-> **Analyse**: Phases 1-4 2026-02-07 06:46 -> 06:46 (16s) | Assemblage 13:15
+> **Analyse**: Phases 1-4 2026-02-07 06:46 -> 01:41 (18h54min) | Assemblage 01:41
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Programme de récupération et d'affichage du titre d'une entité sélectionnée dans le système. Il agit comme un utilitaire central appelé par une multitude de programmes (notamment les zooms de tables et les menus de gestion), permettant de consulter l'intitulé associé à un enregistrement sans modifier les données. Son rôle est de fournir une information lisible sur l'objet en cours de consultation.
+ADH IDE 43 est un utilitaire de **lookup titre/civilité** appelé depuis une vingtaine de contextes différents (sessions, change, garanties, caisse, telephone, etc.). Le programme récupère le titre (M., Mme, etc.) d'un compte en lisant la table de référence **titres** via une clé identifiant le type de titre stocké dans le compte. C'est une fonction élémentaire de normalisation affichage, utilisée partout où un titre doit être présenté à l'écran.
 
-Étant donné le nombre élevé de callers (plus de 20 programmes différents), ce programme constitue un pivot transversal dans la navigation et la consultation des référentiels du système. Il simplifie l'affichage des métadonnées sans dupliquer la logique de récupération dans chaque programme appelant. La structure du code est probablement optimisée pour une exécution rapide et une intégration légère.
+Le programme reçoit probablement un **paramètre d'entrée** (numéro ou code titre) et retourne le **libellé du titre** formaté. Aucune logique métier complexe : il s'agit d'un simple **mapping table de référence**, similaire aux autres zooms (devises, moyens de paiement, garanties).
 
-Les cas d'usage principaux couvrent les zooms interactifs (articles, devises, modes de paiement, types de taux, services), la navigation dans les menus de gestion (changement de compte, transferts) et les impressions (menu d'impression des appels). Cette ubiquité suggère que le programme gère plusieurs types d'entités avec un mécanisme unifié de récupération du titre.
+Son ubiquité dans l'architecture (20+ appelants) en fait un **composant critique de présentation** : si ce lookup échoue, l'affichage titres dégénère partout. C'est typiquement un programme à **migrer en utilitaire/service** centralisé, plutôt que d'appeler depuis 20 endroits.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -43,13 +43,13 @@ Les cas d'usage principaux couvrent les zooms interactifs (articles, devises, mo
 | **Condition** | `> type prog (CA si vide) [C]=''` |
 | **Si vrai** | 'CA' |
 | **Si faux** | > type prog (CA si vide) [C]) |
-| **Variables** | C (> type prog (CA si vide)) |
+| **Variables** | EP (> type prog (CA si vide)) |
 | **Expression source** | Expression 3 : `IF (> type prog (CA si vide) [C]='','CA',> type prog (CA si ` |
 | **Exemple** | Si > type prog (CA si vide) [C]='' â†’ 'CA'. Sinon â†’ > type prog (CA si vide) [C]) |
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Transferts (IDE 0)](ADH-IDE-0.md), [Menu changement compte (IDE 37)](ADH-IDE-37.md), [ Saisie date (IDE 68)](ADH-IDE-68.md), [Menu impression des appels (IDE 214)](ADH-IDE-214.md), [Visu du contenu d'un poste (IDE 215)](ADH-IDE-215.md), [Zoom sur table des gratuites (IDE 256)](ADH-IDE-256.md), [Zoom articles (IDE 257)](ADH-IDE-257.md), [Zoom mode paiement change GM (IDE 258)](ADH-IDE-258.md), [Zoom modes de paiement (IDE 259)](ADH-IDE-259.md), [Zoom moyen de règlement (IDE 260)](ADH-IDE-260.md), [Zoom des types de taux (IDE 261)](ADH-IDE-261.md), [Zoom  des types d'objets (IDE 262)](ADH-IDE-262.md), [Zoom modes de paiement (IDE 263)](ADH-IDE-263.md), [Zoom devise solde compte (IDE 264)](ADH-IDE-264.md), [Zoom devise (IDE 265)](ADH-IDE-265.md), [Zoom des all devises (IDE 266)](ADH-IDE-266.md), [Zoom devises (IDE 267)](ADH-IDE-267.md), [Zoom type depot garantie (IDE 268)](ADH-IDE-268.md), [Zoom services village (IDE 269)](ADH-IDE-269.md), [Zoom sur modes de paiement a/v (IDE 270)](ADH-IDE-270.md)
+- **Appele par**: [Affichage sessions (IDE 119)](ADH-IDE-119.md), [Change GM (IDE 25)](ADH-IDE-25.md), [Gestion forfait TAI LOCAL (IDE 173)](ADH-IDE-173.md), [Bi  Change GM Achat (IDE 293)](ADH-IDE-293.md), [Bi  Change GM Vente (IDE 294)](ADH-IDE-294.md), [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md), [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [Fusion (IDE 28)](ADH-IDE-28.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md), [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Saisie contenu caisse (IDE 120)](ADH-IDE-120.md), [Apport coffre (IDE 123)](ADH-IDE-123.md), [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Messagerie (IDE 170)](ADH-IDE-170.md), [Affectation code autocom (IDE 209)](ADH-IDE-209.md), [Menu telephone (IDE 217)](ADH-IDE-217.md), [Zoom modes de paiement (IDE 272)](ADH-IDE-272.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md), [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 4
 
 <!-- TAB:Ecrans -->
@@ -115,9 +115,9 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > code ecran | Numeric | 1x refs |
-| B | < nom ecran | Alpha | - |
-| C | > type prog (CA si vide) | Alpha | 1x refs |
+| EN | > code ecran | Numeric | 1x refs |
+| EO | < nom ecran | Alpha | - |
+| EP | > type prog (CA si vide) | Alpha | 1x refs |
 
 ## 12. EXPRESSIONS
 
@@ -158,88 +158,130 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Transferts (IDE 0)](ADH-IDE-0.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Affichage sessions (IDE 119)](ADH-IDE-119.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Menu changement compte (IDE 37)](ADH-IDE-37.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Change GM (IDE 25)](ADH-IDE-25.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [ Saisie date (IDE 68)](ADH-IDE-68.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Gestion forfait TAI LOCAL (IDE 173)](ADH-IDE-173.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Menu impression des appels (IDE 214)](ADH-IDE-214.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Bi  Change GM Achat (IDE 293)](ADH-IDE-293.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Visu du contenu d'un poste (IDE 215)](ADH-IDE-215.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Bi  Change GM Vente (IDE 294)](ADH-IDE-294.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom sur table des gratuites (IDE 256)](ADH-IDE-256.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Solde compte fin sejour (IDE 193)](ADH-IDE-193.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom articles (IDE 257)](ADH-IDE-257.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom mode paiement change GM (IDE 258)](ADH-IDE-258.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Fusion (IDE 28)](ADH-IDE-28.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom modes de paiement (IDE 259)](ADH-IDE-259.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Comptes de depôt (IDE 40)](ADH-IDE-40.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom moyen de règlement (IDE 260)](ADH-IDE-260.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Garantie sur compte (IDE 111)](ADH-IDE-111.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom des types de taux (IDE 261)](ADH-IDE-261.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom  des types d'objets (IDE 262)](ADH-IDE-262.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Saisie contenu caisse (IDE 120)](ADH-IDE-120.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom modes de paiement (IDE 263)](ADH-IDE-263.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Apport coffre (IDE 123)](ADH-IDE-123.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom devise solde compte (IDE 264)](ADH-IDE-264.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom devise (IDE 265)](ADH-IDE-265.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Messagerie (IDE 170)](ADH-IDE-170.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom des all devises (IDE 266)](ADH-IDE-266.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Affectation code autocom (IDE 209)](ADH-IDE-209.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom devises (IDE 267)](ADH-IDE-267.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Menu telephone (IDE 217)](ADH-IDE-217.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom type depot garantie (IDE 268)](ADH-IDE-268.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Zoom modes de paiement (IDE 272)](ADH-IDE-272.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom services village (IDE 269)](ADH-IDE-269.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Garantie sur compte (IDE 288)](ADH-IDE-288.md) -> **Recuperation du titre (IDE 43)**
 
-Main -> ... -> [Zoom sur modes de paiement a/v (IDE 270)](ADH-IDE-270.md) -> **Recuperation du titre (IDE 43)**
+Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Recuperation du titre (IDE 43)**
 
 ```mermaid
 graph LR
     T43[43 Recuperation du titre]
     style T43 fill:#58a6ff
-    CC214[214 Menu impression de...]
-    style CC214 fill:#8b5cf6
-    CC215[215 Visu du contenu du...]
-    style CC215 fill:#8b5cf6
-    CC37[37 Menu changement compte]
-    style CC37 fill:#8b5cf6
-    CC68[68 Saisie date]
-    style CC68 fill:#8b5cf6
-    CC37 --> T43
-    CC68 --> T43
-    CC214 --> T43
-    CC215 --> T43
+    CALLER119[119 Affichage sessions]
+    CALLER119 --> T43
+    style CALLER119 fill:#3fb950
+    CALLER25[25 Change GM]
+    CALLER25 --> T43
+    style CALLER25 fill:#3fb950
+    CALLER173[173 Gestion forfait TA...]
+    CALLER173 --> T43
+    style CALLER173 fill:#3fb950
+    CALLER293[293 Bi Change GM Achat]
+    CALLER293 --> T43
+    style CALLER293 fill:#3fb950
+    CALLER294[294 Bi Change GM Vente]
+    CALLER294 --> T43
+    style CALLER294 fill:#3fb950
+    CALLER193[193 Solde compte fin s...]
+    CALLER193 --> T43
+    style CALLER193 fill:#3fb950
+    CALLER28[28 Fusion]
+    CALLER28 --> T43
+    style CALLER28 fill:#3fb950
+    CALLER40[40 Comptes de depôt]
+    CALLER40 --> T43
+    style CALLER40 fill:#3fb950
+    CALLER111[111 Garantie sur compte]
+    CALLER111 --> T43
+    style CALLER111 fill:#3fb950
+    CALLER112[112 Garantie sur compt...]
+    CALLER112 --> T43
+    style CALLER112 fill:#3fb950
+    CALLER120[120 Saisie contenu caisse]
+    CALLER120 --> T43
+    style CALLER120 fill:#3fb950
+    CALLER123[123 Apport coffre]
+    CALLER123 --> T43
+    style CALLER123 fill:#3fb950
+    CALLER163[163 Menu caisse GM - s...]
+    CALLER163 --> T43
+    style CALLER163 fill:#3fb950
+    CALLER170[170 Messagerie]
+    CALLER170 --> T43
+    style CALLER170 fill:#3fb950
+    CALLER209[209 Affectation code a...]
+    CALLER209 --> T43
+    style CALLER209 fill:#3fb950
+    CALLER217[217 Menu telephone]
+    CALLER217 --> T43
+    style CALLER217 fill:#3fb950
+    CALLER272[272 Zoom modes de paie...]
+    CALLER272 --> T43
+    style CALLER272 fill:#3fb950
+    CALLER288[288 Garantie sur compte]
+    CALLER288 --> T43
+    style CALLER288 fill:#3fb950
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [0](ADH-IDE-0.md) | Transferts | 1 |
-| [37](ADH-IDE-37.md) | Menu changement compte | 1 |
-| [68](ADH-IDE-68.md) |  Saisie date | 1 |
-| [214](ADH-IDE-214.md) | Menu impression des appels | 1 |
-| [215](ADH-IDE-215.md) | Visu du contenu d'un poste | 1 |
-| [256](ADH-IDE-256.md) | Zoom sur table des gratuites | 1 |
-| [257](ADH-IDE-257.md) | Zoom articles | 1 |
-| [258](ADH-IDE-258.md) | Zoom mode paiement change GM | 1 |
-| [259](ADH-IDE-259.md) | Zoom modes de paiement | 1 |
-| [260](ADH-IDE-260.md) | Zoom moyen de règlement | 1 |
-| [261](ADH-IDE-261.md) | Zoom des types de taux | 1 |
-| [262](ADH-IDE-262.md) | Zoom  des types d'objets | 1 |
-| [263](ADH-IDE-263.md) | Zoom modes de paiement | 1 |
-| [264](ADH-IDE-264.md) | Zoom devise solde compte | 1 |
-| [265](ADH-IDE-265.md) | Zoom devise | 1 |
-| [266](ADH-IDE-266.md) | Zoom des all devises | 1 |
-| [267](ADH-IDE-267.md) | Zoom devises | 1 |
-| [268](ADH-IDE-268.md) | Zoom type depot garantie | 1 |
-| [269](ADH-IDE-269.md) | Zoom services village | 1 |
-| [270](ADH-IDE-270.md) | Zoom sur modes de paiement a/v | 1 |
+| [119](ADH-IDE-119.md) | Affichage sessions | 7 |
+| [25](ADH-IDE-25.md) | Change GM | 4 |
+| [173](ADH-IDE-173.md) | Gestion forfait TAI LOCAL | 4 |
+| [293](ADH-IDE-293.md) | Bi  Change GM Achat | 4 |
+| [294](ADH-IDE-294.md) | Bi  Change GM Vente | 4 |
+| [193](ADH-IDE-193.md) | Solde compte fin sejour | 3 |
+| [0](ADH-IDE-0.md) | Garantie sur compte PMS-584 | 2 |
+| [28](ADH-IDE-28.md) | Fusion | 2 |
+| [40](ADH-IDE-40.md) | Comptes de depôt | 2 |
+| [111](ADH-IDE-111.md) | Garantie sur compte | 2 |
+| [112](ADH-IDE-112.md) | Garantie sur compte PMS-584 | 2 |
+| [120](ADH-IDE-120.md) | Saisie contenu caisse | 2 |
+| [123](ADH-IDE-123.md) | Apport coffre | 2 |
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 2 |
+| [170](ADH-IDE-170.md) | Messagerie | 2 |
+| [209](ADH-IDE-209.md) | Affectation code autocom | 2 |
+| [217](ADH-IDE-217.md) | Menu telephone | 2 |
+| [272](ADH-IDE-272.md) | Zoom modes de paiement | 2 |
+| [288](ADH-IDE-288.md) | Garantie sur compte | 2 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-584 | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -280,4 +322,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:16*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:42*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 229 - Ventilation Lignes Ventes
 
-> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:54 (30s) | Assemblage 03:54
+> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:54 (30s) | Assemblage 04:29
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,49 +18,17 @@
 | Taches | 7 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 14/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Ventilation Lignes Ventes** assure la gestion complete de ce processus.
+# ADH IDE 229 - Ventilation Lignes Ventes
 
-Le flux de traitement s'organise en **4 blocs fonctionnels** :
+Programme de gestion des lignes de vente avec support multi-registres. Traite la ventilation comptable des ventes en distinguant les moyens de règlement et en créant les écritures comptables correspondantes.
 
-- **Reglement** (3 taches) : gestion des moyens de paiement et reglements
-- **Traitement** (2 taches) : traitements metier divers
-- **Creation** (1 tache) : insertion d'enregistrements en base (mouvements, prestations)
-- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
+Flux principal : Lecture des factures et règlements → Appairage lignes de vente avec modes de paiement → Création d'une table temporaire de facturation → Validation cohérence (nombre de lignes règlement vs facture) → Recherche et appairage règlements existants → Génération des écritures ventilées.
 
-**Donnees modifiees** : 1 tables en ecriture (type_mail_a_traiter).
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Saisie (1 tache)
-
-- **229** - Maj lignes de ventes\Multi Reg
-
-#### Phase 2 : Traitement (2 taches)
-
-- **229.1** - Creaion Temp Fac
-- **229.3.2** - Efface
-
-#### Phase 3 : Reglement (3 taches)
-
-- **229.2** - Lecture Fact/Reglement **[[ECRAN]](#ecran-t3)**
-- **229.3** - Nb Lg Reglement < Nb LgFacture **[[ECRAN]](#ecran-t4)**
-- **229.3.1** - REcherche reglement **[[ECRAN]](#ecran-t5)**
-
-#### Phase 4 : Creation (1 tache)
-
-- **229.3.1.1** - Creation **[[ECRAN]](#ecran-t6)**
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| type_mail_a_traiter | **W** (6 usages) |  |
-
-</details>
+Gère les cas d'exception où le nombre de lignes de règlement est inférieur au nombre de lignes de facture, avec recherche intelligente des règlements manquants. Met à jour la table `type_mail_a_traiter` pour signaler les anomalies ou les traitements achevés. Utilisé principalement dans le flux de caisse pour consolider et répartir les ventes selon les canaux de paiement.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -70,7 +38,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t1"></a>229 - Maj lignes de ventes\Multi Reg
+#### <a id="t1"></a>T1 - Maj lignes de ventes\Multi Reg
 
 **Role** : Saisie des donnees : Maj lignes de ventes\Multi Reg.
 
@@ -81,13 +49,13 @@ Traitements internes.
 
 ---
 
-#### <a id="t2"></a>229.1 - Creaion Temp Fac
+#### <a id="t2"></a>T2 - Creaion Temp Fac
 
 **Role** : Traitement : Creaion Temp Fac.
 
 ---
 
-#### <a id="t7"></a>229.3.2 - Efface
+#### <a id="t7"></a>T7 - Efface
 
 **Role** : Traitement : Efface.
 
@@ -98,7 +66,7 @@ Gestion des moyens de paiement : 3 taches de reglement.
 
 ---
 
-#### <a id="t3"></a>229.2 - Lecture Fact/Reglement [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Lecture Fact/Reglement [ECRAN]
 
 **Role** : Gestion du reglement : Lecture Fact/Reglement.
 **Ecran** : 467 x 0 DLU | [Voir mockup](#ecran-t3)
@@ -106,7 +74,7 @@ Gestion des moyens de paiement : 3 taches de reglement.
 
 ---
 
-#### <a id="t4"></a>229.3 - Nb Lg Reglement < Nb LgFacture [[ECRAN]](#ecran-t4)
+#### <a id="t4"></a>T4 - Nb Lg Reglement < Nb LgFacture [ECRAN]
 
 **Role** : Gestion du reglement : Nb Lg Reglement < Nb LgFacture.
 **Ecran** : 612 x 169 DLU | [Voir mockup](#ecran-t4)
@@ -114,7 +82,7 @@ Gestion des moyens de paiement : 3 taches de reglement.
 
 ---
 
-#### <a id="t5"></a>229.3.1 - REcherche reglement [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - REcherche reglement [ECRAN]
 
 **Role** : Gestion du reglement : REcherche reglement.
 **Ecran** : 502 x 192 DLU | [Voir mockup](#ecran-t5)
@@ -127,7 +95,7 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t6"></a>229.3.1.1 - Creation [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Creation [ECRAN]
 
 **Role** : Creation d'enregistrement : Creation.
 **Ecran** : 143 x 138 DLU | [Voir mockup](#ecran-t6)
@@ -135,7 +103,7 @@ Insertion de nouveaux enregistrements en base.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -154,13 +122,13 @@ Insertion de nouveaux enregistrements en base.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **229.1** | [**Maj lignes de ventes\Multi Reg** (229)](#t1) | - | - | Saisie |
-| **229.2** | [**Creaion Temp Fac** (229.1)](#t2) | - | - | Traitement |
-| 229.2.1 | [Efface (229.3.2)](#t7) | - | - | |
-| **229.3** | [**Lecture Fact/Reglement** (229.2)](#t3) [mockup](#ecran-t3) | - | 467x0 | Reglement |
-| 229.3.1 | [Nb Lg Reglement < Nb LgFacture (229.3)](#t4) [mockup](#ecran-t4) | - | 612x169 | |
-| 229.3.2 | [REcherche reglement (229.3.1)](#t5) [mockup](#ecran-t5) | - | 502x192 | |
-| **229.4** | [**Creation** (229.3.1.1)](#t6) [mockup](#ecran-t6) | - | 143x138 | Creation |
+| **229.1** | [**Maj lignes de ventes\Multi Reg** (T1)](#t1) | - | - | Saisie |
+| **229.2** | [**Creaion Temp Fac** (T2)](#t2) | - | - | Traitement |
+| 229.2.1 | [Efface (T7)](#t7) | - | - | |
+| **229.3** | [**Lecture Fact/Reglement** (T3)](#t3) [mockup](#ecran-t3) | - | 467x0 | Reglement |
+| 229.3.1 | [Nb Lg Reglement < Nb LgFacture (T4)](#t4) [mockup](#ecran-t4) | - | 612x169 | |
+| 229.3.2 | [REcherche reglement (T5)](#t5) [mockup](#ecran-t5) | - | 502x192 | |
+| **229.4** | [**Creation** (T6)](#t6) [mockup](#ecran-t6) | - | 143x138 | Creation |
 
 ### 9.4 Algorigramme
 
@@ -168,19 +136,27 @@ Insertion de nouveaux enregistrements en base.
 flowchart TD
     START([START])
     INIT[Init controles]
-    SAISIE[Traitement principal]
-    UPDATE[MAJ 1 tables]
+    START --> INIT
+    B1[Saisie (1t)]
+    INIT --> B1
+    B2[Traitement (2t)]
+    B1 --> B2
+    B3[Reglement (3t)]
+    B2 --> B3
+    B4[Creation (1t)]
+    B3 --> B4
+    WRITE[MAJ 1 tables]
+    B4 --> WRITE
     ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
+    WRITE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -190,9 +166,9 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 596 | tempo_ecran_police | Table temporaire ecran | TMP |   |   | L | 1 |
-| 847 | stat_lieu_vente_date | Statistiques point de vente | TMP |   |   | L | 1 |
 | 864 | type_mail_a_traiter |  | DB |   | **W** |   | 6 |
+| 847 | stat_lieu_vente_date | Statistiques point de vente | TMP |   |   | L | 1 |
+| 596 | tempo_ecran_police | Table temporaire ecran | TMP |   |   | L | 1 |
 
 ### Colonnes par table (1 / 1 tables avec colonnes identifiees)
 
@@ -341,4 +317,4 @@ graph LR
 | type_mail_a_traiter | Table WRITE (Database) | 6x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:54*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:29*

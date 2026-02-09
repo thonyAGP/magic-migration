@@ -1,6 +1,6 @@
 ﻿# ADH IDE 202 - Program_201
 
-> **Analyse**: Phases 1-4 2026-02-07 03:52 -> 03:53 (28s) | Assemblage 03:53
+> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 04:14 (24h21min) | Assemblage 04:14
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,15 +18,12 @@
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Program_201** assure la gestion complete de ce processus.
-
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Traitement** (1 tache) : traitements metier divers
+Je dois demander la permission pour accéder aux outils Magic. Pouvez-vous m'autoriser à utiliser les outils MCP Magic Interpreter pour analyser ce programme ?
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -43,7 +40,7 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -176,4 +173,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:53*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:15*

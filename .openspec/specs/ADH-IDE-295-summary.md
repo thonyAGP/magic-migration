@@ -1,6 +1,6 @@
 ﻿# ADH IDE 295 - Menu change bilateral
 
-> **Analyse**: 2026-02-07 03:55
+> **Analyse**: 2026-02-08 05:12
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -16,7 +16,7 @@
 | Direction | Programmes |
 |-----------|------------|
 | **Appele par** | (aucun) |
-| **Appelle** | [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Bi  Change GM Achat (IDE 293)](ADH-IDE-293.md), [Bi  Change GM Vente (IDE 294)](ADH-IDE-294.md) |
+| **Appelle** | [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md) |
 
 ## STATISTIQUES
 

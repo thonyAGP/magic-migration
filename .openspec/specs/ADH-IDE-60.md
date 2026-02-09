@@ -1,6 +1,6 @@
 ﻿# ADH IDE 60 - Creation entete facture
 
-> **Analyse**: Phases 1-4 2026-02-07 16:16 -> 16:16 (6s) | Assemblage 16:16
+> **Analyse**: Phases 1-4 2026-02-07 16:16 -> 01:55 (9h38min) | Assemblage 01:55
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,15 +19,14 @@
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 7/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 60 crée l'en-tête d'une facture TVA en lisant les paramètres de taxation stockés dans la table `taxe_add_param`. Le programme récupère les valeurs de configuration (taux, libellés, codes fiscaux) nécessaires pour initialiser la structure de facture avant d'ajouter les lignes détail. C'est une opération d'initialisation critique qui garantit la cohérence des données fiscales sur toute la facture.
+ADH IDE 60 crée les en-têtes de facture avec gestion automatique des paramètres TVA. Le programme initialise les structures de facturation en fonction du contexte appelant (mode comptabilité ou vente), puis insère ou met à jour les enregistrements dans la table `taxe_add_param` qui stocke les configurations de taxe spécifiques à chaque facture.
 
-Le programme modifie uniquement `taxe_add_param` pour enregistrer les choix de paramétrage ou mettre à jour les valeurs par défaut utilisées. Les paramètres stockés incluent les taux TVA applicables, les modes de calcul (TVA incluse/excluse), et les codes de ventilation comptable. Ces données persistes permettent à chaque création de facture suivante de réutiliser la configuration sans la ressaisir.
+Le flux principal récupère les paramètres TVA du contexte session (devise, taux, régime fiscal) et les applique à la nouvelle facture en création. Il gère les cas particuliers où la TVA doit être calculée différemment selon le type de client ou le service rendu, en s'appuyant sur les données transmises par les programmes appelants (IDE 89, 54, 97).
 
-Ce programme s'intègre dans le flux de facturation ADH (modules Factures et Easy Checkout) en amont de la saisie des articles. Une fois l'en-tête créée avec les bons paramètres fiscaux, les programmes de détail (Saisie_facture_tva, FACTURES_CHECK_OUT) peuvent appliquer la TVA correctement ligne par ligne.
+Ce programme est un point de passage obligatoire avant la création des lignes de facture. Il garantit que chaque facture dispose d'une configuration TVA cohérente et traçable dans `taxe_add_param`, évitant les incohérences lors du calcul des totaux et des impressions ultérieures.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -37,7 +36,7 @@ Ce programme s'intègre dans le flux de facturation ADH (modules Factures et Eas
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md), [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 7
 
 <!-- TAB:Ecrans -->
@@ -104,17 +103,17 @@ flowchart TD
 
 ### 11.1 Parametres entrants (7)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | p.NumFact | Numeric | 1x parametre entrant |
-| B | p.Nom | Unicode | 1x parametre entrant |
-| C | p.Adresse | Unicode | 1x parametre entrant |
-| D | p.CodePostal | Unicode | 1x parametre entrant |
-| E | p.Ville | Unicode | 1x parametre entrant |
-| F | p.Tel | Unicode | 1x parametre entrant |
-| G | P.Pays | Unicode | 1x parametre entrant |
+| EN | p.NumFact | Numeric | 1x parametre entrant |
+| EO | p.Nom | Unicode | 1x parametre entrant |
+| EP | p.Adresse | Unicode | 1x parametre entrant |
+| EQ | p.CodePostal | Unicode | 1x parametre entrant |
+| ER | p.Ville | Unicode | 1x parametre entrant |
+| ES | p.Tel | Unicode | 1x parametre entrant |
+| ET | P.Pays | Unicode | 1x parametre entrant |
 
 ## 12. EXPRESSIONS
 
@@ -145,22 +144,74 @@ Variables recues en parametre.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md) -> **Creation entete facture (IDE 60)**
+
+Main -> ... -> [Factures_Check_Out (IDE 54)](ADH-IDE-54.md) -> **Creation entete facture (IDE 60)**
+
+Main -> ... -> [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) -> **Creation entete facture (IDE 60)**
 
 ```mermaid
 graph LR
     T60[60 Creation entete fac...]
     style T60 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T60
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC287[287 Solde Easy Check Out]
+    style CC287 fill:#8b5cf6
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#8b5cf6
+    CC313[313 Easy Check-Out ===...]
+    style CC313 fill:#8b5cf6
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#8b5cf6
+    CC283[283 Easy Check-Out ===...]
+    style CC283 fill:#8b5cf6
+    CC64[64 Solde Easy Check Out]
+    style CC64 fill:#8b5cf6
+    CC280[280 Lanceur Facture]
+    style CC280 fill:#8b5cf6
+    CC54[54 Factures_Check_Out]
+    style CC54 fill:#3fb950
+    CC97[97 Factures Tble Compt...]
+    style CC97 fill:#3fb950
+    CC89[89 Factures Tble Compt...]
+    style CC89 fill:#3fb950
+    CC64 --> CC54
+    CC280 --> CC54
+    CC283 --> CC54
+    CC287 --> CC54
+    CC313 --> CC54
+    CC163 --> CC54
+    CC190 --> CC54
+    CC193 --> CC54
+    CC64 --> CC89
+    CC280 --> CC89
+    CC283 --> CC89
+    CC287 --> CC89
+    CC313 --> CC89
+    CC163 --> CC89
+    CC190 --> CC89
+    CC193 --> CC89
+    CC64 --> CC97
+    CC280 --> CC97
+    CC283 --> CC97
+    CC287 --> CC97
+    CC313 --> CC97
+    CC163 --> CC97
+    CC190 --> CC97
+    CC193 --> CC97
+    CC54 --> T60
+    CC89 --> T60
+    CC97 --> T60
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [89](ADH-IDE-89.md) | Factures (Tble Compta&Vent | 3 |
+| [54](ADH-IDE-54.md) | Factures_Check_Out | 2 |
+| [97](ADH-IDE-97.md) | Factures (Tble Compta&Vent) V3 | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -202,4 +253,4 @@ graph LR
 | taxe_add_param | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 16:17*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:56*

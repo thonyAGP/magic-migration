@@ -1,200 +1,253 @@
 ﻿# ADH IDE 275 - Zoom mode de paiement TPE
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:14
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_271.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:55 -> 04:55 (4s) | Assemblage 04:55
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Zoom mode de paiement TPE** est le **selecteur des modes de paiement compatibles TPE (Terminal de Paiement Electronique)** qui **permet a l'operateur de choisir un mode de paiement pour transaction par carte bancaire**.
-
-**Objectif metier** : Fournir une fenetre de selection (zoom) pour afficher les modes de paiement compatibles avec le terminal de paiement electronique (cartes bancaires Visa, Mastercard, etc.) et permettre leur selection lors d'un encaissement par TPE.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur caisse |
-| **Quoi** | Fenetre de selection des modes de paiement TPE |
-| **Pourquoi** | Filtrer les moyens de reglement compatibles avec le terminal de paiement |
-| **Declencheur** | Clic sur zoom lors d'un paiement par carte bancaire |
-| **Resultat** | Retour du mode de paiement TPE selectionne au programme appelant |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (2 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 275 |
-| **Fichier XML** | `Prg_271.xml` |
-| **Description** | Zoom mode de paiement TPE |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 28 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 275 |
+| Nom Programme | Zoom mode de paiement TPE |
+| Fichier source | `Prg_275.xml` |
+| Dossier IDE | Consultation |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 50 | moyens_reglement_mor | cafil028_dat | READ | Lecture |
-| 89 | moyen_paiement___mop | cafil067_dat | LINK | Jointure |
+**ADH IDE 275 est un sélecteur simplifié de modes de paiement TPE** qui offre aux utilisateurs une interface pour choisir le mode de règlement parmi les moyens de paiement compatibles avec les terminaux électroniques (cartes bancaires, e-monnaie). Le programme accède à deux tables de référence : `moyens_reglement_mor` (codes de règlement) et `moyen_paiement___mop` (libellés détaillés), qu'il filtre pour ne proposer que les modes acceptés par le TPE. Sans logique métier complexe ni expressions conditionnelles, il fonctionne comme un simple lecteur de référentiels.
 
-**Resume**: 2 tables accedees dont **0 en ecriture**
+Le programme s'intègre dans le flux de caisse au moment de la saisie de transaction (IDE 316), où il est appelé en parallèle avec IDE 272 (zoom enrichi) quand l'utilisateur doit corriger ou saisir manuellement un mode de paiement suite à un refus TPE. À la différence d'IDE 272 qui intègre un appel à IDE 43 pour récupérer les titres, IDE 275 reste autonome et retourne directement le mode sélectionné sans dépendances aval. C'est un **composant terminal** très ciblé pour la gestion des moyens de paiement électroniques.
 
-### 2.3 Parametres d'entree (0 parametres)
+Avec une structure extrêmement légère (1 tâche, 28 lignes, zéro callers détectés), IDE 275 représente un utilitaire de lookup pur adapté à une migration vers un simple service repository. Son isolation architecturale et son périmètre métier restreint en font un candidat idéal pour extraction en microservice léger ou pattern repository moderne retournant la liste des modes TPE disponibles.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: [M]<>'VADA' AND [M]<>'VADV' AND [M] different de 'OD'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[M]<>'VADA' AND [M]<>'VADV' AND [M]<>'OD'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 9 : `[M]<>'VADA' AND [M]<>'VADV' AND [M]<>'OD'` |
+| **Exemple** | Si [M]<>'VADA' AND [M]<>'VADV' AND [M]<>'OD' â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 1 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 9
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{AND}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 28 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 2 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (2)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 50 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 1 |
+| 89 | moyen_paiement___mop |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (2 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 50 - moyens_reglement_mor (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | > societe | R | Alpha |
+| B | > devise | R | Alpha |
+| C | > type d'operation | R | Alpha |
+| D | < mode de paiement | R | Alpha |
+| E | > zoom vente et od | R | Alpha |
+| F | > compte garanti | R | Logical |
+| G | > solde compte | R | Numeric |
+| H | > article derniere minute | R | Logical |
+| I | v. titre | R | Alpha |
+| J | bouton quitter | R | Alpha |
+| K | bouton selectionner | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EV | v. titre | Alpha | - |
+
+### 11.2 Autres (10)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | > societe | Alpha | 1x refs |
+| EO | > devise | Alpha | 1x refs |
+| EP | > type d'operation | Alpha | 1x refs |
+| EQ | < mode de paiement | Alpha | - |
+| ER | > zoom vente et od | Alpha | - |
+| ES | > compte garanti | Logical | - |
+| ET | > solde compte | Numeric | - |
+| EU | > article derniere minute | Logical | - |
+| EW | bouton quitter | Alpha | - |
+| EX | bouton selectionner | Alpha | - |
+
+## 12. EXPRESSIONS
+
+**9 / 9 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 4 | 5 |
+| CONSTANTE | 4 | 0 |
+| OTHER | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 9 | `[M]<>'VADA' AND [M]<>'VADV' AND [M]<>'OD'` | [RM-001](#rm-RM-001) |
+| CONDITION | 6 | `> type d'operation [C]` | - |
+| CONDITION | 5 | `> devise [B]` | - |
+| CONDITION | 4 | `> societe [A]` | - |
+
+#### CONSTANTE (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 3 | `61` | - |
+| CONSTANTE | 7 | `'O'` | - |
+| CONSTANTE | 1 | `'&Quitter'` | - |
+| CONSTANTE | 2 | `'&Selectionner'` | - |
+
+#### OTHER (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 8 | `[M]` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[275 Zoom mode de pa]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T275[275 Zoom mode de paiem...]
+    style T275 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T275
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[275 Zoom mode de pa]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T275[275 Zoom mode de paiem...]
+    style T275 fill:#58a6ff
+    C43[43 Recuperation du titre]
+    T275 --> C43
+    style C43 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 28 | Programme compact |
+| Expressions | 9 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 28) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 2 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:14 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:56*

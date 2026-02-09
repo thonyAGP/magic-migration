@@ -1,6 +1,6 @@
 ﻿# ADH IDE 14 - e-mail list
 
-> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:39 (28s) | Assemblage 12:54
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 01:15 (21h36min) | Assemblage 01:15
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,23 +22,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Merci pour le contexte sur le projet. Cependant, je dois demander une clarification pour la tâche.
+# ADH IDE 14 - E-mail List
 
-Vous me demandez de rédiger 2-3 paragraphes sur **ADH IDE 14 - e-mail list** basé sur :
-- Appel depuis : IDE 12 (Catching stats)
-- Tables modifiées : quadriga_chambre
-- Tâches : E-mail List
+Programme de gestion et consultation des listes d'e-mails associées aux réservations en cours. Accédé depuis le module Catching stats (IDE 12), il permet de visualiser et mettre à jour les adresses e-mail des clients enregistrées dans la base de données des réservations.
 
-Le problème : **Je n'ai pas accès aux données brutes du programme Magic ADH IDE 14**. Pour générer une description précise, j'aurais besoin soit de :
+Modifie la table `quadriga_chambre` pour mettre à jour les contacts e-mail. Integre les données de réservation provenant du système Quadriga, permettant une synchronisation des informations de contact entre les systèmes PMS et la gestion interne des adhérents.
 
-1. **Lancer l'analyse complète** du programme (Phase1-Discovery → Phase5-Synthesis) pour extraire les détails du KB
-2. **Consulter les specs existantes** si elles sont déjà générées (dans `.openspec/specs/ADH-IDE-14*.md`)
-3. **Fournir manuellement** les informations de logique métier
-
-**Quelle approche préférez-vous ?**
-- Génération automatique via le pipeline (peut prendre du temps)
-- Rédaction basée sur ce que vous savez du programme
-- Consultation des specs existantes si déjà disponibles
+Tâche principale : E-mail List - gère l'affichage, la validation et la modification des listes d'e-mails pour les contacts de réservations actives. Expose les données des e-mails via une interface de consultation et permet les mises à jour directes des adresses pour faciliter la communication avec les clients.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -379,4 +369,4 @@ graph LR
 | quadriga_chambre | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:56*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:16*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 11 - Export - address
 
-> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 12:50
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 01:09 (21h30min) | Assemblage 01:09
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 11 est un **programme de capture et export d'adresses** utilisé lors du processus de validation de commande (shift F9). Appelé depuis IDE 10 (Print list Checkout), il écrit les données d'adresse dans la table `address_data_catching` avec un statut d'acceptation email tri-niveau. Le programme applique une règle métier simple : si une variable [AY] n'est pas vide, le statut est '0' (accepté), sinon il vérifie [BD]=0 pour '1' (en attente) ou '2' (rejeté).
+ADH IDE 11 est un programme d'export simple qui capture les données d'adresse des clients au moment du départ (checkout) dans le module Data Catching. Appelé depuis ADH IDE 10 (impression du bordereau de caisse) lors de la validation finale, il enregistre les informations de contact dans la table `address_data_catching` avec un statut de trois niveaux pour l'acceptation des emails : accepté (email présent), en attente (condition validation=0) ou rejeté (condition validation≠0).
 
-Le programme est structuré en une seule tâche (Tache 11.1) composée de 68 lignes de logique 100% active, sans code mort. Il utilise un formulaire minimaliste avec un seul champ EDIT pour l'acceptation email, et référence deux tables liées (`gm-complet_______gmc` et `client_gm`) pour le contexte. Aucune sous-tâche, aucun branchement conditionnel : la logique est linéaire et déterministe, parfaitement isolée en tant que programme terminal.
+Le programme exporte les données vers un fichier texte `KIOemail.TXT` stocké dans un répertoire de configuration. Il traite les trois champs de nom (prénom, nom, titre), applique la règle logique de statut email via une expression conditionnelle, et écrit les enregistrements séparés par des délimiteurs ASCII. Aucun autre programme ne dépend de sa sortie, ce qui en fait un terminal pur dans la chaîne de traitement.
 
-Le programme génère un fichier export nommé **KIOemail.TXT** (chemin dynamique depuis configuration INI), persistent la capture d'adresse avec le statut email calculé. Il représente une pièce simple mais critique du workflow Data Catching, serveur de persistance pour les validations de checkout sans dépendances aval.
+Avec seulement 68 lignes de code actif (0% de code mort), zéro appel de sous-programme et une logique métier élémentaire, ADH IDE 11 représente un cas de migration à bas risque : une simple extraction de données avec validation binaire+trinaire, bien adapté pour une transformation directe en service TypeScript ou C# avec écriture de fichier.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -48,15 +48,15 @@ Traitements internes.
 
 ### Autres (1 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Traitement conditionnel si [AY]<>'','0',IF ([BD] est a zero
+#### <a id="rm-RM-001"></a>[RM-001] Traitement conditionnel si [BY]<>'','0',IF ([CD] est a zero
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `[AY]<>''` |
+| **Condition** | `[BY]<>''` |
 | **Si vrai** | '0' |
-| **Si faux** | IF ([BD]=0,'1','2')) |
-| **Expression source** | Expression 10 : `IF ([AY]<>'','0',IF ([BD]=0,'1','2'))` |
-| **Exemple** | Si [AY]<>'' â†’ '0'. Sinon â†’ IF ([BD]=0,'1','2')) |
+| **Si faux** | IF ([CD]=0,'1','2')) |
+| **Expression source** | Expression 10 : `IF ([BY]<>'','0',IF ([CD]=0,'1','2'))` |
+| **Exemple** | Si [BY]<>'' â†’ '0'. Sinon â†’ IF ([CD]=0,'1','2')) |
 
 ## 6. CONTEXTE
 
@@ -189,7 +189,7 @@ flowchart TD
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 10 | `IF ([AY]<>'','0',IF ([BD]=0,'1','2'))` | [RM-001](#rm-RM-001) |
+| CONDITION | 10 | `IF ([BY]<>'','0',IF ([CD]=0,'1','2'))` | [RM-001](#rm-RM-001) |
 
 #### OTHER (6 expressions)
 
@@ -282,4 +282,4 @@ graph LR
 | address_data_catching | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:52*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:11*

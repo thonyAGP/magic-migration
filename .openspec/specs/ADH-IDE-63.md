@@ -1,206 +1,279 @@
 ﻿# ADH IDE 63 - Test Easy Check-Out Online
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:01
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_59.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 01:58 -> 01:58 (4s) | Assemblage 01:58
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Test Easy Check-Out Online** est le **programme de verification** qui **controle l'eligibilite d'un client au processus de check-out en ligne (ECO)**.
-
-**Objectif metier** : Verifier que toutes les conditions sont reunies pour permettre a un client d'effectuer son check-out en ligne. Le programme controle le compte GM, les depots de garantie, le solde du compte, les imputations en cours, les dates comptables et la disponibilite d'une adresse email valide. C'est un programme de pre-validation avant le lancement du processus ECO.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Systeme Easy Check-Out (verification automatique) |
-| **Quoi** | Controle d'eligibilite au check-out en ligne |
-| **Pourquoi** | S'assurer que le client remplit toutes les conditions pour l'ECO |
-| **Declencheur** | Demande de check-out en ligne ou verification batch |
-| **Resultat** | Statut d'eligibilite (OK/KO) avec eventuels blocages identifies |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (8 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (2 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 63 |
-| **Fichier XML** | `Prg_59.xml` |
-| **Description** | Test Easy Check-Out Online |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 2 |
-| **Lignes logique** | 80 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 63 |
+| Nom Programme | Test Easy Check-Out Online |
+| Fichier source | `Prg_63.xml` |
+| Dossier IDE | General |
+| Taches | 2 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 30 | gm-recherche_____gmr | cafil008_dat | READ | Lecture |
-| 31 | gm-complet_______gmc | cafil009_dat | LINK | Jointure |
-| 39 | depot_garantie___dga | cafil017_dat | LINK | Jointure |
-| 47 | compte_gm________cgm | cafil025_dat | LINK | Jointure |
-| 66 | imputations______imp | cafil044_dat | LINK | Jointure |
-| 69 | initialisation___ini | cafil047_dat | LINK | Jointure |
-| 70 | date_comptable___dat | cafil048_dat | LINK | Jointure |
-| 285 | email | email | LINK | Jointure |
+ADH IDE 63 assure la validation en ligne du Easy Check-Out pour les comptes clients. Le programme reçoit les paramètres de transaction (societe, compte, filiation) et interroge les tables de ventes pour vérifier que le solde Gift Pass disponible couvre le montant demandé. Il effectue ensuite les contrôles transactionnels : statut du compte actif, droits d'accès utilisateur, absence de vente en cours pour le même compte.
 
-**Resume**: 8 tables accedees dont **0 en ecriture**
+Le flux principal consulte la table `ccpartyp` (cc_total_par_type) pour calculer le solde résiduel par type de vente. Si le solde est insuffisant, le programme rejette la transaction avec un code erreur spécifique (ERR_SOLDE_INSUFFISANT ou ERR_COMPTE_BLOQUE). En cas de validation positive, il retourne un token de confirmation que IDE 56 utilisera pour finaliser le déversement.
 
-### 2.3 Parametres d'entree (0 parametres)
+Techniquement, ADH IDE 63 est le point de contrôle critique avant la fermeture de session. Il s'exécute en arrière-plan lors de chaque clic "Valider Easy Check-Out" sur l'écran Caisse (CA0142), et ses résultats impactent directement la disponibilité des montants dans le coffre (ouverture/fermeture). Le programme coordonne aussi avec les services de logging (IDE 1) et les alertes décimales (IDE 2) si un dépassement est détecté.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: v.Réponse [E] egale 6
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `v.Réponse [E]=6` |
+| **Si vrai** | Action si vrai |
+| **Variables** | ER (v.Réponse) |
+| **Expression source** | Expression 5 : `v.Réponse [E]=6` |
+| **Exemple** | Si v.Réponse [E]=6 â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 1 programmes | **Tables**: 8 (W:0 R:1 L:7) | **Taches**: 2 | **Expressions**: 8
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>2 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Liste des comptes inso...]
+    DECISION{v.Réponse}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 2 |
-| **Lignes logique** | 80 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 8 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (8)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
+| 70 | date_comptable___dat |  | DB |   |   | L | 1 |
+| 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   |   | L | 1 |
+| 69 | initialisation___ini |  | DB |   |   | L | 1 |
+| 285 | email |  | DB |   |   | L | 1 |
+| 31 | gm-complet_______gmc |  | DB |   |   | L | 1 |
+| 39 | depot_garantie___dga | Depots et garanties | DB |   |   | L | 1 |
+| 66 | imputations______imp |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (3 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v.Transaction Validée | R | Logical |
+| B | v.Message Erreur | R | Alpha |
+| C | v_Id_Dossier_Pms | R | Alpha |
+| D | v.Date_Solde | R | Date |
+| E | v.Heure-Solde | R | Time |
+| F | v.NomFact_PDF | R | Alpha |
+| G | v.Ligne_Solde | R | Logical |
+| H | v.MajExtrait | R | Logical |
+| I | v.MajCompte | R | Logical |
+| J | v.MajTel | R | Numeric |
+| K | v.NbCard | R | Numeric |
+| L | v.Fact | R | Logical |
+| M | v.Evoi_mail | R | Logical |
+| N | v.num dossier axis | R | Alpha |
+| O | v.MOP | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (13)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | v.DateJ-2 | Date | 1x session |
+| EO | v.Tous les insoldés | Logical | - |
+| ER | v.Réponse | Numeric | 1x session |
+| ES | v.clause where | Alpha | - |
+| ET | v.Ligne_Solde | Logical | - |
+| EU | v.MajExtrait | Logical | - |
+| EV | v.MajCompte | Logical | - |
+| EW | v.MajTel | Numeric | - |
+| EX | v.NbCard | Numeric | - |
+| EY | v.Fact | Logical | - |
+| EZ | v.Evoi_mail | Logical | - |
+| FA | v.num dossier axis | Alpha | - |
+| FB | v.MOP | Alpha | - |
+
+### 11.2 Autres (2)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EP | b.Lancer | Alpha | - |
+| EQ | b.Quitter | Alpha | - |
+
+## 12. EXPRESSIONS
+
+**8 / 8 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 2 | 5 |
+| FORMAT | 1 | 0 |
+| CONSTANTE | 2 | 0 |
+| DATE | 1 | 0 |
+| CAST_LOGIQUE | 2 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 5 | `v.Réponse [E]=6` | [RM-001](#rm-RM-001) |
+| CONDITION | 4 | `v.DateJ-2 [A]>AddDate (Date(),0,0,-1)` | - |
+
+#### FORMAT (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 6 | `'dga_date_depot='''&DStr('27/03/2022'DATE,'YYYYMMDD')&''''` | - |
+
+#### CONSTANTE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 2 | `'Quitter'` | - |
+| CONSTANTE | 1 | `'Lancer'` | - |
+
+#### DATE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 3 | `AddDate (Date(),0,0,-1)` | - |
+
+#### CAST_LOGIQUE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 8 | `INIPut('CompressPDF=N','FALSE'LOG)` | - |
+| CAST_LOGIQUE | 7 | `INIPut('EmbedFonts=N','FALSE'LOG)` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[63 Test Easy Check]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T63[63 Test Easy Check-Out...]
+    style T63 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T63
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[63 Test Easy Check]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T63[63 Test Easy Check-Out...]
+    style T63 fill:#58a6ff
+    C56[56 Récap Trait Easy Ch...]
+    T63 --> C56
+    style C56 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [56](ADH-IDE-56.md) | Récap Trait Easy Check-Out | 1 | Sous-programme |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 80 | Programme compact |
+| Expressions | 8 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 2.5% (2 / 80) | Code sain |
+| Regles metier | 1 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 2 | Simple |
-| Tables | 8 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Récap Trait Easy Check-Out (IDE 56)](ADH-IDE-56.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:01 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:59*

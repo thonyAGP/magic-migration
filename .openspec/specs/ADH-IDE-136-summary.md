@@ -1,31 +1,31 @@
-﻿# ADH IDE 136 - Generation tableau recap WS
+﻿# ADH IDE 136 - Generation ticket WS
 
-> **Analyse**: 2026-02-07 07:10
+> **Analyse**: 2026-02-08 03:14
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Generation tableau recap WS
-- **Tables modifiees**: 0
-- **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Fonction**: Generation ticket WS
+- **Tables modifiees**: 2
+- **Complexite**: **BASSE** (7/100)
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 4 programme(s): Ouverture caisse (IDE 122), Fermeture caisse (IDE 131), Ouverture caisse 143 (IDE 297), Fermeture caisse 144 (IDE 299)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
+| **Appele par** | [Ouverture caisse (IDE 122)](ADH-IDE-122.md), [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Ouverture caisse 143 (IDE 297)](ADH-IDE-297.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 1 |
-| Lignes Logic | 98 |
-| Expressions | 30 |
-| Tables | 2 |
+| Taches | 3 |
+| Lignes Logic | 86 |
+| Expressions | 17 |
+| Tables | 3 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

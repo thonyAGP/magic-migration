@@ -1,6 +1,6 @@
 ﻿# ADH IDE 18 - Print extrait compte
 
-> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:40 (29s) | Assemblage 13:00
+> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 01:19 (21h39min) | Assemblage 01:19
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 18 implémente l'édition de l'extrait de compte client. Ce programme récupère les données du compte adhérent sélectionné et prépare le contenu pour impression via la gestion centralisée de l'imprimante (IDE 21). L'interface affiche une succession de messages "Veuillez patienter" guidant l'utilisateur à travers les étapes de récupération du nom adhérent, validation des données et formatage du document.
+# ADH IDE 18 - Print Extrait Compte
 
-Le flux d'impression suit un processus standardisé : la première tâche affiche un message d'attente initial, la deuxième récupère l'identifiant ou le nom complet de l'adhérent, puis les trois tâches "Please wait" successives gèrent respectivement la construction du document à imprimer, l'envoi à la file d'attente d'impression et l'attente de confirmation d'impression. Cette structure modulaire permet de gérer les délais de traitement asynchrones et de fournir un retour utilisateur continu.
+Programme d'édition de l'extrait de compte pour un adhérent. Récupère les mouvements comptables du compte sélectionné, les formate et les envoie à l'imprimante. Le programme appelle ADH IDE 21 pour obtenir la devise locale afin d'afficher correctement les montants.
 
-Le programme s'intègre dans le flux de navigation depuis le Menu Data Catching (IDE 7) et dépend de IDE 21 pour accéder à la configuration de l'imprimante et adapter le format selon la devise locale. Cette dépendance suggère que l'extrait de compte inclut des informations financières formatées selon les paramètres régionaux définis centralement.
+Le flux est simple : récupération du nom de l'adhérent, puis génération du document (extraction des lignes de mouvement depuis les tables comptables), mise en forme pour impression, et envoi vers la file d'attente imprimante. Plusieurs tâches « Please wait » gèrent l'affichage du sablier durant les opérations longues.
+
+C'est un programme de consultation/édition classique du domaine ADH, alimentant le flux utilisateur "Data Catching → Menu → Print Extrait" pour générer les relevés papier des mouvements de compte.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +38,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Veuillez patienter... [ECRAN]
+#### <a id="t1"></a>18 - Veuillez patienter... [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 424 x 57 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -46,25 +48,25 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | récup nom adhérent | Traitement |
-| [T4](#t4) | Please wait **[ECRAN]** | Traitement |
-| [T5](#t5) | Please wait **[ECRAN]** | Traitement |
-| [T6](#t6) | Please wait **[ECRAN]** | Traitement |
+| [18.1](#t2) | récup nom adhérent | Traitement |
+| [18.2.1](#t4) | Please wait **[[ECRAN]](#ecran-t4)** | Traitement |
+| [18.2.2](#t5) | Please wait **[[ECRAN]](#ecran-t5)** | Traitement |
+| [18.2.3](#t6) | Please wait **[[ECRAN]](#ecran-t6)** | Traitement |
 
 </details>
 **Delegue a** : [Recupere devise local (IDE 21)](ADH-IDE-21.md)
 
 ---
 
-#### <a id="t2"></a>T2 - récup nom adhérent
+#### <a id="t2"></a>18.1 - récup nom adhérent
 
 **Role** : Traitement : récup nom adhérent.
-**Variables liees** : J (W0 nom adhérent), K (W0 prénom adhérent), L (W0 n° adhérent)
+**Variables liees** : EW (W0 nom adhérent), EX (W0 prénom adhérent), EY (W0 n° adhérent)
 **Delegue a** : [Recupere devise local (IDE 21)](ADH-IDE-21.md)
 
 ---
 
-#### <a id="t4"></a>T4 - Please wait [ECRAN]
+#### <a id="t4"></a>18.2.1 - Please wait [[ECRAN]](#ecran-t4)
 
 **Role** : Traitement : Please wait.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t4)
@@ -72,7 +74,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t5"></a>T5 - Please wait [ECRAN]
+#### <a id="t5"></a>18.2.2 - Please wait [[ECRAN]](#ecran-t5)
 
 **Role** : Traitement : Please wait.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t5)
@@ -80,7 +82,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t6"></a>T6 - Please wait [ECRAN]
+#### <a id="t6"></a>18.2.3 - Please wait [[ECRAN]](#ecran-t6)
 
 **Role** : Traitement : Please wait.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t6)
@@ -93,7 +95,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t3"></a>T3 - Printer 9
+#### <a id="t3"></a>18.2 - Printer 9
 
 **Role** : Generation du document : Printer 9.
 
@@ -115,14 +117,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 18 | T1 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
+| 1 | 18 | 18 | Veuillez patienter... | MDI | 424 | 57 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>18 - Veuillez patienter...
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
+**Tache** : [18](#t1) | **Type** : MDI | **Dimensions** : 424 x 57 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -211,29 +213,31 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **18.1** | [**Veuillez patienter...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 424x57 | Traitement |
-| 18.1.1 | [récup nom adhérent (T2)](#t2) | MDI | - | |
-| 18.1.2 | [Please wait (T4)](#t4) [mockup](#ecran-t4) | MDI | 422x56 | |
-| 18.1.3 | [Please wait (T5)](#t5) [mockup](#ecran-t5) | MDI | 422x56 | |
-| 18.1.4 | [Please wait (T6)](#t6) [mockup](#ecran-t6) | MDI | 422x56 | |
-| **18.2** | [**Printer 9** (T3)](#t3) | MDI | - | Impression |
+| **18.1** | [**Veuillez patienter...** (18)](#t1) [mockup](#ecran-t1) | MDI | 424x57 | Traitement |
+| 18.1.1 | [récup nom adhérent (18.1)](#t2) | MDI | - | |
+| 18.1.2 | [Please wait (18.2.1)](#t4) [mockup](#ecran-t4) | MDI | 422x56 | |
+| 18.1.3 | [Please wait (18.2.2)](#t5) [mockup](#ecran-t5) | MDI | 422x56 | |
+| 18.1.4 | [Please wait (18.2.3)](#t6) [mockup](#ecran-t6) | MDI | 422x56 | |
+| **18.2** | [**Printer 9** (18.2)](#t3) | MDI | - | Impression |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (5t)]
-    START --> B1
-    B2[Impression (1t)]
-    B1 --> B2
-    ENDOK([END])
-    B2 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -275,13 +279,13 @@ Variables recues du programme appelant ([Menu Data Catching (IDE 7)](ADH-IDE-7.m
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 société | Alpha | - |
-| B | P0 n° compte | Numeric | - |
-| C | P0 filiation | Numeric | - |
-| D | P0 masque montant | Alpha | 1x parametre entrant |
-| E | P0 nom village | Alpha | - |
-| F | P0 fictif | Logical | - |
-| G | P0 date comptable | Date | - |
+| EN | P0 société | Alpha | - |
+| EO | P0 n° compte | Numeric | - |
+| EP | P0 filiation | Numeric | - |
+| EQ | P0 masque montant | Alpha | 1x parametre entrant |
+| ER | P0 nom village | Alpha | - |
+| ES | P0 fictif | Logical | - |
+| ET | P0 date comptable | Date | - |
 
 ### 11.2 Variables de travail (10)
 
@@ -289,39 +293,39 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| H | W0 imprimante | Numeric | - |
-| I | W0 titre | Alpha | - |
-| J | W0 nom adhérent | Alpha | - |
-| K | W0 prénom adhérent | Alpha | - |
-| L | W0 n° adhérent | Numeric | - |
-| M | W0 lettre contrôle | Alpha | - |
-| N | W0 filiation | Numeric | - |
-| O | W0 masque extrait | Alpha | - |
-| P | W0 langue parlée | Alpha | - |
-| Q | W0 devise locale | Alpha | - |
+| EU | W0 imprimante | Numeric | - |
+| EV | W0 titre | Alpha | - |
+| EW | W0 nom adhérent | Alpha | - |
+| EX | W0 prénom adhérent | Alpha | - |
+| EY | W0 n° adhérent | Numeric | - |
+| EZ | W0 lettre contrôle | Alpha | - |
+| FA | W0 filiation | Numeric | - |
+| FB | W0 masque extrait | Alpha | - |
+| FC | W0 langue parlée | Alpha | - |
+| FD | W0 devise locale | Alpha | - |
 
 <details>
 <summary>Toutes les 17 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P0 société | Alpha |
-| P0 | **B** | P0 n° compte | Numeric |
-| P0 | **C** | P0 filiation | Numeric |
-| P0 | **D** | P0 masque montant | Alpha |
-| P0 | **E** | P0 nom village | Alpha |
-| P0 | **F** | P0 fictif | Logical |
-| P0 | **G** | P0 date comptable | Date |
-| W0 | **H** | W0 imprimante | Numeric |
-| W0 | **I** | W0 titre | Alpha |
-| W0 | **J** | W0 nom adhérent | Alpha |
-| W0 | **K** | W0 prénom adhérent | Alpha |
-| W0 | **L** | W0 n° adhérent | Numeric |
-| W0 | **M** | W0 lettre contrôle | Alpha |
-| W0 | **N** | W0 filiation | Numeric |
-| W0 | **O** | W0 masque extrait | Alpha |
-| W0 | **P** | W0 langue parlée | Alpha |
-| W0 | **Q** | W0 devise locale | Alpha |
+| P0 | **EN** | P0 société | Alpha |
+| P0 | **EO** | P0 n° compte | Numeric |
+| P0 | **EP** | P0 filiation | Numeric |
+| P0 | **EQ** | P0 masque montant | Alpha |
+| P0 | **ER** | P0 nom village | Alpha |
+| P0 | **ES** | P0 fictif | Logical |
+| P0 | **ET** | P0 date comptable | Date |
+| W0 | **EU** | W0 imprimante | Numeric |
+| W0 | **EV** | W0 titre | Alpha |
+| W0 | **EW** | W0 nom adhérent | Alpha |
+| W0 | **EX** | W0 prénom adhérent | Alpha |
+| W0 | **EY** | W0 n° adhérent | Numeric |
+| W0 | **EZ** | W0 lettre contrôle | Alpha |
+| W0 | **FA** | W0 filiation | Numeric |
+| W0 | **FB** | W0 masque extrait | Alpha |
+| W0 | **FC** | W0 langue parlée | Alpha |
+| W0 | **FD** | W0 devise locale | Alpha |
 
 </details>
 
@@ -426,4 +430,4 @@ graph LR
 | [Recupere devise local (IDE 21)](ADH-IDE-21.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:01*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:20*

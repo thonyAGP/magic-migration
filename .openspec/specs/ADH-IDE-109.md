@@ -1,6 +1,6 @@
 ﻿# ADH IDE 109 - Print creation garantie TIK V1
 
-> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:49 (27s) | Assemblage 15:25
+> **Analyse**: Phases 1-4 2026-02-07 03:49 -> 02:51 (23h01min) | Assemblage 02:51
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,13 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-## ADH IDE 109 - Print creation garantie TIK V1
+**ADH IDE 109** gère l'impression des documents de création de garantie (dépôt de caution). Le programme orchestre un flux d'impression multi-imprimante : il initialise d'abord l'imprimante cible via RAZ Current Printer (IDE 182), puis enchaîne les éditions d'extrait de compte sur différentes imprimantes (imprimantes 1 et 4 mentionnées dans les tâches).
 
-ADH IDE 109 est un **moteur de génération d'documents multi-imprimantes** pour l'émission de certificats de garantie client. Appelé par trois programmes de gestion des garanties (IDE 111, 112, 288), il configure dynamiquement l'imprimante sélectionnée, itère sur les enregistrements de garantie avec un indicateur de progression ("Veuillez patienter..."), puis génère des éditions d'extrait de compte formatées selon le type d'imprimante (normal, large, condensé). Le programme maintient l'état des dépôts de garantie et des données de garantie via la table depot_garantie (ID 39) et garantie (ID 91), enrichies des informations client depuis pms_village.
+La logique suit un pattern classique de gestion caisse : préparation de la ressource (RAZ imprimante), suivi de l'envoi des données vers les périphériques d'impression. Les trois appels entrants (IDE 111, 112, 288) indiquent que ce programme est appelé depuis plusieurs points du module Garantie, probablement lors de la validation ou confirmation d'un dépôt.
 
-Le workflow suit un **schéma d'impression polymorphe** : le programme expose 4 configurations d'imprimante (1, 4, 8, 9), chacune avec sa propre tâche d'édition. Avant chaque cycle, il réinitialise l'état via IDE 182 (Raz Current Printer) et récupère les détails du membre pour personnaliser le document (numéro adhérent, chambre, dates de garantie, commentaires). Chaque impression inclut le logo village, code société et lettres de contrôle du dossier.
-
-Utilisé dans le contexte de caisse pour les trois scénarios de garantie (sur compte standard, PMS-584, et variante locale), cet utilitaire offre une couche d'abstraction pour les différents formats physiques d'impression, permettant aux trois appelants de générer des certificats sans gérer eux-mêmes les configurations matérielles spécifiques.
+L'architecture utilise des tâches d'édition paramétrées (répétition de "edition extrait compte") suggérant que le même modèle d'impression est appliqué à plusieurs périphériques ou dans plusieurs contextes (par exemple, impression caisse ET impression client, ou impression locale ET transmission réseau).
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -38,7 +36,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t1"></a>T1 - Print creation garantie TIK V1
+#### <a id="t1"></a>109 - Print creation garantie TIK V1
 
 **Role** : Tache d'orchestration : point d'entree du programme (11 sous-taches). Coordonne l'enchainement des traitements.
 
@@ -47,76 +45,76 @@ Generation des documents et tickets.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Printer 1 | Impression |
-| [T3](#t3) | edition extrait compte | Impression |
-| [T4](#t4) | edition extrait compte | Impression |
-| [T5](#t5) | Printer 4 | Impression |
-| [T6](#t6) | edition extrait compte | Impression |
-| [T7](#t7) | edition extrait compte | Impression |
-| [T11](#t11) | Printer 8 | Impression |
-| [T12](#t12) | edition extrait compte | Impression |
-| [T13](#t13) | Printer 9 | Impression |
-| [T14](#t14) | edition extrait compte | Impression |
+| [109.1](#t2) | Printer 1 | Impression |
+| [109.1.1](#t3) | edition extrait compte | Impression |
+| [109.1.2](#t4) | edition extrait compte | Impression |
+| [109.2](#t5) | Printer 4 | Impression |
+| [109.2.1](#t6) | edition extrait compte | Impression |
+| [109.2.2](#t7) | edition extrait compte | Impression |
+| [109.5](#t11) | Printer 8 | Impression |
+| [109.5.1](#t12) | edition extrait compte | Impression |
+| [109.6](#t13) | Printer 9 | Impression |
+| [109.6.1](#t14) | edition extrait compte | Impression |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>T2 - Printer 1
+#### <a id="t2"></a>109.1 - Printer 1
 
 **Role** : Generation du document : Printer 1.
 
 ---
 
-#### <a id="t3"></a>T3 - edition extrait compte
+#### <a id="t3"></a>109.1.1 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
 ---
 
-#### <a id="t4"></a>T4 - edition extrait compte
+#### <a id="t4"></a>109.1.2 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
 ---
 
-#### <a id="t5"></a>T5 - Printer 4
+#### <a id="t5"></a>109.2 - Printer 4
 
 **Role** : Generation du document : Printer 4.
 
 ---
 
-#### <a id="t6"></a>T6 - edition extrait compte
+#### <a id="t6"></a>109.2.1 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
 ---
 
-#### <a id="t7"></a>T7 - edition extrait compte
+#### <a id="t7"></a>109.2.2 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
 ---
 
-#### <a id="t11"></a>T11 - Printer 8
+#### <a id="t11"></a>109.5 - Printer 8
 
 **Role** : Generation du document : Printer 8.
 
 ---
 
-#### <a id="t12"></a>T12 - edition extrait compte
+#### <a id="t12"></a>109.5.1 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
 ---
 
-#### <a id="t13"></a>T13 - Printer 9
+#### <a id="t13"></a>109.6 - Printer 9
 
 **Role** : Generation du document : Printer 9.
 
 ---
 
-#### <a id="t14"></a>T14 - edition extrait compte
+#### <a id="t14"></a>109.6.1 - edition extrait compte
 
 **Role** : Generation du document : edition extrait compte.
 
@@ -127,29 +125,81 @@ Traitements internes.
 
 ---
 
-#### <a id="t8"></a>T8 - Iteration [ECRAN]
+#### <a id="t8"></a>109.3 - Iteration [[ECRAN]](#ecran-t8)
 
 **Role** : Traitement : Iteration.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t9"></a>T9 - Veuillez patienter... [ECRAN]
+#### <a id="t9"></a>109.3.1 - Veuillez patienter... [[ECRAN]](#ecran-t9)
 
 **Role** : Traitement : Veuillez patienter....
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t10"></a>T10 - recup nom adherent
+#### <a id="t10"></a>109.4 - recup nom adherent
 
 **Role** : Consultation/chargement : recup nom adherent.
-**Variables liees** : B (P0 code adherent), H (W0 n° adherent)
+**Variables liees** : EO (P0 code adherent), EU (W0 n° adherent)
 
 
 ## 5. REGLES METIER
 
-*(Programme d'impression - logique technique sans conditions metier)*
+5 regles identifiees:
+
+### Impression (5 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Verification que l'imprimante courante est la n1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 1 |
+| **Expression source** | Expression 5 : `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action si CURRENTPRINTERNUM = 1 |
+| **Impact** | [109 - Print creation garantie TIK V1](#t1) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n4
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 4 |
+| **Expression source** | Expression 6 : `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=4 â†’ Action si CURRENTPRINTERNUM = 4 |
+| **Impact** | [109 - Print creation garantie TIK V1](#t1) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n5
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 5 |
+| **Expression source** | Expression 7 : `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=5 â†’ Action si CURRENTPRINTERNUM = 5 |
+| **Impact** | [109 - Print creation garantie TIK V1](#t1) |
+
+#### <a id="rm-RM-004"></a>[RM-004] Verification que l'imprimante courante est la n8
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 8 |
+| **Expression source** | Expression 8 : `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=8 â†’ Action si CURRENTPRINTERNUM = 8 |
+| **Impact** | [109 - Print creation garantie TIK V1](#t1) |
+
+#### <a id="rm-RM-005"></a>[RM-005] Verification que l'imprimante courante est la n9
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 9 |
+| **Expression source** | Expression 9 : `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action si CURRENTPRINTERNUM = 9 |
+| **Impact** | [109 - Print creation garantie TIK V1](#t1) |
 
 ## 6. CONTEXTE
 
@@ -164,14 +214,14 @@ Traitements internes.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 109.3.1 | T9 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+| 1 | 109.3.1 | 109.3.1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t9"></a>109.3.1 - Veuillez patienter...
-**Tache** : [T9](#t9) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [109.3.1](#t9) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -260,37 +310,39 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **109.1** | [**Print creation garantie TIK V1** (T1)](#t1) | MDI | - | Impression |
-| 109.1.1 | [Printer 1 (T2)](#t2) | MDI | - | |
-| 109.1.2 | [edition extrait compte (T3)](#t3) | MDI | - | |
-| 109.1.3 | [edition extrait compte (T4)](#t4) | MDI | - | |
-| 109.1.4 | [Printer 4 (T5)](#t5) | MDI | - | |
-| 109.1.5 | [edition extrait compte (T6)](#t6) | MDI | - | |
-| 109.1.6 | [edition extrait compte (T7)](#t7) | MDI | - | |
-| 109.1.7 | [Printer 8 (T11)](#t11) | MDI | - | |
-| 109.1.8 | [edition extrait compte (T12)](#t12) | MDI | - | |
-| 109.1.9 | [Printer 9 (T13)](#t13) | MDI | - | |
-| 109.1.10 | [edition extrait compte (T14)](#t14) | MDI | - | |
-| **109.2** | [**Iteration** (T8)](#t8) [mockup](#ecran-t8) | MDI | 422x56 | Traitement |
-| 109.2.1 | [Veuillez patienter... (T9)](#t9) [mockup](#ecran-t9) | MDI | 422x56 | |
-| 109.2.2 | [recup nom adherent (T10)](#t10) | MDI | - | |
+| **109.1** | [**Print creation garantie TIK V1** (109)](#t1) | MDI | - | Impression |
+| 109.1.1 | [Printer 1 (109.1)](#t2) | MDI | - | |
+| 109.1.2 | [edition extrait compte (109.1.1)](#t3) | MDI | - | |
+| 109.1.3 | [edition extrait compte (109.1.2)](#t4) | MDI | - | |
+| 109.1.4 | [Printer 4 (109.2)](#t5) | MDI | - | |
+| 109.1.5 | [edition extrait compte (109.2.1)](#t6) | MDI | - | |
+| 109.1.6 | [edition extrait compte (109.2.2)](#t7) | MDI | - | |
+| 109.1.7 | [Printer 8 (109.5)](#t11) | MDI | - | |
+| 109.1.8 | [edition extrait compte (109.5.1)](#t12) | MDI | - | |
+| 109.1.9 | [Printer 9 (109.6)](#t13) | MDI | - | |
+| 109.1.10 | [edition extrait compte (109.6.1)](#t14) | MDI | - | |
+| **109.2** | [**Iteration** (109.3)](#t8) [mockup](#ecran-t8) | MDI | 422x56 | Traitement |
+| 109.2.1 | [Veuillez patienter... (109.3.1)](#t9) [mockup](#ecran-t9) | MDI | 422x56 | |
+| 109.2.2 | [recup nom adherent (109.4)](#t10) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Impression (11t)]
-    START --> B1
-    B2[Traitement (3t)]
-    B1 --> B2
-    ENDOK([END])
-    B2 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -364,11 +416,11 @@ Variables recues du programme appelant ([Garantie sur compte (IDE 111)](ADH-IDE-
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Alpha | - |
-| B | P0 code adherent | Numeric | - |
-| C | P0 filiation | Numeric | - |
-| D | P0 nom village | Alpha | - |
-| E | P0 masque montant | Alpha | - |
+| EN | P0 societe | Alpha | - |
+| EO | P0 code adherent | Numeric | - |
+| EP | P0 filiation | Numeric | - |
+| EQ | P0 nom village | Alpha | - |
+| ER | P0 masque montant | Alpha | - |
 
 ### 11.2 Variables de session (1)
 
@@ -376,7 +428,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| N | v.comment | Alpha | - |
+| FA | v.comment | Alpha | - |
 
 ### 11.3 Variables de travail (8)
 
@@ -384,14 +436,14 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| F | W0 nom | Alpha | - |
-| G | W0 prenom | Alpha | - |
-| H | W0 n° adherent | Numeric | - |
-| I | W0 lettre contrôle | Alpha | - |
-| J | W0 filiation | Numeric | - |
-| K | W0 Chambre | Alpha | - |
-| L | W0 date de debut | Date | - |
-| M | W0 date de fin | Date | - |
+| ES | W0 nom | Alpha | - |
+| ET | W0 prenom | Alpha | - |
+| EU | W0 n° adherent | Numeric | - |
+| EV | W0 lettre contrôle | Alpha | - |
+| EW | W0 filiation | Numeric | - |
+| EX | W0 Chambre | Alpha | - |
+| EY | W0 date de debut | Date | - |
+| EZ | W0 date de fin | Date | - |
 
 ## 12. EXPRESSIONS
 
@@ -401,13 +453,23 @@ Variables internes au programme.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 5 | 5 |
 | CONSTANTE | 2 | 0 |
 | OTHER | 3 | 0 |
-| CONDITION | 5 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
 | CONCATENATION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (5 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 8 | `GetParam ('CURRENTPRINTERNUM')=8` | [RM-004](#rm-RM-004) |
+| CONDITION | 9 | `GetParam ('CURRENTPRINTERNUM')=9` | [RM-005](#rm-RM-005) |
+| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=5` | [RM-003](#rm-RM-003) |
+| CONDITION | 5 | `GetParam ('CURRENTPRINTERNUM')=1` | [RM-001](#rm-RM-001) |
+| CONDITION | 6 | `GetParam ('CURRENTPRINTERNUM')=4` | [RM-002](#rm-RM-002) |
 
 #### CONSTANTE (2 expressions)
 
@@ -423,16 +485,6 @@ Variables internes au programme.
 | OTHER | 4 | `SetCrsr (1)` | - |
 | OTHER | 2 | `GetParam ('CURRENTLISTINGNUM')` | - |
 | OTHER | 1 | `SetCrsr (2)` | - |
-
-#### CONDITION (5 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 8 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
-| CONDITION | 9 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
-| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=5` | - |
-| CONDITION | 5 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
-| CONDITION | 6 | `GetParam ('CURRENTPRINTERNUM')=4` | - |
 
 #### CAST_LOGIQUE (1 expressions)
 
@@ -518,7 +570,7 @@ graph LR
 | Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 281) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 5 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -541,4 +593,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 15:27*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:51*

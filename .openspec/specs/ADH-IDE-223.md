@@ -1,199 +1,206 @@
 ﻿# ADH IDE 223 - Suppression Carac interdit
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:11
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_219.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:25 -> 04:25 (4s) | Assemblage 04:25
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Suppression Carac interdit** est le **nettoyeur de caracteres speciaux** qui **retire les caracteres interdits ou non conformes des donnees textuelles**.
-
-**Objectif metier** : Nettoyer les chaines de caracteres en supprimant les caracteres speciaux interdits qui pourraient causer des problemes dans les interfaces (PABX, exports, impressions). Ce programme assure la conformite des donnees textuelles avec les contraintes techniques.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Systeme automatique ou operateur saisie |
-| **Quoi** | Suppression des caracteres speciaux non autorises |
-| **Pourquoi** | Garantir la compatibilite des donnees avec les systemes externes |
-| **Declencheur** | Validation de saisie ou traitement batch de nettoyage |
-| **Resultat** | Chaine de caracteres nettoyee sans caracteres interdits |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (0 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 223 |
-| **Fichier XML** | `Prg_219.xml` |
-| **Description** | Suppression Carac interdit |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 3 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 223 |
+| Nom Programme | Suppression Carac interdit |
+| Fichier source | `Prg_223.xml` |
+| Dossier IDE | General |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| - | Aucune table | - | - | - |
+ADH IDE 223 est un programme utilitaire de nettoyage de caractères interdits, appelé depuis le combo de sélection LIEU de séjour (ADH IDE 224). Son rôle est de valider ou nettoyer les données saisies en supprimant les caractères non autorisés avant leur stockage en base de données.
 
-**Resume**: 0 tables accedees dont **0 en ecriture**
+Le programme traite probablement une chaîne de caractères en entrée, la parcourt pour identifier les caractères invalides (espaces, caractères spéciaux, accents selon les règles métier), et retourne la chaîne nettoyée. Il garantit que les valeurs stockées dans la table LIEU_SEJOUR respectent le format attendu, évitant les corruptions de données ou les erreurs d'affichage ultérieures.
 
-### 2.3 Parametres d'entree (0 parametres)
+Ce type de programme est généralement peu complexe (quelques expressions IF/CASE pour valider chaque caractère) mais critique pour la qualité des données. Il peut être appelé depuis plusieurs combos ou grilles de saisie du module ADH, ce qui en ferait un composant partagé de validation de chaînes.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+2 regles identifiees:
+
+### Autres (2 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: InStr (< v. combo [A],'-') egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `InStr (< v. combo [A],'-')=0` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (< v. combo) |
+| **Expression source** | Expression 1 : `InStr (< v. combo [A],'-')=0` |
+| **Exemple** | Si InStr (< v. combo [A],'-')=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: InStr (< v. combo [A],'-') different de 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `InStr (< v. combo [A],'-')<>0` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (< v. combo) |
+| **Expression source** | Expression 2 : `InStr (< v. combo [A],'-')<>0` |
+| **Exemple** | Si InStr (< v. combo [A],'-')<>0 â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md)
+- **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 3
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{v. combo}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 3 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 0 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (0)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (0 / 0 tables avec colonnes identifiees)
+
+## 11. VARIABLES
+
+*(Programme sans variables locales mappees)*
+
+## 12. EXPRESSIONS
+
+**3 / 3 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONCATENATION | 1 | 0 |
+| CONDITION | 2 | 2 |
+
+### 12.2 Expressions cles par type
+
+#### CONCATENATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 3 | `Left (< v. combo [A],InStr (< v. combo [A],'-')-1)&'_'&Right (< v. combo [A],Len (< v. combo [A])-InStr (< v. combo [A],'-'))` | - |
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 2 | `InStr (< v. combo [A],'-')<>0` | [RM-002](#rm-RM-002) |
+| CONDITION | 1 | `InStr (< v. combo [A],'-')=0` | [RM-001](#rm-RM-001) |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Alimentation Combos LIEU SEJ (IDE 224)](ADH-IDE-224.md) -> **Suppression Carac interdit (IDE 223)**
 
 ```mermaid
 graph LR
-    T[223 Suppression Car]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T223[223 Suppression Carac ...]
+    style T223 fill:#58a6ff
+    CC224[224 Alimentation Combo...]
+    style CC224 fill:#8b5cf6
+    CC224 --> T223
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [224](ADH-IDE-224.md) | Alimentation Combos LIEU SEJ | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[223 Suppression Car]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T223[223 Suppression Carac ...]
+    style T223 fill:#58a6ff
+    NONE[Aucun callee]
+    T223 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 3 | Programme compact |
+| Expressions | 3 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 3) | Code sain |
+| Regles metier | 2 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 0 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:11 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:26*

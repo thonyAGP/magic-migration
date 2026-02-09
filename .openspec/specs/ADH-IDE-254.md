@@ -1,6 +1,6 @@
 ﻿# ADH IDE 254 - Solde Resort Credit
 
-> **Analyse**: Phases 1-4 2026-01-30 09:43 -> 09:43 (8s) | Assemblage 09:43
+> **Analyse**: Phases 1-4 2026-02-08 04:41 -> 04:41 (4s) | Assemblage 04:41
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,38 +14,22 @@
 | IDE Position | 254 |
 | Nom Programme | Solde Resort Credit |
 | Fichier source | `Prg_254.xml` |
-| Domaine metier | Comptabilite |
-| Taches | 1 (1 ecrans visibles) |
+| Dossier IDE | Comptabilite |
+| Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Solde Resort Credit** est le **calculateur de solde de credit resort** qui **recupere et calcule le solde de Resort Credit disponible pour un client sur un service donne**.
+ADH IDE 254 - Solde Resort Credit calcule le solde disponible en Resort Credit pour un compte membre. Le programme lit la table de gestion des Resort Credits (crédits de séjour) et compare le montant attribué au montant déjà utilisé. La logique retourne le solde restant ou zéro si le crédit est entièrement consommé.
 
-**Objectif metier** : Interroger le solde de Resort Credit (credit pre-paye utilisable dans le village) a partir du numero de societe, compte client, filiation et code service. Ce programme compact (18 lignes de logique) est appele lors des transactions de vente pour determiner si le client peut utiliser son Resort Credit comme moyen de paiement. La regle metier principale calcule le solde disponible : si le credit est superieur aux depenses, retourne la difference, sinon retourne 0.
+Ce programme est appelé dans le flux de ventes (ADH IDE 250) pour afficher les informations de solde au client avant une transaction. Il s'inscrit dans l'écosystème des programmes de consultation de solde (ADH IDE 192 SOLDE_COMPTE, ADH IDE 237 solde Gift Pass) et utilise des tables de référence partagées pour identifier les services associés au Resort Credit.
 
-Ce programme est accessible depuis [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md).
-
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
-
-- **Traitement** (1 tache) : traitements metier divers
-
-**Logique metier** : 1 regles identifiees couvrant conditions metier.
+Le calcul suit une logique simple : `IF(attribué > utilisé, attribué - utilisé, 0)`. Les paramètres d'entrée incluent la clé de compte (sociétés, compte, filiation) et optionnellement le numéro de service pour filtrer les crédits par type de prestation.
 
 ## 3. BLOCS FONCTIONNELS
-
-### 3.1 Traitement (1 tache)
-
-Traitements internes.
-
----
-
-#### <a id="t1"></a>T1 - Veuillez patienter... [ECRAN]
-
-**Role** : Traitement interne.
-**Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
-
 
 ## 5. REGLES METIER
 
@@ -57,110 +41,48 @@ Traitements internes.
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `IF([J]>[K],[J]-[K],0)` |
-| **Action** | Si [J]>[K] alors [J]-[K] sinon 0) |
+| **Condition** | `[J]>[K]` |
+| **Si vrai** | [J]-[K] |
+| **Si faux** | 0) |
+| **Expression source** | Expression 7 : `IF([J]>[K],[J]-[K],0)` |
+| **Exemple** | Si [J]>[K] â†’ [J]-[K]. Sinon â†’ 0) |
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md), [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md), [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md)
+- **Appele par**: (aucun)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 7
 
 <!-- TAB:Ecrans -->
 
 ## 8. ECRANS
 
-### 8.1 Forms visibles (1 / 1)
-
-| # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
-|---|----------|-------|-----|------|---------|---------|------|
-| 1 | 254.1 | T1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
-
-### 8.2 Mockups Ecrans
-
----
-
-#### <a id="ecran-t1"></a>254.1 - Veuillez patienter...
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
-**Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
-
-<!-- FORM-DATA:
-{
-    "width":  422,
-    "controls":  [
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  10,
-                         "label":  "P0 societe",
-                         "h":  20,
-                         "var":  "A"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  150,
-                         "label":  "P0 compte",
-                         "h":  20,
-                         "var":  "B"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  290,
-                         "label":  "P0 filiation",
-                         "h":  20,
-                         "var":  "C"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  430,
-                         "label":  "P0 service",
-                         "h":  20,
-                         "var":  "D"
-                     },
-                     {
-                         "w":  130,
-                         "readonly":  true,
-                         "y":  13,
-                         "type":  "edit",
-                         "x":  570,
-                         "label":  "P0 solde resort credit",
-                         "h":  20,
-                         "var":  "E"
-                     }
-                 ],
-    "type":  "MDI",
-    "height":  56,
-    "taskId":  1
-}
--->
-
-**Champs :**
-
-| Variable | Nom | Type | Saisie |
-|----------|-----|------|--------|
-| A | P0 societe | Alpha | Lecture |
-| B | P0 compte | Numeric | Lecture |
-| C | P0 filiation | Numeric | Lecture |
-| D | P0 service | Unicode | Lecture |
-| E | P0 solde resort credit | Numeric | Lecture |
+*(Programme sans ecran visible)*
 
 ## 9. NAVIGATION
 
-Ecran unique: **Veuillez patienter...**
+### 9.3 Structure hierarchique (0 tache)
 
-### 9.3 Structure hierarchique (1 tache)
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
 
-- **254.1** [Veuillez patienter... (T1)](#t1) **[ECRAN]** (MDI) 422x56 -> [mockup](#ecran-t1) *[Traitement]*
+### 9.4 Algorigramme
+
+```mermaid
+flowchart TD
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+```
+
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -172,12 +94,18 @@ Ecran unique: **Veuillez patienter...**
 |----|-----|-------------|------|---|---|---|--------|
 | 980 | Table_980 |  | MEM | R |   |   | 1 |
 
-### Colonnes par table
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
 
 <details>
 <summary>Table 980 - Table_980 (R) - 1 usages</summary>
 
-*Colonnes accessibles via outils MCP (`magic_get_line`)*
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P0 societe | R | Alpha |
+| B | P0 compte | R | Numeric |
+| C | P0 filiation | R | Numeric |
+| D | P0 service | R | Unicode |
+| E | P0 solde resort credit | R | Numeric |
 
 </details>
 
@@ -185,15 +113,15 @@ Ecran unique: **Veuillez patienter...**
 
 ### 11.1 Parametres entrants (5)
 
-Variables recues du programme appelant ([Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md)).
+Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Alpha | 1x refs |
-| B | P0 compte | Numeric | 1x refs |
-| C | P0 filiation | Numeric | 1x refs |
-| D | P0 service | Unicode | 1x refs |
-| E | P0 solde resort credit | Numeric | - |
+| EN | P0 societe | Alpha | 1x parametre entrant |
+| EO | P0 compte | Numeric | 1x parametre entrant |
+| EP | P0 filiation | Numeric | 1x parametre entrant |
+| EQ | P0 service | Unicode | 1x parametre entrant |
+| ER | P0 solde resort credit | Numeric | - |
 
 ## 12. EXPRESSIONS
 
@@ -231,60 +159,22 @@ Variables recues du programme appelant ([Transaction Nouv vente PMS-584 (IDE 0)]
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Solde Resort Credit (IDE 254)**
-
-Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md) -> **Solde Resort Credit (IDE 254)**
-
-Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md) -> **Solde Resort Credit (IDE 254)**
-
-Main -> ... -> [Transaction Nouv vente avec GP (IDE 237)](ADH-IDE-237.md) -> **Solde Resort Credit (IDE 254)**
-
-Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md) -> **Solde Resort Credit (IDE 254)**
-
-Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 239)](ADH-IDE-239.md) -> **Solde Resort Credit (IDE 254)**
-
-Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 240)](ADH-IDE-240.md) -> **Solde Resort Credit (IDE 254)**
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
     T254[254 Solde Resort Credit]
     style T254 fill:#58a6ff
-    CC1[1 Main Program]
-    style CC1 fill:#8b5cf6
-    CC242[242 Menu Choix SaisieA...]
-    style CC242 fill:#f59e0b
-    CC316[316 Saisie transaction...]
-    style CC316 fill:#f59e0b
-    CC163[163 Menu caisse GM - s...]
-    style CC163 fill:#f59e0b
-    CC237[237 Transaction Nouv v...]
-    style CC237 fill:#3fb950
-    CC238[238 Transaction Nouv v...]
-    style CC238 fill:#3fb950
-    CC163 --> CC237
-    CC242 --> CC237
-    CC316 --> CC237
-    CC163 --> CC238
-    CC242 --> CC238
-    CC316 --> CC238
-    CC1 --> CC163
-    CC1 --> CC242
-    CC1 --> CC316
-    CC237 --> T254
-    CC238 --> T254
+    NONE[Aucun caller]
+    NONE -.-> T254
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-584 | 1 |
-| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-710 | 1 |
-| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-721 | 1 |
-| [237](ADH-IDE-237.md) | Transaction Nouv vente avec GP | 1 |
-| [238](ADH-IDE-238.md) | Transaction Nouv vente PMS-584 | 1 |
-| [239](ADH-IDE-239.md) | Transaction Nouv vente PMS-721 | 1 |
-| [240](ADH-IDE-240.md) | Transaction Nouv vente PMS-710 | 1 |
+| - | (aucun) | - |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -313,15 +203,11 @@ graph LR
 | Expressions | 7 | Peu de logique |
 | Tables WRITE | 0 | Impact faible |
 | Sous-programmes | 0 | Peu de dependances |
-| Ecrans visibles | 1 | Ecran unique ou traitement batch |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 18) | Code sain |
 | Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
-
-#### Traitement (1 tache: 1 ecran, 0 traitement)
-
-- Traitement standard a migrer
 
 ### 14.3 Dependances critiques
 
@@ -329,4 +215,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-01-30 09:43*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:41*

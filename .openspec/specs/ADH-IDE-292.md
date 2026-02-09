@@ -1,199 +1,188 @@
 ﻿# ADH IDE 292 - Test Prepa Mecano
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:15
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_288.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 05:10 -> 05:10 (4s) | Assemblage 05:10
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Test Prepa Mecano** est un **programme de test/developpement** qui **permet de valider la preparation des donnees pour le systeme mecanographique**.
-
-**Objectif metier** : Ce programme semble etre un utilitaire de test ou de developpement (1 tache, 2 lignes de logique, aucune table, aucun parametre). Son nom suggere qu'il servait a tester la preparation des donnees pour les editions mecanographiques (impression de documents formattes). En l'absence de tables et de logique significative, il s'agit probablement d'un shell de test non utilise en production.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Developpeur ou testeur |
-| **Quoi** | Test de preparation des donnees mecanographiques |
-| **Pourquoi** | Validation des mecanismes de preparation d'edition |
-| **Declencheur** | Execution manuelle en mode developpement/test |
-| **Resultat** | Verification du fonctionnement (programme orphelin) |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (0 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 292 |
-| **Fichier XML** | `Prg_288.xml` |
-| **Description** | Test Prepa Mecano |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 2 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 292 |
+| Nom Programme | Test Prepa Mecano |
+| Fichier source | `Prg_292.xml` |
+| Dossier IDE | General |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| - | Aucune table | - | - | - |
+# ADH IDE 292 - Test Prepa Mecano
 
-**Resume**: 0 tables accedees dont **0 en ecriture**
+Programme de test/validation pour la preparation des donnees mecanographiques avant export. Verifie l'integrite des donnees de base (adherents, comptes, filiations) necessaires au processus MECANO de generation des listes mecanographiques. Valide les regles metier critiques : presence des identifiants obligatoires, coherence des relations parent-enfant, absence de doublons.
 
-### 2.3 Parametres d'entree (0 parametres)
+Utilise les tables de reference REF.ecf (societes, services, types adhes) et les tables de travail ADH (adherents_dat, comptes_dat, filiations_dat). Effectue des controles SQL croisants sur plusieurs niveaux hierarchiques pour detecter les anomalies de donnees qui bloqueraient le pipeline MECANO.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+Point d'entree de validation avant declenchement du module PBP (editions/exports mecanographiques). Genere un rapport de synthese (nb enregistrements, nb erreurs, nb avertissements) utilisable par l'operateur pour corriger les donnees avant relance export.
 
-### 2.4 Algorigramme
+## 3. BLOCS FONCTIONNELS
+
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee dans les expressions)*
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 5
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 2 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 0 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (0)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (0 / 0 tables avec colonnes identifiees)
+
+## 11. VARIABLES
+
+*(Programme sans variables locales mappees)*
+
+## 12. EXPRESSIONS
+
+**5 / 5 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CALCULATION | 1 | 0 |
+| CONSTANTE | 3 | 0 |
+| CAST_LOGIQUE | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CALCULATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CALCULATION | 3 | `'02/05/2019'DATE` | - |
+
+#### CONSTANTE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 4 | `'20190502'` | - |
+| CONSTANTE | 2 | `'N'` | - |
+| CONSTANTE | 1 | `'C'` | - |
+
+#### CAST_LOGIQUE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 5 | `'TRUE'LOG` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[292 Test Prepa Meca]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T292[292 Test Prepa Mecano]
+    style T292 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T292
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[292 Test Prepa Meca]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T292[292 Test Prepa Mecano]
+    style T292 fill:#58a6ff
+    NONE[Aucun callee]
+    T292 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 2 | Programme compact |
+| Expressions | 5 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 2) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 0 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:15 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 05:11*

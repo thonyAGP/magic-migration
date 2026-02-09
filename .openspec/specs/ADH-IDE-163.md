@@ -1,6 +1,6 @@
 ﻿# ADH IDE 163 - Menu caisse GM - scroll
 
-> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:51 (28s) | Assemblage 07:20
+> **Analyse**: Phases 1-4 2026-02-07 03:51 -> 03:46 (23h54min) | Assemblage 03:46
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,98 +14,19 @@
 | IDE Position | 163 |
 | Nom Programme | Menu caisse GM - scroll |
 | Fichier source | `Prg_163.xml` |
-| Dossier IDE | Menus |
+| Dossier IDE | Caisse |
 | Taches | 39 (7 ecrans visibles) |
 | Tables modifiees | 6 |
 | Programmes appeles | 20 |
+| Complexite | **MOYENNE** (score 55/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Menu caisse GM - scroll** assure la gestion complete de ce processus, accessible depuis [Main Program (IDE 1)](ADH-IDE-1.md).
+ADH IDE 163 est le menu caisse principal du système de gestion des clubs. C'est un programme de navigation centralisé qui s'exécute après l'authentification utilisateur et propose à l'opérateur l'accès à toutes les fonctionnalités de caisse : gestion des sessions, saisie de ventes, change de devises, gestion des comptes d'adhérents, et accès à divers utilitaires (factures, garanties, impression tickets). Le programme assure aussi des vérifications préalables critiques : détection des stations de travail éteintes, vérification du statut pooling, et validation de l'intégrité des données de session.
 
-Le flux de traitement s'organise en **4 blocs fonctionnels** :
+Le flux principal du programme implique un menu scrollable d'actions disponibles selon les droits de l'opérateur et l'état du club. Après chaque action (appel à un sous-programme), le menu se réaffiche automatiquement pour permettre une navigation fluide. Le programme gère les cas d'erreur courants : station inactive, données corrompues, sessions concurrentes détectées via la table `histo_fusionseparation`.
 
-- **Traitement** (32 taches) : traitements metier divers
-- **Saisie** (3 taches) : ecrans de saisie utilisateur (formulaires, champs, donnees)
-- **Calcul** (2 taches) : calculs de montants, stocks ou compteurs
-- **Consultation** (2 taches) : ecrans de recherche, selection et consultation
-
-**Donnees modifiees** : 6 tables en ecriture (reseau_cloture___rec, gm-recherche_____gmr, gm-complet_______gmc, compte_gm________cgm, histo_fusionseparation, log_booker).
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (32 taches)
-
-- **T1** - (sans nom) **[ECRAN]**
-- **T2** - Station eteinte erreur v1
-- **T3** - Station eteinte erreur v1
-- **T4** - Scroll sur noms **[ECRAN]**
-- **T5** - Existe FusSep
-- **T6** - Action
-- **T7** - (sans nom) **[ECRAN]**
-- **T8** - mise a jour des parametres
-- **T9** - Lecture session
-- **T10** - Groupement / Separation **[ECRAN]**
-- **T11** - Detail pour le support **[ECRAN]**
-- **T12** - Detail pour le support **[ECRAN]**
-- **T13** - Menu caisse                1.3 **[ECRAN]**
-- **T15** - GM purge ?
-- **T16** - GM purge ?
-- **T17** - Appel programme
-- **T18** - GESTION RESP?
-- **T19** - Lecture email
-- **T20** - recup terminal
-- **T21** - recup terminal
-- **T22** - Menu caisse                1.3 **[ECRAN]**
-- **T23** - SendMail
-- **T27** - Lecture paramètres par     1.6
-- **T28** - Paramètres caisse
-- **T29** - Lecture Paramètres TEL     1.7
-- **T30** - Lecture Parametre Change
-- **T31** - Messages autres
-- **T33** - Solde GM
-- **T34** - read FROM_IMS
-- **T35** - read COFFRE2
-- **T36** - read COFFRE2
-- **T51** - Solde GM
-
-Delegue a : [Liste des affiliés (IDE 167)](ADH-IDE-167.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Gestion caisse (IDE 121)](ADH-IDE-121.md), [Change GM (IDE 25)](ADH-IDE-25.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Contrôles - Integrite dates (IDE 48)](ADH-IDE-48.md), [Club Med Pass menu (IDE 77)](ADH-IDE-77.md), [   Card scan read (IDE 80)](ADH-IDE-80.md), [Test Activation ECO (IDE 113)](ADH-IDE-113.md), [Club Med Pass Filiations (IDE 114)](ADH-IDE-114.md)
-
-#### Phase 2 : Consultation (2 taches)
-
-- **T14** - Affichage donnees adherent **[ECRAN]**
-- **T47** - Affichage sessions **[ECRAN]**
-
-Delegue a : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md)
-
-#### Phase 3 : Saisie (3 taches)
-
-- **T24** - Saisie nbre decimales
-- **T25** - Saisie nbre decimales
-- **T26** - Saisie nbre decimales
-
-Delegue a : [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md)
-
-#### Phase 4 : Calcul (2 taches)
-
-- **T32** - Recalcul solde
-- **T50** - Recalcul solde
-
-Delegue a : [Menu changement compte (IDE 37)](ADH-IDE-37.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md), [Extrait de compte (IDE 69)](ADH-IDE-69.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md), [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md)
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| gm-recherche_____gmr | R/**W**/L (7 usages) | Index de recherche |
-| compte_gm________cgm | R/**W**/L (5 usages) | Comptes GM (generaux) |
-| gm-complet_______gmc | **W**/L (4 usages) |  |
-| histo_fusionseparation | R/**W**/L (4 usages) | Historique / journal |
-| reseau_cloture___rec | **W** (2 usages) | Donnees reseau/cloture |
-| log_booker | **W** (1 usages) |  |
-
-</details>
+Les tables modifiées reflètent la nature transversale du programme : enregistrement de clôtures réseau (`reseau_cloture`), recherche et mise à jour des profils adhérents (`gm-recherche`, `gm-complet`), et suivi des fusions/séparations de comptes pour audite. Le logging dans `log_booker` permet la traçabilité complète des opérations effectuées via ce menu central.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -115,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - (sans nom) [ECRAN]
+#### <a id="t1"></a>163 - (sans nom) [[ECRAN]](#ecran-t1)
 
 **Role** : Tache d'orchestration : point d'entree du programme (32 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 640 x 184 DLU (SDI) | [Voir mockup](#ecran-t1)
@@ -125,242 +46,242 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Station eteinte erreur v1 | Traitement |
-| [T3](#t3) | Station eteinte erreur v1 | Traitement |
-| [T4](#t4) | Scroll sur noms **[ECRAN]** | Traitement |
-| [T5](#t5) | Existe FusSep | Traitement |
-| [T6](#t6) | Action | Traitement |
-| [T7](#t7) | (sans nom) **[ECRAN]** | Traitement |
-| [T8](#t8) | mise a jour des parametres | Traitement |
-| [T9](#t9) | Lecture session | Traitement |
-| [T10](#t10) | Groupement / Separation **[ECRAN]** | Traitement |
-| [T11](#t11) | Detail pour le support **[ECRAN]** | Traitement |
-| [T12](#t12) | Detail pour le support **[ECRAN]** | Traitement |
-| [T13](#t13) | Menu caisse                1.3 **[ECRAN]** | Traitement |
-| [T15](#t15) | GM purge ? | Traitement |
-| [T16](#t16) | GM purge ? | Traitement |
-| [T17](#t17) | Appel programme | Traitement |
-| [T18](#t18) | GESTION RESP? | Traitement |
-| [T19](#t19) | Lecture email | Traitement |
-| [T20](#t20) | recup terminal | Traitement |
-| [T21](#t21) | recup terminal | Traitement |
-| [T22](#t22) | Menu caisse                1.3 **[ECRAN]** | Traitement |
-| [T23](#t23) | SendMail | Traitement |
-| [T27](#t27) | Lecture paramètres par     1.6 | Traitement |
-| [T28](#t28) | Paramètres caisse | Traitement |
-| [T29](#t29) | Lecture Paramètres TEL     1.7 | Traitement |
-| [T30](#t30) | Lecture Parametre Change | Traitement |
-| [T31](#t31) | Messages autres | Traitement |
-| [T33](#t33) | Solde GM | Traitement |
-| [T34](#t34) | read FROM_IMS | Traitement |
-| [T35](#t35) | read COFFRE2 | Traitement |
-| [T36](#t36) | read COFFRE2 | Traitement |
-| [T51](#t51) | Solde GM | Traitement |
+| [163.1](#t2) | Station eteinte erreur v1 | Traitement |
+| [163.2](#t3) | Station eteinte erreur v1 | Traitement |
+| [163.3](#t4) | Scroll sur noms **[[ECRAN]](#ecran-t4)** | Traitement |
+| [163.3.1](#t5) | Existe FusSep | Traitement |
+| [163.3.2](#t6) | Action | Traitement |
+| [163.3.3](#t7) | (sans nom) **[[ECRAN]](#ecran-t7)** | Traitement |
+| [163.3.3.1](#t8) | mise a jour des parametres | Traitement |
+| [163.3.4](#t9) | Lecture session | Traitement |
+| [163.3.5](#t10) | Groupement / Separation **[[ECRAN]](#ecran-t10)** | Traitement |
+| [163.3.5.1](#t11) | Detail pour le support **[[ECRAN]](#ecran-t11)** | Traitement |
+| [163.3.5.2](#t12) | Detail pour le support **[[ECRAN]](#ecran-t12)** | Traitement |
+| [163.4](#t13) | Menu caisse                1.3 **[[ECRAN]](#ecran-t13)** | Traitement |
+| [163.4.2](#t15) | GM purge ? | Traitement |
+| [163.4.3](#t16) | GM purge ? | Traitement |
+| [163.4.4](#t17) | Appel programme | Traitement |
+| [163.4.5](#t18) | GESTION RESP? | Traitement |
+| [163.4.6](#t19) | Lecture email | Traitement |
+| [163.4.7](#t20) | recup terminal | Traitement |
+| [163.4.8](#t21) | recup terminal | Traitement |
+| [163.4.9](#t22) | Menu caisse                1.3 **[[ECRAN]](#ecran-t22)** | Traitement |
+| [163.4.9.1](#t23) | SendMail | Traitement |
+| [163.8](#t27) | Lecture paramètres par     1.6 | Traitement |
+| [163.8.1](#t28) | Paramètres caisse | Traitement |
+| [163.9](#t29) | Lecture Paramètres TEL     1.7 | Traitement |
+| [163.10](#t30) | Lecture Parametre Change | Traitement |
+| [163.11](#t31) | Messages autres | Traitement |
+| [163.12.1](#t33) | Solde GM | Traitement |
+| [163.13](#t34) | read FROM_IMS | Traitement |
+| [163.14](#t35) | read COFFRE2 | Traitement |
+| [163.15](#t36) | read COFFRE2 | Traitement |
+| [163.4.11.1](#t51) | Solde GM | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>T2 - Station eteinte erreur v1
+#### <a id="t2"></a>163.1 - Station eteinte erreur v1
 
 **Role** : Traitement : Station eteinte erreur v1.
 
 ---
 
-#### <a id="t3"></a>T3 - Station eteinte erreur v1
+#### <a id="t3"></a>163.2 - Station eteinte erreur v1
 
 **Role** : Traitement : Station eteinte erreur v1.
 
 ---
 
-#### <a id="t4"></a>T4 - Scroll sur noms [ECRAN]
+#### <a id="t4"></a>163.3 - Scroll sur noms [[ECRAN]](#ecran-t4)
 
 **Role** : Traitement : Scroll sur noms.
 **Ecran** : 1347 x 271 DLU (MDI) | [Voir mockup](#ecran-t4)
 
 ---
 
-#### <a id="t5"></a>T5 - Existe FusSep
+#### <a id="t5"></a>163.3.1 - Existe FusSep
 
 **Role** : Traitement : Existe FusSep.
 
 ---
 
-#### <a id="t6"></a>T6 - Action
+#### <a id="t6"></a>163.3.2 - Action
 
 **Role** : Traitement : Action.
-**Variables liees** : U (W0 choix action)
+**Variables liees** : FH (W0 choix action)
 
 ---
 
-#### <a id="t7"></a>T7 - (sans nom) [ECRAN]
+#### <a id="t7"></a>163.3.3 - (sans nom) [[ECRAN]](#ecran-t7)
 
 **Role** : Traitement interne.
 **Ecran** : 404 x 183 DLU (SDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>T8 - mise a jour des parametres
+#### <a id="t8"></a>163.3.3.1 - mise a jour des parametres
 
 **Role** : Traitement : mise a jour des parametres.
 
 ---
 
-#### <a id="t9"></a>T9 - Lecture session
+#### <a id="t9"></a>163.3.4 - Lecture session
 
 **Role** : Traitement : Lecture session.
-**Variables liees** : CC (W0 Libelle session caisse)
+**Variables liees** : GP (W0 Libelle session caisse)
 
 ---
 
-#### <a id="t10"></a>T10 - Groupement / Separation [ECRAN]
+#### <a id="t10"></a>163.3.5 - Groupement / Separation [[ECRAN]](#ecran-t10)
 
 **Role** : Traitement : Groupement / Separation.
 **Ecran** : 523 x 112 DLU (SDI) | [Voir mockup](#ecran-t10)
 
 ---
 
-#### <a id="t11"></a>T11 - Detail pour le support [ECRAN]
+#### <a id="t11"></a>163.3.5.1 - Detail pour le support [[ECRAN]](#ecran-t11)
 
 **Role** : Traitement : Detail pour le support.
 **Ecran** : 989 x 169 DLU (SDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t12"></a>T12 - Detail pour le support [ECRAN]
+#### <a id="t12"></a>163.3.5.2 - Detail pour le support [[ECRAN]](#ecran-t12)
 
 **Role** : Traitement : Detail pour le support.
 **Ecran** : 989 x 169 DLU (SDI) | [Voir mockup](#ecran-t12)
 
 ---
 
-#### <a id="t13"></a>T13 - Menu caisse                1.3 [ECRAN]
+#### <a id="t13"></a>163.4 - Menu caisse                1.3 [[ECRAN]](#ecran-t13)
 
 **Role** : Traitement : Menu caisse                1.3.
 **Ecran** : 1238 x 312 DLU (MDI) | [Voir mockup](#ecran-t13)
-**Variables liees** : Q (P0 nouvelle gestion caisse), BU (W0 titre menu caisse), CC (W0 Libelle session caisse), CD (W0 Etat caisse), CM (v.affichage menu)
+**Variables liees** : FD (P0 nouvelle gestion caisse), GH (W0 titre menu caisse), GP (W0 Libelle session caisse), GQ (W0 Etat caisse), GZ (v.affichage menu)
 
 ---
 
-#### <a id="t15"></a>T15 - GM purge ?
+#### <a id="t15"></a>163.4.2 - GM purge ?
 
 **Role** : Traitement : GM purge ?.
 
 ---
 
-#### <a id="t16"></a>T16 - GM purge ?
+#### <a id="t16"></a>163.4.3 - GM purge ?
 
 **Role** : Traitement : GM purge ?.
 
 ---
 
-#### <a id="t17"></a>T17 - Appel programme
+#### <a id="t17"></a>163.4.4 - Appel programme
 
 **Role** : Traitement : Appel programme.
-**Variables liees** : Y (WP0 prog d'appel)
+**Variables liees** : FL (WP0 prog d'appel)
 
 ---
 
-#### <a id="t18"></a>T18 - GESTION RESP?
+#### <a id="t18"></a>163.4.5 - GESTION RESP?
 
 **Role** : Gestion du moyen de paiement : GESTION RESP?.
-**Variables liees** : Q (P0 nouvelle gestion caisse)
+**Variables liees** : FD (P0 nouvelle gestion caisse)
 
 ---
 
-#### <a id="t19"></a>T19 - Lecture email
+#### <a id="t19"></a>163.4.6 - Lecture email
 
 **Role** : Traitement : Lecture email.
 
 ---
 
-#### <a id="t20"></a>T20 - recup terminal
+#### <a id="t20"></a>163.4.7 - recup terminal
 
 **Role** : Consultation/chargement : recup terminal.
-**Variables liees** : CH (W0 TERMINAL COFFRE2)
+**Variables liees** : GU (W0 TERMINAL COFFRE2)
 
 ---
 
-#### <a id="t21"></a>T21 - recup terminal
+#### <a id="t21"></a>163.4.8 - recup terminal
 
 **Role** : Consultation/chargement : recup terminal.
-**Variables liees** : CH (W0 TERMINAL COFFRE2)
+**Variables liees** : GU (W0 TERMINAL COFFRE2)
 
 ---
 
-#### <a id="t22"></a>T22 - Menu caisse                1.3 [ECRAN]
+#### <a id="t22"></a>163.4.9 - Menu caisse                1.3 [[ECRAN]](#ecran-t22)
 
 **Role** : Traitement : Menu caisse                1.3.
 **Ecran** : 667 x 139 DLU (MDI) | [Voir mockup](#ecran-t22)
-**Variables liees** : Q (P0 nouvelle gestion caisse), BU (W0 titre menu caisse), CC (W0 Libelle session caisse), CD (W0 Etat caisse), CM (v.affichage menu)
+**Variables liees** : FD (P0 nouvelle gestion caisse), GH (W0 titre menu caisse), GP (W0 Libelle session caisse), GQ (W0 Etat caisse), GZ (v.affichage menu)
 
 ---
 
-#### <a id="t23"></a>T23 - SendMail
+#### <a id="t23"></a>163.4.9.1 - SendMail
 
 **Role** : Traitement : SendMail.
 
 ---
 
-#### <a id="t27"></a>T27 - Lecture paramètres par     1.6
+#### <a id="t27"></a>163.8 - Lecture paramètres par     1.6
 
 **Role** : Traitement : Lecture paramètres par     1.6.
 
 ---
 
-#### <a id="t28"></a>T28 - Paramètres caisse
+#### <a id="t28"></a>163.8.1 - Paramètres caisse
 
 **Role** : Traitement : Paramètres caisse.
-**Variables liees** : Q (P0 nouvelle gestion caisse), BU (W0 titre menu caisse), CC (W0 Libelle session caisse), CD (W0 Etat caisse)
+**Variables liees** : FD (P0 nouvelle gestion caisse), GH (W0 titre menu caisse), GP (W0 Libelle session caisse), GQ (W0 Etat caisse)
 
 ---
 
-#### <a id="t29"></a>T29 - Lecture Paramètres TEL     1.7
+#### <a id="t29"></a>163.9 - Lecture Paramètres TEL     1.7
 
 **Role** : Traitement : Lecture Paramètres TEL     1.7.
 
 ---
 
-#### <a id="t30"></a>T30 - Lecture Parametre Change
+#### <a id="t30"></a>163.10 - Lecture Parametre Change
 
 **Role** : Traitement : Lecture Parametre Change.
 
 ---
 
-#### <a id="t31"></a>T31 - Messages autres
+#### <a id="t31"></a>163.11 - Messages autres
 
 **Role** : Traitement : Messages autres.
-**Variables liees** : BZ (W0 message autres affilies)
+**Variables liees** : GM (W0 message autres affilies)
 
 ---
 
-#### <a id="t33"></a>T33 - Solde GM
+#### <a id="t33"></a>163.12.1 - Solde GM
 
 **Role** : Consultation/chargement : Solde GM.
 
 ---
 
-#### <a id="t34"></a>T34 - read FROM_IMS
+#### <a id="t34"></a>163.13 - read FROM_IMS
 
 **Role** : Traitement : read FROM_IMS.
 
 ---
 
-#### <a id="t35"></a>T35 - read COFFRE2
+#### <a id="t35"></a>163.14 - read COFFRE2
 
 **Role** : Traitement : read COFFRE2.
-**Variables liees** : CH (W0 TERMINAL COFFRE2), CI (v.Hostname coffre2), CJ (v.Host courant coffre2 ?)
+**Variables liees** : GU (W0 TERMINAL COFFRE2), GV (v.Hostname coffre2), GW (v.Host courant coffre2 ?)
 
 ---
 
-#### <a id="t36"></a>T36 - read COFFRE2
+#### <a id="t36"></a>163.15 - read COFFRE2
 
 **Role** : Traitement : read COFFRE2.
-**Variables liees** : CH (W0 TERMINAL COFFRE2), CI (v.Hostname coffre2), CJ (v.Host courant coffre2 ?)
+**Variables liees** : GU (W0 TERMINAL COFFRE2), GV (v.Hostname coffre2), GW (v.Host courant coffre2 ?)
 
 ---
 
-#### <a id="t51"></a>T51 - Solde GM
+#### <a id="t51"></a>163.4.11.1 - Solde GM
 
 **Role** : Consultation/chargement : Solde GM.
 
@@ -371,19 +292,19 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t14"></a>T14 - Affichage donnees adherent [ECRAN]
+#### <a id="t14"></a>163.4.1 - Affichage donnees adherent [[ECRAN]](#ecran-t14)
 
 **Role** : Reinitialisation : Affichage donnees adherent.
 **Ecran** : 1236 x 67 DLU (Modal) | [Voir mockup](#ecran-t14)
-**Variables liees** : BS (W0 affichage presence), CM (v.affichage menu)
+**Variables liees** : GF (W0 affichage presence), GZ (v.affichage menu)
 
 ---
 
-#### <a id="t47"></a>T47 - Affichage sessions [ECRAN]
+#### <a id="t47"></a>163.4.10 - Affichage sessions [[ECRAN]](#ecran-t47)
 
 **Role** : Reinitialisation : Affichage sessions.
 **Ecran** : 338 x 41 DLU (MDI) | [Voir mockup](#ecran-t47)
-**Variables liees** : BS (W0 affichage presence), CM (v.affichage menu)
+**Variables liees** : GF (W0 affichage presence), GZ (v.affichage menu)
 
 
 ### 3.3 Saisie (3 taches)
@@ -392,26 +313,26 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t24"></a>T24 - Saisie nbre decimales
+#### <a id="t24"></a>163.5 - Saisie nbre decimales
 
 **Role** : Saisie des donnees : Saisie nbre decimales.
-**Variables liees** : G (P0 nbre_de_decimales)
+**Variables liees** : ET (P0 nbre_de_decimales)
 **Delegue a** : [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md)
 
 ---
 
-#### <a id="t25"></a>T25 - Saisie nbre decimales
+#### <a id="t25"></a>163.6 - Saisie nbre decimales
 
 **Role** : Saisie des donnees : Saisie nbre decimales.
-**Variables liees** : G (P0 nbre_de_decimales)
+**Variables liees** : ET (P0 nbre_de_decimales)
 **Delegue a** : [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md)
 
 ---
 
-#### <a id="t26"></a>T26 - Saisie nbre decimales
+#### <a id="t26"></a>163.7 - Saisie nbre decimales
 
 **Role** : Saisie des donnees : Saisie nbre decimales.
-**Variables liees** : G (P0 nbre_de_decimales)
+**Variables liees** : ET (P0 nbre_de_decimales)
 **Delegue a** : [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md)
 
 
@@ -421,14 +342,14 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t32"></a>T32 - Recalcul solde
+#### <a id="t32"></a>163.12 - Recalcul solde
 
 **Role** : Calcul : Recalcul solde.
 **Delegue a** : [Menu changement compte (IDE 37)](ADH-IDE-37.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md), [Extrait de compte (IDE 69)](ADH-IDE-69.md)
 
 ---
 
-#### <a id="t50"></a>T50 - Recalcul solde
+#### <a id="t50"></a>163.4.11 - Recalcul solde
 
 **Role** : Calcul : Recalcul solde.
 **Delegue a** : [Menu changement compte (IDE 37)](ADH-IDE-37.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md), [Extrait de compte (IDE 69)](ADH-IDE-69.md)
@@ -436,7 +357,195 @@ Calculs metier : montants, stocks, compteurs.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+17 regles identifiees:
+
+### Consultation (1 regles)
+
+#### <a id="rm-RM-013"></a>[RM-013] Condition composite: Counter (0)=1 OR v.affichage menu [CM]
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Counter (0)=1 OR v.affichage menu [CM]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | GZ (v.affichage menu) |
+| **Expression source** | Expression 26 : `Counter (0)=1 OR v.affichage menu [CM]` |
+| **Exemple** | Si Counter (0)=1 OR v.affichage menu [CM] â†’ Action si vrai |
+| **Impact** | [163.4 - Menu caisse                1.3](#t13) |
+
+### Saisie (12 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: W0 choix action [U] egale 'S'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [U]='S'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FH (W0 choix action) |
+| **Expression source** | Expression 2 : `W0 choix action [U]='S'` |
+| **Exemple** | Si W0 choix action [U]='S' â†’ Action si vrai |
+| **Impact** | [163.3.2 - Action](#t6) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: parametre CHANGEAPPLICATION egale 'N'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [U]='F' AND GetParam ('CHANGEAPPLICATION')='N'` |
+| **Si vrai** | Action si CHANGEAPPLICATION = 'N' |
+| **Variables** | FH (W0 choix action) |
+| **Expression source** | Expression 3 : `W0 choix action [U]='F' AND GetParam ('CHANGEAPPLICATION')='` |
+| **Exemple** | Si W0 choix action [U]='F' AND GetParam ('CHANGEAPPLICATION')='N' â†’ Action si CHANGEAPPLICATION = 'N' |
+| **Impact** | [163.3.2 - Action](#t6) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: W0 choix action [U] egale 'M'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [U]='M'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FH (W0 choix action) |
+| **Expression source** | Expression 4 : `W0 choix action [U]='M'` |
+| **Exemple** | Si W0 choix action [U]='M' â†’ Action si vrai |
+| **Impact** | [163.3.2 - Action](#t6) |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: W0 choix action [U] egale 'A'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [U]='A'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FH (W0 choix action) |
+| **Expression source** | Expression 5 : `W0 choix action [U]='A'` |
+| **Exemple** | Si W0 choix action [U]='A' â†’ Action si vrai |
+| **Impact** | [163.3.2 - Action](#t6) |
+
+#### <a id="rm-RM-005"></a>[RM-005] Condition: W0 choix action [U]='C' OR W0 choix action [U] egale 'A'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [U]='C' OR W0 choix action [U]='A'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FH (W0 choix action) |
+| **Expression source** | Expression 6 : `W0 choix action [U]='C' OR W0 choix action [U]='A'` |
+| **Exemple** | Si W0 choix action [U]='C' OR W0 choix action [U]='A' â†’ Action si vrai |
+| **Impact** | [163.3.2 - Action](#t6) |
+
+#### <a id="rm-RM-006"></a>[RM-006] Condition: W0 choix action [U] egale 'F'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [U]='F'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FH (W0 choix action) |
+| **Expression source** | Expression 10 : `W0 choix action [U]='F'` |
+| **Exemple** | Si W0 choix action [U]='F' â†’ Action si vrai |
+| **Impact** | [163.3.2 - Action](#t6) |
+
+#### <a id="rm-RM-007"></a>[RM-007] Condition: W0 utilisation caiss [BO] egale 'O'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 utilisation caiss [BO]='O'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | GB (W0 utilisation caiss) |
+| **Expression source** | Expression 11 : `W0 utilisation caiss [BO]='O'` |
+| **Exemple** | Si W0 utilisation caiss [BO]='O' â†’ Action si vrai |
+| **Impact** | Bloc Saisie |
+
+#### <a id="rm-RM-008"></a>[RM-008] Condition: W0 utilisation caiss [BO] different de 'O'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 utilisation caiss [BO]<>'O'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | GB (W0 utilisation caiss) |
+| **Expression source** | Expression 12 : `W0 utilisation caiss [BO]<>'O'` |
+| **Exemple** | Si W0 utilisation caiss [BO]<>'O' â†’ Action si vrai |
+| **Impact** | Bloc Saisie |
+
+#### <a id="rm-RM-010"></a>[RM-010] Condition: W0 Status Club Med Pass [CA] egale 'O'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 Status Club Med Pass [CA]='O'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | GN (W0 Status Club Med Pass) |
+| **Expression source** | Expression 21 : `W0 Status Club Med Pass [CA]='O'` |
+| **Exemple** | Si W0 Status Club Med Pass [CA]='O' â†’ Action si vrai |
+| **Impact** | Bloc Saisie |
+
+#### <a id="rm-RM-014"></a>[RM-014] Condition: W0 Etat caisse [CD]='F' OR W0 Etat caisse [CD] egale 'Q'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 Etat caisse [CD]='F' OR W0 Etat caisse [CD]='Q'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | GQ (W0 Etat caisse) |
+| **Expression source** | Expression 27 : `W0 Etat caisse [CD]='F' OR W0 Etat caisse [CD]='Q'` |
+| **Exemple** | Si W0 Etat caisse [CD]='F' OR W0 Etat caisse [CD]='Q' â†’ Action si vrai |
+| **Impact** | Bloc Saisie |
+
+#### <a id="rm-RM-015"></a>[RM-015] Condition: W0 Etat caisse [CD]='O' OR W0 Etat caisse [CD] egale 'C'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 Etat caisse [CD]='O' OR W0 Etat caisse [CD]='C'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | GQ (W0 Etat caisse) |
+| **Expression source** | Expression 28 : `W0 Etat caisse [CD]='O' OR W0 Etat caisse [CD]='C'` |
+| **Exemple** | Si W0 Etat caisse [CD]='O' OR W0 Etat caisse [CD]='C' â†’ Action si vrai |
+| **Impact** | Bloc Saisie |
+
+#### <a id="rm-RM-016"></a>[RM-016] Condition: W0 Choix conf quitter [CF] egale 6
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 Choix conf quitter [CF]=6` |
+| **Si vrai** | Action si vrai |
+| **Variables** | GS (W0 Choix conf quitter) |
+| **Expression source** | Expression 29 : `W0 Choix conf quitter [CF]=6` |
+| **Exemple** | Si W0 Choix conf quitter [CF]=6 â†’ Action si vrai |
+| **Impact** | Bloc Saisie |
+
+### Autres (4 regles)
+
+#### <a id="rm-RM-009"></a>[RM-009] Negation de (FileExist ('%club_trav%Connect.dat')) AND P0 village à tel ? [C]='O' (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT (FileExist ('%club_trav%Connect.dat')) AND P0 village à tel ? [C]='O'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EP (P0 village à tel ?) |
+| **Expression source** | Expression 20 : `NOT (FileExist ('%club_trav%Connect.dat')) AND P0 village à ` |
+| **Exemple** | Si NOT (FileExist ('%club_trav%Connect.dat')) AND P0 village à tel ? [C]='O' â†’ Action si vrai |
+
+#### <a id="rm-RM-011"></a>[RM-011] Condition: P0 nouvelle gestion ca... [Q] egale 'N'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P0 nouvelle gestion ca... [Q]='N'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 24 : `P0 nouvelle gestion ca... [Q]='N'` |
+| **Exemple** | Si P0 nouvelle gestion ca... [Q]='N' â†’ Action si vrai |
+| **Impact** | [163.4.5 - GESTION RESP?](#t18) |
+
+#### <a id="rm-RM-012"></a>[RM-012] Condition: P0 nouvelle gestion ca... [Q] egale 'O'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P0 nouvelle gestion ca... [Q]='O'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 25 : `P0 nouvelle gestion ca... [Q]='O'` |
+| **Exemple** | Si P0 nouvelle gestion ca... [Q]='O' â†’ Action si vrai |
+| **Impact** | [163.4.5 - GESTION RESP?](#t18) |
+
+#### <a id="rm-RM-017"></a>[RM-017] Negation de VG78 (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT VG78` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 33 : `NOT VG78` |
+| **Exemple** | Si NOT VG78 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -451,20 +560,20 @@ Calculs metier : montants, stocks, compteurs.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 163.3 | T4 | Scroll sur noms | MDI | 1347 | 271 | Traitement |
-| 2 | 163.3.3 | T7 | (sans nom) | SDI | 404 | 183 | Traitement |
-| 3 | 163.3.5 | T10 | Groupement / Separation | SDI | 523 | 112 | Traitement |
-| 4 | 163.3.5.1 | T11 | Detail pour le support | SDI | 989 | 169 | Traitement |
-| 5 | 163.3.5.2 | T12 | Detail pour le support | SDI | 989 | 169 | Traitement |
-| 6 | 163.4 | T13 | Menu caisse                1.3 | MDI | 1238 | 312 | Traitement |
-| 7 | 163.4.2 | T14 | Affichage donnees adherent | Modal | 1236 | 67 | Consultation |
+| 1 | 163.3 | 163.3 | Scroll sur noms | MDI | 1347 | 271 | Traitement |
+| 2 | 163.3.3 | 163.3.3 | (sans nom) | SDI | 404 | 183 | Traitement |
+| 3 | 163.3.5 | 163.3.5 | Groupement / Separation | SDI | 523 | 112 | Traitement |
+| 4 | 163.3.5.1 | 163.3.5.1 | Detail pour le support | SDI | 989 | 169 | Traitement |
+| 5 | 163.3.5.2 | 163.3.5.2 | Detail pour le support | SDI | 989 | 169 | Traitement |
+| 6 | 163.4 | 163.4 | Menu caisse                1.3 | MDI | 1238 | 312 | Traitement |
+| 7 | 163.4.2 | 163.4.1 | Affichage donnees adherent | Modal | 1236 | 67 | Consultation |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t4"></a>163.3 - Scroll sur noms
-**Tache** : [T4](#t4) | **Type** : MDI | **Dimensions** : 1347 x 271 DLU
+**Tache** : [163.3](#t4) | **Type** : MDI | **Dimensions** : 1347 x 271 DLU
 **Bloc** : Traitement | **Titre IDE** : Scroll sur noms
 
 <!-- FORM-DATA:
@@ -1029,7 +1138,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t7"></a>163.3.3 - (sans nom)
-**Tache** : [T7](#t7) | **Type** : SDI | **Dimensions** : 404 x 183 DLU
+**Tache** : [163.3.3](#t7) | **Type** : SDI | **Dimensions** : 404 x 183 DLU
 **Bloc** : Traitement | **Titre IDE** : (sans nom)
 
 <!-- FORM-DATA:
@@ -1143,7 +1252,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t10"></a>163.3.5 - Groupement / Separation
-**Tache** : [T10](#t10) | **Type** : SDI | **Dimensions** : 523 x 112 DLU
+**Tache** : [163.3.5](#t10) | **Type** : SDI | **Dimensions** : 523 x 112 DLU
 **Bloc** : Traitement | **Titre IDE** : Groupement / Separation
 
 <!-- FORM-DATA:
@@ -1302,7 +1411,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t11"></a>163.3.5.1 - Detail pour le support
-**Tache** : [T11](#t11) | **Type** : SDI | **Dimensions** : 989 x 169 DLU
+**Tache** : [163.3.5.1](#t11) | **Type** : SDI | **Dimensions** : 989 x 169 DLU
 **Bloc** : Traitement | **Titre IDE** : Detail pour le support
 
 <!-- FORM-DATA:
@@ -1945,7 +2054,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t12"></a>163.3.5.2 - Detail pour le support
-**Tache** : [T12](#t12) | **Type** : SDI | **Dimensions** : 989 x 169 DLU
+**Tache** : [163.3.5.2](#t12) | **Type** : SDI | **Dimensions** : 989 x 169 DLU
 **Bloc** : Traitement | **Titre IDE** : Detail pour le support
 
 <!-- FORM-DATA:
@@ -2588,7 +2697,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t13"></a>163.4 - Menu caisse                1.3
-**Tache** : [T13](#t13) | **Type** : MDI | **Dimensions** : 1238 x 312 DLU
+**Tache** : [163.4](#t13) | **Type** : MDI | **Dimensions** : 1238 x 312 DLU
 **Bloc** : Traitement | **Titre IDE** : Menu caisse                1.3
 
 <!-- FORM-DATA:
@@ -3597,7 +3706,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t14"></a>163.4.2 - Affichage donnees adherent
-**Tache** : [T14](#t14) | **Type** : Modal | **Dimensions** : 1236 x 67 DLU
+**Tache** : [163.4.1](#t14) | **Type** : Modal | **Dimensions** : 1236 x 67 DLU
 **Bloc** : Consultation | **Titre IDE** : Affichage donnees adherent
 
 <!-- FORM-DATA:
@@ -4123,19 +4232,19 @@ Calculs metier : montants, stocks, compteurs.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF4[T4 Scroll sur noms]
+    VF4[163.3 Scroll sur noms]
     style VF4 fill:#58a6ff
-    VF7[T7 sans nom]
+    VF7[163.3.3 sans nom]
     style VF7 fill:#58a6ff
-    VF10[T10 Groupement Separation]
+    VF10[163.3.5 Groupement Separation]
     style VF10 fill:#58a6ff
-    VF11[T11 Detail pour le sup...]
+    VF11[163.3.5.1 Detail pour le sup...]
     style VF11 fill:#58a6ff
-    VF12[T12 Detail pour le sup...]
+    VF12[163.3.5.2 Detail pour le sup...]
     style VF12 fill:#58a6ff
-    VF13[T13 Menu caisse 1.3]
+    VF13[163.4 Menu caisse 1.3]
     style VF13 fill:#58a6ff
-    VF14[T14 Affichage donnees ...]
+    VF14[163.4.1 Affichage donnees ...]
     style VF14 fill:#58a6ff
     EXT167[IDE 167 Liste des affi...]
     style EXT167 fill:#3fb950
@@ -4220,59 +4329,72 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **163.1** | [**(sans nom)** (T1)](#t1) [mockup](#ecran-t1) | SDI | 640x184 | Traitement |
-| 163.1.1 | [Station eteinte erreur v1 (T2)](#t2) | MDI | - | |
-| 163.1.2 | [Station eteinte erreur v1 (T3)](#t3) | MDI | - | |
-| 163.1.3 | [Scroll sur noms (T4)](#t4) [mockup](#ecran-t4) | MDI | 1347x271 | |
-| 163.1.4 | [Existe FusSep (T5)](#t5) | SDI | - | |
-| 163.1.5 | [Action (T6)](#t6) | SDI | - | |
-| 163.1.6 | [(sans nom) (T7)](#t7) [mockup](#ecran-t7) | SDI | 404x183 | |
-| 163.1.7 | [mise a jour des parametres (T8)](#t8) | SDI | - | |
-| 163.1.8 | [Lecture session (T9)](#t9) | SDI | - | |
-| 163.1.9 | [Groupement / Separation (T10)](#t10) [mockup](#ecran-t10) | SDI | 523x112 | |
-| 163.1.10 | [Detail pour le support (T11)](#t11) [mockup](#ecran-t11) | SDI | 989x169 | |
-| 163.1.11 | [Detail pour le support (T12)](#t12) [mockup](#ecran-t12) | SDI | 989x169 | |
-| 163.1.12 | [Menu caisse                1.3 (T13)](#t13) [mockup](#ecran-t13) | MDI | 1238x312 | |
-| 163.1.13 | [GM purge ? (T15)](#t15) | SDI | - | |
-| 163.1.14 | [GM purge ? (T16)](#t16) | SDI | - | |
-| 163.1.15 | [Appel programme (T17)](#t17) | SDI | - | |
-| 163.1.16 | [GESTION RESP? (T18)](#t18) | SDI | - | |
-| 163.1.17 | [Lecture email (T19)](#t19) | SDI | - | |
-| 163.1.18 | [recup terminal (T20)](#t20) | - | - | |
-| 163.1.19 | [recup terminal (T21)](#t21) | - | - | |
-| 163.1.20 | [Menu caisse                1.3 (T22)](#t22) [mockup](#ecran-t22) | MDI | 667x139 | |
-| 163.1.21 | [SendMail (T23)](#t23) | - | - | |
-| 163.1.22 | [Lecture paramètres par     1.6 (T27)](#t27) | SDI | - | |
-| 163.1.23 | [Paramètres caisse (T28)](#t28) | SDI | - | |
-| 163.1.24 | [Lecture Paramètres TEL     1.7 (T29)](#t29) | MDI | - | |
-| 163.1.25 | [Lecture Parametre Change (T30)](#t30) | SDI | - | |
-| 163.1.26 | [Messages autres (T31)](#t31) | SDI | - | |
-| 163.1.27 | [Solde GM (T33)](#t33) | SDI | - | |
-| 163.1.28 | [read FROM_IMS (T34)](#t34) | SDI | - | |
-| 163.1.29 | [read COFFRE2 (T35)](#t35) | SDI | - | |
-| 163.1.30 | [read COFFRE2 (T36)](#t36) | SDI | - | |
-| 163.1.31 | [Solde GM (T51)](#t51) | SDI | - | |
-| **163.2** | [**Affichage donnees adherent** (T14)](#t14) [mockup](#ecran-t14) | Modal | 1236x67 | Consultation |
-| 163.2.1 | [Affichage sessions (T47)](#t47) [mockup](#ecran-t47) | MDI | 338x41 | |
-| **163.3** | [**Saisie nbre decimales** (T24)](#t24) | Modal | - | Saisie |
-| 163.3.1 | [Saisie nbre decimales (T25)](#t25) | Modal | - | |
-| 163.3.2 | [Saisie nbre decimales (T26)](#t26) | Modal | - | |
-| **163.4** | [**Recalcul solde** (T32)](#t32) | SDI | - | Calcul |
-| 163.4.1 | [Recalcul solde (T50)](#t50) | SDI | - | |
+| **163.1** | [**(sans nom)** (163)](#t1) [mockup](#ecran-t1) | SDI | 640x184 | Traitement |
+| 163.1.1 | [Station eteinte erreur v1 (163.1)](#t2) | MDI | - | |
+| 163.1.2 | [Station eteinte erreur v1 (163.2)](#t3) | MDI | - | |
+| 163.1.3 | [Scroll sur noms (163.3)](#t4) [mockup](#ecran-t4) | MDI | 1347x271 | |
+| 163.1.4 | [Existe FusSep (163.3.1)](#t5) | SDI | - | |
+| 163.1.5 | [Action (163.3.2)](#t6) | SDI | - | |
+| 163.1.6 | [(sans nom) (163.3.3)](#t7) [mockup](#ecran-t7) | SDI | 404x183 | |
+| 163.1.7 | [mise a jour des parametres (163.3.3.1)](#t8) | SDI | - | |
+| 163.1.8 | [Lecture session (163.3.4)](#t9) | SDI | - | |
+| 163.1.9 | [Groupement / Separation (163.3.5)](#t10) [mockup](#ecran-t10) | SDI | 523x112 | |
+| 163.1.10 | [Detail pour le support (163.3.5.1)](#t11) [mockup](#ecran-t11) | SDI | 989x169 | |
+| 163.1.11 | [Detail pour le support (163.3.5.2)](#t12) [mockup](#ecran-t12) | SDI | 989x169 | |
+| 163.1.12 | [Menu caisse                1.3 (163.4)](#t13) [mockup](#ecran-t13) | MDI | 1238x312 | |
+| 163.1.13 | [GM purge ? (163.4.2)](#t15) | SDI | - | |
+| 163.1.14 | [GM purge ? (163.4.3)](#t16) | SDI | - | |
+| 163.1.15 | [Appel programme (163.4.4)](#t17) | SDI | - | |
+| 163.1.16 | [GESTION RESP? (163.4.5)](#t18) | SDI | - | |
+| 163.1.17 | [Lecture email (163.4.6)](#t19) | SDI | - | |
+| 163.1.18 | [recup terminal (163.4.7)](#t20) | - | - | |
+| 163.1.19 | [recup terminal (163.4.8)](#t21) | - | - | |
+| 163.1.20 | [Menu caisse                1.3 (163.4.9)](#t22) [mockup](#ecran-t22) | MDI | 667x139 | |
+| 163.1.21 | [SendMail (163.4.9.1)](#t23) | - | - | |
+| 163.1.22 | [Lecture paramètres par     1.6 (163.8)](#t27) | SDI | - | |
+| 163.1.23 | [Paramètres caisse (163.8.1)](#t28) | SDI | - | |
+| 163.1.24 | [Lecture Paramètres TEL     1.7 (163.9)](#t29) | MDI | - | |
+| 163.1.25 | [Lecture Parametre Change (163.10)](#t30) | SDI | - | |
+| 163.1.26 | [Messages autres (163.11)](#t31) | SDI | - | |
+| 163.1.27 | [Solde GM (163.12.1)](#t33) | SDI | - | |
+| 163.1.28 | [read FROM_IMS (163.13)](#t34) | SDI | - | |
+| 163.1.29 | [read COFFRE2 (163.14)](#t35) | SDI | - | |
+| 163.1.30 | [read COFFRE2 (163.15)](#t36) | SDI | - | |
+| 163.1.31 | [Solde GM (163.4.11.1)](#t51) | SDI | - | |
+| **163.2** | [**Affichage donnees adherent** (163.4.1)](#t14) [mockup](#ecran-t14) | Modal | 1236x67 | Consultation |
+| 163.2.1 | [Affichage sessions (163.4.10)](#t47) [mockup](#ecran-t47) | MDI | 338x41 | |
+| **163.3** | [**Saisie nbre decimales** (163.5)](#t24) | Modal | - | Saisie |
+| 163.3.1 | [Saisie nbre decimales (163.6)](#t25) | Modal | - | |
+| 163.3.2 | [Saisie nbre decimales (163.7)](#t26) | Modal | - | |
+| **163.4** | [**Recalcul solde** (163.12)](#t32) | SDI | - | Calcul |
+| 163.4.1 | [Recalcul solde (163.4.11)](#t50) | SDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 39 taches]
-    ENDOK([END])
-    START --> PROCESS --> ENDOK
+    INIT[Init controles]
+    SAISIE[Scroll sur noms]
+    DECISION{W0 choix action}
+    PROCESS[Traitement]
+    UPDATE[MAJ 6 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -4282,56 +4404,49 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB |   | **W** |   | 2 |
-| 29 | voyages__________voy |  | DB |   |   | L | 1 |
 | 30 | gm-recherche_____gmr | Index de recherche | DB | R | **W** | L | 7 |
-| 31 | gm-complet_______gmc |  | DB |   | **W** | L | 4 |
-| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 2 |
-| 36 | client_gm |  | DB |   |   | L | 1 |
-| 39 | depot_garantie___dga | Depots et garanties | DB |   |   | L | 3 |
-| 40 | comptable________cte |  | DB | R |   | L | 3 |
-| 41 | depot_objets_____doa | Depots et garanties | DB |   |   | L | 1 |
-| 43 | solde_devises____sda | Devises / taux de change | DB |   |   | L | 1 |
 | 47 | compte_gm________cgm | Comptes GM (generaux) | DB | R | **W** | L | 5 |
-| 63 | parametres___par |  | DB | R |   |   | 1 |
-| 67 | tables___________tab |  | DB | R |   |   | 2 |
-| 69 | initialisation___ini |  | DB |   |   | L | 2 |
-| 78 | param__telephone_tel |  | DB | R |   |   | 1 |
-| 122 | unilateral_bilateral |  | DB | R |   |   | 1 |
-| 123 | fichier_messagerie |  | DB | R |   | L | 4 |
-| 130 | fichier_langue |  | DB |   |   | L | 1 |
-| 152 | parametres_pour_pabx |  | DB |   |   | L | 1 |
-| 219 | communication_ims |  | DB | R |   |   | 1 |
-| 246 | histo_sessions_caisse | Sessions de caisse | DB | R |   |   | 2 |
-| 257 | numero_des_terminaux_ims |  | DB | R |   |   | 2 |
-| 263 | vente | Donnees de ventes | DB |   |   | L | 1 |
-| 268 | cc_total_par_type |  | DB |   |   | L | 1 |
-| 280 | cotion_par_adherent |  | DB |   |   | L | 1 |
-| 285 | email |  | DB | R |   | L | 2 |
-| 312 | ez_card |  | DB |   |   | L | 1 |
 | 340 | histo_fusionseparation | Historique / journal | DB | R | **W** | L | 4 |
-| 358 | import_mod |  | DB |   |   | L | 2 |
-| 423 | req_param |  | DB |   |   | L | 1 |
-| 697 | droits_applications | Droits operateur | DB | R |   |   | 1 |
-| 720 | arc_transac_entete_bar |  | DB |   |   | L | 1 |
-| 728 | arc_cc_total |  | DB |   |   | L | 2 |
-| 740 | pv_stock_movements | Articles et stock | DB | R |   |   | 1 |
-| 786 | qualite_avant_reprise |  | DB | R |   | L | 2 |
-| 805 | vente_par_moyen_paiement | Donnees de ventes | DB |   |   | L | 1 |
-| 844 | stat_vendeur |  | TMP |   |   | L | 2 |
-| 876 | log_express_co |  | DB |   |   | L | 2 |
-| 878 | categorie_operation_mw | Operations comptables | DB | R |   |   | 2 |
+| 31 | gm-complet_______gmc |  | DB |   | **W** | L | 4 |
+| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB |   | **W** |   | 2 |
 | 911 | log_booker |  | DB |   | **W** |   | 1 |
+| 123 | fichier_messagerie |  | DB | R |   | L | 4 |
+| 40 | comptable________cte |  | DB | R |   | L | 3 |
+| 285 | email |  | DB | R |   | L | 2 |
+| 786 | qualite_avant_reprise |  | DB | R |   | L | 2 |
+| 246 | histo_sessions_caisse | Sessions de caisse | DB | R |   |   | 2 |
+| 878 | categorie_operation_mw | Operations comptables | DB | R |   |   | 2 |
+| 67 | tables___________tab |  | DB | R |   |   | 2 |
+| 257 | numero_des_terminaux_ims |  | DB | R |   |   | 2 |
+| 78 | param__telephone_tel |  | DB | R |   |   | 1 |
+| 63 | parametres___par |  | DB | R |   |   | 1 |
+| 219 | communication_ims |  | DB | R |   |   | 1 |
+| 740 | pv_stock_movements | Articles et stock | DB | R |   |   | 1 |
+| 697 | droits_applications | Droits operateur | DB | R |   |   | 1 |
+| 122 | unilateral_bilateral |  | DB | R |   |   | 1 |
+| 39 | depot_garantie___dga | Depots et garanties | DB |   |   | L | 3 |
+| 69 | initialisation___ini |  | DB |   |   | L | 2 |
+| 844 | stat_vendeur |  | TMP |   |   | L | 2 |
+| 728 | arc_cc_total |  | DB |   |   | L | 2 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB |   |   | L | 2 |
+| 358 | import_mod |  | DB |   |   | L | 2 |
+| 876 | log_express_co |  | DB |   |   | L | 2 |
+| 280 | cotion_par_adherent |  | DB |   |   | L | 1 |
 | 934 | selection enregistrement diver |  | DB |   |   | L | 1 |
+| 41 | depot_objets_____doa | Depots et garanties | DB |   |   | L | 1 |
+| 423 | req_param |  | DB |   |   | L | 1 |
+| 720 | arc_transac_entete_bar |  | DB |   |   | L | 1 |
+| 312 | ez_card |  | DB |   |   | L | 1 |
+| 29 | voyages__________voy |  | DB |   |   | L | 1 |
+| 152 | parametres_pour_pabx |  | DB |   |   | L | 1 |
+| 268 | cc_total_par_type |  | DB |   |   | L | 1 |
+| 805 | vente_par_moyen_paiement | Donnees de ventes | DB |   |   | L | 1 |
+| 43 | solde_devises____sda | Devises / taux de change | DB |   |   | L | 1 |
+| 263 | vente | Donnees de ventes | DB |   |   | L | 1 |
+| 130 | fichier_langue |  | DB |   |   | L | 1 |
+| 36 | client_gm |  | DB |   |   | L | 1 |
 
 ### Colonnes par table (17 / 20 tables avec colonnes identifiees)
-
-<details>
-<summary>Table 23 - reseau_cloture___rec (**W**) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
 
 <details>
 <summary>Table 30 - gm-recherche_____gmr (R/**W**/L) - 7 usages</summary>
@@ -4390,22 +4505,6 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 31 - gm-complet_______gmc (**W**/L) - 4 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 40 - comptable________cte (R/L) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| BA | W1 Retour Comptable | R | Logical |
-
-</details>
-
-<details>
 <summary>Table 47 - compte_gm________cgm (R/**W**/L) - 5 usages</summary>
 
 | Lettre | Variable | Acces | Type |
@@ -4426,34 +4525,28 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 63 - parametres___par (R) - 1 usages</summary>
+<summary>Table 340 - histo_fusionseparation (R/**W**/L) - 4 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
-<summary>Table 67 - tables___________tab (R) - 2 usages</summary>
+<summary>Table 31 - gm-complet_______gmc (**W**/L) - 4 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
-<summary>Table 78 - param__telephone_tel (R) - 1 usages</summary>
+<summary>Table 23 - reseau_cloture___rec (**W**) - 2 usages</summary>
 
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| BE | W1 param autocom code | R | Numeric |
-| BF | W1 param autocom ligne | R | Numeric |
-| BG | W1 param autocom poste | R | Numeric |
-| BW | W0 verif ticket telephone | R | Logical |
-| N | P0 telephone village | R | Alpha |
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
-<summary>Table 122 - unilateral_bilateral (R) - 1 usages</summary>
+<summary>Table 911 - log_booker (**W**) - 1 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
@@ -4467,31 +4560,11 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 219 - communication_ims (R) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 246 - histo_sessions_caisse (R) - 2 usages</summary>
+<summary>Table 40 - comptable________cte (R/L) - 3 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| BU | W0 titre menu caisse | R | Alpha |
-| CC | W0 Libelle session caisse | R | Alpha |
-| CD | W0 Etat caisse | R | Alpha |
-| Q | P0 nouvelle gestion caisse | R | Alpha |
-
-</details>
-
-<details>
-<summary>Table 257 - numero_des_terminaux_ims (R) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| BA | WP0 numero CAM | R | Numeric |
-| BB | WP0 numero PME | R | Numeric |
+| FN | W1 Retour Comptable | R | Logical |
 
 </details>
 
@@ -4500,33 +4573,12 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| BK | W1 Email texte | R | Alpha |
-| BL | W1 Email cnil | R | Alpha |
-| BM | W1 Email report filiations | R | Logical |
-| BN | W1 Email libelle etat | R | Alpha |
-| BO | W1 Email couleur | R | Numeric |
-| BP | Email Existe | R | Logical |
-
-</details>
-
-<details>
-<summary>Table 340 - histo_fusionseparation (R/**W**/L) - 4 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 697 - droits_applications (R) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 740 - pv_stock_movements (R) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+| FX | W1 Email texte | R | Alpha |
+| FY | W1 Email cnil | R | Alpha |
+| FZ | W1 Email report filiations | R | Logical |
+| GA | W1 Email libelle etat | R | Alpha |
+| GB | W1 Email couleur | R | Numeric |
+| GC | Email Existe | R | Logical |
 
 </details>
 
@@ -4558,6 +4610,18 @@ flowchart TD
 </details>
 
 <details>
+<summary>Table 246 - histo_sessions_caisse (R) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| GH | W0 titre menu caisse | R | Alpha |
+| GP | W0 Libelle session caisse | R | Alpha |
+| GQ | W0 Etat caisse | R | Alpha |
+| FD | P0 nouvelle gestion caisse | R | Alpha |
+
+</details>
+
+<details>
 <summary>Table 878 - categorie_operation_mw (R) - 2 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
@@ -4565,7 +4629,65 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 911 - log_booker (**W**) - 1 usages</summary>
+<summary>Table 67 - tables___________tab (R) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 257 - numero_des_terminaux_ims (R) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| FN | WP0 numero CAM | R | Numeric |
+| FO | WP0 numero PME | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 78 - param__telephone_tel (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| FR | W1 param autocom code | R | Numeric |
+| FS | W1 param autocom ligne | R | Numeric |
+| FT | W1 param autocom poste | R | Numeric |
+| GJ | W0 verif ticket telephone | R | Logical |
+| FA | P0 telephone village | R | Alpha |
+
+</details>
+
+<details>
+<summary>Table 63 - parametres___par (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 219 - communication_ims (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 740 - pv_stock_movements (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 697 - droits_applications (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 122 - unilateral_bilateral (R) - 1 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
@@ -4579,25 +4701,25 @@ Variables recues du programme appelant ([Main Program (IDE 1)](ADH-IDE-1.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Alpha | - |
-| B | P0 village_à_CAM ? | Alpha | - |
-| C | P0 village à tel ? | Alpha | 1x parametre entrant |
-| D | P0 parking ? | Alpha | - |
-| E | P0 village BiBop ? | Alpha | - |
-| F | P0 village PME | Alpha | - |
-| G | P0 nbre_de_decimales | Numeric | - |
-| H | P0 masque montant | Alpha | - |
-| I | P0 masque cumul | Alpha | - |
-| J | P0 devise locale | Alpha | - |
-| K | P0 tel cam | Alpha | - |
-| L | P0 code village | Alpha | - |
-| M | P0 nom village | Alpha | - |
-| N | P0 telephone village | Alpha | - |
-| O | P0 fax village | Alpha | - |
-| P | P0 village TAI | Alpha | - |
-| Q | P0 nouvelle gestion caisse | Alpha | - |
-| R | P0 Village CIA Pack | Alpha | - |
-| S | P0 GPIN Limit (cia Pack) | Numeric | - |
+| EN | P0 societe | Alpha | - |
+| EO | P0 village_à_CAM ? | Alpha | - |
+| EP | P0 village à tel ? | Alpha | 1x parametre entrant |
+| EQ | P0 parking ? | Alpha | - |
+| ER | P0 village BiBop ? | Alpha | - |
+| ES | P0 village PME | Alpha | - |
+| ET | P0 nbre_de_decimales | Numeric | - |
+| EU | P0 masque montant | Alpha | - |
+| EV | P0 masque cumul | Alpha | - |
+| EW | P0 devise locale | Alpha | - |
+| EX | P0 tel cam | Alpha | - |
+| EY | P0 code village | Alpha | - |
+| EZ | P0 nom village | Alpha | - |
+| FA | P0 telephone village | Alpha | - |
+| FB | P0 fax village | Alpha | - |
+| FC | P0 village TAI | Alpha | - |
+| FD | P0 nouvelle gestion caisse | Alpha | - |
+| FE | P0 Village CIA Pack | Alpha | - |
+| FF | P0 GPIN Limit (cia Pack) | Numeric | - |
 
 ### 11.2 Variables de session (5)
 
@@ -4605,11 +4727,11 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| T | V.Mode Consultation ? | Logical | - |
-| CI | v.Hostname coffre2 | Unicode | - |
-| CJ | v.Host courant coffre2 ? | Logical | - |
-| CL | v.garantie à verifier | Logical | - |
-| CM | v.affichage menu | Logical | - |
+| FG | V.Mode Consultation ? | Logical | - |
+| GV | v.Hostname coffre2 | Unicode | - |
+| GW | v.Host courant coffre2 ? | Logical | - |
+| GY | v.garantie à verifier | Logical | - |
+| GZ | v.affichage menu | Logical | [163.4](#t13), [163.4.9](#t22) |
 
 ### 11.3 Variables de travail (21)
 
@@ -4617,27 +4739,27 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| U | W0 choix action | Alpha | [T6](#t6) |
-| BO | W0 utilisation caiss | Alpha | - |
-| BP | W0 code retour | Alpha | - |
-| BQ | W0 Uni/Bi-Lateral | Alpha | - |
-| BR | W0 code village PME | Numeric | - |
-| BS | W0 affichage presence | Logical | - |
-| BT | W0 titre gm | Alpha | - |
-| BU | W0 titre menu caisse | Alpha | - |
-| BV | W0 club card number | Numeric | - |
-| BW | W0 verif ticket telephone | Logical | - |
-| BX | W0 verif pooling magic | Logical | - |
-| BY | W0 test room status | Alpha | - |
-| BZ | W0 message autres affilies | Logical | - |
-| CA | W0 Status Club Med Pass | Alpha | - |
-| CB | W0 message | Logical | - |
-| CC | W0 Libelle session caisse | Alpha | - |
-| CD | W0 Etat caisse | Alpha | - |
-| CE | W0 Mode consultation | Logical | - |
-| CF | W0 Choix conf quitter | Numeric | - |
-| CG | W0 FROM IMS | Alpha | - |
-| CH | W0 TERMINAL COFFRE2 | Numeric | - |
+| FH | W0 choix action | Alpha | [163.3.2](#t6) |
+| GB | W0 utilisation caiss | Alpha | [163.4](#t13), [163.4.9](#t22), [163.8.1](#t28) |
+| GC | W0 code retour | Alpha | - |
+| GD | W0 Uni/Bi-Lateral | Alpha | - |
+| GE | W0 code village PME | Numeric | - |
+| GF | W0 affichage presence | Logical | - |
+| GG | W0 titre gm | Alpha | - |
+| GH | W0 titre menu caisse | Alpha | - |
+| GI | W0 club card number | Numeric | - |
+| GJ | W0 verif ticket telephone | Logical | - |
+| GK | W0 verif pooling magic | Logical | - |
+| GL | W0 test room status | Alpha | - |
+| GM | W0 message autres affilies | Logical | - |
+| GN | W0 Status Club Med Pass | Alpha | 1x calcul interne |
+| GO | W0 message | Logical | - |
+| GP | W0 Libelle session caisse | Alpha | - |
+| GQ | W0 Etat caisse | Alpha | [163.4](#t13), [163.4.9](#t22), [163.8.1](#t28) |
+| GR | W0 Mode consultation | Logical | - |
+| GS | W0 Choix conf quitter | Numeric | 1x calcul interne |
+| GT | W0 FROM IMS | Alpha | - |
+| GU | W0 TERMINAL COFFRE2 | Numeric | - |
 
 ### 11.4 Autres (20)
 
@@ -4645,97 +4767,97 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| V | WP0 chaîne recherche | Alpha | - |
-| W | WP0 code GM | Numeric | - |
-| X | WP0 filiation | Numeric | - |
-| Y | WP0 prog d'appel | Alpha | - |
-| Z | WP0 fonction-call | Alpha | - |
-| BA | WP0 numero CAM | Numeric | 1x refs |
-| BB | WP0 numero PME | Numeric | - |
-| BC | WP0 code secret PME | Numeric | - |
-| BD | WP0 type carte | Alpha | 2x refs |
-| BE | WP0 longueur code | Numeric | - |
-| BF | WP0 nb code accepte | Numeric | 1x refs |
-| BG | WP0 borne min | Numeric | - |
-| BH | WP0 type triplet | Alpha | - |
-| BI | WP0 interface PABX | Alpha | - |
-| BJ | WP0 Max Ligne/poste | Numeric | - |
-| BK | WP0 S.D.A | Alpha | 1x refs |
-| BL | WP0 longueur poste | Numeric | - |
-| BM | WP0 montant carte PM | Numeric | 2x refs |
-| BN | WP0 carte bloquee | Alpha | - |
-| CK | L.Recherche prenom | Logical | - |
+| FI | WP0 chaîne recherche | Alpha | - |
+| FJ | WP0 code GM | Numeric | - |
+| FK | WP0 filiation | Numeric | - |
+| FL | WP0 prog d'appel | Alpha | - |
+| FM | WP0 fonction-call | Alpha | - |
+| FN | WP0 numero CAM | Numeric | - |
+| FO | WP0 numero PME | Numeric | - |
+| FP | WP0 code secret PME | Numeric | - |
+| FQ | WP0 type carte | Alpha | - |
+| FR | WP0 longueur code | Numeric | - |
+| FS | WP0 nb code accepte | Numeric | - |
+| FT | WP0 borne min | Numeric | - |
+| FU | WP0 type triplet | Alpha | - |
+| FV | WP0 interface PABX | Alpha | - |
+| FW | WP0 Max Ligne/poste | Numeric | - |
+| FX | WP0 S.D.A | Alpha | - |
+| FY | WP0 longueur poste | Numeric | - |
+| FZ | WP0 montant carte PM | Numeric | - |
+| GA | WP0 carte bloquee | Alpha | - |
+| GX | L.Recherche prenom | Logical | 1x refs |
 
 <details>
 <summary>Toutes les 65 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P0 societe | Alpha |
-| P0 | **B** | P0 village_à_CAM ? | Alpha |
-| P0 | **C** | P0 village à tel ? | Alpha |
-| P0 | **D** | P0 parking ? | Alpha |
-| P0 | **E** | P0 village BiBop ? | Alpha |
-| P0 | **F** | P0 village PME | Alpha |
-| P0 | **G** | P0 nbre_de_decimales | Numeric |
-| P0 | **H** | P0 masque montant | Alpha |
-| P0 | **I** | P0 masque cumul | Alpha |
-| P0 | **J** | P0 devise locale | Alpha |
-| P0 | **K** | P0 tel cam | Alpha |
-| P0 | **L** | P0 code village | Alpha |
-| P0 | **M** | P0 nom village | Alpha |
-| P0 | **N** | P0 telephone village | Alpha |
-| P0 | **O** | P0 fax village | Alpha |
-| P0 | **P** | P0 village TAI | Alpha |
-| P0 | **Q** | P0 nouvelle gestion caisse | Alpha |
-| P0 | **R** | P0 Village CIA Pack | Alpha |
-| P0 | **S** | P0 GPIN Limit (cia Pack) | Numeric |
-| W0 | **U** | W0 choix action | Alpha |
-| W0 | **BO** | W0 utilisation caiss | Alpha |
-| W0 | **BP** | W0 code retour | Alpha |
-| W0 | **BQ** | W0 Uni/Bi-Lateral | Alpha |
-| W0 | **BR** | W0 code village PME | Numeric |
-| W0 | **BS** | W0 affichage presence | Logical |
-| W0 | **BT** | W0 titre gm | Alpha |
-| W0 | **BU** | W0 titre menu caisse | Alpha |
-| W0 | **BV** | W0 club card number | Numeric |
-| W0 | **BW** | W0 verif ticket telephone | Logical |
-| W0 | **BX** | W0 verif pooling magic | Logical |
-| W0 | **BY** | W0 test room status | Alpha |
-| W0 | **BZ** | W0 message autres affilies | Logical |
-| W0 | **CA** | W0 Status Club Med Pass | Alpha |
-| W0 | **CB** | W0 message | Logical |
-| W0 | **CC** | W0 Libelle session caisse | Alpha |
-| W0 | **CD** | W0 Etat caisse | Alpha |
-| W0 | **CE** | W0 Mode consultation | Logical |
-| W0 | **CF** | W0 Choix conf quitter | Numeric |
-| W0 | **CG** | W0 FROM IMS | Alpha |
-| W0 | **CH** | W0 TERMINAL COFFRE2 | Numeric |
-| V. | **T** | V.Mode Consultation ? | Logical |
-| V. | **CI** | v.Hostname coffre2 | Unicode |
-| V. | **CJ** | v.Host courant coffre2 ? | Logical |
-| V. | **CL** | v.garantie à verifier | Logical |
-| V. | **CM** | v.affichage menu | Logical |
-| Autre | **V** | WP0 chaîne recherche | Alpha |
-| Autre | **W** | WP0 code GM | Numeric |
-| Autre | **X** | WP0 filiation | Numeric |
-| Autre | **Y** | WP0 prog d'appel | Alpha |
-| Autre | **Z** | WP0 fonction-call | Alpha |
-| Autre | **BA** | WP0 numero CAM | Numeric |
-| Autre | **BB** | WP0 numero PME | Numeric |
-| Autre | **BC** | WP0 code secret PME | Numeric |
-| Autre | **BD** | WP0 type carte | Alpha |
-| Autre | **BE** | WP0 longueur code | Numeric |
-| Autre | **BF** | WP0 nb code accepte | Numeric |
-| Autre | **BG** | WP0 borne min | Numeric |
-| Autre | **BH** | WP0 type triplet | Alpha |
-| Autre | **BI** | WP0 interface PABX | Alpha |
-| Autre | **BJ** | WP0 Max Ligne/poste | Numeric |
-| Autre | **BK** | WP0 S.D.A | Alpha |
-| Autre | **BL** | WP0 longueur poste | Numeric |
-| Autre | **BM** | WP0 montant carte PM | Numeric |
-| Autre | **BN** | WP0 carte bloquee | Alpha |
-| Autre | **CK** | L.Recherche prenom | Logical |
+| P0 | **EN** | P0 societe | Alpha |
+| P0 | **EO** | P0 village_à_CAM ? | Alpha |
+| P0 | **EP** | P0 village à tel ? | Alpha |
+| P0 | **EQ** | P0 parking ? | Alpha |
+| P0 | **ER** | P0 village BiBop ? | Alpha |
+| P0 | **ES** | P0 village PME | Alpha |
+| P0 | **ET** | P0 nbre_de_decimales | Numeric |
+| P0 | **EU** | P0 masque montant | Alpha |
+| P0 | **EV** | P0 masque cumul | Alpha |
+| P0 | **EW** | P0 devise locale | Alpha |
+| P0 | **EX** | P0 tel cam | Alpha |
+| P0 | **EY** | P0 code village | Alpha |
+| P0 | **EZ** | P0 nom village | Alpha |
+| P0 | **FA** | P0 telephone village | Alpha |
+| P0 | **FB** | P0 fax village | Alpha |
+| P0 | **FC** | P0 village TAI | Alpha |
+| P0 | **FD** | P0 nouvelle gestion caisse | Alpha |
+| P0 | **FE** | P0 Village CIA Pack | Alpha |
+| P0 | **FF** | P0 GPIN Limit (cia Pack) | Numeric |
+| W0 | **FH** | W0 choix action | Alpha |
+| W0 | **GB** | W0 utilisation caiss | Alpha |
+| W0 | **GC** | W0 code retour | Alpha |
+| W0 | **GD** | W0 Uni/Bi-Lateral | Alpha |
+| W0 | **GE** | W0 code village PME | Numeric |
+| W0 | **GF** | W0 affichage presence | Logical |
+| W0 | **GG** | W0 titre gm | Alpha |
+| W0 | **GH** | W0 titre menu caisse | Alpha |
+| W0 | **GI** | W0 club card number | Numeric |
+| W0 | **GJ** | W0 verif ticket telephone | Logical |
+| W0 | **GK** | W0 verif pooling magic | Logical |
+| W0 | **GL** | W0 test room status | Alpha |
+| W0 | **GM** | W0 message autres affilies | Logical |
+| W0 | **GN** | W0 Status Club Med Pass | Alpha |
+| W0 | **GO** | W0 message | Logical |
+| W0 | **GP** | W0 Libelle session caisse | Alpha |
+| W0 | **GQ** | W0 Etat caisse | Alpha |
+| W0 | **GR** | W0 Mode consultation | Logical |
+| W0 | **GS** | W0 Choix conf quitter | Numeric |
+| W0 | **GT** | W0 FROM IMS | Alpha |
+| W0 | **GU** | W0 TERMINAL COFFRE2 | Numeric |
+| V. | **FG** | V.Mode Consultation ? | Logical |
+| V. | **GV** | v.Hostname coffre2 | Unicode |
+| V. | **GW** | v.Host courant coffre2 ? | Logical |
+| V. | **GY** | v.garantie à verifier | Logical |
+| V. | **GZ** | v.affichage menu | Logical |
+| Autre | **FI** | WP0 chaîne recherche | Alpha |
+| Autre | **FJ** | WP0 code GM | Numeric |
+| Autre | **FK** | WP0 filiation | Numeric |
+| Autre | **FL** | WP0 prog d'appel | Alpha |
+| Autre | **FM** | WP0 fonction-call | Alpha |
+| Autre | **FN** | WP0 numero CAM | Numeric |
+| Autre | **FO** | WP0 numero PME | Numeric |
+| Autre | **FP** | WP0 code secret PME | Numeric |
+| Autre | **FQ** | WP0 type carte | Alpha |
+| Autre | **FR** | WP0 longueur code | Numeric |
+| Autre | **FS** | WP0 nb code accepte | Numeric |
+| Autre | **FT** | WP0 borne min | Numeric |
+| Autre | **FU** | WP0 type triplet | Alpha |
+| Autre | **FV** | WP0 interface PABX | Alpha |
+| Autre | **FW** | WP0 Max Ligne/poste | Numeric |
+| Autre | **FX** | WP0 S.D.A | Alpha |
+| Autre | **FY** | WP0 longueur poste | Numeric |
+| Autre | **FZ** | WP0 montant carte PM | Numeric |
+| Autre | **GA** | WP0 carte bloquee | Alpha |
+| Autre | **GX** | L.Recherche prenom | Logical |
 
 </details>
 
@@ -4747,14 +4869,32 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 15 | 15 |
+| NEGATION | 2 | 2 |
 | CONSTANTE | 13 | 0 |
-| CONDITION | 15 | 0 |
 | CAST_LOGIQUE | 2 | 0 |
-| NEGATION | 2 | 0 |
 | OTHER | 2 | 0 |
 | REFERENCE_VG | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (15 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 25 | `P0 nouvelle gestion ca... [Q]='O'` | [RM-012](#rm-RM-012) |
+| CONDITION | 24 | `P0 nouvelle gestion ca... [Q]='N'` | [RM-011](#rm-RM-011) |
+| CONDITION | 21 | `W0 Status Club Med Pass [CA]='O'` | [RM-010](#rm-RM-010) |
+| CONDITION | 26 | `Counter (0)=1 OR v.affichage menu [CM]` | [RM-013](#rm-RM-013) |
+| CONDITION | 29 | `W0 Choix conf quitter [CF]=6` | [RM-016](#rm-RM-016) |
+| ... | | *+10 autres* | |
+
+#### NEGATION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 33 | `NOT VG78` | [RM-017](#rm-RM-017) |
+| NEGATION | 20 | `NOT (FileExist ('%club_trav%Connect.dat')) AND P0 village à tel ? [C]='O'` | [RM-009](#rm-RM-009) |
 
 #### CONSTANTE (13 expressions)
 
@@ -4767,17 +4907,6 @@ Variables diverses.
 | CONSTANTE | 23 | `'O'` | - |
 | ... | | *+8 autres* | |
 
-#### CONDITION (15 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 25 | `P0 nouvelle gestion ca... [Q]='O'` | - |
-| CONDITION | 24 | `P0 nouvelle gestion ca... [Q]='N'` | - |
-| CONDITION | 21 | `WP0 numero CAM [BA]='O'` | - |
-| CONDITION | 26 | `Counter (0)=1 OR WP0 montant carte PM [BM]` | - |
-| CONDITION | 29 | `WP0 nb code accepte [BF]=6` | - |
-| ... | | *+10 autres* | |
-
 #### CAST_LOGIQUE (2 expressions)
 
 | Type | IDE | Expression | Regle |
@@ -4785,19 +4914,12 @@ Variables diverses.
 | CAST_LOGIQUE | 32 | `'FALSE'LOG` | - |
 | CAST_LOGIQUE | 19 | `'TRUE'LOG` | - |
 
-#### NEGATION (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 33 | `NOT VG78` | - |
-| NEGATION | 20 | `NOT (FileExist ('%club_trav%Connect.dat')) AND P0 village à tel ? [C]='O'` | - |
-
 #### OTHER (2 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 35 | `WP0 montant carte PM [BM]` | - |
-| OTHER | 31 | `WP0 S.D.A [BK]` | - |
+| OTHER | 35 | `v.affichage menu [CM]` | - |
+| OTHER | 31 | `L.Recherche prenom [CK]` | - |
 
 #### REFERENCE_VG (1 expressions)
 
@@ -4809,6 +4931,33 @@ Variables diverses.
 
 <details>
 <summary>Voir les 35 expressions</summary>
+
+#### CONDITION (15)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 2 | `W0 choix action [U]='S'` |
+| 3 | `W0 choix action [U]='F' AND GetParam ('CHANGEAPPLICATION')='N'` |
+| 4 | `W0 choix action [U]='M'` |
+| 5 | `W0 choix action [U]='A'` |
+| 6 | `W0 choix action [U]='C' OR W0 choix action [U]='A'` |
+| 10 | `W0 choix action [U]='F'` |
+| 11 | `W0 utilisation caiss [BO]='O'` |
+| 12 | `W0 utilisation caiss [BO]<>'O'` |
+| 21 | `W0 Status Club Med Pass [CA]='O'` |
+| 24 | `P0 nouvelle gestion ca... [Q]='N'` |
+| 25 | `P0 nouvelle gestion ca... [Q]='O'` |
+| 26 | `Counter (0)=1 OR v.affichage menu [CM]` |
+| 27 | `W0 Etat caisse [CD]='F' OR W0 Etat caisse [CD]='Q'` |
+| 28 | `W0 Etat caisse [CD]='O' OR W0 Etat caisse [CD]='C'` |
+| 29 | `W0 Choix conf quitter [CF]=6` |
+
+#### NEGATION (2)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 20 | `NOT (FileExist ('%club_trav%Connect.dat')) AND P0 village à tel ? [C]='O'` |
+| 33 | `NOT VG78` |
 
 #### CONSTANTE (13)
 
@@ -4828,26 +4977,6 @@ Variables diverses.
 | 23 | `'O'` |
 | 30 | `'N'` |
 
-#### CONDITION (15)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 2 | `W0 choix action [U]='S'` |
-| 3 | `W0 choix action [U]='F' AND GetParam ('CHANGEAPPLICATION')='N'` |
-| 4 | `W0 choix action [U]='M'` |
-| 5 | `W0 choix action [U]='A'` |
-| 6 | `W0 choix action [U]='C' OR W0 choix action [U]='A'` |
-| 10 | `W0 choix action [U]='F'` |
-| 11 | `[AO]='O'` |
-| 12 | `[AO]<>'O'` |
-| 21 | `WP0 numero CAM [BA]='O'` |
-| 24 | `P0 nouvelle gestion ca... [Q]='N'` |
-| 25 | `P0 nouvelle gestion ca... [Q]='O'` |
-| 26 | `Counter (0)=1 OR WP0 montant carte PM [BM]` |
-| 27 | `WP0 type carte [BD]='F' OR WP0 type carte [BD]='Q'` |
-| 28 | `WP0 type carte [BD]='O' OR WP0 type carte [BD]='C'` |
-| 29 | `WP0 nb code accepte [BF]=6` |
-
 #### CAST_LOGIQUE (2)
 
 | IDE | Expression Decodee |
@@ -4855,19 +4984,12 @@ Variables diverses.
 | 19 | `'TRUE'LOG` |
 | 32 | `'FALSE'LOG` |
 
-#### NEGATION (2)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 20 | `NOT (FileExist ('%club_trav%Connect.dat')) AND P0 village à tel ? [C]='O'` |
-| 33 | `NOT VG78` |
-
 #### OTHER (2)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 31 | `WP0 S.D.A [BK]` |
-| 35 | `WP0 montant carte PM [BM]` |
+| 31 | `L.Recherche prenom [CK]` |
+| 35 | `v.affichage menu [CM]` |
 
 #### REFERENCE_VG (1)
 
@@ -5005,7 +5127,7 @@ graph LR
 | Sous-programmes | 20 | Forte dependance |
 | Ecrans visibles | 7 | Interface complexe multi-ecrans |
 | Code desactive | 0.1% (1 / 1507) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 17 | Logique metier riche |
 
 ### 14.2 Plan de migration par bloc
 
@@ -5053,4 +5175,4 @@ graph LR
 | [Club Med Pass Filiations (IDE 114)](ADH-IDE-114.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:20*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:46*

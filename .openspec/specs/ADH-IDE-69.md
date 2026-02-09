@@ -1,6 +1,6 @@
 ﻿# ADH IDE 69 - Extrait de compte
 
-> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 03:43 (27s) | Assemblage 13:41
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 02:06 (22h22min) | Assemblage 02:06
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -139,7 +139,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t1"></a>T1 - Extrait de compte [ECRAN]
+#### <a id="t1"></a>69 - Extrait de compte [[ECRAN]](#ecran-t1)
 
 **Role** : Traitement : Extrait de compte.
 **Ecran** : 166 x 15 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -149,43 +149,43 @@ Calculs metier : montants, stocks, compteurs.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Recalcul solde | Calcul |
-| [T4](#t4) | Reaffichage infos compte | Calcul |
-| [T5](#t5) | Scroll compte **[ECRAN]** | Calcul |
-| [T12](#t12) | Reaffichage infos compte | Calcul |
+| [69.1](#t2) | Recalcul solde | Calcul |
+| [69.2](#t4) | Reaffichage infos compte | Calcul |
+| [69.3](#t5) | Scroll compte **[[ECRAN]](#ecran-t5)** | Calcul |
+| [69.4](#t12) | Reaffichage infos compte | Calcul |
 
 </details>
-**Variables liees** : G (< solde compte), H (< etat compte)
+**Variables liees** : ET (< solde compte), EU (< etat compte)
 **Delegue a** : [Print extrait compte /Date (IDE 71)](ADH-IDE-71.md), [Print extrait compte /Nom (IDE 70)](ADH-IDE-70.md), [Print extrait compte /Cum (IDE 72)](ADH-IDE-72.md)
 
 ---
 
-#### <a id="t2"></a>T2 - Recalcul solde
+#### <a id="t2"></a>69.1 - Recalcul solde
 
 **Role** : Calcul : Recalcul solde.
-**Variables liees** : G (< solde compte), I (< date solde)
+**Variables liees** : ET (< solde compte), EV (< date solde)
 
 ---
 
-#### <a id="t4"></a>T4 - Reaffichage infos compte
+#### <a id="t4"></a>69.2 - Reaffichage infos compte
 
 **Role** : Reinitialisation : Reaffichage infos compte.
-**Variables liees** : G (< solde compte), H (< etat compte)
+**Variables liees** : ET (< solde compte), EU (< etat compte)
 
 ---
 
-#### <a id="t5"></a>T5 - Scroll compte [ECRAN]
+#### <a id="t5"></a>69.3 - Scroll compte [[ECRAN]](#ecran-t5)
 
 **Role** : Traitement : Scroll compte.
 **Ecran** : 1496 x 291 DLU (MDI) | [Voir mockup](#ecran-t5)
-**Variables liees** : G (< solde compte), H (< etat compte)
+**Variables liees** : ET (< solde compte), EU (< etat compte)
 
 ---
 
-#### <a id="t12"></a>T12 - Reaffichage infos compte
+#### <a id="t12"></a>69.4 - Reaffichage infos compte
 
 **Role** : Reinitialisation : Reaffichage infos compte.
-**Variables liees** : G (< solde compte), H (< etat compte)
+**Variables liees** : ET (< solde compte), EU (< etat compte)
 
 
 ### 3.2 Traitement (4 taches)
@@ -194,34 +194,34 @@ Traitements internes.
 
 ---
 
-#### <a id="t3"></a>T3 - Solde GM
+#### <a id="t3"></a>69.1.1 - Solde GM
 
 **Role** : Consultation/chargement : Solde GM.
-**Variables liees** : G (< solde compte), I (< date solde)
+**Variables liees** : ET (< solde compte), EV (< date solde)
 **Delegue a** : [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Other Listing (IDE 183)](ADH-IDE-183.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 ---
 
-#### <a id="t8"></a>T8 - SendMail
+#### <a id="t8"></a>69.3.3 - SendMail
 
 **Role** : Traitement : SendMail.
 **Delegue a** : [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Other Listing (IDE 183)](ADH-IDE-183.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 ---
 
-#### <a id="t10"></a>T10 - Check recu detail
+#### <a id="t10"></a>69.3.5 - Check recu detail
 
 **Role** : Traitement : Check recu detail.
-**Variables liees** : S (v.Flag recu détaillé), T (v.Blob recu détaillé), U (v.Fichier recu détaillé), Z (v.Retour_recu_detail)
+**Variables liees** : FF (v.Flag recu détaillé), FG (v.Blob recu détaillé), FH (v.Fichier recu détaillé), FM (v.Retour_recu_detail)
 **Delegue a** : [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Other Listing (IDE 183)](ADH-IDE-183.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 ---
 
-#### <a id="t11"></a>T11 - PDF mobilité POS [ECRAN]
+#### <a id="t11"></a>69.3.6 - PDF mobilité POS [[ECRAN]](#ecran-t11)
 
 **Role** : Traitement : PDF mobilité POS.
 **Ecran** : 123 x 195 DLU | [Voir mockup](#ecran-t11)
-**Variables liees** : BA (v.Retour ticket mobilité POS)
+**Variables liees** : FN (v.Retour ticket mobilité POS)
 **Delegue a** : [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Other Listing (IDE 183)](ADH-IDE-183.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 
@@ -231,11 +231,11 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t6"></a>T6 - Choix Edition [ECRAN]
+#### <a id="t6"></a>69.3.1 - Choix Edition [[ECRAN]](#ecran-t6)
 
 **Role** : Generation du document : Choix Edition.
 **Ecran** : 537 x 41 DLU | [Voir mockup](#ecran-t6)
-**Variables liees** : V (v. Edition partielle ?)
+**Variables liees** : FI (v. Edition partielle ?)
 **Delegue a** : [Get Printer (IDE 179)](ADH-IDE-179.md), [Print extrait compte /Date (IDE 71)](ADH-IDE-71.md), [Print extrait compte /Nom (IDE 70)](ADH-IDE-70.md)
 
 
@@ -245,7 +245,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t7"></a>T7 - Zoom Listing [ECRAN]
+#### <a id="t7"></a>69.3.2 - Zoom Listing [[ECRAN]](#ecran-t7)
 
 **Role** : Selection par l'operateur : Zoom Listing.
 **Ecran** : 818 x 0 DLU (MDI) | [Voir mockup](#ecran-t7)
@@ -258,15 +258,37 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 ---
 
-#### <a id="t9"></a>T9 - Vérif. Vente avec signature
+#### <a id="t9"></a>69.3.4 - Vérif. Vente avec signature
 
 **Role** : Saisie des donnees : Vérif. Vente avec signature.
-**Variables liees** : Y (v.Retour isVenteODSignature)
+**Variables liees** : FL (v.Retour isVenteODSignature)
 
 
 ## 5. REGLES METIER
 
-*(Programme d'impression - logique technique sans conditions metier)*
+2 regles identifiees:
+
+### Autres (2 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: > societe [A] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> societe [A]=''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (> societe) |
+| **Expression source** | Expression 1 : `> societe [A]=''` |
+| **Exemple** | Si > societe [A]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Negation de >P_FormatPDF [K] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT >P_FormatPDF [K]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EX (>P_FormatPDF) |
+| **Expression source** | Expression 6 : `NOT >P_FormatPDF [K]` |
+| **Exemple** | Si NOT >P_FormatPDF [K] â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -281,16 +303,16 @@ Ce bloc traite la saisie des donnees de la transaction.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 69.3 | T5 | Scroll compte | MDI | 1496 | 291 | Calcul |
-| 2 | 69.3.1 | T6 | Choix Edition | Type0 | 537 | 41 | Impression |
-| 3 | 69.3.2 | T7 | Zoom Listing | MDI | 818 | 0 | Consultation |
+| 1 | 69.3 | 69.3 | Scroll compte | MDI | 1496 | 291 | Calcul |
+| 2 | 69.3.1 | 69.3.1 | Choix Edition | Type0 | 537 | 41 | Impression |
+| 3 | 69.3.2 | 69.3.2 | Zoom Listing | MDI | 818 | 0 | Consultation |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t5"></a>69.3 - Scroll compte
-**Tache** : [T5](#t5) | **Type** : MDI | **Dimensions** : 1496 x 291 DLU
+**Tache** : [69.3](#t5) | **Type** : MDI | **Dimensions** : 1496 x 291 DLU
 **Bloc** : Calcul | **Titre IDE** : Scroll compte
 
 <!-- FORM-DATA:
@@ -1033,7 +1055,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 ---
 
 #### <a id="ecran-t6"></a>69.3.1 - Choix Edition
-**Tache** : [T6](#t6) | **Type** : Type0 | **Dimensions** : 537 x 41 DLU
+**Tache** : [69.3.1](#t6) | **Type** : Type0 | **Dimensions** : 537 x 41 DLU
 **Bloc** : Impression | **Titre IDE** : Choix Edition
 
 <!-- FORM-DATA:
@@ -1102,7 +1124,7 @@ Ce bloc traite la saisie des donnees de la transaction.
 ---
 
 #### <a id="ecran-t7"></a>69.3.2 - Zoom Listing
-**Tache** : [T7](#t7) | **Type** : MDI | **Dimensions** : 818 x 0 DLU
+**Tache** : [69.3.2](#t7) | **Type** : MDI | **Dimensions** : 818 x 0 DLU
 **Bloc** : Consultation | **Titre IDE** : Zoom Listing
 
 <!-- FORM-DATA:
@@ -1171,11 +1193,11 @@ Ce bloc traite la saisie des donnees de la transaction.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF5[T5 Scroll compte]
+    VF5[69.3 Scroll compte]
     style VF5 fill:#58a6ff
-    VF6[T6 Choix Edition]
+    VF6[69.3.1 Choix Edition]
     style VF6 fill:#58a6ff
-    VF7[T7 Zoom Listing]
+    VF7[69.3.2 Zoom Listing]
     style VF7 fill:#58a6ff
     EXT179[IDE 179 Get Printer]
     style EXT179 fill:#3fb950
@@ -1242,44 +1264,45 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **69.1** | [**Extrait de compte** (T1)](#t1) [mockup](#ecran-t1) | MDI | 166x15 | Calcul |
-| 69.1.1 | [Recalcul solde (T2)](#t2) | SDI | - | |
-| 69.1.2 | [Reaffichage infos compte (T4)](#t4) | MDI | - | |
-| 69.1.3 | [Scroll compte (T5)](#t5) [mockup](#ecran-t5) | MDI | 1496x291 | |
-| 69.1.4 | [Reaffichage infos compte (T12)](#t12) | MDI | - | |
-| **69.2** | [**Solde GM** (T3)](#t3) | SDI | - | Traitement |
-| 69.2.1 | [SendMail (T8)](#t8) | - | - | |
-| 69.2.2 | [Check recu detail (T10)](#t10) | - | - | |
-| 69.2.3 | [PDF mobilité POS (T11)](#t11) [mockup](#ecran-t11) | - | 123x195 | |
-| **69.3** | [**Choix Edition** (T6)](#t6) [mockup](#ecran-t6) | - | 537x41 | Impression |
-| **69.4** | [**Zoom Listing** (T7)](#t7) [mockup](#ecran-t7) | MDI | 818x0 | Consultation |
-| **69.5** | [**Vérif. Vente avec signature** (T9)](#t9) | - | - | Saisie |
+| **69.1** | [**Extrait de compte** (69)](#t1) [mockup](#ecran-t1) | MDI | 166x15 | Calcul |
+| 69.1.1 | [Recalcul solde (69.1)](#t2) | SDI | - | |
+| 69.1.2 | [Reaffichage infos compte (69.2)](#t4) | MDI | - | |
+| 69.1.3 | [Scroll compte (69.3)](#t5) [mockup](#ecran-t5) | MDI | 1496x291 | |
+| 69.1.4 | [Reaffichage infos compte (69.4)](#t12) | MDI | - | |
+| **69.2** | [**Solde GM** (69.1.1)](#t3) | SDI | - | Traitement |
+| 69.2.1 | [SendMail (69.3.3)](#t8) | - | - | |
+| 69.2.2 | [Check recu detail (69.3.5)](#t10) | - | - | |
+| 69.2.3 | [PDF mobilité POS (69.3.6)](#t11) [mockup](#ecran-t11) | - | 123x195 | |
+| **69.3** | [**Choix Edition** (69.3.1)](#t6) [mockup](#ecran-t6) | - | 537x41 | Impression |
+| **69.4** | [**Zoom Listing** (69.3.2)](#t7) [mockup](#ecran-t7) | MDI | 818x0 | Consultation |
+| **69.5** | [**Vérif. Vente avec signature** (69.3.4)](#t9) | - | - | Saisie |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Calcul (5t)]
-    START --> B1
-    B2[Traitement (4t)]
-    B1 --> B2
-    B3[Impression (1t)]
-    B2 --> B3
-    B4[Consultation (1t)]
-    B3 --> B4
-    B5[Saisie (1t)]
-    B4 --> B5
-    WRITE[MAJ 4 tables]
-    B5 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[scroll sur compte]
+    DECISION{societe}
+    PROCESS[Traitement]
+    UPDATE[MAJ 4 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -1349,8 +1372,8 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| B | Bt.Print | W | Alpha |
-| N | W0 Print Recap Free Extra | W | Logical |
+| EO | Bt.Print | W | Alpha |
+| FA | W0 Print Recap Free Extra | W | Logical |
 
 </details>
 
@@ -1379,16 +1402,16 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| P | v.Cancel | Logical | - |
-| Q | v.PDFFileName | Unicode | - |
-| R | v.FileLocation | Unicode | - |
-| S | v.Flag recu détaillé | Logical | - |
-| T | v.Blob recu détaillé | Blob | - |
-| U | v.Fichier recu détaillé | Alpha | - |
-| V | v. Edition partielle ? | Numeric | - |
-| Y | v.Retour isVenteODSignature | Logical | - |
-| Z | v.Retour_recu_detail | Logical | - |
-| BA | v.Retour ticket mobilité POS | Logical | - |
+| FC | v.Cancel | Logical | - |
+| FD | v.PDFFileName | Unicode | - |
+| FE | v.FileLocation | Unicode | - |
+| FF | v.Flag recu détaillé | Logical | - |
+| FG | v.Blob recu détaillé | Blob | - |
+| FH | v.Fichier recu détaillé | Alpha | - |
+| FI | v. Edition partielle ? | Numeric | - |
+| FL | v.Retour isVenteODSignature | Logical | - |
+| FM | v.Retour_recu_detail | Logical | - |
+| FN | v.Retour ticket mobilité POS | Logical | - |
 
 ### 11.2 Variables de travail (3)
 
@@ -1396,9 +1419,9 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| M | W0 Presence Recap Free Extra | Logical | - |
-| N | W0 Print Recap Free Extra | Logical | - |
-| O | W0 Mail Existe | Logical | - |
+| EZ | W0 Presence Recap Free Extra | Logical | - |
+| FA | W0 Print Recap Free Extra | Logical | - |
+| FB | W0 Mail Existe | Logical | - |
 
 ### 11.3 Autres (14)
 
@@ -1406,53 +1429,53 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > societe | Alpha | 2x refs |
-| B | > code_retour | Alpha | - |
-| C | > code_adherent | Numeric | 1x refs |
-| D | > filiation | Numeric | 1x refs |
-| E | > masque mtt | Alpha | - |
-| F | > nom village | Alpha | - |
-| G | < solde compte | Numeric | - |
-| H | < etat compte | Alpha | - |
-| I | < date solde | Date | - |
-| J | < garanti O/N | Alpha | - |
-| K | >P_FormatPDF | Logical | 2x refs |
-| L | >P.ViensDe | Alpha | - |
-| W | CHG_REASON_W1 Impr Recap Free | Numeric | - |
-| X | CHG_PRV_W1 Impr Recap Free Ext | Logical | - |
+| EN | > societe | Alpha | 2x refs |
+| EO | > code_retour | Alpha | - |
+| EP | > code_adherent | Numeric | 1x refs |
+| EQ | > filiation | Numeric | 1x refs |
+| ER | > masque mtt | Alpha | - |
+| ES | > nom village | Alpha | - |
+| ET | < solde compte | Numeric | - |
+| EU | < etat compte | Alpha | - |
+| EV | < date solde | Date | - |
+| EW | < garanti O/N | Alpha | - |
+| EX | >P_FormatPDF | Logical | 2x refs |
+| EY | >P.ViensDe | Alpha | - |
+| FJ | CHG_REASON_W1 Impr Recap Free | Numeric | - |
+| FK | CHG_PRV_W1 Impr Recap Free Ext | Logical | - |
 
 <details>
 <summary>Toutes les 27 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| W0 | **M** | W0 Presence Recap Free Extra | Logical |
-| W0 | **N** | W0 Print Recap Free Extra | Logical |
-| W0 | **O** | W0 Mail Existe | Logical |
-| V. | **P** | v.Cancel | Logical |
-| V. | **Q** | v.PDFFileName | Unicode |
-| V. | **R** | v.FileLocation | Unicode |
-| V. | **S** | v.Flag recu détaillé | Logical |
-| V. | **T** | v.Blob recu détaillé | Blob |
-| V. | **U** | v.Fichier recu détaillé | Alpha |
-| V. | **V** | v. Edition partielle ? | Numeric |
-| V. | **Y** | v.Retour isVenteODSignature | Logical |
-| V. | **Z** | v.Retour_recu_detail | Logical |
-| V. | **BA** | v.Retour ticket mobilité POS | Logical |
-| Autre | **A** | > societe | Alpha |
-| Autre | **B** | > code_retour | Alpha |
-| Autre | **C** | > code_adherent | Numeric |
-| Autre | **D** | > filiation | Numeric |
-| Autre | **E** | > masque mtt | Alpha |
-| Autre | **F** | > nom village | Alpha |
-| Autre | **G** | < solde compte | Numeric |
-| Autre | **H** | < etat compte | Alpha |
-| Autre | **I** | < date solde | Date |
-| Autre | **J** | < garanti O/N | Alpha |
-| Autre | **K** | >P_FormatPDF | Logical |
-| Autre | **L** | >P.ViensDe | Alpha |
-| Autre | **W** | CHG_REASON_W1 Impr Recap Free | Numeric |
-| Autre | **X** | CHG_PRV_W1 Impr Recap Free Ext | Logical |
+| W0 | **EZ** | W0 Presence Recap Free Extra | Logical |
+| W0 | **FA** | W0 Print Recap Free Extra | Logical |
+| W0 | **FB** | W0 Mail Existe | Logical |
+| V. | **FC** | v.Cancel | Logical |
+| V. | **FD** | v.PDFFileName | Unicode |
+| V. | **FE** | v.FileLocation | Unicode |
+| V. | **FF** | v.Flag recu détaillé | Logical |
+| V. | **FG** | v.Blob recu détaillé | Blob |
+| V. | **FH** | v.Fichier recu détaillé | Alpha |
+| V. | **FI** | v. Edition partielle ? | Numeric |
+| V. | **FL** | v.Retour isVenteODSignature | Logical |
+| V. | **FM** | v.Retour_recu_detail | Logical |
+| V. | **FN** | v.Retour ticket mobilité POS | Logical |
+| Autre | **EN** | > societe | Alpha |
+| Autre | **EO** | > code_retour | Alpha |
+| Autre | **EP** | > code_adherent | Numeric |
+| Autre | **EQ** | > filiation | Numeric |
+| Autre | **ER** | > masque mtt | Alpha |
+| Autre | **ES** | > nom village | Alpha |
+| Autre | **ET** | < solde compte | Numeric |
+| Autre | **EU** | < etat compte | Alpha |
+| Autre | **EV** | < date solde | Date |
+| Autre | **EW** | < garanti O/N | Alpha |
+| Autre | **EX** | >P_FormatPDF | Logical |
+| Autre | **EY** | >P.ViensDe | Alpha |
+| Autre | **FJ** | CHG_REASON_W1 Impr Recap Free | Numeric |
+| Autre | **FK** | CHG_PRV_W1 Impr Recap Free Ext | Logical |
 
 </details>
 
@@ -1464,35 +1487,35 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 5 | 5 |
+| NEGATION | 1 | 5 |
 | CONSTANTE | 1 | 0 |
-| CONDITION | 5 | 0 |
-| NEGATION | 1 | 0 |
 | REFERENCE_VG | 1 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (5 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 1 | `> societe [A]=''` | [RM-001](#rm-RM-001) |
+| CONDITION | 5 | `> filiation [D]` | - |
+| CONDITION | 7 | `>P_FormatPDF [K]` | - |
+| CONDITION | 3 | `> societe [A]` | - |
+| CONDITION | 4 | `> code_adherent [C]` | - |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 6 | `NOT >P_FormatPDF [K]` | [RM-002](#rm-RM-002) |
 
 #### CONSTANTE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CONSTANTE | 2 | `'C'` | - |
-
-#### CONDITION (5 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 5 | `> filiation [D]` | - |
-| CONDITION | 7 | `>P_FormatPDF [K]` | - |
-| CONDITION | 4 | `> code_adherent [C]` | - |
-| CONDITION | 1 | `> societe [A]=''` | - |
-| CONDITION | 3 | `> societe [A]` | - |
-
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 6 | `NOT >P_FormatPDF [K]` | - |
 
 #### REFERENCE_VG (1 expressions)
 
@@ -1613,7 +1636,7 @@ graph LR
 | Sous-programmes | 14 | Forte dependance |
 | Ecrans visibles | 3 | Quelques ecrans |
 | Code desactive | 0.2% (1 / 464) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 2 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -1664,4 +1687,4 @@ graph LR
 | [Appel programme (IDE 44)](ADH-IDE-44.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:41*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:06*

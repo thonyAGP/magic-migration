@@ -1,6 +1,6 @@
 ﻿# ADH IDE 92 - flag ligne boutique
 
-> **Analyse**: Phases 1-4 2026-02-07 03:46 -> 03:47 (29s) | Assemblage 14:18
+> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 02:30 (22h42min) | Assemblage 02:30
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,9 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme **ADH IDE 92** assure la mise à jour du flag boutique au sein des factures du système. Appelé par les trois variantes majeures de facturation (factures standard IDE 89, checkout IDE 54, et version V3 IDE 97), il modifie la table `maj_appli_tpe` en enregistrant les informations de société et de compte pour marquer les lignes comme associées à la boutique. Avec seulement 2 tâches et 5 expressions décodées, le programme reste volontairement simple et sans code mort, reflétant son rôle d'utilitaire spécialisé.
+Le programme **ADH IDE 92** est un utilitaire léger qui marque les lignes de factures boutique en mettant à jour la table `maj_appli_tpe` avec les informations de société et de compte reçues en paramètres. Appelé par trois variantes de traitement de factures (ADH IDE 89, 54 et 97), il joue un rôle critique dans le cycle de règlement des comptes en permettant la traçabilité des transactions. Avec seulement 2 tâches imbriquées et 5 expressions, le code est extrêmement compact et sans dépendances externes.
 
-Ce programme s'intègre dans les flux critiques de checkout et de settlement (solde de compte), notamment en caisse (IDE 163) et lors des fins de séjour (IDE 193). Ses trois appelants couvrent l'ensemble des parcours de paiement : le flux Easy Check-Out (IDE 54), les factures comptables et de vente (IDE 89), et la version modernisée V3 (IDE 97). La mise à jour de `maj_appli_tpe` permet au système de tracer et de gérer les transactions boutique tout au long du cycle de facturation.
+La logique métier est minimaliste : le programme accepte deux paramètres d'entrée (Societe et Compte), effectue une vérification conditionnelle basique sur une variable intermédiaire (G = 0), puis exécute l'écriture des deux champs de la table cible. Aucun sous-programme n'est appelé, ce qui en fait un programme terminal dans la chaîne d'appels. Son statut "non-orphelin" est confirmé par ses trois appelants directs intégrés dans les flux de caisse, de settlement et de checkout.
+
+La complexité très basse (7/100), le code sain à 100% (aucune ligne désactivée), et la responsabilité unique clairement définie font de ce programme un candidat idéal pour la migration vers un service backend C# injectable et testable.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -34,20 +36,31 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - flag ligne boutique
+#### <a id="t1"></a>92 - flag ligne boutique
 
 **Role** : Traitement : flag ligne boutique.
 
 ---
 
-#### <a id="t2"></a>T2 - flag ligne
+#### <a id="t2"></a>92.1 - flag ligne
 
 **Role** : Traitement : flag ligne.
 
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: [G] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[G] = 0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 5 : `[G] = 0` |
+| **Exemple** | Si [G] = 0 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -66,24 +79,28 @@ Traitements internes.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **92.1** | [**flag ligne boutique** (T1)](#t1) | - | - | Traitement |
-| 92.1.1 | [flag ligne (T2)](#t2) | - | - | |
+| **92.1** | [**flag ligne boutique** (92)](#t1) | - | - | Traitement |
+| 92.1.1 | [flag ligne (92.1)](#t2) | - | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 2 taches]
-    WRITE[MAJ 1 tables]
-    START --> PROCESS --> WRITE --> ENDOK
-    ENDOK([END])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -115,8 +132,8 @@ Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](AD
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | p.Societe | Unicode | 1x parametre entrant |
-| B | p.Compte | Numeric | 1x parametre entrant |
+| EN | p.Societe | Unicode | 1x parametre entrant |
+| EO | p.Compte | Numeric | 1x parametre entrant |
 
 ## 12. EXPRESSIONS
 
@@ -126,12 +143,18 @@ Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](AD
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 1 | 5 |
 | CONSTANTE | 1 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
 | OTHER | 2 | 0 |
-| CONDITION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 5 | `[G] = 0` | [RM-001](#rm-RM-001) |
 
 #### CONSTANTE (1 expressions)
 
@@ -151,12 +174,6 @@ Variables recues du programme appelant ([Factures (Tble Compta&Vent (IDE 89)](AD
 |------|-----|------------|-------|
 | OTHER | 4 | `p.Compte [B]` | - |
 | OTHER | 3 | `p.Societe [A]` | - |
-
-#### CONDITION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 5 | `[G] = 0` | - |
 
 <!-- TAB:Connexions -->
 
@@ -262,7 +279,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 17) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -278,4 +295,4 @@ graph LR
 | maj_appli_tpe | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:20*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:32*

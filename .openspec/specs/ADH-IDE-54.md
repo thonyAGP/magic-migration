@@ -1,6 +1,6 @@
 ﻿# ADH IDE 54 - Factures_Check_Out
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (28s) | Assemblage 13:35
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 01:49 (22h06min) | Assemblage 01:49
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme **Factures_Check_Out (IDE 54)** est un élément central du processus de facturation pour les ventes en Easy Check-Out. Il gère la création complète des factures en orchestrant plusieurs sous-programmes : incrémentation du numéro de facture, génération de l'en-tête et du pied de facture, mise à jour des lignes de vente et application des taxes. Le programme traite à la fois les factures standard (IDE 90, 98) et les factures de séjour (IDE 57), en intégrant les données boutique et en appliquant les tarifications spécifiques.
+ADH IDE 54 - Factures_Check_Out gère la création et le suivi des factures lors du processus de clôture de caisse en Easy Check-Out. Ce programme orchestre l'ensemble du workflow facturation : validation des articles saisis, création des numéros séquentiels, génération des en-têtes et pieds de facture, et intégration des données de pied de chambre (hébergement temporaire). Il vérifie également que les articles de boutique sont correctement flaggés avant émission.
 
-Le flux principal s'articule autour de quatre axes de traitement : **vérification et flagging des lignes boutique** (via IDE 91, 92) pour identifier les articles non encore traités, **gestion de l'hébergement temporaire** (IDE 62) pour les séjours partiels, **édition de la facture avec calcul des taxes** (IDE 90, 98) en fonction du régime fiscal, et **mise à jour des rayons boutique** pour refléter les stocks utilisés. La tâche "Recherche si Fact déjà éditée" prévient les doublons lors de reprises après erreur.
+Le programme effectue des validations critiques sur l'intégrité des données avant d'émettre les factures. Il contrôle notamment que toutes les lignes de vente ont été correctement traitées, vérifie l'existence des rayons de boutique, et s'assure qu'aucune facture n'a déjà été éditée pour la même transaction. Il gère aussi des cas particuliers comme les hébergements temporaires qui nécessitent une mise à jour spécifique en parallèle de la facturation.
 
-Appelé depuis cinq points d'entrée différents (Easy Check-Out V2.00 en IDE 283 et 313, Solde Easy Check Out en IDE 64 et 287, Lanceur Facture IDE 280), le programme garantit la cohérence facturation quel que soit le scénario (facture directe, régularisation de séjour, ou ajustement de montant). Il modifie les tables critiques `maj_appli_tpe` (journal d'application TPE), `Rayons_Boutique` (stocks) et `taxe_add_param` (paramètres fiscaux), ce qui en fait un point de contrôle majeur pour l'intégrité des données commerciales.
+Dépendant de multiples programmes spécialisés (numérotation, édition TVA, pied de facture), ADH IDE 54 joue un rôle de coordinateur qui enchaîne les opérations dans le bon ordre tout en maintenant la cohérence des données de facturation entre le TPE, la comptabilité et les tables de référence boutique.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +36,7 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Factures Bis(Vente
 
 ---
 
-#### <a id="t1"></a>T1 - Factures Bis(Ventes) [ECRAN]
+#### <a id="t1"></a>54 - Factures Bis(Ventes) [[ECRAN]](#ecran-t1)
 
 **Role** : Saisie des donnees : Factures Bis(Ventes).
 **Ecran** : 881 x 411 DLU | [Voir mockup](#ecran-t1)
@@ -49,25 +49,25 @@ Controles de coherence : 3 taches verifient les donnees et conditions.
 
 ---
 
-#### <a id="t2"></a>T2 - verif non flaguee
+#### <a id="t2"></a>54.1 - verif non flaguee
 
 **Role** : Verification : verif non flaguee.
-**Variables liees** : BB (V.Existe flaguee ?)
+**Variables liees** : FO (V.Existe flaguee ?)
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t5"></a>T5 - verif boutique
+#### <a id="t5"></a>54.2.2 - verif boutique
 
 **Role** : Verification : verif boutique.
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 ---
 
-#### <a id="t7"></a>T7 - verif non flaguee
+#### <a id="t7"></a>54.4 - verif non flaguee
 
 **Role** : Verification : verif non flaguee.
-**Variables liees** : BB (V.Existe flaguee ?)
+**Variables liees** : FO (V.Existe flaguee ?)
 **Delegue a** : [Verif boutique (IDE 91)](ADH-IDE-91.md)
 
 
@@ -77,41 +77,41 @@ Traitements internes.
 
 ---
 
-#### <a id="t3"></a>T3 - Hebergement [ECRAN]
+#### <a id="t3"></a>54.2 - Hebergement [[ECRAN]](#ecran-t3)
 
 **Role** : Traitement : Hebergement.
 **Ecran** : 866 x 250 DLU | [Voir mockup](#ecran-t3)
-**Variables liees** : Y (V.Date Début Hebergement), Z (V.Date Fin Hebergement)
+**Variables liees** : FL (V.Date Début Hebergement), FM (V.Date Fin Hebergement)
 **Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
 
 ---
 
-#### <a id="t4"></a>T4 - Flag All [ECRAN]
+#### <a id="t4"></a>54.2.1 - Flag All [[ECRAN]](#ecran-t4)
 
 **Role** : Traitement : Flag All.
 **Ecran** : 541 x 291 DLU | [Voir mockup](#ecran-t4)
-**Variables liees** : BB (V.Existe flaguee ?)
+**Variables liees** : FO (V.Existe flaguee ?)
 **Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
 
 ---
 
-#### <a id="t8"></a>T8 - chargement boutique
+#### <a id="t8"></a>54.5 - chargement boutique
 
 **Role** : Traitement : chargement boutique.
 **Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
 
 ---
 
-#### <a id="t9"></a>T9 - SQL parcourt facture [ECRAN]
+#### <a id="t9"></a>54.6 - SQL parcourt facture [[ECRAN]](#ecran-t9)
 
 **Role** : Traitement : SQL parcourt facture.
 **Ecran** : 609 x 195 DLU | [Voir mockup](#ecran-t9)
-**Variables liees** : H (P.i.Facture ECO), J (V.Lien Pied de facture), K (V.Existe facture ?), R (V.Facture Sans Nom), S (V.Facture Sans Adresse)
+**Variables liees** : EU (P.i.Facture ECO), EW (V.Lien Pied de facture), EX (V.Existe facture ?), FE (V.Facture Sans Nom), FF (V.Facture Sans Adresse)
 **Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
 
 ---
 
-#### <a id="t10"></a>T10 - Browse Fac TVA Pro [ECRAN]
+#### <a id="t10"></a>54.7 - Browse Fac TVA Pro [[ECRAN]](#ecran-t10)
 
 **Role** : Traitement : Browse Fac TVA Pro.
 **Ecran** : 1111 x 0 DLU | [Voir mockup](#ecran-t10)
@@ -119,11 +119,11 @@ Traitements internes.
 
 ---
 
-#### <a id="t11"></a>T11 - Browse Fact Tempo [ECRAN]
+#### <a id="t11"></a>54.8 - Browse Fact Tempo [[ECRAN]](#ecran-t11)
 
 **Role** : Traitement : Browse Fact Tempo.
 **Ecran** : 798 x 316 DLU | [Voir mockup](#ecran-t11)
-**Variables liees** : H (P.i.Facture ECO), J (V.Lien Pied de facture), K (V.Existe facture ?), R (V.Facture Sans Nom), S (V.Facture Sans Adresse)
+**Variables liees** : EU (P.i.Facture ECO), EW (V.Lien Pied de facture), EX (V.Existe facture ?), FE (V.Facture Sans Nom), FF (V.Facture Sans Adresse)
 **Delegue a** : [Incremente N° de Facture (IDE 58)](ADH-IDE-58.md), [Factures_Sejour (IDE 57)](ADH-IDE-57.md), [Facture - chargement boutique (IDE 59)](ADH-IDE-59.md)
 
 
@@ -133,10 +133,10 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t6"></a>T6 - Recherche si Fact déjà éditée
+#### <a id="t6"></a>54.3 - Recherche si Fact déjà éditée
 
 **Role** : Traitement : Recherche si Fact déjà éditée.
-**Variables liees** : H (P.i.Facture ECO), J (V.Lien Pied de facture), K (V.Existe facture ?), R (V.Facture Sans Nom), S (V.Facture Sans Adresse)
+**Variables liees** : EU (P.i.Facture ECO), EW (V.Lien Pied de facture), EX (V.Existe facture ?), FE (V.Facture Sans Nom), FF (V.Facture Sans Adresse)
 
 
 ### 3.5 Initialisation (2 taches)
@@ -145,57 +145,84 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t12"></a>T12 - RAZ facture ECO
+#### <a id="t12"></a>54.9 - RAZ facture ECO
 
 **Role** : Reinitialisation : RAZ facture ECO.
-**Variables liees** : H (P.i.Facture ECO), J (V.Lien Pied de facture), K (V.Existe facture ?), R (V.Facture Sans Nom), S (V.Facture Sans Adresse)
+**Variables liees** : EU (P.i.Facture ECO), EW (V.Lien Pied de facture), EX (V.Existe facture ?), FE (V.Facture Sans Nom), FF (V.Facture Sans Adresse)
 
 ---
 
-#### <a id="t13"></a>T13 - Raz détail facture
+#### <a id="t13"></a>54.9.1 - Raz détail facture
 
 **Role** : Reinitialisation : Raz détail facture.
-**Variables liees** : H (P.i.Facture ECO), J (V.Lien Pied de facture), K (V.Existe facture ?), R (V.Facture Sans Nom), S (V.Facture Sans Adresse)
+**Variables liees** : EU (P.i.Facture ECO), EW (V.Lien Pied de facture), EX (V.Existe facture ?), FE (V.Facture Sans Nom), FF (V.Facture Sans Adresse)
 
 
 ## 5. REGLES METIER
 
-3 regles identifiees:
+6 regles identifiees:
 
-### Autres (3 regles)
+### Autres (6 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Si [AP] alors Trim([AS]) sinon Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X]))
+#### <a id="rm-RM-001"></a>[RM-001] Si [BP] alors Trim([BS]) sinon Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X]))
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `[AP]` |
-| **Si vrai** | Trim([AS]) |
+| **Condition** | `[BP]` |
+| **Si vrai** | Trim([BS]) |
 | **Si faux** | Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X])) |
-| **Variables** | W (V.Service), X (V.Fact déjà editée) |
-| **Expression source** | Expression 6 : `IF([AP],Trim([AS]),Trim(V.Service [W])&' '&Trim(V.Fact déjà ` |
-| **Exemple** | Si [AP] â†’ Trim([AS]). Sinon â†’ Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X])) |
+| **Variables** | FJ (V.Service), FK (V.Fact déjà editée) |
+| **Expression source** | Expression 6 : `IF([BP],Trim([BS]),Trim(V.Service [W])&' '&Trim(V.Fact déjà ` |
+| **Exemple** | Si [BP] â†’ Trim([BS]). Sinon â†’ Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X])) |
 
-#### <a id="rm-RM-002"></a>[RM-002] Si Trim(P.i.chemin [F]) <> '' alors Trim(P.i.chemin [F]) & Trim([BG]) sinon Translate ('%club_exportdata%')&'PDF\'&Trim([BG]))
+#### <a id="rm-RM-002"></a>[RM-002] Si Trim(P.i.chemin [F]) <> '' alors Trim(P.i.chemin [F]) & Trim([CG]) sinon Translate ('%club_exportdata%')&'PDF\'&Trim([CG]))
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `Trim(P.i.chemin [F]) <> ''` |
-| **Si vrai** | Trim(P.i.chemin [F]) & Trim([BG]) |
-| **Si faux** | Translate ('%club_exportdata%')&'PDF\'&Trim([BG])) |
-| **Variables** | F (P.i.chemin) |
-| **Expression source** | Expression 23 : `IF(Trim(P.i.chemin [F]) <> '',Trim(P.i.chemin [F]) & Trim([B` |
-| **Exemple** | Si Trim(P.i.chemin [F]) <> '' â†’ Trim(P.i.chemin [F]) & Trim([BG]). Sinon â†’ Translate ('%club_exportdata%')&'PDF\'&Trim([BG])) |
+| **Si vrai** | Trim(P.i.chemin [F]) & Trim([CG]) |
+| **Si faux** | Translate ('%club_exportdata%')&'PDF\'&Trim([CG])) |
+| **Variables** | ES (P.i.chemin) |
+| **Expression source** | Expression 23 : `IF(Trim(P.i.chemin [F]) <> '',Trim(P.i.chemin [F]) & Trim([C` |
+| **Exemple** | Si Trim(P.i.chemin [F]) <> '' â†’ Trim(P.i.chemin [F]) & Trim([CG]). Sinon â†’ Translate ('%club_exportdata%')&'PDF\'&Trim([CG])) |
 
-#### <a id="rm-RM-003"></a>[RM-003] Si Trim(P.i.TypeReglement [G]) vaut 'I' alors 'D', sinon 'I'
+#### <a id="rm-RM-003"></a>[RM-003] Condition: Trim([BX]) different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Trim([BX])<>''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 27 : `Trim([BX])<>''` |
+| **Exemple** | Si Trim([BX])<>'' â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Negation de [BP] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT [BP]` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 30 : `NOT [BP]` |
+| **Exemple** | Si NOT [BP] â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Si Trim(P.i.TypeReglement [G]) vaut 'I' alors 'D', sinon 'I'
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `Trim(P.i.TypeReglement [G])='I'` |
 | **Si vrai** | 'D' |
 | **Si faux** | 'I') |
-| **Variables** | G (P.i.TypeReglement) |
+| **Variables** | ET (P.i.TypeReglement) |
 | **Expression source** | Expression 34 : `IF(Trim(P.i.TypeReglement [G])='I','D','I')` |
 | **Exemple** | Si Trim(P.i.TypeReglement [G])='I' â†’ 'D'. Sinon â†’ 'I') |
+
+#### <a id="rm-RM-006"></a>[RM-006] Condition: [BN] different de 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BN]<>0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 38 : `[BN]<>0` |
+| **Exemple** | Si [BN]<>0 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -210,15 +237,15 @@ Reinitialisation d'etats et variables de travail.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 54.7 | T10 | Browse Fac TVA Pro | Type0 | 1111 | 0 | Traitement |
-| 2 | 54.8 | T11 | Browse Fact Tempo | Type0 | 798 | 316 | Traitement |
+| 1 | 54.7 | 54.7 | Browse Fac TVA Pro | Type0 | 1111 | 0 | Traitement |
+| 2 | 54.8 | 54.8 | Browse Fact Tempo | Type0 | 798 | 316 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t10"></a>54.7 - Browse Fac TVA Pro
-**Tache** : [T10](#t10) | **Type** : Type0 | **Dimensions** : 1111 x 0 DLU
+**Tache** : [54.7](#t10) | **Type** : Type0 | **Dimensions** : 1111 x 0 DLU
 **Bloc** : Traitement | **Titre IDE** : Browse Fac TVA Pro
 
 <!-- FORM-DATA:
@@ -871,7 +898,7 @@ Reinitialisation d'etats et variables de travail.
 ---
 
 #### <a id="ecran-t11"></a>54.8 - Browse Fact Tempo
-**Tache** : [T11](#t11) | **Type** : Type0 | **Dimensions** : 798 x 316 DLU
+**Tache** : [54.8](#t11) | **Type** : Type0 | **Dimensions** : 798 x 316 DLU
 **Bloc** : Traitement | **Titre IDE** : Browse Fact Tempo
 
 <!-- FORM-DATA:
@@ -1111,9 +1138,9 @@ Reinitialisation d'etats et variables de travail.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF10[T10 Browse Fac TVA Pro]
+    VF10[54.7 Browse Fac TVA Pro]
     style VF10 fill:#58a6ff
-    VF11[T11 Browse Fact Tempo]
+    VF11[54.8 Browse Fact Tempo]
     style VF11 fill:#58a6ff
     EXT58[IDE 58 Incremente N° d...]
     style EXT58 fill:#3fb950
@@ -1174,45 +1201,39 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **54.1** | [**Factures Bis(Ventes)** (T1)](#t1) [mockup](#ecran-t1) | - | 881x411 | Saisie |
-| **54.2** | [**verif non flaguee** (T2)](#t2) | - | - | Validation |
-| 54.2.1 | [verif boutique (T5)](#t5) | - | - | |
-| 54.2.2 | [verif non flaguee (T7)](#t7) | - | - | |
-| **54.3** | [**Hebergement** (T3)](#t3) [mockup](#ecran-t3) | - | 866x250 | Traitement |
-| 54.3.1 | [Flag All (T4)](#t4) [mockup](#ecran-t4) | - | 541x291 | |
-| 54.3.2 | [chargement boutique (T8)](#t8) | - | - | |
-| 54.3.3 | [SQL parcourt facture (T9)](#t9) [mockup](#ecran-t9) | - | 609x195 | |
-| 54.3.4 | [Browse Fac TVA Pro (T10)](#t10) [mockup](#ecran-t10) | - | 1111x0 | |
-| 54.3.5 | [Browse Fact Tempo (T11)](#t11) [mockup](#ecran-t11) | - | 798x316 | |
-| **54.4** | [**Recherche si Fact déjà éditée** (T6)](#t6) | - | - | Consultation |
-| **54.5** | [**RAZ facture ECO** (T12)](#t12) | - | - | Initialisation |
-| 54.5.1 | [Raz détail facture (T13)](#t13) | - | - | |
+| **54.1** | [**Factures Bis(Ventes)** (54)](#t1) [mockup](#ecran-t1) | - | 881x411 | Saisie |
+| **54.2** | [**verif non flaguee** (54.1)](#t2) | - | - | Validation |
+| 54.2.1 | [verif boutique (54.2.2)](#t5) | - | - | |
+| 54.2.2 | [verif non flaguee (54.4)](#t7) | - | - | |
+| **54.3** | [**Hebergement** (54.2)](#t3) [mockup](#ecran-t3) | - | 866x250 | Traitement |
+| 54.3.1 | [Flag All (54.2.1)](#t4) [mockup](#ecran-t4) | - | 541x291 | |
+| 54.3.2 | [chargement boutique (54.5)](#t8) | - | - | |
+| 54.3.3 | [SQL parcourt facture (54.6)](#t9) [mockup](#ecran-t9) | - | 609x195 | |
+| 54.3.4 | [Browse Fac TVA Pro (54.7)](#t10) [mockup](#ecran-t10) | - | 1111x0 | |
+| 54.3.5 | [Browse Fact Tempo (54.8)](#t11) [mockup](#ecran-t11) | - | 798x316 | |
+| **54.4** | [**Recherche si Fact déjà éditée** (54.3)](#t6) | - | - | Consultation |
+| **54.5** | [**RAZ facture ECO** (54.9)](#t12) | - | - | Initialisation |
+| 54.5.1 | [Raz détail facture (54.9.1)](#t13) | - | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Saisie (1t)]
-    START --> B1
-    B2[Validation (3t)]
-    B1 --> B2
-    B3[Traitement (6t)]
-    B2 --> B3
-    B4[Consultation (1t)]
-    B3 --> B4
-    B5[Initialisation (2t)]
-    B4 --> B5
-    WRITE[MAJ 3 tables]
-    B5 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[Browse Fac TVA Pro]
+    UPDATE[MAJ 3 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -1254,8 +1275,8 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | v.Existe ligne boutique ? | W | Logical |
-| E | V.Boutique manquante ? | W | Logical |
+| EN | v.Existe ligne boutique ? | W | Logical |
+| ER | V.Boutique manquante ? | W | Logical |
 
 </details>
 
@@ -1323,14 +1344,14 @@ Variables recues du programme appelant ([Easy Check-Out === V2.00 (IDE 283)](ADH
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.i.Societe | Alpha | 1x parametre entrant |
-| B | P.i.Code_Gm | Numeric | 3x parametre entrant |
-| C | P.i.Filiation | Numeric | 3x parametre entrant |
-| D | P.i.Application | Alpha | - |
-| E | P.o.NomsPDF | Alpha | 1x parametre entrant |
-| F | P.i.chemin | Alpha | 1x parametre entrant |
-| G | P.i.TypeReglement | Unicode | 1x parametre entrant |
-| H | P.i.Facture ECO | Logical | - |
+| EN | P.i.Societe | Alpha | 1x parametre entrant |
+| EO | P.i.Code_Gm | Numeric | 3x parametre entrant |
+| EP | P.i.Filiation | Numeric | 3x parametre entrant |
+| EQ | P.i.Application | Alpha | - |
+| ER | P.o.NomsPDF | Alpha | 1x parametre entrant |
+| ES | P.i.chemin | Alpha | 1x parametre entrant |
+| ET | P.i.TypeReglement | Unicode | 1x parametre entrant |
+| EU | P.i.Facture ECO | Logical | - |
 
 ### 11.2 Variables de session (20)
 
@@ -1338,60 +1359,60 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| I | V.Lien Gm_Complet | Logical | - |
-| J | V.Lien Pied de facture | Logical | [T1](#t1), [T9](#t9), [T12](#t12) |
-| K | V.Existe facture ? | Logical | [T1](#t1), [T9](#t9), [T12](#t12) |
-| L | V.Nom | Alpha | 1x session |
-| M | V.Adresse | Alpha | - |
-| N | V.CP | Alpha | 1x session |
-| O | V.Ville | Alpha | - |
-| P | V.Pays | Unicode | - |
-| Q | V.Telephone | Alpha | - |
-| R | V.Facture Sans Nom | Logical | - |
-| S | V.Facture Sans Adresse | Logical | 1x session |
-| T | V.No Facture | Numeric | [T1](#t1), [T9](#t9), [T12](#t12) |
-| U | V.Nom Fichier PDF | Alpha | 1x session |
-| V | V.Pos , | Numeric | 1x session |
-| W | V.Service | Alpha | 1x session |
-| X | V.Fact déjà editée | Logical | [T6](#t6) |
-| Y | V.Date Début Hebergement | Date | [T3](#t3) |
-| Z | V.Date Fin Hebergement | Date | - |
-| BA | V.Existe non facturee ? | Logical | - |
-| BB | V.Existe flaguee ? | Logical | - |
+| EV | V.Lien Gm_Complet | Logical | - |
+| EW | V.Lien Pied de facture | Logical | [54](#t1), [54.6](#t9), [54.9](#t12) |
+| EX | V.Existe facture ? | Logical | [54](#t1), [54.6](#t9), [54.9](#t12) |
+| EY | V.Nom | Alpha | 1x session |
+| EZ | V.Adresse | Alpha | - |
+| FA | V.CP | Alpha | 1x session |
+| FB | V.Ville | Alpha | - |
+| FC | V.Pays | Unicode | - |
+| FD | V.Telephone | Alpha | - |
+| FE | V.Facture Sans Nom | Logical | - |
+| FF | V.Facture Sans Adresse | Logical | 1x session |
+| FG | V.No Facture | Numeric | [54](#t1), [54.6](#t9), [54.9](#t12) |
+| FH | V.Nom Fichier PDF | Alpha | 1x session |
+| FI | V.Pos , | Numeric | 1x session |
+| FJ | V.Service | Alpha | 1x session |
+| FK | V.Fact déjà editée | Logical | [54.3](#t6) |
+| FL | V.Date Début Hebergement | Date | [54.2](#t3) |
+| FM | V.Date Fin Hebergement | Date | - |
+| FN | V.Existe non facturee ? | Logical | 1x session |
+| FO | V.Existe flaguee ? | Logical | - |
 
 <details>
 <summary>Toutes les 28 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P.i.Societe | Alpha |
-| P0 | **B** | P.i.Code_Gm | Numeric |
-| P0 | **C** | P.i.Filiation | Numeric |
-| P0 | **D** | P.i.Application | Alpha |
-| P0 | **E** | P.o.NomsPDF | Alpha |
-| P0 | **F** | P.i.chemin | Alpha |
-| P0 | **G** | P.i.TypeReglement | Unicode |
-| P0 | **H** | P.i.Facture ECO | Logical |
-| V. | **I** | V.Lien Gm_Complet | Logical |
-| V. | **J** | V.Lien Pied de facture | Logical |
-| V. | **K** | V.Existe facture ? | Logical |
-| V. | **L** | V.Nom | Alpha |
-| V. | **M** | V.Adresse | Alpha |
-| V. | **N** | V.CP | Alpha |
-| V. | **O** | V.Ville | Alpha |
-| V. | **P** | V.Pays | Unicode |
-| V. | **Q** | V.Telephone | Alpha |
-| V. | **R** | V.Facture Sans Nom | Logical |
-| V. | **S** | V.Facture Sans Adresse | Logical |
-| V. | **T** | V.No Facture | Numeric |
-| V. | **U** | V.Nom Fichier PDF | Alpha |
-| V. | **V** | V.Pos , | Numeric |
-| V. | **W** | V.Service | Alpha |
-| V. | **X** | V.Fact déjà editée | Logical |
-| V. | **Y** | V.Date Début Hebergement | Date |
-| V. | **Z** | V.Date Fin Hebergement | Date |
-| V. | **BA** | V.Existe non facturee ? | Logical |
-| V. | **BB** | V.Existe flaguee ? | Logical |
+| P0 | **EN** | P.i.Societe | Alpha |
+| P0 | **EO** | P.i.Code_Gm | Numeric |
+| P0 | **EP** | P.i.Filiation | Numeric |
+| P0 | **EQ** | P.i.Application | Alpha |
+| P0 | **ER** | P.o.NomsPDF | Alpha |
+| P0 | **ES** | P.i.chemin | Alpha |
+| P0 | **ET** | P.i.TypeReglement | Unicode |
+| P0 | **EU** | P.i.Facture ECO | Logical |
+| V. | **EV** | V.Lien Gm_Complet | Logical |
+| V. | **EW** | V.Lien Pied de facture | Logical |
+| V. | **EX** | V.Existe facture ? | Logical |
+| V. | **EY** | V.Nom | Alpha |
+| V. | **EZ** | V.Adresse | Alpha |
+| V. | **FA** | V.CP | Alpha |
+| V. | **FB** | V.Ville | Alpha |
+| V. | **FC** | V.Pays | Unicode |
+| V. | **FD** | V.Telephone | Alpha |
+| V. | **FE** | V.Facture Sans Nom | Logical |
+| V. | **FF** | V.Facture Sans Adresse | Logical |
+| V. | **FG** | V.No Facture | Numeric |
+| V. | **FH** | V.Nom Fichier PDF | Alpha |
+| V. | **FI** | V.Pos , | Numeric |
+| V. | **FJ** | V.Service | Alpha |
+| V. | **FK** | V.Fact déjà editée | Logical |
+| V. | **FL** | V.Date Début Hebergement | Date |
+| V. | **FM** | V.Date Fin Hebergement | Date |
+| V. | **FN** | V.Existe non facturee ? | Logical |
+| V. | **FO** | V.Existe flaguee ? | Logical |
 
 </details>
 
@@ -1404,14 +1425,14 @@ Variables persistantes pendant toute la session.
 | Type | Expressions | Regles |
 |------|-------------|--------|
 | CALCULATION | 1 | 0 |
-| CONDITION | 9 | 3 |
+| CONDITION | 9 | 5 |
+| NEGATION | 1 | 5 |
 | CONSTANTE | 2 | 0 |
 | FORMAT | 5 | 0 |
 | DATE | 1 | 0 |
 | OTHER | 15 | 0 |
 | REFERENCE_VG | 2 | 0 |
 | CAST_LOGIQUE | 3 | 0 |
-| NEGATION | 1 | 0 |
 | CONCATENATION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
@@ -1420,18 +1441,24 @@ Variables persistantes pendant toute la session.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CALCULATION | 16 | `MID(GetParam('SERVICE'),4,[BH]-4)` | - |
+| CALCULATION | 16 | `MID(GetParam('SERVICE'),4,[CH]-4)` | - |
 
 #### CONDITION (9 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 23 | `IF(Trim(P.i.chemin [F]) <> '',Trim(P.i.chemin [F]) & Trim([BG]), Translate ('%club_exportdata%')&'PDF\'&Trim([BG]))` | [RM-002](#rm-RM-002) |
-| CONDITION | 34 | `IF(Trim(P.i.TypeReglement [G])='I','D','I')` | [RM-003](#rm-RM-003) |
-| CONDITION | 6 | `IF([AP],Trim([AS]),Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X]))` | [RM-001](#rm-RM-001) |
-| CONDITION | 38 | `[AN]<>0` | - |
-| CONDITION | 27 | `Trim([AX])<>''` | - |
+| CONDITION | 23 | `IF(Trim(P.i.chemin [F]) <> '',Trim(P.i.chemin [F]) & Trim([CG]), Translate ('%club_exportdata%')&'PDF\'&Trim([CG]))` | [RM-002](#rm-RM-002) |
+| CONDITION | 38 | `[BN]<>0` | [RM-006](#rm-RM-006) |
+| CONDITION | 34 | `IF(Trim(P.i.TypeReglement [G])='I','D','I')` | [RM-005](#rm-RM-005) |
+| CONDITION | 27 | `Trim([BX])<>''` | [RM-003](#rm-RM-003) |
+| CONDITION | 6 | `IF([BP],Trim([BS]),Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X]))` | [RM-001](#rm-RM-001) |
 | ... | | *+4 autres* | |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 30 | `NOT [BP]` | [RM-004](#rm-RM-004) |
 
 #### CONSTANTE (2 expressions)
 
@@ -1447,8 +1474,8 @@ Variables persistantes pendant toute la session.
 | FORMAT | 11 | `'Numéro d''adhérent'&' '&Trim(Str(V.Pos , [V],'10Z'))` | - |
 | FORMAT | 17 | `InStr(GetParam('SERVICE'),',')` | - |
 | FORMAT | 40 | `DStr(Date(),'YY')&'99'` | - |
-| FORMAT | 12 | `Trim([AE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BF],'8P0'))&'_'&Str(P.i.Code_Gm [B],'8P0')&'_'&Str(P.i.Filiation [C],'#')&'_F.pdf'` | - |
-| FORMAT | 13 | `Trim([AE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BF],'8P0'))&
+| FORMAT | 12 | `Trim([BE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CF],'8P0'))&'_'&Str(P.i.Code_Gm [B],'8P0')&'_'&Str(P.i.Filiation [C],'#')&'_F.pdf'` | - |
+| FORMAT | 13 | `Trim([BE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CF],'8P0'))&
 '_'&Str(P.i.Code_Gm [B],'8P0')&'_'&Str(P.i.Filiation [C],'#')&'_NF.pdf'` | - |
 
 #### DATE (1 expressions)
@@ -1461,10 +1488,10 @@ Variables persistantes pendant toute la session.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 28 | `[AN]` | - |
-| OTHER | 26 | `[BN]` | - |
-| OTHER | 25 | `[BM]` | - |
-| OTHER | 29 | `[AV]` | - |
+| OTHER | 28 | `[BN]` | - |
+| OTHER | 26 | `[CN]` | - |
+| OTHER | 25 | `[CM]` | - |
+| OTHER | 29 | `[BV]` | - |
 | OTHER | 39 | `V.CP [N]` | - |
 | ... | | *+10 autres* | |
 
@@ -1483,17 +1510,11 @@ Variables persistantes pendant toute la session.
 | CAST_LOGIQUE | 22 | `'FALSE'LOG` | - |
 | CAST_LOGIQUE | 21 | `'TRUE'LOG` | - |
 
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 30 | `NOT [AP]` | - |
-
 #### CONCATENATION (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONCATENATION | 35 | `Trim(P.o.NomsPDF [E])&','&Trim([BG])` | - |
+| CONCATENATION | 35 | `Trim(P.o.NomsPDF [E])&','&Trim([CG])` | - |
 
 ### 12.3 Toutes les expressions (40)
 
@@ -1504,21 +1525,27 @@ Variables persistantes pendant toute la session.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 16 | `MID(GetParam('SERVICE'),4,[BH]-4)` |
+| 16 | `MID(GetParam('SERVICE'),4,[CH]-4)` |
 
 #### CONDITION (9)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 6 | `IF([AP],Trim([AS]),Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X]))` |
-| 7 | `IF([AP],Trim([AR]),Trim(V.Facture Sans Adresse [S])&' '&Trim(V.Nom Fichier PDF [U])&' '&Trim(V.No Facture [T]))` |
-| 8 | `IF([AP],Trim([AT]),Trim(V.Date Début Hebergement [Y]))` |
-| 9 | `IF([AP],Trim([AU]),Trim([AA]))` |
-| 10 | `IF([AP],Trim([AW]),Trim([AC]))` |
-| 23 | `IF(Trim(P.i.chemin [F]) <> '',Trim(P.i.chemin [F]) & Trim([BG]), Translate ('%club_exportdata%')&'PDF\'&Trim([BG]))` |
+| 6 | `IF([BP],Trim([BS]),Trim(V.Service [W])&' '&Trim(V.Fact déjà editée [X]))` |
+| 7 | `IF([BP],Trim([BR]),Trim(V.Facture Sans Adresse [S])&' '&Trim(V.Nom Fichier PDF [U])&' '&Trim(V.No Facture [T]))` |
+| 8 | `IF([BP],Trim([BT]),Trim(V.Date Début Hebergement [Y]))` |
+| 9 | `IF([BP],Trim([BU]),Trim(V.Existe non facturee ? [BA]))` |
+| 10 | `IF([BP],Trim([BW]),Trim([BC]))` |
+| 23 | `IF(Trim(P.i.chemin [F]) <> '',Trim(P.i.chemin [F]) & Trim([CG]), Translate ('%club_exportdata%')&'PDF\'&Trim([CG]))` |
+| 27 | `Trim([BX])<>''` |
 | 34 | `IF(Trim(P.i.TypeReglement [G])='I','D','I')` |
-| 38 | `[AN]<>0` |
-| 27 | `Trim([AX])<>''` |
+| 38 | `[BN]<>0` |
+
+#### NEGATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 30 | `NOT [BP]` |
 
 #### CONSTANTE (2)
 
@@ -1531,8 +1558,8 @@ Variables persistantes pendant toute la session.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 12 | `Trim([AE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BF],'8P0'))&'_'&Str(P.i.Code_Gm [B],'8P0')&'_'&Str(P.i.Filiation [C],'#')&'_F.pdf'` |
-| 13 | `Trim([AE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([BF],'8P0'))&
+| 12 | `Trim([BE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CF],'8P0'))&'_'&Str(P.i.Code_Gm [B],'8P0')&'_'&Str(P.i.Filiation [C],'#')&'_F.pdf'` |
+| 13 | `Trim([BE])&Trim(Str(Year(Date()),'4'))&Trim(Str(Month(Date()),'2P0'))&Trim(Str([CF],'8P0'))&
 '_'&Str(P.i.Code_Gm [B],'8P0')&'_'&Str(P.i.Filiation [C],'#')&'_NF.pdf'` |
 | 40 | `DStr(Date(),'YY')&'99'` |
 | 11 | `'Numéro d''adhérent'&' '&Trim(Str(V.Pos , [V],'10Z'))` |
@@ -1553,14 +1580,14 @@ Variables persistantes pendant toute la session.
 | 3 | `P.i.Filiation [C]` |
 | 4 | `V.Lien Pied de facture [J]` |
 | 5 | `V.Existe facture ? [K]` |
-| 14 | `NOT([BJ])` |
-| 15 | `[BJ]` |
-| 20 | `[BF]` |
-| 25 | `[BM]` |
-| 26 | `[BN]` |
-| 28 | `[AN]` |
-| 29 | `[AV]` |
-| 31 | `[BG]` |
+| 14 | `NOT([CJ])` |
+| 15 | `[CJ]` |
+| 20 | `[CF]` |
+| 25 | `[CM]` |
+| 26 | `[CN]` |
+| 28 | `[BN]` |
+| 29 | `[BV]` |
+| 31 | `[CG]` |
 | 32 | `NOT(VG53)` |
 | 39 | `V.CP [N]` |
 
@@ -1579,17 +1606,11 @@ Variables persistantes pendant toute la session.
 | 22 | `'FALSE'LOG` |
 | 24 | `'FALSE'LOG` |
 
-#### NEGATION (1)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 30 | `NOT [AP]` |
-
 #### CONCATENATION (1)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 35 | `Trim(P.o.NomsPDF [E])&','&Trim([BG])` |
+| 35 | `Trim(P.o.NomsPDF [E])&','&Trim([CG])` |
 
 </details>
 
@@ -1727,7 +1748,7 @@ graph LR
 | Sous-programmes | 12 | Forte dependance |
 | Ecrans visibles | 2 | Quelques ecrans |
 | Code desactive | 1.7% (8 / 460) | Code sain |
-| Regles metier | 3 | Quelques regles a preserver |
+| Regles metier | 6 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -1776,4 +1797,4 @@ graph LR
 | [Maj Hebergement Tempo (IDE 62)](ADH-IDE-62.md) | Sous-programme | 1x | Normale - Mise a jour donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:36*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:50*

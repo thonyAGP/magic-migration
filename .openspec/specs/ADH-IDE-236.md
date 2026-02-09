@@ -1,6 +1,6 @@
 ﻿# ADH IDE 236 - Print ticket vente PMS-584
 
-> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:54 (28s) | Assemblage 03:54
+> **Analyse**: Phases 1-4 2026-02-07 03:53 -> 03:54 (28s) | Assemblage 04:32
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,78 +18,15 @@
 | Taches | 38 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 2 |
+| Complexite | **BASSE** (score 25/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Print ticket vente PMS-584** assure la gestion complete de ce processus, accessible depuis [Transaction Nouv vente PMS-584 (IDE 238)](ADH-IDE-238.md), [Histo ventes payantes (IDE 243)](ADH-IDE-243.md), [Histo ventes payantes /PMS-605 (IDE 244)](ADH-IDE-244.md), [Histo ventes payantes /PMS-623 (IDE 245)](ADH-IDE-245.md).
+ADH IDE 236 - Print ticket vente gère l'impression des reçus de vente dans le système de caisse. Ce programme est appelé suite à chaque transaction de vente (ADH IDE 238), ainsi que lors de la consultation de l'historique des ventes (ADH IDE 243, 244, 245). Il s'intègre dans le flux de finalization d'une vente en générant le document à remettre au client.
 
-Le flux de traitement s'organise en **4 blocs fonctionnels** :
+Le workflow comporte 6 tâches principales : une phase d'attente (UI), un compteur pour numéroter les tickets, deux phases d'impression du reçu de change (avec vérification des données), une recherche de dates de séjour pour contextualiser la transaction, et une gestion des réductions appliquées. Chaque tâche est orchestrée pour assurer que toutes les informations pertinentes figurent sur le reçu imprimé.
 
-- **Traitement** (16 taches) : traitements metier divers
-- **Impression** (15 taches) : generation de tickets et documents
-- **Reglement** (5 taches) : gestion des moyens de paiement et reglements
-- **Consultation** (2 taches) : ecrans de recherche, selection et consultation
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (16 taches)
-
-- **236** - Veuillez patienter ... **[[ECRAN]](#ecran-t1)**
-- **236.1** - Counter
-- **236.1.1** - Impression reçu change **[[ECRAN]](#ecran-t3)**
-- **236.1.2** - Impression reçu change
-- **236.2** - Counter
-- **236.2.1** - Impression reçu change
-- **236.2.2** - Impression reçu change
-- **236.3.1** - Veuillez patienter ... **[[ECRAN]](#ecran-t18)**
-- **236.4.1** - Veuillez patienter ... **[[ECRAN]](#ecran-t23)**
-- **236.4.1.1** - Récup. dates de séjour /PMS28/
-- **236.5.1** - Veuillez patienter ... **[[ECRAN]](#ecran-t29)**
-- **236.5.1.2** - Récup. dates de séjour /PMS28/
-- **236.6** - recup terminal
-- **236.7** - recup terminal
-- **236.8** - Errors **[[ECRAN]](#ecran-t37)**
-- **236.9** - (sans nom) **[[ECRAN]](#ecran-t41)**
-
-#### Phase 2 : Consultation (2 taches)
-
-- **236.1.1.1** - Recherche dates de séjour
-- **236.1.2.4** - Recherche dates de séjour
-
-Delegue a : [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md)
-
-#### Phase 3 : Impression (15 taches)
-
-- **236.1.2.1** - Print reduction
-- **236.1.2.3** - Print Tva **[[ECRAN]](#ecran-t8)**
-- **236.1.2.5** - Edition LCO Liberation
-- **236.2.2.1** - Print reduction
-- **236.2.2.2** - Print Tva **[[ECRAN]](#ecran-t15)**
-- **236.3** - Printer 5 **[[ECRAN]](#ecran-t17)**
-- **236.3.1.2** - Print reduction
-- **236.3.1.3** - Print Tva **[[ECRAN]](#ecran-t21)**
-- **236.4** - Printer 5 **[[ECRAN]](#ecran-t22)**
-- **236.4.1.3** - Print reduction
-- **236.4.1.4** - Print Tva **[[ECRAN]](#ecran-t27)**
-- **236.5** - Printer 9 **[[ECRAN]](#ecran-t28)**
-- **236.5.1.1** - Edition LCO Liberation
-- **236.5.1.3** - Print reduction
-- **236.5.1.5** - Print Tva **[[ECRAN]](#ecran-t34)**
-
-Delegue a : [Creation pied Ticket (IDE 251)](ADH-IDE-251.md)
-
-#### Phase 4 : Reglement (5 taches)
-
-- **236.1.2.2** - Edition Multi Moyen Paiement
-- **236.2.2.3** - Edition Multi Moyen Paiement
-- **236.3.1.1** - Edition Multi Moyen Paiement
-- **236.4.1.2** - Edition Multi Moyen Paiement
-- **236.5.1.4** - Edition Multi Moyen Paiement
-
-Delegue a : [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md)
-
-</details>
+Le programme collabore avec deux sous-programmes critiques : ADH IDE 152 (Recup Classe et Lib du MOP) pour récupérer les libellés des moyens de paiement, et ADH IDE 251 (Creation pied Ticket) pour générer le pied de page du reçu avec les mentions légales et informations de caisse. Cette architecture modulaire garantit la cohérence des reçus à travers toutes les transactions du système.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -99,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>236 - Veuillez patienter ... [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Veuillez patienter ... [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (16 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -109,118 +46,118 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [236.1](#t2) | Counter | Traitement |
-| [236.1.1](#t3) | Impression reçu change **[[ECRAN]](#ecran-t3)** | Traitement |
-| [236.1.2](#t5) | Impression reçu change | Traitement |
-| [236.2](#t11) | Counter | Traitement |
-| [236.2.1](#t12) | Impression reçu change | Traitement |
-| [236.2.2](#t13) | Impression reçu change | Traitement |
-| [236.3.1](#t18) | Veuillez patienter ... **[[ECRAN]](#ecran-t18)** | Traitement |
-| [236.4.1](#t23) | Veuillez patienter ... **[[ECRAN]](#ecran-t23)** | Traitement |
-| [236.4.1.1](#t24) | Récup. dates de séjour /PMS28/ | Traitement |
-| [236.5.1](#t29) | Veuillez patienter ... **[[ECRAN]](#ecran-t29)** | Traitement |
-| [236.5.1.2](#t31) | Récup. dates de séjour /PMS28/ | Traitement |
-| [236.6](#t35) | recup terminal | Traitement |
-| [236.7](#t36) | recup terminal | Traitement |
-| [236.8](#t37) | Errors **[[ECRAN]](#ecran-t37)** | Traitement |
-| [236.9](#t41) | (sans nom) **[[ECRAN]](#ecran-t41)** | Traitement |
+| [T2](#t2) | Counter | Traitement |
+| [T3](#t3) | Impression reçu change **[ECRAN]** | Traitement |
+| [T5](#t5) | Impression reçu change | Traitement |
+| [T11](#t11) | Counter | Traitement |
+| [T12](#t12) | Impression reçu change | Traitement |
+| [T13](#t13) | Impression reçu change | Traitement |
+| [T18](#t18) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T23](#t23) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T24](#t24) | Récup. dates de séjour /PMS28/ | Traitement |
+| [T29](#t29) | Veuillez patienter ... **[ECRAN]** | Traitement |
+| [T31](#t31) | Récup. dates de séjour /PMS28/ | Traitement |
+| [T35](#t35) | recup terminal | Traitement |
+| [T36](#t36) | recup terminal | Traitement |
+| [T37](#t37) | Errors **[ECRAN]** | Traitement |
+| [T41](#t41) | (sans nom) **[ECRAN]** | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>236.1 - Counter
+#### <a id="t2"></a>T2 - Counter
 
 **Role** : Traitement : Counter.
 
 ---
 
-#### <a id="t3"></a>236.1.1 - Impression reçu change [[ECRAN]](#ecran-t3)
+#### <a id="t3"></a>T3 - Impression reçu change [ECRAN]
 
 **Role** : Generation du document : Impression reçu change.
 **Ecran** : 333 x 86 DLU (MDI) | [Voir mockup](#ecran-t3)
 
 ---
 
-#### <a id="t5"></a>236.1.2 - Impression reçu change
+#### <a id="t5"></a>T5 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
 
 ---
 
-#### <a id="t11"></a>236.2 - Counter
+#### <a id="t11"></a>T11 - Counter
 
 **Role** : Traitement : Counter.
 
 ---
 
-#### <a id="t12"></a>236.2.1 - Impression reçu change
+#### <a id="t12"></a>T12 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
 
 ---
 
-#### <a id="t13"></a>236.2.2 - Impression reçu change
+#### <a id="t13"></a>T13 - Impression reçu change
 
 **Role** : Generation du document : Impression reçu change.
 
 ---
 
-#### <a id="t18"></a>236.3.1 - Veuillez patienter ... [[ECRAN]](#ecran-t18)
+#### <a id="t18"></a>T18 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t18)
 
 ---
 
-#### <a id="t23"></a>236.4.1 - Veuillez patienter ... [[ECRAN]](#ecran-t23)
+#### <a id="t23"></a>T23 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t23)
 
 ---
 
-#### <a id="t24"></a>236.4.1.1 - Récup. dates de séjour /PMS28/
+#### <a id="t24"></a>T24 - Récup. dates de séjour /PMS28/
 
 **Role** : Traitement : Récup. dates de séjour /PMS28/.
 **Variables liees** : BJ (v.Date Conso ou date séjour)
 
 ---
 
-#### <a id="t29"></a>236.5.1 - Veuillez patienter ... [[ECRAN]](#ecran-t29)
+#### <a id="t29"></a>T29 - Veuillez patienter ... [ECRAN]
 
 **Role** : Traitement : Veuillez patienter ....
 **Ecran** : 435 x 63 DLU (MDI) | [Voir mockup](#ecran-t29)
 
 ---
 
-#### <a id="t31"></a>236.5.1.2 - Récup. dates de séjour /PMS28/
+#### <a id="t31"></a>T31 - Récup. dates de séjour /PMS28/
 
 **Role** : Traitement : Récup. dates de séjour /PMS28/.
 **Variables liees** : BJ (v.Date Conso ou date séjour)
 
 ---
 
-#### <a id="t35"></a>236.6 - recup terminal
+#### <a id="t35"></a>T35 - recup terminal
 
 **Role** : Consultation/chargement : recup terminal.
 
 ---
 
-#### <a id="t36"></a>236.7 - recup terminal
+#### <a id="t36"></a>T36 - recup terminal
 
 **Role** : Consultation/chargement : recup terminal.
 
 ---
 
-#### <a id="t37"></a>236.8 - Errors [[ECRAN]](#ecran-t37)
+#### <a id="t37"></a>T37 - Errors [ECRAN]
 
 **Role** : Traitement : Errors.
 **Ecran** : 600 x 259 DLU | [Voir mockup](#ecran-t37)
 
 ---
 
-#### <a id="t41"></a>236.9 - (sans nom) [[ECRAN]](#ecran-t41)
+#### <a id="t41"></a>T41 - (sans nom) [ECRAN]
 
 **Role** : Traitement interne.
 **Ecran** : 725 x 303 DLU | [Voir mockup](#ecran-t41)
@@ -232,14 +169,14 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t4"></a>236.1.1.1 - Recherche dates de séjour
+#### <a id="t4"></a>T4 - Recherche dates de séjour
 
 **Role** : Traitement : Recherche dates de séjour.
 **Variables liees** : BJ (v.Date Conso ou date séjour)
 
 ---
 
-#### <a id="t9"></a>236.1.2.4 - Recherche dates de séjour
+#### <a id="t9"></a>T9 - Recherche dates de séjour
 
 **Role** : Traitement : Recherche dates de séjour.
 **Variables liees** : BJ (v.Date Conso ou date séjour)
@@ -251,14 +188,14 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t6"></a>236.1.2.1 - Print reduction
+#### <a id="t6"></a>T6 - Print reduction
 
 **Role** : Generation du document : Print reduction.
 **Variables liees** : Z (p.Re_Print_Annulation), BL (v.Num printer)
 
 ---
 
-#### <a id="t8"></a>236.1.2.3 - Print Tva [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Print Tva [ECRAN]
 
 **Role** : Generation du document : Print Tva.
 **Ecran** : 506 x 0 DLU | [Voir mockup](#ecran-t8)
@@ -266,20 +203,20 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t10"></a>236.1.2.5 - Edition LCO Liberation
+#### <a id="t10"></a>T10 - Edition LCO Liberation
 
 **Role** : Generation du document : Edition LCO Liberation.
 
 ---
 
-#### <a id="t14"></a>236.2.2.1 - Print reduction
+#### <a id="t14"></a>T14 - Print reduction
 
 **Role** : Generation du document : Print reduction.
 **Variables liees** : Z (p.Re_Print_Annulation), BL (v.Num printer)
 
 ---
 
-#### <a id="t15"></a>236.2.2.2 - Print Tva [[ECRAN]](#ecran-t15)
+#### <a id="t15"></a>T15 - Print Tva [ECRAN]
 
 **Role** : Generation du document : Print Tva.
 **Ecran** : 506 x 0 DLU | [Voir mockup](#ecran-t15)
@@ -287,7 +224,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t17"></a>236.3 - Printer 5 [[ECRAN]](#ecran-t17)
+#### <a id="t17"></a>T17 - Printer 5 [ECRAN]
 
 **Role** : Generation du document : Printer 5.
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t17)
@@ -295,14 +232,14 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t20"></a>236.3.1.2 - Print reduction
+#### <a id="t20"></a>T20 - Print reduction
 
 **Role** : Generation du document : Print reduction.
 **Variables liees** : Z (p.Re_Print_Annulation), BL (v.Num printer)
 
 ---
 
-#### <a id="t21"></a>236.3.1.3 - Print Tva [[ECRAN]](#ecran-t21)
+#### <a id="t21"></a>T21 - Print Tva [ECRAN]
 
 **Role** : Generation du document : Print Tva.
 **Ecran** : 506 x 0 DLU | [Voir mockup](#ecran-t21)
@@ -310,7 +247,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t22"></a>236.4 - Printer 5 [[ECRAN]](#ecran-t22)
+#### <a id="t22"></a>T22 - Printer 5 [ECRAN]
 
 **Role** : Generation du document : Printer 5.
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t22)
@@ -318,14 +255,14 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t26"></a>236.4.1.3 - Print reduction
+#### <a id="t26"></a>T26 - Print reduction
 
 **Role** : Generation du document : Print reduction.
 **Variables liees** : Z (p.Re_Print_Annulation), BL (v.Num printer)
 
 ---
 
-#### <a id="t27"></a>236.4.1.4 - Print Tva [[ECRAN]](#ecran-t27)
+#### <a id="t27"></a>T27 - Print Tva [ECRAN]
 
 **Role** : Generation du document : Print Tva.
 **Ecran** : 506 x 0 DLU | [Voir mockup](#ecran-t27)
@@ -333,7 +270,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t28"></a>236.5 - Printer 9 [[ECRAN]](#ecran-t28)
+#### <a id="t28"></a>T28 - Printer 9 [ECRAN]
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 424 x 56 DLU (MDI) | [Voir mockup](#ecran-t28)
@@ -341,20 +278,20 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t30"></a>236.5.1.1 - Edition LCO Liberation
+#### <a id="t30"></a>T30 - Edition LCO Liberation
 
 **Role** : Generation du document : Edition LCO Liberation.
 
 ---
 
-#### <a id="t32"></a>236.5.1.3 - Print reduction
+#### <a id="t32"></a>T32 - Print reduction
 
 **Role** : Generation du document : Print reduction.
 **Variables liees** : Z (p.Re_Print_Annulation), BL (v.Num printer)
 
 ---
 
-#### <a id="t34"></a>236.5.1.5 - Print Tva [[ECRAN]](#ecran-t34)
+#### <a id="t34"></a>T34 - Print Tva [ECRAN]
 
 **Role** : Generation du document : Print Tva.
 **Ecran** : 565 x 0 DLU | [Voir mockup](#ecran-t34)
@@ -367,7 +304,7 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ---
 
-#### <a id="t7"></a>236.1.2.2 - Edition Multi Moyen Paiement
+#### <a id="t7"></a>T7 - Edition Multi Moyen Paiement
 
 **Role** : Gestion du reglement : Edition Multi Moyen Paiement.
 **Variables liees** : L (P0 mode de paiement), M (P0 libelle paiement)
@@ -375,7 +312,7 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ---
 
-#### <a id="t16"></a>236.2.2.3 - Edition Multi Moyen Paiement
+#### <a id="t16"></a>T16 - Edition Multi Moyen Paiement
 
 **Role** : Gestion du reglement : Edition Multi Moyen Paiement.
 **Variables liees** : L (P0 mode de paiement), M (P0 libelle paiement)
@@ -383,7 +320,7 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ---
 
-#### <a id="t19"></a>236.3.1.1 - Edition Multi Moyen Paiement
+#### <a id="t19"></a>T19 - Edition Multi Moyen Paiement
 
 **Role** : Gestion du reglement : Edition Multi Moyen Paiement.
 **Variables liees** : L (P0 mode de paiement), M (P0 libelle paiement)
@@ -391,7 +328,7 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ---
 
-#### <a id="t25"></a>236.4.1.2 - Edition Multi Moyen Paiement
+#### <a id="t25"></a>T25 - Edition Multi Moyen Paiement
 
 **Role** : Gestion du reglement : Edition Multi Moyen Paiement.
 **Variables liees** : L (P0 mode de paiement), M (P0 libelle paiement)
@@ -399,7 +336,7 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ---
 
-#### <a id="t33"></a>236.5.1.4 - Edition Multi Moyen Paiement
+#### <a id="t33"></a>T33 - Edition Multi Moyen Paiement
 
 **Role** : Gestion du reglement : Edition Multi Moyen Paiement.
 **Variables liees** : L (P0 mode de paiement), M (P0 libelle paiement)
@@ -408,7 +345,88 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+8 regles identifiees:
+
+### Impression (5 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Verification que l'imprimante courante est la n1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 3 : `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action conditionnelle |
+| **Impact** | [T6 - Print reduction](#t6) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n4
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 4 : `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=4 â†’ Action conditionnelle |
+| **Impact** | [T6 - Print reduction](#t6) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n5
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 5 : `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=5 â†’ Action conditionnelle |
+| **Impact** | [T6 - Print reduction](#t6) |
+
+#### <a id="rm-RM-004"></a>[RM-004] Verification que l'imprimante courante est la n8
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 6 : `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=8 â†’ Action conditionnelle |
+| **Impact** | [T6 - Print reduction](#t6) |
+
+#### <a id="rm-RM-005"></a>[RM-005] Verification que l'imprimante courante est la n9
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 7 : `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action conditionnelle |
+| **Impact** | [T6 - Print reduction](#t6) |
+
+### Autres (3 regles)
+
+#### <a id="rm-RM-006"></a>[RM-006] Negation de VG78 (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT VG78` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 15 : `NOT VG78` |
+| **Exemple** | Si NOT VG78 â†’ Action conditionnelle |
+
+#### <a id="rm-RM-007"></a>[RM-007] Condition composite: ExpCalc('3'EXP) OR ExpCalc('7'EXP)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `ExpCalc('3'EXP) OR ExpCalc('7'EXP)` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 18 : `ExpCalc('3'EXP) OR ExpCalc('7'EXP)` |
+| **Exemple** | Si ExpCalc('3'EXP) OR ExpCalc('7'EXP) â†’ Action conditionnelle |
+
+#### <a id="rm-RM-008"></a>[RM-008] [AX]>0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[AX]>0` |
+| **Si vrai** | Action conditionnelle |
+| **Expression source** | Expression 19 : `[AX]>0` |
+| **Exemple** | Si [AX]>0 â†’ Action conditionnelle |
 
 ## 6. CONTEXTE
 
@@ -423,14 +441,14 @@ Gestion des moyens de paiement : 5 taches de reglement.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 236.8 | 236.8 | Errors | Type0 | 600 | 259 | Traitement |
+| 1 | 236.8 | T37 | Errors | Type0 | 600 | 259 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t37"></a>236.8 - Errors
-**Tache** : [236.8](#t37) | **Type** : Type0 | **Dimensions** : 600 x 259 DLU
+**Tache** : [T37](#t37) | **Type** : Type0 | **Dimensions** : 600 x 259 DLU
 **Bloc** : Traitement | **Titre IDE** : Errors
 
 <!-- FORM-DATA:
@@ -702,44 +720,44 @@ Ecran unique: **Errors**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **236.1** | [**Veuillez patienter ...** (236)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
-| 236.1.1 | [Counter (236.1)](#t2) | MDI | - | |
-| 236.1.2 | [Impression reçu change (236.1.1)](#t3) [mockup](#ecran-t3) | MDI | 333x86 | |
-| 236.1.3 | [Impression reçu change (236.1.2)](#t5) | MDI | - | |
-| 236.1.4 | [Counter (236.2)](#t11) | MDI | - | |
-| 236.1.5 | [Impression reçu change (236.2.1)](#t12) | MDI | - | |
-| 236.1.6 | [Impression reçu change (236.2.2)](#t13) | MDI | - | |
-| 236.1.7 | [Veuillez patienter ... (236.3.1)](#t18) [mockup](#ecran-t18) | MDI | 424x56 | |
-| 236.1.8 | [Veuillez patienter ... (236.4.1)](#t23) [mockup](#ecran-t23) | MDI | 424x56 | |
-| 236.1.9 | [Récup. dates de séjour /PMS28/ (236.4.1.1)](#t24) | - | - | |
-| 236.1.10 | [Veuillez patienter ... (236.5.1)](#t29) [mockup](#ecran-t29) | MDI | 435x63 | |
-| 236.1.11 | [Récup. dates de séjour /PMS28/ (236.5.1.2)](#t31) | - | - | |
-| 236.1.12 | [recup terminal (236.6)](#t35) | - | - | |
-| 236.1.13 | [recup terminal (236.7)](#t36) | - | - | |
-| 236.1.14 | [Errors (236.8)](#t37) [mockup](#ecran-t37) | - | 600x259 | |
-| 236.1.15 | [(sans nom) (236.9)](#t41) [mockup](#ecran-t41) | - | 725x303 | |
-| **236.2** | [**Recherche dates de séjour** (236.1.1.1)](#t4) | - | - | Consultation |
-| 236.2.1 | [Recherche dates de séjour (236.1.2.4)](#t9) | - | - | |
-| **236.3** | [**Print reduction** (236.1.2.1)](#t6) | - | - | Impression |
-| 236.3.1 | [Print Tva (236.1.2.3)](#t8) [mockup](#ecran-t8) | - | 506x0 | |
-| 236.3.2 | [Edition LCO Liberation (236.1.2.5)](#t10) | - | - | |
-| 236.3.3 | [Print reduction (236.2.2.1)](#t14) | - | - | |
-| 236.3.4 | [Print Tva (236.2.2.2)](#t15) [mockup](#ecran-t15) | - | 506x0 | |
-| 236.3.5 | [Printer 5 (236.3)](#t17) [mockup](#ecran-t17) | MDI | 424x56 | |
-| 236.3.6 | [Print reduction (236.3.1.2)](#t20) | - | - | |
-| 236.3.7 | [Print Tva (236.3.1.3)](#t21) [mockup](#ecran-t21) | - | 506x0 | |
-| 236.3.8 | [Printer 5 (236.4)](#t22) [mockup](#ecran-t22) | MDI | 424x56 | |
-| 236.3.9 | [Print reduction (236.4.1.3)](#t26) | - | - | |
-| 236.3.10 | [Print Tva (236.4.1.4)](#t27) [mockup](#ecran-t27) | - | 506x0 | |
-| 236.3.11 | [Printer 9 (236.5)](#t28) [mockup](#ecran-t28) | MDI | 424x56 | |
-| 236.3.12 | [Edition LCO Liberation (236.5.1.1)](#t30) | - | - | |
-| 236.3.13 | [Print reduction (236.5.1.3)](#t32) | - | - | |
-| 236.3.14 | [Print Tva (236.5.1.5)](#t34) [mockup](#ecran-t34) | - | 565x0 | |
-| **236.4** | [**Edition Multi Moyen Paiement** (236.1.2.2)](#t7) | - | - | Reglement |
-| 236.4.1 | [Edition Multi Moyen Paiement (236.2.2.3)](#t16) | - | - | |
-| 236.4.2 | [Edition Multi Moyen Paiement (236.3.1.1)](#t19) | - | - | |
-| 236.4.3 | [Edition Multi Moyen Paiement (236.4.1.2)](#t25) | - | - | |
-| 236.4.4 | [Edition Multi Moyen Paiement (236.5.1.4)](#t33) | - | - | |
+| **236.1** | [**Veuillez patienter ...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
+| 236.1.1 | [Counter (T2)](#t2) | MDI | - | |
+| 236.1.2 | [Impression reçu change (T3)](#t3) [mockup](#ecran-t3) | MDI | 333x86 | |
+| 236.1.3 | [Impression reçu change (T5)](#t5) | MDI | - | |
+| 236.1.4 | [Counter (T11)](#t11) | MDI | - | |
+| 236.1.5 | [Impression reçu change (T12)](#t12) | MDI | - | |
+| 236.1.6 | [Impression reçu change (T13)](#t13) | MDI | - | |
+| 236.1.7 | [Veuillez patienter ... (T18)](#t18) [mockup](#ecran-t18) | MDI | 424x56 | |
+| 236.1.8 | [Veuillez patienter ... (T23)](#t23) [mockup](#ecran-t23) | MDI | 424x56 | |
+| 236.1.9 | [Récup. dates de séjour /PMS28/ (T24)](#t24) | - | - | |
+| 236.1.10 | [Veuillez patienter ... (T29)](#t29) [mockup](#ecran-t29) | MDI | 435x63 | |
+| 236.1.11 | [Récup. dates de séjour /PMS28/ (T31)](#t31) | - | - | |
+| 236.1.12 | [recup terminal (T35)](#t35) | - | - | |
+| 236.1.13 | [recup terminal (T36)](#t36) | - | - | |
+| 236.1.14 | [Errors (T37)](#t37) [mockup](#ecran-t37) | - | 600x259 | |
+| 236.1.15 | [(sans nom) (T41)](#t41) [mockup](#ecran-t41) | - | 725x303 | |
+| **236.2** | [**Recherche dates de séjour** (T4)](#t4) | - | - | Consultation |
+| 236.2.1 | [Recherche dates de séjour (T9)](#t9) | - | - | |
+| **236.3** | [**Print reduction** (T6)](#t6) | - | - | Impression |
+| 236.3.1 | [Print Tva (T8)](#t8) [mockup](#ecran-t8) | - | 506x0 | |
+| 236.3.2 | [Edition LCO Liberation (T10)](#t10) | - | - | |
+| 236.3.3 | [Print reduction (T14)](#t14) | - | - | |
+| 236.3.4 | [Print Tva (T15)](#t15) [mockup](#ecran-t15) | - | 506x0 | |
+| 236.3.5 | [Printer 5 (T17)](#t17) [mockup](#ecran-t17) | MDI | 424x56 | |
+| 236.3.6 | [Print reduction (T20)](#t20) | - | - | |
+| 236.3.7 | [Print Tva (T21)](#t21) [mockup](#ecran-t21) | - | 506x0 | |
+| 236.3.8 | [Printer 5 (T22)](#t22) [mockup](#ecran-t22) | MDI | 424x56 | |
+| 236.3.9 | [Print reduction (T26)](#t26) | - | - | |
+| 236.3.10 | [Print Tva (T27)](#t27) [mockup](#ecran-t27) | - | 506x0 | |
+| 236.3.11 | [Printer 9 (T28)](#t28) [mockup](#ecran-t28) | MDI | 424x56 | |
+| 236.3.12 | [Edition LCO Liberation (T30)](#t30) | - | - | |
+| 236.3.13 | [Print reduction (T32)](#t32) | - | - | |
+| 236.3.14 | [Print Tva (T34)](#t34) [mockup](#ecran-t34) | - | 565x0 | |
+| **236.4** | [**Edition Multi Moyen Paiement** (T7)](#t7) | - | - | Reglement |
+| 236.4.1 | [Edition Multi Moyen Paiement (T16)](#t16) | - | - | |
+| 236.4.2 | [Edition Multi Moyen Paiement (T19)](#t19) | - | - | |
+| 236.4.3 | [Edition Multi Moyen Paiement (T25)](#t25) | - | - | |
+| 236.4.4 | [Edition Multi Moyen Paiement (T33)](#t33) | - | - | |
 
 ### 9.4 Algorigramme
 
@@ -747,18 +765,24 @@ Ecran unique: **Errors**
 flowchart TD
     START([START])
     INIT[Init controles]
-    SAISIE[Errors]
+    START --> INIT
+    B1[Traitement (16t)]
+    INIT --> B1
+    B2[Consultation (2t)]
+    B1 --> B2
+    B3[Impression (15t)]
+    B2 --> B3
+    B4[Reglement (5t)]
+    B3 --> B4
     ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    B4 --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -768,33 +792,90 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 31 | gm-complet_______gmc |  | DB | R |   |   | 2 |
-| 34 | hebergement______heb | Hebergement (chambres) | DB | R |   | L | 4 |
-| 40 | comptable________cte |  | DB | R |   |   | 4 |
-| 67 | tables___________tab |  | DB | R |   | L | 3 |
-| 69 | initialisation___ini |  | DB | R |   |   | 1 |
-| 77 | articles_________art | Articles et stock | DB | R |   | L | 3 |
-| 263 | vente | Donnees de ventes | DB |   |   | L | 4 |
+| 847 | stat_lieu_vente_date | Statistiques point de vente | TMP | R |   | L | 15 |
 | 596 | tempo_ecran_police | Table temporaire ecran | TMP | R |   | L | 14 |
+| 34 | hebergement______heb | Hebergement (chambres) | DB | R |   | L | 4 |
+| 77 | articles_________art | Articles et stock | DB | R |   | L | 3 |
+| 67 | tables___________tab |  | DB | R |   | L | 3 |
+| 867 | log_maj_tpe |  | DB | R |   |   | 5 |
+| 40 | comptable________cte |  | DB | R |   |   | 4 |
+| 878 | categorie_operation_mw | Operations comptables | DB | R |   |   | 2 |
+| 31 | gm-complet_______gmc |  | DB | R |   |   | 2 |
+| 1037 | Table_1037 |  | MEM | R |   |   | 2 |
+| 69 | initialisation___ini |  | DB | R |   |   | 1 |
+| 263 | vente | Donnees de ventes | DB |   |   | L | 4 |
+| 904 | Boo_AvailibleEmployees |  | DB |   |   | L | 3 |
 | 728 | arc_cc_total |  | DB |   |   | L | 1 |
 | 818 | Circuit supprime |  | DB |   |   | L | 1 |
-| 847 | stat_lieu_vente_date | Statistiques point de vente | TMP | R |   | L | 15 |
-| 867 | log_maj_tpe |  | DB | R |   |   | 5 |
-| 878 | categorie_operation_mw | Operations comptables | DB | R |   |   | 2 |
-| 904 | Boo_AvailibleEmployees |  | DB |   |   | L | 3 |
-| 1037 | Table_1037 |  | MEM | R |   |   | 2 |
 
 ### Colonnes par table (7 / 11 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 31 - gm-complet_______gmc (R) - 2 usages</summary>
+<summary>Table 847 - stat_lieu_vente_date (R/L) - 15 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | v Libellé Moyen Paiement | R | Alpha |
+| B | v.Total mp | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 596 - tempo_ecran_police (R/L) - 14 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | V TOTAL | R | Numeric |
+| B | V.Début séjour | R | Date |
+| C | V.Fin séjour | R | Date |
+
+</details>
+
+<details>
+<summary>Table 34 - hebergement______heb (R/L) - 4 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
-<summary>Table 34 - hebergement______heb (R/L) - 4 usages</summary>
+<summary>Table 77 - articles_________art (R/L) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | V.Existe OD ? | R | Logical |
+| B | V TOTAL | R | Numeric |
+| C | V TOTAL_GP | R | Numeric |
+| D | V.NAP | R | Numeric |
+| E | V.Existe reduction ? | R | Logical |
+| F | v.Numero de Ticket | R | Numeric |
+| G | v.Date de Consom. lue | R | Date |
+| H | v.Dernière Date de Conso. lue | R | Date |
+| I | V.A editer ? | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 67 - tables___________tab (R/L) - 3 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | V.Date Début Séjour | R | Date |
+| B | V.Date Fin Séjour | R | Date |
+| C | V.Existe OD ? | R | Logical |
+| D | V.Existe entête pour Type art | R | Logical |
+| E | V Total | R | Numeric |
+| F | V Total_Gift Pass | R | Numeric |
+| G | V.NAP | R | Numeric |
+| H | V.Existe reduction ? | R | Logical |
+| I | V.Numéro de Ticket | R | Numeric |
+| J | V.Date Conso Lu | R | Date |
+| K | V.Dernière Date Conso Lu | R | Date |
+
+</details>
+
+<details>
+<summary>Table 867 - log_maj_tpe (R) - 5 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
@@ -829,21 +910,23 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 67 - tables___________tab (R/L) - 3 usages</summary>
+<summary>Table 878 - categorie_operation_mw (R) - 2 usages</summary>
 
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | V.Date Début Séjour | R | Date |
-| B | V.Date Fin Séjour | R | Date |
-| C | V.Existe OD ? | R | Logical |
-| D | V.Existe entête pour Type art | R | Logical |
-| E | V Total | R | Numeric |
-| F | V Total_Gift Pass | R | Numeric |
-| G | V.NAP | R | Numeric |
-| H | V.Existe reduction ? | R | Logical |
-| I | V.Numéro de Ticket | R | Numeric |
-| J | V.Date Conso Lu | R | Date |
-| K | V.Dernière Date Conso Lu | R | Date |
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 31 - gm-complet_______gmc (R) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 1037 - Table_1037 (R) - 2 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
@@ -891,65 +974,6 @@ flowchart TD
 | BK | v.TPE ICMP | R | Logical |
 | BL | v.Num printer | R | Numeric |
 | BM | v. nb lignes erreurs | R | Numeric |
-
-</details>
-
-<details>
-<summary>Table 77 - articles_________art (R/L) - 3 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | V.Existe OD ? | R | Logical |
-| B | V TOTAL | R | Numeric |
-| C | V TOTAL_GP | R | Numeric |
-| D | V.NAP | R | Numeric |
-| E | V.Existe reduction ? | R | Logical |
-| F | v.Numero de Ticket | R | Numeric |
-| G | v.Date de Consom. lue | R | Date |
-| H | v.Dernière Date de Conso. lue | R | Date |
-| I | V.A editer ? | R | Logical |
-
-</details>
-
-<details>
-<summary>Table 596 - tempo_ecran_police (R/L) - 14 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | V TOTAL | R | Numeric |
-| B | V.Début séjour | R | Date |
-| C | V.Fin séjour | R | Date |
-
-</details>
-
-<details>
-<summary>Table 847 - stat_lieu_vente_date (R/L) - 15 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | v Libellé Moyen Paiement | R | Alpha |
-| B | v.Total mp | R | Numeric |
-
-</details>
-
-<details>
-<summary>Table 867 - log_maj_tpe (R) - 5 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 878 - categorie_operation_mw (R) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 1037 - Table_1037 (R) - 2 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
@@ -1226,7 +1250,7 @@ graph LR
 | Sous-programmes | 2 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0.3% (4 / 1231) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 8 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -1259,4 +1283,4 @@ graph LR
 | [Recup Classe et Lib du MOP (IDE 152)](ADH-IDE-152.md) | Sous-programme | 5x | **CRITIQUE** - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:54*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:33*

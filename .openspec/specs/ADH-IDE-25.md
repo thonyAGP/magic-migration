@@ -1,6 +1,6 @@
 ﻿# ADH IDE 25 - Change GM
 
-> **Analyse**: Phases 1-4 2026-02-07 03:40 -> 03:41 (27s) | Assemblage 13:03
+> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 01:22 (21h40min) | Assemblage 01:22
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -117,7 +117,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Change GM [ECRAN]
+#### <a id="t1"></a>25 - Change GM [[ECRAN]](#ecran-t1)
 
 **Role** : Tache d'orchestration : point d'entree du programme (8 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 204 x 50 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -127,66 +127,66 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T3](#t3) | Scroll Change achat **[ECRAN]** | Traitement |
-| [T17](#t17) | Test si cloture en cours | Traitement |
-| [T18](#t18) | Blocage cloture v1 | Traitement |
-| [T19](#t19) | Blocage cloture v1 | Traitement |
-| [T20](#t20) | Test reseau | Traitement |
-| [T22](#t22) | Deblocage cloture v1 | Traitement |
-| [T23](#t23) | Deblocage cloture v1 | Traitement |
+| [25.2](#t3) | Scroll Change achat **[[ECRAN]](#ecran-t3)** | Traitement |
+| [25.5](#t17) | Test si cloture en cours | Traitement |
+| [25.5.1](#t18) | Blocage cloture v1 | Traitement |
+| [25.5.2](#t19) | Blocage cloture v1 | Traitement |
+| [25.6](#t20) | Test reseau | Traitement |
+| [25.8](#t22) | Deblocage cloture v1 | Traitement |
+| [25.9](#t23) | Deblocage cloture v1 | Traitement |
 
 </details>
-**Variables liees** : S (W0 n° de change), BB (Btn Creer Change)
+**Variables liees** : FF (W0 n° de change), FO (Btn Creer Change)
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
 
 ---
 
-#### <a id="t3"></a>T3 - Scroll Change achat [ECRAN]
+#### <a id="t3"></a>25.2 - Scroll Change achat [[ECRAN]](#ecran-t3)
 
 **Role** : Traitement : Scroll Change achat.
 **Ecran** : 1101 x 219 DLU (MDI) | [Voir mockup](#ecran-t3)
-**Variables liees** : S (W0 n° de change), BB (Btn Creer Change)
+**Variables liees** : FF (W0 n° de change), FO (Btn Creer Change)
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
 
 ---
 
-#### <a id="t17"></a>T17 - Test si cloture en cours
+#### <a id="t17"></a>25.5 - Test si cloture en cours
 
 **Role** : Verification : Test si cloture en cours.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
 
 ---
 
-#### <a id="t18"></a>T18 - Blocage cloture v1
+#### <a id="t18"></a>25.5.1 - Blocage cloture v1
 
 **Role** : Traitement : Blocage cloture v1.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
 
 ---
 
-#### <a id="t19"></a>T19 - Blocage cloture v1
+#### <a id="t19"></a>25.5.2 - Blocage cloture v1
 
 **Role** : Traitement : Blocage cloture v1.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
 
 ---
 
-#### <a id="t20"></a>T20 - Test reseau
+#### <a id="t20"></a>25.6 - Test reseau
 
 **Role** : Verification : Test reseau.
-**Variables liees** : X (W0 reseau)
+**Variables liees** : FK (W0 reseau)
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
 
 ---
 
-#### <a id="t22"></a>T22 - Deblocage cloture v1
+#### <a id="t22"></a>25.8 - Deblocage cloture v1
 
 **Role** : Traitement : Deblocage cloture v1.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
 
 ---
 
-#### <a id="t23"></a>T23 - Deblocage cloture v1
+#### <a id="t23"></a>25.9 - Deblocage cloture v1
 
 **Role** : Traitement : Deblocage cloture v1.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
@@ -198,20 +198,20 @@ L'operateur saisit les donnees de la transaction via 2 ecrans (Scroll Change ven
 
 ---
 
-#### <a id="t2"></a>T2 - Scroll Change vente [ECRAN]
+#### <a id="t2"></a>25.1 - Scroll Change vente [[ECRAN]](#ecran-t2)
 
 **Role** : Saisie des donnees : Scroll Change vente.
 **Ecran** : 1101 x 218 DLU (MDI) | [Voir mockup](#ecran-t2)
-**Variables liees** : S (W0 n° de change), BB (Btn Creer Change)
+**Variables liees** : FF (W0 n° de change), FO (Btn Creer Change)
 **Delegue a** : [Print reçu change vente (IDE 24)](ADH-IDE-24.md)
 
 ---
 
-#### <a id="t4"></a>T4 - Change vente [ECRAN]
+#### <a id="t4"></a>25.3 - Change vente [[ECRAN]](#ecran-t4)
 
 **Role** : Saisie des donnees : Change vente.
 **Ecran** : 1106 x 90 DLU (MDI) | [Voir mockup](#ecran-t4)
-**Variables liees** : S (W0 n° de change), BB (Btn Creer Change)
+**Variables liees** : FF (W0 n° de change), FO (Btn Creer Change)
 **Delegue a** : [Print reçu change vente (IDE 24)](ADH-IDE-24.md)
 
 
@@ -221,7 +221,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t5"></a>T5 - Affichage annulation [ECRAN]
+#### <a id="t5"></a>25.3.1 - Affichage annulation [[ECRAN]](#ecran-t5)
 
 **Role** : Reinitialisation : Affichage annulation.
 **Ecran** : 312 x 64 DLU (Modal) | [Voir mockup](#ecran-t5)
@@ -229,7 +229,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t6"></a>T6 - Affichage annulation [ECRAN]
+#### <a id="t6"></a>25.3.2 - Affichage annulation [[ECRAN]](#ecran-t6)
 
 **Role** : Reinitialisation : Affichage annulation.
 **Ecran** : 312 x 64 DLU (Modal) | [Voir mockup](#ecran-t6)
@@ -237,7 +237,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t12"></a>T12 - Zoom des devises [ECRAN]
+#### <a id="t12"></a>25.3.7 - Zoom des devises [[ECRAN]](#ecran-t12)
 
 **Role** : Selection par l'operateur : Zoom des devises.
 **Ecran** : 366 x 154 DLU (MDI) | [Voir mockup](#ecran-t12)
@@ -250,38 +250,38 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t7"></a>T7 - Creation change
+#### <a id="t7"></a>25.3.3 - Creation change
 
 **Role** : Creation d'enregistrement : Creation change.
-**Variables liees** : S (W0 n° de change), BB (Btn Creer Change)
+**Variables liees** : FF (W0 n° de change), FO (Btn Creer Change)
 
 ---
 
-#### <a id="t8"></a>T8 - Creation change
+#### <a id="t8"></a>25.3.3.1 - Creation change
 
 **Role** : Creation d'enregistrement : Creation change.
-**Variables liees** : S (W0 n° de change), BB (Btn Creer Change)
+**Variables liees** : FF (W0 n° de change), FO (Btn Creer Change)
 
 ---
 
-#### <a id="t9"></a>T9 - Creation change
+#### <a id="t9"></a>25.3.4 - Creation change
 
 **Role** : Creation d'enregistrement : Creation change.
-**Variables liees** : S (W0 n° de change), BB (Btn Creer Change)
+**Variables liees** : FF (W0 n° de change), FO (Btn Creer Change)
 
 ---
 
-#### <a id="t10"></a>T10 - Creation change
+#### <a id="t10"></a>25.3.5 - Creation change
 
 **Role** : Creation d'enregistrement : Creation change.
-**Variables liees** : S (W0 n° de change), BB (Btn Creer Change)
+**Variables liees** : FF (W0 n° de change), FO (Btn Creer Change)
 
 ---
 
-#### <a id="t11"></a>T11 - Creation change
+#### <a id="t11"></a>25.3.6 - Creation change
 
 **Role** : Creation d'enregistrement : Creation change.
-**Variables liees** : S (W0 n° de change), BB (Btn Creer Change)
+**Variables liees** : FF (W0 n° de change), FO (Btn Creer Change)
 
 
 ### 3.5 Calcul (4 taches)
@@ -290,33 +290,33 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t13"></a>T13 - Recup compteur
+#### <a id="t13"></a>25.3.8 - Recup compteur
 
 **Role** : Calcul : Recup compteur.
 **Delegue a** : [Calcul du stock devise (IDE 153)](ADH-IDE-153.md)
 
 ---
 
-#### <a id="t14"></a>T14 - Calcul Flag
+#### <a id="t14"></a>25.3.9 - Calcul Flag
 
 **Role** : Calcul : Calcul Flag.
 **Delegue a** : [Calcul du stock devise (IDE 153)](ADH-IDE-153.md)
 
 ---
 
-#### <a id="t16"></a>T16 - OCA  Menu solde d'un compte [ECRAN]
+#### <a id="t16"></a>25.4 - OCA  Menu solde d'un compte [[ECRAN]](#ecran-t16)
 
 **Role** : Consultation/chargement : OCA  Menu solde d'un compte.
 **Ecran** : 608 x 159 DLU (MDI) | [Voir mockup](#ecran-t16)
-**Variables liees** : I (> solde compte), J (> etat compte), K (> date solde)
+**Variables liees** : EV (> solde compte), EW (> etat compte), EX (> date solde)
 **Delegue a** : [Calcul du stock devise (IDE 153)](ADH-IDE-153.md)
 
 ---
 
-#### <a id="t21"></a>T21 - Reaffichage infos compte
+#### <a id="t21"></a>25.7 - Reaffichage infos compte
 
 **Role** : Reinitialisation : Reaffichage infos compte.
-**Variables liees** : I (> solde compte), J (> etat compte)
+**Variables liees** : EV (> solde compte), EW (> etat compte)
 **Delegue a** : [Calcul du stock devise (IDE 153)](ADH-IDE-153.md)
 
 
@@ -326,7 +326,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t15"></a>T15 - Ecriture ds reedition_ Ticket
+#### <a id="t15"></a>25.3.10 - Ecriture ds reedition_ Ticket
 
 **Role** : Generation du document : Ecriture ds reedition_ Ticket.
 **Delegue a** : [Print reçu change achat (IDE 23)](ADH-IDE-23.md), [Get Printer (IDE 179)](ADH-IDE-179.md), [Printer choice (IDE 180)](ADH-IDE-180.md)
@@ -334,7 +334,108 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Programme d'impression - logique technique sans conditions metier)*
+10 regles identifiees:
+
+### Saisie (1 regles)
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: W0 reseau [X] different de 'R'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 reseau [X]<>'R'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FK (W0 reseau) |
+| **Expression source** | Expression 13 : `W0 reseau [X]<>'R'` |
+| **Exemple** | Si W0 reseau [X]<>'R' â†’ Action si vrai |
+| **Impact** | Bloc Saisie |
+
+### Autres (9 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: > societe [A] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> societe [A]=''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (> societe) |
+| **Expression source** | Expression 1 : `> societe [A]=''` |
+| **Exemple** | Si > societe [A]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: V0 choix action [Q] different de 'F'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V0 choix action [Q]<>'F'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FD (V0 choix action) |
+| **Expression source** | Expression 9 : `V0 choix action [Q]<>'F'` |
+| **Exemple** | Si V0 choix action [Q]<>'F' â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: V0 choix action [Q] egale 'F'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `V0 choix action [Q]='F'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FD (V0 choix action) |
+| **Expression source** | Expression 10 : `V0 choix action [Q]='F'` |
+| **Exemple** | Si V0 choix action [Q]='F' â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Condition: > Uni/Bi [O] egale 'B'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> Uni/Bi [O]='B'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FB (> Uni/Bi) |
+| **Expression source** | Expression 14 : `> Uni/Bi [O]='B'` |
+| **Exemple** | Si > Uni/Bi [O]='B' â†’ Action si vrai |
+
+#### <a id="rm-RM-006"></a>[RM-006] Condition: > Uni/Bi [O] different de 'B'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> Uni/Bi [O]<>'B'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FB (> Uni/Bi) |
+| **Expression source** | Expression 16 : `> Uni/Bi [O]<>'B'` |
+| **Exemple** | Si > Uni/Bi [O]<>'B' â†’ Action si vrai |
+
+#### <a id="rm-RM-007"></a>[RM-007] Condition: [BJ] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BJ]=''` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 18 : `[BJ]=''` |
+| **Exemple** | Si [BJ]='' â†’ Action si vrai |
+
+#### <a id="rm-RM-008"></a>[RM-008] Condition: [BJ] egale 'A'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BJ]='A'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 21 : `[BJ]='A'` |
+| **Exemple** | Si [BJ]='A' â†’ Action si vrai |
+
+#### <a id="rm-RM-009"></a>[RM-009] Condition: [BJ] egale 'V'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BJ]='V'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 22 : `[BJ]='V'` |
+| **Exemple** | Si [BJ]='V' â†’ Action si vrai |
+
+#### <a id="rm-RM-010"></a>[RM-010] Negation de VG78 (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT VG78` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 23 : `NOT VG78` |
+| **Exemple** | Si NOT VG78 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -349,18 +450,18 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 25.1 | T2 | Scroll Change vente | MDI | 1101 | 218 | Saisie |
-| 2 | 25.2 | T3 | Scroll Change achat | MDI | 1101 | 219 | Traitement |
-| 3 | 25.3 | T4 | Change vente | MDI | 1106 | 90 | Saisie |
-| 4 | 25.3.7 | T12 | Zoom des devises | MDI | 366 | 154 | Consultation |
-| 5 | 25.4 | T16 | OCA  Menu solde d'un compte | MDI | 608 | 159 | Calcul |
+| 1 | 25.1 | 25.1 | Scroll Change vente | MDI | 1101 | 218 | Saisie |
+| 2 | 25.2 | 25.2 | Scroll Change achat | MDI | 1101 | 219 | Traitement |
+| 3 | 25.3 | 25.3 | Change vente | MDI | 1106 | 90 | Saisie |
+| 4 | 25.3.7 | 25.3.7 | Zoom des devises | MDI | 366 | 154 | Consultation |
+| 5 | 25.4 | 25.4 | OCA  Menu solde d'un compte | MDI | 608 | 159 | Calcul |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t2"></a>25.1 - Scroll Change vente
-**Tache** : [T2](#t2) | **Type** : MDI | **Dimensions** : 1101 x 218 DLU
+**Tache** : [25.1](#t2) | **Type** : MDI | **Dimensions** : 1101 x 218 DLU
 **Bloc** : Saisie | **Titre IDE** : Scroll Change vente
 
 <!-- FORM-DATA:
@@ -768,7 +869,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t3"></a>25.2 - Scroll Change achat
-**Tache** : [T3](#t3) | **Type** : MDI | **Dimensions** : 1101 x 219 DLU
+**Tache** : [25.2](#t3) | **Type** : MDI | **Dimensions** : 1101 x 219 DLU
 **Bloc** : Traitement | **Titre IDE** : Scroll Change achat
 
 <!-- FORM-DATA:
@@ -1202,7 +1303,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t4"></a>25.3 - Change vente
-**Tache** : [T4](#t4) | **Type** : MDI | **Dimensions** : 1106 x 90 DLU
+**Tache** : [25.3](#t4) | **Type** : MDI | **Dimensions** : 1106 x 90 DLU
 **Bloc** : Saisie | **Titre IDE** : Change vente
 
 <!-- FORM-DATA:
@@ -1523,7 +1624,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t12"></a>25.3.7 - Zoom des devises
-**Tache** : [T12](#t12) | **Type** : MDI | **Dimensions** : 366 x 154 DLU
+**Tache** : [25.3.7](#t12) | **Type** : MDI | **Dimensions** : 366 x 154 DLU
 **Bloc** : Consultation | **Titre IDE** : Zoom des devises
 
 <!-- FORM-DATA:
@@ -1668,7 +1769,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t16"></a>25.4 - OCA  Menu solde d'un compte
-**Tache** : [T16](#t16) | **Type** : MDI | **Dimensions** : 608 x 159 DLU
+**Tache** : [25.4](#t16) | **Type** : MDI | **Dimensions** : 608 x 159 DLU
 **Bloc** : Calcul | **Titre IDE** : OCA  Menu solde d'un compte
 
 <!-- FORM-DATA:
@@ -1922,15 +2023,15 @@ Generation des documents et tickets.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF2[T2 Scroll Change vente]
+    VF2[25.1 Scroll Change vente]
     style VF2 fill:#58a6ff
-    VF3[T3 Scroll Change achat]
+    VF3[25.2 Scroll Change achat]
     style VF3 fill:#58a6ff
-    VF4[T4 Change vente]
+    VF4[25.3 Change vente]
     style VF4 fill:#58a6ff
-    VF12[T12 Zoom des devises]
+    VF12[25.3.7 Zoom des devises]
     style VF12 fill:#58a6ff
-    VF16[T16 OCA Menu solde dun...]
+    VF16[25.4 OCA Menu solde dun...]
     style VF16 fill:#58a6ff
     EXT43[IDE 43 Recuperation du...]
     style EXT43 fill:#3fb950
@@ -1997,57 +2098,56 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **25.1** | [**Change GM** (T1)](#t1) [mockup](#ecran-t1) | MDI | 204x50 | Traitement |
-| 25.1.1 | [Scroll Change achat (T3)](#t3) [mockup](#ecran-t3) | MDI | 1101x219 | |
-| 25.1.2 | [Test si cloture en cours (T17)](#t17) | MDI | - | |
-| 25.1.3 | [Blocage cloture v1 (T18)](#t18) | MDI | - | |
-| 25.1.4 | [Blocage cloture v1 (T19)](#t19) | MDI | - | |
-| 25.1.5 | [Test reseau (T20)](#t20) | MDI | - | |
-| 25.1.6 | [Deblocage cloture v1 (T22)](#t22) | MDI | - | |
-| 25.1.7 | [Deblocage cloture v1 (T23)](#t23) | MDI | - | |
-| **25.2** | [**Scroll Change vente** (T2)](#t2) [mockup](#ecran-t2) | MDI | 1101x218 | Saisie |
-| 25.2.1 | [Change vente (T4)](#t4) [mockup](#ecran-t4) | MDI | 1106x90 | |
-| **25.3** | [**Affichage annulation** (T5)](#t5) [mockup](#ecran-t5) | Modal | 312x64 | Consultation |
-| 25.3.1 | [Affichage annulation (T6)](#t6) [mockup](#ecran-t6) | Modal | 312x64 | |
-| 25.3.2 | [Zoom des devises (T12)](#t12) [mockup](#ecran-t12) | MDI | 366x154 | |
-| **25.4** | [**Creation change** (T7)](#t7) | MDI | - | Creation |
-| 25.4.1 | [Creation change (T8)](#t8) | MDI | - | |
-| 25.4.2 | [Creation change (T9)](#t9) | MDI | - | |
-| 25.4.3 | [Creation change (T10)](#t10) | MDI | - | |
-| 25.4.4 | [Creation change (T11)](#t11) | MDI | - | |
-| **25.5** | [**Recup compteur** (T13)](#t13) | MDI | - | Calcul |
-| 25.5.1 | [Calcul Flag (T14)](#t14) | MDI | - | |
-| 25.5.2 | [OCA  Menu solde d'un compte (T16)](#t16) [mockup](#ecran-t16) | MDI | 608x159 | |
-| 25.5.3 | [Reaffichage infos compte (T21)](#t21) | MDI | - | |
-| **25.6** | [**Ecriture ds reedition_ Ticket** (T15)](#t15) | - | - | Impression |
+| **25.1** | [**Change GM** (25)](#t1) [mockup](#ecran-t1) | MDI | 204x50 | Traitement |
+| 25.1.1 | [Scroll Change achat (25.2)](#t3) [mockup](#ecran-t3) | MDI | 1101x219 | |
+| 25.1.2 | [Test si cloture en cours (25.5)](#t17) | MDI | - | |
+| 25.1.3 | [Blocage cloture v1 (25.5.1)](#t18) | MDI | - | |
+| 25.1.4 | [Blocage cloture v1 (25.5.2)](#t19) | MDI | - | |
+| 25.1.5 | [Test reseau (25.6)](#t20) | MDI | - | |
+| 25.1.6 | [Deblocage cloture v1 (25.8)](#t22) | MDI | - | |
+| 25.1.7 | [Deblocage cloture v1 (25.9)](#t23) | MDI | - | |
+| **25.2** | [**Scroll Change vente** (25.1)](#t2) [mockup](#ecran-t2) | MDI | 1101x218 | Saisie |
+| 25.2.1 | [Change vente (25.3)](#t4) [mockup](#ecran-t4) | MDI | 1106x90 | |
+| **25.3** | [**Affichage annulation** (25.3.1)](#t5) [mockup](#ecran-t5) | Modal | 312x64 | Consultation |
+| 25.3.1 | [Affichage annulation (25.3.2)](#t6) [mockup](#ecran-t6) | Modal | 312x64 | |
+| 25.3.2 | [Zoom des devises (25.3.7)](#t12) [mockup](#ecran-t12) | MDI | 366x154 | |
+| **25.4** | [**Creation change** (25.3.3)](#t7) | MDI | - | Creation |
+| 25.4.1 | [Creation change (25.3.3.1)](#t8) | MDI | - | |
+| 25.4.2 | [Creation change (25.3.4)](#t9) | MDI | - | |
+| 25.4.3 | [Creation change (25.3.5)](#t10) | MDI | - | |
+| 25.4.4 | [Creation change (25.3.6)](#t11) | MDI | - | |
+| **25.5** | [**Recup compteur** (25.3.8)](#t13) | MDI | - | Calcul |
+| 25.5.1 | [Calcul Flag (25.3.9)](#t14) | MDI | - | |
+| 25.5.2 | [OCA  Menu solde d'un compte (25.4)](#t16) [mockup](#ecran-t16) | MDI | 608x159 | |
+| 25.5.3 | [Reaffichage infos compte (25.7)](#t21) | MDI | - | |
+| **25.6** | [**Ecriture ds reedition_ Ticket** (25.3.10)](#t15) | - | - | Impression |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (8t)]
-    START --> B1
-    B2[Saisie (2t)]
-    B1 --> B2
-    B3[Consultation (3t)]
-    B2 --> B3
-    B4[Creation (5t)]
-    B3 --> B4
-    B5[Calcul (4t)]
-    B4 --> B5
-    B6[Impression (1t)]
-    B5 --> B6
-    WRITE[MAJ 7 tables]
-    B6 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[Scroll Change vente]
+    DECISION{V0 choix action}
+    PROCESS[Traitement]
+    UPDATE[MAJ 7 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -2101,10 +2201,10 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | W1 devise | W | Alpha |
-| D | >devise locale | W | Alpha |
-| G | W1 qte maxi devise | W | Numeric |
-| P | > Nouvelle caisse | W | Alpha |
+| EN | W1 devise | W | Alpha |
+| EQ | >devise locale | W | Alpha |
+| ET | W1 qte maxi devise | W | Numeric |
+| FC | > Nouvelle caisse | W | Alpha |
 
 </details>
 
@@ -2113,11 +2213,11 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| BB | Btn Creer Change | W | Alpha |
-| D | mor taux de change | W | Numeric |
-| E | W1 taux de change | W | Numeric |
-| J | W1 n° change | W | Numeric |
-| S | W0 n° de change | W | Numeric |
+| FO | Btn Creer Change | W | Alpha |
+| EQ | mor taux de change | W | Numeric |
+| ER | W1 taux de change | W | Numeric |
+| EW | W1 n° change | W | Numeric |
+| FF | W0 n° de change | W | Numeric |
 
 </details>
 
@@ -2126,8 +2226,8 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| I | > solde compte | W | Numeric |
-| J | > etat compte | W | Alpha |
+| EV | > solde compte | W | Numeric |
+| EW | > etat compte | W | Alpha |
 
 </details>
 
@@ -2136,7 +2236,7 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| R | W0 date comptable | W | Date |
+| FE | W0 date comptable | W | Date |
 
 </details>
 
@@ -2241,10 +2341,10 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| Y | V.Code retour go ? | Logical | - |
-| BC | V. titre | Alpha | - |
-| BD | V Date/Heure session | Numeric | - |
-| BE | V.Type operation | Alpha | - |
+| FL | V.Code retour go ? | Logical | - |
+| FP | V. titre | Alpha | - |
+| FQ | V Date/Heure session | Numeric | - |
+| FR | V.Type operation | Alpha | - |
 
 ### 11.2 Variables de travail (7)
 
@@ -2252,13 +2352,13 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| R | W0 date comptable | Date | - |
-| S | W0 n° de change | Numeric | - |
-| T | W0 date operation | Date | - |
-| U | W0 heure operation | Time | - |
-| V | W0 pas d'enreg | Alpha | - |
-| W | W0 user | Alpha | - |
-| X | W0 reseau | Alpha | [T20](#t20) |
+| FE | W0 date comptable | Date | - |
+| FF | W0 n° de change | Numeric | - |
+| FG | W0 date operation | Date | - |
+| FH | W0 heure operation | Time | - |
+| FI | W0 pas d'enreg | Alpha | - |
+| FJ | W0 user | Alpha | - |
+| FK | W0 reseau | Alpha | [25.6](#t20) |
 
 ### 11.3 Autres (20)
 
@@ -2266,63 +2366,63 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > societe | Alpha | 2x refs |
-| B | > code GM | Numeric | 1x refs |
-| C | > filiation | Numeric | 1x refs |
-| D | >devise locale | Alpha | - |
-| E | >nb decimale | Numeric | - |
-| F | >masque mtt | Alpha | - |
-| G | > code retour | Alpha | - |
-| H | > nom village | Alpha | - |
-| I | > solde compte | Numeric | - |
-| J | > etat compte | Alpha | - |
-| K | > date solde | Date | - |
-| L | > garanti O/N | Alpha | - |
-| M | > telephone | Alpha | - |
-| N | > fax | Alpha | - |
-| O | > Uni/Bi | Alpha | 2x refs |
-| P | > Nouvelle caisse | Alpha | - |
-| Q | V0 choix action | Alpha | 2x refs |
-| Z | Btn Quitter | Alpha | 1x refs |
-| BA | Btn Annuler | Alpha | - |
-| BB | Btn Creer Change | Alpha | - |
+| EN | > societe | Alpha | 2x refs |
+| EO | > code GM | Numeric | 1x refs |
+| EP | > filiation | Numeric | 1x refs |
+| EQ | >devise locale | Alpha | - |
+| ER | >nb decimale | Numeric | - |
+| ES | >masque mtt | Alpha | - |
+| ET | > code retour | Alpha | - |
+| EU | > nom village | Alpha | - |
+| EV | > solde compte | Numeric | - |
+| EW | > etat compte | Alpha | - |
+| EX | > date solde | Date | - |
+| EY | > garanti O/N | Alpha | - |
+| EZ | > telephone | Alpha | - |
+| FA | > fax | Alpha | - |
+| FB | > Uni/Bi | Alpha | 2x refs |
+| FC | > Nouvelle caisse | Alpha | - |
+| FD | V0 choix action | Alpha | 2x refs |
+| FM | Btn Quitter | Alpha | 1x refs |
+| FN | Btn Annuler | Alpha | - |
+| FO | Btn Creer Change | Alpha | - |
 
 <details>
 <summary>Toutes les 31 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| W0 | **R** | W0 date comptable | Date |
-| W0 | **S** | W0 n° de change | Numeric |
-| W0 | **T** | W0 date operation | Date |
-| W0 | **U** | W0 heure operation | Time |
-| W0 | **V** | W0 pas d'enreg | Alpha |
-| W0 | **W** | W0 user | Alpha |
-| W0 | **X** | W0 reseau | Alpha |
-| V. | **Y** | V.Code retour go ? | Logical |
-| V. | **BC** | V. titre | Alpha |
-| V. | **BD** | V Date/Heure session | Numeric |
-| V. | **BE** | V.Type operation | Alpha |
-| Autre | **A** | > societe | Alpha |
-| Autre | **B** | > code GM | Numeric |
-| Autre | **C** | > filiation | Numeric |
-| Autre | **D** | >devise locale | Alpha |
-| Autre | **E** | >nb decimale | Numeric |
-| Autre | **F** | >masque mtt | Alpha |
-| Autre | **G** | > code retour | Alpha |
-| Autre | **H** | > nom village | Alpha |
-| Autre | **I** | > solde compte | Numeric |
-| Autre | **J** | > etat compte | Alpha |
-| Autre | **K** | > date solde | Date |
-| Autre | **L** | > garanti O/N | Alpha |
-| Autre | **M** | > telephone | Alpha |
-| Autre | **N** | > fax | Alpha |
-| Autre | **O** | > Uni/Bi | Alpha |
-| Autre | **P** | > Nouvelle caisse | Alpha |
-| Autre | **Q** | V0 choix action | Alpha |
-| Autre | **Z** | Btn Quitter | Alpha |
-| Autre | **BA** | Btn Annuler | Alpha |
-| Autre | **BB** | Btn Creer Change | Alpha |
+| W0 | **FE** | W0 date comptable | Date |
+| W0 | **FF** | W0 n° de change | Numeric |
+| W0 | **FG** | W0 date operation | Date |
+| W0 | **FH** | W0 heure operation | Time |
+| W0 | **FI** | W0 pas d'enreg | Alpha |
+| W0 | **FJ** | W0 user | Alpha |
+| W0 | **FK** | W0 reseau | Alpha |
+| V. | **FL** | V.Code retour go ? | Logical |
+| V. | **FP** | V. titre | Alpha |
+| V. | **FQ** | V Date/Heure session | Numeric |
+| V. | **FR** | V.Type operation | Alpha |
+| Autre | **EN** | > societe | Alpha |
+| Autre | **EO** | > code GM | Numeric |
+| Autre | **EP** | > filiation | Numeric |
+| Autre | **EQ** | >devise locale | Alpha |
+| Autre | **ER** | >nb decimale | Numeric |
+| Autre | **ES** | >masque mtt | Alpha |
+| Autre | **ET** | > code retour | Alpha |
+| Autre | **EU** | > nom village | Alpha |
+| Autre | **EV** | > solde compte | Numeric |
+| Autre | **EW** | > etat compte | Alpha |
+| Autre | **EX** | > date solde | Date |
+| Autre | **EY** | > garanti O/N | Alpha |
+| Autre | **EZ** | > telephone | Alpha |
+| Autre | **FA** | > fax | Alpha |
+| Autre | **FB** | > Uni/Bi | Alpha |
+| Autre | **FC** | > Nouvelle caisse | Alpha |
+| Autre | **FD** | V0 choix action | Alpha |
+| Autre | **FM** | Btn Quitter | Alpha |
+| Autre | **FN** | Btn Annuler | Alpha |
+| Autre | **FO** | Btn Creer Change | Alpha |
 
 </details>
 
@@ -2334,14 +2434,31 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 12 | 9 |
+| NEGATION | 1 | 5 |
 | CONSTANTE | 7 | 0 |
-| CONDITION | 12 | 0 |
 | OTHER | 1 | 0 |
 | REFERENCE_VG | 2 | 0 |
-| NEGATION | 1 | 0 |
 | STRING | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (12 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 18 | `[BJ]=''` | [RM-007](#rm-RM-007) |
+| CONDITION | 16 | `> Uni/Bi [O]<>'B'` | [RM-006](#rm-RM-006) |
+| CONDITION | 22 | `[BJ]='V'` | [RM-009](#rm-RM-009) |
+| CONDITION | 21 | `[BJ]='A'` | [RM-008](#rm-RM-008) |
+| CONDITION | 14 | `> Uni/Bi [O]='B'` | [RM-005](#rm-RM-005) |
+| ... | | *+7 autres* | |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 23 | `NOT VG78` | [RM-010](#rm-RM-010) |
 
 #### CONSTANTE (7 expressions)
 
@@ -2353,17 +2470,6 @@ Variables diverses.
 | CONSTANTE | 6 | `'&Annuler'` | - |
 | CONSTANTE | 2 | `'C'` | - |
 | ... | | *+2 autres* | |
-
-#### CONDITION (12 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 19 | `> code GM [B]` | - |
-| CONDITION | 18 | `[AJ]=''` | - |
-| CONDITION | 16 | `> Uni/Bi [O]<>'B'` | - |
-| CONDITION | 22 | `[AJ]='V'` | - |
-| CONDITION | 21 | `[AJ]='A'` | - |
-| ... | | *+7 autres* | |
 
 #### OTHER (1 expressions)
 
@@ -2378,22 +2484,39 @@ Variables diverses.
 | REFERENCE_VG | 24 | `VG78` | - |
 | REFERENCE_VG | 12 | `VG1` | - |
 
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 23 | `NOT VG78` | - |
-
 #### STRING (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| STRING | 3 | `Trim ([AH])` | - |
+| STRING | 3 | `Trim ([BH])` | - |
 
 ### 12.3 Toutes les expressions (24)
 
 <details>
 <summary>Voir les 24 expressions</summary>
+
+#### CONDITION (12)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 1 | `> societe [A]=''` |
+| 9 | `V0 choix action [Q]<>'F'` |
+| 10 | `V0 choix action [Q]='F'` |
+| 13 | `W0 reseau [X]<>'R'` |
+| 14 | `> Uni/Bi [O]='B'` |
+| 16 | `> Uni/Bi [O]<>'B'` |
+| 18 | `[BJ]=''` |
+| 21 | `[BJ]='A'` |
+| 22 | `[BJ]='V'` |
+| 8 | `> societe [A]` |
+| 19 | `> code GM [B]` |
+| 20 | `> filiation [C]` |
+
+#### NEGATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 23 | `NOT VG78` |
 
 #### CONSTANTE (7)
 
@@ -2406,23 +2529,6 @@ Variables diverses.
 | 7 | `'&Creer change'` |
 | 15 | `'A'` |
 | 17 | `'F'` |
-
-#### CONDITION (12)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 1 | `> societe [A]=''` |
-| 8 | `> societe [A]` |
-| 9 | `V0 choix action [Q]<>'F'` |
-| 10 | `V0 choix action [Q]='F'` |
-| 13 | `W0 reseau [X]<>'R'` |
-| 14 | `> Uni/Bi [O]='B'` |
-| 16 | `> Uni/Bi [O]<>'B'` |
-| 18 | `[AJ]=''` |
-| 19 | `> code GM [B]` |
-| 20 | `> filiation [C]` |
-| 21 | `[AJ]='A'` |
-| 22 | `[AJ]='V'` |
 
 #### OTHER (1)
 
@@ -2437,17 +2543,11 @@ Variables diverses.
 | 12 | `VG1` |
 | 24 | `VG78` |
 
-#### NEGATION (1)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 23 | `NOT VG78` |
-
 #### STRING (1)
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 3 | `Trim ([AH])` |
+| 3 | `Trim ([BH])` |
 
 </details>
 
@@ -2558,7 +2658,7 @@ graph LR
 | Sous-programmes | 14 | Forte dependance |
 | Ecrans visibles | 5 | Quelques ecrans |
 | Code desactive | 0% (0 / 642) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 10 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -2618,4 +2718,4 @@ graph LR
 | [Print reçu change vente (IDE 24)](ADH-IDE-24.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:03*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:22*

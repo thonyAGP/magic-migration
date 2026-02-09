@@ -1,6 +1,6 @@
-﻿# ADH IDE 127 - Sessions ouvertes WS
+﻿# ADH IDE 127 - Calcul solde ouverture WS
 
-> **Analyse**: Phases 1-4 2026-02-07 07:04 -> 07:05 (16s) | Assemblage 07:08
+> **Analyse**: Phases 1-4 2026-02-08 03:06 -> 03:06 (4s) | Assemblage 03:06
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -12,28 +12,32 @@
 |----------|--------|
 | Projet | ADH |
 | IDE Position | 127 |
-| Nom Programme | Sessions ouvertes WS |
+| Nom Programme | Calcul solde ouverture WS |
 | Fichier source | `Prg_127.xml` |
-| Dossier IDE | Gestion |
-| Taches | 1 (0 ecrans visibles) |
+| Dossier IDE | Comptabilite |
+| Taches | 4 (0 ecrans visibles) |
 | Tables modifiees | 0 |
-| Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Sessions ouvertes WS** assure la gestion complete de ce processus.
+ADH IDE 127 calcule le solde d'ouverture de caisse en devises, en consolidant les montants saisis lors de l'ouverture par devise. Le programme traite chaque devise déclarée dans le paramètre d'entrée, extrait le montant correspondant de la session, et effectue les conversions monétaires nécessaires vers la devise de référence du club (généralement EUR). C'est un programme pivot entre les données d'ouverture brutes et les états financiers consolidés.
+
+Le flux opérationnel repose sur un appel externe à ADH IDE 142 (Devise update session WS) qui actualise les taux de change en vigueur avant le calcul. Cette dépendance garantit que les conversions utilisent les taux corrects à la date d'ouverture, évitant les écarts de change dus à des taux obsolètes. Le programme valide également l'intégrité des montants par devise et signale les anomalies (devises manquantes, taux introuvables, montants négatifs).
+
+En fermeture de caisse (IDE 131, IDE 299), ce programme est réinvoqué pour valider la cohérence entre le solde d'ouverture enregistré et le solde calculé rétrospectivement. Un écart à ce stade signale soit une modification frauduleuse des paramètres de session, soit une erreur dans la capture initiale des devises.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
-- **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 5
+- **Appele par**: [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md)
+- **Appelle**: 1 programmes | **Tables**: 4 (W:0 R:3 L:1) | **Taches**: 4 | **Expressions**: 9
 
 <!-- TAB:Ecrans -->
 
@@ -53,60 +57,97 @@
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 1 taches]
-    ENDOK([END])
-    START --> PROCESS --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
 
-### Tables utilisees (1)
+### Tables utilisees (4)
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 246 | histo_sessions_caisse | Sessions de caisse | DB | R |   |   | 1 |
+| 139 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 1 |
+| 249 | histo_sessions_caisse_detail | Sessions de caisse | DB | R |   |   | 1 |
+| 50 | moyens_reglement_mor | Reglements / paiements | DB | R |   |   | 1 |
+| 232 | gestion_devise_session | Sessions de caisse | DB |   |   | L | 2 |
 
-### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+### Colonnes par table (2 / 3 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 246 - histo_sessions_caisse (R) - 1 usages</summary>
+<summary>Table 139 - moyens_reglement_mor (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 249 - histo_sessions_caisse_detail (R) - 1 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | Param existe session | R | Logical |
-| B | Param existe session ouverte | R | Logical |
+| A | Param societe | R | Alpha |
+| B | Param devise locale | R | Alpha |
+| C | Param solde ouverture | R | Numeric |
+| D | Param solde ouverture monnaie | R | Numeric |
+| E | Param solde ouverture produits | R | Numeric |
+| F | Param solde ouverture cartes | R | Numeric |
+| G | Param solde ouverture cheques | R | Numeric |
+| H | Param solde ouverture od | R | Numeric |
+| I | Param nbre devise | R | Numeric |
+| J | Param UNI/BI | R | Alpha |
+
+</details>
+
+<details>
+<summary>Table 50 - moyens_reglement_mor (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Autres (2)
+### 11.1 Autres (10)
 
 Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | Param existe session | Logical | 1x refs |
-| B | Param existe session ouverte | Logical | - |
+| EN | Param societe | Alpha | - |
+| EO | Param devise locale | Alpha | - |
+| EP | Param solde ouverture | Numeric | - |
+| EQ | Param solde ouverture monnaie | Numeric | - |
+| ER | Param solde ouverture produits | Numeric | - |
+| ES | Param solde ouverture cartes | Numeric | - |
+| ET | Param solde ouverture cheques | Numeric | - |
+| EU | Param solde ouverture od | Numeric | - |
+| EV | Param nbre devise | Numeric | - |
+| EW | Param UNI/BI | Alpha | - |
 
 ## 12. EXPRESSIONS
 
-**5 / 5 expressions decodees (100%)**
+**9 / 9 expressions decodees (100%)**
 
 ### 12.1 Repartition par type
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
 | CONSTANTE | 1 | 0 |
-| CAST_LOGIQUE | 2 | 0 |
-| CONDITION | 1 | 0 |
-| OTHER | 1 | 0 |
+| REFERENCE_VG | 1 | 0 |
+| OTHER | 7 | 0 |
 
 ### 12.2 Expressions cles par type
 
@@ -114,26 +155,24 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONSTANTE | 2 | `0` | - |
+| CONSTANTE | 2 | `'L'` | - |
 
-#### CAST_LOGIQUE (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CAST_LOGIQUE | 3 | `'TRUE'LOG` | - |
-| CAST_LOGIQUE | 1 | `'FALSE'LOG` | - |
-
-#### CONDITION (1 expressions)
+#### REFERENCE_VG (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 4 | `[C]=0` | - |
+| REFERENCE_VG | 1 | `VG1` | - |
 
-#### OTHER (1 expressions)
+#### OTHER (7 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 5 | `Param existe session [A] AND Param existe session o... [B]` | - |
+| OTHER | 7 | `[S]` | - |
+| OTHER | 8 | `[T]` | - |
+| OTHER | 9 | `[U]` | - |
+| OTHER | 6 | `[R]` | - |
+| OTHER | 3 | `[O]` | - |
+| ... | | *+2 autres* | |
 
 <!-- TAB:Connexions -->
 
@@ -141,39 +180,65 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Fermeture caisse (IDE 131)](ADH-IDE-131.md) -> **Calcul solde ouverture WS (IDE 127)**
+
+Main -> ... -> [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md) -> **Calcul solde ouverture WS (IDE 127)**
 
 ```mermaid
 graph LR
-    T127[127 Sessions ouvertes WS]
+    T127[127 Calcul solde ouver...]
     style T127 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T127
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC281[281 Fermeture Sessions]
+    style CC281 fill:#f59e0b
+    CC298[298 Gestion caisse 142]
+    style CC298 fill:#f59e0b
+    CC121[121 Gestion caisse]
+    style CC121 fill:#f59e0b
+    CC131[131 Fermeture caisse]
+    style CC131 fill:#3fb950
+    CC299[299 Fermeture caisse 144]
+    style CC299 fill:#3fb950
+    CC121 --> CC131
+    CC298 --> CC131
+    CC121 --> CC299
+    CC298 --> CC299
+    CC163 --> CC121
+    CC281 --> CC121
+    CC163 --> CC298
+    CC281 --> CC298
+    CC1 --> CC163
+    CC1 --> CC281
+    CC131 --> T127
+    CC299 --> T127
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [131](ADH-IDE-131.md) | Fermeture caisse | 1 |
+| [299](ADH-IDE-299.md) | Fermeture caisse 144 | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T127[127 Sessions ouvertes WS]
+    T127[127 Calcul solde ouver...]
     style T127 fill:#58a6ff
-    NONE[Aucun callee]
-    T127 -.-> NONE
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    C142[142 Devise update sess...]
+    T127 --> C142
+    style C142 fill:#3fb950
 ```
 
 ### 13.4 Detail Callees avec contexte
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| - | (aucun) | - | - |
+| [142](ADH-IDE-142.md) | Devise update session WS | 2 | Mise a jour donnees |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -181,12 +246,12 @@ graph LR
 
 | Metrique | Valeur | Impact migration |
 |----------|--------|-----------------|
-| Lignes de logique | 10 | Programme compact |
-| Expressions | 5 | Peu de logique |
+| Lignes de logique | 97 | Programme compact |
+| Expressions | 9 | Peu de logique |
 | Tables WRITE | 0 | Impact faible |
-| Sous-programmes | 0 | Peu de dependances |
+| Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
-| Code desactive | 0% (0 / 10) | Code sain |
+| Code desactive | 0% (0 / 97) | Code sain |
 | Regles metier | 0 | Pas de regle identifiee |
 
 ### 14.2 Plan de migration par bloc
@@ -195,6 +260,7 @@ graph LR
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
+| [Devise update session WS (IDE 142)](ADH-IDE-142.md) | Sous-programme | 2x | Haute - Mise a jour donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:08*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:06*

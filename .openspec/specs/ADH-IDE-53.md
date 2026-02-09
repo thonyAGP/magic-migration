@@ -1,6 +1,6 @@
 ﻿# ADH IDE 53 - Extrait Easy Check Out à J+1
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (27s) | Assemblage 03:43
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 01:49 (22h05min) | Assemblage 01:49
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,14 +18,15 @@
 | Taches | 3 (1 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 3 |
+| Complexite | **BASSE** (score 5/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Extrait Easy Check Out à J+1** assure la gestion complete de ce processus.
+ADH IDE 53 gère l'extraction d'un fichier de synthèse comptable pour le processus Easy Check Out du lendemain. Le programme orchestre trois tâches : initialisation des contrôles, affichage d'une grille de recherche GM avec trois colonnes (compte, filiation, email), et traitement des notifications email à envoyer aux clients concernés. Les trois sous-programmes appelés (IDE 71, 76, 178) assurent l'impression de l'extrait détaillé par date, l'extraction par service, et l'enregistrement de l'adresse du village associé.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Le flux commence par récupérer la date du lendemain via une expression (AddDate sur le jour courant), filtre les résultats dans une table SQL spécifique aux recherches GM, puis produit les impressions documentaires nécessaires à l'archivage. Le programme ne modifie aucune table directement ; c'est un orchestrateur de lecture et d'exportation de données financières, typiquement exécuté en batch quotidien après fermeture de caisse.
 
-- **Traitement** (3 taches) : traitements metier divers
+L'interface minimale (617×271 DLU) affiche simplement les résultats sans saisie complexe, confirmant son rôle de visualiseur et d'exportateur de synthèse plutôt que de gestionnaire transactionnel. Les variables peu nombreuses (6 variables totales) reflètent la logique métier simple et déterministe du processus.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -58,7 +59,7 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -220,9 +221,9 @@ flowchart TD
 |----|-----|-------------|------|---|---|---|--------|
 | 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
 | 69 | initialisation___ini |  | DB | R |   |   | 1 |
-| 70 | date_comptable___dat |  | DB |   |   | L | 1 |
 | 372 | pv_budget |  | DB |   |   | L | 1 |
 | 911 | log_booker |  | DB |   |   | L | 1 |
+| 70 | date_comptable___dat |  | DB |   |   | L | 1 |
 
 ### Colonnes par table (1 / 2 tables avec colonnes identifiees)
 
@@ -248,7 +249,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| F | v.nom fichier PDF | Alpha | - |
+| ES | v.nom fichier PDF | Alpha | - |
 
 ### 11.2 Autres (5)
 
@@ -256,11 +257,11 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | V0.DateDepart | Alpha | - |
-| B | gmc_compte | Numeric | - |
-| C | gmc_filiation_compte | Numeric | - |
-| D | ema_email | Unicode | - |
-| E | solde du compte | Numeric | - |
+| EN | V0.DateDepart | Alpha | - |
+| EO | gmc_compte | Numeric | - |
+| EP | gmc_filiation_compte | Numeric | - |
+| EQ | ema_email | Unicode | - |
+| ER | solde du compte | Numeric | - |
 
 ## 12. EXPRESSIONS
 
@@ -367,4 +368,4 @@ graph LR
 | [Print extrait compte /Date (IDE 71)](ADH-IDE-71.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:43*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:49*

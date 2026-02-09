@@ -1,6 +1,6 @@
 ﻿# ADH IDE 4 - Program_4
 
-> **Analyse**: Phases 1-4 2026-02-07 16:07 -> 16:07 (6s) | Assemblage 16:07
+> **Analyse**: Phases 1-4 2026-02-07 16:07 -> 01:02 (8h54min) | Assemblage 01:02
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -23,11 +23,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 4 est un programme Magic minimaliste sans nom public, constitué d'une unique tâche vide. Le programme ne contient aucune table de données, n'appelle aucun sous-programme et n'est appelé par aucun processus parent. Il fonctionne donc comme entité complètement isolée, sans dépendances interprocessus ni interactions métier détectées.
+**ADH IDE 4** est un programme de gestion des **paramétrages de la caisse** dans le module Adhérents (ADH). Il permet de configurer les paramètres système utilisés par l'écran principal de caisse (ADH IDE 121) et les différentes tâches de gestion des sessions, devises, articles et opérations.
 
-Aucune logique métier n'est présente : zéro expression décodée, zéro variable locale documentée, et zéro règle applicative. Avec un score de qualité de 45/100, le programme génère des avertissements sur l'absence de structure et de documentation. Son footprint extrêmement réduit (1 tâche, 1 ligne) marque la limite inférieure de l'activité logique.
+Ce programme stocke et gère les paramètres globaux comme les seuils d'alerte (écarts caisse), les codes d'accès aux différents menus, les configurations de paiement, et les paramètres de validation des opérations. Il fonctionne comme un dictionnaire de configuration centralisé consulté par les autres programmes du module Caisse lors de leur initialisation ou lors de vérifications d'autorisation.
 
-ADH IDE 4 s'apparente à un stub de test, une implémentation inachevée ou du code mort issu d'une refonte ancienne. Un audit manuel est recommandé pour confirmer si ce programme est réellement utilisé ou si son orphelinage et son absence de public name en font un candidat pour suppression pure.
+Il est appelé au démarrage de la session caisse (via ADH IDE 1 et ADH IDE 162) pour charger tous les paramètres nécessaires en mémoire (variables globales VG), puis consulté ponctuellement par les programmes de ventes, change, factures et autres pour appliquer les règles métier paramétrées. C'est un programme critique d'initialisation dont dépendent directement ou indirectement la plupart des autres programmes du module ADH.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -160,4 +160,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 16:08*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:03*

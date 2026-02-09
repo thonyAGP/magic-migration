@@ -1,6 +1,6 @@
 ﻿# ADH IDE 46 - Affichage Version
 
-> **Analyse**: Phases 1-4 2026-02-07 06:47 -> 06:47 (17s) | Assemblage 13:18
+> **Analyse**: Phases 1-4 2026-02-07 06:47 -> 01:43 (18h56min) | Assemblage 01:43
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -23,11 +23,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme ADH IDE 46 "Affichage Version" est un utilitaire minimal destiné à informer l'utilisateur de la version logicielle en cours d'exécution. Il construit et affiche un message composé à partir de deux variables globales : la version du logiciel (VG14) et sa date ou période de déploiement (VG15), trimées pour éliminer les espaces inutiles, puis présente ce message dans une fenêtre modale avec un bouton de confirmation.
+ADH IDE 46 est un programme utilitaire de diagnostic système qui affiche la version logicielle de l'application Magic Unipaas. C'est un programme simple sans paramètres d'entrée, destiné à être appelé depuis le menu principal ou les outils de configuration pour permettre aux utilisateurs et administrateurs de vérifier la version en cours d'exécution. Le programme est typiquement utilisé dans les workflows de support technique ou de gestion de l'infrastructure.
 
-Avec une complexité minimale—une seule tâche, aucun appel entre programmes et trois expressions seulement—ce programme fonctionne de manière entièrement autonome. Il ne lit ni ne modifie aucune table de données et ne dépend d'aucun autre programme pour s'exécuter, ce qui en fait un composant très fiable et léger du système.
+Structurellement, ce programme comporte une tâche principale avec une logique minimale : il récupère les informations de version depuis les variables globales ou constantes du système, puis les affiche à l'utilisateur via une fenêtre de dialogue ou un message. Il ne modifie aucune donnée métier et n'accède généralement pas aux tables de la base de données, ce qui le classe dans la catégorie des programmes utilitaires de consultation pure.
 
-Son rôle principal est probablement d'apparaître lors d'une interaction "À propos" dans un menu ou au démarrage du logiciel, fournissant à l'utilisateur une transparence sur la version du système auquel il accède. Cette simplicité structurelle garantit aucun risque de régression lors de modifications du système et une maintenance triviale.
+Le programme est appelé depuis ADH IDE 162 (Menu caisse GM) ou d'autres menus d'administration. Il fait partie du framework de gestion de session et de configuration, aux côtés d'autres utilitaires comme les programmes d'édition, d'impression ou de paramétrage. Son rôle est instrumental mais non critique pour le fonctionnement du cœur métier de l'application de gestion de caisse.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -175,4 +175,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:21*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:44*

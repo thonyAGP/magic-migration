@@ -1,199 +1,239 @@
 ﻿# ADH IDE 224 - Alimentation Combos LIEU SEJ
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:11
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_220.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:26 -> 04:26 (4s) | Assemblage 04:26
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Alimentation Combos LIEU SEJ** est le **chargeur de listes deroulantes** qui **alimente les combos de selection des lieux de sejour a partir des tables d'import**.
-
-**Objectif metier** : Charger dynamiquement les listes deroulantes (combos) permettant de selectionner les lieux de sejour dans les formulaires. Ce programme lit les donnees des tables d'import pour alimenter les controles de selection utilisateur.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Systeme d'interface utilisateur |
-| **Quoi** | Chargement des listes de lieux de sejour pour les combos |
-| **Pourquoi** | Permettre la selection des lieux de sejour dans les formulaires |
-| **Declencheur** | Ouverture de formulaire ou rafraichissement de liste |
-| **Resultat** | Combo alimente avec les lieux de sejour disponibles |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 224 |
-| **Fichier XML** | `Prg_220.xml` |
-| **Description** | Alimentation Combos LIEU SEJ |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 10 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 224 |
+| Nom Programme | Alimentation Combos LIEU SEJ |
+| Fichier source | `Prg_224.xml` |
+| Dossier IDE | General |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 118 | tables_imports | cafil096_dat | READ | Lecture |
+**ADH IDE 224 - Alimentation Combos LIEU SEJ** gère l'alimentati des combinaisons de lieux de séjour. Ce programme traite les données de configuration pour les séjours, permettant la création et la maintenance des combos (combinaisons d'emplacements) disponibles dans le système de réservation. Il s'intègre dans la chaîne de gestion des référentiels d'accueil.
 
-**Resume**: 1 tables accedees dont **0 en ecriture**
+Le programme appelle **ADH IDE 223 - Suppression Carac interdit**, ce qui indique qu'il valide les caractères autorisés avant d'insérer ou de modifier les données dans les tables de combos. Cette dépendance suggère une logique de nettoyage ou de validation des entrées utilisateur.
 
-### 2.3 Parametres d'entree (0 parametres)
+En tant que programme de configuration (non visible dans l'interface caisse), ADH IDE 224 supporte les écrans de maintenance des tables de référence. Les données qu'il gère alimentent probablement les zooms et les listes déroulantes utilisées dans les formulaires de réservation et de gestion des séjours.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+3 regles identifiees:
+
+### Autres (3 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: [B]<>'N' AND [B] different de 'G'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[B]<>'N' AND [B]<>'G'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 1 : `[B]<>'N' AND [B]<>'G'` |
+| **Exemple** | Si [B]<>'N' AND [B]<>'G' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: Counter (0) egale 1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Counter (0)=1` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 3 : `Counter (0)=1` |
+| **Exemple** | Si Counter (0)=1 â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: Counter (0) different de 1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Counter (0)<>1` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 4 : `Counter (0)<>1` |
+| **Exemple** | Si Counter (0)<>1 â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 1 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 7
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{AND}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 10 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (1)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 118 | tables_imports |  | DB | R |   |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (0 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 118 - tables_imports (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+*(Programme sans variables locales mappees)*
+
+## 12. EXPRESSIONS
+
+**7 / 7 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 3 | 3 |
+| CONSTANTE | 1 | 0 |
+| CONCATENATION | 2 | 0 |
+| OTHER | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 4 | `Counter (0)<>1` | [RM-003](#rm-RM-003) |
+| CONDITION | 3 | `Counter (0)=1` | [RM-002](#rm-RM-002) |
+| CONDITION | 1 | `[B]<>'N' AND [B]<>'G'` | [RM-001](#rm-RM-001) |
+
+#### CONSTANTE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 2 | `'C'` | - |
+
+#### CONCATENATION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONCATENATION | 6 | `Trim ([E])&','&Left ([B],2)&' '&Left ([C],12)` | - |
+| CONCATENATION | 5 | `Left ([B],2)&' '&Left ([C],12)` | - |
+
+#### OTHER (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 7 | `[E]` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[224 Alimentation Co]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T224[224 Alimentation Combo...]
+    style T224 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T224
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[224 Alimentation Co]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T224[224 Alimentation Combo...]
+    style T224 fill:#58a6ff
+    C223[223 Suppression Carac ...]
+    T224 --> C223
+    style C223 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [223](ADH-IDE-223.md) | Suppression Carac interdit | 1 | Validation saisie |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 10 | Programme compact |
+| Expressions | 7 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 10) | Code sain |
+| Regles metier | 3 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 1 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Suppression Carac interdit (IDE 223)](ADH-IDE-223.md) | Sous-programme | 1x | Normale - Validation saisie |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:11 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:26*

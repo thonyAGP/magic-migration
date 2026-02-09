@@ -1,199 +1,279 @@
 ﻿# ADH IDE 214 - Menu impression des appels
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:10
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_210.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:18 -> 04:18 (4s) | Assemblage 04:18
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Menu impression des appels** est le **point d'entree des etats d'impression telephoniques** qui **propose les differentes options d'edition des appels telephoniques**.
-
-**Objectif metier** : Fournir un menu centralise pour acceder aux differentes impressions liees a la telephonie : releves d'appels par chambre, syntheses par periode, factures detaillees, statistiques d'utilisation. Ce programme est le hub de navigation pour les editions telephoniques.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur reception ou responsable telephonie |
-| **Quoi** | Menu de selection des etats d'impression telephoniques |
-| **Pourquoi** | Centraliser l'acces aux differents types d'editions telephoniques |
-| **Declencheur** | Acces depuis le menu telephonie ou demande d'impression |
-| **Resultat** | Affichage du menu avec les options d'impression disponibles |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (0 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 214 |
-| **Fichier XML** | `Prg_210.xml` |
-| **Description** | Menu impression des appels |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 32 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 214 |
+| Nom Programme | Menu impression des appels |
+| Fichier source | `Prg_214.xml` |
+| Dossier IDE | Navigation |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 4 |
+| Complexite | **BASSE** (score 5/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| - | Aucune table | - | - | - |
+ADH IDE 214 est un menu de gestion d'impression dédié aux appels téléphoniques. Ce programme orchestre le workflow complet d'impression en coordinant quatre sous-programmes critiques : récupération du titre (IDE 43), appel de la fonction d'impression principale (IDE 44), configuration du numéro de listing (IDE 181), et réinitialisation de l'imprimante (IDE 182). Le flux garantit que chaque appel est imprimé avec les paramètres corrects avant de réinitialiser l'état de l'imprimante.
 
-**Resume**: 0 tables accedees dont **0 en ecriture**
+La logique opérationnelle suit une séquence déterministe : d'abord récupérer le titre de l'appel depuis IDE 43, puis exécuter l'impression via IDE 44 avec ce titre, ensuite configurer le numéro de listing via IDE 181 pour les appels suivants, et enfin nettoyer l'état de l'imprimante via IDE 182. Cette orchestration assure que l'imprimante revient à un état cohérent après chaque cycle d'impression.
 
-### 2.3 Parametres d'entree (0 parametres)
+Ce programme fait partie de la couche présentation/impression du module ADH (Adhérents/Caisse) et supporte le sous-module **Telephone** (phases 8 du plan migration). Il est appelé depuis le menu principal ou depuis des workflows d'impression contextuels dans les écrans de gestion des lignes téléphoniques.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+2 regles identifiees:
+
+### Autres (2 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: W0 choix action [M] egale '1'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [M]='1'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EZ (W0 choix action) |
+| **Expression source** | Expression 6 : `W0 choix action [M]='1'` |
+| **Exemple** | Si W0 choix action [M]='1' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: W0 choix action [M] egale '2'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [M]='2'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EZ (W0 choix action) |
+| **Expression source** | Expression 7 : `W0 choix action [M]='2'` |
+| **Exemple** | Si W0 choix action [M]='2' â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 4 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 8
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{W0 choix action}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 32 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 0 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (0)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (0 / 0 tables avec colonnes identifiees)
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (12)
+
+Variables recues en parametre.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | P0 societe | Alpha | - |
+| EO | P0 code GM | Numeric | - |
+| EP | P0 filiation | Numeric | - |
+| EQ | P0 code autocom | Numeric | - |
+| ER | P0 masque montant | Alpha | - |
+| ES | P0 masque cumul | Alpha | - |
+| ET | P0 nbre decimales | Numeric | - |
+| EU | P0 nom village | Alpha | - |
+| EV | P0 telephone | Alpha | - |
+| EW | P0 fax | Alpha | - |
+| EX | P0 nom | Alpha | - |
+| EY | P0 prenom | Alpha | - |
+
+### 11.2 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| FA | v. titre ecran | Alpha | 1x session |
+
+### 11.3 Variables de travail (1)
+
+Variables internes au programme.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EZ | W0 choix action | Alpha | 2x calcul interne |
+
+## 12. EXPRESSIONS
+
+**8 / 8 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 2 | 2 |
+| CONSTANTE | 3 | 0 |
+| DATE | 1 | 0 |
+| REFERENCE_VG | 1 | 0 |
+| STRING | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 7 | `W0 choix action [M]='2'` | [RM-002](#rm-RM-002) |
+| CONDITION | 6 | `W0 choix action [M]='1'` | [RM-001](#rm-RM-001) |
+
+#### CONSTANTE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 8 | `34` | - |
+| CONSTANTE | 5 | `''` | - |
+| CONSTANTE | 2 | `78` | - |
+
+#### DATE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 3 | `Date ()` | - |
+
+#### REFERENCE_VG (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 4 | `VG2` | - |
+
+#### STRING (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| STRING | 1 | `Trim (v. titre ecran [N])` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[214 Menu impression]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T214[214 Menu impression de...]
+    style T214 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T214
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[214 Menu impression]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T214[214 Menu impression de...]
+    style T214 fill:#58a6ff
+    C43[43 Recuperation du titre]
+    T214 --> C43
+    style C43 fill:#3fb950
+    C44[44 Appel programme]
+    T214 --> C44
+    style C44 fill:#3fb950
+    C181[181 Set Listing Number]
+    T214 --> C181
+    style C181 fill:#3fb950
+    C182[182 Raz Current Printer]
+    T214 --> C182
+    style C182 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
+| [44](ADH-IDE-44.md) | Appel programme | 1 | Sous-programme |
+| [181](ADH-IDE-181.md) | Set Listing Number | 1 | Configuration impression |
+| [182](ADH-IDE-182.md) | Raz Current Printer | 1 | Impression ticket/document |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 32 | Programme compact |
+| Expressions | 8 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 4 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 32) | Code sain |
+| Regles metier | 2 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 0 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Set Listing Number (IDE 181)](ADH-IDE-181.md) | Sous-programme | 1x | Normale - Configuration impression |
+| [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
+| [Appel programme (IDE 44)](ADH-IDE-44.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:10 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:19*

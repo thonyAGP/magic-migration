@@ -1,200 +1,257 @@
 ﻿# ADH IDE 62 - Maj Hebergement Tempo
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:01
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_58.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 01:56 -> 01:56 (4s) | Assemblage 01:56
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Maj Hebergement Tempo** est le **sous-programme de gestion des sejours** qui **met a jour les donnees d'hebergement temporaire en lien avec les Gift Pass**.
-
-**Objectif metier** : Synchroniser les informations d'hebergement temporaire avec les affectations de Gift Pass et les mises a jour TPE. Ce traitement permet de maintenir la coherence entre le sejour du client, son hebergement temporaire et les avantages Gift Pass qui lui sont attribues.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Processus de gestion sejour (appele automatiquement) |
-| **Quoi** | Mise a jour des donnees d'hebergement temporaire |
-| **Pourquoi** | Synchroniser hebergement, Gift Pass et informations TPE |
-| **Declencheur** | Appel lors de modifications de sejour ou affectation Gift Pass |
-| **Resultat** | Donnees hebergement temporaire mises a jour |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (2 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 62 |
-| **Fichier XML** | `Prg_58.xml` |
-| **Description** | Maj Hebergement Tempo |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 25 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 62 |
+| Nom Programme | Maj Hebergement Tempo |
+| Fichier source | `Prg_62.xml` |
+| Dossier IDE | General |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 866 | maj_appli_tpe | maj_appli_tpe | READ | Lecture |
-| 868 | Affectation_Gift_Pass | affectation_gift_pass | LINK | Jointure |
+ADH IDE 62 - "Maj Hebergement Tempo" est un sous-programme de synchronisation des données d'hébergement temporaire lors du processus de facturation. Appelé depuis IDE 54 (Factures_Check_Out) et IDE 89 (Factures - Table Compta & Ventes), il gère la cohérence entre trois ensembles de données : les informations de séjour, les allocations Gift Pass, et les mises à jour TPE (terminal de paiement). Le programme ne prend aucun paramètre en entrée et opère en lecture seule sur deux tables : maj_appli_tpe et affectation_gift_pass, sans créer ni modifier de données.
 
-**Resume**: 2 tables accedees dont **0 en ecriture**
+La logique métier repose sur une **validation conditionnelle et une synchronisation des données** : vérifier que les règles de cohérence des données d'hébergement sont respectées, assurer que les allocations Gift Pass se reflètent dans les enregistrements temporaires d'hébergement, et coordonner les mises à jour d'hébergement avec les données de l'application TPE. Exécuté comme étape du workflow de génération de factures, IDE 62 garantit l'alignement des informations de séjour temporaire dans le système de facturation avant l'émission des factures.
 
-### 2.3 Parametres d'entree (0 parametres)
+Son intégration dans les deux contextes d'appel confirme son rôle de **support orchestration** pour la facturation professionnelle (IDE 54) et la gestion comptable-vente (IDE 89), plutôt qu'un composant effectuant des transactions métier critiques. Les deux appelants le classent comme une mise à jour de données "Normale" sans impact critique, reflétant sa fonction de synchronisation accessoire.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee dans les expressions)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md)
+- **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 8
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 25 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 2 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (2)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 866 | maj_appli_tpe |  | DB | R |   |   | 1 |
+| 868 | Affectation_Gift_Pass |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 866 - maj_appli_tpe (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | p.Societe | R | Unicode |
+| B | p.Compte | R | Numeric |
+| C | p.Filiation | R | Numeric |
+| D | p.NumFac | R | Numeric |
+| E | p.DateDebut | R | Date |
+| F | p.DateFin | R | Date |
+| G | V.Lien Hebergement_Pro | R | Logical |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (6)
+
+Variables recues du programme appelant ([Factures_Check_Out (IDE 54)](ADH-IDE-54.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | p.Societe | Unicode | 1x parametre entrant |
+| EO | p.Compte | Numeric | 1x parametre entrant |
+| EP | p.Filiation | Numeric | 1x parametre entrant |
+| EQ | p.NumFac | Numeric | 1x parametre entrant |
+| ER | p.DateDebut | Date | 1x parametre entrant |
+| ES | p.DateFin | Date | 1x parametre entrant |
+
+### 11.2 Variables de session (1)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| ET | V.Lien Hebergement_Pro | Logical | 1x session |
+
+## 12. EXPRESSIONS
+
+**8 / 8 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| DATE | 1 | 0 |
+| OTHER | 7 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### DATE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 1 | `Date()` | - |
+
+#### OTHER (7 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 6 | `p.DateDebut [E]` | - |
+| OTHER | 7 | `p.DateFin [F]` | - |
+| OTHER | 8 | `V.Lien Hebergement_Pro [G]` | - |
+| OTHER | 5 | `p.Filiation [C]` | - |
+| OTHER | 2 | `p.NumFac [D]` | - |
+| ... | | *+2 autres* | |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Factures_Check_Out (IDE 54)](ADH-IDE-54.md) -> **Maj Hebergement Tempo (IDE 62)**
+
+Main -> ... -> [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md) -> **Maj Hebergement Tempo (IDE 62)**
 
 ```mermaid
 graph LR
-    T[62 Maj Hebergement]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T62[62 Maj Hebergement Tempo]
+    style T62 fill:#58a6ff
+    CC55[55 Easy Check-Out === ...]
+    style CC55 fill:#8b5cf6
+    CC66[66 Lancement Solde ECO]
+    style CC66 fill:#8b5cf6
+    CC287[287 Solde Easy Check Out]
+    style CC287 fill:#f59e0b
+    CC313[313 Easy Check-Out ===...]
+    style CC313 fill:#f59e0b
+    CC283[283 Easy Check-Out ===...]
+    style CC283 fill:#f59e0b
+    CC64[64 Solde Easy Check Out]
+    style CC64 fill:#f59e0b
+    CC280[280 Lanceur Facture]
+    style CC280 fill:#f59e0b
+    CC54[54 Factures_Check_Out]
+    style CC54 fill:#3fb950
+    CC89[89 Factures Tble Compt...]
+    style CC89 fill:#3fb950
+    CC64 --> CC54
+    CC280 --> CC54
+    CC283 --> CC54
+    CC287 --> CC54
+    CC313 --> CC54
+    CC64 --> CC89
+    CC280 --> CC89
+    CC283 --> CC89
+    CC287 --> CC89
+    CC313 --> CC89
+    CC55 --> CC64
+    CC66 --> CC64
+    CC55 --> CC280
+    CC66 --> CC280
+    CC55 --> CC283
+    CC66 --> CC283
+    CC55 --> CC287
+    CC66 --> CC287
+    CC55 --> CC313
+    CC66 --> CC313
+    CC54 --> T62
+    CC89 --> T62
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [54](ADH-IDE-54.md) | Factures_Check_Out | 1 |
+| [89](ADH-IDE-89.md) | Factures (Tble Compta&Vent | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[62 Maj Hebergement]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T62[62 Maj Hebergement Tempo]
+    style T62 fill:#58a6ff
+    NONE[Aucun callee]
+    T62 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 25 | Programme compact |
+| Expressions | 8 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 25) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 2 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:01 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:58*

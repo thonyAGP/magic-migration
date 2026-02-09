@@ -1,6 +1,6 @@
 ﻿# ADH IDE 29 - Write histo Fus_Sep
 
-> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (27s) | Assemblage 13:04
+> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 01:23 (21h41min) | Assemblage 01:23
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 29** est un **enregistreur d'audit spécialisé** qui journalise les transitions d'état des opérations de fusion et séparation de comptes. Le programme écrit dans la table `histo_fusionseparation` un seul enregistrement pour chaque phase de traitement, capturant le type d'opération (DATEHEURE, UPDFIRST, UPDTABLE, UPDEND, FIN, REPRISE), la date/heure exacte, un numéro séquentiel et un flag de validation. Cette structure de logging immuable permet de tracer l'historique complet d'une opération de fusion ou séparation de compte.
+# ADH IDE 29 - Write histo Fus_Sep
 
-Le programme est appelé **6 fois** depuis IDE 27 (Separation) et **6 fois** depuis IDE 28 (Fusion), ce qui correspond aux 6 phases distinctes de la pipeline transactionnelle. Chaque invocation enregistre un point d'étape précis dans le workflow, formant une trace d'audit complète et ordonnée. Les codes d'état incluent un marqueur de reprise (REPRISE), ce qui suggère que le système peut interrompre et reprendre une opération de fusion/séparation longue, en s'appuyant sur cet historique pour valider la continuité.
+Programme utilitaire de journalisation des opérations de fusion/séparation de comptes. Appelé à la suite des programmes ADH IDE 27 (Separation) et ADH IDE 28 (Fusion) pour enregistrer l'historique dans la table `histo_fusionseparation`.
 
-Son intégration avec le formulaire **Printer Management** indique que ce programme peut également générer de la documentation ou des rapports d'audit destinés à l'impression, transformant les données de transition d'état brutes en artefacts utilisateur finaux. IDE 29 est donc le cœur du mécanisme d'audit transactionnel pour les opérations critiques de gestion de compte.
+Écrit un enregistrement d'historique contenant les paramètres de l'opération : sociétés source/cible, comptes, filiales, type d'opération (fusion ou séparation), date/heure, et identifiant utilisateur. La structure de l'enregistrement permet la traçabilité complète des mouvements de comptes et la réconciliation des données après restructurations.
+
+Logiquement situé en fin de chaîne de traitement pour capture de l'état final après validation des opérations principales. Aucun traitement métier complexe - rôle limité à la persistance des données d'audit pour reporting et conformité.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -43,7 +45,69 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Programme d'impression - logique technique sans conditions metier)*
+6 regles identifiees:
+
+### Autres (6 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: i type update [A] egale 'DATEHEURE'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i type update [A]='DATEHEURE'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (i type update) |
+| **Expression source** | Expression 2 : `i type update [A]='DATEHEURE'` |
+| **Exemple** | Si i type update [A]='DATEHEURE' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: i type update [A] egale 'UPDFIRST'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i type update [A]='UPDFIRST'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (i type update) |
+| **Expression source** | Expression 3 : `i type update [A]='UPDFIRST'` |
+| **Exemple** | Si i type update [A]='UPDFIRST' â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: i type update [A] egale 'UPDTABLE'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i type update [A]='UPDTABLE'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (i type update) |
+| **Expression source** | Expression 4 : `i type update [A]='UPDTABLE'` |
+| **Exemple** | Si i type update [A]='UPDTABLE' â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: i type update [A] egale 'UPDEND'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i type update [A]='UPDEND'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (i type update) |
+| **Expression source** | Expression 5 : `i type update [A]='UPDEND'` |
+| **Exemple** | Si i type update [A]='UPDEND' â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Condition: i type update [A] egale 'FIN'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i type update [A]='FIN'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (i type update) |
+| **Expression source** | Expression 6 : `i type update [A]='FIN'` |
+| **Exemple** | Si i type update [A]='FIN' â†’ Action si vrai |
+
+#### <a id="rm-RM-006"></a>[RM-006] Condition: i type update [A] egale 'REPRISE'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i type update [A]='REPRISE'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (i type update) |
+| **Expression source** | Expression 7 : `i type update [A]='REPRISE'` |
+| **Exemple** | Si i type update [A]='REPRISE' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -71,14 +135,21 @@ flowchart TD
     START([START])
     INIT[Init controles]
     SAISIE[Traitement principal]
+    DECISION{i type update}
+    PROCESS[Traitement]
     UPDATE[MAJ 1 tables]
     ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
@@ -117,11 +188,11 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | i type update | Alpha | 6x refs |
-| B | i chrono | Numeric | 1x refs |
-| C | i date F/E | Date | 1x refs |
-| D | i heure F/E | Time | 1x refs |
-| E | i Valide | Logical | 1x refs |
+| EN | i type update | Alpha | 6x refs |
+| EO | i chrono | Numeric | 1x refs |
+| EP | i date F/E | Date | 1x refs |
+| EQ | i heure F/E | Time | 1x refs |
+| ER | i Valide | Logical | 1x refs |
 
 ## 12. EXPRESSIONS
 
@@ -131,12 +202,23 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 6 | 6 |
 | DATE | 1 | 0 |
 | OTHER | 5 | 0 |
-| CONDITION | 6 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 5 | `i type update [A]='UPDEND'` | [RM-004](#rm-RM-004) |
+| CONDITION | 6 | `i type update [A]='FIN'` | [RM-005](#rm-RM-005) |
+| CONDITION | 7 | `i type update [A]='REPRISE'` | [RM-006](#rm-RM-006) |
+| CONDITION | 2 | `i type update [A]='DATEHEURE'` | [RM-001](#rm-RM-001) |
+| CONDITION | 3 | `i type update [A]='UPDFIRST'` | [RM-002](#rm-RM-002) |
+| ... | | *+1 autres* | |
 
 #### DATE (1 expressions)
 
@@ -153,17 +235,6 @@ Variables diverses.
 | OTHER | 9 | `i heure F/E [D]` | - |
 | OTHER | 1 | `i chrono [B]` | - |
 | OTHER | 8 | `i date F/E [C]` | - |
-
-#### CONDITION (6 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 5 | `i type update [A]='UPDEND'` | - |
-| CONDITION | 6 | `i type update [A]='FIN'` | - |
-| CONDITION | 7 | `i type update [A]='REPRISE'` | - |
-| CONDITION | 2 | `i type update [A]='DATEHEURE'` | - |
-| CONDITION | 3 | `i type update [A]='UPDFIRST'` | - |
-| ... | | *+1 autres* | |
 
 #### CAST_LOGIQUE (1 expressions)
 
@@ -239,7 +310,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 61) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 6 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -255,4 +326,4 @@ graph LR
 | histo_fusionseparation | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:06*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:24*

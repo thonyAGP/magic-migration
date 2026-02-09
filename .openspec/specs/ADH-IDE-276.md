@@ -1,199 +1,321 @@
 ﻿# ADH IDE 276 - Selection Vols
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:14
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_272.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:56 -> 04:57 (4s) | Assemblage 04:57
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Selection Vols** est le **selecteur des vols pour groupes d'arrivee/depart** qui **permet a l'operateur de consulter et selectionner un vol pour associer aux transferts adherents**.
-
-**Objectif metier** : Fournir une fenetre de selection pour afficher les vols disponibles (arrivees et departs) et permettre leur selection lors de la gestion des transferts aeriens des adherents, avec mise a jour de la table groupe_arr_dep.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Operateur accueil ou gestionnaire transferts |
-| **Quoi** | Fenetre de selection des vols arrivee/depart |
-| **Pourquoi** | Associer les adherents aux vols pour organiser les transferts aeroport |
-| **Declencheur** | Clic sur zoom depuis un champ vol ou transfert |
-| **Resultat** | Enregistrement du vol selectionne et retour au programme appelant |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 276 |
-| **Fichier XML** | `Prg_272.xml` |
-| **Description** | Selection Vols |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 48 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 276 |
+| Nom Programme | Selection Vols |
+| Fichier source | `Prg_276.xml` |
+| Dossier IDE | Consultation |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 134 | groupe_arr_dep___vol | cafil112_dat | WRITE | Ecriture |
+ADH IDE 276 est un programme de **sélection de vols** destiné aux opérateurs pour associer des vols aux groupes d'arrivée/départ. Il modifie directement la table `groupe_arr_dep___vol` (cafil112_dat) sans passer par d'autres programmes. Bien que techniquement simple (1 tâche, 48 lignes logique), il demeure critique car cette table est centrale dans l'écosystème : elle est accédée en lecture/écriture par 57 programmes répartis sur 8 projets Magic (ADH, PBG, PBP, WEL, PTR, PUG, Import, REF).
 
-**Resume**: 1 tables accedees dont **1 en ecriture**
+Le programme est **orphelin confirmé** selon les critères du Knowledge Base : aucun caller détecté, pas de PublicName visible, et non-présent dans les composants partagés (ECF). Cela suggère qu'il est appelé via un mécanisme dynamique (binding de formulaire ou ProgIdx avec résolution au runtime) plutôt que par un appel CallTask classique.
 
-### 2.3 Parametres d'entree (0 parametres)
+Tout changement du schéma de cafil112_dat nécessite une validation rigoureuse auprès des 30 programmes qui lisent cette table et des 3 programmes qui l'écrivent directement (ADH 276, Import 123, et 27 programmes PBG). L'import batch (IDE 123) représente un point d'attention particulier, car il popule cette même table depuis des fichiers de source externe (cafil112.txt).
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+4 regles identifiees:
+
+### Autres (4 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition toujours vraie (flag actif)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `p.i.Affiche VV [G]` |
+| **Si vrai** | 'TRUE'LOG |
+| **Si faux** | InStr ('VV1,VV2,VV3',Trim ([N]))=0) |
+| **Variables** | ET (p.i.Affiche VV) |
+| **Expression source** | Expression 13 : `IF (p.i.Affiche VV [G],'TRUE'LOG,InStr ('VV1,VV2,VV3',Trim (` |
+| **Exemple** | Si p.i.Affiche VV [G] â†’ 'TRUE'LOG. Sinon â†’ InStr ('VV1,VV2,VV3',Trim ([N]))=0) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: p.i.TypeVol Aller/Retour [C] egale 'A'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `p.i.TypeVol Aller/Retour [C]='A'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EP (p.i.TypeVol Aller/Retour) |
+| **Expression source** | Expression 18 : `p.i.TypeVol Aller/Retour [C]='A'` |
+| **Exemple** | Si p.i.TypeVol Aller/Retour [C]='A' â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: p.i.TypeVol Aller/Retour [C] egale 'R'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `p.i.TypeVol Aller/Retour [C]='R'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EP (p.i.TypeVol Aller/Retour) |
+| **Expression source** | Expression 19 : `p.i.TypeVol Aller/Retour [C]='R'` |
+| **Exemple** | Si p.i.TypeVol Aller/Retour [C]='R' â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Negation de [T] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT [T]` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 20 : `NOT [T]` |
+| **Exemple** | Si NOT [T] â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 20
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{Retour}
+    PROCESS[Traitement]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 48 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (1)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 134 | groupe_arr_dep___vol |  | DB |   | **W** |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 134 - groupe_arr_dep___vol (**W**) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | p.i.Date | W | Date |
+| B | p.o.Categorie/code vol | W | Alpha |
+| C | p.i.TypeVol Aller/Retour | W | Alpha |
+| D | p.i.Sélection min | W | Alpha |
+| E | p.i.Sélection max | W | Alpha |
+| F | p.o.Heure min | W | Numeric |
+| G | p.i.Affiche VV | W | Logical |
+| H | p.o.Ville | W | Unicode |
+| I | v. autorisation quitter | W | Logical |
+| J | bouton select | W | Alpha |
+| K | bouton quitter | W | Alpha |
+| L | v. titre | W | Alpha |
+| M | v.Au moins une ligne ? | W | Logical |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (8)
+
+Variables recues en parametre.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | p.i.Date | Date | 3x parametre entrant |
+| EO | p.o.Categorie/code vol | Alpha | 1x parametre entrant |
+| EP | p.i.TypeVol Aller/Retour | Alpha | 3x parametre entrant |
+| EQ | p.i.Sélection min | Alpha | 1x parametre entrant |
+| ER | p.i.Sélection max | Alpha | 1x parametre entrant |
+| ES | p.o.Heure min | Numeric | - |
+| ET | p.i.Affiche VV | Logical | 1x parametre entrant |
+| EU | p.o.Ville | Unicode | - |
+
+### 11.2 Variables de session (3)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EV | v. autorisation quitter | Logical | - |
+| EY | v. titre | Alpha | - |
+| EZ | v.Au moins une ligne ? | Logical | 1x session |
+
+### 11.3 Autres (2)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EW | bouton select | Alpha | - |
+| EX | bouton quitter | Alpha | - |
+
+## 12. EXPRESSIONS
+
+**20 / 20 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CAST_LOGIQUE | 2 | 5 |
+| CONDITION | 2 | 2 |
+| NEGATION | 1 | 5 |
+| CONSTANTE | 4 | 0 |
+| FORMAT | 2 | 0 |
+| OTHER | 9 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CAST_LOGIQUE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 13 | `IF (p.i.Affiche VV [G],'TRUE'LOG,InStr ('VV1,VV2,VV3',Trim ([N]))=0)` | [RM-001](#rm-RM-001) |
+| CAST_LOGIQUE | 10 | `'TRUE'LOG` | - |
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 19 | `p.i.TypeVol Aller/Retour [C]='R'` | [RM-003](#rm-RM-003) |
+| CONDITION | 18 | `p.i.TypeVol Aller/Retour [C]='A'` | [RM-002](#rm-RM-002) |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 20 | `NOT [T]` | [RM-004](#rm-RM-004) |
+
+#### CONSTANTE (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 11 | `''` | - |
+| CONSTANTE | 12 | `0` | - |
+| CONSTANTE | 3 | `'&Selectionner'` | - |
+| CONSTANTE | 4 | `'&Quitter'` | - |
+
+#### FORMAT (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 17 | `StrBuild(MlsTrans('Aucun vol retour n''est défini au @1@.'), DStr(p.i.Date [A], '##/##/####'))` | - |
+| FORMAT | 16 | `StrBuild(MlsTrans('Aucun vol aller n''est défini au @1@.'), DStr(p.i.Date [A], '##/##/####'))` | - |
+
+#### OTHER (9 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 9 | `p.o.Categorie/code vol [B]` | - |
+| OTHER | 8 | `p.i.Sélection max [E]` | - |
+| OTHER | 15 | `v.Au moins une ligne ? [M]` | - |
+| OTHER | 14 | `[P]` | - |
+| OTHER | 7 | `p.i.Sélection min [D]` | - |
+| ... | | *+4 autres* | |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[276 Selection Vols]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T276[276 Selection Vols]
+    style T276 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T276
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[276 Selection Vols]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T276[276 Selection Vols]
+    style T276 fill:#58a6ff
+    NONE[Aucun callee]
+    T276 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 48 | Programme compact |
+| Expressions | 20 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 48) | Code sain |
+| Regles metier | 4 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 1 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| groupe_arr_dep___vol | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:14 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:59*

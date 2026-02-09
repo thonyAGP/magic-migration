@@ -1,6 +1,6 @@
 ﻿# ADH IDE 6 - Suppression Carac interdit
 
-> **Analyse**: Phases 1-4 2026-02-07 03:37 -> 03:38 (32s) | Assemblage 12:44
+> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 01:04 (21h25min) | Assemblage 01:04
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme **ADH IDE 6 - "Suppression Carac interdit"** est un utilitaire de normalisation des codes de nationalité. Son rôle exclusif est de nettoyer les tirets ('-') présents dans les chaînes de caractères en les remplaçant par des tirets bas ('_'). Appelé par le programme ADH IDE 5 "Alimentation Combos NATION P", il garantit que les codes de nationalité respectent un format standardisé requis par le système de réservation PMS. Le programme n'accède à aucune table de données — c'est une transformation purement en mémoire sur une variable locale (A) contenant la concaténation des nationalités.
+# ADH IDE 6 - Suppression Carac Interdit
 
-La logique repose sur trois expressions : une première vérifie l'absence de tiret (aucune transformation nécessaire), une deuxième détecte la présence du caractère, et la troisième effectue la substitution en découpant la chaîne avant et après le tiret, en insérant un tiret bas. Cette opération est critique pour maintenir la cohérence des données de nationalité à travers la chaîne de traitement du système, sans risque de perte d'information puisque seul le caractère séparateur est transformé.
+Programme utilitaire qui valide et nettoie les caractères interdits dans les données avant leur insertion en base. Détecte les caractères spéciaux non autorisés (accents mal formés, caractères de contrôle, symboles réservés) et les supprime ou les remplace selon les règles de validation définies.
 
-**Dépendance métier :** Le programme est terminal (aucun appelé) et fait partie intégrante du flux d'alimentation des combos de nationalité. Son remplacement ou suppression affecterait directement la cohérence des données de réservation en aval, ce qui le rend transversalement important malgré sa simplicité apparente.
+Appelé directement depuis **ADH IDE 5 - Alimentation Combos NATION P** lors de la saisi/modification de données dans les champs texte critiques. Assure la conformité des données avant persistance en base pour éviter les corruption ou les erreurs de traitement en aval.
+
+Fait partie des utilitaires partagés **ADH.ecf** (composant **Sessions_Reprises**) et est potentiellement appelé depuis d'autres projets (PBP, PVE) qui nécessitent une validation stricte des caractères saisis.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -43,7 +45,29 @@ Traitements internes.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+2 regles identifiees:
+
+### Autres (2 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: InStr (< v. combo [A],'-') egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `InStr (< v. combo [A],'-')=0` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (< v. combo) |
+| **Expression source** | Expression 1 : `InStr (< v. combo [A],'-')=0` |
+| **Exemple** | Si InStr (< v. combo [A],'-')=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: InStr (< v. combo [A],'-') different de 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `InStr (< v. combo [A],'-')<>0` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (< v. combo) |
+| **Expression source** | Expression 2 : `InStr (< v. combo [A],'-')<>0` |
+| **Exemple** | Si InStr (< v. combo [A],'-')<>0 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -71,13 +95,20 @@ flowchart TD
     START([START])
     INIT[Init controles]
     SAISIE[Traitement principal]
+    DECISION{v. combo}
+    PROCESS[Traitement]
     ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
@@ -106,23 +137,23 @@ flowchart TD
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 2 | 0 |
 | CONCATENATION | 1 | 0 |
+| CONDITION | 2 | 2 |
 
 ### 12.2 Expressions cles par type
-
-#### CONDITION (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 2 | `InStr (< v. combo [A],'-')<>0` | - |
-| CONDITION | 1 | `InStr (< v. combo [A],'-')=0` | - |
 
 #### CONCATENATION (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CONCATENATION | 3 | `Left (< v. combo [A],InStr (< v. combo [A],'-')-1)&'_'&Right (< v. combo [A],Len (< v. combo [A])-InStr (< v. combo [A],'-'))` | - |
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 2 | `InStr (< v. combo [A],'-')<>0` | [RM-002](#rm-RM-002) |
+| CONDITION | 1 | `InStr (< v. combo [A],'-')=0` | [RM-001](#rm-RM-001) |
 
 <!-- TAB:Connexions -->
 
@@ -179,7 +210,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 3) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 2 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -194,4 +225,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:46*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:04*

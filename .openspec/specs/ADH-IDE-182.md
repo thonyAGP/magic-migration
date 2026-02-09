@@ -1,6 +1,6 @@
 ﻿# ADH IDE 182 - Raz Current Printer
 
-> **Analyse**: Phases 1-4 2026-02-07 07:26 -> 07:26 (16s) | Assemblage 07:26
+> **Analyse**: Phases 1-4 2026-02-08 04:03 -> 04:03 (4s) | Assemblage 04:03
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,20 +14,31 @@
 | IDE Position | 182 |
 | Nom Programme | Raz Current Printer |
 | Fichier source | `Prg_182.xml` |
-| Dossier IDE | Printer |
+| Dossier IDE | Impression |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Raz Current Printer** assure la gestion complete de ce processus, accessible depuis [Menu impression des appels (IDE 214)](ADH-IDE-214.md).
+**Objectif et contexte**
+
+ADH IDE 182 - Raz Current Printer est un utilitaire de gestion d'impression appelé depuis le menu impression des appels (ADH IDE 214). Son rôle est de reinitialiser l'imprimante courante en réinitialisant l'état interne du gestionnaire d'impression, typiquement après une opération d'impression terminée ou en cas de dysfonctionnement.
+
+**Fonctionnalité principale**
+
+Le programme réinitialise les variables d'état de l'imprimante (numéro de ligne courant, position curseur, buffer d'impression) pour préparer une nouvelle session d'impression. Cette operation est généralement appelée après un appel à ADH IDE 229 (Print Ticket) ou ADH IDE 180 (Set List Number) pour nettoyer les ressources et eviter les conflits d'impression dans les appels successifs.
+
+**Intégration dans le flux**
+
+Situé dans la chaîne impression (ADH IDE 178 Get Printer → ADH IDE 180 Set List Number → ADH IDE 229 Print Ticket → ADH IDE 181 Raz Current Printer), ce programme fait partie des 3 utilitaires de gestion d'impression de la caisse. Son execution est typiquement automatique après chaque ticket imprimé, garantissant que l'imprimante est dans un état cohérent pour la prochaine operation.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -165,4 +176,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:26*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:04*

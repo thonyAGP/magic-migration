@@ -1,6 +1,6 @@
 ﻿# ADH IDE 22 - Calcul equivalent
 
-> **Analyse**: Phases 1-4 2026-02-07 06:38 -> 06:39 (16s) | Assemblage 13:03
+> **Analyse**: Phases 1-4 2026-02-07 06:39 -> 01:21 (18h42min) | Assemblage 01:21
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,7 +19,6 @@
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 0/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
@@ -39,11 +38,63 @@ Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+5 regles identifiees:
+
+### Autres (5 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: > Type operation [J]='A' AND > Uni/BI [B] different de 'B'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> Type operation [J]='A' AND > Uni/BI [B]<>'B'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EO (> Uni/BI), EW (> Type operation) |
+| **Expression source** | Expression 12 : `> Type operation [J]='A' AND > Uni/BI [B]<>'B'` |
+| **Exemple** | Si > Type operation [J]='A' AND > Uni/BI [B]<>'B' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: > Type operation [J]='A' AND > Uni/BI [B] egale 'B'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> Type operation [J]='A' AND > Uni/BI [B]='B'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EO (> Uni/BI), EW (> Type operation) |
+| **Expression source** | Expression 13 : `> Type operation [J]='A' AND > Uni/BI [B]='B'` |
+| **Exemple** | Si > Type operation [J]='A' AND > Uni/BI [B]='B' â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: > Uni/BI [B] different de 'B'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> Uni/BI [B]<>'B'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EO (> Uni/BI) |
+| **Expression source** | Expression 14 : `> Uni/BI [B]<>'B'` |
+| **Exemple** | Si > Uni/BI [B]<>'B' â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: > Uni/BI [B] egale 'B'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> Uni/BI [B]='B'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EO (> Uni/BI) |
+| **Expression source** | Expression 15 : `> Uni/BI [B]='B'` |
+| **Exemple** | Si > Uni/BI [B]='B' â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Condition: > Type operation [J] different de 'A'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> Type operation [J]<>'A'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EW (> Type operation) |
+| **Expression source** | Expression 16 : `> Type operation [J]<>'A'` |
+| **Exemple** | Si > Type operation [J]<>'A' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Print reçu change achat (IDE 23)](ADH-IDE-23.md), [Print reçu change vente (IDE 24)](ADH-IDE-24.md), [Tableau recap fermeture (IDE 154)](ADH-IDE-154.md)
 - **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 16
 
 <!-- TAB:Ecrans -->
@@ -66,13 +117,20 @@ flowchart TD
     START([START])
     INIT[Init controles]
     SAISIE[Traitement principal]
+    DECISION{Variable B}
+    PROCESS[Traitement]
     ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
@@ -118,17 +176,17 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > Societe | Alpha | 1x refs |
-| B | > Uni/BI | Alpha | 4x refs |
-| C | > devise locale | Alpha | - |
-| D | > nombre de decimal | Numeric | 3x refs |
-| E | > Devise | Alpha | 1x refs |
-| F | < cdrt devise in | Logical | - |
-| G | > mode de paiement | Alpha | 1x refs |
-| H | > quantite | Numeric | 3x refs |
-| I | < Equivalent | Numeric | - |
-| J | > Type operation | Alpha | 4x refs |
-| K | > Type de devise | Numeric | 1x refs |
+| EN | > Societe | Alpha | 1x refs |
+| EO | > Uni/BI | Alpha | 4x refs |
+| EP | > devise locale | Alpha | - |
+| EQ | > nombre de decimal | Numeric | 3x refs |
+| ER | > Devise | Alpha | 1x refs |
+| ES | < cdrt devise in | Logical | - |
+| ET | > mode de paiement | Alpha | 1x refs |
+| EU | > quantite | Numeric | 3x refs |
+| EV | < Equivalent | Numeric | - |
+| EW | > Type operation | Alpha | 4x refs |
+| EX | > Type de devise | Numeric | 1x refs |
 
 ## 12. EXPRESSIONS
 
@@ -138,7 +196,7 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 13 | 0 |
+| CONDITION | 13 | 5 |
 | CONSTANTE | 2 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
 
@@ -148,11 +206,11 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 13 | `> Type operation [J]='A' AND > Uni/BI [B]='B'` | - |
-| CONDITION | 12 | `> Type operation [J]='A' AND > Uni/BI [B]<>'B'` | - |
-| CONDITION | 11 | `> Type de devise [K]` | - |
-| CONDITION | 16 | `> Type operation [J]<>'A'` | - |
-| CONDITION | 15 | `> Uni/BI [B]='B'` | - |
+| CONDITION | 13 | `> Type operation [J]='A' AND > Uni/BI [B]='B'` | [RM-002](#rm-RM-002) |
+| CONDITION | 14 | `> Uni/BI [B]<>'B'` | [RM-003](#rm-RM-003) |
+| CONDITION | 16 | `> Type operation [J]<>'A'` | [RM-005](#rm-RM-005) |
+| CONDITION | 12 | `> Type operation [J]='A' AND > Uni/BI [B]<>'B'` | [RM-001](#rm-RM-001) |
+| CONDITION | 15 | `> Uni/BI [B]='B'` | [RM-004](#rm-RM-004) |
 | ... | | *+8 autres* | |
 
 #### CONSTANTE (2 expressions)
@@ -174,22 +232,72 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Print reçu change achat (IDE 23)](ADH-IDE-23.md) -> **Calcul equivalent (IDE 22)**
+
+Main -> ... -> [Print reçu change vente (IDE 24)](ADH-IDE-24.md) -> **Calcul equivalent (IDE 22)**
+
+Main -> ... -> [Tableau recap fermeture (IDE 154)](ADH-IDE-154.md) -> **Calcul equivalent (IDE 22)**
 
 ```mermaid
 graph LR
     T22[22 Calcul equivalent]
     style T22 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T22
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#8b5cf6
+    CC131[131 Fermeture caisse]
+    style CC131 fill:#f59e0b
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#f59e0b
+    CC299[299 Fermeture caisse 144]
+    style CC299 fill:#f59e0b
+    CC151[151 Reimpression ticke...]
+    style CC151 fill:#f59e0b
+    CC25[25 Change GM]
+    style CC25 fill:#f59e0b
+    CC174[174 VersementRetrait]
+    style CC174 fill:#f59e0b
+    CC23[23 Print reçu change a...]
+    style CC23 fill:#3fb950
+    CC24[24 Print reçu change v...]
+    style CC24 fill:#3fb950
+    CC154[154 Tableau recap ferm...]
+    style CC154 fill:#3fb950
+    CC25 --> CC23
+    CC174 --> CC23
+    CC193 --> CC23
+    CC131 --> CC23
+    CC151 --> CC23
+    CC299 --> CC23
+    CC25 --> CC24
+    CC174 --> CC24
+    CC193 --> CC24
+    CC131 --> CC24
+    CC151 --> CC24
+    CC299 --> CC24
+    CC25 --> CC154
+    CC174 --> CC154
+    CC193 --> CC154
+    CC131 --> CC154
+    CC151 --> CC154
+    CC299 --> CC154
+    CC163 --> CC25
+    CC163 --> CC174
+    CC163 --> CC193
+    CC163 --> CC131
+    CC163 --> CC151
+    CC163 --> CC299
+    CC23 --> T22
+    CC24 --> T22
+    CC154 --> T22
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [23](ADH-IDE-23.md) | Print reçu change achat | 7 |
+| [24](ADH-IDE-24.md) | Print reçu change vente | 7 |
+| [154](ADH-IDE-154.md) | Tableau recap fermeture | 6 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -220,7 +328,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 34) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 5 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -230,4 +338,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:03*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:21*

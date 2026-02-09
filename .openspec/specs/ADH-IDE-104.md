@@ -1,6 +1,6 @@
 ﻿# ADH IDE 104 - Maj Hebergement Tempo V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 03:48 (27s) | Assemblage 15:20
+> **Analyse**: Phases 1-4 2026-02-07 03:48 -> 02:46 (22h57min) | Assemblage 02:46
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme ADH IDE 104 est un utilitaire léger de mise à jour des hébergements temporaires, appelé depuis le processus de facturation client (IDE 97). Il synchronise les références d'hébergement court terme dans la base de données après la génération d'une facture, en vérifiant la cohérence avec les cartes cadeau et les liens hébergement professionnel. Son rôle est crucial pour maintenir la traçabilité entre les factures émises et les situations de logement provisoire des clients.
+ADH IDE 104 est un utilitaire léger de synchronisation des hébergements temporaires intégré au flux de facturation. Appelé exclusivement par ADH IDE 97 (Factures Compta&Vent) lors de la génération d'une facture client, ce programme opère en mode lecture seule sans modification directe des données. Son rôle est de maintenir la traçabilité entre les factures émises et les situations de logement provisoire des clients, en effectuant des vérifications de cohérence entre les références d'hébergement court terme et les configurations de cartes cadeau.
 
-Le programme opère en lecture seule, sans modification directe des données. Il reçoit en paramètres l'identifiant client (société, compte, filiation), le numéro de facture, les dates de la période d'hébergement et des drapeaux de traitement. La logique se limite à 27 lignes sans condition : extraction des données de configuration TPE, vérification du lien avec la table d'affectation des cartes cadeau, et retour des informations mises à jour au programme appelant.
+Le programme contient une unique tâche de 27 lignes sans branchement conditionnel. Le flux reçoit 7 paramètres d'entrée depuis IDE 97 : identifiant client (Société A, Compte B, Filiation C), numéro de facture D, dates d'hébergement (E DateDebut, F DateFin) et drapeau de traitement G. La logique d'exécution est simple : initialisation du contrôle, extraction des données de configuration TPE depuis Table 866 (maj_appli_tpe), vérification du lien avec Table 868 (Affectation_Gift_Pass) pour valider les cartes cadeau associées, puis retour de la variable session H au programme appelant.
 
-Conçu pour les situations où un client est en transition (changement de statut, transfert de filiale, hébergement provisoire), ce programme garantit que chaque facture générée maintient la cohérence des données d'hébergement temporaire. C'est un maillon discret mais essentiel de la chaîne de facturation, assurant que les opérations comptables reflètent correctement l'état réel du logement des clients au moment de la facturation.
+Le programme accède à seulement 2 tables en lecture : Table 866 (maj_appli_tpe) pour récupérer les configurations d'application TPE, et Table 868 (Affectation_Gift_Pass) en jointure pour vérifier les allocations de cartes cadeau. Aucune table n'est modifiée. Les expressions du programme sont majoritairement des références de variables simples plus une seule expression DATE(). Ce programme terminal n'appelle aucun autre programme, minimalisant ainsi le couplage et l'impact en cascade des modifications. Complexité très basse, code sain sans lignes désactivées.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -40,7 +40,7 @@ Traitements internes.
 
 **Role** : Traitement : Maj Hebergement Tempo V3.
 **Ecran** : 672 x 0 DLU | [Voir mockup](#ecran-t1)
-**Variables liees** : H (V.Lien Hebergement_Pro)
+**Variables liees** : EU (V.Lien Hebergement_Pro)
 
 
 ## 5. REGLES METIER
@@ -122,13 +122,13 @@ Variables recues du programme appelant ([Factures (Tble Compta&Vent) V3 (IDE 97)
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | p.Societe | Unicode | 1x parametre entrant |
-| B | p.Compte | Numeric | 1x parametre entrant |
-| C | p.Filiation | Numeric | 1x parametre entrant |
-| D | p.NumFac | Numeric | 1x parametre entrant |
-| E | p.DateDebut | Date | 1x parametre entrant |
-| F | p.DateFin | Date | 1x parametre entrant |
-| G | p.Flague | Logical | 1x parametre entrant |
+| EN | p.Societe | Unicode | 1x parametre entrant |
+| EO | p.Compte | Numeric | 1x parametre entrant |
+| EP | p.Filiation | Numeric | 1x parametre entrant |
+| EQ | p.NumFac | Numeric | 1x parametre entrant |
+| ER | p.DateDebut | Date | 1x parametre entrant |
+| ES | p.DateFin | Date | 1x parametre entrant |
+| ET | p.Flague | Logical | 1x parametre entrant |
 
 ### 11.2 Variables de session (1)
 
@@ -136,7 +136,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| H | V.Lien Hebergement_Pro | Logical | 1x session |
+| EU | V.Lien Hebergement_Pro | Logical | 1x session |
 
 ## 12. EXPRESSIONS
 
@@ -254,4 +254,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 15:22*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:47*

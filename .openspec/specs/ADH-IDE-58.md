@@ -1,199 +1,288 @@
 ﻿# ADH IDE 58 - Incremente N° de Facture
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:01
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_54.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 01:52 -> 01:52 (4s) | Assemblage 01:52
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Incremente N de Facture** est l'**utilitaire de generation sequentielle des numeros de factures** qui permet d'**obtenir le prochain numero de facture disponible pour un compteur donne**.
-
-**Objectif metier** : Gerer la numerotation sequentielle des factures en incrementant le compteur specifie et en retournant le nouveau numero. Ce programme garantit l'unicite et la sequence des numeros de factures conformement aux exigences legales et comptables.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Systeme (appel automatique depuis programmes de facturation) |
-| **Quoi** | Incrementation du compteur de factures et retour du nouveau numero |
-| **Pourquoi** | Garantir la numerotation sequentielle et unique des factures |
-| **Declencheur** | Appel parametrise avec le code compteur a incrementer |
-| **Resultat** | Nouveau numero de facture genere et compteur mis a jour |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (1 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 58 |
-| **Fichier XML** | `Prg_54.xml` |
-| **Description** | Incremente N° de Facture |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 13 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 58 |
+| Nom Programme | Incremente N° de Facture |
+| Fichier source | `Prg_58.xml` |
+| Dossier IDE | Facturation |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 1 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 7/100) |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 68 | compteurs________cpt | cafil046_dat | WRITE | Ecriture |
+ADH IDE 58 - Incremente N° de Facture est un programme utilitaire de gestion des compteurs. Il modifie la table `compteurs________cpt` pour incrémenter le numéro de facture stocké dans cette table de référence. Ce programme fonctionne comme un service transactionnel critique, assurant que chaque nouvelle facture reçoit un numéro séquentiel unique et non réutilisable.
 
-**Resume**: 1 tables accedees dont **1 en ecriture**
+Le programme est appelé par trois points d'entrée principaux liés au workflow de facturation : ADH IDE 54 (Factures_Check_Out - facturation easy checkout), ADH IDE 89 (Table Compta&Vent - interface facturation comptable), et ADH IDE 97 (Factures V3 - version améliorée du module facturation). Cette multiplicité d'appels reflète l'importance du compteur dans différents contextes de vente et de gestion comptable.
 
-### 2.3 Parametres d'entree (0 parametres)
+L'opération d'incrémentation sur la table `compteurs________cpt` est une opération atomique typique dans les systèmes comptables, garantissant l'intégrité des numérotations fiscales. Le programme maintient la séquence des factures comme artefact de traçabilité critique pour l'audit et la conformité réglementaire, en particulier dans un contexte de gestion hôtelière où les numéros de facture sont soumis à des obligations légales strictes.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+2 regles identifiees:
+
+### Autres (2 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Valeur par defaut si P.i.Code compteur [B] est vide
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P.i.Code compteur [B]=''` |
+| **Si vrai** | 'F'&DStr(Date() |
+| **Si faux** | 'YYMM'),P.i.Code compteur [B]) |
+| **Variables** | EO (P.i.Code compteur) |
+| **Expression source** | Expression 3 : `IF(P.i.Code compteur [B]='','F'&DStr(Date(),'YYMM'),P.i.Code` |
+| **Exemple** | Si P.i.Code compteur [B]='' â†’ 'F'&DStr(Date(). Sinon â†’ 'YYMM'),P.i.Code compteur [B]) |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: [F]=9999 AND P.i.Code compteur [B] different de
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[F]=9999 AND P.i.Code compteur [B]<>''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EO (P.i.Code compteur) |
+| **Expression source** | Expression 6 : `[F]=9999 AND P.i.Code compteur [B]<>''` |
+| **Exemple** | Si [F]=9999 AND P.i.Code compteur [B]<>'' â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)
+- **Appelle**: 0 programmes | **Tables**: 1 (W:1 R:0 L:0) | **Taches**: 1 | **Expressions**: 6
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 13 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 1 |
-| **Tables en ecriture** | 1 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (1)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 68 | compteurs________cpt | Comptes GM (generaux) | DB |   | **W** |   | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | p.NumFact | W | Numeric |
+| B | P.i.Code compteur | W | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (2)
+
+Variables recues du programme appelant ([Factures_Check_Out (IDE 54)](ADH-IDE-54.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | p.NumFact | Numeric | - |
+| EO | P.i.Code compteur | Alpha | 3x parametre entrant |
+
+## 12. EXPRESSIONS
+
+**6 / 6 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CALCULATION | 1 | 0 |
+| CONDITION | 2 | 2 |
+| FORMAT | 1 | 0 |
+| CONSTANTE | 2 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CALCULATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CALCULATION | 1 | `[F]+1` | - |
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 6 | `[F]=9999 AND P.i.Code compteur [B]<>''` | [RM-002](#rm-RM-002) |
+| CONDITION | 3 | `IF(P.i.Code compteur [B]='','F'&DStr(Date(),'YYMM'),P.i.Code compteur [B])` | [RM-001](#rm-RM-001) |
+
+#### FORMAT (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| FORMAT | 4 | `Val( IF (P.i.Code compteur [B]='', DStr(Date(),'YYMM'),Trim(P.i.Code compteur [B])) &
+Str([F],'4P0'),'8')` | - |
+
+#### CONSTANTE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 5 | `1` | - |
+| CONSTANTE | 2 | `'C'` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Factures_Check_Out (IDE 54)](ADH-IDE-54.md) -> **Incremente N° de Facture (IDE 58)**
+
+Main -> ... -> [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md) -> **Incremente N° de Facture (IDE 58)**
+
+Main -> ... -> [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) -> **Incremente N° de Facture (IDE 58)**
 
 ```mermaid
 graph LR
-    T[58 Incremente N° d]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T58[58 Incremente N° de Fa...]
+    style T58 fill:#58a6ff
+    CC287[287 Solde Easy Check Out]
+    style CC287 fill:#8b5cf6
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#8b5cf6
+    CC313[313 Easy Check-Out ===...]
+    style CC313 fill:#8b5cf6
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#8b5cf6
+    CC283[283 Easy Check-Out ===...]
+    style CC283 fill:#8b5cf6
+    CC64[64 Solde Easy Check Out]
+    style CC64 fill:#8b5cf6
+    CC280[280 Lanceur Facture]
+    style CC280 fill:#8b5cf6
+    CC54[54 Factures_Check_Out]
+    style CC54 fill:#3fb950
+    CC97[97 Factures Tble Compt...]
+    style CC97 fill:#3fb950
+    CC89[89 Factures Tble Compt...]
+    style CC89 fill:#3fb950
+    CC64 --> CC54
+    CC280 --> CC54
+    CC283 --> CC54
+    CC287 --> CC54
+    CC313 --> CC54
+    CC163 --> CC54
+    CC190 --> CC54
+    CC193 --> CC54
+    CC64 --> CC89
+    CC280 --> CC89
+    CC283 --> CC89
+    CC287 --> CC89
+    CC313 --> CC89
+    CC163 --> CC89
+    CC190 --> CC89
+    CC193 --> CC89
+    CC64 --> CC97
+    CC280 --> CC97
+    CC283 --> CC97
+    CC287 --> CC97
+    CC313 --> CC97
+    CC163 --> CC97
+    CC190 --> CC97
+    CC193 --> CC97
+    CC54 --> T58
+    CC89 --> T58
+    CC97 --> T58
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [54](ADH-IDE-54.md) | Factures_Check_Out | 2 |
+| [89](ADH-IDE-89.md) | Factures (Tble Compta&Vent | 2 |
+| [97](ADH-IDE-97.md) | Factures (Tble Compta&Vent) V3 | 2 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[58 Incremente N° d]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T58[58 Incremente N° de Fa...]
+    style T58 fill:#58a6ff
+    NONE[Aucun callee]
+    T58 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 13 | Programme compact |
+| Expressions | 6 | Peu de logique |
+| Tables WRITE | 1 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 13) | Code sain |
+| Regles metier | 2 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 1 | Ecriture |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| compteurs________cpt | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:01 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:52*

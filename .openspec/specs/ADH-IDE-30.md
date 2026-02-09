@@ -1,6 +1,6 @@
 ﻿# ADH IDE 30 - Read histo Fus_Sep_Det
 
-> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 03:41 (28s) | Assemblage 13:06
+> **Analyse**: Phases 1-4 2026-02-07 03:41 -> 01:24 (21h42min) | Assemblage 01:24
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,16 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Je n'ai pas accès aux fichiers de spécifications. Pourriez-vous :
+**ADH IDE 30 - Read histo Fus_Sep_Det** est un programme de **revalidation et déblocage post-opération de fusion/séparation de comptes**. Appelé directement par les programmes Séparation (IDE 27) et Fusion (IDE 28), il relit l'historique détaillé écrit précédemment pour valider la cohérence des données et effectuer le déverrouillage des comptes référence. Le programme supporte différentes phases de reprise (position `1F` et `3E`) avec des tâches conditionnées (10, 20, 30, 50, 60), ce qui permet d'adapter le traitement au contexte opérationnel.
 
-1. **Fournir le contenu du programme ADH IDE 30** (structure XML/données brutes)
-2. **Ou détailler le contexte métier** :
-   - Quel est le processus de Fusion/Séparation ?
-   - Qu'est-ce que "Read histo Fus_Sep_Det" doit accomplir ?
-   - Pourquoi relire l'historique de fusion/séparation ?
-   - Quel est le mécanisme de "déblocage compte" ?
+La logique métier repose sur **11 tâches organisées en deux blocs**: un bloc de traitement qui route les opérations selon la position et le numéro de tâche, et un bloc de calcul dédié au déblocage des comptes. Le programme lit les données depuis `histo_fusionseparation_detail` (9 colonnes identifiées: type F/E, société, chrono reprise, position reprise, taskNumber, compte référence, toDo, état réseau, existence) et effectue des modifications dans deux tables cibles—`compte_gm` pour le déblocage et `histo_fusionseparation_saisie` pour la journalisation.
 
-Alternativement, je peux utiliser les outils Magic disponibles (magic_get_line, magic_decode_expression, etc.) si vous me confirmez que je peux y accéder.
+Code **sain et sans régression** (0% désactivé, complexité basse), ce programme joue un rôle critique dans l'intégrité post-fusion en assurant que les comptes sont correctement déverrouillés et que l'historique est nettoyé selon les états de réseau et les conditions de toDo. Aucun programme externe n'est appelé directement, ce qui en fait un **maillon autonome mais dépendant** du flux Séparation/Fusion pour son activation.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -41,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - (sans nom)
+#### <a id="t1"></a>30 - (sans nom)
 
 **Role** : Tache d'orchestration : point d'entree du programme (9 sous-taches). Coordonne l'enchainement des traitements.
 
@@ -50,62 +45,62 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | 1F/10 v1 | Traitement |
-| [T3](#t3) | 1F/10 v1 | Traitement |
-| [T4](#t4) | 1F/20 | Traitement |
-| [T6](#t6) | 1F/30 | Traitement |
-| [T8](#t8) | suppression histo | Traitement |
-| [T9](#t9) | 3E/50 | Traitement |
-| [T10](#t10) | 3E/60 v1 | Traitement |
-| [T11](#t11) | 3E/60 v1 | Traitement |
+| [30.1](#t2) | 1F/10 v1 | Traitement |
+| [30.2](#t3) | 1F/10 v1 | Traitement |
+| [30.3](#t4) | 1F/20 | Traitement |
+| [30.4](#t6) | 1F/30 | Traitement |
+| [30.4.2](#t8) | suppression histo | Traitement |
+| [30.5](#t9) | 3E/50 | Traitement |
+| [30.6](#t10) | 3E/60 v1 | Traitement |
+| [30.7](#t11) | 3E/60 v1 | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>T2 - 1F/10 v1
+#### <a id="t2"></a>30.1 - 1F/10 v1
 
 **Role** : Traitement : 1F/10 v1.
 
 ---
 
-#### <a id="t3"></a>T3 - 1F/10 v1
+#### <a id="t3"></a>30.2 - 1F/10 v1
 
 **Role** : Traitement : 1F/10 v1.
 
 ---
 
-#### <a id="t4"></a>T4 - 1F/20
+#### <a id="t4"></a>30.3 - 1F/20
 
 **Role** : Traitement : 1F/20.
 
 ---
 
-#### <a id="t6"></a>T6 - 1F/30
+#### <a id="t6"></a>30.4 - 1F/30
 
 **Role** : Traitement : 1F/30.
 
 ---
 
-#### <a id="t8"></a>T8 - suppression histo
+#### <a id="t8"></a>30.4.2 - suppression histo
 
 **Role** : Traitement : suppression histo.
 
 ---
 
-#### <a id="t9"></a>T9 - 3E/50
+#### <a id="t9"></a>30.5 - 3E/50
 
 **Role** : Traitement : 3E/50.
 
 ---
 
-#### <a id="t10"></a>T10 - 3E/60 v1
+#### <a id="t10"></a>30.6 - 3E/60 v1
 
 **Role** : Traitement : 3E/60 v1.
 
 ---
 
-#### <a id="t11"></a>T11 - 3E/60 v1
+#### <a id="t11"></a>30.7 - 3E/60 v1
 
 **Role** : Traitement : 3E/60 v1.
 
@@ -116,21 +111,82 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t5"></a>T5 - deblocage compte
+#### <a id="t5"></a>30.3.1 - deblocage compte
 
 **Role** : Traitement : deblocage compte.
-**Variables liees** : F (i compte reference)
+**Variables liees** : ES (i compte reference)
 
 ---
 
-#### <a id="t7"></a>T7 - deblocage comptes
+#### <a id="t7"></a>30.4.1 - deblocage comptes
 
 **Role** : Traitement : deblocage comptes.
 
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+6 regles identifiees:
+
+### Autres (6 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: i position reprise [D]='1F' AND i taskNumber [E] egale 10
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i position reprise [D]='1F' AND i taskNumber [E]=10` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EQ (i position reprise), ER (i taskNumber) |
+| **Expression source** | Expression 8 : `i position reprise [D]='1F' AND i taskNumber [E]=10` |
+| **Exemple** | Si i position reprise [D]='1F' AND i taskNumber [E]=10 â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: i position reprise [D]='1F' AND i taskNumber [E] egale 20
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i position reprise [D]='1F' AND i taskNumber [E]=20` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EQ (i position reprise), ER (i taskNumber) |
+| **Expression source** | Expression 9 : `i position reprise [D]='1F' AND i taskNumber [E]=20` |
+| **Exemple** | Si i position reprise [D]='1F' AND i taskNumber [E]=20 â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: i position reprise [D]='1F' AND i taskNumber [E] egale 30
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i position reprise [D]='1F' AND i taskNumber [E]=30` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EQ (i position reprise), ER (i taskNumber) |
+| **Expression source** | Expression 10 : `i position reprise [D]='1F' AND i taskNumber [E]=30` |
+| **Exemple** | Si i position reprise [D]='1F' AND i taskNumber [E]=30 â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: i position reprise [D]='3E' AND i taskNumber [E] egale 50
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i position reprise [D]='3E' AND i taskNumber [E]=50` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EQ (i position reprise), ER (i taskNumber) |
+| **Expression source** | Expression 11 : `i position reprise [D]='3E' AND i taskNumber [E]=50` |
+| **Exemple** | Si i position reprise [D]='3E' AND i taskNumber [E]=50 â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Condition: i position reprise [D]='3E' AND i taskNumber [E] egale 60
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `i position reprise [D]='3E' AND i taskNumber [E]=60` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EQ (i position reprise), ER (i taskNumber) |
+| **Expression source** | Expression 12 : `i position reprise [D]='3E' AND i taskNumber [E]=60` |
+| **Exemple** | Si i position reprise [D]='3E' AND i taskNumber [E]=60 â†’ Action si vrai |
+
+#### <a id="rm-RM-006"></a>[RM-006] Negation de VG78 (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT VG78` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 13 : `NOT VG78` |
+| **Exemple** | Si NOT VG78 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -149,37 +205,44 @@ Calculs metier : montants, stocks, compteurs.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **30.1** | [**(sans nom)** (T1)](#t1) | MDI | - | Traitement |
-| 30.1.1 | [1F/10 v1 (T2)](#t2) | MDI | - | |
-| 30.1.2 | [1F/10 v1 (T3)](#t3) | MDI | - | |
-| 30.1.3 | [1F/20 (T4)](#t4) | MDI | - | |
-| 30.1.4 | [1F/30 (T6)](#t6) | MDI | - | |
-| 30.1.5 | [suppression histo (T8)](#t8) | MDI | - | |
-| 30.1.6 | [3E/50 (T9)](#t9) | MDI | - | |
-| 30.1.7 | [3E/60 v1 (T10)](#t10) | MDI | - | |
-| 30.1.8 | [3E/60 v1 (T11)](#t11) | MDI | - | |
-| **30.2** | [**deblocage compte** (T5)](#t5) | MDI | - | Calcul |
-| 30.2.1 | [deblocage comptes (T7)](#t7) | MDI | - | |
+| **30.1** | [**(sans nom)** (30)](#t1) | MDI | - | Traitement |
+| 30.1.1 | [1F/10 v1 (30.1)](#t2) | MDI | - | |
+| 30.1.2 | [1F/10 v1 (30.2)](#t3) | MDI | - | |
+| 30.1.3 | [1F/20 (30.3)](#t4) | MDI | - | |
+| 30.1.4 | [1F/30 (30.4)](#t6) | MDI | - | |
+| 30.1.5 | [suppression histo (30.4.2)](#t8) | MDI | - | |
+| 30.1.6 | [3E/50 (30.5)](#t9) | MDI | - | |
+| 30.1.7 | [3E/60 v1 (30.6)](#t10) | MDI | - | |
+| 30.1.8 | [3E/60 v1 (30.7)](#t11) | MDI | - | |
+| **30.2** | [**deblocage compte** (30.3.1)](#t5) | MDI | - | Calcul |
+| 30.2.1 | [deblocage comptes (30.4.1)](#t7) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (9t)]
-    START --> B1
-    B2[Calcul (2t)]
-    B1 --> B2
-    WRITE[MAJ 2 tables]
-    B2 --> WRITE
-    ENDOK([END])
-    WRITE --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{i position reprise}
+    PROCESS[Traitement]
+    UPDATE[MAJ 2 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -209,7 +272,7 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| F | i compte reference | W | Numeric |
+| ES | i compte reference | W | Numeric |
 
 </details>
 
@@ -218,8 +281,8 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | v.Existe cloture ? | R | Logical |
-| H | o etat reseau | R | Alpha |
+| EN | v.Existe cloture ? | R | Logical |
+| EU | o etat reseau | R | Alpha |
 
 </details>
 
@@ -255,15 +318,15 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | i type F/E | Alpha | - |
-| B | i societe | Alpha | - |
-| C | i chrono reprise | Numeric | 1x refs |
-| D | i position reprise | Alpha | 6x refs |
-| E | i taskNumber | Numeric | 6x refs |
-| F | i compte reference | Numeric | - |
-| G | o toDo | Logical | 1x refs |
-| H | o etat reseau | Alpha | - |
-| I | exist | Logical | 1x refs |
+| EN | i type F/E | Alpha | - |
+| EO | i societe | Alpha | - |
+| EP | i chrono reprise | Numeric | 1x refs |
+| EQ | i position reprise | Alpha | 6x refs |
+| ER | i taskNumber | Numeric | 6x refs |
+| ES | i compte reference | Numeric | - |
+| ET | o toDo | Logical | 1x refs |
+| EU | o etat reseau | Alpha | - |
+| EV | exist | Logical | 1x refs |
 
 ## 12. EXPRESSIONS
 
@@ -273,13 +336,29 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 5 | 5 |
+| NEGATION | 1 | 5 |
 | CAST_LOGIQUE | 2 | 0 |
 | OTHER | 5 | 0 |
-| CONDITION | 5 | 0 |
-| NEGATION | 1 | 0 |
 | REFERENCE_VG | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (5 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 11 | `i position reprise [D]='3E' AND i taskNumber [E]=50` | [RM-004](#rm-RM-004) |
+| CONDITION | 12 | `i position reprise [D]='3E' AND i taskNumber [E]=60` | [RM-005](#rm-RM-005) |
+| CONDITION | 10 | `i position reprise [D]='1F' AND i taskNumber [E]=30` | [RM-003](#rm-RM-003) |
+| CONDITION | 8 | `i position reprise [D]='1F' AND i taskNumber [E]=10` | [RM-001](#rm-RM-001) |
+| CONDITION | 9 | `i position reprise [D]='1F' AND i taskNumber [E]=20` | [RM-002](#rm-RM-002) |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 13 | `NOT VG78` | [RM-006](#rm-RM-006) |
 
 #### CAST_LOGIQUE (2 expressions)
 
@@ -297,22 +376,6 @@ Variables diverses.
 | OTHER | 4 | `i taskNumber [E]` | - |
 | OTHER | 2 | `i chrono reprise [C]` | - |
 | OTHER | 3 | `i position reprise [D]` | - |
-
-#### CONDITION (5 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 11 | `i position reprise [D]='3E' AND i taskNumber [E]=50` | - |
-| CONDITION | 12 | `i position reprise [D]='3E' AND i taskNumber [E]=60` | - |
-| CONDITION | 10 | `i position reprise [D]='1F' AND i taskNumber [E]=30` | - |
-| CONDITION | 8 | `i position reprise [D]='1F' AND i taskNumber [E]=10` | - |
-| CONDITION | 9 | `i position reprise [D]='1F' AND i taskNumber [E]=20` | - |
-
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 13 | `NOT VG78` | - |
 
 #### REFERENCE_VG (1 expressions)
 
@@ -388,7 +451,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 116) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 6 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -410,4 +473,4 @@ graph LR
 | histo_fusionseparation_saisie | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:07*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:26*

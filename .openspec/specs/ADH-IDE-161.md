@@ -1,6 +1,6 @@
 ﻿# ADH IDE 161 - Get Club Med Pass
 
-> **Analyse**: Phases 1-4 2026-02-07 07:19 -> 07:19 (16s) | Assemblage 07:19
+> **Analyse**: Phases 1-4 2026-02-07 07:19 -> 03:43 (20h24min) | Assemblage 03:43
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,23 +14,37 @@
 | IDE Position | 161 |
 | Nom Programme | Get Club Med Pass |
 | Fichier source | `Prg_161.xml` |
-| Dossier IDE | Identification |
+| Dossier IDE | General |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 7/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Get Club Med Pass** assure la gestion complete de ce processus.
+ADH IDE 161 - Get Club Med Pass est un programme très simple de récupération d'informations de carte Club Med Pass. Il reçoit trois paramètres (société, compte, filiation) et effectue une mise à jour directe sur la table ez_card sans logique métier complexe. Le programme comporte une seule condition qui teste si le statut n'est pas 'O' (opposition/bloqué) avant de continuer le traitement.
 
-**Donnees modifiees** : 1 tables en ecriture (ez_card).
+Ce programme s'intègre dans l'écosystème Club Med Pass qui comprend plusieurs utilitaires (Menu principal 77, Gestion filiations 114, Création de cartes 81, etc.). Cependant, il est actuellement orphelin - aucun caller direct n'a pu être détecté dans la base de connaissances, ce qui suggère qu'il pourrait être appelé via ProgIdx() avec un nom public ou être un utilitaire de batch non référencé directement.
+
+Pour la migration vers C#, le programme est un excellent candidat pour une simple API REST donnée sa structure basse complexité (22 lignes, zéro sous-programmes, aucune dépendance interne). Il devrait être consolidé avec ADH IDE 114 (Club Med Pass Filiations) ou transformé en endpoint spécialisé `POST /api/club-med-pass/get` si sa fonction est distincte.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: [H] different de 'O'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[H]<>'O'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 4 : `[H]<>'O'` |
+| **Exemple** | Si [H]<>'O' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -101,9 +115,9 @@ Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Unicode | 1x parametre entrant |
-| B | P0 compte | Numeric | 1x parametre entrant |
-| C | P0 filiation | Numeric | 1x parametre entrant |
+| EN | P0 societe | Unicode | 1x parametre entrant |
+| EO | P0 compte | Numeric | 1x parametre entrant |
+| EP | P0 filiation | Numeric | 1x parametre entrant |
 
 ## 12. EXPRESSIONS
 
@@ -113,10 +127,16 @@ Variables recues en parametre.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 1 | 5 |
 | OTHER | 4 | 0 |
-| CONDITION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 4 | `[H]<>'O'` | [RM-001](#rm-RM-001) |
 
 #### OTHER (4 expressions)
 
@@ -126,12 +146,6 @@ Variables recues en parametre.
 | OTHER | 5 | `[G]` | - |
 | OTHER | 1 | `P0 societe [A]` | - |
 | OTHER | 2 | `P0 compte [B]` | - |
-
-#### CONDITION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 4 | `[H]<>'O'` | - |
 
 <!-- TAB:Connexions -->
 
@@ -185,7 +199,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 22) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -196,4 +210,4 @@ graph LR
 | ez_card | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:19*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:45*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 8 - Set Village info
 
-> **Analyse**: Phases 1-4 2026-02-07 03:38 -> 03:39 (28s) | Assemblage 12:47
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 01:05 (21h26min) | Assemblage 01:05
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**ADH IDE 8 - Set Village info** extrait et structure les informations du village depuis un buffer (variable AE) pour les paramétrer dans le système. Le programme parcourt 10 champs distincts d'identité du club (code, nom, adresses, code postal, téléphone, fax, email, SIRE, TVA) en utilisant la fonction MID pour découper des sections précises du buffer à des positions définies. Chaque extraction est ensuite trimmée et assignée à une variable VI_* correspondante via SetParam.
+ADH IDE 8 est un programme de gestion d'informations village appelé depuis le menu DataCatching (IDE 7). Il comporte deux tâches principales : **Set Village Address** qui permet de définir ou mettre à jour l'adresse du village dans un formulaire, et **Load Buffer** qui charge les données en mémoire temporaire avant traitement.
 
-Le flux s'articule autour de deux tâches principales : **Set Village Address** qui gère l'affectation des paramètres d'identification, et **Load Buffer** qui charge les données brutes. La condition de sortie (NOT [Q]) vérifie que la variable Q n'est pas à vraie, contrôlant ainsi le flux d'exécution. Cette séparation entre extraction brute (MID) et nettoyage (Trim) permet à la fois de capturer des fragments longs depuis le buffer et de stocker des versions compactes pour l'affichage.
+Le flux métier suit un pattern classique de capture de données : l'utilisateur saisit l'adresse village dans la première tâche, qui alimente ensuite un buffer en mémoire. Ce buffer sert probablement d'intermédiaire avant enregistrement en base de données ou transmission à d'autres programmes de la chaîne DataCatching.
 
-Le programme fait appel à une table externe (Boo_AvailibleEmployees) avec un lien vers pv_budget, mais l'analyse syntaxique montre qu'aucune logique métier complexe n'intervient—il s'agit essentiellement d'une mécanique de parsing structuré de données brutes vers des paramètres métier.
+Ce programme s'inscrit dans un contexte plus large de gestion d'établissements (village/résidence), où les données de localisation sont des informations critiques pour l'ensemble du système. L'intégration avec le menu DataCatching (IDE 7) indique qu'il fait partie d'un workflow de saisie/correction de données maître.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,22 +36,33 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Set Village Address
+#### <a id="t1"></a>8 - Set Village Address
 
 **Role** : Traitement : Set Village Address.
-**Variables liees** : A (V lien adresse_service_village)
+**Variables liees** : EN (V lien adresse_service_village)
 
 ---
 
-#### <a id="t2"></a>T2 - Load Buffer
+#### <a id="t2"></a>8.1 - Load Buffer
 
 **Role** : Traitement : Load Buffer.
-**Variables liees** : B (Buffer)
+**Variables liees** : EO (Buffer)
 
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Negation de ([Q]) (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT ([Q])` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 21 : `NOT ([Q])` |
+| **Exemple** | Si NOT ([Q]) â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -70,22 +81,27 @@ Traitements internes.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **8.1** | [**Set Village Address** (T1)](#t1) | MDI | - | Traitement |
-| 8.1.1 | [Load Buffer (T2)](#t2) | MDI | - | |
+| **8.1** | [**Set Village Address** (8)](#t1) | MDI | - | Traitement |
+| 8.1.1 | [Load Buffer (8.1)](#t2) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 2 taches]
-    START --> PROCESS --> ENDOK
-    ENDOK([END])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -120,7 +136,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | V lien adresse_service_village | Logical | - |
+| EN | V lien adresse_service_village | Logical | - |
 
 ### 11.2 Autres (3)
 
@@ -128,9 +144,9 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| B | Buffer | Alpha | - |
-| C | CounterTel | Numeric | - |
-| D | CounterFax | Numeric | - |
+| EO | Buffer | Alpha | - |
+| EP | CounterTel | Numeric | - |
+| EQ | CounterFax | Numeric | - |
 
 ## 12. EXPRESSIONS
 
@@ -140,12 +156,18 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| NEGATION | 1 | 5 |
 | CONSTANTE | 1 | 0 |
 | OTHER | 10 | 0 |
-| NEGATION | 1 | 0 |
 | STRING | 10 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 21 | `NOT ([Q])` | [RM-001](#rm-RM-001) |
 
 #### CONSTANTE (1 expressions)
 
@@ -157,34 +179,34 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 13 | `SetParam ('VI_FAXN',MID ([AE],775,128))` | - |
-| OTHER | 11 | `SetParam ('VI_PHON',MID ([AE],646,128))` | - |
-| OTHER | 15 | `SetParam ('VI_MAIL',MID ([AE],904,128))` | - |
-| OTHER | 19 | `SetParam ('VI_VATN',MID ([AE],1162,128))` | - |
-| OTHER | 17 | `SetParam ('VI_SIRE',MID ([AE],1033,128))` | - |
+| OTHER | 13 | `SetParam ('VI_FAXN',MID ([BE],775,128))` | - |
+| OTHER | 11 | `SetParam ('VI_PHON',MID ([BE],646,128))` | - |
+| OTHER | 15 | `SetParam ('VI_MAIL',MID ([BE],904,128))` | - |
+| OTHER | 19 | `SetParam ('VI_VATN',MID ([BE],1162,128))` | - |
+| OTHER | 17 | `SetParam ('VI_SIRE',MID ([BE],1033,128))` | - |
 | ... | | *+5 autres* | |
-
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 21 | `NOT ([Q])` | - |
 
 #### STRING (10 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| STRING | 14 | `SetParam ('VI_FAXN','Fax  '&Trim([AA]))` | - |
+| STRING | 14 | `SetParam ('VI_FAXN','Fax  '&Trim([BA]))` | - |
 | STRING | 12 | `SetParam ('VI_PHON','Tel  '&Trim([Z]))` | - |
-| STRING | 16 | `SetParam ('VI_MAIL',Trim([AD]))` | - |
-| STRING | 20 | `SetParam ('VI_VATN',Trim([AC]))` | - |
-| STRING | 18 | `SetParam ('VI_SIRE',Trim([AB]))` | - |
+| STRING | 16 | `SetParam ('VI_MAIL',Trim([BD]))` | - |
+| STRING | 20 | `SetParam ('VI_VATN',Trim([BC]))` | - |
+| STRING | 18 | `SetParam ('VI_SIRE',Trim([BB]))` | - |
 | ... | | *+5 autres* | |
 
 ### 12.3 Toutes les expressions (22)
 
 <details>
 <summary>Voir les 22 expressions</summary>
+
+#### NEGATION (1)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 21 | `NOT ([Q])` |
 
 #### CONSTANTE (1)
 
@@ -196,22 +218,16 @@ Variables diverses.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 1 | `SetParam ('VI_CLUB',MID ([AE],1,128))` |
-| 3 | `SetParam ('VI_NAME',MID ([AE],130,128))` |
-| 5 | `SetParam ('VI_ADR1',MID ([AE],259,128))` |
-| 7 | `SetParam ('VI_ADR2',MID ([AE],388,128))` |
-| 9 | `SetParam ('VI_ZIPC',MID ([AE],517,128))` |
-| 11 | `SetParam ('VI_PHON',MID ([AE],646,128))` |
-| 13 | `SetParam ('VI_FAXN',MID ([AE],775,128))` |
-| 15 | `SetParam ('VI_MAIL',MID ([AE],904,128))` |
-| 17 | `SetParam ('VI_SIRE',MID ([AE],1033,128))` |
-| 19 | `SetParam ('VI_VATN',MID ([AE],1162,128))` |
-
-#### NEGATION (1)
-
-| IDE | Expression Decodee |
-|-----|-------------------|
-| 21 | `NOT ([Q])` |
+| 1 | `SetParam ('VI_CLUB',MID ([BE],1,128))` |
+| 3 | `SetParam ('VI_NAME',MID ([BE],130,128))` |
+| 5 | `SetParam ('VI_ADR1',MID ([BE],259,128))` |
+| 7 | `SetParam ('VI_ADR2',MID ([BE],388,128))` |
+| 9 | `SetParam ('VI_ZIPC',MID ([BE],517,128))` |
+| 11 | `SetParam ('VI_PHON',MID ([BE],646,128))` |
+| 13 | `SetParam ('VI_FAXN',MID ([BE],775,128))` |
+| 15 | `SetParam ('VI_MAIL',MID ([BE],904,128))` |
+| 17 | `SetParam ('VI_SIRE',MID ([BE],1033,128))` |
+| 19 | `SetParam ('VI_VATN',MID ([BE],1162,128))` |
 
 #### STRING (10)
 
@@ -223,10 +239,10 @@ Variables diverses.
 | 8 | `SetParam ('VI_ADR2',Trim([W]))` |
 | 10 | `SetParam ('VI_ZIPC',Trim([Y]))` |
 | 12 | `SetParam ('VI_PHON','Tel  '&Trim([Z]))` |
-| 14 | `SetParam ('VI_FAXN','Fax  '&Trim([AA]))` |
-| 16 | `SetParam ('VI_MAIL',Trim([AD]))` |
-| 18 | `SetParam ('VI_SIRE',Trim([AB]))` |
-| 20 | `SetParam ('VI_VATN',Trim([AC]))` |
+| 14 | `SetParam ('VI_FAXN','Fax  '&Trim([BA]))` |
+| 16 | `SetParam ('VI_MAIL',Trim([BD]))` |
+| 18 | `SetParam ('VI_SIRE',Trim([BB]))` |
+| 20 | `SetParam ('VI_VATN',Trim([BC]))` |
 
 </details>
 
@@ -282,7 +298,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 76) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -297,4 +313,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:48*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:05*

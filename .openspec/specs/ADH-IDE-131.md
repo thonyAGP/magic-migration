@@ -1,6 +1,6 @@
 ﻿# ADH IDE 131 - Fermeture caisse
 
-> **Analyse**: Phases 1-4 2026-02-07 03:49 -> 03:50 (27s) | Assemblage 15:36
+> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:08 (23h18min) | Assemblage 03:08
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -160,7 +160,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Fermeture caisse
+#### <a id="t1"></a>131 - Fermeture caisse
 
 **Role** : Tache d'orchestration : point d'entree du programme (19 sous-taches). Coordonne l'enchainement des traitements.
 
@@ -169,141 +169,141 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Fermeture caisse **[ECRAN]** | Traitement |
-| [T3](#t3) | (sans nom) **[ECRAN]** | Traitement |
-| [T7](#t7) | (sans nom) **[ECRAN]** | Traitement |
-| [T8](#t8) | Devises finales | Traitement |
-| [T9](#t9) | Devises finales | Traitement |
-| [T10](#t10) | Devises finales | Traitement |
-| [T11](#t11) | Update AppRem | Traitement |
-| [T12](#t12) | Update devises | Traitement |
-| [T13](#t13) | Update produits | Traitement |
-| [T14](#t14) | (sans nom) **[ECRAN]** | Traitement |
-| [T15](#t15) | Devises finales | Traitement |
-| [T16](#t16) | Devises finales | Traitement |
-| [T17](#t17) | Devises finales | Traitement |
-| [T18](#t18) | Update AppRem | Traitement |
-| [T19](#t19) | Update devises | Traitement |
-| [T20](#t20) | Update produits | Traitement |
-| [T21](#t21) | Detail devises **[ECRAN]** | Traitement |
-| [T22](#t22) | Detail devises **[ECRAN]** | Traitement |
+| [131.1](#t2) | Fermeture caisse **[[ECRAN]](#ecran-t2)** | Traitement |
+| [131.1.1](#t3) | (sans nom) **[[ECRAN]](#ecran-t3)** | Traitement |
+| [131.1.2](#t7) | (sans nom) **[[ECRAN]](#ecran-t7)** | Traitement |
+| [131.1.2.1](#t8) | Devises finales | Traitement |
+| [131.1.2.1.1](#t9) | Devises finales | Traitement |
+| [131.1.2.1.2](#t10) | Devises finales | Traitement |
+| [131.1.2.2](#t11) | Update AppRem | Traitement |
+| [131.1.2.2.1](#t12) | Update devises | Traitement |
+| [131.1.2.2.2](#t13) | Update produits | Traitement |
+| [131.1.3](#t14) | (sans nom) **[[ECRAN]](#ecran-t14)** | Traitement |
+| [131.1.3.1](#t15) | Devises finales | Traitement |
+| [131.1.3.1.1](#t16) | Devises finales | Traitement |
+| [131.1.3.1.2](#t17) | Devises finales | Traitement |
+| [131.1.3.2](#t18) | Update AppRem | Traitement |
+| [131.1.3.2.1](#t19) | Update devises | Traitement |
+| [131.1.3.2.2](#t20) | Update produits | Traitement |
+| [131.1.4](#t21) | Detail devises **[[ECRAN]](#ecran-t21)** | Traitement |
+| [131.1.4.1](#t22) | Detail devises **[[ECRAN]](#ecran-t22)** | Traitement |
 
 </details>
-**Variables liees** : K (Param fermeture validee), DA (Edition ticket fermeture)
+**Variables liees** : EX (Param fermeture validee), HN (Edition ticket fermeture)
 
 ---
 
-#### <a id="t2"></a>T2 - Fermeture caisse [ECRAN]
+#### <a id="t2"></a>131.1 - Fermeture caisse [[ECRAN]](#ecran-t2)
 
 **Role** : Traitement : Fermeture caisse.
 **Ecran** : 1318 x 271 DLU (MDI) | [Voir mockup](#ecran-t2)
-**Variables liees** : K (Param fermeture validee), DA (Edition ticket fermeture)
+**Variables liees** : EX (Param fermeture validee), HN (Edition ticket fermeture)
 
 ---
 
-#### <a id="t3"></a>T3 - (sans nom) [ECRAN]
+#### <a id="t3"></a>131.1.1 - (sans nom) [[ECRAN]](#ecran-t3)
 
 **Role** : Traitement interne.
 **Ecran** : 240 x 24 DLU (MDI) | [Voir mockup](#ecran-t3)
 
 ---
 
-#### <a id="t7"></a>T7 - (sans nom) [ECRAN]
+#### <a id="t7"></a>131.1.2 - (sans nom) [[ECRAN]](#ecran-t7)
 
 **Role** : Traitement interne.
 **Ecran** : 240 x 24 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>T8 - Devises finales
+#### <a id="t8"></a>131.1.2.1 - Devises finales
 
 **Role** : Traitement : Devises finales.
 
 ---
 
-#### <a id="t9"></a>T9 - Devises finales
+#### <a id="t9"></a>131.1.2.1.1 - Devises finales
 
 **Role** : Traitement : Devises finales.
 
 ---
 
-#### <a id="t10"></a>T10 - Devises finales
+#### <a id="t10"></a>131.1.2.1.2 - Devises finales
 
 **Role** : Traitement : Devises finales.
 
 ---
 
-#### <a id="t11"></a>T11 - Update AppRem
+#### <a id="t11"></a>131.1.2.2 - Update AppRem
 
 **Role** : Traitement : Update AppRem.
 
 ---
 
-#### <a id="t12"></a>T12 - Update devises
+#### <a id="t12"></a>131.1.2.2.1 - Update devises
 
 **Role** : Traitement : Update devises.
 
 ---
 
-#### <a id="t13"></a>T13 - Update produits
+#### <a id="t13"></a>131.1.2.2.2 - Update produits
 
 **Role** : Traitement : Update produits.
-**Variables liees** : W (Montant initial produits), BD (Montant compte produits), BK (Montant calcule produits), BR (Montant ecart produits), CA (Montant versement produits)
+**Variables liees** : FJ (Montant initial produits), FQ (Montant compte produits), FX (Montant calcule produits), GE (Montant ecart produits), GN (Montant versement produits)
 
 ---
 
-#### <a id="t14"></a>T14 - (sans nom) [ECRAN]
+#### <a id="t14"></a>131.1.3 - (sans nom) [[ECRAN]](#ecran-t14)
 
 **Role** : Traitement interne.
 **Ecran** : 240 x 24 DLU (MDI) | [Voir mockup](#ecran-t14)
 
 ---
 
-#### <a id="t15"></a>T15 - Devises finales
+#### <a id="t15"></a>131.1.3.1 - Devises finales
 
 **Role** : Traitement : Devises finales.
 
 ---
 
-#### <a id="t16"></a>T16 - Devises finales
+#### <a id="t16"></a>131.1.3.1.1 - Devises finales
 
 **Role** : Traitement : Devises finales.
 
 ---
 
-#### <a id="t17"></a>T17 - Devises finales
+#### <a id="t17"></a>131.1.3.1.2 - Devises finales
 
 **Role** : Traitement : Devises finales.
 
 ---
 
-#### <a id="t18"></a>T18 - Update AppRem
+#### <a id="t18"></a>131.1.3.2 - Update AppRem
 
 **Role** : Traitement : Update AppRem.
 
 ---
 
-#### <a id="t19"></a>T19 - Update devises
+#### <a id="t19"></a>131.1.3.2.1 - Update devises
 
 **Role** : Traitement : Update devises.
 
 ---
 
-#### <a id="t20"></a>T20 - Update produits
+#### <a id="t20"></a>131.1.3.2.2 - Update produits
 
 **Role** : Traitement : Update produits.
-**Variables liees** : W (Montant initial produits), BD (Montant compte produits), BK (Montant calcule produits), BR (Montant ecart produits), CA (Montant versement produits)
+**Variables liees** : FJ (Montant initial produits), FQ (Montant compte produits), FX (Montant calcule produits), GE (Montant ecart produits), GN (Montant versement produits)
 
 ---
 
-#### <a id="t21"></a>T21 - Detail devises [ECRAN]
+#### <a id="t21"></a>131.1.4 - Detail devises [[ECRAN]](#ecran-t21)
 
 **Role** : Traitement : Detail devises.
 **Ecran** : 390 x 146 DLU (MDI) | [Voir mockup](#ecran-t21)
 
 ---
 
-#### <a id="t22"></a>T22 - Detail devises [ECRAN]
+#### <a id="t22"></a>131.1.4.1 - Detail devises [[ECRAN]](#ecran-t22)
 
 **Role** : Traitement : Detail devises.
 **Ecran** : 781 x 156 DLU (MDI) | [Voir mockup](#ecran-t22)
@@ -315,7 +315,7 @@ Reinitialisation d'etats et variables de travail.
 
 ---
 
-#### <a id="t4"></a>T4 - raz
+#### <a id="t4"></a>131.1.1.1 - raz
 
 **Role** : Reinitialisation des variables de travail.
 
@@ -326,10 +326,10 @@ Controles de coherence : 1 tache verifie les donnees et conditions.
 
 ---
 
-#### <a id="t5"></a>T5 - Validation
+#### <a id="t5"></a>131.1.1.2 - Validation
 
 **Role** : Verification : Validation.
-**Variables liees** : CX (Validation comptage chrono his), CY (Validation comptage date), CZ (Validation comptage time)
+**Variables liees** : HK (Validation comptage chrono his), HL (Validation comptage date), HM (Validation comptage time)
 **Delegue a** : [Controle fermeture caisse WS (IDE 155)](ADH-IDE-155.md)
 
 
@@ -339,7 +339,7 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t6"></a>T6 - Maj devises comptees
+#### <a id="t6"></a>131.1.1.3 - Maj devises comptees
 
 **Role** : Traitement : Maj devises comptees.
 **Delegue a** : [Mise a jour comptage caisse WS (IDE 133)](ADH-IDE-133.md), [Calcul solde ouverture WS (IDE 127)](ADH-IDE-127.md)
@@ -347,7 +347,39 @@ Calculs metier : montants, stocks, compteurs.
 
 ## 5. REGLES METIER
 
-*(Programme utilitaire - operations systeme sans logique conditionnelle)*
+3 regles identifiees:
+
+### Autres (3 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: Action [S] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Action [S]=0` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FF (Action) |
+| **Expression source** | Expression 1 : `Action [S]=0` |
+| **Exemple** | Si Action [S]=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: Montant apport coffre [CF]<>0 OR Montant apport produits [CG]<>0 OR Montant versement monnaie [BZ]<>0 OR Montant versement cartes [CB]<>0 OR Montant versement cheques [CC]<>0 OR Nbre devise versement [CE]<>0 OR Nbre devise apport [CH] different de 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Montant apport coffre [CF]<>0 OR Montant apport produits [CG]<>0 OR Montant versement monnaie [BZ]<>0 OR Montant versement cartes [CB]<>0 OR Montant versement cheques [CC]<>0 OR Nbre devise versement [CE]<>0 OR Nbre devise apport [CH]<>0` |
+| **Si vrai** | Action si vrai |
+| **Variables** | GL (Montant versement), GM (Montant versement monnaie), GO (Montant versement cartes), GP (Montant versement cheques), GR (Nbre devise versement), GS (Montant apport coffre), GT (Montant apport produits), GU (Nbre devise apport) |
+| **Expression source** | Expression 9 : `Montant apport coffre [CF]<>0 OR Montant apport produits [CG` |
+| **Exemple** | Si Montant apport coffre [CF]<>0 OR Montant apport produits [CG]<>0 OR Montant versement monnaie [BZ]<>0 OR Montant versement cartes [CB]<>0 OR Montant versement cheques [CC]<>0 OR Nbre devise versement [CE]<>0 OR Nbre devise apport [CH]<>0 â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Negation de P.Session ouvertes VIL ? [Q] (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT P.Session ouvertes VIL ? [Q]` |
+| **Si vrai** | Action si vrai |
+| **Variables** | FD (P.Session ouvertes VIL ?) |
+| **Expression source** | Expression 12 : `NOT P.Session ouvertes VIL ? [Q]` |
+| **Exemple** | Si NOT P.Session ouvertes VIL ? [Q] â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -362,18 +394,18 @@ Calculs metier : montants, stocks, compteurs.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 131.1 | T2 | Fermeture caisse | MDI | 1318 | 271 | Traitement |
-| 2 | 131.1.1 | T3 | (sans nom) | MDI | 240 | 24 | Traitement |
-| 3 | 131.1.2 | T7 | (sans nom) | MDI | 240 | 24 | Traitement |
-| 4 | 131.1.3 | T14 | (sans nom) | MDI | 240 | 24 | Traitement |
-| 5 | 131.1.4.1 | T22 | Detail devises | MDI | 781 | 156 | Traitement |
+| 1 | 131.1 | 131.1 | Fermeture caisse | MDI | 1318 | 271 | Traitement |
+| 2 | 131.1.1 | 131.1.1 | (sans nom) | MDI | 240 | 24 | Traitement |
+| 3 | 131.1.2 | 131.1.2 | (sans nom) | MDI | 240 | 24 | Traitement |
+| 4 | 131.1.3 | 131.1.3 | (sans nom) | MDI | 240 | 24 | Traitement |
+| 5 | 131.1.4.1 | 131.1.4.1 | Detail devises | MDI | 781 | 156 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t2"></a>131.1 - Fermeture caisse
-**Tache** : [T2](#t2) | **Type** : MDI | **Dimensions** : 1318 x 271 DLU
+**Tache** : [131.1](#t2) | **Type** : MDI | **Dimensions** : 1318 x 271 DLU
 **Bloc** : Traitement | **Titre IDE** : Fermeture caisse
 
 <!-- FORM-DATA:
@@ -1967,7 +1999,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t3"></a>131.1.1 - (sans nom)
-**Tache** : [T3](#t3) | **Type** : MDI | **Dimensions** : 240 x 24 DLU
+**Tache** : [131.1.1](#t3) | **Type** : MDI | **Dimensions** : 240 x 24 DLU
 **Bloc** : Traitement | **Titre IDE** : (sans nom)
 
 <!-- FORM-DATA:
@@ -1999,7 +2031,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t7"></a>131.1.2 - (sans nom)
-**Tache** : [T7](#t7) | **Type** : MDI | **Dimensions** : 240 x 24 DLU
+**Tache** : [131.1.2](#t7) | **Type** : MDI | **Dimensions** : 240 x 24 DLU
 **Bloc** : Traitement | **Titre IDE** : (sans nom)
 
 <!-- FORM-DATA:
@@ -2031,7 +2063,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t14"></a>131.1.3 - (sans nom)
-**Tache** : [T14](#t14) | **Type** : MDI | **Dimensions** : 240 x 24 DLU
+**Tache** : [131.1.3](#t14) | **Type** : MDI | **Dimensions** : 240 x 24 DLU
 **Bloc** : Traitement | **Titre IDE** : (sans nom)
 
 <!-- FORM-DATA:
@@ -2063,7 +2095,7 @@ Calculs metier : montants, stocks, compteurs.
 ---
 
 #### <a id="ecran-t22"></a>131.1.4.1 - Detail devises
-**Tache** : [T22](#t22) | **Type** : MDI | **Dimensions** : 781 x 156 DLU
+**Tache** : [131.1.4.1](#t22) | **Type** : MDI | **Dimensions** : 781 x 156 DLU
 **Bloc** : Traitement | **Titre IDE** : Detail devises
 
 <!-- FORM-DATA:
@@ -2244,15 +2276,15 @@ Calculs metier : montants, stocks, compteurs.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF2[T2 Fermeture caisse]
+    VF2[131.1 Fermeture caisse]
     style VF2 fill:#58a6ff
-    VF3[T3 sans nom]
+    VF3[131.1.1 sans nom]
     style VF3 fill:#58a6ff
-    VF7[T7 sans nom]
+    VF7[131.1.2 sans nom]
     style VF7 fill:#58a6ff
-    VF14[T14 sans nom]
+    VF14[131.1.3 sans nom]
     style VF14 fill:#58a6ff
-    VF22[T22 Detail devises]
+    VF22[131.1.4.1 Detail devises]
     style VF22 fill:#58a6ff
     EXT134[IDE 134 Mise à jour de...]
     style EXT134 fill:#3fb950
@@ -2337,28 +2369,28 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **131.1** | [**Fermeture caisse** (T1)](#t1) | MDI | - | Traitement |
-| 131.1.1 | [Fermeture caisse (T2)](#t2) [mockup](#ecran-t2) | MDI | 1318x271 | |
-| 131.1.2 | [(sans nom) (T3)](#t3) [mockup](#ecran-t3) | MDI | 240x24 | |
-| 131.1.3 | [(sans nom) (T7)](#t7) [mockup](#ecran-t7) | MDI | 240x24 | |
-| 131.1.4 | [Devises finales (T8)](#t8) | MDI | - | |
-| 131.1.5 | [Devises finales (T9)](#t9) | MDI | - | |
-| 131.1.6 | [Devises finales (T10)](#t10) | MDI | - | |
-| 131.1.7 | [Update AppRem (T11)](#t11) | MDI | - | |
-| 131.1.8 | [Update devises (T12)](#t12) | MDI | - | |
-| 131.1.9 | [Update produits (T13)](#t13) | MDI | - | |
-| 131.1.10 | [(sans nom) (T14)](#t14) [mockup](#ecran-t14) | MDI | 240x24 | |
-| 131.1.11 | [Devises finales (T15)](#t15) | MDI | - | |
-| 131.1.12 | [Devises finales (T16)](#t16) | MDI | - | |
-| 131.1.13 | [Devises finales (T17)](#t17) | MDI | - | |
-| 131.1.14 | [Update AppRem (T18)](#t18) | MDI | - | |
-| 131.1.15 | [Update devises (T19)](#t19) | MDI | - | |
-| 131.1.16 | [Update produits (T20)](#t20) | MDI | - | |
-| 131.1.17 | [Detail devises (T21)](#t21) [mockup](#ecran-t21) | MDI | 390x146 | |
-| 131.1.18 | [Detail devises (T22)](#t22) [mockup](#ecran-t22) | MDI | 781x156 | |
-| **131.2** | [**raz** (T4)](#t4) | MDI | - | Initialisation |
-| **131.3** | [**Validation** (T5)](#t5) | MDI | - | Validation |
-| **131.4** | [**Maj devises comptees** (T6)](#t6) | - | - | Calcul |
+| **131.1** | [**Fermeture caisse** (131)](#t1) | MDI | - | Traitement |
+| 131.1.1 | [Fermeture caisse (131.1)](#t2) [mockup](#ecran-t2) | MDI | 1318x271 | |
+| 131.1.2 | [(sans nom) (131.1.1)](#t3) [mockup](#ecran-t3) | MDI | 240x24 | |
+| 131.1.3 | [(sans nom) (131.1.2)](#t7) [mockup](#ecran-t7) | MDI | 240x24 | |
+| 131.1.4 | [Devises finales (131.1.2.1)](#t8) | MDI | - | |
+| 131.1.5 | [Devises finales (131.1.2.1.1)](#t9) | MDI | - | |
+| 131.1.6 | [Devises finales (131.1.2.1.2)](#t10) | MDI | - | |
+| 131.1.7 | [Update AppRem (131.1.2.2)](#t11) | MDI | - | |
+| 131.1.8 | [Update devises (131.1.2.2.1)](#t12) | MDI | - | |
+| 131.1.9 | [Update produits (131.1.2.2.2)](#t13) | MDI | - | |
+| 131.1.10 | [(sans nom) (131.1.3)](#t14) [mockup](#ecran-t14) | MDI | 240x24 | |
+| 131.1.11 | [Devises finales (131.1.3.1)](#t15) | MDI | - | |
+| 131.1.12 | [Devises finales (131.1.3.1.1)](#t16) | MDI | - | |
+| 131.1.13 | [Devises finales (131.1.3.1.2)](#t17) | MDI | - | |
+| 131.1.14 | [Update AppRem (131.1.3.2)](#t18) | MDI | - | |
+| 131.1.15 | [Update devises (131.1.3.2.1)](#t19) | MDI | - | |
+| 131.1.16 | [Update produits (131.1.3.2.2)](#t20) | MDI | - | |
+| 131.1.17 | [Detail devises (131.1.4)](#t21) [mockup](#ecran-t21) | MDI | 390x146 | |
+| 131.1.18 | [Detail devises (131.1.4.1)](#t22) [mockup](#ecran-t22) | MDI | 781x156 | |
+| **131.2** | [**raz** (131.1.1.1)](#t4) | MDI | - | Initialisation |
+| **131.3** | [**Validation** (131.1.1.2)](#t5) | MDI | - | Validation |
+| **131.4** | [**Maj devises comptees** (131.1.1.3)](#t6) | - | - | Calcul |
 
 ### 9.4 Algorigramme Metier
 
@@ -2454,6 +2486,7 @@ flowchart TD
 
 
 
+
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
@@ -2487,17 +2520,17 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| B | Param devise locale | W | Alpha |
-| BA | Nbre devise initial | W | Numeric |
-| BH | Nbre devise compte | W | Numeric |
-| BO | Nbre devise calcule | W | Numeric |
-| BV | Nbre devise ecart | W | Numeric |
-| BX | Commentaire ecart devise | W | Alpha |
-| CE | Nbre devise versement | W | Numeric |
-| CH | Nbre devise apport | W | Numeric |
-| CO | Nbre devise solde final | W | Numeric |
-| CP | Existe ecart devise | W | Logical |
-| CW | Nbre devise tableau | W | Numeric |
+| EO | Param devise locale | W | Alpha |
+| FN | Nbre devise initial | W | Numeric |
+| FU | Nbre devise compte | W | Numeric |
+| GB | Nbre devise calcule | W | Numeric |
+| GI | Nbre devise ecart | W | Numeric |
+| GK | Commentaire ecart devise | W | Alpha |
+| GR | Nbre devise versement | W | Numeric |
+| GU | Nbre devise apport | W | Numeric |
+| HB | Nbre devise solde final | W | Numeric |
+| HC | Existe ecart devise | W | Logical |
+| HJ | Nbre devise tableau | W | Numeric |
 
 </details>
 
@@ -2506,7 +2539,7 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| DB | Edition ticket remise / appro | W | Logical |
+| HO | Edition ticket remise / appro | W | Logical |
 
 </details>
 
@@ -2515,19 +2548,19 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| B | Param devise locale | R | Alpha |
-| BA | Nbre devise initial | R | Numeric |
-| BH | Nbre devise compte | R | Numeric |
-| BO | Nbre devise calcule | R | Numeric |
-| BV | Nbre devise ecart | R | Numeric |
-| BX | Commentaire ecart devise | R | Alpha |
-| CE | Nbre devise versement | R | Numeric |
-| CH | Nbre devise apport | R | Numeric |
-| CO | Nbre devise solde final | R | Numeric |
-| CP | Existe ecart devise | R | Logical |
-| CW | Nbre devise tableau | R | Numeric |
-| L | Param chrono session | R | Numeric |
-| Q | P.Session ouvertes VIL ? | R | Logical |
+| EO | Param devise locale | R | Alpha |
+| FN | Nbre devise initial | R | Numeric |
+| FU | Nbre devise compte | R | Numeric |
+| GB | Nbre devise calcule | R | Numeric |
+| GI | Nbre devise ecart | R | Numeric |
+| GK | Commentaire ecart devise | R | Alpha |
+| GR | Nbre devise versement | R | Numeric |
+| GU | Nbre devise apport | R | Numeric |
+| HB | Nbre devise solde final | R | Numeric |
+| HC | Existe ecart devise | R | Logical |
+| HJ | Nbre devise tableau | R | Numeric |
+| EY | Param chrono session | R | Numeric |
+| FD | P.Session ouvertes VIL ? | R | Logical |
 
 </details>
 
@@ -2567,17 +2600,17 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| B | Param devise locale | R | Alpha |
-| BA | Nbre devise initial | R | Numeric |
-| BH | Nbre devise compte | R | Numeric |
-| BO | Nbre devise calcule | R | Numeric |
-| BV | Nbre devise ecart | R | Numeric |
-| BX | Commentaire ecart devise | R | Alpha |
-| CE | Nbre devise versement | R | Numeric |
-| CH | Nbre devise apport | R | Numeric |
-| CO | Nbre devise solde final | R | Numeric |
-| CP | Existe ecart devise | R | Logical |
-| CW | Nbre devise tableau | R | Numeric |
+| EO | Param devise locale | R | Alpha |
+| FN | Nbre devise initial | R | Numeric |
+| FU | Nbre devise compte | R | Numeric |
+| GB | Nbre devise calcule | R | Numeric |
+| GI | Nbre devise ecart | R | Numeric |
+| GK | Commentaire ecart devise | R | Alpha |
+| GR | Nbre devise versement | R | Numeric |
+| GU | Nbre devise apport | R | Numeric |
+| HB | Nbre devise solde final | R | Numeric |
+| HC | Existe ecart devise | R | Logical |
+| HJ | Nbre devise tableau | R | Numeric |
 
 </details>
 
@@ -2589,10 +2622,10 @@ Variables recues du programme appelant ([Gestion caisse (IDE 121)](ADH-IDE-121.m
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| M | p.i.Terminal coffre2 | Numeric | - |
-| N | p.i.Hostname coffre 2 | Unicode | - |
-| O | p.i.Host courant coffre 2 ? | Logical | - |
-| Q | P.Session ouvertes VIL ? | Logical | 1x parametre entrant |
+| EZ | p.i.Terminal coffre2 | Numeric | - |
+| FA | p.i.Hostname coffre 2 | Unicode | - |
+| FB | p.i.Host courant coffre 2 ? | Logical | - |
+| FD | P.Session ouvertes VIL ? | Logical | 1x parametre entrant |
 
 ### 11.2 Autres (78)
 
@@ -2600,172 +2633,172 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | Param societe | Alpha | - |
-| B | Param devise locale | Alpha | - |
-| C | Param Nbre decimales | Numeric | - |
-| D | Param masque montant | Alpha | - |
-| E | Param code village | Alpha | - |
-| F | Param nom village | Alpha | - |
-| G | Param masque cumul | Alpha | - |
-| H | Param Uni/Bi | Alpha | - |
-| I | Param village TAI | Alpha | - |
-| J | Param Date comptable | Date | - |
-| K | Param fermeture validee | Logical | - |
-| L | Param chrono session | Numeric | - |
-| P | Param coffre 2 est ouvert | Logical | - |
-| R | Fin | Logical | 1x refs |
-| S | Action | Numeric | 1x refs |
-| T | Flag avancement | Numeric | - |
-| U | Montant initial | Numeric | - |
-| V | Montant initial monnaie | Numeric | - |
-| W | Montant initial produits | Numeric | - |
-| X | Montant initial cartes | Numeric | - |
-| Y | Montant initial cheques | Numeric | - |
-| Z | Montant initial od | Numeric | - |
-| BA | Nbre devise initial | Numeric | - |
-| BB | Montant compte | Numeric | [T6](#t6) |
-| BC | Montant compte monnaie | Numeric | [T6](#t6) |
-| BD | Montant compte produits | Numeric | - |
-| BE | Montant compte cartes | Numeric | [T6](#t6) |
-| BF | Montant compte cheques | Numeric | [T6](#t6) |
-| BG | Montant compte od | Numeric | [T6](#t6) |
-| BH | Nbre devise compte | Numeric | [T6](#t6), [T8](#t8), [T9](#t9) |
-| BI | Montant calcule | Numeric | - |
-| BJ | Montant calcule monnaie | Numeric | - |
-| BK | Montant calcule produits | Numeric | - |
-| BL | Montant calcule cartes | Numeric | - |
-| BM | Montant calcule cheques | Numeric | - |
-| BN | Montant calcule od | Numeric | - |
-| BO | Nbre devise calcule | Numeric | - |
-| BP | Montant ecart | Numeric | - |
-| BQ | Montant ecart monnaie | Numeric | - |
-| BR | Montant ecart produits | Numeric | - |
-| BS | Montant ecart cartes | Numeric | - |
-| BT | Montant ecart cheques | Numeric | - |
-| BU | Montant ecart od | Numeric | - |
-| BV | Nbre devise ecart | Numeric | - |
-| BW | Commentaire ecart | Alpha | - |
-| BX | Commentaire ecart devise | Alpha | - |
-| BY | Montant versement | Numeric | 4x refs |
-| BZ | Montant versement monnaie | Numeric | - |
-| CA | Montant versement produits | Numeric | - |
-| CB | Montant versement cartes | Numeric | 1x refs |
-| CC | Montant versement cheques | Numeric | 1x refs |
-| CD | Montant versement od | Numeric | 1x refs |
-| CE | Nbre devise versement | Numeric | - |
-| CF | Montant apport coffre | Numeric | - |
-| CG | Montant apport produits | Numeric | - |
-| CH | Nbre devise apport | Numeric | - |
-| CI | Montant solde final | Numeric | - |
-| CJ | Montant solde final monnaie | Numeric | - |
-| CK | Montant solde final produits | Numeric | - |
-| CL | Montant solde final cartes | Numeric | - |
-| CM | Montant solde final cheques | Numeric | - |
-| CN | Montant solde final od | Numeric | - |
-| CO | Nbre devise solde final | Numeric | - |
-| CP | Existe ecart devise | Logical | - |
-| CQ | Montant tableau | Numeric | - |
-| CR | Montant tableau monnaie | Numeric | - |
-| CS | Montant tableau produit | Numeric | - |
-| CT | Montant tableau carte | Numeric | - |
-| CU | Montant tableau cheque | Numeric | - |
-| CV | Montant tableau od | Numeric | - |
-| CW | Nbre devise tableau | Numeric | - |
-| CX | Validation comptage chrono his | Numeric | - |
-| CY | Validation comptage date | Date | - |
-| CZ | Validation comptage time | Time | - |
-| DA | Edition ticket fermeture | Logical | - |
-| DB | Edition ticket remise / appro | Logical | - |
-| DC | Edition ticket recap | Logical | - |
-| DD | Editer ticket recap dans ecart | Logical | - |
+| EN | Param societe | Alpha | - |
+| EO | Param devise locale | Alpha | - |
+| EP | Param Nbre decimales | Numeric | - |
+| EQ | Param masque montant | Alpha | - |
+| ER | Param code village | Alpha | - |
+| ES | Param nom village | Alpha | - |
+| ET | Param masque cumul | Alpha | - |
+| EU | Param Uni/Bi | Alpha | - |
+| EV | Param village TAI | Alpha | - |
+| EW | Param Date comptable | Date | - |
+| EX | Param fermeture validee | Logical | - |
+| EY | Param chrono session | Numeric | - |
+| FC | Param coffre 2 est ouvert | Logical | - |
+| FE | Fin | Logical | 1x refs |
+| FF | Action | Numeric | 1x refs |
+| FG | Flag avancement | Numeric | - |
+| FH | Montant initial | Numeric | - |
+| FI | Montant initial monnaie | Numeric | - |
+| FJ | Montant initial produits | Numeric | - |
+| FK | Montant initial cartes | Numeric | - |
+| FL | Montant initial cheques | Numeric | - |
+| FM | Montant initial od | Numeric | - |
+| FN | Nbre devise initial | Numeric | - |
+| FO | Montant compte | Numeric | - |
+| FP | Montant compte monnaie | Numeric | - |
+| FQ | Montant compte produits | Numeric | - |
+| FR | Montant compte cartes | Numeric | - |
+| FS | Montant compte cheques | Numeric | - |
+| FT | Montant compte od | Numeric | - |
+| FU | Nbre devise compte | Numeric | - |
+| FV | Montant calcule | Numeric | - |
+| FW | Montant calcule monnaie | Numeric | - |
+| FX | Montant calcule produits | Numeric | - |
+| FY | Montant calcule cartes | Numeric | - |
+| FZ | Montant calcule cheques | Numeric | - |
+| GA | Montant calcule od | Numeric | - |
+| GB | Nbre devise calcule | Numeric | - |
+| GC | Montant ecart | Numeric | - |
+| GD | Montant ecart monnaie | Numeric | - |
+| GE | Montant ecart produits | Numeric | - |
+| GF | Montant ecart cartes | Numeric | - |
+| GG | Montant ecart cheques | Numeric | - |
+| GH | Montant ecart od | Numeric | - |
+| GI | Nbre devise ecart | Numeric | - |
+| GJ | Commentaire ecart | Alpha | - |
+| GK | Commentaire ecart devise | Alpha | - |
+| GL | Montant versement | Numeric | 1x refs |
+| GM | Montant versement monnaie | Numeric | 1x refs |
+| GN | Montant versement produits | Numeric | - |
+| GO | Montant versement cartes | Numeric | 1x refs |
+| GP | Montant versement cheques | Numeric | 1x refs |
+| GQ | Montant versement od | Numeric | - |
+| GR | Nbre devise versement | Numeric | [131.1.1.3](#t6), [131.1.2.1](#t8), [131.1.2.1.1](#t9) |
+| GS | Montant apport coffre | Numeric | 1x refs |
+| GT | Montant apport produits | Numeric | [131.1.2.2.2](#t13), [131.1.3.2.2](#t20) |
+| GU | Nbre devise apport | Numeric | [131.1.1.3](#t6), [131.1.2.1](#t8), [131.1.2.1.1](#t9) |
+| GV | Montant solde final | Numeric | - |
+| GW | Montant solde final monnaie | Numeric | - |
+| GX | Montant solde final produits | Numeric | - |
+| GY | Montant solde final cartes | Numeric | - |
+| GZ | Montant solde final cheques | Numeric | - |
+| HA | Montant solde final od | Numeric | - |
+| HB | Nbre devise solde final | Numeric | - |
+| HC | Existe ecart devise | Logical | - |
+| HD | Montant tableau | Numeric | - |
+| HE | Montant tableau monnaie | Numeric | - |
+| HF | Montant tableau produit | Numeric | - |
+| HG | Montant tableau carte | Numeric | - |
+| HH | Montant tableau cheque | Numeric | - |
+| HI | Montant tableau od | Numeric | - |
+| HJ | Nbre devise tableau | Numeric | - |
+| HK | Validation comptage chrono his | Numeric | - |
+| HL | Validation comptage date | Date | - |
+| HM | Validation comptage time | Time | - |
+| HN | Edition ticket fermeture | Logical | [131](#t1), [131.1](#t2) |
+| HO | Edition ticket remise / appro | Logical | - |
+| HP | Edition ticket recap | Logical | 1x refs |
+| HQ | Editer ticket recap dans ecart | Logical | - |
 
 <details>
 <summary>Toutes les 82 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **M** | p.i.Terminal coffre2 | Numeric |
-| P0 | **N** | p.i.Hostname coffre 2 | Unicode |
-| P0 | **O** | p.i.Host courant coffre 2 ? | Logical |
-| P0 | **Q** | P.Session ouvertes VIL ? | Logical |
-| Autre | **A** | Param societe | Alpha |
-| Autre | **B** | Param devise locale | Alpha |
-| Autre | **C** | Param Nbre decimales | Numeric |
-| Autre | **D** | Param masque montant | Alpha |
-| Autre | **E** | Param code village | Alpha |
-| Autre | **F** | Param nom village | Alpha |
-| Autre | **G** | Param masque cumul | Alpha |
-| Autre | **H** | Param Uni/Bi | Alpha |
-| Autre | **I** | Param village TAI | Alpha |
-| Autre | **J** | Param Date comptable | Date |
-| Autre | **K** | Param fermeture validee | Logical |
-| Autre | **L** | Param chrono session | Numeric |
-| Autre | **P** | Param coffre 2 est ouvert | Logical |
-| Autre | **R** | Fin | Logical |
-| Autre | **S** | Action | Numeric |
-| Autre | **T** | Flag avancement | Numeric |
-| Autre | **U** | Montant initial | Numeric |
-| Autre | **V** | Montant initial monnaie | Numeric |
-| Autre | **W** | Montant initial produits | Numeric |
-| Autre | **X** | Montant initial cartes | Numeric |
-| Autre | **Y** | Montant initial cheques | Numeric |
-| Autre | **Z** | Montant initial od | Numeric |
-| Autre | **BA** | Nbre devise initial | Numeric |
-| Autre | **BB** | Montant compte | Numeric |
-| Autre | **BC** | Montant compte monnaie | Numeric |
-| Autre | **BD** | Montant compte produits | Numeric |
-| Autre | **BE** | Montant compte cartes | Numeric |
-| Autre | **BF** | Montant compte cheques | Numeric |
-| Autre | **BG** | Montant compte od | Numeric |
-| Autre | **BH** | Nbre devise compte | Numeric |
-| Autre | **BI** | Montant calcule | Numeric |
-| Autre | **BJ** | Montant calcule monnaie | Numeric |
-| Autre | **BK** | Montant calcule produits | Numeric |
-| Autre | **BL** | Montant calcule cartes | Numeric |
-| Autre | **BM** | Montant calcule cheques | Numeric |
-| Autre | **BN** | Montant calcule od | Numeric |
-| Autre | **BO** | Nbre devise calcule | Numeric |
-| Autre | **BP** | Montant ecart | Numeric |
-| Autre | **BQ** | Montant ecart monnaie | Numeric |
-| Autre | **BR** | Montant ecart produits | Numeric |
-| Autre | **BS** | Montant ecart cartes | Numeric |
-| Autre | **BT** | Montant ecart cheques | Numeric |
-| Autre | **BU** | Montant ecart od | Numeric |
-| Autre | **BV** | Nbre devise ecart | Numeric |
-| Autre | **BW** | Commentaire ecart | Alpha |
-| Autre | **BX** | Commentaire ecart devise | Alpha |
-| Autre | **BY** | Montant versement | Numeric |
-| Autre | **BZ** | Montant versement monnaie | Numeric |
-| Autre | **CA** | Montant versement produits | Numeric |
-| Autre | **CB** | Montant versement cartes | Numeric |
-| Autre | **CC** | Montant versement cheques | Numeric |
-| Autre | **CD** | Montant versement od | Numeric |
-| Autre | **CE** | Nbre devise versement | Numeric |
-| Autre | **CF** | Montant apport coffre | Numeric |
-| Autre | **CG** | Montant apport produits | Numeric |
-| Autre | **CH** | Nbre devise apport | Numeric |
-| Autre | **CI** | Montant solde final | Numeric |
-| Autre | **CJ** | Montant solde final monnaie | Numeric |
-| Autre | **CK** | Montant solde final produits | Numeric |
-| Autre | **CL** | Montant solde final cartes | Numeric |
-| Autre | **CM** | Montant solde final cheques | Numeric |
-| Autre | **CN** | Montant solde final od | Numeric |
-| Autre | **CO** | Nbre devise solde final | Numeric |
-| Autre | **CP** | Existe ecart devise | Logical |
-| Autre | **CQ** | Montant tableau | Numeric |
-| Autre | **CR** | Montant tableau monnaie | Numeric |
-| Autre | **CS** | Montant tableau produit | Numeric |
-| Autre | **CT** | Montant tableau carte | Numeric |
-| Autre | **CU** | Montant tableau cheque | Numeric |
-| Autre | **CV** | Montant tableau od | Numeric |
-| Autre | **CW** | Nbre devise tableau | Numeric |
-| Autre | **CX** | Validation comptage chrono his | Numeric |
-| Autre | **CY** | Validation comptage date | Date |
-| Autre | **CZ** | Validation comptage time | Time |
-| Autre | **DA** | Edition ticket fermeture | Logical |
-| Autre | **DB** | Edition ticket remise / appro | Logical |
-| Autre | **DC** | Edition ticket recap | Logical |
-| Autre | **DD** | Editer ticket recap dans ecart | Logical |
+| P0 | **EZ** | p.i.Terminal coffre2 | Numeric |
+| P0 | **FA** | p.i.Hostname coffre 2 | Unicode |
+| P0 | **FB** | p.i.Host courant coffre 2 ? | Logical |
+| P0 | **FD** | P.Session ouvertes VIL ? | Logical |
+| Autre | **EN** | Param societe | Alpha |
+| Autre | **EO** | Param devise locale | Alpha |
+| Autre | **EP** | Param Nbre decimales | Numeric |
+| Autre | **EQ** | Param masque montant | Alpha |
+| Autre | **ER** | Param code village | Alpha |
+| Autre | **ES** | Param nom village | Alpha |
+| Autre | **ET** | Param masque cumul | Alpha |
+| Autre | **EU** | Param Uni/Bi | Alpha |
+| Autre | **EV** | Param village TAI | Alpha |
+| Autre | **EW** | Param Date comptable | Date |
+| Autre | **EX** | Param fermeture validee | Logical |
+| Autre | **EY** | Param chrono session | Numeric |
+| Autre | **FC** | Param coffre 2 est ouvert | Logical |
+| Autre | **FE** | Fin | Logical |
+| Autre | **FF** | Action | Numeric |
+| Autre | **FG** | Flag avancement | Numeric |
+| Autre | **FH** | Montant initial | Numeric |
+| Autre | **FI** | Montant initial monnaie | Numeric |
+| Autre | **FJ** | Montant initial produits | Numeric |
+| Autre | **FK** | Montant initial cartes | Numeric |
+| Autre | **FL** | Montant initial cheques | Numeric |
+| Autre | **FM** | Montant initial od | Numeric |
+| Autre | **FN** | Nbre devise initial | Numeric |
+| Autre | **FO** | Montant compte | Numeric |
+| Autre | **FP** | Montant compte monnaie | Numeric |
+| Autre | **FQ** | Montant compte produits | Numeric |
+| Autre | **FR** | Montant compte cartes | Numeric |
+| Autre | **FS** | Montant compte cheques | Numeric |
+| Autre | **FT** | Montant compte od | Numeric |
+| Autre | **FU** | Nbre devise compte | Numeric |
+| Autre | **FV** | Montant calcule | Numeric |
+| Autre | **FW** | Montant calcule monnaie | Numeric |
+| Autre | **FX** | Montant calcule produits | Numeric |
+| Autre | **FY** | Montant calcule cartes | Numeric |
+| Autre | **FZ** | Montant calcule cheques | Numeric |
+| Autre | **GA** | Montant calcule od | Numeric |
+| Autre | **GB** | Nbre devise calcule | Numeric |
+| Autre | **GC** | Montant ecart | Numeric |
+| Autre | **GD** | Montant ecart monnaie | Numeric |
+| Autre | **GE** | Montant ecart produits | Numeric |
+| Autre | **GF** | Montant ecart cartes | Numeric |
+| Autre | **GG** | Montant ecart cheques | Numeric |
+| Autre | **GH** | Montant ecart od | Numeric |
+| Autre | **GI** | Nbre devise ecart | Numeric |
+| Autre | **GJ** | Commentaire ecart | Alpha |
+| Autre | **GK** | Commentaire ecart devise | Alpha |
+| Autre | **GL** | Montant versement | Numeric |
+| Autre | **GM** | Montant versement monnaie | Numeric |
+| Autre | **GN** | Montant versement produits | Numeric |
+| Autre | **GO** | Montant versement cartes | Numeric |
+| Autre | **GP** | Montant versement cheques | Numeric |
+| Autre | **GQ** | Montant versement od | Numeric |
+| Autre | **GR** | Nbre devise versement | Numeric |
+| Autre | **GS** | Montant apport coffre | Numeric |
+| Autre | **GT** | Montant apport produits | Numeric |
+| Autre | **GU** | Nbre devise apport | Numeric |
+| Autre | **GV** | Montant solde final | Numeric |
+| Autre | **GW** | Montant solde final monnaie | Numeric |
+| Autre | **GX** | Montant solde final produits | Numeric |
+| Autre | **GY** | Montant solde final cartes | Numeric |
+| Autre | **GZ** | Montant solde final cheques | Numeric |
+| Autre | **HA** | Montant solde final od | Numeric |
+| Autre | **HB** | Nbre devise solde final | Numeric |
+| Autre | **HC** | Existe ecart devise | Logical |
+| Autre | **HD** | Montant tableau | Numeric |
+| Autre | **HE** | Montant tableau monnaie | Numeric |
+| Autre | **HF** | Montant tableau produit | Numeric |
+| Autre | **HG** | Montant tableau carte | Numeric |
+| Autre | **HH** | Montant tableau cheque | Numeric |
+| Autre | **HI** | Montant tableau od | Numeric |
+| Autre | **HJ** | Nbre devise tableau | Numeric |
+| Autre | **HK** | Validation comptage chrono his | Numeric |
+| Autre | **HL** | Validation comptage date | Date |
+| Autre | **HM** | Validation comptage time | Time |
+| Autre | **HN** | Edition ticket fermeture | Logical |
+| Autre | **HO** | Edition ticket remise / appro | Logical |
+| Autre | **HP** | Edition ticket recap | Logical |
+| Autre | **HQ** | Editer ticket recap dans ecart | Logical |
 
 </details>
 
@@ -2777,13 +2810,26 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 2 | 2 |
+| NEGATION | 1 | 5 |
 | CONSTANTE | 2 | 0 |
-| CONDITION | 2 | 0 |
 | OTHER | 5 | 0 |
 | CAST_LOGIQUE | 2 | 0 |
-| NEGATION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 9 | `Montant apport coffre [CF]<>0 OR Montant apport produits [CG]<>0 OR Montant versement monnaie [BZ]<>0 OR Montant versement cartes [CB]<>0 OR Montant versement cheques [CC]<>0 OR Nbre devise versement [CE]<>0 OR Nbre devise apport [CH]<>0` | [RM-002](#rm-RM-002) |
+| CONDITION | 1 | `Action [S]=0` | [RM-001](#rm-RM-001) |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 12 | `NOT P.Session ouvertes VIL ? [Q]` | [RM-003](#rm-RM-003) |
 
 #### CONSTANTE (2 expressions)
 
@@ -2792,22 +2838,15 @@ Variables diverses.
 | CONSTANTE | 10 | `'D'` | - |
 | CONSTANTE | 8 | `'F'` | - |
 
-#### CONDITION (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 9 | `Montant compte cheques [BF]<>0 OR Montant compte od [BG]<>0 OR [AZ]<>0 OR Montant compte [BB]<>0 OR Montant compte monnaie [BC]<>0 OR Montant compte cartes [BE]<>0 OR Nbre devise compte [BH]<>0` | - |
-| CONDITION | 1 | `Action [S]=0` | - |
-
 #### OTHER (5 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 5 | `Montant versement cheques [CC]` | - |
-| OTHER | 6 | `Montant versement od [CD]` | - |
-| OTHER | 4 | `Montant versement cartes [CB]` | - |
+| OTHER | 5 | `Edition ticket recap [DC]` | - |
+| OTHER | 6 | `Editer ticket recap da... [DD]` | - |
+| OTHER | 4 | `Edition ticket remise ... [DB]` | - |
 | OTHER | 2 | `Fin [R]` | - |
-| OTHER | 3 | `Montant versement prod... [CA]` | - |
+| OTHER | 3 | `Edition ticket fermeture [DA]` | - |
 
 #### CAST_LOGIQUE (2 expressions)
 
@@ -2815,12 +2854,6 @@ Variables diverses.
 |------|-----|------------|-------|
 | CAST_LOGIQUE | 11 | `'TRUE'LOG` | - |
 | CAST_LOGIQUE | 7 | `'FALSE'LOG` | - |
-
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 12 | `NOT P.Session ouvertes VIL ? [Q]` | - |
 
 <!-- TAB:Connexions -->
 
@@ -2968,7 +3001,7 @@ graph LR
 | Sous-programmes | 20 | Forte dependance |
 | Ecrans visibles | 5 | Quelques ecrans |
 | Code desactive | 0% (0 / 628) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 3 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -3012,4 +3045,4 @@ graph LR
 | [Mise a jour comptage caisse WS (IDE 133)](ADH-IDE-133.md) | Sous-programme | 2x | Haute - Mise a jour donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 15:36*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:08*

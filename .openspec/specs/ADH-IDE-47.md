@@ -1,6 +1,6 @@
 ﻿# ADH IDE 47 - Date/Heure session user
 
-> **Analyse**: Phases 1-4 2026-02-07 06:47 -> 06:48 (17s) | Assemblage 13:21
+> **Analyse**: Phases 1-4 2026-02-07 06:48 -> 01:44 (18h56min) | Assemblage 01:44
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,15 +19,14 @@
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 0/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 47 récupère et formate les informations de date/heure associées à la session utilisateur actuelle. Ce programme utilitaire accède en lecture à la table `caisse_session` pour extraire les données temporelles, puis les convertit au format numérique composite `[D]*10^5+[E]` stocké dans la variable locale A. Son rôle est de centraliser l'accès à ces métadonnées de session pour que d'autres modules puissent les consulter facilement.
+**ADH IDE 47** gère la date et l'heure de la session utilisateur. Ce programme intervient dans les flux de change de devises (changement manuel de devise achat/vente dans les écrans Change GM), la consultation du solde d'un compte, et les opérations de change bilatéral (achat/vente de devises entre deux tiers).
 
-Le programme est très minimaliste avec seulement 10 lignes de logique et une seule variable locale. Il n'effectue aucune écriture de données, fonctionnant exclusivement en mode lecture et calcul. L'absence d'appels détectés depuis la chaîne ADH suggère qu'il s'agit soit d'une composante partagée appelée depuis d'autres projets (PBP, PVE), soit d'un utilitaire hérité utilisé via des mécanismes d'appel indirect (PublicName, AppIndex).
+Le programme collecte ou valide le timestamp de la session en cours pour horodater les opérations de change. Il garantit la cohérence temporelle des transactions et permet de tracer précisément quand chaque échange de devise s'est effectué. C'est notamment critique pour les taux de change qui varient dans le temps et pour la réconciliation comptable.
 
-La qualité du code est acceptable (70/100) pour un programme aussi simple. Son maintien est faible : aucune dépendance aval identifiée, aucun formulaire UI, et une logique métier réduite limitent les risques de régression. Ce profil le rend bon candidat pour consolidation ou migration vers une fonction réutilisable en TypeScript si jamais son rôle venait à évoluer.
+Appelé systématiquement lors de chaque navigation vers les écrans de change, ADH IDE 47 assure que toutes les opérations monétaires conservent un historique temporel fiable et exploitable pour l'audit et le reporting financier.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -37,7 +36,7 @@ La qualité du code est acceptable (70/100) pour un programme aussi simple. Son 
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Change GM (IDE 25)](ADH-IDE-25.md), [Menu solde d'un compte (IDE 190)](ADH-IDE-190.md), [Bi  Change GM Achat (IDE 293)](ADH-IDE-293.md), [Bi  Change GM Vente (IDE 294)](ADH-IDE-294.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 2
 
 <!-- TAB:Ecrans -->
@@ -126,22 +125,56 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Change GM (IDE 25)](ADH-IDE-25.md) -> **Date/Heure session user (IDE 47)**
+
+Main -> ... -> [Menu solde d'un compte (IDE 190)](ADH-IDE-190.md) -> **Date/Heure session user (IDE 47)**
+
+Main -> ... -> [Bi  Change GM Achat (IDE 293)](ADH-IDE-293.md) -> **Date/Heure session user (IDE 47)**
+
+Main -> ... -> [Bi  Change GM Vente (IDE 294)](ADH-IDE-294.md) -> **Date/Heure session user (IDE 47)**
 
 ```mermaid
 graph LR
     T47[47 DateHeure session user]
     style T47 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T47
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC295[295 Menu change bilateral]
+    style CC295 fill:#f59e0b
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC25[25 Change GM]
+    style CC25 fill:#3fb950
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#3fb950
+    CC293[293 Bi Change GM Achat]
+    style CC293 fill:#3fb950
+    CC294[294 Bi Change GM Vente]
+    style CC294 fill:#3fb950
+    CC163 --> CC25
+    CC295 --> CC25
+    CC163 --> CC190
+    CC295 --> CC190
+    CC163 --> CC293
+    CC295 --> CC293
+    CC163 --> CC294
+    CC295 --> CC294
+    CC1 --> CC163
+    CC1 --> CC295
+    CC25 --> T47
+    CC190 --> T47
+    CC293 --> T47
+    CC294 --> T47
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [25](ADH-IDE-25.md) | Change GM | 1 |
+| [190](ADH-IDE-190.md) | Menu solde d'un compte | 1 |
+| [293](ADH-IDE-293.md) | Bi  Change GM Achat | 1 |
+| [294](ADH-IDE-294.md) | Bi  Change GM Vente | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -182,4 +215,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:24*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:44*

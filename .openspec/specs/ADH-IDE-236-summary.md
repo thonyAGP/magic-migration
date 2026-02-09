@@ -1,6 +1,6 @@
 ﻿# ADH IDE 236 - Print ticket vente PMS-584
 
-> **Analyse**: 2026-02-07 03:54
+> **Analyse**: 2026-02-08 04:32
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

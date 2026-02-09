@@ -1,6 +1,6 @@
 ﻿# ADH IDE 50 - Initialistaion Easy Arrival
 
-> **Analyse**: Phases 1-4 2026-02-07 16:16 -> 16:16 (6s) | Assemblage 16:16
+> **Analyse**: Phases 1-4 2026-02-07 16:16 -> 01:46 (9h30min) | Assemblage 01:46
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,15 +19,16 @@
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 0/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 50 initialise le flux d'arrivée facile dans le système de gestion des adhérents. Ce programme configure les paramètres de base pour une nouvelle arrivée : identifiant client, services associés, montants de dépôt et options de facturation. Il valide les données d'entrée et prépare l'environnement pour les étapes suivantes du processus d'accueil.
+# ADH IDE 50 - Initialisation Easy Arrival
 
-Le programme gère également les vérifications préalables : existence du compte, droits d'accès de l'opérateur, et compatibilité des services demandés avec le profil client. Si une condition de validation échoue, il retourne un code d'erreur spécifique qui oriente l'utilisateur vers la correction appropriée (numéro de compte invalide, services indisponibles, droits insuffisants).
+Ce programme gère l'initialisation des arrivées simplifiées (Easy Arrival) dans le système de gestion des adhérents. Il est appelé depuis le menu principal (ADH IDE 166 - Start) et prépare les structures de données nécessaires avant le processus d'enregistrement d'une nouvelle arrivée.
 
-En sortie, ADH IDE 50 fournit un ensemble de variables globales préremplies (montants, devises, codes services) que les écrans suivants du workflow consommeront directement. Cela élimine les ressaisies et garantit la cohérence des données à travers les différentes étapes de l'arrivée.
+Le programme effectue les tâches préparatoires critiques : validation des paramètres d'entrée, initialisation des variables de session, chargement des configurations Easy Arrival depuis les tables de référence, et préparation de l'environnement pour les écrans suivants du flux d'arrivée. Il garantit que toutes les données requises sont présentes et cohérentes avant de passer au contrôle utilisateur.
+
+Une fois les initialisations terminées, le programme retourne les états et données préparées au programme appelant ou transfère le contrôle à l'écran d'Easy Arrival suivant. Les erreurs d'initialisation (données manquantes, incohérences de configuration) sont gérées avec messages d'alerte appropriés pour guider l'utilisateur.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -37,7 +38,7 @@ En sortie, ADH IDE 50 fournit un ensemble de variables globales préremplies (mo
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Start (IDE 166)](ADH-IDE-166.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 6
 
 <!-- TAB:Ecrans -->
@@ -130,22 +131,22 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Start (IDE 166)](ADH-IDE-166.md) -> **Initialistaion Easy Arrival (IDE 50)**
 
 ```mermaid
 graph LR
     T50[50 Initialistaion Easy...]
     style T50 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T50
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC166[166 Start]
+    style CC166 fill:#8b5cf6
+    CC166 --> T50
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [166](ADH-IDE-166.md) | Start | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -186,4 +187,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 16:16*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:46*

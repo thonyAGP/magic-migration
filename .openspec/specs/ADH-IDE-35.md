@@ -1,6 +1,6 @@
 ﻿# ADH IDE 35 - Write histo_Fus_Sep_Log
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (27s) | Assemblage 13:10
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 01:29 (21h46min) | Assemblage 01:29
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -24,11 +24,11 @@
 
 # ADH IDE 35 - Write histo_Fus_Sep_Log
 
-Programme utilitaire chargé d'enregistrer les opérations de fusion et séparation de comptes clients dans la table de journalisation `histo__fusionseparation_log`. Il capture les métadonnées critiques de chaque opération : identificateurs des comptes source/destination, type d'opération (fusion ou séparation), horodatage et utilisateur responsable.
+Programme utilitaire appelé lors des opérations de **séparation et fusion de comptes** (ADH IDE 27 et 28). Son rôle est de tracer dans la table `histo_fusionseparation_log` chaque modification effectuée pendant ces opérations critiques.
 
-Appelé systématiquement par les programmes Separation (IDE 27) et Fusion (IDE 28) après validation des données, il assure la traçabilité complète de ces opérations sensibles. Cet audit trail est obligatoire pour la réconciliation comptable et les investigations ultérieures sur l'historique des comptes.
+Enregistre les mouvements de comptes : création de liens de filiation, suppression d'associations, modification des statuts. Chaque ligne loggée contient l'opérateur, la date/heure, les numéros de sociétés et comptes impliqués, et le type d'opération (séparation vs fusion). Permet un audit complet des restructurations de données comptables.
 
-Fonction atomique sans logique métier complexe : valide les paramètres d'entrée, construit le enregistrement avec contexte d'exécution, puis persiste dans la table de historique avant de retourner le statut de succès au programme appelant.
+Appelé une ou plusieurs fois pendant le flux séparation/fusion pour tracer les étapes intermédiaires. Point d'entrée critique pour garantir la traçabilité des modifications de hiérarchie de comptes dans la base de données.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -38,26 +38,37 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - (sans nom)
+#### <a id="t1"></a>35 - (sans nom)
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t2"></a>T2 - (sans nom)
+#### <a id="t2"></a>35.1 - (sans nom)
 
 **Role** : Traitement interne.
 
 ---
 
-#### <a id="t3"></a>T3 - (sans nom)
+#### <a id="t3"></a>35.2 - (sans nom)
 
 **Role** : Traitement interne.
 
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Negation de VG78 (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT VG78` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 1 : `NOT VG78` |
+| **Exemple** | Si NOT VG78 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -76,25 +87,29 @@ Traitements internes.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **35.1** | [**(sans nom)** (T1)](#t1) | MDI | - | Traitement |
-| 35.1.1 | [(sans nom) (T2)](#t2) | MDI | - | |
-| 35.1.2 | [(sans nom) (T3)](#t3) | MDI | - | |
+| **35.1** | [**(sans nom)** (35)](#t1) | MDI | - | Traitement |
+| 35.1.1 | [(sans nom) (35.1)](#t2) | MDI | - | |
+| 35.1.2 | [(sans nom) (35.2)](#t3) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 3 taches]
-    WRITE[MAJ 1 tables]
-    START --> PROCESS --> WRITE --> ENDOK
-    ENDOK([END])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -131,13 +146,13 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | i.mode Reprise | Logical | - |
-| B | i.chrono F/E | Numeric | - |
-| C | i.chrono LOG | Numeric | - |
-| D | i.code | Alpha | - |
-| E | i.texte | Alpha | - |
-| F | i.status | Alpha | - |
-| G | i.type F/E | Alpha | - |
+| EN | i.mode Reprise | Logical | - |
+| EO | i.chrono F/E | Numeric | - |
+| EP | i.chrono LOG | Numeric | - |
+| EQ | i.code | Alpha | - |
+| ER | i.texte | Alpha | - |
+| ES | i.status | Alpha | - |
+| ET | i.type F/E | Alpha | - |
 
 ## 12. EXPRESSIONS
 
@@ -147,7 +162,7 @@ Variables diverses.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| NEGATION | 1 | 0 |
+| NEGATION | 1 | 5 |
 | REFERENCE_VG | 1 | 0 |
 
 ### 12.2 Expressions cles par type
@@ -156,7 +171,7 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| NEGATION | 1 | `NOT VG78` | - |
+| NEGATION | 1 | `NOT VG78` | [RM-001](#rm-RM-001) |
 
 #### REFERENCE_VG (1 expressions)
 
@@ -232,7 +247,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 72) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -248,4 +263,4 @@ graph LR
 | histo__fusionseparation_log | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:10*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:29*

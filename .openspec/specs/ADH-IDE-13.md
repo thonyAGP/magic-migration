@@ -1,6 +1,6 @@
 ﻿# ADH IDE 13 - calculate week #
 
-> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 03:39 (29s) | Assemblage 12:53
+> **Analyse**: Phases 1-4 2026-02-07 03:39 -> 01:13 (21h33min) | Assemblage 01:13
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 13 est un programme de **calcul pur du numéro de semaine ISO** pour une date donnée. Appelé depuis ADH IDE 12 (Catching stats) lors du traitement des statistiques de caisse, il reçoit une date en entrée et retourne le numéro de semaine correspondant. C'est un bloc de logique calendaire sans accès base de données : il détermine d'abord le début d'année, vérifie le jour de la semaine du 1er janvier, calcule la fin de la première semaine ISO, puis convertit la différence avec la date entrante en nombre de semaines avec arrondi.
+**ADH IDE 13** est un utilitaire de calcul pur qui détermine le numéro de semaine ISO 8601 pour une date donnée. Invoqué exclusivement par ADH IDE 12 (Catching stats), ce programme ne contient aucune interaction base de données, aucun écran, et aucun appel à d'autres programmes. Il exécute 7 expressions mathématiques compactes pour convertir une date en numéro de semaine suivant les règles ISO (semaine 1 = première semaine contenant un jeudi, semaines commençant le lundi).
 
-La logique suit la norme ISO 8601 où une semaine commence le lundi et finit le dimanche. Le programme utilise 7 expressions successives : obtention du début d'année (`BOY`), extraction du jour de la semaine (`DOW`), calcul des jours jusqu'à fin de première semaine, détermination de cette date limite, comparaison avec la date entrante, et enfin conversion du nombre de jours en semaines avec arrondi entier. Toute la complexité réside dans le respect strict du calendrier ISO : les jours excédentaires sont arrondis à la semaine supérieure, et le résultat est incrémenté de 1 pour commencer à la semaine 1 (pas 0).
+L'algorithme suit une logique séquentielle : extraction du 1er janvier de l'année d'entrée, détermination du jour de la semaine du 1er janvier (MOD 7), calcul de la fin de la première semaine ISO, différenciation en jours entre la date d'entrée et cette limite, conversion en semaines avec arrondi au plafond, puis ajout de 1 pour numéroter à partir de la semaine 1. La formule clé combine modulo (détection de reste) et division entière pour gérer correctement les semaines partielles.
 
-C'est un composant **non orphelin et non critique** : spécialisé, autonome, sans dépendances externes, il sert exclusivement à enrichir les analyses de caisse avec la dimension temporelle par semaine. Si modifié, seul IDE 12 en subirait les impacts directs. Aucune table n'est impliquée, aucun autre programme ne le compose ou ne l'enrichit—c'est une brique de calcul isolée et robuste.
+Avec une couverture de 100 % des expressions décodées, zéro accès table, et zéro code désactivé, ce programme représente une fonction stateless idéale pour migration : transformable directement en méthode TypeScript, C# ou Python utilisant les bibliothèques calendaires natives du langage cible.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -39,12 +39,24 @@ Calculs metier : montants, stocks, compteurs.
 #### <a id="t1"></a>13 - calculate week #
 
 **Role** : Calcul : calculate week #.
-**Variables liees** : B (<.week #), F (EOF 1st week), H (weeks between)
+**Variables liees** : EO (<.week #), ES (EOF 1st week), EU (weeks between)
 
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Fix (IF (Days between [G] MOD 7=0,Days between [G]/7,Days between [G]/7+1),2,0)+1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Fix (IF (Days between [G] MOD 7=0,Days between [G]/7,Days between [G]/7+1),2,0)+1` |
+| **Si vrai** | Action conditionnelle |
+| **Variables** | ET (Days between) |
+| **Expression source** | Expression 6 : `Fix (IF (Days between [G] MOD 7=0,Days between [G]/7,Days be` |
+| **Exemple** | Si Fix (IF (Days between [G] MOD 7=0,Days between [G]/7,Days between [G]/7+1),2,0)+1 â†’ Action conditionnelle |
 
 ## 6. CONTEXTE
 
@@ -72,13 +84,20 @@ flowchart TD
     START([START])
     INIT[Init controles]
     SAISIE[Traitement principal]
+    DECISION{Days between}
+    PROCESS[Traitement]
     ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
@@ -103,14 +122,14 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | >.date | Date | 3x refs |
-| B | <.week # | Numeric | - |
-| C | BOY pdate | Date | 2x refs |
-| D | DOW(BOY pdate) | Numeric | 1x refs |
-| E | #days from BOY | Numeric | 1x refs |
-| F | EOF 1st week | Date | [13](#t1) |
-| G | Days between | Numeric | 1x refs |
-| H | weeks between | Numeric | 1x refs |
+| EN | >.date | Date | 3x refs |
+| EO | <.week # | Numeric | - |
+| EP | BOY pdate | Date | 2x refs |
+| EQ | DOW(BOY pdate) | Numeric | 1x refs |
+| ER | #days from BOY | Numeric | 1x refs |
+| ES | EOF 1st week | Date | [13](#t1) |
+| ET | Days between | Numeric | 1x refs |
+| EU | weeks between | Numeric | 1x refs |
 
 ## 12. EXPRESSIONS
 
@@ -203,7 +222,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 17) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -218,4 +237,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 12:54*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:15*

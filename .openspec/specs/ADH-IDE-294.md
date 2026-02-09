@@ -1,6 +1,6 @@
 ﻿# ADH IDE 294 - Bi  Change GM Vente
 
-> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 03:55 (42s) | Assemblage 03:55
+> **Analyse**: Phases 1-4 2026-02-07 03:54 -> 03:55 (42s) | Assemblage 05:11
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -18,72 +18,15 @@
 | Taches | 16 (5 ecrans visibles) |
 | Tables modifiees | 5 |
 | Programmes appeles | 9 |
+| Complexite | **BASSE** (score 36/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Bi  Change GM Vente** assure la gestion complete de ce processus, accessible depuis [Menu change bilateral (IDE 295)](ADH-IDE-295.md).
+ADH IDE 294 gère le workflow complet d'une transaction de change (achat/vente de devises) au sein de la caisse. Le programme démarre par une série de validations critiques : vérification que la session caisse est ouverte, que aucune clôture n'est en cours, et que le réseau est disponible. Il récupère ensuite les informations contextuelles (titre du titre de change, données utilisateur, date/heure session) et initialise l'écran de saisie avec les devises disponibles et leur stock actuel en caisse.
 
-Le flux de traitement s'organise en **5 blocs fonctionnels** :
+La logique métier centrale alterne entre deux modes : consultation des devises existantes (scroll dans la grille change_vente) et création d'une nouvelle transaction. Lors de chaque entrée, le programme recalcule le stock devise disponible (via ADH IDE 153), valide les montants (achat vs vente avec taux de change appliqué), et enregistre la transaction dans la table change_vente_____chg avec son mode de paiement associé. Les compteurs opérationnels (compteurs________cpt) sont incrémentés pour chaque transaction validée.
 
-- **Traitement** (6 taches) : traitements metier divers
-- **Consultation** (4 taches) : ecrans de recherche, selection et consultation
-- **Calcul** (3 taches) : calculs de montants, stocks ou compteurs
-- **Creation** (2 taches) : insertion d'enregistrements en base (mouvements, prestations)
-- **Reglement** (1 tache) : gestion des moyens de paiement et reglements
-
-**Donnees modifiees** : 5 tables en ecriture (reseau_cloture___rec, compte_gm________cgm, compteurs________cpt, moyens_reglement_mor, change_vente_____chg).
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (6 taches)
-
-- **294** - Change GM **[[ECRAN]](#ecran-t1)**
-- **294.1** - Test si cloture en cours
-- **294.1.1** - Blocage cloture
-- **294.2** - Test reseau
-- **294.3** - Scroll Change **[[ECRAN]](#ecran-t5)**
-- **294.6** - Deblocage cloture
-
-Delegue a : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md)
-
-#### Phase 2 : Consultation (4 taches)
-
-- **294.4** - Creation/Affichage change **[[ECRAN]](#ecran-t6)**
-- **294.4.1** - Affichage annulation **[[ECRAN]](#ecran-t7)**
-- **294.4.2** - Zoom des devises **[[ECRAN]](#ecran-t8)**
-- **294.4.4** - Zoom Type de Taux **[[ECRAN]](#ecran-t10)**
-
-Delegue a : [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
-
-#### Phase 3 : Reglement (1 tache)
-
-- **294.4.3** - Zoom des modes de paiement **[[ECRAN]](#ecran-t9)**
-
-#### Phase 4 : Calcul (3 taches)
-
-- **294.4.5** - Recup compteur
-- **294.4.8** - Calcul Flag
-- **294.5** - Reaffichage infos compte
-
-Delegue a : [Calcul du stock devise (IDE 153)](ADH-IDE-153.md)
-
-#### Phase 5 : Creation (2 taches)
-
-- **294.4.6** - Creation change
-- **294.4.7** - Creation change
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| change_vente_____chg | R/**W**/L (4 usages) | Donnees de ventes |
-| moyens_reglement_mor | R/**W**/L (4 usages) | Reglements / paiements |
-| reseau_cloture___rec | R/**W** (3 usages) | Donnees reseau/cloture |
-| compte_gm________cgm | **W** (2 usages) | Comptes GM (generaux) |
-| compteurs________cpt | **W** (1 usages) | Comptes GM (generaux) |
-
-</details>
+À la finalisation, le programme déclenche l'impression du reçu change via ADH IDE 291, en passant par la chaîne d'impression (sélection imprimante, numérotation ticket, réinitialisation). Les modifications aux tables moyens_reglement_mor et compte_gm________cgm reflètent l'impact sur les soldes de compte et les moyens de règlement utilisés. L'ensemble du flux est protégé par des blocages de concurrence (cloture en cours) et des validations de disponibilité réseau.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -93,7 +36,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>294 - Change GM [[ECRAN]](#ecran-t1)
+#### <a id="t1"></a>T1 - Change GM [ECRAN]
 
 **Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 118 x 44 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -103,11 +46,11 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [294.1](#t2) | Test si cloture en cours | Traitement |
-| [294.1.1](#t3) | Blocage cloture | Traitement |
-| [294.2](#t4) | Test reseau | Traitement |
-| [294.3](#t5) | Scroll Change **[[ECRAN]](#ecran-t5)** | Traitement |
-| [294.6](#t16) | Deblocage cloture | Traitement |
+| [T2](#t2) | Test si cloture en cours | Traitement |
+| [T3](#t3) | Blocage cloture | Traitement |
+| [T4](#t4) | Test reseau | Traitement |
+| [T5](#t5) | Scroll Change **[ECRAN]** | Traitement |
+| [T16](#t16) | Deblocage cloture | Traitement |
 
 </details>
 **Variables liees** : R (W0 n° de change)
@@ -115,21 +58,21 @@ Traitements internes.
 
 ---
 
-#### <a id="t2"></a>294.1 - Test si cloture en cours
+#### <a id="t2"></a>T2 - Test si cloture en cours
 
 **Role** : Verification : Test si cloture en cours.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
 
 ---
 
-#### <a id="t3"></a>294.1.1 - Blocage cloture
+#### <a id="t3"></a>T3 - Blocage cloture
 
 **Role** : Traitement : Blocage cloture.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
 
 ---
 
-#### <a id="t4"></a>294.2 - Test reseau
+#### <a id="t4"></a>T4 - Test reseau
 
 **Role** : Verification : Test reseau.
 **Variables liees** : W (W0 reseau)
@@ -137,7 +80,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t5"></a>294.3 - Scroll Change [[ECRAN]](#ecran-t5)
+#### <a id="t5"></a>T5 - Scroll Change [ECRAN]
 
 **Role** : Traitement : Scroll Change.
 **Ecran** : 1101 x 218 DLU (MDI) | [Voir mockup](#ecran-t5)
@@ -146,7 +89,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t16"></a>294.6 - Deblocage cloture
+#### <a id="t16"></a>T16 - Deblocage cloture
 
 **Role** : Traitement : Deblocage cloture.
 **Delegue a** : [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Appel programme (IDE 44)](ADH-IDE-44.md), [Date/Heure session user (IDE 47)](ADH-IDE-47.md)
@@ -158,7 +101,7 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t6"></a>294.4 - Creation/Affichage change [[ECRAN]](#ecran-t6)
+#### <a id="t6"></a>T6 - Creation/Affichage change [ECRAN]
 
 **Role** : Reinitialisation : Creation/Affichage change.
 **Ecran** : 1102 x 88 DLU (MDI) | [Voir mockup](#ecran-t6)
@@ -166,21 +109,21 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t7"></a>294.4.1 - Affichage annulation [[ECRAN]](#ecran-t7)
+#### <a id="t7"></a>T7 - Affichage annulation [ECRAN]
 
 **Role** : Reinitialisation : Affichage annulation.
 **Ecran** : 312 x 64 DLU (Modal) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>294.4.2 - Zoom des devises [[ECRAN]](#ecran-t8)
+#### <a id="t8"></a>T8 - Zoom des devises [ECRAN]
 
 **Role** : Selection par l'operateur : Zoom des devises.
 **Ecran** : 363 x 152 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t10"></a>294.4.4 - Zoom Type de Taux [[ECRAN]](#ecran-t10)
+#### <a id="t10"></a>T10 - Zoom Type de Taux [ECRAN]
 
 **Role** : Calcul : Zoom Type de Taux.
 **Ecran** : 506 x 153 DLU (MDI) | [Voir mockup](#ecran-t10)
@@ -192,7 +135,7 @@ Gestion des moyens de paiement : 1 tache de reglement.
 
 ---
 
-#### <a id="t9"></a>294.4.3 - Zoom des modes de paiement [[ECRAN]](#ecran-t9)
+#### <a id="t9"></a>T9 - Zoom des modes de paiement [ECRAN]
 
 **Role** : Gestion du reglement : Zoom des modes de paiement.
 **Ecran** : 366 x 151 DLU (MDI) | [Voir mockup](#ecran-t9)
@@ -204,21 +147,21 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t11"></a>294.4.5 - Recup compteur
+#### <a id="t11"></a>T11 - Recup compteur
 
 **Role** : Calcul : Recup compteur.
 **Delegue a** : [Calcul du stock devise (IDE 153)](ADH-IDE-153.md)
 
 ---
 
-#### <a id="t14"></a>294.4.8 - Calcul Flag
+#### <a id="t14"></a>T14 - Calcul Flag
 
 **Role** : Calcul : Calcul Flag.
 **Delegue a** : [Calcul du stock devise (IDE 153)](ADH-IDE-153.md)
 
 ---
 
-#### <a id="t15"></a>294.5 - Reaffichage infos compte
+#### <a id="t15"></a>T15 - Reaffichage infos compte
 
 **Role** : Reinitialisation : Reaffichage infos compte.
 **Variables liees** : I (> solde compte), J (> etat compte)
@@ -231,14 +174,14 @@ Insertion de nouveaux enregistrements en base.
 
 ---
 
-#### <a id="t12"></a>294.4.6 - Creation change
+#### <a id="t12"></a>T12 - Creation change
 
 **Role** : Creation d'enregistrement : Creation change.
 **Variables liees** : R (W0 n° de change)
 
 ---
 
-#### <a id="t13"></a>294.4.7 - Creation change
+#### <a id="t13"></a>T13 - Creation change
 
 **Role** : Creation d'enregistrement : Creation change.
 **Variables liees** : R (W0 n° de change)
@@ -246,7 +189,7 @@ Insertion de nouveaux enregistrements en base.
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Programme de consultation - lecture seule sans regles de validation)*
 
 ## 6. CONTEXTE
 
@@ -261,18 +204,18 @@ Insertion de nouveaux enregistrements en base.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 294.3 | 294.3 | Scroll Change | MDI | 1101 | 218 | Traitement |
-| 2 | 294.4 | 294.4 | Creation/Affichage change | MDI | 1102 | 88 | Consultation |
-| 3 | 294.4.2 | 294.4.2 | Zoom des devises | MDI | 363 | 152 | Consultation |
-| 4 | 294.4.3 | 294.4.3 | Zoom des modes de paiement | MDI | 366 | 151 | Reglement |
-| 5 | 294.4.4 | 294.4.4 | Zoom Type de Taux | MDI | 506 | 153 | Consultation |
+| 1 | 294.3 | T5 | Scroll Change | MDI | 1101 | 218 | Traitement |
+| 2 | 294.4 | T6 | Creation/Affichage change | MDI | 1102 | 88 | Consultation |
+| 3 | 294.4.2 | T8 | Zoom des devises | MDI | 363 | 152 | Consultation |
+| 4 | 294.4.3 | T9 | Zoom des modes de paiement | MDI | 366 | 151 | Reglement |
+| 5 | 294.4.4 | T10 | Zoom Type de Taux | MDI | 506 | 153 | Consultation |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t5"></a>294.3 - Scroll Change
-**Tache** : [294.3](#t5) | **Type** : MDI | **Dimensions** : 1101 x 218 DLU
+**Tache** : [T5](#t5) | **Type** : MDI | **Dimensions** : 1101 x 218 DLU
 **Bloc** : Traitement | **Titre IDE** : Scroll Change
 
 <!-- FORM-DATA:
@@ -680,7 +623,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t6"></a>294.4 - Creation/Affichage change
-**Tache** : [294.4](#t6) | **Type** : MDI | **Dimensions** : 1102 x 88 DLU
+**Tache** : [T6](#t6) | **Type** : MDI | **Dimensions** : 1102 x 88 DLU
 **Bloc** : Consultation | **Titre IDE** : Creation/Affichage change
 
 <!-- FORM-DATA:
@@ -1001,7 +944,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t8"></a>294.4.2 - Zoom des devises
-**Tache** : [294.4.2](#t8) | **Type** : MDI | **Dimensions** : 363 x 152 DLU
+**Tache** : [T8](#t8) | **Type** : MDI | **Dimensions** : 363 x 152 DLU
 **Bloc** : Consultation | **Titre IDE** : Zoom des devises
 
 <!-- FORM-DATA:
@@ -1146,7 +1089,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t9"></a>294.4.3 - Zoom des modes de paiement
-**Tache** : [294.4.3](#t9) | **Type** : MDI | **Dimensions** : 366 x 151 DLU
+**Tache** : [T9](#t9) | **Type** : MDI | **Dimensions** : 366 x 151 DLU
 **Bloc** : Reglement | **Titre IDE** : Zoom des modes de paiement
 
 <!-- FORM-DATA:
@@ -1272,7 +1215,7 @@ Insertion de nouveaux enregistrements en base.
 ---
 
 #### <a id="ecran-t10"></a>294.4.4 - Zoom Type de Taux
-**Tache** : [294.4.4](#t10) | **Type** : MDI | **Dimensions** : 506 x 153 DLU
+**Tache** : [T10](#t10) | **Type** : MDI | **Dimensions** : 506 x 153 DLU
 **Bloc** : Consultation | **Titre IDE** : Zoom Type de Taux
 
 <!-- FORM-DATA:
@@ -1441,15 +1384,15 @@ Insertion de nouveaux enregistrements en base.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF5[294.3 Scroll Change]
+    VF5[T5 Scroll Change]
     style VF5 fill:#58a6ff
-    VF6[294.4 CreationAffichage c...]
+    VF6[T6 CreationAffichage c...]
     style VF6 fill:#58a6ff
-    VF8[294.4.2 Zoom des devises]
+    VF8[T8 Zoom des devises]
     style VF8 fill:#58a6ff
-    VF9[294.4.3 Zoom des modes de p...]
+    VF9[T9 Zoom des modes de p...]
     style VF9 fill:#58a6ff
-    VF10[294.4.4 Zoom Type de Taux]
+    VF10[T10 Zoom Type de Taux]
     style VF10 fill:#58a6ff
     EXT43[IDE 43 Recuperation du...]
     style EXT43 fill:#3fb950
@@ -1501,22 +1444,22 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **294.1** | [**Change GM** (294)](#t1) [mockup](#ecran-t1) | MDI | 118x44 | Traitement |
-| 294.1.1 | [Test si cloture en cours (294.1)](#t2) | MDI | - | |
-| 294.1.2 | [Blocage cloture (294.1.1)](#t3) | MDI | - | |
-| 294.1.3 | [Test reseau (294.2)](#t4) | MDI | - | |
-| 294.1.4 | [Scroll Change (294.3)](#t5) [mockup](#ecran-t5) | MDI | 1101x218 | |
-| 294.1.5 | [Deblocage cloture (294.6)](#t16) | MDI | - | |
-| **294.2** | [**Creation/Affichage change** (294.4)](#t6) [mockup](#ecran-t6) | MDI | 1102x88 | Consultation |
-| 294.2.1 | [Affichage annulation (294.4.1)](#t7) [mockup](#ecran-t7) | Modal | 312x64 | |
-| 294.2.2 | [Zoom des devises (294.4.2)](#t8) [mockup](#ecran-t8) | MDI | 363x152 | |
-| 294.2.3 | [Zoom Type de Taux (294.4.4)](#t10) [mockup](#ecran-t10) | MDI | 506x153 | |
-| **294.3** | [**Zoom des modes de paiement** (294.4.3)](#t9) [mockup](#ecran-t9) | MDI | 366x151 | Reglement |
-| **294.4** | [**Recup compteur** (294.4.5)](#t11) | MDI | - | Calcul |
-| 294.4.1 | [Calcul Flag (294.4.8)](#t14) | MDI | - | |
-| 294.4.2 | [Reaffichage infos compte (294.5)](#t15) | MDI | - | |
-| **294.5** | [**Creation change** (294.4.6)](#t12) | MDI | - | Creation |
-| 294.5.1 | [Creation change (294.4.7)](#t13) | MDI | - | |
+| **294.1** | [**Change GM** (T1)](#t1) [mockup](#ecran-t1) | MDI | 118x44 | Traitement |
+| 294.1.1 | [Test si cloture en cours (T2)](#t2) | MDI | - | |
+| 294.1.2 | [Blocage cloture (T3)](#t3) | MDI | - | |
+| 294.1.3 | [Test reseau (T4)](#t4) | MDI | - | |
+| 294.1.4 | [Scroll Change (T5)](#t5) [mockup](#ecran-t5) | MDI | 1101x218 | |
+| 294.1.5 | [Deblocage cloture (T16)](#t16) | MDI | - | |
+| **294.2** | [**Creation/Affichage change** (T6)](#t6) [mockup](#ecran-t6) | MDI | 1102x88 | Consultation |
+| 294.2.1 | [Affichage annulation (T7)](#t7) [mockup](#ecran-t7) | Modal | 312x64 | |
+| 294.2.2 | [Zoom des devises (T8)](#t8) [mockup](#ecran-t8) | MDI | 363x152 | |
+| 294.2.3 | [Zoom Type de Taux (T10)](#t10) [mockup](#ecran-t10) | MDI | 506x153 | |
+| **294.3** | [**Zoom des modes de paiement** (T9)](#t9) [mockup](#ecran-t9) | MDI | 366x151 | Reglement |
+| **294.4** | [**Recup compteur** (T11)](#t11) | MDI | - | Calcul |
+| 294.4.1 | [Calcul Flag (T14)](#t14) | MDI | - | |
+| 294.4.2 | [Reaffichage infos compte (T15)](#t15) | MDI | - | |
+| **294.5** | [**Creation change** (T12)](#t12) | MDI | - | Creation |
+| 294.5.1 | [Creation change (T13)](#t13) | MDI | - | |
 
 ### 9.4 Algorigramme
 
@@ -1524,19 +1467,29 @@ flowchart TD
 flowchart TD
     START([START])
     INIT[Init controles]
-    SAISIE[Scroll Change]
-    UPDATE[MAJ 5 tables]
+    START --> INIT
+    B1[Traitement (6t)]
+    INIT --> B1
+    B2[Consultation (4t)]
+    B1 --> B2
+    B3[Reglement (1t)]
+    B2 --> B3
+    B4[Calcul (3t)]
+    B3 --> B4
+    B5[Creation (2t)]
+    B4 --> B5
+    WRITE[MAJ 5 tables]
+    B5 --> WRITE
     ENDOK([END OK])
-
-    START --> INIT --> SAISIE
-    SAISIE --> UPDATE --> ENDOK
+    WRITE --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style WRITE fill:#ffeb3b,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
-> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -1546,18 +1499,49 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
+| 139 | moyens_reglement_mor | Reglements / paiements | DB | R | **W** | L | 4 |
+| 147 | change_vente_____chg | Donnees de ventes | DB | R | **W** | L | 4 |
 | 23 | reseau_cloture___rec | Donnees reseau/cloture | DB | R | **W** |   | 3 |
-| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
-| 35 | personnel_go______go |  | DB | R |   |   | 1 |
 | 47 | compte_gm________cgm | Comptes GM (generaux) | DB |   | **W** |   | 2 |
 | 68 | compteurs________cpt | Comptes GM (generaux) | DB |   | **W** |   | 1 |
-| 70 | date_comptable___dat |  | DB |   |   | L | 1 |
 | 124 | type_taux_change | Devises / taux de change | DB | R |   | L | 2 |
-| 139 | moyens_reglement_mor | Reglements / paiements | DB | R | **W** | L | 4 |
 | 141 | devises__________dev | Devises / taux de change | DB | R |   |   | 1 |
-| 147 | change_vente_____chg | Donnees de ventes | DB | R | **W** | L | 4 |
+| 35 | personnel_go______go |  | DB | R |   |   | 1 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 1 |
+| 70 | date_comptable___dat |  | DB |   |   | L | 1 |
 
 ### Colonnes par table (9 / 9 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 139 - moyens_reglement_mor (R/**W**/L) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 devise | W | Alpha |
+| B | W1 mode de paiement | W | Alpha |
+| C | W1 type de taux | W | Numeric |
+| D | W1 taux de change | W | Numeric |
+| E | W1 equivalent | W | Numeric |
+| F | W1 qte maxi devise | W | Numeric |
+| G | W1 quantite | W | Numeric |
+| H | W1 validation | W | Alpha |
+| I | W1 n° change | W | Numeric |
+| J | W1 retour lien-MOP | W | Numeric |
+| K | W1 ret lien TypeTaux | W | Numeric |
+| L | Btn Valider | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 147 - change_vente_____chg (R/**W**/L) - 4 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| D | W1 taux de change | W | Numeric |
+| I | W1 n° change | W | Numeric |
+| R | W0 n° de change | W | Numeric |
+
+</details>
 
 <details>
 <summary>Table 23 - reseau_cloture___rec (R/**W**) - 3 usages</summary>
@@ -1570,14 +1554,41 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
+<summary>Table 47 - compte_gm________cgm (**W**) - 2 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| A | W1 choix action | R | Alpha |
-| B | W1 fin tâche | R | Alpha |
-| C | W1 ret lien MOP | R | Numeric |
-| D | v. titre | R | Alpha |
+| I | > solde compte | W | Numeric |
+| J | > etat compte | W | Alpha |
+
+</details>
+
+<details>
+<summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 124 - type_taux_change (R/L) - 2 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | bouton quitter | R | Alpha |
+| B | bouton selectionner | R | Alpha |
+| C | v. titre | R | Alpha |
+
+</details>
+
+<details>
+<summary>Table 141 - devises__________dev (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | bouton quitter | R | Alpha |
+| B | bouton selectionner | R | Alpha |
+| C | v. titre | R | Alpha |
 
 </details>
 
@@ -1615,72 +1626,14 @@ flowchart TD
 </details>
 
 <details>
-<summary>Table 47 - compte_gm________cgm (**W**) - 2 usages</summary>
+<summary>Table 30 - gm-recherche_____gmr (R) - 1 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| I | > solde compte | W | Numeric |
-| J | > etat compte | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
-
-*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
-
-</details>
-
-<details>
-<summary>Table 124 - type_taux_change (R/L) - 2 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | bouton quitter | R | Alpha |
-| B | bouton selectionner | R | Alpha |
-| C | v. titre | R | Alpha |
-
-</details>
-
-<details>
-<summary>Table 139 - moyens_reglement_mor (R/**W**/L) - 4 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | W1 devise | W | Alpha |
-| B | W1 mode de paiement | W | Alpha |
-| C | W1 type de taux | W | Numeric |
-| D | W1 taux de change | W | Numeric |
-| E | W1 equivalent | W | Numeric |
-| F | W1 qte maxi devise | W | Numeric |
-| G | W1 quantite | W | Numeric |
-| H | W1 validation | W | Alpha |
-| I | W1 n° change | W | Numeric |
-| J | W1 retour lien-MOP | W | Numeric |
-| K | W1 ret lien TypeTaux | W | Numeric |
-| L | Btn Valider | W | Alpha |
-
-</details>
-
-<details>
-<summary>Table 141 - devises__________dev (R) - 1 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| A | bouton quitter | R | Alpha |
-| B | bouton selectionner | R | Alpha |
-| C | v. titre | R | Alpha |
-
-</details>
-
-<details>
-<summary>Table 147 - change_vente_____chg (R/**W**/L) - 4 usages</summary>
-
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| D | W1 taux de change | W | Numeric |
-| I | W1 n° change | W | Numeric |
-| R | W0 n° de change | W | Numeric |
+| A | W1 choix action | R | Alpha |
+| B | W1 fin tâche | R | Alpha |
+| C | W1 ret lien MOP | R | Numeric |
+| D | v. titre | R | Alpha |
 
 </details>
 
@@ -1707,7 +1660,7 @@ Variables internes au programme.
 | T | W0 heure operation | Time | - |
 | U | W0 pas d'enreg | Alpha | - |
 | V | W0 user | Alpha | - |
-| W | W0 reseau | Alpha | [294.2](#t4) |
+| W | W0 reseau | Alpha | [T4](#t4) |
 
 ### 11.3 Autres (16)
 
@@ -1937,4 +1890,4 @@ graph LR
 | [Calcul du stock devise (IDE 153)](ADH-IDE-153.md) | Sous-programme | 1x | Normale - Calcul de donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 03:55*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 05:12*

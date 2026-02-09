@@ -1,31 +1,31 @@
-﻿# ADH IDE 154 - Devises finales F/F Qte WS
+﻿# ADH IDE 154 - Tableau recap fermeture
 
-> **Analyse**: 2026-02-07 07:16
+> **Analyse**: 2026-02-08 03:38
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Devises finales F/F Qte WS
-- **Tables modifiees**: 0
-- **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Fonction**: Tableau recap fermeture
+- **Tables modifiees**: 2
+- **Complexite**: **BASSE** (37/100)
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 3 programme(s): Fermeture caisse (IDE 131), Reimpression tickets fermeture (IDE 151), Fermeture caisse 144 (IDE 299)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
-| **Appelle** | (aucun) |
+| **Appele par** | [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Reimpression tickets fermeture (IDE 151)](ADH-IDE-151.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md) |
+| **Appelle** | [Calcul equivalent (IDE 22)](ADH-IDE-22.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md), [Get Printer (IDE 179)](ADH-IDE-179.md), [Printer choice (IDE 180)](ADH-IDE-180.md), [Set Listing Number (IDE 181)](ADH-IDE-181.md), [Raz Current Printer (IDE 182)](ADH-IDE-182.md) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 1 |
-| Lignes Logic | 35 |
-| Expressions | 8 |
-| Tables |  |
+| Taches | 93 |
+| Lignes Logic | 1934 |
+| Expressions | 13 |
+| Tables | 24 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

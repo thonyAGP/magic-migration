@@ -1,6 +1,6 @@
 ﻿# ADH IDE 44 - Appel programme
 
-> **Analyse**: Phases 1-4 2026-02-07 06:46 -> 06:47 (16s) | Assemblage 13:16
+> **Analyse**: Phases 1-4 2026-02-07 06:47 -> 01:42 (18h55min) | Assemblage 01:42
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 44 est un **programme utilitaire de routage** chargé de dispatcher les clics utilisateurs depuis les menus vers les programmes cibles appropriés. Bien qu'extrêmement simple (une seule tâche, une expression), il joue un rôle central en tant que point de passage pour quatre menus différents : changement de compte, Great Member, impression des appels, et changement bilatéral. Le programme ne contient aucune logique métier complexe — il se limite à récupérer le dernier élément cliqué via la fonction `LastClicked()` et en déduit la cible d'exécution.
+ADH IDE 44 est un programme de **routage centralisé d'appels** sans interface visuelle. Il capture le dernier contrôle cliqué (via `LastClicked()`) et l'utilise comme clé de dispatch pour acheminer vers le bon programme cible. C'est un pattern de factorisation typique dans Magic Unipaas : au lieu que 21 menus différents gèrent individuellement le routage des clics, ils delegent tous à ce programme unique qui applique une logique uniforme.
 
-Ce programme n'accède à aucune table et n'appelle aucun autre programme : c'est une **fonction terminale** purement technique. Son rôle est de décharger les menus d'une logique de routage répétitive en centralisant le mécanisme de dispatch. Cette approche évite la duplication de code dans les quatre menus appelants et garantit un traitement cohérent des commandes utilisateur.
+Le programme ne lit ni n'écrit en base de données, n'accepte aucun paramètre formel, et termine sans appeler d'autres programmes—c'est un **point terminal** dans la chaîne d'appels. Sa structure est minimale (1 tâche, 1 handler, 1 expression) mais critique pour l'UX caisse, puisqu'il est appelé depuis 21 écrans différents (changement de compte, garanties, facturation, télephonie, etc.).
 
-Classé en **non-orphelin** malgré zéro appel externe, ADH IDE 44 est utilisé par d'autres programmes plutôt que d'en appeler. Sa qualité de code est excellente (zéro ligne désactivée, pas de code mort), et sa complexité minimale en fait un bon candidat pour des refactorisations futures si le besoin de dispatch devient plus sophistiqué.
+Ce pattern économise du code répétitif et garantit que la logique de routage reste cohérente sur toute l'application. Si le comportement du dispatch devait évoluer (par exemple, ajouter un log ou une validation avant appel), une seule modification suffirait.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,7 +36,7 @@ Classé en **non-orphelin** malgré zéro appel externe, ADH IDE 44 est utilisé
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Menu changement compte (IDE 37)](ADH-IDE-37.md), [Menu Great Member (IDE 158)](ADH-IDE-158.md), [Menu impression des appels (IDE 214)](ADH-IDE-214.md), [Menu change bilateral (IDE 295)](ADH-IDE-295.md)
+- **Appele par**: [Change GM (IDE 25)](ADH-IDE-25.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md), [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Gratuités (IDE 168)](ADH-IDE-168.md), [Versement/Retrait (IDE 174)](ADH-IDE-174.md), [Menu telephone (IDE 217)](ADH-IDE-217.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md), [Gratuités P157 (IDE 317)](ADH-IDE-317.md), [Menu changement compte (IDE 37)](ADH-IDE-37.md), [Extrait de compte (IDE 69)](ADH-IDE-69.md), [Club Med Pass menu (IDE 77)](ADH-IDE-77.md), [Bar Limit (IDE 86)](ADH-IDE-86.md), [Menu Great Member (IDE 158)](ADH-IDE-158.md), [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md), [Gestion forfait TAI LOCAL (IDE 173)](ADH-IDE-173.md), [Menu solde d'un compte (IDE 190)](ADH-IDE-190.md), [Menu impression des appels (IDE 214)](ADH-IDE-214.md), [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md)
 - **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 1
 
 <!-- TAB:Ecrans -->
@@ -110,40 +110,97 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
+Main -> ... -> [Change GM (IDE 25)](ADH-IDE-25.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Comptes de depôt (IDE 40)](ADH-IDE-40.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Garantie sur compte (IDE 111)](ADH-IDE-111.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Gratuités (IDE 168)](ADH-IDE-168.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Versement/Retrait (IDE 174)](ADH-IDE-174.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Menu telephone (IDE 217)](ADH-IDE-217.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Garantie sur compte (IDE 288)](ADH-IDE-288.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Gratuités P157 (IDE 317)](ADH-IDE-317.md) -> **Appel programme (IDE 44)**
+
 Main -> ... -> [Menu changement compte (IDE 37)](ADH-IDE-37.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Extrait de compte (IDE 69)](ADH-IDE-69.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Club Med Pass menu (IDE 77)](ADH-IDE-77.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Bar Limit (IDE 86)](ADH-IDE-86.md) -> **Appel programme (IDE 44)**
 
 Main -> ... -> [Menu Great Member (IDE 158)](ADH-IDE-158.md) -> **Appel programme (IDE 44)**
 
+Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Gestion forfait TAI LOCAL (IDE 173)](ADH-IDE-173.md) -> **Appel programme (IDE 44)**
+
+Main -> ... -> [Menu solde d'un compte (IDE 190)](ADH-IDE-190.md) -> **Appel programme (IDE 44)**
+
 Main -> ... -> [Menu impression des appels (IDE 214)](ADH-IDE-214.md) -> **Appel programme (IDE 44)**
 
-Main -> ... -> [Menu change bilateral (IDE 295)](ADH-IDE-295.md) -> **Appel programme (IDE 44)**
+Main -> ... -> [Menu Choix Saisie/Annul vente (IDE 242)](ADH-IDE-242.md) -> **Appel programme (IDE 44)**
 
 ```mermaid
 graph LR
     T44[44 Appel programme]
     style T44 fill:#58a6ff
-    CC214[214 Menu impression de...]
-    style CC214 fill:#8b5cf6
-    CC295[295 Menu change bilateral]
-    style CC295 fill:#8b5cf6
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC25[25 Change GM]
+    style CC25 fill:#3fb950
+    CC69[69 Extrait de compte]
+    style CC69 fill:#3fb950
     CC37[37 Menu changement compte]
-    style CC37 fill:#8b5cf6
-    CC158[158 Menu Great Member]
-    style CC158 fill:#8b5cf6
+    style CC37 fill:#3fb950
+    CC40[40 Comptes de depôt]
+    style CC40 fill:#3fb950
+    CC163 --> CC25
+    CC163 --> CC37
+    CC163 --> CC40
+    CC163 --> CC69
+    CC1 --> CC163
+    CC25 --> T44
     CC37 --> T44
-    CC158 --> T44
-    CC214 --> T44
-    CC295 --> T44
+    CC40 --> T44
+    CC69 --> T44
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
+| [25](ADH-IDE-25.md) | Change GM | 3 |
+| [40](ADH-IDE-40.md) | Comptes de depôt | 3 |
+| [0](ADH-IDE-0.md) | Garantie sur compte PMS-584 | 2 |
+| [111](ADH-IDE-111.md) | Garantie sur compte | 2 |
+| [112](ADH-IDE-112.md) | Garantie sur compte PMS-584 | 2 |
+| [168](ADH-IDE-168.md) | Gratuités | 2 |
+| [174](ADH-IDE-174.md) | Versement/Retrait | 2 |
+| [217](ADH-IDE-217.md) | Menu telephone | 2 |
+| [288](ADH-IDE-288.md) | Garantie sur compte | 2 |
+| [317](ADH-IDE-317.md) | Gratuités P157 | 2 |
 | [37](ADH-IDE-37.md) | Menu changement compte | 1 |
+| [69](ADH-IDE-69.md) | Extrait de compte | 1 |
+| [77](ADH-IDE-77.md) | Club Med Pass menu | 1 |
+| [86](ADH-IDE-86.md) | Bar Limit | 1 |
 | [158](ADH-IDE-158.md) | Menu Great Member | 1 |
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
+| [173](ADH-IDE-173.md) | Gestion forfait TAI LOCAL | 1 |
+| [190](ADH-IDE-190.md) | Menu solde d'un compte | 1 |
 | [214](ADH-IDE-214.md) | Menu impression des appels | 1 |
-| [295](ADH-IDE-295.md) | Menu change bilateral | 1 |
+| [242](ADH-IDE-242.md) | Menu Choix Saisie/Annul vente | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -184,4 +241,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:18*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:43*

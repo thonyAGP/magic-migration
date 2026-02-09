@@ -1,6 +1,6 @@
 ﻿# ADH IDE 51 - Recherche Droit Solde Free Ext
 
-> **Analyse**: Phases 1-4 2026-02-07 06:49 -> 06:49 (15s) | Assemblage 13:32
+> **Analyse**: Phases 1-4 2026-02-07 06:49 -> 01:46 (18h57min) | Assemblage 01:46
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,25 +19,35 @@
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 0/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 51 est un programme de recherche spécialisé dans la localisation et l'extraction du droit au solde gratuit (free balance) pour les externes. Il parcourt les données de compte client pour identifier les montants disponibles non facturés, critère fondamental pour les opérations de clôture de dossier ou de transition vers un nouvel établissement. Ce programme fait partie de la chaîne de traitement des droits financiers du module ADH.
+**ADH IDE 51** est un programme de recherche spécialisé qui localise et extrait le droit au solde gratuit (montant non facturé disponible) pour les clients externes. Appelé directement depuis le Main Program, il fonctionne en mode batch sans interface utilisateur visible et interroge la table des mouvements de stock pour déterminer les montants disponibles selon le profil client et l'état de validation du droit.
 
-Le programme interroge les tables de transactions et de cumuls pour construire une vision consolidée du solde disponible, en excluant les montants déjà engagés ou réservés. Il applique des règles métier spécifiques aux externes (clients non-résidents ou temporaires) pour déterminer l'éligibilité et le montant extractible, intégrant des paramètres de seuil et des conditions de durée de détention.
+Le programme applique une logique de filtrage basée sur les rôles utilisateur (distingue les rôles "INFORMATICIEN" et "GESTION") et utilise une validation boolean pour confirmer l'éligibilité. Avec seulement 8 lignes de logic sans code mort et zéro programmes appelés, il s'agit d'un composant autonome et fortement découplé qui se focalise uniquement sur la vérification et l'extraction des droits aux soldes gratuits.
 
-En cas de succès, le programme retourne le montant du droit au solde avec les références de justification. En cas d'erreur (compte introuvable, données insuffisantes), il génère un code d'erreur explicite permettant au processus appelant de gérer le scénario dégradé. Ce programme s'inscrit dans une logique de service réutilisable, appelé depuis plusieurs points de la chaîne de gestion des dossiers clients.
+Son absence de callers détectés le classe comme orphelin potentiel — il est probablement invoqué dynamiquement via un PublicName ou fait partie d'une chaîne de traitement appelée indirectement (processus de fermeture de dossiers, transitions clients). La lecture seule de la base (zéro modifications) garantit une sécurité d'accès maximale et une facilité de migration vers une architecture moderne.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: [C]='INFORMATICIEN' OR [C] egale 'GESTION'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[C]='INFORMATICIEN' OR [C]='GESTION'` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 2 : `[C]='INFORMATICIEN' OR [C]='GESTION'` |
+| **Exemple** | Si [C]='INFORMATICIEN' OR [C]='GESTION' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Main Program (IDE 1)](ADH-IDE-1.md)
 - **Appelle**: 0 programmes | **Tables**: 1 (W:0 R:1 L:0) | **Taches**: 1 | **Expressions**: 3
 
 <!-- TAB:Ecrans -->
@@ -98,12 +108,12 @@ flowchart TD
 
 ### 11.1 Parametres entrants (2)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Main Program (IDE 1)](ADH-IDE-1.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P. User | Alpha | 1x parametre entrant |
-| B | P Droit Ok | Logical | - |
+| EN | P. User | Alpha | 1x parametre entrant |
+| EO | P Droit Ok | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -113,23 +123,23 @@ Variables recues en parametre.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 1 | 5 |
 | OTHER | 1 | 0 |
-| CONDITION | 1 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 2 | `[C]='INFORMATICIEN' OR [C]='GESTION'` | [RM-001](#rm-RM-001) |
 
 #### OTHER (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | OTHER | 1 | `P. User [A]` | - |
-
-#### CONDITION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 2 | `[C]='INFORMATICIEN' OR [C]='GESTION'` | - |
 
 #### CAST_LOGIQUE (1 expressions)
 
@@ -143,22 +153,22 @@ Variables recues en parametre.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Main Program (IDE 1)](ADH-IDE-1.md) -> **Recherche Droit Solde Free Ext (IDE 51)**
 
 ```mermaid
 graph LR
     T51[51 Recherche Droit Sol...]
     style T51 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T51
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC1 --> T51
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [1](ADH-IDE-1.md) | Main Program | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -189,7 +199,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 8) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -199,4 +209,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:33*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:48*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 135 - Generation tableau recap WS
 
-> **Analyse**: Phases 1-4 2026-02-07 07:10 -> 07:10 (15s) | Assemblage 07:10
+> **Analyse**: Phases 1-4 2026-02-08 03:13 -> 03:13 (4s) | Assemblage 03:13
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,25 +14,29 @@
 | IDE Position | 135 |
 | Nom Programme | Generation tableau recap WS |
 | Fichier source | `Prg_135.xml` |
-| Dossier IDE | Gestion |
+| Dossier IDE | General |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 0/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Generation tableau recap WS** assure la gestion complete de ce processus.
+ADH IDE 135 - GENERATION TABLEAU RECAP WS est un programme de synthèse qui consolide les données de fermeture de caisse en tableau récapitulatif. Appelé à la fin du workflow de fermeture (depuis ADH IDE 131, IDE 155 ou IDE 299), il agrège les mouvements de trésorerie, les écarts détectés et génère un fichier résumé pour transmission au siège ou archivage.
+
+Le programme traite les données de session (devises manipulées, montants comptés vs attendus, écarts par type de mouvement) et les formate dans un tableau lisible. Il gère les différentes devises selon la configuration locale et calcule les totaux consolidés. Le résultat est typiquement exporté en fichier texte ou directement alimenté un module de reporting (WS = Web Service ou Worksheet selon contexte).
+
+Ce programme est essentiel pour l'audit de caisse : il produit la trace documentée de chaque fermeture et permet la réconciliation avec le siège. Sans lui, les équipes terrain n'auraient pas de preuve formelle du solde clôturé. C'est un utility programme sans interface directe, puremnet orienté données et exports.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Controle fermeture caisse WS (IDE 155)](ADH-IDE-155.md), [Fermeture caisse (IDE 131)](ADH-IDE-131.md), [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md)
 - **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 30
 
 <!-- TAB:Ecrans -->
@@ -75,8 +79,8 @@ flowchart TD
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 510 | pv_discounts |  | TMP |   |   | L | 1 |
 | 693 | devise_in | Devises / taux de change | DB | R |   |   | 1 |
+| 510 | pv_discounts |  | TMP |   |   | L | 1 |
 
 ### Colonnes par table (1 / 1 tables avec colonnes identifiees)
 
@@ -121,62 +125,62 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | Param date comptable | Date | 1x refs |
-| B | Param numero session | Numeric | 1x refs |
-| C | Param type | Alpha | 2x refs |
-| D | Param type appro_vers_coffre | Alpha | - |
-| E | Param mode de paiement | Alpha | 1x refs |
-| F | Param avec change | Alpha | 1x refs |
-| G | Param code devise | Alpha | 1x refs |
-| H | Param quantite devise | Numeric | 1x refs |
-| I | Param taux devise | Numeric | 1x refs |
-| J | Param montant | Numeric | 6x refs |
-| K | Param montant monnaie | Numeric | 1x refs |
-| L | Param montant produits | Numeric | 1x refs |
-| M | Param montant cartes | Numeric | 1x refs |
-| N | Param montant chèque | Numeric | 1x refs |
-| O | Param montant od | Numeric | 1x refs |
-| P | Param societe | Alpha | 1x refs |
-| Q | Param compte village | Numeric | 1x refs |
-| R | Param filiation | Numeric | 1x refs |
-| S | Param imputation | Numeric | 1x refs |
-| T | Param sous imputation | Numeric | 1x refs |
-| U | Param libelle | Alpha | 2x refs |
-| V | Param libelle complementaire | Alpha | - |
-| W | Param nom GM | Alpha | 1x refs |
-| X | Param quantite article | Numeric | 1x refs |
-| Y | Param prix article | Numeric | 1x refs |
+| EN | Param date comptable | Date | 1x refs |
+| EO | Param numero session | Numeric | 1x refs |
+| EP | Param type | Alpha | 2x refs |
+| EQ | Param type appro_vers_coffre | Alpha | - |
+| ER | Param mode de paiement | Alpha | 1x refs |
+| ES | Param avec change | Alpha | 1x refs |
+| ET | Param code devise | Alpha | 1x refs |
+| EU | Param quantite devise | Numeric | 1x refs |
+| EV | Param taux devise | Numeric | 1x refs |
+| EW | Param montant | Numeric | 6x refs |
+| EX | Param montant monnaie | Numeric | 1x refs |
+| EY | Param montant produits | Numeric | 1x refs |
+| EZ | Param montant cartes | Numeric | 1x refs |
+| FA | Param montant chèque | Numeric | 1x refs |
+| FB | Param montant od | Numeric | 1x refs |
+| FC | Param societe | Alpha | 1x refs |
+| FD | Param compte village | Numeric | 1x refs |
+| FE | Param filiation | Numeric | 1x refs |
+| FF | Param imputation | Numeric | 1x refs |
+| FG | Param sous imputation | Numeric | 1x refs |
+| FH | Param libelle | Alpha | 2x refs |
+| FI | Param libelle complementaire | Alpha | - |
+| FJ | Param nom GM | Alpha | 1x refs |
+| FK | Param quantite article | Numeric | 1x refs |
+| FL | Param prix article | Numeric | 1x refs |
 
 <details>
 <summary>Toutes les 25 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| Autre | **A** | Param date comptable | Date |
-| Autre | **B** | Param numero session | Numeric |
-| Autre | **C** | Param type | Alpha |
-| Autre | **D** | Param type appro_vers_coffre | Alpha |
-| Autre | **E** | Param mode de paiement | Alpha |
-| Autre | **F** | Param avec change | Alpha |
-| Autre | **G** | Param code devise | Alpha |
-| Autre | **H** | Param quantite devise | Numeric |
-| Autre | **I** | Param taux devise | Numeric |
-| Autre | **J** | Param montant | Numeric |
-| Autre | **K** | Param montant monnaie | Numeric |
-| Autre | **L** | Param montant produits | Numeric |
-| Autre | **M** | Param montant cartes | Numeric |
-| Autre | **N** | Param montant chèque | Numeric |
-| Autre | **O** | Param montant od | Numeric |
-| Autre | **P** | Param societe | Alpha |
-| Autre | **Q** | Param compte village | Numeric |
-| Autre | **R** | Param filiation | Numeric |
-| Autre | **S** | Param imputation | Numeric |
-| Autre | **T** | Param sous imputation | Numeric |
-| Autre | **U** | Param libelle | Alpha |
-| Autre | **V** | Param libelle complementaire | Alpha |
-| Autre | **W** | Param nom GM | Alpha |
-| Autre | **X** | Param quantite article | Numeric |
-| Autre | **Y** | Param prix article | Numeric |
+| Autre | **EN** | Param date comptable | Date |
+| Autre | **EO** | Param numero session | Numeric |
+| Autre | **EP** | Param type | Alpha |
+| Autre | **EQ** | Param type appro_vers_coffre | Alpha |
+| Autre | **ER** | Param mode de paiement | Alpha |
+| Autre | **ES** | Param avec change | Alpha |
+| Autre | **ET** | Param code devise | Alpha |
+| Autre | **EU** | Param quantite devise | Numeric |
+| Autre | **EV** | Param taux devise | Numeric |
+| Autre | **EW** | Param montant | Numeric |
+| Autre | **EX** | Param montant monnaie | Numeric |
+| Autre | **EY** | Param montant produits | Numeric |
+| Autre | **EZ** | Param montant cartes | Numeric |
+| Autre | **FA** | Param montant chèque | Numeric |
+| Autre | **FB** | Param montant od | Numeric |
+| Autre | **FC** | Param societe | Alpha |
+| Autre | **FD** | Param compte village | Numeric |
+| Autre | **FE** | Param filiation | Numeric |
+| Autre | **FF** | Param imputation | Numeric |
+| Autre | **FG** | Param sous imputation | Numeric |
+| Autre | **FH** | Param libelle | Alpha |
+| Autre | **FI** | Param libelle complementaire | Alpha |
+| Autre | **FJ** | Param nom GM | Alpha |
+| Autre | **FK** | Param quantite article | Numeric |
+| Autre | **FL** | Param prix article | Numeric |
 
 </details>
 
@@ -199,7 +203,7 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CALCULATION | 1 | `[AA]+1` | - |
+| CALCULATION | 1 | `[BA]+1` | - |
 
 #### CONSTANTE (2 expressions)
 
@@ -234,7 +238,7 @@ Variables diverses.
 
 | IDE | Expression Decodee |
 |-----|-------------------|
-| 1 | `[AA]+1` |
+| 1 | `[BA]+1` |
 
 #### CONSTANTE (2)
 
@@ -256,7 +260,7 @@ Variables diverses.
 | 5 | `Param date comptable [A]` |
 | 6 | `Param numero session [B]` |
 | 7 | `Param type [C]` |
-| 8 | `[BG]` |
+| 8 | `[CG]` |
 | 9 | `Param type appro_vers_... [D]` |
 | 10 | `Param mode de paiement [E]` |
 | 11 | `Param avec change [F]` |
@@ -288,22 +292,56 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Controle fermeture caisse WS (IDE 155)](ADH-IDE-155.md) -> **Generation tableau recap WS (IDE 135)**
+
+Main -> ... -> [Fermeture caisse (IDE 131)](ADH-IDE-131.md) -> **Generation tableau recap WS (IDE 135)**
+
+Main -> ... -> [Fermeture caisse 144 (IDE 299)](ADH-IDE-299.md) -> **Generation tableau recap WS (IDE 135)**
 
 ```mermaid
 graph LR
     T135[135 Generation tableau...]
     style T135 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T135
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC281[281 Fermeture Sessions]
+    style CC281 fill:#f59e0b
+    CC298[298 Gestion caisse 142]
+    style CC298 fill:#f59e0b
+    CC121[121 Gestion caisse]
+    style CC121 fill:#f59e0b
+    CC131[131 Fermeture caisse]
+    style CC131 fill:#3fb950
+    CC155[155 Controle fermeture...]
+    style CC155 fill:#3fb950
+    CC299[299 Fermeture caisse 144]
+    style CC299 fill:#3fb950
+    CC121 --> CC131
+    CC298 --> CC131
+    CC121 --> CC155
+    CC298 --> CC155
+    CC121 --> CC299
+    CC298 --> CC299
+    CC163 --> CC121
+    CC281 --> CC121
+    CC163 --> CC298
+    CC281 --> CC298
+    CC1 --> CC163
+    CC1 --> CC281
+    CC131 --> T135
+    CC155 --> T135
+    CC299 --> T135
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [155](ADH-IDE-155.md) | Controle fermeture caisse WS | 13 |
+| [131](ADH-IDE-131.md) | Fermeture caisse | 2 |
+| [299](ADH-IDE-299.md) | Fermeture caisse 144 | 2 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -344,4 +382,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:10*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:13*

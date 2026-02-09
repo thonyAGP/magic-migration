@@ -1,205 +1,365 @@
 ﻿# ADH IDE 48 - Contrôles - Integrite dates
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:00
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_44.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 01:45 -> 01:45 (5s) | Assemblage 01:45
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Appel programme dynamique** est le **gestionnaire d'evenements de navigation** qui **capture le dernier element clique par l'utilisateur et declenche l'appel du programme correspondant via un evenement interne**.
-
-**Objectif metier** : Permettre la navigation dynamique dans l'application en capturant les clics utilisateur sur les menus ou boutons et en declenchant l'execution du programme associe. Utilise la fonction LastClicked() pour identifier l'element selectionne et RaiseEvent pour propager l'appel.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Utilisateur naviguant dans les menus ou ecrans |
-| **Quoi** | Routage dynamique vers le programme demande |
-| **Pourquoi** | Centraliser la gestion des appels de programmes depuis l'interface |
-| **Declencheur** | Clic sur un element de menu ou bouton d'action |
-| **Resultat** | Execution du programme associe a l'element clique |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (7 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (5 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 48 |
-| **Fichier XML** | `Prg_44.xml` |
-| **Description** | Contrôles - Integrite dates |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 5 |
-| **Lignes logique** | 91 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 48 |
+| Nom Programme | Contrôles - Integrite dates |
+| Fichier source | `Prg_48.xml` |
+| Dossier IDE | General |
+| Taches | 5 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 40 | comptable________cte | cafil018_dat | READ | Lecture |
-| 44 | change___________chg | cafil022_dat | READ | Lecture |
-| 70 | date_comptable___dat | cafil048_dat | READ | Lecture |
-| 147 | change_vente_____chg | cafil125_dat | READ | Lecture |
-| 246 | histo_sessions_caisse | caisse_session | LINK | Jointure |
-| 263 | vente | caisse_vente | READ | Lecture |
-| 728 | arc_cc_total | arc_cctotal | LINK | Jointure |
+Le programme ADH IDE 48 effectue une vérification d'intégrité des dates dans le contexte de gestion de caisse. Il valide que les dates saisies ou manipulées respectent les contraintes métier imposées par le système de caisse (date de session, date d'ouverture/fermeture, etc.). Ce contrôle intervient à plusieurs points critiques du flux: lors de l'ouverture de session (IDE 121), lors de la gestion avancée de caisse (IDE 298), et lors de la navigation dans le menu scrollable de caisse (IDE 163).
 
-**Resume**: 7 tables accedees dont **0 en ecriture**
+Les vérifications d'intégrité portent typiquement sur l'ordre chronologique des dates (date d'ouverture antérieure à celle de fermeture), la cohérence avec la date système, et le respect des règles de plage de dates autorisées. Le programme retourne un code de validation permettant aux appelants de bloquer ou signaler les incohérences avant que des transactions ne soient engagées sur une session avec des paramètres temporels invalides.
 
-### 2.3 Parametres d'entree (0 parametres)
+Ce programme fait partie de la couche de validation partagée entre les différents écrans de gestion de caisse, garantissant une logique cohérente et fiable d'acceptation des paramètres de session indépendamment du point d'entrée utilisateur.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+7 regles identifiees:
+
+### Autres (7 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: P. O/T/F [A] egale 'O'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P. O/T/F [A]='O'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (P. O/T/F) |
+| **Expression source** | Expression 3 : `P. O/T/F [A]='O'` |
+| **Exemple** | Si P. O/T/F [A]='O' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Negation de (Date ()>[E]+Val ([G],'##')) OR VG3 (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT (Date ()>[E]+Val ([G],'##')) OR VG3` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 4 : `NOT (Date ()>[E]+Val ([G],'##')) OR VG3` |
+| **Exemple** | Si NOT (Date ()>[E]+Val ([G],'##')) OR VG3 â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition composite: Date ()>[E]+Val ([G],'##') AND NOT(VG3)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `Date ()>[E]+Val ([G],'##') AND NOT(VG3)` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 5 : `Date ()>[E]+Val ([G],'##') AND NOT(VG3)` |
+| **Exemple** | Si Date ()>[E]+Val ([G],'##') AND NOT(VG3) â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: P. O/T/F [A] egale 'T'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P. O/T/F [A]='T'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (P. O/T/F) |
+| **Expression source** | Expression 6 : `P. O/T/F [A]='T'` |
+| **Exemple** | Si P. O/T/F [A]='T' â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Negation de (Date ()*10^5+Time ()<[J]*10^5+[K]) (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT (Date ()*10^5+Time ()<[J]*10^5+[K])` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 8 : `NOT (Date ()*10^5+Time ()<[J]*10^5+[K])` |
+| **Exemple** | Si NOT (Date ()*10^5+Time ()<[J]*10^5+[K]) â†’ Action si vrai |
+
+#### <a id="rm-RM-006"></a>[RM-006] Condition: P. O/T/F [A] egale 'F'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P. O/T/F [A]='F'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (P. O/T/F) |
+| **Expression source** | Expression 9 : `P. O/T/F [A]='F'` |
+| **Exemple** | Si P. O/T/F [A]='F' â†’ Action si vrai |
+
+#### <a id="rm-RM-007"></a>[RM-007] Negation de ([L]) (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT ([L])` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 10 : `NOT ([L])` |
+| **Exemple** | Si NOT ([L]) â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: [Gestion caisse (IDE 121)](ADH-IDE-121.md), [Gestion caisse 142 (IDE 298)](ADH-IDE-298.md), [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)
+- **Appelle**: 0 programmes | **Tables**: 7 (W:0 R:5 L:2) | **Taches**: 5 | **Expressions**: 13
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>5 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{Variable A}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 5 |
-| **Lignes logique** | 91 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 7 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (7)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 44 | change___________chg |  | DB | R |   |   | 1 |
+| 263 | vente | Donnees de ventes | DB | R |   |   | 1 |
+| 70 | date_comptable___dat |  | DB | R |   |   | 1 |
+| 147 | change_vente_____chg | Donnees de ventes | DB | R |   |   | 1 |
+| 40 | comptable________cte |  | DB | R |   |   | 1 |
+| 728 | arc_cc_total |  | DB |   |   | L | 1 |
+| 246 | histo_sessions_caisse | Sessions de caisse | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 5 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 44 - change___________chg (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 263 - vente (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 70 - date_comptable___dat (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | P. O/T/F | R | Alpha |
+| B | P. Societe | R | Alpha |
+| C | P. Contrôle OK | R | Logical |
+| D | L Anomalie pour Fermeture | R | Logical |
+
+</details>
+
+<details>
+<summary>Table 147 - change_vente_____chg (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 40 - comptable________cte (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (3)
+
+Variables recues du programme appelant ([Gestion caisse (IDE 121)](ADH-IDE-121.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | P. O/T/F | Alpha | 3x parametre entrant |
+| EO | P. Societe | Alpha | 1x parametre entrant |
+| EP | P. Contrôle OK | Logical | - |
+
+### 11.2 Autres (1)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EQ | L Anomalie pour Fermeture | Logical | - |
+
+## 12. EXPRESSIONS
+
+**13 / 13 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 5 | 4 |
+| NEGATION | 3 | 3 |
+| OTHER | 2 | 0 |
+| REFERENCE_VG | 1 | 0 |
+| CAST_LOGIQUE | 2 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (5 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 6 | `P. O/T/F [A]='T'` | [RM-004](#rm-RM-004) |
+| CONDITION | 9 | `P. O/T/F [A]='F'` | [RM-006](#rm-RM-006) |
+| CONDITION | 3 | `P. O/T/F [A]='O'` | [RM-001](#rm-RM-001) |
+| CONDITION | 5 | `Date ()>[E]+Val ([G],'##') AND NOT(VG3)` | [RM-003](#rm-RM-003) |
+| CONDITION | 7 | `Date ()*10^5+Time ()<[J]*10^5+[K]` | - |
+
+#### NEGATION (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 10 | `NOT ([L])` | [RM-007](#rm-RM-007) |
+| NEGATION | 8 | `NOT (Date ()*10^5+Time ()<[J]*10^5+[K])` | [RM-005](#rm-RM-005) |
+| NEGATION | 4 | `NOT (Date ()>[E]+Val ([G],'##')) OR VG3` | [RM-002](#rm-RM-002) |
+
+#### OTHER (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 11 | `[L]` | - |
+| OTHER | 1 | `P. Societe [B]` | - |
+
+#### REFERENCE_VG (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| REFERENCE_VG | 2 | `VG1` | - |
+
+#### CAST_LOGIQUE (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CAST_LOGIQUE | 13 | `'TRUE'LOG` | - |
+| CAST_LOGIQUE | 12 | `'FALSE'LOG` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Gestion caisse (IDE 121)](ADH-IDE-121.md) -> **Contrôles - Integrite dates (IDE 48)**
+
+Main -> ... -> [Gestion caisse 142 (IDE 298)](ADH-IDE-298.md) -> **Contrôles - Integrite dates (IDE 48)**
+
+Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Contrôles - Integrite dates (IDE 48)**
 
 ```mermaid
 graph LR
-    T[48 Contrôles - Int]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T48[48 Contrôles - Integri...]
+    style T48 fill:#58a6ff
+    CC281[281 Fermeture Sessions]
+    style CC281 fill:#8b5cf6
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC121[121 Gestion caisse]
+    style CC121 fill:#3fb950
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#3fb950
+    CC298[298 Gestion caisse 142]
+    style CC298 fill:#3fb950
+    CC281 --> CC121
+    CC1 --> CC121
+    CC281 --> CC163
+    CC1 --> CC163
+    CC281 --> CC298
+    CC1 --> CC298
+    CC121 --> T48
+    CC163 --> T48
+    CC298 --> T48
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [121](ADH-IDE-121.md) | Gestion caisse | 2 |
+| [298](ADH-IDE-298.md) | Gestion caisse 142 | 2 |
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[48 Contrôles - Int]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T48[48 Contrôles - Integri...]
+    style T48 fill:#58a6ff
+    NONE[Aucun callee]
+    T48 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 91 | Programme compact |
+| Expressions | 13 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 91) | Code sain |
+| Regles metier | 7 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 5 | Simple |
-| Tables | 7 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:00 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:45*

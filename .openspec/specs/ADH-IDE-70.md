@@ -1,6 +1,6 @@
 ﻿# ADH IDE 70 - Print extrait compte /Nom
 
-> **Analyse**: Phases 1-4 2026-02-08 00:31 -> 00:31 (9s) | Assemblage 00:31
+> **Analyse**: Phases 1-4 2026-02-08 00:49 -> 02:06 (1h17min) | Assemblage 02:06
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme ADH IDE 70 orchestr la génération et l'impression de l'extrait de compte pour un adhérent. Il gère tout le workflow d'édition depuis la récupération du nom du client jusqu'à l'envoi vers l'imprimante, en passant par la preparation des données et la mise en page du document. Le programme interagit avec plusieurs modules spécialisés : récupération de la devise locale, gestion de l'imprimante (attribution, configuration, réinitialisation), et création du pied de page standardisé.
+**ADH IDE 70** imprime l'extrait de compte d'un adhérent Club Med trié par **ordre alphabétique (nom)**. C'est un programme de traitement batch appelé depuis IDE 69 (Extrait de compte), conçu pour gérer le formatage et la distribution multi-imprimante des documents de facturation. Le flux suit trois phases : initialisation des données du titulaire via IDE 21 (devise) et IDE 181 (numérotation), édition du document principal sur imprimante sélectionnée (appels multiples à IDE 75 pour calcul fiscal), et traçabilité via mise à jour de la table d'audit `log_maj_tpe` (4 écritures). Le programme gère 4 variantes d'imprimantes (1, 6, 8, 9) avec chacune ses sous-tâches d'édition pied de facture et récapitulatif (Free Extract ou Gift Pass selon imprimante 9).
 
-Le flux d'exécution suit une logique séquentielle classique : après un écran d'attente pour l'utilisateur, le programme récupère les informations de l'adhérent, configure l'imprimante sélectionnée, puis lance deux passes d'édition (l'extrait principal et le récapitulatif des frais). Chaque étape met à jour la table `log_maj_tpe` pour tracer l'historique des modifications. Cette architecture modulaire permet de réutiliser les composants d'impression et de formatage (pied de page, devise) dans d'autres contextes applicatifs.
+Structurellement, le programme comprend 19 tâches réparties entre écrans d'attente, blocs d'impression, et traitements invisibles de calcul. Ses 15 paramètres d'entrée (code adhérent, filiation, société, dates comptables, etc.) configurent entièrement le traitement sans branchements complexes. La table `log_maj_tpe` enregistre systématiquement les éditions pour audit, tandis que 7 autres tables (comptable, gm-complet, type de lit, paramètres TVA) fournissent les données en lecture. Aucune gestion d'erreur explicite : les appels aux IDE 21, 75, 179, 181, 182 gèrent eux-mêmes leurs exceptions.
 
-Le programme est entièrement piloté par interface utilisateur avec un appel depuis le programme d'extrait de compte principal (IDE 69), permettant une séparation claire entre la logique métier du calcul d'extrait et l'impression. Les tâches désactivées ou optionnelles (comme le récapitulatif Free Extra) peuvent être conditionnées selon les configurations d'exploitation ou les besoins spécifiques du moment.
+Le programme est **critique pour la migration** car il représente un pattern courant : édition multi-formats avec calcul fiscal et traçabilité. Sa complexité basse (25/100), absence de code mort, et absence d'orphelinat en font un candidat idéal pour validation de la première génération de migration vers API .NET/TypeScript, particulièrement pour le module Ventes/Extraits (ADH IDE 237-250 déjà migrées).
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -625,4 +625,4 @@ graph LR
 | [Get Printer (IDE 179)](ADH-IDE-179.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 00:32*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:08*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 37 - Menu changement compte
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:43 (27s) | Assemblage 13:10
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 01:31 (21h47min) | Assemblage 01:31
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,13 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-# ADH IDE 37 - Menu changement compte
+ADH IDE 37 est un **menu de navigation** pour les opérations de changement de compte. Le programme affiche deux options : "Séparation de comptes" (option 1) ou "Regroupement de comptes" (option 2). L'utilisateur sélectionne son choix dans le champ W0 choix action (variable J), puis le programme récupère d'abord le titre du compte via l'appel à ADH IDE 43, avant de router l'utilisateur vers le programme approprié (ADH IDE 27 pour la séparation ou ADH IDE 28 pour la fusion) en passant par le routeur central ADH IDE 44.
 
-Le programme affiche un menu permettant à l'utilisateur de changer de compte client lors d'une session de caisse. Il offre quatre options principales : la séparation de compte (division d'un compte en plusieurs), la fusion de comptes (regroupement de plusieurs comptes), la récupération du titre du compte sélectionné, et l'appel direct d'autres programmes selon le contexte. Ce menu fonctionne comme point d'aiguillage pour les opérations de gestion de compte complexes.
+Ce programme est un **hub fonctionnel sans accès base de données**. Il reçoit 9 paramètres d'entrée en lecture seule (société, code GM, filiation, montant, garantie, solde, date limite, village, type compte) et les transmet aux programmes avals. La logique est minimaliste : afficher le menu, capturer le choix, valoriser les variables contextuelles (titre du compte), et déclencher l'action correspondante. Une validation basique empêche la séparation si la filiation est nulle (C<>0 & J='1'), garantissant que seuls les clients avec une filiation valide peuvent accéder à cette fonction.
 
-La logique de la tâche OCA (Menu changement compte) gère la navigation utilisateur et l'aiguillage vers les programmes métier correspondants. Elle valide le contexte de caisse et s'assure que l'utilisateur dispose des droits nécessaires avant de permettre l'accès aux opérations sensibles comme la séparation ou fusion de comptes. Le programme récupère également les informations du compte courant (titre, solde, historique) pour affichage et utilise ces données pour contextualiser les opérations disponibles.
-
-Ce programme est intégré à la chaîne de caisse et représente un élément critique du flux de gestion multi-compte. Il est appelé depuis le menu principal de caisse (IDE 163) et sert de carrefour décisionnel avant d'effectuer des modifications structurantes sur les comptes clients.
+ADH IDE 37 joue un **rôle architectural pivot** dans le flux de caisse : il est le point d'entrée unique pour les deux opérations sensibles de changement de compte. Son appel depuis le menu principal (ADH IDE 163) montre qu'il fait partie du chemin critique de gestion des adhérents. Les variables partagées VG111, VG112 et VG115 suggèrent une intégration avec des mécanismes de droits d'accès et de contexte utilisateur globaux.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -46,20 +44,59 @@ Calculs metier : montants, stocks, compteurs.
 
 ## 5. REGLES METIER
 
-1 regles identifiees:
+5 regles identifiees:
 
-### Autres (1 regles)
+### Autres (5 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Si Trim(VG115)<>'',Trim(VG115)&'|','')&IF(W0 choix action [J] vaut '1' alors 'SEPARATION DE COMPTE', sinon 'FUSION DE COMPTE'
+#### <a id="rm-RM-001"></a>[RM-001] Condition: > filiation [C]<>0 AND W0 choix action [J] egale '1'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `> filiation [C]<>0 AND W0 choix action [J]='1'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EW (W0 choix action), EP (> filiation) |
+| **Expression source** | Expression 5 : `> filiation [C]<>0 AND W0 choix action [J]='1'` |
+| **Exemple** | Si > filiation [C]<>0 AND W0 choix action [J]='1' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Si Trim(VG115)<>'',Trim(VG115)&'|','')&IF(W0 choix action [J] vaut '1' alors 'SEPARATION DE COMPTE', sinon 'FUSION DE COMPTE'
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `Trim(VG115)<>''` |
 | **Si vrai** | Trim(VG115)&'/' |
 | **Si faux** | '')&IF(W0 choix action [J]='1','SEPARATION DE COMPTE','FUSION DE COMPTE') |
-| **Variables** | J (W0 choix action) |
+| **Variables** | EW (W0 choix action) |
 | **Expression source** | Expression 7 : `IF(Trim(VG115)<>'',Trim(VG115)&'|','')&IF(W0 choix action [J` |
 | **Exemple** | Si Trim(VG115)<>'' â†’ Trim(VG115)&'/' |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition: W0 choix action [J] egale '1'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [J]='1'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EW (W0 choix action) |
+| **Expression source** | Expression 8 : `W0 choix action [J]='1'` |
+| **Exemple** | Si W0 choix action [J]='1' â†’ Action si vrai |
+
+#### <a id="rm-RM-004"></a>[RM-004] Condition: W0 choix action [J] egale '2'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 choix action [J]='2'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EW (W0 choix action) |
+| **Expression source** | Expression 9 : `W0 choix action [J]='2'` |
+| **Exemple** | Si W0 choix action [J]='2' â†’ Action si vrai |
+
+#### <a id="rm-RM-005"></a>[RM-005] Condition: VG111 AND VG112 different de 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `VG111 AND VG112<>0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 10 : `VG111 AND VG112<>0` |
+| **Exemple** | Si VG111 AND VG112<>0 â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -375,7 +412,7 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| L | V. titre | Alpha | 1x session |
+| EY | V. titre | Alpha | 1x session |
 
 ### 11.2 Variables de travail (1)
 
@@ -383,7 +420,7 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| J | W0 choix action | Alpha | 4x calcul interne |
+| EW | W0 choix action | Alpha | 4x calcul interne |
 
 ### 11.3 Autres (10)
 
@@ -391,16 +428,16 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > societe | Alpha | - |
-| B | > code GM | Numeric | - |
-| C | > filiation | Numeric | 1x refs |
-| D | > masque montant | Alpha | - |
-| E | > garantie | Alpha | - |
-| F | > solde | Numeric | - |
-| G | > date limite solde | Date | - |
-| H | > nom village | Alpha | - |
-| I | > Uni/Bilateral | Alpha | - |
-| K | PROGRAM | Numeric | - |
+| EN | > societe | Alpha | - |
+| EO | > code GM | Numeric | - |
+| EP | > filiation | Numeric | 1x refs |
+| EQ | > masque montant | Alpha | - |
+| ER | > garantie | Alpha | - |
+| ES | > solde | Numeric | - |
+| ET | > date limite solde | Date | - |
+| EU | > nom village | Alpha | - |
+| EV | > Uni/Bilateral | Alpha | - |
+| EX | PROGRAM | Numeric | - |
 
 ## 12. EXPRESSIONS
 
@@ -422,11 +459,11 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 7 | `IF(Trim(VG115)<>'',Trim(VG115)&'\|','')&IF(W0 choix action [J]='1','SEPARATION DE COMPTE','FUSION DE COMPTE')` | [RM-001](#rm-RM-001) |
-| CONDITION | 9 | `W0 choix action [J]='2'` | - |
-| CONDITION | 10 | `VG111 AND VG112<>0` | - |
-| CONDITION | 5 | `> filiation [C]<>0 AND W0 choix action [J]='1'` | - |
-| CONDITION | 8 | `W0 choix action [J]='1'` | - |
+| CONDITION | 9 | `W0 choix action [J]='2'` | [RM-004](#rm-RM-004) |
+| CONDITION | 10 | `VG111 AND VG112<>0` | [RM-005](#rm-RM-005) |
+| CONDITION | 8 | `W0 choix action [J]='1'` | [RM-003](#rm-RM-003) |
+| CONDITION | 5 | `> filiation [C]<>0 AND W0 choix action [J]='1'` | [RM-001](#rm-RM-001) |
+| CONDITION | 7 | `IF(Trim(VG115)<>'',Trim(VG115)&'\|','')&IF(W0 choix action [J]='1','SEPARATION DE COMPTE','FUSION DE COMPTE')` | [RM-002](#rm-RM-002) |
 
 #### CONSTANTE (2 expressions)
 
@@ -520,7 +557,7 @@ graph LR
 | Sous-programmes | 4 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 32) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Regles metier | 5 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -539,4 +576,4 @@ graph LR
 | [Fusion (IDE 28)](ADH-IDE-28.md) | Sous-programme | 1x | Normale - Sous-programme |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:11*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:33*

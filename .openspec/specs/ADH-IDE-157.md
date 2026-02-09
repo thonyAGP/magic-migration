@@ -1,6 +1,6 @@
 ﻿# ADH IDE 157 - Program_156
 
-> **Analyse**: Phases 1-4 2026-02-07 07:17 -> 07:18 (15s) | Assemblage 07:18
+> **Analyse**: Phases 1-4 2026-02-08 03:40 -> 03:40 (4s) | Assemblage 03:40
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,21 +14,24 @@
 | IDE Position | 157 |
 | Nom Programme | Program_156 |
 | Fichier source | `Prg_157.xml` |
-| Dossier IDE | Great |
+| Dossier IDE | General |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Program_156** assure la gestion complete de ce processus.
+ADH IDE 157 est un programme **fantôme isolé** du module Adhérents sans rôle métier défini. Contrairement à ses homologues dans les autres projets Magic (PBP, REF, Import) qui gèrent des données spécifiques, ce programme est dépourvu de logique, n'accède à aucune table et ne possède aucun appellant - c'est un shell vide contenant une seule tâche racine sans implémentation. La structure suggère un placeholder jamais finalisé ou un stub d'intégration issu d'un composant partagé.
+
+Le programme ne participe à aucune chaîne d'appels depuis le Main et n'invoque aucun sous-programme, le rendant totalement détaché du système. Cette isolation couplée à l'absence de code mort détecté indique une propreté technique, mais soulève la question : est-ce un fragment en attente de développement, une dépendance appelée dynamiquement par `ProgIdx()` sous un PublicName non mappé, ou simplement un composant orphelin destiné à la suppression ?
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -155,4 +158,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:18*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:41*

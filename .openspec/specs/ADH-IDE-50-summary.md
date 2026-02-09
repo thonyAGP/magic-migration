@@ -1,6 +1,6 @@
 ﻿# ADH IDE 50 - Initialistaion Easy Arrival
 
-> **Analyse**: 2026-02-07 16:16
+> **Analyse**: 2026-02-08 01:46
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Initialistaion Easy Arrival
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: ORPHELIN_POTENTIEL
-- **Raison**: Aucun caller direct detecte - verifier PublicName et ECF
+- **Statut**: NON_ORPHELIN
+- **Raison**: Appele par 1 programme(s): Start (IDE 166)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | (aucun) |
+| **Appele par** | [Start (IDE 166)](ADH-IDE-166.md) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

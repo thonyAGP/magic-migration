@@ -1,6 +1,6 @@
 ﻿# ADH IDE 178 - Set Village Address
 
-> **Analyse**: Phases 1-4 2026-02-07 07:24 -> 07:25 (16s) | Assemblage 07:25
+> **Analyse**: Phases 1-4 2026-02-07 03:52 -> 03:57 (24h04min) | Assemblage 03:57
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,20 +14,36 @@
 | IDE Position | 178 |
 | Nom Programme | Set Village Address |
 | Fichier source | `Prg_178.xml` |
-| Dossier IDE | Printer |
+| Dossier IDE | General |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Set Village Address** assure la gestion complete de ce processus.
+ADH IDE 178 est un utilitaire d'impression pour configurer les paramètres d'adresse du village. Ce programme lit une seule table (pv_budget) et mappe ses colonnes dans dix paramètres distincts : identifiant club, nom, adresses (ligne 1 et 2), code postal, téléphone, contact, email, SIREN et numéro de TVA. Les six derniers paramètres appliquent une fonction Trim() pour nettoyer les espaces.
+
+C'est un programme batch sans écran d'interaction directe, classé comme composant partagé dans ADH.ecf (ECF Sessions_Reprises). Il n'effectue aucune modification de données et n'appelle aucun autre programme ; sa seule responsabilité est d'extraire et préparer les informations de village pour les opérations d'affichage ou d'impression. Avec ses 30 lignes de code, zéro dépendances internes et pas de logique métier complexe, il représente un cas d'école pour une migration simple vers un service TypeScript/C#.
+
+Le programme est appelable depuis plusieurs modules (PBP, PVE) via son PublicName GET_PRINTER, ce qui le rend non-orphelin malgré l'absence d'appels directs identifiés dans la chaîne principale ADH. C'est un pur collecteur de données sans effets de bord.
 
 ## 3. BLOCS FONCTIONNELS
 
+### 3.1 Traitement (1 tache)
+
+Traitements internes.
+
+---
+
+#### <a id="t1"></a>178 - Set Village Address
+
+**Role** : Traitement : Set Village Address.
+
+
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -42,10 +58,11 @@
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (0 tache)
+### 9.3 Structure hierarchique (1 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
+| **178.1** | [**Set Village Address** (178)](#t1) | MDI | - | Traitement |
 
 ### 9.4 Algorigramme
 
@@ -178,10 +195,15 @@ graph LR
 
 ### 14.2 Plan de migration par bloc
 
+#### Traitement (1 tache: 0 ecran, 1 traitement)
+
+- **Strategie** : 1 service(s) backend injectable(s) (Domain Services).
+- Decomposer les taches en services unitaires testables.
+
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:25*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:00*

@@ -1,6 +1,6 @@
-﻿# ADH IDE 172 - Facturation appel
+﻿# ADH IDE 172 - Print Depot Obj/Dev/Sce
 
-> **Analyse**: Phases 1-4 2026-02-03 10:54 -> 10:54 (16s) | Assemblage 07:23
+> **Analyse**: Phases 1-4 2026-02-08 03:53 -> 03:53 (5s) | Assemblage 03:53
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -12,138 +12,79 @@
 |----------|--------|
 | Projet | ADH |
 | IDE Position | 172 |
-| Nom Programme | Facturation appel |
+| Nom Programme | Print Depot Obj/Dev/Sce |
 | Fichier source | `Prg_172.xml` |
-| Dossier IDE | Operations |
-| Taches | 6 (0 ecrans visibles) |
-| Tables modifiees | 3 |
-| Programmes appeles | 5 |
+| Dossier IDE | Garanties |
+| Taches | 63 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 25/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Facturation appel** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md).
+ADH IDE 172 - Print Depot Obj/Dev/Sce est un programme d'impression spécialisé dans l'affichage des détails relatifs aux dépôts de garantie. Il gère l'édition des données de dépôt pour trois dimensions : objet (garanties matérielles), devise (dépôts monétaires), et service (cautions de service). Le programme reçoit en paramètres les identifiants de compte et filiation, puis imprime un récapitulatif structuré des dépôts actifs associés au compte client, intégrant les montants, dates et statuts de chaque garantie.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+Le flux d'exécution débute par l'initialisation de l'imprimante via un appel à ADH IDE 182 (Raz Current Printer), qui réinitialise l'état de la file d'attente d'impression. Ensuite, le programme boucle sur les trois catégories de dépôts (objets, devises, services) en lisant les tables correspondantes (depot_garantie, taux_change, etc.) et en formatant les lignes d'édition selon les règles de présentation définies. Les données sont envoyées au gestionnaire d'impression ligne par ligne, avec gestion des sauts de page et des totalisations si applicable.
 
-- **Traitement** (6 taches) : traitements metier divers
-
-**Donnees modifiees** : 3 tables en ecriture (reseau_cloture___rec, historique_pabx, coef__telephone__coe).
-
-**Logique metier** : 1 regles identifiees couvrant conditions metier.
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (6 taches)
-
-- **T1** - Facturation appel
-- **T2** - Historique appel
-- **T3** - Historique appel
-- **T4** - Recuperation coef
-- **T5** - Deblocage cloture
-- **T8** - Deblocage cloture
-
-Delegue a : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| reseau_cloture___rec | **W** (2 usages) | Donnees reseau/cloture |
-| historique_pabx | **W** (2 usages) | Historique / journal |
-| coef__telephone__coe | **W** (1 usages) |  |
-
-</details>
+Ce programme est appelé depuis deux contextes : l'affichage des garanties sur compte (IDE 0) et la consultation des comptes de dépôt (IDE 40). Il joue un rôle auxiliaire dans le workflow de visualisation des dépôts, en tant que service d'impression transparent qui isole la logique de mise en page des données métier. Aucune modification de données n'est effectuée ; seule l'impression est générée et envoyée vers le périphérique configuré.
 
 ## 3. BLOCS FONCTIONNELS
 
-### 3.1 Traitement (6 taches)
-
-Traitements internes.
-
----
-
-#### <a id="t1"></a>T1 - Facturation appel
-
-**Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
-
-<details>
-<summary>5 sous-taches directes</summary>
-
-| Tache | Nom | Bloc |
-|-------|-----|------|
-| [T2](#t2) | Historique appel | Traitement |
-| [T3](#t3) | Historique appel | Traitement |
-| [T4](#t4) | Recuperation coef | Traitement |
-| [T5](#t5) | Deblocage cloture | Traitement |
-| [T8](#t8) | Deblocage cloture | Traitement |
-
-</details>
-**Variables liees** : C (> date appel), D (> heure appel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t2"></a>T2 - Historique appel
-
-**Role** : Consultation/chargement : Historique appel.
-**Variables liees** : C (> date appel), D (> heure appel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t3"></a>T3 - Historique appel
-
-**Role** : Consultation/chargement : Historique appel.
-**Variables liees** : C (> date appel), D (> heure appel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t4"></a>T4 - Recuperation coef
-
-**Role** : Consultation/chargement : Recuperation coef.
-**Variables liees** : V (w0 coeff tel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t5"></a>T5 - Deblocage cloture
-
-**Role** : Traitement : Deblocage cloture.
-**Variables liees** : W (w0 cloture en cours)
-**Delegue a** : [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t8"></a>T8 - Deblocage cloture
-
-**Role** : Traitement : Deblocage cloture.
-**Variables liees** : W (w0 cloture en cours)
-**Delegue a** : [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
-
 ## 5. REGLES METIER
 
-1 regles identifiees:
+5 regles identifiees:
 
-### Autres (1 regles)
+### Autres (5 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Si > GO [G] alors 'GO' sinon 'GM')
+#### <a id="rm-RM-001"></a>[RM-001] Verification que l'imprimante courante est la n1
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `> GO [G]` |
-| **Si vrai** | 'GO' |
-| **Si faux** | 'GM') |
-| **Variables** | G (> GO) |
-| **Expression source** | Expression 4 : `IF (> GO [G],'GO','GM')` |
-| **Exemple** | Si > GO [G] â†’ 'GO'. Sinon â†’ 'GM') |
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 1 |
+| **Expression source** | Expression 4 : `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action si CURRENTPRINTERNUM = 1 |
+
+#### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n4
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 4 |
+| **Expression source** | Expression 5 : `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=4 â†’ Action si CURRENTPRINTERNUM = 4 |
+
+#### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n5
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 5 |
+| **Expression source** | Expression 6 : `GetParam ('CURRENTPRINTERNUM')=5` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=5 â†’ Action si CURRENTPRINTERNUM = 5 |
+
+#### <a id="rm-RM-004"></a>[RM-004] Verification que l'imprimante courante est la n8
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 8 |
+| **Expression source** | Expression 7 : `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=8 â†’ Action si CURRENTPRINTERNUM = 8 |
+
+#### <a id="rm-RM-005"></a>[RM-005] Verification que l'imprimante courante est la n9
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 9 |
+| **Expression source** | Expression 8 : `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action si CURRENTPRINTERNUM = 9 |
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md)
-- **Appelle**: 5 programmes | **Tables**: 3 (W:3 R:0 L:0) | **Taches**: 6 | **Expressions**: 15
+- **Appele par**: [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md)
+- **Appelle**: 1 programmes | **Tables**: 6 (W:0 R:4 L:2) | **Taches**: 63 | **Expressions**: 9
 
 <!-- TAB:Ecrans -->
 
@@ -153,207 +94,195 @@ Traitements internes.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (6 taches)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **172.1** | [**Facturation appel** (T1)](#t1) | MDI | - | Traitement |
-| 172.1.1 | [Historique appel (T2)](#t2) | MDI | - | |
-| 172.1.2 | [Historique appel (T3)](#t3) | MDI | - | |
-| 172.1.3 | [Recuperation coef (T4)](#t4) | MDI | - | |
-| 172.1.4 | [Deblocage cloture (T5)](#t5) | MDI | - | |
-| 172.1.5 | [Deblocage cloture (T8)](#t8) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 6 taches]
-    ENDOK([END])
-    START --> PROCESS --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    START --> INIT --> SAISIE
+    DECISION{CURRENTPRINTERNUM}
+    SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS[Traitement]
+    ENDKO([END KO])
+    PROCESS --> ENDOK
+    ENDOK([END OK])
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme genere depuis les expressions CONDITION. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
 
-### Tables utilisees (3)
+### Tables utilisees (6)
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB |   | **W** |   | 2 |
-| 155 | historique_pabx | Historique / journal | DB |   | **W** |   | 2 |
-| 157 | coef__telephone__coe |  | DB |   | **W** |   | 1 |
+| 41 | depot_objets_____doa | Depots et garanties | DB | R |   |   | 26 |
+| 30 | gm-recherche_____gmr | Index de recherche | DB | R |   |   | 9 |
+| 42 | depot_devises____dda | Depots et garanties | DB | R |   |   | 7 |
+| 456 | tai_demarrage |  | DB | R |   |   | 7 |
+| 31 | gm-complet_______gmc |  | DB |   |   | L | 8 |
+| 43 | solde_devises____sda | Devises / taux de change | DB |   |   | L | 6 |
 
-### Colonnes par table (2 / 3 tables avec colonnes identifiees)
+### Colonnes par table (3 / 4 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 23 - reseau_cloture___rec (**W**) - 2 usages</summary>
+<summary>Table 41 - depot_objets_____doa (R) - 26 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| W | w0 cloture en cours | W | Logical |
-| X | w0 test reseau | W | Alpha |
+| EN | W Total depot | R | Numeric |
+| EQ | W Depot objet | R | Logical |
 
 </details>
 
 <details>
-<summary>Table 155 - historique_pabx (**W**) - 2 usages</summary>
+<summary>Table 30 - gm-recherche_____gmr (R) - 9 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
-<summary>Table 157 - coef__telephone__coe (**W**) - 1 usages</summary>
+<summary>Table 42 - depot_devises____dda (R) - 7 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| V | w0 coeff tel | W | Numeric |
+| A | W Total depot | R | Numeric |
+| B | W Total retrait | R | Numeric |
+| C | W1 normal | R | Alpha |
+| D | W1 condense | R | Alpha |
+| E | W1 detection papier | R | Alpha |
+| F | W1 inhibe panel | R | Alpha |
+| G | W1 massicot | R | Alpha |
+| H | W1 selection feuille | R | Alpha |
+| I | W1 selection rouleau | R | Alpha |
+| J | W1 nom | R | Alpha |
+| K | W1 prenom | R | Alpha |
+| L | W1 n° adherent | R | Numeric |
+| M | W1 lettre contrôle | R | Alpha |
+| N | W1 filiation | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 456 - tai_demarrage (R) - 7 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | W1 initialisation | R | Alpha |
+| B | W1 large | R | Alpha |
+| C | W1 normal | R | Alpha |
+| D | W1 condense | R | Alpha |
+| E | W1 detection papier | R | Alpha |
+| F | W1 inhibe panel | R | Alpha |
+| G | W1 massicot | R | Alpha |
+| H | W1 selection feuille | R | Alpha |
+| I | W1 selection rouleau | R | Alpha |
+| J | W1 nom | R | Alpha |
+| K | W1 prenom | R | Alpha |
+| L | W1 n° adherent | R | Numeric |
+| M | W1 lettre contrôle | R | Alpha |
+| N | W1 filiation | R | Numeric |
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Variables de travail (7)
+### 11.1 Parametres entrants (11)
+
+Variables recues du programme appelant ([Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | P0 societe | Alpha | - |
+| EO | P0 code adherent | Numeric | - |
+| EP | P0 filiation | Numeric | - |
+| EQ | P0 date session | Date | - |
+| ER | P0 heure session | Time | - |
+| ES | P0 nom village | Alpha | - |
+| ET | P0 user | Alpha | - |
+| EU | P0 existe objet | Alpha | - |
+| EV | P0 existe devise | Alpha | - |
+| EW | P0 existe scelle | Alpha | - |
+| EX | P0 Code scelle | Alpha | - |
+
+### 11.2 Variables de travail (2)
 
 Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| T | w0 numero de tel | Alpha | - |
-| U | w0 qualite | Alpha | 1x calcul interne |
-| V | w0 coeff tel | Numeric | 1x calcul interne |
-| W | w0 cloture en cours | Logical | - |
-| X | w0 test reseau | Alpha | 1x calcul interne |
-| Y | w0 gratuite | Logical | - |
-| Z | w0 raison gratuite | Alpha | - |
+| EY | W0 nbre d'edition | Numeric | - |
+| EZ | W0 fin tâche | Alpha | - |
 
-### 11.2 Autres (19)
+### 11.3 Autres (1)
 
 Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > societe | Alpha | - |
-| B | > prefixe | Alpha | - |
-| C | > date appel | Date | [T1](#t1), [T2](#t2), [T3](#t3) |
-| D | > heure appel | Time | [T1](#t1), [T2](#t2), [T3](#t3) |
-| E | > Nom | Alpha | 2x refs |
-| F | > Prenom | Alpha | 1x refs |
-| G | > GO | Logical | 1x refs |
-| H | > compte fictif | Logical | 3x refs |
-| I | > fin | Alpha | - |
-| J | > numero de compte | Numeric | - |
-| K | > filiation | Numeric | - |
-| L | > montant | Numeric | 1x refs |
-| M | > solde du compte | Numeric | - |
-| N | < Quitter | Logical | - |
-| O | > devise local | Alpha | - |
-| P | > Masque | Alpha | - |
-| Q | > annulation | Logical | 1x refs |
-| R | > duree | Time | - |
-| S | > nombre decimal | Numeric | 1x refs |
-
-<details>
-<summary>Toutes les 26 variables (liste complete)</summary>
-
-| Cat | Lettre | Nom Variable | Type |
-|-----|--------|--------------|------|
-| W0 | **T** | w0 numero de tel | Alpha |
-| W0 | **U** | w0 qualite | Alpha |
-| W0 | **V** | w0 coeff tel | Numeric |
-| W0 | **W** | w0 cloture en cours | Logical |
-| W0 | **X** | w0 test reseau | Alpha |
-| W0 | **Y** | w0 gratuite | Logical |
-| W0 | **Z** | w0 raison gratuite | Alpha |
-| Autre | **A** | > societe | Alpha |
-| Autre | **B** | > prefixe | Alpha |
-| Autre | **C** | > date appel | Date |
-| Autre | **D** | > heure appel | Time |
-| Autre | **E** | > Nom | Alpha |
-| Autre | **F** | > Prenom | Alpha |
-| Autre | **G** | > GO | Logical |
-| Autre | **H** | > compte fictif | Logical |
-| Autre | **I** | > fin | Alpha |
-| Autre | **J** | > numero de compte | Numeric |
-| Autre | **K** | > filiation | Numeric |
-| Autre | **L** | > montant | Numeric |
-| Autre | **M** | > solde du compte | Numeric |
-| Autre | **N** | < Quitter | Logical |
-| Autre | **O** | > devise local | Alpha |
-| Autre | **P** | > Masque | Alpha |
-| Autre | **Q** | > annulation | Logical |
-| Autre | **R** | > duree | Time |
-| Autre | **S** | > nombre decimal | Numeric |
-
-</details>
+| FA | W1 filiation | Numeric | - |
 
 ## 12. EXPRESSIONS
 
-**15 / 15 expressions decodees (100%)**
+**9 / 9 expressions decodees (100%)**
 
 ### 12.1 Repartition par type
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 7 | 5 |
+| CONDITION | 5 | 5 |
 | CONSTANTE | 1 | 0 |
-| NEGATION | 3 | 0 |
-| CAST_LOGIQUE | 2 | 0 |
-| REFERENCE_VG | 1 | 0 |
-| CONCATENATION | 1 | 0 |
+| OTHER | 2 | 0 |
+| CAST_LOGIQUE | 1 | 0 |
 
 ### 12.2 Expressions cles par type
 
-#### CONDITION (7 expressions)
+#### CONDITION (5 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 4 | `IF (> GO [G],'GO','GM')` | [RM-001](#rm-RM-001) |
-| CONDITION | 6 | `w0 test reseau [X]<>'R'` | - |
-| CONDITION | 12 | `> date appel [C]` | - |
-| CONDITION | 13 | `> heure appel [D]` | - |
-| CONDITION | 7 | `Round (> montant [L]*w0 coeff tel [V],15,> nombre decimal [S])` | - |
-| ... | | *+2 autres* | |
+| CONDITION | 7 | `GetParam ('CURRENTPRINTERNUM')=8` | [RM-004](#rm-RM-004) |
+| CONDITION | 8 | `GetParam ('CURRENTPRINTERNUM')=9` | [RM-005](#rm-RM-005) |
+| CONDITION | 6 | `GetParam ('CURRENTPRINTERNUM')=5` | [RM-003](#rm-RM-003) |
+| CONDITION | 4 | `GetParam ('CURRENTPRINTERNUM')=1` | [RM-001](#rm-RM-001) |
+| CONDITION | 5 | `GetParam ('CURRENTPRINTERNUM')=4` | [RM-002](#rm-RM-002) |
 
 #### CONSTANTE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONSTANTE | 5 | `'F'` | - |
+| CONSTANTE | 3 | `1` | - |
 
-#### NEGATION (3 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 14 | `NOT VG6` | - |
-| NEGATION | 9 | `NOT (> annulation [Q])` | - |
-| NEGATION | 2 | `NOT (> compte fictif [H])` | - |
-
-#### CAST_LOGIQUE (2 expressions)
+#### OTHER (2 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CAST_LOGIQUE | 11 | `'FALSE'LOG` | - |
-| CAST_LOGIQUE | 8 | `'TRUE'LOG` | - |
+| OTHER | 2 | `SetCrsr (2)` | - |
+| OTHER | 1 | `SetCrsr (1)` | - |
 
-#### REFERENCE_VG (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| REFERENCE_VG | 15 | `VG6` | - |
-
-#### CONCATENATION (1 expressions)
+#### CAST_LOGIQUE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONCATENATION | 10 | `Trim (> Nom [E])&' '&Trim (> Prenom [F])` | - |
+| CAST_LOGIQUE | 9 | `'TRUE'LOG` | - |
 
 <!-- TAB:Connexions -->
 
@@ -361,61 +290,48 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md) -> **Facturation appel (IDE 172)**
+Main -> ... -> [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Print Depot Obj/Dev/Sce (IDE 172)**
+
+Main -> ... -> [Comptes de depôt (IDE 40)](ADH-IDE-40.md) -> **Print Depot Obj/Dev/Sce (IDE 172)**
 
 ```mermaid
 graph LR
-    T172[172 Facturation appel]
+    T172[172 Print Depot ObjDevSce]
     style T172 fill:#58a6ff
     CC1[1 Main Program]
     style CC1 fill:#8b5cf6
-    CC33[33 Visualisation Appel]
-    style CC33 fill:#f59e0b
-    CC22[22 Menu caisse GM - sc...]
-    style CC22 fill:#3fb950
-    CC33 --> CC22
-    CC1 --> CC33
-    CC22 --> T172
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC40[40 Comptes de depôt]
+    style CC40 fill:#3fb950
+    CC163 --> CC40
+    CC1 --> CC163
+    CC40 --> T172
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [22](ADH-IDE-22.md) | Menu caisse GM - scroll @ | 1 |
+| [0](ADH-IDE-0.md) | Garantie sur compte PMS-584 | 4 |
+| [40](ADH-IDE-40.md) | Comptes de depôt | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T172[172 Facturation appel]
+    T172[172 Print Depot ObjDevSce]
     style T172 fill:#58a6ff
-    C16[16 Creation O.D]
-    T172 --> C16
-    style C16 fill:#3fb950
-    C17[17 Deblocage compte GM]
-    T172 --> C17
-    style C17 fill:#3fb950
-    C18[18 Test reseau]
-    T172 --> C18
-    style C18 fill:#3fb950
-    C19[19 Test si cloture en ...]
-    T172 --> C19
-    style C19 fill:#3fb950
-    C36[36 Zoom GOGM]
-    T172 --> C36
-    style C36 fill:#3fb950
+    C182[182 Raz Current Printer]
+    T172 --> C182
+    style C182 fill:#3fb950
 ```
 
 ### 13.4 Detail Callees avec contexte
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| [16](ADH-IDE-16.md) |   Creation O.D | 1 | Sous-programme |
-| [17](ADH-IDE-17.md) |   Deblocage compte GM | 1 | Sous-programme |
-| [18](ADH-IDE-18.md) |   Test reseau | 1 | Sous-programme |
-| [19](ADH-IDE-19.md) |   Test si cloture en cours | 1 | Fermeture session |
-| [36](ADH-IDE-36.md) | Zoom GO/GM | 1 | Selection/consultation |
+| [182](ADH-IDE-182.md) | Raz Current Printer | 1 | Impression ticket/document |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -423,34 +339,21 @@ graph LR
 
 | Metrique | Valeur | Impact migration |
 |----------|--------|-----------------|
-| Lignes de logique | 116 | Programme compact |
-| Expressions | 15 | Peu de logique |
-| Tables WRITE | 3 | Impact modere |
-| Sous-programmes | 5 | Peu de dependances |
+| Lignes de logique | 972 | Programme volumineux |
+| Expressions | 9 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
-| Code desactive | 0% (0 / 116) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Code desactive | 0% (0 / 972) | Code sain |
+| Regles metier | 5 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
-
-#### Traitement (6 taches: 0 ecran, 6 traitements)
-
-- **Strategie** : 6 service(s) backend injectable(s) (Domain Services).
-- 5 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
-- Decomposer les taches en services unitaires testables.
 
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
-| reseau_cloture___rec | Table WRITE (Database) | 2x | Schema + repository |
-| historique_pabx | Table WRITE (Database) | 2x | Schema + repository |
-| coef__telephone__coe | Table WRITE (Database) | 1x | Schema + repository |
-| [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md) | Sous-programme | 1x | Normale - Fermeture session |
-| [Zoom GO/GM (IDE 36)](ADH-IDE-36.md) | Sous-programme | 1x | Normale - Selection/consultation |
-| [  Test reseau (IDE 18)](ADH-IDE-18.md) | Sous-programme | 1x | Normale - Sous-programme |
-| [  Creation O.D (IDE 16)](ADH-IDE-16.md) | Sous-programme | 1x | Normale - Sous-programme |
-| [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md) | Sous-programme | 1x | Normale - Sous-programme |
+| [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:23*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:53*

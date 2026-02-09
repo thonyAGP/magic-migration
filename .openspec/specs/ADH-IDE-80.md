@@ -1,6 +1,6 @@
 ﻿# ADH IDE 80 - Card scan read
 
-> **Analyse**: Phases 1-4 2026-02-07 16:14 -> 16:14 (6s) | Assemblage 16:14
+> **Analyse**: Phases 1-4 2026-02-07 16:14 -> 02:17 (10h02min) | Assemblage 02:17
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,15 +19,16 @@
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 0/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 80 est un programme de lecture de codes à barres/cartes magnétiques destiné à l'identification rapide de clients dans le système de gestion de caisse. Il capture et décode les données brutes du scanner de cartes (code barre, RFID, bande magnétique) et les restitue au programme appelant pour vérification d'identité.
+# ADH IDE 80 - Card scan read
 
-Le programme fonctionne comme un handler événementiel déclenchant une saisie manuelle ou une lecture scanner. Il gère les erreurs de format (code invalide, carte expirée, etc.) et retourne un code client normalisé exploitable par les modules de caisse (vérification droits, chargement compte). La logique inclut probablement une validation du format du code lu, un mapping vers l'ID client en base, et un retour d'erreur si la carte n'existe pas ou est bloquée.
+Programme utilitaire chargé de la lecture et du décodage des données de cartes magnétiques ou puces électroniques. Point d'entrée critique dans le flux de transactions puisqu'il est appelé depuis plusieurs contextes : les trois variantes de transaction de nouvelle vente (PMS-584, PMS-710, PMS-721), le menu Club Med Pass (IDE 77) et le menu caisse avec fonctionnalité de scroll (IDE 163).
 
-C'est un composant critique de la chaîne d'accès caisse car il conditionne l'authentification initiale du client. Les modules downstream (ADH IDE 121 - Gestion caisse, ADH IDE 122 - Ouverture session) dépendent du code retourné par ce programme pour accéder aux données de compte et autoriser les opérations.
+Ce programme encapsule la logique métier d'extraction et de validation des informations de carte scannée. Il traduit les données brutes du lecteur de carte magnétique (passage physique) ou du système de saisie en paramètres exploitables : numéro de compte, type de titulaire, services associés. Il gère probablement la gestion des erreurs de lecture, les cas de cartes invalides ou expirées, et l'interrogation des tables de référence pour enrichir les données.
+
+Utilisé massivement dans le parcours caisse (accueil, identification client avant transaction), ce programme est un maillon central du système d'identification des adhérents. Ses performances et sa fiabilité directes impactent l'expérience utilisateur au point de vente et la taille des files d'attente.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -43,7 +44,7 @@ C'est un composant critique de la chaîne d'accès caisse car il conditionne l'a
 |---------|--------|
 | **Condition** | `NOT (r.card [H])` |
 | **Si vrai** | Action si vrai |
-| **Variables** | H (r.card) |
+| **Variables** | EU (r.card) |
 | **Expression source** | Expression 12 : `NOT (r.card [H])` |
 | **Exemple** | Si NOT (r.card [H]) â†’ Action si vrai |
 
@@ -53,13 +54,13 @@ C'est un composant critique de la chaîne d'accès caisse car il conditionne l'a
 |---------|--------|
 | **Condition** | `pv.card id [F]>'' AND NOT (r.card [H])` |
 | **Si vrai** | Action si vrai |
-| **Variables** | F (pv.card id), H (r.card) |
+| **Variables** | ES (pv.card id), EU (r.card) |
 | **Expression source** | Expression 15 : `pv.card id [F]>'' AND NOT (r.card [H])` |
 | **Exemple** | Si pv.card id [F]>'' AND NOT (r.card [H]) â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md), [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md), [Club Med Pass menu (IDE 77)](ADH-IDE-77.md), [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md)
 - **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 15
 
 <!-- TAB:Ecrans -->
@@ -134,16 +135,16 @@ flowchart TD
 
 ### 11.1 Parametres entrants (6)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | p.code-8chiffres | Numeric | - |
-| B | p.filiation | Numeric | - |
-| C | p.chaine U | Alpha | - |
-| D | p.chaine U10 | Alpha | - |
-| E | p.Club Med Pass select | Logical | - |
-| G | p.status | Alpha | - |
+| EN | p.code-8chiffres | Numeric | - |
+| EO | p.filiation | Numeric | - |
+| EP | p.chaine U | Alpha | - |
+| EQ | p.chaine U10 | Alpha | - |
+| ER | p.Club Med Pass select | Logical | - |
+| ET | p.status | Alpha | - |
 
 ### 11.2 Autres (2)
 
@@ -151,8 +152,8 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| F | pv.card id | Alpha | 2x refs |
-| H | r.card | Logical | 4x refs |
+| ES | pv.card id | Alpha | 2x refs |
+| EU | r.card | Logical | 4x refs |
 
 ## 12. EXPRESSIONS
 
@@ -218,22 +219,41 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Transaction Nouv vente PMS-584 (IDE 0)](ADH-IDE-0.md) -> **Card scan read (IDE 80)**
+
+Main -> ... -> [Transaction Nouv vente PMS-710 (IDE 0)](ADH-IDE-0.md) -> **Card scan read (IDE 80)**
+
+Main -> ... -> [Transaction Nouv vente PMS-721 (IDE 0)](ADH-IDE-0.md) -> **Card scan read (IDE 80)**
+
+Main -> ... -> [Club Med Pass menu (IDE 77)](ADH-IDE-77.md) -> **Card scan read (IDE 80)**
+
+Main -> ... -> [Menu caisse GM - scroll (IDE 163)](ADH-IDE-163.md) -> **Card scan read (IDE 80)**
 
 ```mermaid
 graph LR
     T80[80 Card scan read]
     style T80 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T80
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC77[77 Club Med Pass menu]
+    style CC77 fill:#3fb950
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#3fb950
+    CC1 --> CC77
+    CC1 --> CC163
+    CC77 --> T80
+    CC163 --> T80
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-584 | 2 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-710 | 2 |
+| [0](ADH-IDE-0.md) | Transaction Nouv vente PMS-721 | 2 |
+| [77](ADH-IDE-77.md) | Club Med Pass menu | 1 |
+| [163](ADH-IDE-163.md) | Menu caisse GM - scroll | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -274,4 +294,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 16:15*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:17*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 177 - Program_176
 
-> **Analyse**: Phases 1-4 2026-02-07 07:24 -> 07:24 (16s) | Assemblage 07:24
+> **Analyse**: Phases 1-4 2026-02-08 03:54 -> 03:54 (4s) | Assemblage 03:54
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -14,21 +14,26 @@
 | IDE Position | 177 |
 | Nom Programme | Program_176 |
 | Fichier source | `Prg_177.xml` |
-| Dossier IDE | Operations |
+| Dossier IDE | General |
 | Taches | 1 (0 ecrans visibles) |
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
-| :warning: Statut | **ORPHELIN_POTENTIEL** |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Program_176** assure la gestion complete de ce processus.
+**ADH IDE 177** est un programme orphelin sans aucun appelant détecté dans la chaîne d'appels. Il possède une structure minimale avec une seule tâche ne contenant aucune logique complexe, aucune variable mappée, et n'accède à aucune table de données. L'absence de PublicName et son isolation totale des autres programmes confirment qu'il n'est jamais invoqué par le code actif.
+
+Bien que son nom public soit non défini, le programme est décrit comme assurant "la gestion complète d'un processus" avec un flux simple d'initialisation de contrôles et traitement principal. Cependant, cette description générique ne reflète pas réellement la logique du programme, qui s'avère être pratiquement vide.
+
+De part sa complexité extrêmement basse (score 0/100), son absence totale de dépendances et son statut d'orphelin confirmé, **ADH IDE 177 est un candidat idéal pour suppression ou consolidation** lors de la migration. Il ne présente aucun risque de suppression puisqu'aucun programme actif ne dépend de lui, et sa porting vers des langages modernes n'apporterait aucune valeur métier.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee)*
+*(Aucune regle metier identifiee dans les expressions)*
 
 ## 6. CONTEXTE
 
@@ -155,4 +160,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:24*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:57*

@@ -1,31 +1,31 @@
-﻿# ADH IDE 171 - Facturation appel
+﻿# ADH IDE 171 - Print versement retrait
 
-> **Analyse**: 2026-02-07 07:22
+> **Analyse**: 2026-02-08 03:51
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Facturation appel
-- **Tables modifiees**: 3
-- **Complexite**: **BASSE** (19/100)
+- **Fonction**: Print versement retrait
+- **Tables modifiees**: 0
+- **Complexite**: **BASSE** (12/100)
 - **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Menu caisse GM - scroll @ (IDE 22)
+- **Raison**: Appele par 6 programme(s): Garantie sur compte PMS-584 (IDE 0), Garantie sur compte (IDE 111), Garantie sur compte PMS-584 (IDE 112), Garantie sur compte (IDE 288), Versement/Retrait (IDE 174), VAD validés à imprimer (IDE 255)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md) |
-| **Appelle** | [  Creation O.D (IDE 16)](ADH-IDE-16.md), [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md), [Zoom GO/GM (IDE 36)](ADH-IDE-36.md) |
+| **Appele par** | [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [Garantie sur compte (IDE 111)](ADH-IDE-111.md), [Garantie sur compte PMS-584 (IDE 112)](ADH-IDE-112.md), [Garantie sur compte (IDE 288)](ADH-IDE-288.md), [Versement/Retrait (IDE 174)](ADH-IDE-174.md), [VAD validés à imprimer (IDE 255)](ADH-IDE-255.md) |
+| **Appelle** | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 6 |
-| Lignes Logic | 116 |
-| Expressions | 15 |
-| Tables | 3 |
+| Taches | 14 |
+| Lignes Logic | 342 |
+| Expressions | 12 |
+| Tables | 4 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

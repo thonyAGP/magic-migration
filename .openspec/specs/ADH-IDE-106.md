@@ -1,6 +1,6 @@
 ﻿# ADH IDE 106 - Maj lignes saisies archive V3
 
-> **Analyse**: Phases 1-4 2026-02-07 07:00 -> 07:01 (16s) | Assemblage 15:23
+> **Analyse**: Phases 1-4 2026-02-07 07:01 -> 02:48 (19h47min) | Assemblage 02:48
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,42 +19,64 @@
 | Tables modifiees | 1 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 7/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Basé sur l'analyse du programme Magic :
+**ADH IDE 106** est un utilitaire de maintenance spécialisé dans la **synchronisation des archives de factures lors de la migration V2→V3**. Le programme met à jour en batch les enregistrements archivés de la table **projet** en enrichissant chaque ligne avec les données de facturation critiques : numéro de facture, compte, société, indicateurs de statut. Il valide en parallèle les correspondances avec les systèmes Compta et Vente via les tables de référence (Activité, Rayons_Boutique, maj_appli_tpe).
 
----
+Le flux d'exécution est très simple : réinitialisation des variables de contrôle, capture du timestamp courant, puis traitement conditionnel basé sur le champ `P.i.Flague [C]` (indicateur d'activation). Pour chaque enregistrement archivé, le programme affecte les 7 variables paramètres (sociétés, comptes, numéros de facture) et écrit les 11 colonnes modifiées dans la table projet. Les conditions sur les champs Compta et Vente permettent de détecter les correspondances manquantes et de signaler les anomalies de synchronisation.
 
-**ADH IDE 106** (Maj lignes saisies archive V3) est un utilitaire de maintenance chargé de **synchroniser et mettre à jour les lignes de factures archivées** dans la table "projet" lors de la migration de la version 2 vers la version 3. Le programme traite des enregistrements d'archives en batch, mettant à jour les informations de facturation (numéro de facture, compte, société, indicateurs de statut) tout en maintenant la cohérence des données à travers les systèmes comptables et de vente. Il effectue des validations croisées avec les tables de référence (activités, rayons boutique, mises à jour TPE) pour garantir que chaque entrée archivée correspond aux enregistrements valides.
-
-Le programme exécute un flux de travail spécifique : réinitialisation des variables de contrôle, capture des timestamps pour la traçabilité, traitement conditionnel basé sur le champ "Flague" (statut de l'entrée), puis validation des relations entre les systèmes Compta et Vente. Il maintient des indicateurs booléens pour suivre les mises à jour réussies et les correspondances trouvées dans chaque système, permettant ainsi un audit complet du processus de synchronisation archive.
-
-Bien que classé comme orphelin potentiel (sans appelants détectés), le programme constitue un composant terminal isolé de 71 lignes de logique avec zéro callees, ce qui minimise les risques de régression. Son absence de dépendances en aval le rend sûr à modifier sans impacter d'autres composants du système ADH.
+Complexité très basse (71 lignes de logique, zéro appels de sous-programmes). Le programme est un traitement batch isolé sans écran visible, sûr à modifier car il n'impacte qu'une table en écriture et n'a aucune dépendance en aval.
 
 ## 3. BLOCS FONCTIONNELS
 
 ## 5. REGLES METIER
 
-1 regles identifiees:
+4 regles identifiees:
 
-### Autres (1 regles)
+### Autres (4 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Condition toujours vraie (flag actif)
+#### <a id="rm-RM-001"></a>[RM-001] Condition: [BC] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BC]=0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 1 : `[BC]=0` |
+| **Exemple** | Si [BC]=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: [BM] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[BM]=0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 2 : `[BM]=0` |
+| **Exemple** | Si [BM]=0 â†’ Action si vrai |
+
+#### <a id="rm-RM-003"></a>[RM-003] Condition toujours vraie (flag actif)
 
 | Element | Detail |
 |---------|--------|
 | **Condition** | `P.i.Flague [C]` |
 | **Si vrai** | 'TRUE'LOG |
 | **Si faux** | 'FALSE'LOG) |
-| **Variables** | C (P.i.Flague) |
+| **Variables** | EP (P.i.Flague) |
 | **Expression source** | Expression 10 : `IF(P.i.Flague [C],'TRUE'LOG,'FALSE'LOG)` |
 | **Exemple** | Si P.i.Flague [C] â†’ 'TRUE'LOG. Sinon â†’ 'FALSE'LOG) |
 
+#### <a id="rm-RM-004"></a>[RM-004] Condition: [P]=0 OR [BC] egale 0
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[P]=0 OR [BC]=0` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 16 : `[P]=0 OR [BC]=0` |
+| **Exemple** | Si [P]=0 OR [BC]=0 â†’ Action si vrai |
+
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)
 - **Appelle**: 0 programmes | **Tables**: 4 (W:1 R:0 L:3) | **Taches**: 1 | **Expressions**: 18
 
 <!-- TAB:Ecrans -->
@@ -128,17 +150,17 @@ flowchart TD
 
 ### 11.1 Parametres entrants (7)
 
-Variables recues en parametre.
+Variables recues du programme appelant ([Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P.i.Societe | Unicode | 1x parametre entrant |
-| B | P.i.Compte | Numeric | 1x parametre entrant |
-| C | P.i.Flague | Logical | 1x parametre entrant |
-| D | P.i.No_Facture | Numeric | 1x parametre entrant |
-| E | P.i.NomFichPDF | Alpha | 1x parametre entrant |
-| F | P.i.SelectionManuelle | Logical | 1x parametre entrant |
-| G | P.i.Date Purge | Date | 1x parametre entrant |
+| EN | P.i.Societe | Unicode | 1x parametre entrant |
+| EO | P.i.Compte | Numeric | 1x parametre entrant |
+| EP | P.i.Flague | Logical | 1x parametre entrant |
+| EQ | P.i.No_Facture | Numeric | 1x parametre entrant |
+| ER | P.i.NomFichPDF | Alpha | 1x parametre entrant |
+| ES | P.i.SelectionManuelle | Logical | 1x parametre entrant |
+| ET | P.i.Date Purge | Date | 1x parametre entrant |
 
 ### 11.2 Variables de session (4)
 
@@ -146,10 +168,10 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| H | V retour Compta | Logical | - |
-| I | v Retour Vente | Logical | - |
-| J | v Trouvé Compta | Logical | - |
-| K | v Trouvé Vente | Logical | - |
+| EU | V retour Compta | Logical | - |
+| EV | v Retour Vente | Logical | - |
+| EW | v Trouvé Compta | Logical | - |
+| EX | v Trouvé Vente | Logical | - |
 
 ## 12. EXPRESSIONS
 
@@ -159,18 +181,26 @@ Variables persistantes pendant toute la session.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 3 | 3 |
 | CAST_LOGIQUE | 1 | 5 |
 | DATE | 2 | 0 |
-| CONDITION | 3 | 0 |
 | OTHER | 12 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 16 | `[P]=0 OR [BC]=0` | [RM-004](#rm-RM-004) |
+| CONDITION | 2 | `[BM]=0` | [RM-002](#rm-RM-002) |
+| CONDITION | 1 | `[BC]=0` | [RM-001](#rm-RM-001) |
 
 #### CAST_LOGIQUE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CAST_LOGIQUE | 10 | `IF(P.i.Flague [C],'TRUE'LOG,'FALSE'LOG)` | [RM-001](#rm-RM-001) |
+| CAST_LOGIQUE | 10 | `IF(P.i.Flague [C],'TRUE'LOG,'FALSE'LOG)` | [RM-003](#rm-RM-003) |
 
 #### DATE (2 expressions)
 
@@ -179,21 +209,13 @@ Variables persistantes pendant toute la session.
 | DATE | 9 | `Date()` | - |
 | DATE | 4 | `Date()` | - |
 
-#### CONDITION (3 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 16 | `[P]=0 OR [AC]=0` | - |
-| CONDITION | 2 | `[AM]=0` | - |
-| CONDITION | 1 | `[AC]=0` | - |
-
 #### OTHER (12 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | OTHER | 14 | `[M]` | - |
-| OTHER | 13 | `[AH]` | - |
-| OTHER | 12 | `[AA]` | - |
+| OTHER | 13 | `[BH]` | - |
+| OTHER | 12 | `[BA]` | - |
 | OTHER | 18 | `P.i.Date Purge [G]` | - |
 | OTHER | 17 | `P.i.SelectionManuelle [F]` | - |
 | ... | | *+7 autres* | |
@@ -204,22 +226,41 @@ Variables persistantes pendant toute la session.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) -> **Maj lignes saisies archive V3 (IDE 106)**
 
 ```mermaid
 graph LR
     T106[106 Maj lignes saisies...]
     style T106 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T106
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC174[174 VersementRetrait]
+    style CC174 fill:#8b5cf6
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#f59e0b
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#f59e0b
+    CC97[97 Factures Tble Compt...]
+    style CC97 fill:#3fb950
+    CC163 --> CC97
+    CC190 --> CC97
+    CC193 --> CC97
+    CC1 --> CC163
+    CC174 --> CC163
+    CC1 --> CC190
+    CC174 --> CC190
+    CC1 --> CC193
+    CC174 --> CC193
+    CC97 --> T106
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [97](ADH-IDE-97.md) | Factures (Tble Compta&Vent) V3 | 2 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -250,7 +291,7 @@ graph LR
 | Sous-programmes | 0 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 71) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Regles metier | 4 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -261,4 +302,4 @@ graph LR
 | projet | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 15:24*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:49*

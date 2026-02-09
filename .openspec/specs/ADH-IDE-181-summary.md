@@ -1,6 +1,6 @@
 ﻿# ADH IDE 181 - Set Listing Number
 
-> **Analyse**: 2026-02-07 07:26
+> **Analyse**: 2026-02-08 04:01
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
@@ -8,14 +8,14 @@
 - **Fonction**: Set Listing Number
 - **Tables modifiees**: 0
 - **Complexite**: **BASSE** (0/100)
-- **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Menu impression des appels (IDE 214)
+- **Statut**: ECF_SHARED
+- **Raison**: Membre de ADH.ecf - peut etre appele depuis PBP, PVE
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Menu impression des appels (IDE 214)](ADH-IDE-214.md) |
+| **Appele par** | (aucun) |
 | **Appelle** | (aucun) |
 
 ## STATISTIQUES

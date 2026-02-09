@@ -1,6 +1,6 @@
 ﻿# ADH IDE 78 - Print Ventes Club Med Pass
 
-> **Analyse**: 2026-02-07 13:51
+> **Analyse**: 2026-02-08 02:15
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF

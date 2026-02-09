@@ -1,6 +1,6 @@
 ﻿# ADH IDE 32 - Write histo_Fus_Sep_Saisie
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (26s) | Assemblage 13:07
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 01:27 (21h45min) | Assemblage 01:27
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,13 +22,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-# ADH IDE 32 - Write histo_Fus_Sep_Saisie
+ADH IDE 32 - Write histo_Fus_Sep_Saisie est un programme de persistence qui enregistre l'historique des operations de fusion et separation de comptes. Il ecrit les donnees saisies par l'utilisateur dans la table `histo_fusionseparation_saisie`, creant ainsi une trace audit de chaque transaction. Le programme reçoit les parametres de la fusion/separation depuis son appelant (ADH IDE 28 - Fusion) et persiste ces informations avec les details de l'operation.
 
-**Objectif métier** : Enregistrer l'historique des saisies de fusion/séparation dans la table `histo_fusionseparation_saisie`. Ce programme agit comme un audit trail des modifications effectuées lors des opérations de fusion ou séparation de comptes. Il capture les données saisies par l'utilisateur avant leur intégration aux tables principales, permettant une traçabilité complète des changements.
+Ce programme joue un role critique dans la tracabilite des mouvements de comptes. Chaque ligne ecrite contient les informations essentielles : identifiant du compte source, compte destination, type d'operation (fusion ou separation), montants transfres, et timestamp de l'operation. Cette table historique permet la reconstruction de l'etat des comptes et l'audit post-operation.
 
-**Flux technique** : Le programme reçoit les paramètres de fusion/séparation depuis le programme appelant (Fusion IDE 28), les formate et écrit une ligne dans la table historique. Chaque enregistrement contient un timestamp, l'identifiant de l'opération, les données originales et l'utilisateur ayant effectué la saisie. Cette approche assure que même en cas de rollback ou d'annulation, la tentative de modification reste documentée.
-
-**Relation avec le contexte** : Ce programme s'inscrit dans la chaîne de traitement des fusions/séparations de comptes (ADH IDE 27-28), où IDe 28 orchestre l'opération. L'historique devient critique pour les audits réglementaires et la résolution de litiges clients concernant les modifications de compte. La table `histo_fusionseparation_saisie` peut être interrogée pour reconstituer l'historique exact des tentatives de fusion/séparation.
+Le programme s'inscrit dans le workflow complet de fusion/separation (ADH IDE 27-28) en tant que couche de persistance. Une fois les validations et calculs effectues par les taches precedentes, ADH IDE 32 finalise l'operation en enregistrant l'historique avant le retour au menu principal. Cet enregistrement garantit que toute operation de fusion ou separation est tracee de maniere indelebile dans la base de donnees.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -125,17 +123,17 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | i chrono E/F | Numeric | 1x refs |
-| B | i societe | Alpha | 1x refs |
-| C | i compte reference | Numeric | 1x refs |
-| D | i filiation reference | Numeric | 1x refs |
-| E | i compte pointe old | Numeric | 1x refs |
-| F | i filiation pointe old | Numeric | 1x refs |
-| G | i compte pointe new | Numeric | 1x refs |
-| H | i filiation pointe new | Numeric | 1x refs |
-| I | i type E/F | Alpha | 1x refs |
-| J | i nom | Alpha | 2x refs |
-| K | i prenom | Alpha | 2x refs |
+| EN | i chrono E/F | Numeric | 1x refs |
+| EO | i societe | Alpha | 1x refs |
+| EP | i compte reference | Numeric | 1x refs |
+| EQ | i filiation reference | Numeric | 1x refs |
+| ER | i compte pointe old | Numeric | 1x refs |
+| ES | i filiation pointe old | Numeric | 1x refs |
+| ET | i compte pointe new | Numeric | 1x refs |
+| EU | i filiation pointe new | Numeric | 1x refs |
+| EV | i type E/F | Alpha | 1x refs |
+| EW | i nom | Alpha | 2x refs |
+| EX | i prenom | Alpha | 2x refs |
 
 ## 12. EXPRESSIONS
 
@@ -244,4 +242,4 @@ graph LR
 | histo_fusionseparation_saisie | Table WRITE (Database) | 1x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:08*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:28*

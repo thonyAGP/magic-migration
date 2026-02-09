@@ -1,6 +1,6 @@
 ﻿# ADH IDE 36 - Print Separation ou fusion
 
-> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 03:42 (26s) | Assemblage 13:10
+> **Analyse**: Phases 1-4 2026-02-07 03:42 -> 01:30 (21h47min) | Assemblage 01:30
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,13 +22,7 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-# ADH IDE 36 - Print Separation ou Fusion
-
-ADH IDE 36 gère l'impression des documents lors des opérations de séparation ou fusion de comptes. Ce programme est appelé depuis les modules Séparation (IDE 27) et Fusion (IDE 28), agissant comme gestionnaire d'impression centralisé pour ces deux opérations critiques. Son rôle consiste à préparer et envoyer les données de compte vers l'imprimante configurable pour générer les documents justificatifs nécessaires à l'archivage et à la traçabilité.
-
-Le flux d'exécution suit une séquence logique : affichage d'un message d'attente ("Veuillez patienter..."), récupération du nombre de records historiques à imprimer, initialisation de l'imprimante (Printer 1), puis traitement détaillé ligne par ligne des données. La tâche "Traitement" gère la boucle principale tandis que "Detail" formate chaque ligne pour l'impression.
-
-Le programme intègre un mécanisme de réinitialisation via l'appel à "Raz Current Printer" (IDE 182), garantissant que chaque impression démarre avec une imprimante vierge. Cette architecture modulaire permet de réutiliser la même logique d'impression pour les deux opérations (séparation et fusion) sans duplication de code, respectant le principe DRY de l'architecture Magic.
+{"type":"result","subtype":"success","is_error":false,"duration_ms":30268,"duration_api_ms":24869,"num_turns":4,"result":"","session_id":"9d979476-89eb-4140-bb5b-e7498ca37aef","total_cost_usd":0.13944735,"usage":{"input_tokens":19,"cache_creation_input_tokens":46656,"cache_read_input_tokens":209453,"output_tokens":1080,"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":0,"ephemeral_5m_input_tokens":46656}},"modelUsage":{"claude-haiku-4-5-20251001":{"inputTokens":448,"outputTokens":1872,"cacheReadInputTokens":287656,"cacheCreationInputTokens":80699,"webSearchRequests":0,"costUSD":0.13944735,"contextWindow":200000,"maxOutputTokens":64000}},"permission_denials":[],"uuid":"0c78a107-969c-413f-8d10-4bfa93aba248"}
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -38,7 +32,7 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Veuillez patienter... [ECRAN]
+#### <a id="t1"></a>36 - Veuillez patienter... [[ECRAN]](#ecran-t1)
 
 **Role** : Tache d'orchestration : point d'entree du programme (22 sous-taches). Coordonne l'enchainement des traitements.
 **Ecran** : 422 x 56 DLU (MDI) | [Voir mockup](#ecran-t1)
@@ -48,164 +42,164 @@ Traitements internes.
 
 | Tache | Nom | Bloc |
 |-------|-----|------|
-| [T2](#t2) | Nbre Record Histo | Traitement |
-| [T4](#t4) | Traitement **[ECRAN]** | Traitement |
-| [T5](#t5) | Detail | Traitement |
-| [T6](#t6) | Traitement **[ECRAN]** | Traitement |
-| [T7](#t7) | Detail | Traitement |
-| [T9](#t9) | Traitement **[ECRAN]** | Traitement |
-| [T10](#t10) | Detail | Traitement |
-| [T11](#t11) | Traitement **[ECRAN]** | Traitement |
-| [T12](#t12) | Detail | Traitement |
-| [T14](#t14) | Traitement **[ECRAN]** | Traitement |
-| [T15](#t15) | Detail | Traitement |
-| [T16](#t16) | Traitement **[ECRAN]** | Traitement |
-| [T17](#t17) | Detail | Traitement |
-| [T19](#t19) | Traitement **[ECRAN]** | Traitement |
-| [T20](#t20) | Detail | Traitement |
-| [T21](#t21) | Traitement **[ECRAN]** | Traitement |
-| [T22](#t22) | Detail | Traitement |
-| [T24](#t24) | Traitement **[ECRAN]** | Traitement |
-| [T25](#t25) | Detail | Traitement |
-| [T26](#t26) | Traitement **[ECRAN]** | Traitement |
-| [T27](#t27) | Detail | Traitement |
+| [36.1](#t2) | Nbre Record Histo | Traitement |
+| [36.2.1](#t4) | Traitement **[[ECRAN]](#ecran-t4)** | Traitement |
+| [36.2.1.1](#t5) | Detail | Traitement |
+| [36.2.2](#t6) | Traitement **[[ECRAN]](#ecran-t6)** | Traitement |
+| [36.2.2.1](#t7) | Detail | Traitement |
+| [36.3.1](#t9) | Traitement **[[ECRAN]](#ecran-t9)** | Traitement |
+| [36.3.1.1](#t10) | Detail | Traitement |
+| [36.3.2](#t11) | Traitement **[[ECRAN]](#ecran-t11)** | Traitement |
+| [36.3.2.1](#t12) | Detail | Traitement |
+| [36.4.1](#t14) | Traitement **[[ECRAN]](#ecran-t14)** | Traitement |
+| [36.4.1.1](#t15) | Detail | Traitement |
+| [36.4.2](#t16) | Traitement **[[ECRAN]](#ecran-t16)** | Traitement |
+| [36.4.2.1](#t17) | Detail | Traitement |
+| [36.5.1](#t19) | Traitement **[[ECRAN]](#ecran-t19)** | Traitement |
+| [36.5.1.1](#t20) | Detail | Traitement |
+| [36.5.2](#t21) | Traitement **[[ECRAN]](#ecran-t21)** | Traitement |
+| [36.5.2.1](#t22) | Detail | Traitement |
+| [36.6.1](#t24) | Traitement **[[ECRAN]](#ecran-t24)** | Traitement |
+| [36.6.1.1](#t25) | Detail | Traitement |
+| [36.6.2](#t26) | Traitement **[[ECRAN]](#ecran-t26)** | Traitement |
+| [36.6.2.1](#t27) | Detail | Traitement |
 
 </details>
 
 ---
 
-#### <a id="t2"></a>T2 - Nbre Record Histo
+#### <a id="t2"></a>36.1 - Nbre Record Histo
 
 **Role** : Traitement : Nbre Record Histo.
-**Variables liees** : N (W0 nbre filiation), S (W0 Nbre Record Histo)
+**Variables liees** : FA (W0 nbre filiation), FF (W0 Nbre Record Histo)
 
 ---
 
-#### <a id="t4"></a>T4 - Traitement [ECRAN]
+#### <a id="t4"></a>36.2.1 - Traitement [[ECRAN]](#ecran-t4)
 
 **Role** : Traitement : Traitement.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t4)
 
 ---
 
-#### <a id="t5"></a>T5 - Detail
+#### <a id="t5"></a>36.2.1.1 - Detail
 
 **Role** : Traitement : Detail.
 
 ---
 
-#### <a id="t6"></a>T6 - Traitement [ECRAN]
+#### <a id="t6"></a>36.2.2 - Traitement [[ECRAN]](#ecran-t6)
 
 **Role** : Traitement : Traitement.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t6)
 
 ---
 
-#### <a id="t7"></a>T7 - Detail
+#### <a id="t7"></a>36.2.2.1 - Detail
 
 **Role** : Traitement : Detail.
 
 ---
 
-#### <a id="t9"></a>T9 - Traitement [ECRAN]
+#### <a id="t9"></a>36.3.1 - Traitement [[ECRAN]](#ecran-t9)
 
 **Role** : Traitement : Traitement.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t9)
 
 ---
 
-#### <a id="t10"></a>T10 - Detail
+#### <a id="t10"></a>36.3.1.1 - Detail
 
 **Role** : Traitement : Detail.
 
 ---
 
-#### <a id="t11"></a>T11 - Traitement [ECRAN]
+#### <a id="t11"></a>36.3.2 - Traitement [[ECRAN]](#ecran-t11)
 
 **Role** : Traitement : Traitement.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t11)
 
 ---
 
-#### <a id="t12"></a>T12 - Detail
+#### <a id="t12"></a>36.3.2.1 - Detail
 
 **Role** : Traitement : Detail.
 
 ---
 
-#### <a id="t14"></a>T14 - Traitement [ECRAN]
+#### <a id="t14"></a>36.4.1 - Traitement [[ECRAN]](#ecran-t14)
 
 **Role** : Traitement : Traitement.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t14)
 
 ---
 
-#### <a id="t15"></a>T15 - Detail
+#### <a id="t15"></a>36.4.1.1 - Detail
 
 **Role** : Traitement : Detail.
 
 ---
 
-#### <a id="t16"></a>T16 - Traitement [ECRAN]
+#### <a id="t16"></a>36.4.2 - Traitement [[ECRAN]](#ecran-t16)
 
 **Role** : Traitement : Traitement.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t16)
 
 ---
 
-#### <a id="t17"></a>T17 - Detail
+#### <a id="t17"></a>36.4.2.1 - Detail
 
 **Role** : Traitement : Detail.
 
 ---
 
-#### <a id="t19"></a>T19 - Traitement [ECRAN]
+#### <a id="t19"></a>36.5.1 - Traitement [[ECRAN]](#ecran-t19)
 
 **Role** : Traitement : Traitement.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t19)
 
 ---
 
-#### <a id="t20"></a>T20 - Detail
+#### <a id="t20"></a>36.5.1.1 - Detail
 
 **Role** : Traitement : Detail.
 
 ---
 
-#### <a id="t21"></a>T21 - Traitement [ECRAN]
+#### <a id="t21"></a>36.5.2 - Traitement [[ECRAN]](#ecran-t21)
 
 **Role** : Traitement : Traitement.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t21)
 
 ---
 
-#### <a id="t22"></a>T22 - Detail
+#### <a id="t22"></a>36.5.2.1 - Detail
 
 **Role** : Traitement : Detail.
 
 ---
 
-#### <a id="t24"></a>T24 - Traitement [ECRAN]
+#### <a id="t24"></a>36.6.1 - Traitement [[ECRAN]](#ecran-t24)
 
 **Role** : Traitement : Traitement.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t24)
 
 ---
 
-#### <a id="t25"></a>T25 - Detail
+#### <a id="t25"></a>36.6.1.1 - Detail
 
 **Role** : Traitement : Detail.
 
 ---
 
-#### <a id="t26"></a>T26 - Traitement [ECRAN]
+#### <a id="t26"></a>36.6.2 - Traitement [[ECRAN]](#ecran-t26)
 
 **Role** : Traitement : Traitement.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t26)
 
 ---
 
-#### <a id="t27"></a>T27 - Detail
+#### <a id="t27"></a>36.6.2.1 - Detail
 
 **Role** : Traitement : Detail.
 
@@ -216,7 +210,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t3"></a>T3 - Printer 1 [ECRAN]
+#### <a id="t3"></a>36.2 - Printer 1 [[ECRAN]](#ecran-t3)
 
 **Role** : Generation du document : Printer 1.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t3)
@@ -224,7 +218,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t8"></a>T8 - Printer 4 [ECRAN]
+#### <a id="t8"></a>36.3 - Printer 4 [[ECRAN]](#ecran-t8)
 
 **Role** : Generation du document : Printer 4.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t8)
@@ -232,7 +226,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t13"></a>T13 - Printer 6 [ECRAN]
+#### <a id="t13"></a>36.4 - Printer 6 [[ECRAN]](#ecran-t13)
 
 **Role** : Generation du document : Printer 6.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t13)
@@ -240,7 +234,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t18"></a>T18 - Printer 8 [ECRAN]
+#### <a id="t18"></a>36.5 - Printer 8 [[ECRAN]](#ecran-t18)
 
 **Role** : Generation du document : Printer 8.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t18)
@@ -248,7 +242,7 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t23"></a>T23 - Printer 9 [ECRAN]
+#### <a id="t23"></a>36.6 - Printer 9 [[ECRAN]](#ecran-t23)
 
 **Role** : Generation du document : Printer 9.
 **Ecran** : 308 x 56 DLU (MDI) | [Voir mockup](#ecran-t23)
@@ -257,7 +251,71 @@ Generation des documents et tickets.
 
 ## 5. REGLES METIER
 
-*(Programme d'impression - logique technique sans conditions metier)*
+6 regles identifiees:
+
+### Impression (5 regles)
+
+#### <a id="rm-RM-002"></a>[RM-002] Verification que l'imprimante courante est la n1
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 1 |
+| **Expression source** | Expression 10 : `GetParam ('CURRENTPRINTERNUM')=1` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=1 â†’ Action si CURRENTPRINTERNUM = 1 |
+| **Impact** | [36.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-003"></a>[RM-003] Verification que l'imprimante courante est la n4
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 4 |
+| **Expression source** | Expression 11 : `GetParam ('CURRENTPRINTERNUM')=4` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=4 â†’ Action si CURRENTPRINTERNUM = 4 |
+| **Impact** | [36.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-004"></a>[RM-004] Verification que l'imprimante courante est la n6
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=6` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 6 |
+| **Expression source** | Expression 12 : `GetParam ('CURRENTPRINTERNUM')=6` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=6 â†’ Action si CURRENTPRINTERNUM = 6 |
+| **Impact** | [36.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-005"></a>[RM-005] Verification que l'imprimante courante est la n8
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 8 |
+| **Expression source** | Expression 13 : `GetParam ('CURRENTPRINTERNUM')=8` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=8 â†’ Action si CURRENTPRINTERNUM = 8 |
+| **Impact** | [36.2 - Printer 1](#t3) |
+
+#### <a id="rm-RM-006"></a>[RM-006] Verification que l'imprimante courante est la n9
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Si vrai** | Action si CURRENTPRINTERNUM = 9 |
+| **Expression source** | Expression 14 : `GetParam ('CURRENTPRINTERNUM')=9` |
+| **Exemple** | Si GetParam ('CURRENTPRINTERNUM')=9 â†’ Action si CURRENTPRINTERNUM = 9 |
+| **Impact** | [36.2 - Printer 1](#t3) |
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: P0 societe [A] egale
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `P0 societe [A]=''` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EN (P0 societe) |
+| **Expression source** | Expression 1 : `P0 societe [A]=''` |
+| **Exemple** | Si P0 societe [A]='' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -272,14 +330,14 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 36 | T1 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
+| 1 | 36 | 36 | Veuillez patienter... | MDI | 422 | 56 | Traitement |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t1"></a>36 - Veuillez patienter...
-**Tache** : [T1](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
+**Tache** : [36](#t1) | **Type** : MDI | **Dimensions** : 422 x 56 DLU
 **Bloc** : Traitement | **Titre IDE** : Veuillez patienter...
 
 <!-- FORM-DATA:
@@ -368,50 +426,59 @@ Ecran unique: **Veuillez patienter...**
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **36.1** | [**Veuillez patienter...** (T1)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
-| 36.1.1 | [Nbre Record Histo (T2)](#t2) | MDI | - | |
-| 36.1.2 | [Traitement (T4)](#t4) [mockup](#ecran-t4) | MDI | 308x56 | |
-| 36.1.3 | [Detail (T5)](#t5) | MDI | - | |
-| 36.1.4 | [Traitement (T6)](#t6) [mockup](#ecran-t6) | MDI | 308x56 | |
-| 36.1.5 | [Detail (T7)](#t7) | MDI | - | |
-| 36.1.6 | [Traitement (T9)](#t9) [mockup](#ecran-t9) | MDI | 308x56 | |
-| 36.1.7 | [Detail (T10)](#t10) | MDI | - | |
-| 36.1.8 | [Traitement (T11)](#t11) [mockup](#ecran-t11) | MDI | 308x56 | |
-| 36.1.9 | [Detail (T12)](#t12) | MDI | - | |
-| 36.1.10 | [Traitement (T14)](#t14) [mockup](#ecran-t14) | MDI | 308x56 | |
-| 36.1.11 | [Detail (T15)](#t15) | MDI | - | |
-| 36.1.12 | [Traitement (T16)](#t16) [mockup](#ecran-t16) | MDI | 308x56 | |
-| 36.1.13 | [Detail (T17)](#t17) | MDI | - | |
-| 36.1.14 | [Traitement (T19)](#t19) [mockup](#ecran-t19) | MDI | 308x56 | |
-| 36.1.15 | [Detail (T20)](#t20) | MDI | - | |
-| 36.1.16 | [Traitement (T21)](#t21) [mockup](#ecran-t21) | MDI | 308x56 | |
-| 36.1.17 | [Detail (T22)](#t22) | MDI | - | |
-| 36.1.18 | [Traitement (T24)](#t24) [mockup](#ecran-t24) | MDI | 308x56 | |
-| 36.1.19 | [Detail (T25)](#t25) | MDI | - | |
-| 36.1.20 | [Traitement (T26)](#t26) [mockup](#ecran-t26) | MDI | 308x56 | |
-| 36.1.21 | [Detail (T27)](#t27) | MDI | - | |
-| **36.2** | [**Printer 1** (T3)](#t3) [mockup](#ecran-t3) | MDI | 308x56 | Impression |
-| 36.2.1 | [Printer 4 (T8)](#t8) [mockup](#ecran-t8) | MDI | 308x56 | |
-| 36.2.2 | [Printer 6 (T13)](#t13) [mockup](#ecran-t13) | MDI | 308x56 | |
-| 36.2.3 | [Printer 8 (T18)](#t18) [mockup](#ecran-t18) | MDI | 308x56 | |
-| 36.2.4 | [Printer 9 (T23)](#t23) [mockup](#ecran-t23) | MDI | 308x56 | |
+| **36.1** | [**Veuillez patienter...** (36)](#t1) [mockup](#ecran-t1) | MDI | 422x56 | Traitement |
+| 36.1.1 | [Nbre Record Histo (36.1)](#t2) | MDI | - | |
+| 36.1.2 | [Traitement (36.2.1)](#t4) [mockup](#ecran-t4) | MDI | 308x56 | |
+| 36.1.3 | [Detail (36.2.1.1)](#t5) | MDI | - | |
+| 36.1.4 | [Traitement (36.2.2)](#t6) [mockup](#ecran-t6) | MDI | 308x56 | |
+| 36.1.5 | [Detail (36.2.2.1)](#t7) | MDI | - | |
+| 36.1.6 | [Traitement (36.3.1)](#t9) [mockup](#ecran-t9) | MDI | 308x56 | |
+| 36.1.7 | [Detail (36.3.1.1)](#t10) | MDI | - | |
+| 36.1.8 | [Traitement (36.3.2)](#t11) [mockup](#ecran-t11) | MDI | 308x56 | |
+| 36.1.9 | [Detail (36.3.2.1)](#t12) | MDI | - | |
+| 36.1.10 | [Traitement (36.4.1)](#t14) [mockup](#ecran-t14) | MDI | 308x56 | |
+| 36.1.11 | [Detail (36.4.1.1)](#t15) | MDI | - | |
+| 36.1.12 | [Traitement (36.4.2)](#t16) [mockup](#ecran-t16) | MDI | 308x56 | |
+| 36.1.13 | [Detail (36.4.2.1)](#t17) | MDI | - | |
+| 36.1.14 | [Traitement (36.5.1)](#t19) [mockup](#ecran-t19) | MDI | 308x56 | |
+| 36.1.15 | [Detail (36.5.1.1)](#t20) | MDI | - | |
+| 36.1.16 | [Traitement (36.5.2)](#t21) [mockup](#ecran-t21) | MDI | 308x56 | |
+| 36.1.17 | [Detail (36.5.2.1)](#t22) | MDI | - | |
+| 36.1.18 | [Traitement (36.6.1)](#t24) [mockup](#ecran-t24) | MDI | 308x56 | |
+| 36.1.19 | [Detail (36.6.1.1)](#t25) | MDI | - | |
+| 36.1.20 | [Traitement (36.6.2)](#t26) [mockup](#ecran-t26) | MDI | 308x56 | |
+| 36.1.21 | [Detail (36.6.2.1)](#t27) | MDI | - | |
+| **36.2** | [**Printer 1** (36.2)](#t3) [mockup](#ecran-t3) | MDI | 308x56 | Impression |
+| 36.2.1 | [Printer 4 (36.3)](#t8) [mockup](#ecran-t8) | MDI | 308x56 | |
+| 36.2.2 | [Printer 6 (36.4)](#t13) [mockup](#ecran-t13) | MDI | 308x56 | |
+| 36.2.3 | [Printer 8 (36.5)](#t18) [mockup](#ecran-t18) | MDI | 308x56 | |
+| 36.2.4 | [Printer 9 (36.6)](#t23) [mockup](#ecran-t23) | MDI | 308x56 | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (22t)]
-    START --> B1
-    B2[Impression (5t)]
-    B1 --> B2
-    ENDOK([END])
-    B2 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{P0 societe}
+    PROCESS[Traitement]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -433,7 +500,7 @@ flowchart TD
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| S | W0 Nbre Record Histo | R | Numeric |
+| FF | W0 Nbre Record Histo | R | Numeric |
 
 </details>
 
@@ -479,19 +546,19 @@ Variables recues du programme appelant ([Separation (IDE 27)](ADH-IDE-27.md)).
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | P0 societe | Alpha | 2x parametre entrant |
-| B | P0 code GM | Numeric | 1x parametre entrant |
-| C | P0 filiation | Numeric | 1x parametre entrant |
-| D | P0 masque montant | Alpha | - |
-| E | P0 garantie | Alpha | - |
-| F | P0 solde | Numeric | - |
-| G | P0 date limite solde | Date | - |
-| H | P0 nom village | Alpha | - |
-| I | P0 Uni/Bilateral | Alpha | - |
-| J | P0 n° compteur | Numeric | - |
-| K | P0 MERGE/SEPAR | Alpha | - |
-| L | P0 SEPAR NNN/ONE | Alpha | - |
-| M | P0 chrono F/E | Numeric | - |
+| EN | P0 societe | Alpha | 2x parametre entrant |
+| EO | P0 code GM | Numeric | 1x parametre entrant |
+| EP | P0 filiation | Numeric | 1x parametre entrant |
+| EQ | P0 masque montant | Alpha | - |
+| ER | P0 garantie | Alpha | - |
+| ES | P0 solde | Numeric | - |
+| ET | P0 date limite solde | Date | - |
+| EU | P0 nom village | Alpha | - |
+| EV | P0 Uni/Bilateral | Alpha | - |
+| EW | P0 n° compteur | Numeric | - |
+| EX | P0 MERGE/SEPAR | Alpha | - |
+| EY | P0 SEPAR NNN/ONE | Alpha | - |
+| EZ | P0 chrono F/E | Numeric | - |
 
 ### 11.2 Variables de travail (6)
 
@@ -499,37 +566,37 @@ Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| N | W0 nbre filiation | Numeric | - |
-| O | W0 date operation | Date | - |
-| P | W0 heure operation | Time | - |
-| Q | W0 nom/prenom newcpt | Alpha | - |
-| R | W0 qualite compte | Alpha | - |
-| S | W0 Nbre Record Histo | Numeric | - |
+| FA | W0 nbre filiation | Numeric | - |
+| FB | W0 date operation | Date | - |
+| FC | W0 heure operation | Time | - |
+| FD | W0 nom/prenom newcpt | Alpha | - |
+| FE | W0 qualite compte | Alpha | - |
+| FF | W0 Nbre Record Histo | Numeric | - |
 
 <details>
 <summary>Toutes les 19 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| P0 | **A** | P0 societe | Alpha |
-| P0 | **B** | P0 code GM | Numeric |
-| P0 | **C** | P0 filiation | Numeric |
-| P0 | **D** | P0 masque montant | Alpha |
-| P0 | **E** | P0 garantie | Alpha |
-| P0 | **F** | P0 solde | Numeric |
-| P0 | **G** | P0 date limite solde | Date |
-| P0 | **H** | P0 nom village | Alpha |
-| P0 | **I** | P0 Uni/Bilateral | Alpha |
-| P0 | **J** | P0 n° compteur | Numeric |
-| P0 | **K** | P0 MERGE/SEPAR | Alpha |
-| P0 | **L** | P0 SEPAR NNN/ONE | Alpha |
-| P0 | **M** | P0 chrono F/E | Numeric |
-| W0 | **N** | W0 nbre filiation | Numeric |
-| W0 | **O** | W0 date operation | Date |
-| W0 | **P** | W0 heure operation | Time |
-| W0 | **Q** | W0 nom/prenom newcpt | Alpha |
-| W0 | **R** | W0 qualite compte | Alpha |
-| W0 | **S** | W0 Nbre Record Histo | Numeric |
+| P0 | **EN** | P0 societe | Alpha |
+| P0 | **EO** | P0 code GM | Numeric |
+| P0 | **EP** | P0 filiation | Numeric |
+| P0 | **EQ** | P0 masque montant | Alpha |
+| P0 | **ER** | P0 garantie | Alpha |
+| P0 | **ES** | P0 solde | Numeric |
+| P0 | **ET** | P0 date limite solde | Date |
+| P0 | **EU** | P0 nom village | Alpha |
+| P0 | **EV** | P0 Uni/Bilateral | Alpha |
+| P0 | **EW** | P0 n° compteur | Numeric |
+| P0 | **EX** | P0 MERGE/SEPAR | Alpha |
+| P0 | **EY** | P0 SEPAR NNN/ONE | Alpha |
+| P0 | **EZ** | P0 chrono F/E | Numeric |
+| W0 | **FA** | W0 nbre filiation | Numeric |
+| W0 | **FB** | W0 date operation | Date |
+| W0 | **FC** | W0 heure operation | Time |
+| W0 | **FD** | W0 nom/prenom newcpt | Alpha |
+| W0 | **FE** | W0 qualite compte | Alpha |
+| W0 | **FF** | W0 Nbre Record Histo | Numeric |
 
 </details>
 
@@ -541,13 +608,24 @@ Variables internes au programme.
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
+| CONDITION | 6 | 6 |
 | CONSTANTE | 1 | 0 |
 | DATE | 1 | 0 |
-| CONDITION | 6 | 0 |
 | OTHER | 6 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
 
 ### 12.2 Expressions cles par type
+
+#### CONDITION (6 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 12 | `GetParam ('CURRENTPRINTERNUM')=6` | [RM-004](#rm-RM-004) |
+| CONDITION | 13 | `GetParam ('CURRENTPRINTERNUM')=8` | [RM-005](#rm-RM-005) |
+| CONDITION | 14 | `GetParam ('CURRENTPRINTERNUM')=9` | [RM-006](#rm-RM-006) |
+| CONDITION | 1 | `P0 societe [A]=''` | [RM-001](#rm-RM-001) |
+| CONDITION | 10 | `GetParam ('CURRENTPRINTERNUM')=1` | [RM-002](#rm-RM-002) |
+| ... | | *+1 autres* | |
 
 #### CONSTANTE (1 expressions)
 
@@ -560,17 +638,6 @@ Variables internes au programme.
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | DATE | 4 | `Date ()` | - |
-
-#### CONDITION (6 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONDITION | 12 | `GetParam ('CURRENTPRINTERNUM')=6` | - |
-| CONDITION | 13 | `GetParam ('CURRENTPRINTERNUM')=8` | - |
-| CONDITION | 14 | `GetParam ('CURRENTPRINTERNUM')=9` | - |
-| CONDITION | 1 | `P0 societe [A]=''` | - |
-| CONDITION | 10 | `GetParam ('CURRENTPRINTERNUM')=1` | - |
-| ... | | *+1 autres* | |
 
 #### OTHER (6 expressions)
 
@@ -657,7 +724,7 @@ graph LR
 | Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 426) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 6 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -680,4 +747,4 @@ graph LR
 | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) | Sous-programme | 1x | Normale - Impression ticket/document |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:10*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:30*

@@ -1,6 +1,6 @@
 ﻿# ADH IDE 49 - Truncate table SQL
 
-> **Analyse**: Phases 1-4 2026-02-07 06:48 -> 06:48 (16s) | Assemblage 13:24
+> **Analyse**: Phases 1-4 2026-02-07 06:48 -> 01:45 (18h56min) | Assemblage 01:45
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -19,13 +19,14 @@
 | Tables modifiees | 0 |
 | Programmes appeles | 0 |
 | Complexite | **BASSE** (score 0/100) |
-| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 49 est un utilitaire administratif minimal dédié au vidage de tables par instruction SQL TRUNCATE. Le programme accepte en paramètre (variable A) le nom de la table à vider et exécute l'opération de suppression de tous les enregistrements sans validation préalable ni gestion d'erreur complexe. Avec seulement 2 lignes de logique métier dans sa tâche unique, ce programme constitue un outil de nettoyage pur sans dépendance interne.
+**ADH IDE 49** est un programme utilitaire de maintenance de base de données qui vide une table SQL utilisée pour l'autocomplétion PABX (autocom). Son rôle est de nettoyer les données obsolètes ou corrompues en effectuant une troncature (DELETE sans WHERE) sur la table cible, libérant l'espace disque et réinitialisant l'état de la table.
 
-Bien que sans appelants directs détectés dans la chaîne Main classique, le programme pourrait être invoqué depuis des contextes extérieurs (autres ECF ou appels dynamiques) pour des opérations de maintenance de base de données. Aucune table n'est manipulée en lecture-écriture structurée : seule la transmission du nom de table paramétré est traitée avant exécution de l'instruction SQL brute.
+Appelé depuis **ADH IDE 218** (Envoi table autocom PABX), ce programme s'exécute dans un workflow de gestion des données téléphoniques. Il intervient typiquement lors d'une opération de synchronisation ou de maintenance planifiée pour vider les anciens enregistrements avant un rechargement des données d'autocomplétion du standard PABX.
+
+La troncature est une opération critique qui doit être contrôlée : elle vise une table spécifique (probablement `pabx_autocom` ou similaire) et détruit toutes les données sans possibilité de rollback granulaire. Ce programme est probablement exécuté en batch mode, avec des logs appropriés et des vérifications de sécurité pour éviter une suppression accidentelle en environnement de production.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -35,7 +36,7 @@ Bien que sans appelants directs détectés dans la chaîne Main classique, le pr
 
 ## 6. CONTEXTE
 
-- **Appele par**: (aucun)
+- **Appele par**: [   Envoi table autocom PABX (IDE 218)](ADH-IDE-218.md)
 - **Appelle**: 0 programmes | **Tables**: 0 (W:0 R:0 L:0) | **Taches**: 1 | **Expressions**: 0
 
 <!-- TAB:Ecrans -->
@@ -102,22 +103,31 @@ flowchart TD
 
 ### 13.1 Chaine depuis Main (Callers)
 
-**Chemin**: (pas de callers directs)
+Main -> ... -> [   Envoi table autocom PABX (IDE 218)](ADH-IDE-218.md) -> **Truncate table SQL (IDE 49)**
 
 ```mermaid
 graph LR
     T49[49 Truncate table SQL]
     style T49 fill:#58a6ff
-    NONE[Aucun caller]
-    NONE -.-> T49
-    style NONE fill:#6b7280,stroke-dasharray: 5 5
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC217[217 Menu telephone]
+    style CC217 fill:#f59e0b
+    CC218[218 Envoi table autoco...]
+    style CC218 fill:#3fb950
+    CC217 --> CC218
+    CC163 --> CC217
+    CC1 --> CC163
+    CC218 --> T49
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| - | (aucun) | - |
+| [218](ADH-IDE-218.md) |    Envoi table autocom PABX | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
@@ -158,4 +168,4 @@ graph LR
 |------------|------|--------|--------|
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:26*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:46*

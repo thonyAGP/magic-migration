@@ -1,6 +1,6 @@
 ﻿# ADH IDE 100 - flag ligne boutique V3
 
-> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 03:47 (27s) | Assemblage 14:32
+> **Analyse**: Phases 1-4 2026-02-07 03:47 -> 02:39 (22h51min) | Assemblage 02:39
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -23,11 +23,11 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Programme de marquage/flagage des lignes boutique pour les applications TPE (Terminaux de Paiement Électronique). Le processus démarre via la tâche principale "flag ligne boutique V3" qui initialise le flagging en mass update de la table maj_appli_tpe. La sous-tâche enfant "flag ligne" réalise l'opération de marquage unitaire, en appliquant un flag logique TRUE sur chaque ligne boutique ciblée.
+**ADH IDE 100 - Flag ligne boutique V3** est un programme batch simple dédié au marquage des lignes boutique après facturation. Il reçoit deux paramètres (Societe et Compte) et exécute une mise à jour unique sur la table `maj_appli_tpe` pour flaguer les lignes comme facturées en mode "R". Avec seulement 2 tâches linéaires et 16 lignes de logique, c'est un programme isolé sans appels externes ni dépendances complexes.
 
-Le programme utilise un mécanisme de filtrage paramétrisé combinant deux variables : p.Societe (lettre A) pour identifier la société concernée et p.Compte (lettre B) pour cibler le compte spécifique. Les lignes correspondent aux critères sont marquées dans un mode "R" (possiblement Recherche ou Récupération), réalisant ainsi une transaction batch cohérente de marquage boutique V3.
+Ce programme s'intègre dans le workflow de facturation V3 (programmes 96-105), où il intervient après vérification des lignes boutique pour enregistrer leur traitement comptable. Son rôle est transactionnel et déterministe : appliquer un flag TRUE logique aux enregistrements concernés et enregistrer la date/heure de traitement. Aucune branche conditionnelle, aucun calcul métier — juste une opération UPDATE paramétrée.
 
-C'est un processus transactionnel pur sans branchement conditionnel—16 lignes de logique linéaire déployées en deux niveaux hiérarchiques. Le programme reste orphelin en apparence (aucun appelant détecté dans la chaîne Main), suggérant une utilisation batch ou EDI depuis un contexte externe non analysé.
+Sur le plan technique, le programme est idéal pour la migration C# .NET 8 : complexité minimale (score 7/100), absence de code mort, logique purement déclarative. Il a déjà été migré en endpoint REST (`POST /api/factures/flag-ligne-boutique`) via la classe `FlagLigneBoutiqueCommand`, et fonctionne en production via la caisse TPE pour marquer les transactions boutique comme facturées après leur enregistrement en base.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -37,13 +37,13 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - flag ligne boutique V3
+#### <a id="t1"></a>100 - flag ligne boutique V3
 
 **Role** : Traitement : flag ligne boutique V3.
 
 ---
 
-#### <a id="t2"></a>T2 - flag ligne
+#### <a id="t2"></a>100.1 - flag ligne
 
 **Role** : Traitement : flag ligne.
 
@@ -69,24 +69,28 @@ Traitements internes.
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **100.1** | [**flag ligne boutique V3** (T1)](#t1) | - | - | Traitement |
-| 100.1.1 | [flag ligne (T2)](#t2) | - | - | |
+| **100.1** | [**flag ligne boutique V3** (100)](#t1) | - | - | Traitement |
+| 100.1.1 | [flag ligne (100.1)](#t2) | - | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 2 taches]
-    WRITE[MAJ 1 tables]
-    START --> PROCESS --> WRITE --> ENDOK
-    ENDOK([END])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    UPDATE[MAJ 1 tables]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
-    style WRITE fill:#ffeb3b,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -118,8 +122,8 @@ Variables recues en parametre.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | p.Societe | Unicode | 1x parametre entrant |
-| B | p.Compte | Numeric | 1x parametre entrant |
+| EN | p.Societe | Unicode | 1x parametre entrant |
+| EO | p.Compte | Numeric | 1x parametre entrant |
 
 ## 12. EXPRESSIONS
 
@@ -222,4 +226,4 @@ graph LR
 | maj_appli_tpe | Table WRITE (Database) | 2x | Schema + repository |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 14:34*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:41*

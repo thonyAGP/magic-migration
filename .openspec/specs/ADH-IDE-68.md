@@ -1,6 +1,6 @@
 ﻿# ADH IDE 68 - Saisie date
 
-> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 03:43 (26s) | Assemblage 13:38
+> **Analyse**: Phases 1-4 2026-02-07 03:43 -> 02:02 (22h18min) | Assemblage 02:02
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-Le programme ADH IDE 68 est un formulaire de saisie de dates appelé depuis le programme Print extrait DateImp (IDE 74). Son objectif principal est de permettre à l'utilisateur de capturer une plage de dates (date min et date max) dans une interface MDI simple. Le programme utilise 8 variables locales pour gérer les paramètres de saisie : il reçoit la date comptable du système en paramètre d'entrée et capture les limites de date minimale et maximale saisies par l'utilisateur.
+**Saisie date** assure la gestion complete de ce processus, accessible depuis [Print extrait DateImp /O (IDE 74)](ADH-IDE-74.md).
 
-Le formulaire lui-même est minimaliste, dimensionné à 533x92 DLU, avec un titre dynamique récupéré via un appel au programme Recuperation du titre (IDE 43). Le programme ne persiste aucune donnée en base de données — il effectue une validation des dates saisies via le flag v.ok (variable F) et retourne les valeurs au programme appelant une fois que l'utilisateur valide son saisie avec le bouton Ok.
+Le flux de traitement s'organise en **1 blocs fonctionnels** :
 
-En tant que composant transactionnel, ADH IDE 68 joue un rôle clé dans le workflow d'extraction de comptes, car il filtre les opérations bancaires affichées par une plage de dates définie par l'utilisateur. Ce programme n'est jamais orphelin, car il fait partie de la chaîne d'appel métier depuis le Menu caisse jusqu'au Print extrait.
+- **Saisie** (1 tache) : ecrans de saisie utilisateur (formulaires, champs, donnees)
+
+**Logique metier** : 1 regles identifiees couvrant conditions metier.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -44,7 +46,19 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Saisie dates).
 
 ## 5. REGLES METIER
 
-*(Aucune regle metier identifiee dans les expressions)*
+1 regles identifiees:
+
+### Autres (1 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Negation de (v. ok [F]) (condition inversee)
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `NOT (v. ok [F])` |
+| **Si vrai** | Action si vrai |
+| **Variables** | ES (v. ok) |
+| **Expression source** | Expression 9 : `NOT (v. ok [F])` |
+| **Exemple** | Si NOT (v. ok [F]) â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
@@ -264,13 +278,20 @@ flowchart TD
     START([START])
     INIT[Init controles]
     SAISIE[Traitement principal]
+    DECISION{v. ok}
+    PROCESS[Traitement]
     ENDOK([END OK])
+    ENDKO([END KO])
 
-    START --> INIT --> SAISIE
-    SAISIE --> ENDOK
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> ENDOK
 
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
 > **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
@@ -295,10 +316,10 @@ Variables persistantes pendant toute la session.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| D | v.date Min | Date | 1x session |
-| E | v.date Max | Date | 1x session |
-| F | v. ok | Logical | 1x session |
-| H | v.titre | Alpha | 1x session |
+| EQ | v.date Min | Date | 1x session |
+| ER | v.date Max | Date | 1x session |
+| ES | v. ok | Logical | 1x session |
+| EU | v.titre | Alpha | 1x session |
 
 ### 11.2 Autres (4)
 
@@ -306,10 +327,10 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > date comptable | Date | [68](#t1) |
-| B | < date min | Date | - |
-| C | < date max | Date | - |
-| G | Bouton Ok | Alpha | - |
+| EN | > date comptable | Date | [68](#t1) |
+| EO | < date min | Date | - |
+| EP | < date max | Date | - |
+| ET | Bouton Ok | Alpha | - |
 
 ## 12. EXPRESSIONS
 
@@ -320,12 +341,12 @@ Variables diverses.
 | Type | Expressions | Regles |
 |------|-------------|--------|
 | CALCULATION | 1 | 0 |
+| NEGATION | 1 | 5 |
 | CONSTANTE | 1 | 0 |
 | DATE | 1 | 0 |
 | CONDITION | 1 | 0 |
 | REFERENCE_VG | 1 | 0 |
 | OTHER | 2 | 0 |
-| NEGATION | 1 | 0 |
 | CAST_LOGIQUE | 1 | 0 |
 | STRING | 1 | 0 |
 
@@ -336,6 +357,12 @@ Variables diverses.
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
 | CALCULATION | 8 | `'00/00/0000'DATE` | - |
+
+#### NEGATION (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| NEGATION | 9 | `NOT (v. ok [F])` | [RM-001](#rm-RM-001) |
 
 #### CONSTANTE (1 expressions)
 
@@ -367,12 +394,6 @@ Variables diverses.
 |------|-----|------------|-------|
 | OTHER | 7 | `v.date Max [E]` | - |
 | OTHER | 6 | `v.date Min [D]` | - |
-
-#### NEGATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 9 | `NOT (v. ok [F])` | - |
 
 #### CAST_LOGIQUE (1 expressions)
 
@@ -447,7 +468,7 @@ graph LR
 | Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 1 | Ecran unique ou traitement batch |
 | Code desactive | 0% (0 / 23) | Code sain |
-| Regles metier | 0 | Pas de regle identifiee |
+| Regles metier | 1 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
 
@@ -464,4 +485,4 @@ graph LR
 | [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 13:41*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:06*

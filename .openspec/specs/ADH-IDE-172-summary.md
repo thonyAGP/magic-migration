@@ -1,31 +1,31 @@
-﻿# ADH IDE 172 - Facturation appel
+﻿# ADH IDE 172 - Print Depot Obj/Dev/Sce
 
-> **Analyse**: 2026-02-07 07:23
+> **Analyse**: 2026-02-08 03:53
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Facturation appel
-- **Tables modifiees**: 3
-- **Complexite**: **BASSE** (19/100)
+- **Fonction**: Print Depot Obj/Dev/Sce
+- **Tables modifiees**: 0
+- **Complexite**: **BASSE** (25/100)
 - **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Menu caisse GM - scroll @ (IDE 22)
+- **Raison**: Appele par 2 programme(s): Garantie sur compte PMS-584 (IDE 0), Comptes de depôt (IDE 40)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md) |
-| **Appelle** | [  Creation O.D (IDE 16)](ADH-IDE-16.md), [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md), [Zoom GO/GM (IDE 36)](ADH-IDE-36.md) |
+| **Appele par** | [Garantie sur compte PMS-584 (IDE 0)](ADH-IDE-0.md), [Comptes de depôt (IDE 40)](ADH-IDE-40.md) |
+| **Appelle** | [Raz Current Printer (IDE 182)](ADH-IDE-182.md) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 6 |
-| Lignes Logic | 116 |
-| Expressions | 15 |
-| Tables | 3 |
+| Taches | 63 |
+| Lignes Logic | 972 |
+| Expressions | 9 |
+| Tables | 6 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

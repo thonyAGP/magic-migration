@@ -1,200 +1,300 @@
 ﻿# ADH IDE 59 - Facture - chargement boutique
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:01
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_55.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 01:52 -> 01:52 (4s) | Assemblage 01:52
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Facture - chargement boutique** est le **module de chargement des donnees boutique pour la facturation** qui permet de **preparer les rayons boutique associes a un compte pour la generation de facture**.
-
-**Objectif metier** : Charger les donnees des rayons boutique associes a un compte adherent en vue de la facturation. Le programme lit les informations de mise a jour applicative TPE et alimente la table des rayons boutique avec les elements necessaires a la facturation des achats en boutique.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Systeme (appel automatique depuis processus de facturation) |
-| **Quoi** | Chargement des rayons boutique pour un compte donne |
-| **Pourquoi** | Preparer les donnees boutique necessaires a la facturation |
-| **Declencheur** | Appel parametrise avec Societe et NumeroCompte |
-| **Resultat** | Table Rayons_Boutique alimentee avec les donnees du compte |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (2 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 59 |
-| **Fichier XML** | `Prg_55.xml` |
-| **Description** | Facture - chargement boutique |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 104 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 59 |
+| Nom Programme | Facture - chargement boutique |
+| Fichier source | `Prg_59.xml` |
+| Dossier IDE | Facturation |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 866 | maj_appli_tpe | maj_appli_tpe | READ | Lecture |
-| 870 | Rayons_Boutique | rayons_boutique | LINK | Jointure |
+ADH IDE 59 est un module utilitaire de **chargement des données boutique** avant la facturation. Appelé directement par les 3 programmes principaux de facturation (IDEs 54, 89, 97), il charge en mémoire les configurations TPE et associe les rayons boutique au compte adhérent pour les étapes suivantes d'édition de facture. C'est un programme très simple (1 tâche, 104 lignes) qui ne fait que de la lecture : il accède à 2 tables (maj_appli_tpe en READ et Rayons_Boutique en LINK) sans effectuer aucune modification de données.
 
-**Resume**: 2 tables accedees dont **0 en ecriture**
+Le programme joue un rôle pivot dans le **workflow orchestré par Factures_Check_Out (IDE 54)**, se positionnant entre les vérifications préalables et la création des éléments de facture (entête, lignes, édition). C'est un terminal de l'arbre d'appels qui n'appelle lui-même aucun autre programme, ce qui rend sa migration straightforward : il suffira de mapper les 2 tables à des repositories et encapsuler la logique de chargement dans un service dédié de bootstrap boutique.
 
-### 2.3 Parametres d'entree (0 parametres)
+Aucune logique complexe n'est impliquée : zéro expression, zéro variable locale, zéro paramètre d'entrée. Les données manipulées proviennent du contexte global via variables VG* et les lectures tabulaires directes, ce qui le classe dans la catégorie **FACILE** pour une migration vers une architecture moderne (C#/.NET ou TypeScript).
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee dans les expressions)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Factures_Check_Out (IDE 54)](ADH-IDE-54.md), [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md), [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md)
+- **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 29
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 104 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 2 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (2)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 866 | maj_appli_tpe |  | DB | R |   |   | 1 |
+| 870 | Rayons_Boutique |  | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 866 - maj_appli_tpe (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | p.Societe | R | Unicode |
+| B | p.Compte | R | Numeric |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Parametres entrants (2)
+
+Variables recues du programme appelant ([Factures_Check_Out (IDE 54)](ADH-IDE-54.md)).
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | p.Societe | Unicode | 1x parametre entrant |
+| EO | p.Compte | Numeric | 1x parametre entrant |
+
+## 12. EXPRESSIONS
+
+**29 / 29 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONSTANTE | 3 | 0 |
+| OTHER | 26 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONSTANTE (3 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 28 | `1` | - |
+| CONSTANTE | 18 | `''` | - |
+| CONSTANTE | 4 | `'R'` | - |
+
+#### OTHER (26 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 19 | `[H]` | - |
+| OTHER | 20 | `[U]` | - |
+| OTHER | 21 | `[L]` | - |
+| OTHER | 15 | `[BQ]` | - |
+| OTHER | 16 | `[BR]` | - |
+| ... | | *+21 autres* | |
+
+### 12.3 Toutes les expressions (29)
+
+<details>
+<summary>Voir les 29 expressions</summary>
+
+#### CONSTANTE (3)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 4 | `'R'` |
+| 18 | `''` |
+| 28 | `1` |
+
+#### OTHER (26)
+
+| IDE | Expression Decodee |
+|-----|-------------------|
+| 1 | `p.Societe [A]` |
+| 2 | `p.Compte [B]` |
+| 3 | `[H]` |
+| 5 | `[BI]` |
+| 6 | `[BJ]` |
+| 7 | `[BG]` |
+| 8 | `[Y]` |
+| 9 | `[BK]` |
+| 10 | `[BL]` |
+| 11 | `[BM]` |
+| 12 | `[BN]` |
+| 13 | `[BO]` |
+| 14 | `[BP]` |
+| 15 | `[BQ]` |
+| 16 | `[BR]` |
+| 17 | `[X]` |
+| 19 | `[H]` |
+| 20 | `[U]` |
+| 21 | `[L]` |
+| 22 | `[E]` |
+| 23 | `[R]` |
+| 24 | `[BT]` |
+| 25 | `[BE]` |
+| 26 | `[BC]` |
+| 27 | `[Q]` |
+| 29 | `[W]` |
+
+</details>
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Factures_Check_Out (IDE 54)](ADH-IDE-54.md) -> **Facture - chargement boutique (IDE 59)**
+
+Main -> ... -> [Factures (Tble Compta&Vent (IDE 89)](ADH-IDE-89.md) -> **Facture - chargement boutique (IDE 59)**
+
+Main -> ... -> [Factures (Tble Compta&Vent) V3 (IDE 97)](ADH-IDE-97.md) -> **Facture - chargement boutique (IDE 59)**
 
 ```mermaid
 graph LR
-    T[59 Facture - charg]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T59[59 Facture - chargemen...]
+    style T59 fill:#58a6ff
+    CC287[287 Solde Easy Check Out]
+    style CC287 fill:#8b5cf6
+    CC193[193 Solde compte fin s...]
+    style CC193 fill:#8b5cf6
+    CC313[313 Easy Check-Out ===...]
+    style CC313 fill:#8b5cf6
+    CC190[190 Menu solde dun compte]
+    style CC190 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#8b5cf6
+    CC283[283 Easy Check-Out ===...]
+    style CC283 fill:#8b5cf6
+    CC64[64 Solde Easy Check Out]
+    style CC64 fill:#8b5cf6
+    CC280[280 Lanceur Facture]
+    style CC280 fill:#8b5cf6
+    CC54[54 Factures_Check_Out]
+    style CC54 fill:#3fb950
+    CC97[97 Factures Tble Compt...]
+    style CC97 fill:#3fb950
+    CC89[89 Factures Tble Compt...]
+    style CC89 fill:#3fb950
+    CC64 --> CC54
+    CC280 --> CC54
+    CC283 --> CC54
+    CC287 --> CC54
+    CC313 --> CC54
+    CC163 --> CC54
+    CC190 --> CC54
+    CC193 --> CC54
+    CC64 --> CC89
+    CC280 --> CC89
+    CC283 --> CC89
+    CC287 --> CC89
+    CC313 --> CC89
+    CC163 --> CC89
+    CC190 --> CC89
+    CC193 --> CC89
+    CC64 --> CC97
+    CC280 --> CC97
+    CC283 --> CC97
+    CC287 --> CC97
+    CC313 --> CC97
+    CC163 --> CC97
+    CC190 --> CC97
+    CC193 --> CC97
+    CC54 --> T59
+    CC89 --> T59
+    CC97 --> T59
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [54](ADH-IDE-54.md) | Factures_Check_Out | 1 |
+| [89](ADH-IDE-89.md) | Factures (Tble Compta&Vent | 1 |
+| [97](ADH-IDE-97.md) | Factures (Tble Compta&Vent) V3 | 1 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[59 Facture - charg]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T59[59 Facture - chargemen...]
+    style T59 fill:#58a6ff
+    NONE[Aucun callee]
+    T59 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 104 | Programme compact |
+| Expressions | 29 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 104) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 2 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:01 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 01:55*

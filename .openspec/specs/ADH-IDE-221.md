@@ -1,200 +1,238 @@
 ﻿# ADH IDE 221 - Verif automatic pooling Tic
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:11
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_217.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 04:23 -> 04:23 (5s) | Assemblage 04:23
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Verif automatic pooling Tic** est le **controleur de taxation automatique** qui **verifie la reception des tickets de taxation telephonique depuis le systeme de pooling**.
-
-**Objectif metier** : Controler automatiquement la bonne reception des tickets de taxation (TIC) depuis le PABX via le systeme de pooling. Ce programme detecte les interruptions de communication et alerte en cas de perte de donnees de taxation.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Processus automatique ou operateur supervision |
-| **Quoi** | Verification de la reception des tickets de taxation PABX |
-| **Pourquoi** | Garantir la completude des donnees de facturation telephonique |
-| **Declencheur** | Verification periodique automatique ou controle manuel |
-| **Resultat** | Statut de reception des tickets avec alerte si anomalie detectee |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (2 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (1 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 221 |
-| **Fichier XML** | `Prg_217.xml` |
-| **Description** | Verif automatic pooling Tic |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 1 |
-| **Lignes logique** | 26 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 221 |
+| Nom Programme | Verif automatic pooling Tic |
+| Fichier source | `Prg_221.xml` |
+| Dossier IDE | General |
+| Taches | 1 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 0 |
+| Complexite | **BASSE** (score 0/100) |
+| <span style="color:red">Statut</span> | <span style="color:red">**ORPHELIN_POTENTIEL**</span> |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 155 | historique_pabx | cafil133_dat | READ | Lecture |
-| 477 | cumul_devises_tempo | %club_user%_caisse_cumul_devise | LINK | Jointure |
+ADH IDE 221 - Verif automatic pooling Tic est un **contrôleur de taxation automatique** qui vérifie la réception des tickets de taxation téléphonique (TIC) en provenance du PABX via le système de pooling. Son objectif métier est de garantir automatiquement la complétude et la continuité des données de facturation téléphonique en détectant les interruptions de communication et en levant des alertes en cas de perte de données. Le programme s'exécute périodiquement de manière automatique ou sur demande manuelle pour contrôle supervisé.
 
-**Resume**: 2 tables accedees dont **0 en ecriture**
+Le programme accède à **2 tables** en lecture seule : **table 155** (historique_pabx, cafil133_dat) et **table 477** (cumul_devises_tempo). Il n'a **0 paramètres d'entrée** et aucune sortie formellement documentée. La structure est très simple avec **1 seule tâche principale** contenant 26 lignes de logique, **0 expressions** et **0 appels à des sous-programmes**, ce qui en fait un programme terminal sans dépendances aval.
 
-### 2.3 Parametres d'entree (0 parametres)
+Le programme est actuellement **orphelin** (0 callers actifs, pas de PublicName, non référencé dans un ECF partagé), ce qui suggère qu'il s'agit soit d'un point d'entrée direct depuis le Main Program, soit d'un traitement résiduel. Avec une complexité très faible, il s'agit d'un contrôle de monitoring simple qui livre un véritable rapport de supervision des flux de taxation téléphonique.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+2 regles identifiees:
+
+### Autres (2 regles)
+
+#### <a id="rm-RM-001"></a>[RM-001] Condition: [J]=0 AND [K] <= 10800
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[J]=0 AND [K]<=10800` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 6 : `[J]=0 AND [K]<=10800` |
+| **Exemple** | Si [J]=0 AND [K]<=10800 â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: [J]=0 AND [K] <= 5400
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `[J]=0 AND [K]<=5400` |
+| **Si vrai** | Action si vrai |
+| **Expression source** | Expression 7 : `[J]=0 AND [K]<=5400` |
+| **Exemple** | Si [J]=0 AND [K]<=5400 â†’ Action si vrai |
+
+## 6. CONTEXTE
+
+- **Appele par**: (aucun)
+- **Appelle**: 0 programmes | **Tables**: 2 (W:0 R:1 L:1) | **Taches**: 1 | **Expressions**: 7
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>1 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 1 |
-| **Lignes logique** | 26 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 2 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (2)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 155 | historique_pabx | Historique / journal | DB | R |   |   | 1 |
+| 477 | cumul_devises_tempo | Table temporaire ecran | TMP |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (1 / 1 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 155 - historique_pabx (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | < reception ticket | R | Logical |
+| B | < verification magic | R | Logical |
+| C | v. Dif Days | R | Numeric |
+| D | v. Dif Seconds | R | Numeric |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Variables de session (2)
+
+Variables persistantes pendant toute la session.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EP | v. Dif Days | Numeric | - |
+| EQ | v. Dif Seconds | Numeric | - |
+
+### 11.2 Autres (2)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | < reception ticket | Logical | - |
+| EO | < verification magic | Logical | - |
+
+## 12. EXPRESSIONS
+
+**7 / 7 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| CONDITION | 2 | 2 |
+| CONSTANTE | 4 | 0 |
+| DATE | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### CONDITION (2 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONDITION | 7 | `[J]=0 AND [K]<=5400` | [RM-002](#rm-RM-002) |
+| CONDITION | 6 | `[J]=0 AND [K]<=10800` | [RM-001](#rm-RM-001) |
+
+#### CONSTANTE (4 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| CONSTANTE | 3 | `'C'` | - |
+| CONSTANTE | 4 | `99` | - |
+| CONSTANTE | 1 | `'0'` | - |
+| CONSTANTE | 2 | `'9'` | - |
+
+#### DATE (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| DATE | 5 | `DifDateTime(Date(),Time(),[H],[I],'[J]'VAR,'[K]'VAR)` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+**Chemin**: (pas de callers directs)
 
 ```mermaid
 graph LR
-    T[221 Verif automatic]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T221[221 Verif automatic po...]
+    style T221 fill:#58a6ff
+    NONE[Aucun caller]
+    NONE -.-> T221
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| - | (aucun) | - |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[221 Verif automatic]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T221[221 Verif automatic po...]
+    style T221 fill:#58a6ff
+    NONE[Aucun callee]
+    T221 -.-> NONE
+    style NONE fill:#6b7280,stroke-dasharray: 5 5
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| - | (aucun) | - | - |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 26 | Programme compact |
+| Expressions | 7 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 0 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 26) | Code sain |
+| Regles metier | 2 | Quelques regles a preserver |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 1 | Simple |
-| Tables | 2 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:11 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 04:24*

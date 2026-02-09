@@ -1,31 +1,31 @@
-﻿# ADH IDE 170 - Facturation appel
+﻿# ADH IDE 170 - Messagerie
 
-> **Analyse**: 2026-02-07 07:22
+> **Analyse**: 2026-02-08 03:50
 > **Pipeline**: V7.2 Enrichi
 
 ## RESUME EXECUTIF
 
-- **Fonction**: Facturation appel
-- **Tables modifiees**: 3
-- **Complexite**: **BASSE** (19/100)
+- **Fonction**: Messagerie
+- **Tables modifiees**: 5
+- **Complexite**: **BASSE** (31/100)
 - **Statut**: NON_ORPHELIN
-- **Raison**: Appele par 1 programme(s): Menu caisse GM - scroll @ (IDE 22)
+- **Raison**: Appele par 1 programme(s): Messages (IDE 169)
 
 ## PROGRAMMES LIES
 
 | Direction | Programmes |
 |-----------|------------|
-| **Appele par** | [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md) |
-| **Appelle** | [  Creation O.D (IDE 16)](ADH-IDE-16.md), [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md), [Zoom GO/GM (IDE 36)](ADH-IDE-36.md) |
+| **Appele par** | [Messages (IDE 169)](ADH-IDE-169.md) |
+| **Appelle** | [Recuperation du titre (IDE 43)](ADH-IDE-43.md) |
 
 ## STATISTIQUES
 
 | Metrique | Valeur |
 |----------|--------|
-| Taches | 6 |
-| Lignes Logic | 116 |
-| Expressions | 15 |
-| Tables | 3 |
+| Taches | 27 |
+| Lignes Logic | 380 |
+| Expressions | 3 |
+| Tables | 8 |
 
 ---
 *Spec SUMMARY generee par Pipeline V7.2*

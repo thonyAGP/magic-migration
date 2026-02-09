@@ -1,201 +1,229 @@
 ﻿# ADH IDE 117 - Historique session
 
-> **Version spec**: 4.0
-> **Analyse**: 2026-01-27 23:05
-> **Source**: `D:\Data\Migration\XPA\PMS\ADH\Source\Prg_113.xml`
-> **Methode**: APEX + PDCA (Auto-generated)
+> **Analyse**: Phases 1-4 2026-02-08 02:57 -> 02:57 (4s) | Assemblage 02:57
+> **Pipeline**: V7.2 Enrichi
+> **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
----
+<!-- TAB:Resume -->
 
-<!-- TAB:Fonctionnel -->
-
-## SPECIFICATION FONCTIONNELLE
-
-### 1.1 Objectif metier
-
-**Historique session** est le **programme de consultation de l'historique des sessions de caisse** qui **affiche le detail des operations effectuees lors des sessions precedentes**.
-
-**Objectif metier** : Permettre aux operateurs et responsables de consulter l'historique complet des sessions de caisse (ouverture, cloture, montants, operations). Ce programme offre une vue detaillee des transactions passees pour le controle de gestion, l'audit financier et la resolution des litiges, avec conversion des montants selon les devises parametrees.
-
-| Element | Description |
-|---------|-------------|
-| **Qui** | Responsable caisse, controleur de gestion, auditeur |
-| **Quoi** | Consultation de l'historique des sessions et operations de caisse |
-| **Pourquoi** | Controle de gestion, audit et tracabilite des operations financieres |
-| **Declencheur** | Demande de consultation via menu ou recherche specifique |
-| **Resultat** | Affichage des sessions avec detail des operations et montants par devise |
-
-### 1.2 Regles metier
-
-| Code | Regle | Condition |
-|------|-------|-----------|
-| RM-001 | Execution du traitement principal | Conditions d'entree validees |
-| RM-002 | Gestion des tables (3 tables) | Acces selon mode (R/W/L) |
-| RM-003 | Appels sous-programmes (0 callees) | Selon logique metier |
-
-### 1.3 Flux utilisateur
-
-1. Reception des parametres d'entree (0 params)
-2. Initialisation et verification conditions
-3. Traitement principal (4 taches)
-4. Appels sous-programmes si necessaire
-5. Retour resultats
-
-### 1.4 Cas d'erreur
-
-| Erreur | Comportement |
-|--------|--------------|
-| Conditions non remplies | Abandon avec message |
-| Erreur sous-programme | Propagation erreur |
-
----
-
-<!-- TAB:Technique -->
-
-## SPECIFICATION TECHNIQUE
-
-### 2.1 Identification
+## 1. FICHE D'IDENTITE
 
 | Attribut | Valeur |
 |----------|--------|
-| **IDE Position** | 117 |
-| **Fichier XML** | `Prg_113.xml` |
-| **Description** | Historique session |
-| **Module** | ADH |
-| **Public Name** |  |
-| **Nombre taches** | 4 |
-| **Lignes logique** | 124 |
-| **Expressions** | 0 |
+| Projet | ADH |
+| IDE Position | 117 |
+| Nom Programme | Historique session |
+| Fichier source | `Prg_117.xml` |
+| Dossier IDE | Caisse |
+| Taches | 4 (0 ecrans visibles) |
+| Tables modifiees | 0 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 5/100) |
 
-### 2.2 Tables
+## 2. DESCRIPTION FONCTIONNELLE
 
-| # | Nom logique | Nom physique | Acces | Usage |
-|---|-------------|--------------|-------|-------|
-| 246 | histo_sessions_caisse | caisse_session | READ | Lecture |
-| 249 | histo_sessions_caisse_detail | caisse_session_detail | READ | Lecture |
-| 693 | devise_in | devisein_par | LINK | Jointure |
+ADH IDE 117 affiche l'historique des opérations effectuées au cours d'une session de caisse. Le programme récupère les mouvements enregistrés (ventes, encaissements, remboursements) et les présente chronologiquement pour permettre à l'opérateur de consulter les transactions passées. C'est un programme de lecture pure, sans modification de données, qui facilite l'audit et le contrôle des opérations.
 
-**Resume**: 3 tables accedees dont **0 en ecriture**
+La structure repose sur une grille de consultation interrogeant la table des opérations avec filtrage par numéro de session et période. Le programme applique les droits d'accès pour déterminer quelles colonnes afficher (soldes, montants détaillés, etc.) selon le profil de l'opérateur. Les données sont triées chronologiquement pour reconstituer le fil des événements.
 
-### 2.3 Parametres d'entree (0 parametres)
+ADH IDE 117 s'inscrit dans le flux de gestion de caisse en tant qu'outil de traçabilité. Après la fermeture de session, l'opérateur peut consulter cet historique pour valider l'exactitude des enregistrements ou investiguer une anomalie. Le programme appelle ADH IDE 43 pour résoudre les identifiants de compte en noms d'adhérents, enrichissant la lisibilité des mouvements affichés.
 
-| Var | Nom | Type | Picture |
-|-----|-----|------|---------|
-| - | Aucun parametre | - | - |
+## 3. BLOCS FONCTIONNELS
 
-### 2.4 Algorigramme
+## 5. REGLES METIER
+
+*(Aucune regle metier identifiee dans les expressions)*
+
+## 6. CONTEXTE
+
+- **Appele par**: [Affichage sessions (IDE 119)](ADH-IDE-119.md)
+- **Appelle**: 1 programmes | **Tables**: 3 (W:0 R:2 L:1) | **Taches**: 4 | **Expressions**: 1
+
+<!-- TAB:Ecrans -->
+
+## 8. ECRANS
+
+*(Programme sans ecran visible)*
+
+## 9. NAVIGATION
+
+### 9.3 Structure hierarchique (0 tache)
+
+| Position | Tache | Type | Dimensions | Bloc |
+|----------|-------|------|------------|------|
+
+### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
-    START([START - 0 params])
-    INIT["Initialisation"]
-    PROCESS["Traitement principal<br/>4 taches"]
-    CALLS["Appels sous-programmes<br/>0 callees"]
-    ENDOK([END])
+    START([START])
+    INIT[Init controles]
+    SAISIE[Affichage historique]
+    ENDOK([END OK])
 
-    START --> INIT --> PROCESS --> CALLS --> ENDOK
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
 
-    style START fill:#3fb950
-    style ENDOK fill:#f85149
-    style PROCESS fill:#58a6ff
+    style START fill:#3fb950,color:#000
+    style ENDOK fill:#3fb950,color:#000
 ```
 
-### 2.5 Statistiques
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
-| Metrique | Valeur |
-|----------|--------|
-| **Taches** | 4 |
-| **Lignes logique** | 124 |
-| **Expressions** | 0 |
-| **Parametres** | 0 |
-| **Tables accedees** | 3 |
-| **Tables en ecriture** | 0 |
-| **Callees niveau 1** | 0 |
+<!-- TAB:Donnees -->
 
----
+## 10. TABLES
 
-<!-- TAB:Cartographie -->
+### Tables utilisees (3)
 
-## CARTOGRAPHIE APPLICATIVE
+| ID | Nom | Description | Type | R | W | L | Usages |
+|----|-----|-------------|------|---|---|---|--------|
+| 249 | histo_sessions_caisse_detail | Sessions de caisse | DB | R |   |   | 1 |
+| 246 | histo_sessions_caisse | Sessions de caisse | DB | R |   |   | 1 |
+| 693 | devise_in | Devises / taux de change | DB |   |   | L | 1 |
 
-### 3.1 Chaine d'appels depuis Main
+### Colonnes par table (3 / 2 tables avec colonnes identifiees)
+
+<details>
+<summary>Table 249 - histo_sessions_caisse_detail (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| EN | curseur detail | R | Logical |
+| EO | Flag detail | R | Logical |
+| ER | Fin Historique | R | Logical |
+| EW | Total caisse | R | Numeric |
+
+</details>
+
+<details>
+<summary>Table 246 - histo_sessions_caisse (R) - 1 usages</summary>
+
+| Lettre | Variable | Acces | Type |
+|--------|----------|-------|------|
+| A | curseur | R | Logical |
+| B | Flag detail | R | Logical |
+| C | titre | R | Alpha |
+
+</details>
+
+## 11. VARIABLES
+
+### 11.1 Autres (10)
+
+Variables diverses.
+
+| Lettre | Nom | Type | Usage dans |
+|--------|-----|------|-----------|
+| EN | Param societe | Alpha | - |
+| EO | Param devise locale | Alpha | - |
+| EP | Param masque montant | Alpha | - |
+| EQ | Param user | Alpha | - |
+| ER | Fin Historique | Logical | 1x refs |
+| ES | LastQuand | Alpha | - |
+| ET | Validation comptage chrono his | Numeric | - |
+| EU | Validation comptage chrono date | Date | - |
+| EV | Validation comptage chrono time | Time | - |
+| EW | Total caisse | Numeric | - |
+
+## 12. EXPRESSIONS
+
+**1 / 1 expressions decodees (100%)**
+
+### 12.1 Repartition par type
+
+| Type | Expressions | Regles |
+|------|-------------|--------|
+| OTHER | 1 | 0 |
+
+### 12.2 Expressions cles par type
+
+#### OTHER (1 expressions)
+
+| Type | IDE | Expression | Regle |
+|------|-----|------------|-------|
+| OTHER | 1 | `Fin Historique [E]` | - |
+
+<!-- TAB:Connexions -->
+
+## 13. GRAPHE D'APPELS
+
+### 13.1 Chaine depuis Main (Callers)
+
+Main -> ... -> [Affichage sessions (IDE 119)](ADH-IDE-119.md) -> **Historique session (IDE 117)**
 
 ```mermaid
 graph LR
-    T[117 Historique sess]
-    ORPHAN([ORPHELIN ou Main])
-    T -.-> ORPHAN
-    style T fill:#58a6ff,color:#000
-    style ORPHAN fill:#6b7280,stroke-dasharray: 5 5
+    T117[117 Historique session]
+    style T117 fill:#58a6ff
+    CC1[1 Main Program]
+    style CC1 fill:#8b5cf6
+    CC163[163 Menu caisse GM - s...]
+    style CC163 fill:#f59e0b
+    CC281[281 Fermeture Sessions]
+    style CC281 fill:#f59e0b
+    CC121[121 Gestion caisse]
+    style CC121 fill:#f59e0b
+    CC298[298 Gestion caisse 142]
+    style CC298 fill:#f59e0b
+    CC119[119 Affichage sessions]
+    style CC119 fill:#3fb950
+    CC121 --> CC119
+    CC298 --> CC119
+    CC163 --> CC121
+    CC281 --> CC121
+    CC163 --> CC298
+    CC281 --> CC298
+    CC1 --> CC163
+    CC1 --> CC281
+    CC119 --> T117
 ```
 
-### 3.2 Callers directs
+### 13.2 Callers
 
-| IDE | Programme | Nb appels |
-|-----|-----------|-----------|
-| - | ORPHELIN ou Main direct | - |
+| IDE | Nom Programme | Nb Appels |
+|-----|---------------|-----------|
+| [119](ADH-IDE-119.md) | Affichage sessions | 2 |
 
-### 3.3 Callees (3 niveaux)
+### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T[117 Historique sess]
-    TERM([TERMINAL])
-    T -.-> TERM
-    style TERM fill:#6b7280,stroke-dasharray: 5 5
-    style T fill:#58a6ff,color:#000
+    T117[117 Historique session]
+    style T117 fill:#58a6ff
+    C43[43 Recuperation du titre]
+    T117 --> C43
+    style C43 fill:#3fb950
 ```
 
-| Niv | IDE | Programme | Nb appels | Status |
-|-----|-----|-----------|-----------|--------|
-| - | - | TERMINAL | - | - |
+### 13.4 Detail Callees avec contexte
 
-### 3.4 Composants ECF utilises
+| IDE | Nom Programme | Appels | Contexte |
+|-----|---------------|--------|----------|
+| [43](ADH-IDE-43.md) | Recuperation du titre | 1 | Recuperation donnees |
 
-| ECF | IDE | Public Name | Description |
-|-----|-----|-------------|-------------|
-| - | - | Aucun composant ECF | - |
+## 14. RECOMMANDATIONS MIGRATION
 
-### 3.5 Verification orphelin
+### 14.1 Profil du programme
 
-| Critere | Resultat |
-|---------|----------|
-| Callers actifs | 0 programmes |
-| PublicName | Non defini |
-| ECF partage | NON |
-| **Conclusion** | **ORPHELIN** - Pas de callers actifs |
+| Metrique | Valeur | Impact migration |
+|----------|--------|-----------------|
+| Lignes de logique | 124 | Programme compact |
+| Expressions | 1 | Peu de logique |
+| Tables WRITE | 0 | Impact faible |
+| Sous-programmes | 1 | Peu de dependances |
+| Ecrans visibles | 0 | Ecran unique ou traitement batch |
+| Code desactive | 0% (0 / 124) | Code sain |
+| Regles metier | 0 | Pas de regle identifiee |
 
----
+### 14.2 Plan de migration par bloc
 
-## NOTES MIGRATION
+### 14.3 Dependances critiques
 
-### Complexite
-
-| Critere | Score | Detail |
-|---------|-------|--------|
-| Taches | 4 | Simple |
-| Tables | 3 | Lecture seule |
-| Callees | 0 | Faible couplage |
-| **Score global** | **FAIBLE** | - |
-
-### Points d'attention migration
-
-| Point | Solution moderne |
-|-------|-----------------|
-| Variables globales (VG*) | Service/Repository injection |
-| Tables Magic | Entity Framework / Dapper |
-| CallTask | Service method calls |
-| Forms | React/Angular components |
+| Dependance | Type | Appels | Impact |
+|------------|------|--------|--------|
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-
-## HISTORIQUE
-
-| Date | Action | Auteur |
-|------|--------|--------|
-| 2026-01-27 23:05 | **V4.0 APEX/PDCA** - Generation automatique complete | Script |
-
----
-
-*Specification V4.0 - Auto-generated with APEX/PDCA methodology*
-
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 02:58*

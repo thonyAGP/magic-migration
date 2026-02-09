@@ -1,6 +1,6 @@
 ﻿# ADH IDE 130 - Ecart fermeture caisse
 
-> **Analyse**: Phases 1-4 2026-02-07 03:49 -> 03:50 (28s) | Assemblage 15:34
+> **Analyse**: Phases 1-4 2026-02-07 03:50 -> 03:08 (23h18min) | Assemblage 03:08
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -22,11 +22,13 @@
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-ADH IDE 130 gère les écarts détectés lors de la fermeture de caisse—quand le montant compté en physique ne correspond pas au calcul système. Appelé depuis les programmes de fermeture caisse (IDE 131, 299), il présente un formulaire permettant à l'opérateur de saisir des commentaires justifiant l'écart. Le programme calcule les différences pour chaque moyen de paiement (monnaie, produits, cartes, chèques, découvert) en distinguant les montants comptés versus calculés, puis exporte les écarts par catégorie.
+# ADH IDE 130 - Gestion des Écarts de Fermeture Caisse
 
-L'architecture du programme repose sur une logique duale UNI/BI : une première branche pour les configurations monétaires simples (Table 50) et une seconde pour les configurations multi-devises (Table 139), chacune disposant de tâches dédiées de calcul et d'affichage. Les 10 tâches organisées hiérarchiquement orchestrent successivement la capture des données, le calcul réconciliation, l'affichage détaillé des écarts, et l'impression optionnelle d'un ticket récapitulatif. Le programme synchronise ensuite les résultats via appels web service (IDE 142) pour intégrer les écarts en session.
+ADH IDE 130 traite les discrepancies (écarts) detectés lors de la fermeture d'une session de caisse. Le programme valide l'écart total par rapport aux seuils acceptables (ForceClosureOnEcart parameter), demande à l'opérateur de saisir un commentaire explicatif, puis enregistre cet écart dans la base de données pour audit et suivi. C'est le point de contrôle critique qui empêche une fermeture erronée si l'écart dépasse les limites définies.
 
-Comme opération purement en lecture, sans modification de données critiques, ADH IDE 130 joue un rôle de composant informatif et documentaire—l'exception handler qui laisse les opérateurs enregistrer l'audit trail complet des discordances de caisse avant archivage, assurant la traçabilité des variations non expliquées du portefeuille de trésorerie.
+Le flux comporte trois phases principales: d'abord, le calcul de l'écart global (différence entre montants physiques comptés et montants attendus), ensuite la validation contre le seuil configurable (paramètre SeuilAlerte), et enfin - si l'écart est accepté - la mise à jour de la devise de la session via WS (IDE 142) et la récupération des données de titre (IDE 43) pour l'archivage. Chaque devise est traitée individuellement pour identifier précisément où réside la discrepancy.
+
+Ce programme est appelé uniquement en cas de détection d'écart >= au seuil. Il agit comme garde-fou: force l'opérateur à documenter l'anomalie avant de valider la fermeture, créant une piste d'audit complète. Sans ce contrôle, les petits vols ou erreurs de comptage pourraient passer inaperçus.
 
 ## 3. BLOCS FONCTIONNELS
 
@@ -36,15 +38,15 @@ Traitements internes.
 
 ---
 
-#### <a id="t1"></a>T1 - Ecart fermeture caisse
+#### <a id="t1"></a>130 - Ecart fermeture caisse
 
 **Role** : Traitement : Ecart fermeture caisse.
-**Variables liees** : F (Param caisse comptee), G (Param caisse comptee monnaie), H (Param caisse comptee produits), I (Param caisse comptee cartes), J (Param caisse comptee cheques)
+**Variables liees** : ES (Param caisse comptee), ET (Param caisse comptee monnaie), EU (Param caisse comptee produits), EV (Param caisse comptee cartes), EW (Param caisse comptee cheques)
 **Delegue a** : [Devise update session WS (IDE 142)](ADH-IDE-142.md), [Recuperation du titre (IDE 43)](ADH-IDE-43.md)
 
 ---
 
-#### <a id="t3"></a>T3 - Commentaires [ECRAN]
+#### <a id="t3"></a>130.1.1 - Commentaires [[ECRAN]](#ecran-t3)
 
 **Role** : Traitement : Commentaires.
 **Ecran** : 480 x 0 DLU (MDI) | [Voir mockup](#ecran-t3)
@@ -57,11 +59,11 @@ L'operateur saisit les donnees de la transaction via 1 ecran (Saisie commentaire
 
 ---
 
-#### <a id="t2"></a>T2 - Saisie commentaire [ECRAN]
+#### <a id="t2"></a>130.1 - Saisie commentaire [[ECRAN]](#ecran-t2)
 
 **Role** : Saisie des donnees : Saisie commentaire.
 **Ecran** : 1000 x 240 DLU (MDI) | [Voir mockup](#ecran-t2)
-**Variables liees** : BA (Param commentaire), BB (Param commentaire devise)
+**Variables liees** : FN (Param commentaire), FO (Param commentaire devise)
 
 
 ### 3.3 Calcul (3 taches)
@@ -70,24 +72,24 @@ Calculs metier : montants, stocks, compteurs.
 
 ---
 
-#### <a id="t4"></a>T4 - Calcul ecart sur devise
+#### <a id="t4"></a>130.1.2 - Calcul ecart sur devise
 
 **Role** : Calcul : Calcul ecart sur devise.
-**Variables liees** : C (Param devise locale), L (Param caisse comptee nb devise), M (Param caisse calculee), N (Param caisse calculee monnaie), O (Param caisse calculee produits)
+**Variables liees** : EP (Param devise locale), EY (Param caisse comptee nb devise), EZ (Param caisse calculee), FA (Param caisse calculee monnaie), FB (Param caisse calculee produits)
 
 ---
 
-#### <a id="t5"></a>T5 - Calcul ecart sur devise
+#### <a id="t5"></a>130.1.2.1 - Calcul ecart sur devise
 
 **Role** : Calcul : Calcul ecart sur devise.
-**Variables liees** : C (Param devise locale), L (Param caisse comptee nb devise), M (Param caisse calculee), N (Param caisse calculee monnaie), O (Param caisse calculee produits)
+**Variables liees** : EP (Param devise locale), EY (Param caisse comptee nb devise), EZ (Param caisse calculee), FA (Param caisse calculee monnaie), FB (Param caisse calculee produits)
 
 ---
 
-#### <a id="t6"></a>T6 - Calcul ecart sur devise
+#### <a id="t6"></a>130.1.2.2 - Calcul ecart sur devise
 
 **Role** : Calcul : Calcul ecart sur devise.
-**Variables liees** : C (Param devise locale), L (Param caisse comptee nb devise), M (Param caisse calculee), N (Param caisse calculee monnaie), O (Param caisse calculee produits)
+**Variables liees** : EP (Param devise locale), EY (Param caisse comptee nb devise), EZ (Param caisse calculee), FA (Param caisse calculee monnaie), FB (Param caisse calculee produits)
 
 
 ### 3.4 Consultation (3 taches)
@@ -96,21 +98,21 @@ Ecrans de recherche et consultation.
 
 ---
 
-#### <a id="t7"></a>T7 - Affiche devises [ECRAN]
+#### <a id="t7"></a>130.1.3 - Affiche devises [[ECRAN]](#ecran-t7)
 
 **Role** : Reinitialisation : Affiche devises.
 **Ecran** : 501 x 240 DLU (MDI) | [Voir mockup](#ecran-t7)
 
 ---
 
-#### <a id="t8"></a>T8 - Affiche devises [ECRAN]
+#### <a id="t8"></a>130.1.3.1 - Affiche devises [[ECRAN]](#ecran-t8)
 
 **Role** : Reinitialisation : Affiche devises.
 **Ecran** : 1002 x 240 DLU (MDI) | [Voir mockup](#ecran-t8)
 
 ---
 
-#### <a id="t9"></a>T9 - Affiche devises [ECRAN]
+#### <a id="t9"></a>130.1.3.2 - Affiche devises [[ECRAN]](#ecran-t9)
 
 **Role** : Reinitialisation : Affiche devises.
 **Ecran** : 1002 x 240 DLU (MDI) | [Voir mockup](#ecran-t9)
@@ -122,10 +124,10 @@ Generation des documents et tickets.
 
 ---
 
-#### <a id="t10"></a>T10 - Ticket
+#### <a id="t10"></a>130.1.4 - Ticket
 
 **Role** : Generation du document : Ticket.
-**Variables liees** : BC (Param editer ticket recap)
+**Variables liees** : FP (Param editer ticket recap)
 
 
 ## 5. REGLES METIER
@@ -145,17 +147,17 @@ Generation des documents et tickets.
 
 | # | Position | Tache | Nom | Type | Largeur | Hauteur | Bloc |
 |---|----------|-------|-----|------|---------|---------|------|
-| 1 | 130.1 | T2 | Saisie commentaire | MDI | 1000 | 240 | Saisie |
-| 2 | 130.1.1 | T3 | Commentaires | MDI | 480 | 0 | Traitement |
-| 3 | 130.1.3.1 | T8 | Affiche devises | MDI | 1002 | 240 | Consultation |
-| 4 | 130.1.3.2 | T9 | Affiche devises | MDI | 1002 | 240 | Consultation |
+| 1 | 130.1 | 130.1 | Saisie commentaire | MDI | 1000 | 240 | Saisie |
+| 2 | 130.1.1 | 130.1.1 | Commentaires | MDI | 480 | 0 | Traitement |
+| 3 | 130.1.3.1 | 130.1.3.1 | Affiche devises | MDI | 1002 | 240 | Consultation |
+| 4 | 130.1.3.2 | 130.1.3.2 | Affiche devises | MDI | 1002 | 240 | Consultation |
 
 ### 8.2 Mockups Ecrans
 
 ---
 
 #### <a id="ecran-t2"></a>130.1 - Saisie commentaire
-**Tache** : [T2](#t2) | **Type** : MDI | **Dimensions** : 1000 x 240 DLU
+**Tache** : [130.1](#t2) | **Type** : MDI | **Dimensions** : 1000 x 240 DLU
 **Bloc** : Saisie | **Titre IDE** : Saisie commentaire
 
 <!-- FORM-DATA:
@@ -844,7 +846,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t3"></a>130.1.1 - Commentaires
-**Tache** : [T3](#t3) | **Type** : MDI | **Dimensions** : 480 x 0 DLU
+**Tache** : [130.1.1](#t3) | **Type** : MDI | **Dimensions** : 480 x 0 DLU
 **Bloc** : Traitement | **Titre IDE** : Commentaires
 
 <!-- FORM-DATA:
@@ -984,7 +986,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t8"></a>130.1.3.1 - Affiche devises
-**Tache** : [T8](#t8) | **Type** : MDI | **Dimensions** : 1002 x 240 DLU
+**Tache** : [130.1.3.1](#t8) | **Type** : MDI | **Dimensions** : 1002 x 240 DLU
 **Bloc** : Consultation | **Titre IDE** : Affiche devises
 
 <!-- FORM-DATA:
@@ -1235,7 +1237,7 @@ Generation des documents et tickets.
 ---
 
 #### <a id="ecran-t9"></a>130.1.3.2 - Affiche devises
-**Tache** : [T9](#t9) | **Type** : MDI | **Dimensions** : 1002 x 240 DLU
+**Tache** : [130.1.3.2](#t9) | **Type** : MDI | **Dimensions** : 1002 x 240 DLU
 **Bloc** : Consultation | **Titre IDE** : Affiche devises
 
 <!-- FORM-DATA:
@@ -1491,13 +1493,13 @@ Generation des documents et tickets.
 flowchart TD
     START([Entree])
     style START fill:#3fb950
-    VF2[T2 Saisie commentaire]
+    VF2[130.1 Saisie commentaire]
     style VF2 fill:#58a6ff
-    VF3[T3 Commentaires]
+    VF3[130.1.1 Commentaires]
     style VF3 fill:#58a6ff
-    VF8[T8 Affiche devises]
+    VF8[130.1.3.1 Affiche devises]
     style VF8 fill:#58a6ff
-    VF9[T9 Affiche devises]
+    VF9[130.1.3.2 Affiche devises]
     style VF9 fill:#58a6ff
     EXT142[IDE 142 Devise update ...]
     style EXT142 fill:#3fb950
@@ -1522,39 +1524,35 @@ flowchart TD
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **130.1** | [**Ecart fermeture caisse** (T1)](#t1) | MDI | - | Traitement |
-| 130.1.1 | [Commentaires (T3)](#t3) [mockup](#ecran-t3) | MDI | 480x0 | |
-| **130.2** | [**Saisie commentaire** (T2)](#t2) [mockup](#ecran-t2) | MDI | 1000x240 | Saisie |
-| **130.3** | [**Calcul ecart sur devise** (T4)](#t4) | MDI | - | Calcul |
-| 130.3.1 | [Calcul ecart sur devise (T5)](#t5) | MDI | - | |
-| 130.3.2 | [Calcul ecart sur devise (T6)](#t6) | MDI | - | |
-| **130.4** | [**Affiche devises** (T7)](#t7) [mockup](#ecran-t7) | MDI | 501x240 | Consultation |
-| 130.4.1 | [Affiche devises (T8)](#t8) [mockup](#ecran-t8) | MDI | 1002x240 | |
-| 130.4.2 | [Affiche devises (T9)](#t9) [mockup](#ecran-t9) | MDI | 1002x240 | |
-| **130.5** | [**Ticket** (T10)](#t10) | MDI | - | Impression |
+| **130.1** | [**Ecart fermeture caisse** (130)](#t1) | MDI | - | Traitement |
+| 130.1.1 | [Commentaires (130.1.1)](#t3) [mockup](#ecran-t3) | MDI | 480x0 | |
+| **130.2** | [**Saisie commentaire** (130.1)](#t2) [mockup](#ecran-t2) | MDI | 1000x240 | Saisie |
+| **130.3** | [**Calcul ecart sur devise** (130.1.2)](#t4) | MDI | - | Calcul |
+| 130.3.1 | [Calcul ecart sur devise (130.1.2.1)](#t5) | MDI | - | |
+| 130.3.2 | [Calcul ecart sur devise (130.1.2.2)](#t6) | MDI | - | |
+| **130.4** | [**Affiche devises** (130.1.3)](#t7) [mockup](#ecran-t7) | MDI | 501x240 | Consultation |
+| 130.4.1 | [Affiche devises (130.1.3.1)](#t8) [mockup](#ecran-t8) | MDI | 1002x240 | |
+| 130.4.2 | [Affiche devises (130.1.3.2)](#t9) [mockup](#ecran-t9) | MDI | 1002x240 | |
+| **130.5** | [**Ticket** (130.1.4)](#t10) | MDI | - | Impression |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    B1[Traitement (2t)]
-    START --> B1
-    B2[Saisie (1t)]
-    B1 --> B2
-    B3[Calcul (3t)]
-    B2 --> B3
-    B4[Consultation (3t)]
-    B3 --> B4
-    B5[Impression (1t)]
-    B4 --> B5
-    ENDOK([END])
-    B5 --> ENDOK
+    INIT[Init controles]
+    SAISIE[Saisie commentaire]
+    ENDOK([END OK])
+
+    START --> INIT --> SAISIE
+    SAISIE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
 ```
 
-> *Algorigramme simplifie base sur les blocs fonctionnels. Utiliser `/algorigramme` pour une synthese metier detaillee.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
@@ -1610,74 +1608,74 @@ Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | Param societe | Alpha | - |
-| B | Param chrono session | Numeric | - |
-| C | Param devise locale | Alpha | - |
-| D | Param masque montant | Alpha | - |
-| E | Param quand | Alpha | - |
-| F | Param caisse comptee | Numeric | - |
-| G | Param caisse comptee monnaie | Numeric | - |
-| H | Param caisse comptee produits | Numeric | - |
-| I | Param caisse comptee cartes | Numeric | - |
-| J | Param caisse comptee cheques | Numeric | - |
-| K | Param caisse comptee od | Numeric | - |
-| L | Param caisse comptee nb devise | Numeric | - |
-| M | Param caisse calculee | Numeric | - |
-| N | Param caisse calculee monnaie | Numeric | - |
-| O | Param caisse calculee produits | Numeric | - |
-| P | Param caisse calculee cartes | Numeric | - |
-| Q | Param caisse calculee cheques | Numeric | - |
-| R | Param caisse calculee od | Numeric | - |
-| S | Param caisse calculee nb devise | Numeric | - |
-| T | Param montant ecart | Numeric | - |
-| U | Param montant ecart monnaie | Numeric | - |
-| V | Param montant ecart produits | Numeric | - |
-| W | Param montant ecart cartes | Numeric | - |
-| X | Param montant ecart cheques | Numeric | - |
-| Y | Param montant ecart od | Numeric | - |
-| Z | Param ecart nb devise | Numeric | - |
-| BA | Param commentaire | Alpha | - |
-| BB | Param commentaire devise | Alpha | - |
-| BC | Param editer ticket recap | Logical | - |
-| BD | Param UNI/BI | Alpha | - |
-| BE | Fin | Logical | - |
+| EN | Param societe | Alpha | - |
+| EO | Param chrono session | Numeric | - |
+| EP | Param devise locale | Alpha | - |
+| EQ | Param masque montant | Alpha | - |
+| ER | Param quand | Alpha | - |
+| ES | Param caisse comptee | Numeric | - |
+| ET | Param caisse comptee monnaie | Numeric | - |
+| EU | Param caisse comptee produits | Numeric | - |
+| EV | Param caisse comptee cartes | Numeric | - |
+| EW | Param caisse comptee cheques | Numeric | - |
+| EX | Param caisse comptee od | Numeric | - |
+| EY | Param caisse comptee nb devise | Numeric | - |
+| EZ | Param caisse calculee | Numeric | - |
+| FA | Param caisse calculee monnaie | Numeric | - |
+| FB | Param caisse calculee produits | Numeric | - |
+| FC | Param caisse calculee cartes | Numeric | - |
+| FD | Param caisse calculee cheques | Numeric | - |
+| FE | Param caisse calculee od | Numeric | - |
+| FF | Param caisse calculee nb devise | Numeric | - |
+| FG | Param montant ecart | Numeric | - |
+| FH | Param montant ecart monnaie | Numeric | - |
+| FI | Param montant ecart produits | Numeric | - |
+| FJ | Param montant ecart cartes | Numeric | - |
+| FK | Param montant ecart cheques | Numeric | - |
+| FL | Param montant ecart od | Numeric | - |
+| FM | Param ecart nb devise | Numeric | - |
+| FN | Param commentaire | Alpha | - |
+| FO | Param commentaire devise | Alpha | - |
+| FP | Param editer ticket recap | Logical | - |
+| FQ | Param UNI/BI | Alpha | - |
+| FR | Fin | Logical | 1x refs |
 
 <details>
 <summary>Toutes les 31 variables (liste complete)</summary>
 
 | Cat | Lettre | Nom Variable | Type |
 |-----|--------|--------------|------|
-| Autre | **A** | Param societe | Alpha |
-| Autre | **B** | Param chrono session | Numeric |
-| Autre | **C** | Param devise locale | Alpha |
-| Autre | **D** | Param masque montant | Alpha |
-| Autre | **E** | Param quand | Alpha |
-| Autre | **F** | Param caisse comptee | Numeric |
-| Autre | **G** | Param caisse comptee monnaie | Numeric |
-| Autre | **H** | Param caisse comptee produits | Numeric |
-| Autre | **I** | Param caisse comptee cartes | Numeric |
-| Autre | **J** | Param caisse comptee cheques | Numeric |
-| Autre | **K** | Param caisse comptee od | Numeric |
-| Autre | **L** | Param caisse comptee nb devise | Numeric |
-| Autre | **M** | Param caisse calculee | Numeric |
-| Autre | **N** | Param caisse calculee monnaie | Numeric |
-| Autre | **O** | Param caisse calculee produits | Numeric |
-| Autre | **P** | Param caisse calculee cartes | Numeric |
-| Autre | **Q** | Param caisse calculee cheques | Numeric |
-| Autre | **R** | Param caisse calculee od | Numeric |
-| Autre | **S** | Param caisse calculee nb devise | Numeric |
-| Autre | **T** | Param montant ecart | Numeric |
-| Autre | **U** | Param montant ecart monnaie | Numeric |
-| Autre | **V** | Param montant ecart produits | Numeric |
-| Autre | **W** | Param montant ecart cartes | Numeric |
-| Autre | **X** | Param montant ecart cheques | Numeric |
-| Autre | **Y** | Param montant ecart od | Numeric |
-| Autre | **Z** | Param ecart nb devise | Numeric |
-| Autre | **BA** | Param commentaire | Alpha |
-| Autre | **BB** | Param commentaire devise | Alpha |
-| Autre | **BC** | Param editer ticket recap | Logical |
-| Autre | **BD** | Param UNI/BI | Alpha |
-| Autre | **BE** | Fin | Logical |
+| Autre | **EN** | Param societe | Alpha |
+| Autre | **EO** | Param chrono session | Numeric |
+| Autre | **EP** | Param devise locale | Alpha |
+| Autre | **EQ** | Param masque montant | Alpha |
+| Autre | **ER** | Param quand | Alpha |
+| Autre | **ES** | Param caisse comptee | Numeric |
+| Autre | **ET** | Param caisse comptee monnaie | Numeric |
+| Autre | **EU** | Param caisse comptee produits | Numeric |
+| Autre | **EV** | Param caisse comptee cartes | Numeric |
+| Autre | **EW** | Param caisse comptee cheques | Numeric |
+| Autre | **EX** | Param caisse comptee od | Numeric |
+| Autre | **EY** | Param caisse comptee nb devise | Numeric |
+| Autre | **EZ** | Param caisse calculee | Numeric |
+| Autre | **FA** | Param caisse calculee monnaie | Numeric |
+| Autre | **FB** | Param caisse calculee produits | Numeric |
+| Autre | **FC** | Param caisse calculee cartes | Numeric |
+| Autre | **FD** | Param caisse calculee cheques | Numeric |
+| Autre | **FE** | Param caisse calculee od | Numeric |
+| Autre | **FF** | Param caisse calculee nb devise | Numeric |
+| Autre | **FG** | Param montant ecart | Numeric |
+| Autre | **FH** | Param montant ecart monnaie | Numeric |
+| Autre | **FI** | Param montant ecart produits | Numeric |
+| Autre | **FJ** | Param montant ecart cartes | Numeric |
+| Autre | **FK** | Param montant ecart cheques | Numeric |
+| Autre | **FL** | Param montant ecart od | Numeric |
+| Autre | **FM** | Param ecart nb devise | Numeric |
+| Autre | **FN** | Param commentaire | Alpha |
+| Autre | **FO** | Param commentaire devise | Alpha |
+| Autre | **FP** | Param editer ticket recap | Logical |
+| Autre | **FQ** | Param UNI/BI | Alpha |
+| Autre | **FR** | Fin | Logical |
 
 </details>
 
@@ -1704,7 +1702,7 @@ Variables diverses.
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| OTHER | 2 | `[AE]` | - |
+| OTHER | 2 | `Fin [BE]` | - |
 
 <!-- TAB:Connexions -->
 
@@ -1828,4 +1826,4 @@ graph LR
 | [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 1x | Normale - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 15:36*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:08*

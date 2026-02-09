@@ -1,6 +1,6 @@
-﻿# ADH IDE 170 - Facturation appel
+﻿# ADH IDE 170 - Messagerie
 
-> **Analyse**: Phases 1-4 2026-02-03 10:54 -> 10:54 (16s) | Assemblage 07:22
+> **Analyse**: Phases 1-4 2026-02-08 03:50 -> 03:50 (4s) | Assemblage 03:50
 > **Pipeline**: V7.2 Enrichi
 > **Structure**: 4 onglets (Resume | Ecrans | Donnees | Connexions)
 
@@ -12,138 +12,54 @@
 |----------|--------|
 | Projet | ADH |
 | IDE Position | 170 |
-| Nom Programme | Facturation appel |
+| Nom Programme | Messagerie |
 | Fichier source | `Prg_170.xml` |
-| Dossier IDE | Operations |
-| Taches | 6 (0 ecrans visibles) |
-| Tables modifiees | 3 |
-| Programmes appeles | 5 |
+| Dossier IDE | General |
+| Taches | 27 (0 ecrans visibles) |
+| Tables modifiees | 5 |
+| Programmes appeles | 1 |
+| Complexite | **BASSE** (score 31/100) |
 
 ## 2. DESCRIPTION FONCTIONNELLE
 
-**Facturation appel** assure la gestion complete de ce processus, accessible depuis [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md).
+Ce programme gère la messagerie interne du système de gestion de club. Il traite l'affichage, la création et la manipulation des messages stockés dans les tables de messagerie (`fichier_messagerie`, `fichier_validation`, `fichier_echanges`). Le programme récupère les informations contextuelles (titre du message via ADH IDE 43) et maintient à jour les compteurs et l'historique des stations pour suivre l'activité de messagerie.
 
-Le flux de traitement s'organise en **1 blocs fonctionnels** :
+La logique principale repose sur une gestion d'état des messages : création, lecture, validation et archivage. Les modifications apportées aux tables compteurs et historique permettent de tracer les actions utilisateur et de synchroniser l'état de la messagerie across les différentes stations. Le programme s'insère dans un flux d'appels depuis le menu Messages (ADH IDE 169), formant ainsi une chaîne cohérente de gestion des communications internes.
 
-- **Traitement** (6 taches) : traitements metier divers
-
-**Donnees modifiees** : 3 tables en ecriture (reseau_cloture___rec, historique_pabx, coef__telephone__coe).
-
-**Logique metier** : 1 regles identifiees couvrant conditions metier.
-
-<details>
-<summary>Detail : phases du traitement</summary>
-
-#### Phase 1 : Traitement (6 taches)
-
-- **T1** - Facturation appel
-- **T2** - Historique appel
-- **T3** - Historique appel
-- **T4** - Recuperation coef
-- **T5** - Deblocage cloture
-- **T8** - Deblocage cloture
-
-Delegue a : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
-#### Tables impactees
-
-| Table | Operations | Role metier |
-|-------|-----------|-------------|
-| reseau_cloture___rec | **W** (2 usages) | Donnees reseau/cloture |
-| historique_pabx | **W** (2 usages) | Historique / journal |
-| coef__telephone__coe | **W** (1 usages) |  |
-
-</details>
+Le processus implique probablement des validations sur les droits d'accès, les permissions de lecture/écriture et la gestion des statuts de message (nouveau, lu, validé, etc.). Les interactions avec les tables d'historique et de compteurs garantissent une cohérence des données et permettent un suivi précis des activités de messagerie dans le système.
 
 ## 3. BLOCS FONCTIONNELS
 
-### 3.1 Traitement (6 taches)
-
-Traitements internes.
-
----
-
-#### <a id="t1"></a>T1 - Facturation appel
-
-**Role** : Tache d'orchestration : point d'entree du programme (6 sous-taches). Coordonne l'enchainement des traitements.
-
-<details>
-<summary>5 sous-taches directes</summary>
-
-| Tache | Nom | Bloc |
-|-------|-----|------|
-| [T2](#t2) | Historique appel | Traitement |
-| [T3](#t3) | Historique appel | Traitement |
-| [T4](#t4) | Recuperation coef | Traitement |
-| [T5](#t5) | Deblocage cloture | Traitement |
-| [T8](#t8) | Deblocage cloture | Traitement |
-
-</details>
-**Variables liees** : C (> date appel), D (> heure appel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t2"></a>T2 - Historique appel
-
-**Role** : Consultation/chargement : Historique appel.
-**Variables liees** : C (> date appel), D (> heure appel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t3"></a>T3 - Historique appel
-
-**Role** : Consultation/chargement : Historique appel.
-**Variables liees** : C (> date appel), D (> heure appel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t4"></a>T4 - Recuperation coef
-
-**Role** : Consultation/chargement : Recuperation coef.
-**Variables liees** : V (w0 coeff tel)
-**Delegue a** : [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t5"></a>T5 - Deblocage cloture
-
-**Role** : Traitement : Deblocage cloture.
-**Variables liees** : W (w0 cloture en cours)
-**Delegue a** : [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
----
-
-#### <a id="t8"></a>T8 - Deblocage cloture
-
-**Role** : Traitement : Deblocage cloture.
-**Variables liees** : W (w0 cloture en cours)
-**Delegue a** : [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md), [  Test reseau (IDE 18)](ADH-IDE-18.md), [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md)
-
-
 ## 5. REGLES METIER
 
-1 regles identifiees:
+2 regles identifiees:
 
-### Autres (1 regles)
+### Autres (2 regles)
 
-#### <a id="rm-RM-001"></a>[RM-001] Si > GO [G] alors 'GO' sinon 'GM')
+#### <a id="rm-RM-001"></a>[RM-001] Condition: W0-Fin de Tache [D] egale 'F'
 
 | Element | Detail |
 |---------|--------|
-| **Condition** | `> GO [G]` |
-| **Si vrai** | 'GO' |
-| **Si faux** | 'GM') |
-| **Variables** | G (> GO) |
-| **Expression source** | Expression 4 : `IF (> GO [G],'GO','GM')` |
-| **Exemple** | Si > GO [G] â†’ 'GO'. Sinon â†’ 'GM') |
+| **Condition** | `W0-Fin de Tache [D]='F'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EQ (W0-Fin de Tache) |
+| **Expression source** | Expression 2 : `W0-Fin de Tache [D]='F'` |
+| **Exemple** | Si W0-Fin de Tache [D]='F' â†’ Action si vrai |
+
+#### <a id="rm-RM-002"></a>[RM-002] Condition: W0 village TEL [K]='O' AND W0 interface [L]='CLUB' AND W0 type triplet [M] egale '1'
+
+| Element | Detail |
+|---------|--------|
+| **Condition** | `W0 village TEL [K]='O' AND W0 interface [L]='CLUB' AND W0 type triplet [M]='1'` |
+| **Si vrai** | Action si vrai |
+| **Variables** | EX (W0 village TEL), EY (W0 interface), EZ (W0 type triplet) |
+| **Expression source** | Expression 3 : `W0 village TEL [K]='O' AND W0 interface [L]='CLUB' AND W0 ty` |
+| **Exemple** | Si W0 village TEL [K]='O' AND W0 interface [L]='CLUB' AND W0 type triplet [M]='1' â†’ Action si vrai |
 
 ## 6. CONTEXTE
 
-- **Appele par**: [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md)
-- **Appelle**: 5 programmes | **Tables**: 3 (W:3 R:0 L:0) | **Taches**: 6 | **Expressions**: 15
+- **Appele par**: [Messages (IDE 169)](ADH-IDE-169.md)
+- **Appelle**: 1 programmes | **Tables**: 8 (W:5 R:4 L:2) | **Taches**: 27 | **Expressions**: 3
 
 <!-- TAB:Ecrans -->
 
@@ -153,207 +69,169 @@ Traitements internes.
 
 ## 9. NAVIGATION
 
-### 9.3 Structure hierarchique (6 taches)
+### 9.3 Structure hierarchique (0 tache)
 
 | Position | Tache | Type | Dimensions | Bloc |
 |----------|-------|------|------------|------|
-| **170.1** | [**Facturation appel** (T1)](#t1) | MDI | - | Traitement |
-| 170.1.1 | [Historique appel (T2)](#t2) | MDI | - | |
-| 170.1.2 | [Historique appel (T3)](#t3) | MDI | - | |
-| 170.1.3 | [Recuperation coef (T4)](#t4) | MDI | - | |
-| 170.1.4 | [Deblocage cloture (T5)](#t5) | MDI | - | |
-| 170.1.5 | [Deblocage cloture (T8)](#t8) | MDI | - | |
 
 ### 9.4 Algorigramme
 
 ```mermaid
 flowchart TD
     START([START])
-    PROCESS[Traitement 6 taches]
-    ENDOK([END])
-    START --> PROCESS --> ENDOK
+    INIT[Init controles]
+    SAISIE[Traitement principal]
+    DECISION{W0-Fin de Tache}
+    PROCESS[Traitement]
+    UPDATE[MAJ 5 tables]
+    ENDOK([END OK])
+    ENDKO([END KO])
+
+    START --> INIT --> SAISIE --> DECISION
+    DECISION -->|OUI| PROCESS
+    DECISION -->|NON| ENDKO
+    PROCESS --> UPDATE --> ENDOK
+
     style START fill:#3fb950,color:#000
     style ENDOK fill:#3fb950,color:#000
+    style ENDKO fill:#f85149,color:#fff
+    style DECISION fill:#58a6ff,color:#000
 ```
 
-> *algo-data indisponible. Utiliser `/algorigramme` pour generer.*
+> **Legende**: Vert = START/END OK | Rouge = END KO | Bleu = Decisions
+> *Algorigramme auto-genere. Utiliser `/algorigramme` pour une synthese metier detaillee.*
 
 <!-- TAB:Donnees -->
 
 ## 10. TABLES
 
-### Tables utilisees (3)
+### Tables utilisees (8)
 
 | ID | Nom | Description | Type | R | W | L | Usages |
 |----|-----|-------------|------|---|---|---|--------|
-| 23 | reseau_cloture___rec | Donnees reseau/cloture | DB |   | **W** |   | 2 |
-| 155 | historique_pabx | Historique / journal | DB |   | **W** |   | 2 |
-| 157 | coef__telephone__coe |  | DB |   | **W** |   | 1 |
+| 123 | fichier_messagerie |  | DB | R | **W** |   | 7 |
+| 131 | fichier_validation |  | DB | R | **W** |   | 3 |
+| 88 | historik_station | Historique / journal | DB |   | **W** | L | 3 |
+| 136 | fichier_echanges |  | DB |   | **W** |   | 4 |
+| 68 | compteurs________cpt | Comptes GM (generaux) | DB |   | **W** |   | 1 |
+| 78 | param__telephone_tel |  | DB | R |   |   | 1 |
+| 80 | codes_autocom____aut |  | DB | R |   |   | 1 |
+| 63 | parametres___par |  | DB |   |   | L | 1 |
 
-### Colonnes par table (2 / 3 tables avec colonnes identifiees)
+### Colonnes par table (1 / 7 tables avec colonnes identifiees)
 
 <details>
-<summary>Table 23 - reseau_cloture___rec (**W**) - 2 usages</summary>
+<summary>Table 123 - fichier_messagerie (R/**W**) - 7 usages</summary>
 
 | Lettre | Variable | Acces | Type |
 |--------|----------|-------|------|
-| W | w0 cloture en cours | W | Logical |
-| X | w0 test reseau | W | Alpha |
+| A | W1-Code Retour | W | Numeric |
+| B | W2 passage prefixe | W | Logical |
+| C | W2-Selection Choix | W | Alpha |
+| D | W2-bouton creation | W | Alpha |
+| E | W2-bouton annulation | W | Alpha |
+| F | v. titre | W | Alpha |
 
 </details>
 
 <details>
-<summary>Table 155 - historique_pabx (**W**) - 2 usages</summary>
+<summary>Table 131 - fichier_validation (R/**W**) - 3 usages</summary>
 
 *Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 <details>
-<summary>Table 157 - coef__telephone__coe (**W**) - 1 usages</summary>
+<summary>Table 88 - historik_station (**W**/L) - 3 usages</summary>
 
-| Lettre | Variable | Acces | Type |
-|--------|----------|-------|------|
-| V | w0 coeff tel | W | Numeric |
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 136 - fichier_echanges (**W**) - 4 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 68 - compteurs________cpt (**W**) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 78 - param__telephone_tel (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
+
+</details>
+
+<details>
+<summary>Table 80 - codes_autocom____aut (R) - 1 usages</summary>
+
+*Table utilisee uniquement en Link ou aucune colonne Real identifiee dans le DataView.*
 
 </details>
 
 ## 11. VARIABLES
 
-### 11.1 Variables de travail (7)
+### 11.1 Variables de travail (3)
 
 Variables internes au programme.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| T | w0 numero de tel | Alpha | - |
-| U | w0 qualite | Alpha | 1x calcul interne |
-| V | w0 coeff tel | Numeric | 1x calcul interne |
-| W | w0 cloture en cours | Logical | - |
-| X | w0 test reseau | Alpha | 1x calcul interne |
-| Y | w0 gratuite | Logical | - |
-| Z | w0 raison gratuite | Alpha | - |
+| EX | W0 village TEL | Alpha | 1x calcul interne |
+| EY | W0 interface | Alpha | 1x calcul interne |
+| EZ | W0 type triplet | Alpha | 1x calcul interne |
 
-### 11.2 Autres (19)
+### 11.2 Autres (12)
 
 Variables diverses.
 
 | Lettre | Nom | Type | Usage dans |
 |--------|-----|------|-----------|
-| A | > societe | Alpha | - |
-| B | > prefixe | Alpha | - |
-| C | > date appel | Date | [T1](#t1), [T2](#t2), [T3](#t3) |
-| D | > heure appel | Time | [T1](#t1), [T2](#t2), [T3](#t3) |
-| E | > Nom | Alpha | 2x refs |
-| F | > Prenom | Alpha | 1x refs |
-| G | > GO | Logical | 1x refs |
-| H | > compte fictif | Logical | 3x refs |
-| I | > fin | Alpha | - |
-| J | > numero de compte | Numeric | - |
-| K | > filiation | Numeric | - |
-| L | > montant | Numeric | 1x refs |
-| M | > solde du compte | Numeric | - |
-| N | < Quitter | Logical | - |
-| O | > devise local | Alpha | - |
-| P | > Masque | Alpha | - |
-| Q | > annulation | Logical | 1x refs |
-| R | > duree | Time | - |
-| S | > nombre decimal | Numeric | 1x refs |
-
-<details>
-<summary>Toutes les 26 variables (liste complete)</summary>
-
-| Cat | Lettre | Nom Variable | Type |
-|-----|--------|--------------|------|
-| W0 | **T** | w0 numero de tel | Alpha |
-| W0 | **U** | w0 qualite | Alpha |
-| W0 | **V** | w0 coeff tel | Numeric |
-| W0 | **W** | w0 cloture en cours | Logical |
-| W0 | **X** | w0 test reseau | Alpha |
-| W0 | **Y** | w0 gratuite | Logical |
-| W0 | **Z** | w0 raison gratuite | Alpha |
-| Autre | **A** | > societe | Alpha |
-| Autre | **B** | > prefixe | Alpha |
-| Autre | **C** | > date appel | Date |
-| Autre | **D** | > heure appel | Time |
-| Autre | **E** | > Nom | Alpha |
-| Autre | **F** | > Prenom | Alpha |
-| Autre | **G** | > GO | Logical |
-| Autre | **H** | > compte fictif | Logical |
-| Autre | **I** | > fin | Alpha |
-| Autre | **J** | > numero de compte | Numeric |
-| Autre | **K** | > filiation | Numeric |
-| Autre | **L** | > montant | Numeric |
-| Autre | **M** | > solde du compte | Numeric |
-| Autre | **N** | < Quitter | Logical |
-| Autre | **O** | > devise local | Alpha |
-| Autre | **P** | > Masque | Alpha |
-| Autre | **Q** | > annulation | Logical |
-| Autre | **R** | > duree | Time |
-| Autre | **S** | > nombre decimal | Numeric |
-
-</details>
+| EN | P0-Societe | Alpha | - |
+| EO | P0-Numero Compte | Numeric | - |
+| EP | P0-Filiation Compte | Numeric | - |
+| EQ | W0-Fin de Tache | Alpha | 1x refs |
+| ER | W0-Accord Suite | Alpha | - |
+| ES | W0-Nom Personne | Alpha | - |
+| ET | W0-Prenom Personne | Alpha | - |
+| EU | W0-Provenance | Alpha | - |
+| EV | W0-Date | Date | - |
+| EW | W0-Heure | Time | - |
+| FA | W0-n° poste | Numeric | - |
+| FB | W0-n° ligne | Numeric | - |
 
 ## 12. EXPRESSIONS
 
-**15 / 15 expressions decodees (100%)**
+**3 / 3 expressions decodees (100%)**
 
 ### 12.1 Repartition par type
 
 | Type | Expressions | Regles |
 |------|-------------|--------|
-| CONDITION | 7 | 5 |
+| CONDITION | 2 | 2 |
 | CONSTANTE | 1 | 0 |
-| NEGATION | 3 | 0 |
-| CAST_LOGIQUE | 2 | 0 |
-| REFERENCE_VG | 1 | 0 |
-| CONCATENATION | 1 | 0 |
 
 ### 12.2 Expressions cles par type
 
-#### CONDITION (7 expressions)
+#### CONDITION (2 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONDITION | 4 | `IF (> GO [G],'GO','GM')` | [RM-001](#rm-RM-001) |
-| CONDITION | 6 | `w0 test reseau [X]<>'R'` | - |
-| CONDITION | 12 | `> date appel [C]` | - |
-| CONDITION | 13 | `> heure appel [D]` | - |
-| CONDITION | 7 | `Round (> montant [L]*w0 coeff tel [V],15,> nombre decimal [S])` | - |
-| ... | | *+2 autres* | |
+| CONDITION | 3 | `W0 village TEL [K]='O' AND W0 interface [L]='CLUB' AND W0 type triplet [M]='1'` | [RM-002](#rm-RM-002) |
+| CONDITION | 2 | `W0-Fin de Tache [D]='F'` | [RM-001](#rm-RM-001) |
 
 #### CONSTANTE (1 expressions)
 
 | Type | IDE | Expression | Regle |
 |------|-----|------------|-------|
-| CONSTANTE | 5 | `'F'` | - |
-
-#### NEGATION (3 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| NEGATION | 14 | `NOT VG6` | - |
-| NEGATION | 9 | `NOT (> annulation [Q])` | - |
-| NEGATION | 2 | `NOT (> compte fictif [H])` | - |
-
-#### CAST_LOGIQUE (2 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CAST_LOGIQUE | 11 | `'FALSE'LOG` | - |
-| CAST_LOGIQUE | 8 | `'TRUE'LOG` | - |
-
-#### REFERENCE_VG (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| REFERENCE_VG | 15 | `VG6` | - |
-
-#### CONCATENATION (1 expressions)
-
-| Type | IDE | Expression | Regle |
-|------|-----|------------|-------|
-| CONCATENATION | 10 | `Trim (> Nom [E])&' '&Trim (> Prenom [F])` | - |
+| CONSTANTE | 1 | `'F'` | - |
 
 <!-- TAB:Connexions -->
 
@@ -361,61 +239,39 @@ Variables diverses.
 
 ### 13.1 Chaine depuis Main (Callers)
 
-Main -> ... -> [Menu caisse GM - scroll @ (IDE 22)](ADH-IDE-22.md) -> **Facturation appel (IDE 170)**
+Main -> ... -> [Messages (IDE 169)](ADH-IDE-169.md) -> **Messagerie (IDE 170)**
 
 ```mermaid
 graph LR
-    T170[170 Facturation appel]
+    T170[170 Messagerie]
     style T170 fill:#58a6ff
-    CC1[1 Main Program]
-    style CC1 fill:#8b5cf6
-    CC33[33 Visualisation Appel]
-    style CC33 fill:#f59e0b
-    CC22[22 Menu caisse GM - sc...]
-    style CC22 fill:#3fb950
-    CC33 --> CC22
-    CC1 --> CC33
-    CC22 --> T170
+    CC169[169 Messages]
+    style CC169 fill:#8b5cf6
+    CC169 --> T170
 ```
 
 ### 13.2 Callers
 
 | IDE | Nom Programme | Nb Appels |
 |-----|---------------|-----------|
-| [22](ADH-IDE-22.md) | Menu caisse GM - scroll @ | 1 |
+| [169](ADH-IDE-169.md) | Messages | 1 |
 
 ### 13.3 Callees (programmes appeles)
 
 ```mermaid
 graph LR
-    T170[170 Facturation appel]
+    T170[170 Messagerie]
     style T170 fill:#58a6ff
-    C16[16 Creation O.D]
-    T170 --> C16
-    style C16 fill:#3fb950
-    C17[17 Deblocage compte GM]
-    T170 --> C17
-    style C17 fill:#3fb950
-    C18[18 Test reseau]
-    T170 --> C18
-    style C18 fill:#3fb950
-    C19[19 Test si cloture en ...]
-    T170 --> C19
-    style C19 fill:#3fb950
-    C36[36 Zoom GOGM]
-    T170 --> C36
-    style C36 fill:#3fb950
+    C43[43 Recuperation du titre]
+    T170 --> C43
+    style C43 fill:#3fb950
 ```
 
 ### 13.4 Detail Callees avec contexte
 
 | IDE | Nom Programme | Appels | Contexte |
 |-----|---------------|--------|----------|
-| [16](ADH-IDE-16.md) |   Creation O.D | 1 | Sous-programme |
-| [17](ADH-IDE-17.md) |   Deblocage compte GM | 1 | Sous-programme |
-| [18](ADH-IDE-18.md) |   Test reseau | 1 | Sous-programme |
-| [19](ADH-IDE-19.md) |   Test si cloture en cours | 1 | Fermeture session |
-| [36](ADH-IDE-36.md) | Zoom GO/GM | 1 | Selection/consultation |
+| [43](ADH-IDE-43.md) | Recuperation du titre | 2 | Recuperation donnees |
 
 ## 14. RECOMMANDATIONS MIGRATION
 
@@ -423,34 +279,26 @@ graph LR
 
 | Metrique | Valeur | Impact migration |
 |----------|--------|-----------------|
-| Lignes de logique | 116 | Programme compact |
-| Expressions | 15 | Peu de logique |
-| Tables WRITE | 3 | Impact modere |
-| Sous-programmes | 5 | Peu de dependances |
+| Lignes de logique | 380 | Taille moyenne |
+| Expressions | 3 | Peu de logique |
+| Tables WRITE | 5 | Impact modere |
+| Sous-programmes | 1 | Peu de dependances |
 | Ecrans visibles | 0 | Ecran unique ou traitement batch |
-| Code desactive | 0% (0 / 116) | Code sain |
-| Regles metier | 1 | Quelques regles a preserver |
+| Code desactive | 0% (0 / 380) | Code sain |
+| Regles metier | 2 | Quelques regles a preserver |
 
 ### 14.2 Plan de migration par bloc
-
-#### Traitement (6 taches: 0 ecran, 6 traitements)
-
-- **Strategie** : 6 service(s) backend injectable(s) (Domain Services).
-- 5 sous-programme(s) a migrer ou a reutiliser depuis les services existants.
-- Decomposer les taches en services unitaires testables.
 
 ### 14.3 Dependances critiques
 
 | Dependance | Type | Appels | Impact |
 |------------|------|--------|--------|
-| reseau_cloture___rec | Table WRITE (Database) | 2x | Schema + repository |
-| historique_pabx | Table WRITE (Database) | 2x | Schema + repository |
-| coef__telephone__coe | Table WRITE (Database) | 1x | Schema + repository |
-| [  Test si cloture en cours (IDE 19)](ADH-IDE-19.md) | Sous-programme | 1x | Normale - Fermeture session |
-| [Zoom GO/GM (IDE 36)](ADH-IDE-36.md) | Sous-programme | 1x | Normale - Selection/consultation |
-| [  Test reseau (IDE 18)](ADH-IDE-18.md) | Sous-programme | 1x | Normale - Sous-programme |
-| [  Creation O.D (IDE 16)](ADH-IDE-16.md) | Sous-programme | 1x | Normale - Sous-programme |
-| [  Deblocage compte GM (IDE 17)](ADH-IDE-17.md) | Sous-programme | 1x | Normale - Sous-programme |
+| compteurs________cpt | Table WRITE (Database) | 1x | Schema + repository |
+| historik_station | Table WRITE (Database) | 2x | Schema + repository |
+| fichier_messagerie | Table WRITE (Database) | 2x | Schema + repository |
+| fichier_validation | Table WRITE (Database) | 2x | Schema + repository |
+| fichier_echanges | Table WRITE (Database) | 4x | Schema + repository |
+| [Recuperation du titre (IDE 43)](ADH-IDE-43.md) | Sous-programme | 2x | Haute - Recuperation donnees |
 
 ---
-*Spec DETAILED generee par Pipeline V7.2 - 2026-02-07 07:22*
+*Spec DETAILED generee par Pipeline V7.2 - 2026-02-08 03:51*
