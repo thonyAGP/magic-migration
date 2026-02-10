@@ -7,3 +7,5 @@ export * from './caisse';
 export * from './denomination';
 export * from './extrait';
 export * from './change';
+export * from './garantie';
+export * from './facture';

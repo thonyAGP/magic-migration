@@ -6,3 +6,5 @@ export { ReimpressionPage } from './ReimpressionPage';
 export { TransactionPage } from './TransactionPage';
 export { ExtraitPage } from './ExtraitPage';
 export { ChangePage } from './ChangePage';
+export { GarantiePage } from './GarantiePage';
+export { FacturePage } from './FacturePage';

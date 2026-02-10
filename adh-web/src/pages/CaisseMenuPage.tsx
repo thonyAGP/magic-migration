@@ -87,6 +87,22 @@ function buildMenuItems(sessionStatus: 'open' | 'closed'): CaisseMenuItem[] {
       enabled: isOpen,
       requiresOpenSession: true,
     },
+    {
+      action: 'garantie',
+      label: 'Garanties',
+      icon: 'lock',
+      description: 'Gestion des cautions et garanties',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
+    {
+      action: 'facture',
+      label: 'Factures TVA',
+      icon: 'file-text',
+      description: 'Creation et gestion des factures',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
   ];
 }
 
@@ -102,6 +118,8 @@ const actionRoutes: Record<CaisseMenuAction, string> = {
   vente_boutique: '/caisse/vente/Boutique',
   extrait: '/caisse/extrait',
   change: '/caisse/change',
+  garantie: '/caisse/garantie',
+  facture: '/caisse/facture',
 };
 
 export function CaisseMenuPage() {

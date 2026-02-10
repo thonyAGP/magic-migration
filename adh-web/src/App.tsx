@@ -10,6 +10,8 @@ import {
   TransactionPage,
   ExtraitPage,
   ChangePage,
+  GarantiePage,
+  FacturePage,
 } from '@/pages';
 
 function LoginPage() {
@@ -74,6 +76,8 @@ export function App() {
         <Route path="/caisse/vente" element={<Navigate to="/caisse/vente/GP" replace />} />
         <Route path="/caisse/extrait" element={<ProtectedRoute><ExtraitPage /></ProtectedRoute>} />
         <Route path="/caisse/change" element={<ProtectedRoute><ChangePage /></ProtectedRoute>} />
+        <Route path="/caisse/garantie" element={<ProtectedRoute><GarantiePage /></ProtectedRoute>} />
+        <Route path="/caisse/facture" element={<ProtectedRoute><FacturePage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>

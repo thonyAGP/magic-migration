@@ -5,3 +5,5 @@ export { useTransactionStore } from './transactionStore';
 export { useUiStore } from './uiStore';
 export { useExtraitStore } from './extraitStore';
 export { useChangeStore } from './changeStore';
+export { useGarantieStore } from './garantieStore';
+export { useFactureStore } from './factureStore';
