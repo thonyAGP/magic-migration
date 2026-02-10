@@ -11,3 +11,5 @@ export * from './garantie';
 export * from './facture';
 export * from './clubmedpass';
 export * from './datacatch';
+export * from './separation';
+export * from './fusion';

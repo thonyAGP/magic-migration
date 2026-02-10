@@ -119,6 +119,46 @@ function buildMenuItems(sessionStatus: 'open' | 'closed'): CaisseMenuItem[] {
       enabled: isOpen,
       requiresOpenSession: true,
     },
+    {
+      action: 'separation',
+      label: 'Separation',
+      icon: 'scissors',
+      description: 'Separer un compte',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
+    {
+      action: 'fusion',
+      label: 'Fusion',
+      icon: 'merge',
+      description: 'Fusionner des comptes',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
+    {
+      action: 'changement_compte',
+      label: 'Changement compte',
+      icon: 'refresh-cw',
+      description: 'Changer de compte',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
+    {
+      action: 'solde_compte',
+      label: 'Solde compte',
+      icon: 'wallet',
+      description: 'Consulter le solde',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
+    {
+      action: 'telephone',
+      label: 'Telephone',
+      icon: 'phone',
+      description: 'Gestion telephone',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
   ];
 }
 
@@ -138,6 +178,11 @@ const actionRoutes: Record<CaisseMenuAction, string> = {
   facture: '/caisse/facture',
   clubmedpass: '/caisse/pass',
   datacatch: '/caisse/datacatch',
+  separation: '/caisse/separation',
+  fusion: '/caisse/fusion',
+  changement_compte: '/caisse/compte/changement',
+  solde_compte: '/caisse/compte/solde',
+  telephone: '/caisse/compte/telephone',
 };
 
 export function CaisseMenuPage() {

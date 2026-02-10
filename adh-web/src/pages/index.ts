@@ -10,3 +10,6 @@ export { GarantiePage } from './GarantiePage';
 export { FacturePage } from './FacturePage';
 export { PassPage } from './PassPage';
 export { DataCatchPage } from './DataCatchPage';
+export { SeparationPage } from './SeparationPage';
+export { FusionPage } from './FusionPage';
+export { AccountOpsPage } from './AccountOpsPage';

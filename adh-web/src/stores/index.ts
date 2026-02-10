@@ -9,3 +9,5 @@ export { useGarantieStore } from './garantieStore';
 export { useFactureStore } from './factureStore';
 export { useClubMedPassStore } from './clubmedPassStore';
 export { useDataCatchStore } from './datacatchStore';
+export { useSeparationStore } from './separationStore';
+export { useFusionStore } from './fusionStore';

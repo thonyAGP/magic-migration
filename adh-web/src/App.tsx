@@ -14,6 +14,9 @@ import {
   FacturePage,
   PassPage,
   DataCatchPage,
+  SeparationPage,
+  FusionPage,
+  AccountOpsPage,
 } from '@/pages';
 
 function LoginPage() {
@@ -82,6 +85,9 @@ export function App() {
         <Route path="/caisse/facture" element={<ProtectedRoute><FacturePage /></ProtectedRoute>} />
         <Route path="/caisse/pass" element={<ProtectedRoute><PassPage /></ProtectedRoute>} />
         <Route path="/caisse/datacatch" element={<ProtectedRoute><DataCatchPage /></ProtectedRoute>} />
+        <Route path="/caisse/separation" element={<ProtectedRoute><SeparationPage /></ProtectedRoute>} />
+        <Route path="/caisse/fusion" element={<ProtectedRoute><FusionPage /></ProtectedRoute>} />
+        <Route path="/caisse/compte/:type" element={<ProtectedRoute><AccountOpsPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>

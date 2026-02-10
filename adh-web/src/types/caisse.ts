@@ -36,7 +36,12 @@ export type CaisseMenuAction =
   | 'garantie'
   | 'facture'
   | 'clubmedpass'
-  | 'datacatch';
+  | 'datacatch'
+  | 'separation'
+  | 'fusion'
+  | 'changement_compte'
+  | 'solde_compte'
+  | 'telephone';
 
 export interface CaisseMenuItem {
   action: CaisseMenuAction;
