@@ -106,7 +106,7 @@ export const useChangeStore = create<ChangeStore>()((set, get) => ({
 
   loadStock: async (societe) => {
     const { isRealApi } = useDataSourceStore.getState();
-    set({ isLoadingStock: true });
+    set({ isLoadingStock: true, error: null });
 
     if (!isRealApi) {
       set({ stock: MOCK_STOCK, isLoadingStock: false });

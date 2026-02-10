@@ -24,7 +24,7 @@ export const sessionApi = {
   close: (data: CloseSessionRequest) =>
     apiClient.post<ApiResponse<void>>('/sessions/fermer', data),
   getHistory: (params: PaginationParams & { caisseId?: number }) =>
-    apiClient.get<PaginatedResponse<SessionSummary>>('/sessions', {
+    apiClient.get<ApiResponse<SessionSummary[]>>('/sessions', {
       params,
     }),
   getDetails: (sessionId: number) =>

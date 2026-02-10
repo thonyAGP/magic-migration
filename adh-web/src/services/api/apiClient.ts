@@ -39,6 +39,21 @@ apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
+// Response interceptor - normalize raw responses to ApiResponse format
+// Backend returns either raw data or {data, success} wrapper depending on endpoint.
+// This ensures all stores can consistently access response.data.data
+apiClient.interceptors.response.use(
+  (response) => {
+    const d = response.data;
+    if (d && typeof d === 'object' && !Array.isArray(d) && 'success' in d && 'data' in d) {
+      return response; // Already wrapped in ApiResponse format
+    }
+    // Wrap raw response
+    response.data = { data: d, success: true };
+    return response;
+  },
+);
+
 // Response interceptor - normalize errors
 apiClient.interceptors.response.use(
   (response) => response,

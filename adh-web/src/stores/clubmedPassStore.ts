@@ -134,7 +134,7 @@ export const useClubMedPassStore = create<ClubMedPassStore>()((set, get) => ({
 
   loadTransactions: async (numeroPass, limit) => {
     const { isRealApi } = useDataSourceStore.getState();
-    set({ isLoadingTransactions: true });
+    set({ isLoadingTransactions: true, error: null });
 
     if (!isRealApi) {
       const txs = limit ? MOCK_TRANSACTIONS.slice(0, limit) : MOCK_TRANSACTIONS;

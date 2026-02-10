@@ -155,7 +155,7 @@ export const useGarantieStore = create<GarantieStore>()((set, get) => ({
 
   loadOperations: async (garantieId) => {
     const { isRealApi } = useDataSourceStore.getState();
-    set({ isLoadingOperations: true });
+    set({ isLoadingOperations: true, error: null });
 
     if (!isRealApi) {
       set({ operations: MOCK_OPERATIONS.map((op) => ({ ...op, garantieId })), isLoadingOperations: false });
@@ -175,7 +175,7 @@ export const useGarantieStore = create<GarantieStore>()((set, get) => ({
 
   loadSummary: async (societe) => {
     const { isRealApi } = useDataSourceStore.getState();
-    set({ isLoadingSummary: true });
+    set({ isLoadingSummary: true, error: null });
 
     if (!isRealApi) {
       set({ summary: MOCK_SUMMARY, isLoadingSummary: false });

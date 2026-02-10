@@ -162,15 +162,22 @@ export const useSessionStore = create<SessionStore>()(
 
         try {
           const response = await sessionApi.getHistory({ page: _page, pageSize });
-          const items: SessionHistoryItem[] = response.data.items.map((s) => ({
-            id: s.id,
-            caisseId: 0,
-            caisseNumero: '',
+          const raw = (response.data.data ?? []) as Record<string, unknown>[];
+          const formatMagicDate = (d: string, h: string) => {
+            if (!d || d.length < 8) return '';
+            const iso = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
+            if (h && h.length >= 6) return `${iso}T${h.slice(0, 2)}:${h.slice(2, 4)}:${h.slice(4, 6)}`;
+            return iso;
+          };
+          const items: SessionHistoryItem[] = raw.map((s, idx) => ({
+            id: (s.id as number) ?? idx + 1,
+            caisseId: (s.chrono as number) ?? 0,
+            caisseNumero: `C${String((s.chrono as number) ?? 0).padStart(2, '0')}`,
             userId: 0,
-            userLogin: '',
-            dateOuverture: s.dateOuverture,
-            dateFermeture: s.dateFermeture,
-            status: s.dateFermeture ? 'closed' as const : 'open' as const,
+            userLogin: (s.utilisateur as string) ?? '',
+            dateOuverture: formatMagicDate((s.dateDebut as string) ?? '', (s.heureDebut as string) ?? ''),
+            dateFermeture: formatMagicDate((s.dateFin as string) ?? '', (s.heureFin as string) ?? ''),
+            status: (s.estOuverte as boolean) ? 'open' as const : 'closed' as const,
           }));
           set({ history: items, isLoadingHistory: false });
         } catch (error) {
