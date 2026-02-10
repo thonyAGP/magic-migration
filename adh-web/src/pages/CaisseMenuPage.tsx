@@ -71,6 +71,22 @@ function buildMenuItems(sessionStatus: 'open' | 'closed'): CaisseMenuItem[] {
       enabled: isOpen,
       requiresOpenSession: true,
     },
+    {
+      action: 'extrait',
+      label: 'Extrait de compte',
+      icon: 'list',
+      description: 'Consulter et imprimer l\'extrait de compte',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
+    {
+      action: 'change',
+      label: 'Change devises',
+      icon: 'repeat',
+      description: 'Operations de change de devises',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
   ];
 }
 
@@ -84,6 +100,8 @@ const actionRoutes: Record<CaisseMenuAction, string> = {
   parametres: '/caisse/menu',
   vente_gp: '/caisse/vente/GP',
   vente_boutique: '/caisse/vente/Boutique',
+  extrait: '/caisse/extrait',
+  change: '/caisse/change',
 };
 
 export function CaisseMenuPage() {

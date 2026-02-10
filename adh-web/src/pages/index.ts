@@ -4,3 +4,5 @@ export { SessionFermeturePage } from './SessionFermeturePage';
 export { SessionHistoriquePage } from './SessionHistoriquePage';
 export { ReimpressionPage } from './ReimpressionPage';
 export { TransactionPage } from './TransactionPage';
+export { ExtraitPage } from './ExtraitPage';
+export { ChangePage } from './ChangePage';

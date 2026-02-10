@@ -30,7 +30,9 @@ export type CaisseMenuAction =
   | 'consultation'
   | 'parametres'
   | 'vente_gp'
-  | 'vente_boutique';
+  | 'vente_boutique'
+  | 'extrait'
+  | 'change';
 
 export interface CaisseMenuItem {
   action: CaisseMenuAction;

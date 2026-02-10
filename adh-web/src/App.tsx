@@ -8,6 +8,8 @@ import {
   SessionHistoriquePage,
   ReimpressionPage,
   TransactionPage,
+  ExtraitPage,
+  ChangePage,
 } from '@/pages';
 
 function LoginPage() {
@@ -51,18 +53,6 @@ function DashboardPage() {
   );
 }
 
-
-function ExtraitPage() {
-  return (
-    <ScreenLayout>
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Extrait compte</h2>
-        <p className="text-on-surface-muted">DataGrid avec operations (Lot 3)</p>
-      </div>
-    </ScreenLayout>
-  );
-}
-
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   if (!isAuthenticated) return <Navigate to="/login" replace />;
@@ -83,6 +73,7 @@ export function App() {
         <Route path="/caisse/vente/:mode" element={<ProtectedRoute><TransactionPage /></ProtectedRoute>} />
         <Route path="/caisse/vente" element={<Navigate to="/caisse/vente/GP" replace />} />
         <Route path="/caisse/extrait" element={<ProtectedRoute><ExtraitPage /></ProtectedRoute>} />
+        <Route path="/caisse/change" element={<ProtectedRoute><ChangePage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
