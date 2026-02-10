@@ -103,6 +103,22 @@ function buildMenuItems(sessionStatus: 'open' | 'closed'): CaisseMenuItem[] {
       enabled: isOpen,
       requiresOpenSession: true,
     },
+    {
+      action: 'clubmedpass',
+      label: 'Club Med Pass',
+      icon: 'credit-card',
+      description: 'Validation et gestion des cartes Club Med',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
+    {
+      action: 'datacatch',
+      label: 'Saisie client',
+      icon: 'user-plus',
+      description: 'Capture et mise a jour donnees clients',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
   ];
 }
 
@@ -120,6 +136,8 @@ const actionRoutes: Record<CaisseMenuAction, string> = {
   change: '/caisse/change',
   garantie: '/caisse/garantie',
   facture: '/caisse/facture',
+  clubmedpass: '/caisse/pass',
+  datacatch: '/caisse/datacatch',
 };
 
 export function CaisseMenuPage() {

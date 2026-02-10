@@ -34,7 +34,9 @@ export type CaisseMenuAction =
   | 'extrait'
   | 'change'
   | 'garantie'
-  | 'facture';
+  | 'facture'
+  | 'clubmedpass'
+  | 'datacatch';
 
 export interface CaisseMenuItem {
   action: CaisseMenuAction;

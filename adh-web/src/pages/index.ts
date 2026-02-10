@@ -8,3 +8,5 @@ export { ExtraitPage } from './ExtraitPage';
 export { ChangePage } from './ChangePage';
 export { GarantiePage } from './GarantiePage';
 export { FacturePage } from './FacturePage';
+export { PassPage } from './PassPage';
+export { DataCatchPage } from './DataCatchPage';

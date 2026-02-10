@@ -7,3 +7,5 @@ export { useExtraitStore } from './extraitStore';
 export { useChangeStore } from './changeStore';
 export { useGarantieStore } from './garantieStore';
 export { useFactureStore } from './factureStore';
+export { useClubMedPassStore } from './clubmedPassStore';
+export { useDataCatchStore } from './datacatchStore';

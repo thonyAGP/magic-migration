@@ -9,3 +9,5 @@ export * from './extrait';
 export * from './change';
 export * from './garantie';
 export * from './facture';
+export * from './clubmedpass';
+export * from './datacatch';
