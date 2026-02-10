@@ -7,6 +7,7 @@ import type {
   FusionStep,
 } from '@/types/fusion';
 import { fusionApi } from '@/services/api/endpoints-lot6';
+import { useDataSourceStore } from './dataSourceStore';
 
 interface FusionState {
   comptePrincipal: FusionAccount | null;
@@ -65,25 +66,26 @@ export const useFusionStore = create<FusionStore>()((set, get) => ({
   ...initialState,
 
   searchAccount: async (societe, query) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isSearching: true, error: null });
+
+    if (!isRealApi) {
+      const filtered = MOCK_ACCOUNTS.filter(
+        (a) =>
+          a.nom.toLowerCase().includes(query.toLowerCase()) ||
+          a.prenom.toLowerCase().includes(query.toLowerCase()) ||
+          String(a.codeAdherent).includes(query),
+      );
+      set({ searchResults: filtered, isSearching: false });
+      return;
+    }
+
     try {
       const response = await fusionApi.searchAccount(societe, query);
-      set({ searchResults: response.data.data ?? [] });
+      set({ searchResults: response.data.data ?? [], isSearching: false });
     } catch (e: unknown) {
-      if (import.meta.env.DEV) {
-        const filtered = MOCK_ACCOUNTS.filter(
-          (a) =>
-            a.nom.toLowerCase().includes(query.toLowerCase()) ||
-            a.prenom.toLowerCase().includes(query.toLowerCase()) ||
-            String(a.codeAdherent).includes(query),
-        );
-        set({ searchResults: filtered, error: null });
-        return;
-      }
       const message = e instanceof Error ? e.message : 'Erreur recherche compte';
-      set({ searchResults: [], error: message });
-    } finally {
-      set({ isSearching: false });
+      set({ searchResults: [], error: message, isSearching: false });
     }
   },
 
@@ -100,7 +102,24 @@ export const useFusionStore = create<FusionStore>()((set, get) => ({
     if (!comptePrincipal || !compteSecondaire) {
       return { success: false, error: 'Comptes principal et secondaire requis' };
     }
+
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isValidating: true, error: null });
+
+    if (!isRealApi) {
+      const mockPreview: FusionPreview = {
+        comptePrincipal,
+        compteSecondaire,
+        nbOperationsAFusionner: compteSecondaire.nbTransactions,
+        montantTotal: comptePrincipal.solde + compteSecondaire.solde,
+        garantiesATransferer: compteSecondaire.nbGaranties,
+        conflits: [],
+        avertissements: [],
+      };
+      set({ preview: mockPreview, currentStep: 'preview', isValidating: false });
+      return { success: true };
+    }
+
     try {
       const response = await fusionApi.validate({
         societe,
@@ -109,14 +128,12 @@ export const useFusionStore = create<FusionStore>()((set, get) => ({
         codeAdherentSecondaire: compteSecondaire.codeAdherent,
         filiationSecondaire: compteSecondaire.filiation,
       });
-      set({ preview: response.data.data ?? null, currentStep: 'preview' });
+      set({ preview: response.data.data ?? null, currentStep: 'preview', isValidating: false });
       return { success: true };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Erreur validation fusion';
-      set({ error: message });
+      set({ error: message, isValidating: false });
       return { success: false, error: message };
-    } finally {
-      set({ isValidating: false });
     }
   },
 
@@ -125,7 +142,23 @@ export const useFusionStore = create<FusionStore>()((set, get) => ({
     if (!comptePrincipal || !compteSecondaire) {
       return { success: false, error: 'Comptes principal et secondaire requis' };
     }
+
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isExecuting: true, error: null, currentStep: 'processing' });
+
+    if (!isRealApi) {
+      const mockResult: FusionResult = {
+        success: true,
+        compteFinal: { ...comptePrincipal, solde: comptePrincipal.solde + compteSecondaire.solde, nbTransactions: comptePrincipal.nbTransactions + compteSecondaire.nbTransactions, nbGaranties: comptePrincipal.nbGaranties + compteSecondaire.nbGaranties },
+        nbOperationsFusionnees: compteSecondaire.nbTransactions,
+        nbGarantiesTransferees: compteSecondaire.nbGaranties,
+        message: 'Fusion effectuee avec succes',
+        dateExecution: new Date().toISOString(),
+      };
+      set({ result: mockResult, currentStep: 'result', isExecuting: false });
+      return { success: true };
+    }
+
     try {
       const response = await fusionApi.execute({
         societe,
@@ -142,14 +175,28 @@ export const useFusionStore = create<FusionStore>()((set, get) => ({
       return { success: true };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Erreur execution fusion';
-      set({ error: message, currentStep: 'confirmation' });
+      set({ error: message, currentStep: 'confirmation', isExecuting: false });
       return { success: false, error: message };
-    } finally {
-      set({ isExecuting: false });
     }
   },
 
   pollProgress: async (operationId) => {
+    const { isRealApi } = useDataSourceStore.getState();
+
+    if (!isRealApi) {
+      const { comptePrincipal, compteSecondaire } = get();
+      const mockResult: FusionResult = {
+        success: true,
+        compteFinal: comptePrincipal!,
+        nbOperationsFusionnees: compteSecondaire?.nbTransactions ?? 0,
+        nbGarantiesTransferees: compteSecondaire?.nbGaranties ?? 0,
+        message: 'Fusion effectuee avec succes',
+        dateExecution: new Date().toISOString(),
+      };
+      set({ result: mockResult, currentStep: 'result' });
+      return;
+    }
+
     try {
       const resultResponse = await fusionApi.getResult(operationId);
       set({

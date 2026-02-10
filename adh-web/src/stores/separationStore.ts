@@ -7,6 +7,7 @@ import type {
   SeparationStep,
 } from '@/types/separation';
 import { separationApi } from '@/services/api/endpoints-lot6';
+import { useDataSourceStore } from './dataSourceStore';
 
 interface SeparationState {
   compteSource: SeparationAccount | null;
@@ -65,25 +66,26 @@ export const useSeparationStore = create<SeparationStore>()((set, get) => ({
   ...initialState,
 
   searchAccount: async (societe, query) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isSearching: true, error: null });
+
+    if (!isRealApi) {
+      const filtered = MOCK_ACCOUNTS.filter(
+        (a) =>
+          a.nom.toLowerCase().includes(query.toLowerCase()) ||
+          a.prenom.toLowerCase().includes(query.toLowerCase()) ||
+          String(a.codeAdherent).includes(query),
+      );
+      set({ searchResults: filtered, isSearching: false });
+      return;
+    }
+
     try {
       const response = await separationApi.searchAccount(societe, query);
-      set({ searchResults: response.data.data ?? [] });
+      set({ searchResults: response.data.data ?? [], isSearching: false });
     } catch (e: unknown) {
-      if (import.meta.env.DEV) {
-        const filtered = MOCK_ACCOUNTS.filter(
-          (a) =>
-            a.nom.toLowerCase().includes(query.toLowerCase()) ||
-            a.prenom.toLowerCase().includes(query.toLowerCase()) ||
-            String(a.codeAdherent).includes(query),
-        );
-        set({ searchResults: filtered, error: null });
-        return;
-      }
       const message = e instanceof Error ? e.message : 'Erreur recherche compte';
-      set({ searchResults: [], error: message });
-    } finally {
-      set({ isSearching: false });
+      set({ searchResults: [], error: message, isSearching: false });
     }
   },
 
@@ -100,7 +102,23 @@ export const useSeparationStore = create<SeparationStore>()((set, get) => ({
     if (!compteSource || !compteDestination) {
       return { success: false, error: 'Comptes source et destination requis' };
     }
+
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isValidating: true, error: null });
+
+    if (!isRealApi) {
+      const mockPreview: SeparationPreview = {
+        compteSource,
+        compteDestination,
+        nbOperationsADeplacer: 15,
+        montantADeplacer: 450.00,
+        garantiesImpactees: 0,
+        avertissements: [],
+      };
+      set({ preview: mockPreview, currentStep: 'preview', isValidating: false });
+      return { success: true };
+    }
+
     try {
       const response = await separationApi.validate({
         societe,
@@ -109,14 +127,12 @@ export const useSeparationStore = create<SeparationStore>()((set, get) => ({
         codeAdherentDest: compteDestination.codeAdherent,
         filiationDest: compteDestination.filiation,
       });
-      set({ preview: response.data.data ?? null, currentStep: 'preview' });
+      set({ preview: response.data.data ?? null, currentStep: 'preview', isValidating: false });
       return { success: true };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Erreur validation separation';
-      set({ error: message });
+      set({ error: message, isValidating: false });
       return { success: false, error: message };
-    } finally {
-      set({ isValidating: false });
     }
   },
 
@@ -125,7 +141,24 @@ export const useSeparationStore = create<SeparationStore>()((set, get) => ({
     if (!compteSource || !compteDestination) {
       return { success: false, error: 'Comptes source et destination requis' };
     }
+
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isExecuting: true, error: null, currentStep: 'processing' });
+
+    if (!isRealApi) {
+      const mockResult: SeparationResult = {
+        success: true,
+        compteSource,
+        compteDestination,
+        nbOperationsDeplacees: 15,
+        montantDeplace: 450.00,
+        message: 'Separation effectuee avec succes',
+        dateExecution: new Date().toISOString(),
+      };
+      set({ result: mockResult, currentStep: 'result', isExecuting: false });
+      return { success: true };
+    }
+
     try {
       const response = await separationApi.execute({
         societe,
@@ -142,14 +175,29 @@ export const useSeparationStore = create<SeparationStore>()((set, get) => ({
       return { success: true };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Erreur execution separation';
-      set({ error: message, currentStep: 'confirmation' });
+      set({ error: message, currentStep: 'confirmation', isExecuting: false });
       return { success: false, error: message };
-    } finally {
-      set({ isExecuting: false });
     }
   },
 
   pollProgress: async (operationId) => {
+    const { isRealApi } = useDataSourceStore.getState();
+
+    if (!isRealApi) {
+      const { compteSource, compteDestination } = get();
+      const mockResult: SeparationResult = {
+        success: true,
+        compteSource: compteSource!,
+        compteDestination: compteDestination!,
+        nbOperationsDeplacees: 15,
+        montantDeplace: 450.00,
+        message: 'Separation effectuee avec succes',
+        dateExecution: new Date().toISOString(),
+      };
+      set({ result: mockResult, currentStep: 'result' });
+      return;
+    }
+
     try {
       const resultResponse = await separationApi.getResult(operationId);
       set({

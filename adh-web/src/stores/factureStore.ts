@@ -6,6 +6,7 @@ import type {
   FactureType,
 } from '@/types/facture';
 import { factureApi } from '@/services/api/endpoints-lot4';
+import { useDataSourceStore } from './dataSourceStore';
 
 interface FactureState {
   currentFacture: Facture | null;
@@ -59,6 +60,41 @@ interface FactureActions {
 
 type FactureStore = FactureState & FactureActions;
 
+const MOCK_FACTURE: Facture = {
+  id: 1,
+  reference: 'FAC-2026-0001',
+  societe: 'SOC1',
+  codeAdherent: 1001,
+  filiation: 0,
+  nomAdherent: 'DUPONT Jean',
+  type: 'facture',
+  statut: 'brouillon',
+  dateEmission: '2026-02-10',
+  dateEcheance: '2026-03-10',
+  lignes: [
+    { id: 1, factureId: 1, codeArticle: 'ART01', libelle: 'Prestation spa', quantite: 2, prixUnitaireHT: 50, tauxTVA: 20, montantHT: 100, montantTVA: 20, montantTTC: 120 },
+    { id: 2, factureId: 1, codeArticle: 'ART02', libelle: 'Massage relaxant', quantite: 1, prixUnitaireHT: 80, tauxTVA: 20, montantHT: 80, montantTVA: 16, montantTTC: 96 },
+  ],
+  totalHT: 180,
+  totalTVA: 36,
+  totalTTC: 216,
+  devise: 'EUR',
+  commentaire: '',
+  operateur: 'CAISSIER1',
+};
+
+const MOCK_SEARCH: FactureSearchResult = {
+  factures: [MOCK_FACTURE],
+  total: 1,
+};
+
+const MOCK_SUMMARY: FactureSummary = {
+  totalHT: 180,
+  totalTVA: 36,
+  totalTTC: 216,
+  ventilationTVA: [{ tauxTVA: 20, baseHT: 180, montantTVA: 36 }],
+};
+
 const initialState: FactureState = {
   currentFacture: null,
   searchResults: null,
@@ -76,7 +112,21 @@ export const useFactureStore = create<FactureStore>()((set, get) => ({
   ...initialState,
 
   searchFactures: async (societe, query, dateDebut, dateFin) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isSearching: true, error: null });
+
+    if (!isRealApi) {
+      const filtered = query
+        ? MOCK_SEARCH.factures.filter(
+            (f) =>
+              f.reference.toLowerCase().includes(query.toLowerCase()) ||
+              f.nomAdherent.toLowerCase().includes(query.toLowerCase()),
+          )
+        : MOCK_SEARCH.factures;
+      set({ searchResults: { factures: filtered, total: filtered.length }, isSearching: false });
+      return;
+    }
+
     try {
       const response = await factureApi.search(societe, query, dateDebut, dateFin);
       set({ searchResults: response.data.data ?? null });
@@ -89,7 +139,14 @@ export const useFactureStore = create<FactureStore>()((set, get) => ({
   },
 
   loadFacture: async (id) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isLoadingFacture: true, error: null });
+
+    if (!isRealApi) {
+      set({ currentFacture: { ...MOCK_FACTURE, id }, isLoadingFacture: false });
+      return;
+    }
+
     try {
       const response = await factureApi.getById(id);
       set({ currentFacture: response.data.data ?? null });
@@ -102,7 +159,16 @@ export const useFactureStore = create<FactureStore>()((set, get) => ({
   },
 
   createFacture: async (data) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isSubmitting: true, error: null });
+
+    if (!isRealApi) {
+      const mockId = Date.now();
+      const mockRef = `FAC-2026-${String(mockId).slice(-4)}`;
+      set({ isSubmitting: false });
+      return { success: true, id: mockId, reference: mockRef };
+    }
+
     try {
       const response = await factureApi.create(data);
       const result = response.data.data;
@@ -121,7 +187,20 @@ export const useFactureStore = create<FactureStore>()((set, get) => ({
   },
 
   updateLignes: async (factureId, lignes) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isSubmitting: true, error: null });
+
+    if (!isRealApi) {
+      const mockSummary: FactureSummary = {
+        totalHT: lignes.reduce((sum, l) => sum + l.quantite * l.prixUnitaireHT, 0),
+        totalTVA: lignes.reduce((sum, l) => sum + l.quantite * l.prixUnitaireHT * l.tauxTVA / 100, 0),
+        totalTTC: lignes.reduce((sum, l) => sum + l.quantite * l.prixUnitaireHT * (1 + l.tauxTVA / 100), 0),
+        ventilationTVA: [],
+      };
+      set({ summary: mockSummary, isSubmitting: false });
+      return { success: true };
+    }
+
     try {
       const response = await factureApi.updateLignes(factureId, { lignes });
       set({ summary: response.data.data ?? null });
@@ -139,7 +218,19 @@ export const useFactureStore = create<FactureStore>()((set, get) => ({
   },
 
   validateFacture: async (factureId, commentaire) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isValidating: true, error: null });
+
+    if (!isRealApi) {
+      set((state) => ({
+        currentFacture: state.currentFacture
+          ? { ...state.currentFacture, statut: 'emise' as const }
+          : null,
+        isValidating: false,
+      }));
+      return { success: true };
+    }
+
     try {
       await factureApi.validate(factureId, { commentaire });
       // Reload facture to get updated status
@@ -156,7 +247,19 @@ export const useFactureStore = create<FactureStore>()((set, get) => ({
   },
 
   cancelFacture: async (factureId, motif) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isCancelling: true, error: null });
+
+    if (!isRealApi) {
+      set((state) => ({
+        currentFacture: state.currentFacture
+          ? { ...state.currentFacture, statut: 'annulee' as const }
+          : null,
+        isCancelling: false,
+      }));
+      return { success: true };
+    }
+
     try {
       await factureApi.cancel(factureId, motif);
       // Reload facture to get updated status
@@ -173,7 +276,14 @@ export const useFactureStore = create<FactureStore>()((set, get) => ({
   },
 
   printFacture: async (factureId) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isPrinting: true, error: null });
+
+    if (!isRealApi) {
+      set({ isPrinting: false });
+      return;
+    }
+
     try {
       await factureApi.print(factureId);
     } catch (e: unknown) {

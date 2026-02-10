@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User, LoginCredentials } from '@/types';
+import { useDataSourceStore } from './dataSourceStore';
 
 interface AuthStore {
   user: User | null;
@@ -12,6 +13,14 @@ interface AuthStore {
   setToken: (token: string) => void;
 }
 
+const MOCK_USER: User = {
+  id: 1,
+  login: 'demo',
+  nom: 'Demo',
+  prenom: 'Caissier',
+  role: 'caissier',
+};
+
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
@@ -19,16 +28,28 @@ export const useAuthStore = create<AuthStore>()(
       token: null,
       isAuthenticated: false,
 
-      login: async (_credentials: LoginCredentials) => {
-        // TODO: Call API when ready
-        const mockUser: User = {
-          id: 1,
-          login: _credentials.login,
-          nom: 'Caissier',
-          prenom: 'Test',
-          role: 'caissier',
-        };
-        set({ user: mockUser, token: 'mock-token', isAuthenticated: true });
+      login: async (credentials: LoginCredentials) => {
+        const { isRealApi } = useDataSourceStore.getState();
+
+        if (!isRealApi) {
+          // Mode Mock - retourne un user fictif immediatement
+          set({
+            user: { ...MOCK_USER, login: credentials.login },
+            token: 'mock-token',
+            isAuthenticated: true,
+          });
+          return;
+        }
+
+        // Mode API - TODO: Call real auth API when ready
+        try {
+          // const response = await authApi.login(credentials);
+          // set({ user: response.data.data.user, token: response.data.data.token, isAuthenticated: true });
+          throw new Error('API auth not implemented yet');
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Erreur de connexion';
+          throw new Error(message);
+        }
       },
 
       logout: () => {

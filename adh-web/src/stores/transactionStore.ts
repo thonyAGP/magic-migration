@@ -18,6 +18,7 @@ import {
   MOCK_EDITION_CONFIG,
   MOCK_PRE_CHECK,
 } from '@/fixtures/mock-transaction-catalogs';
+import { useDataSourceStore } from './dataSourceStore';
 
 interface TransactionState {
   // Catalogues (charges au mount)
@@ -101,11 +102,39 @@ const initialState: TransactionState = {
   catalogErrors: [],
 };
 
+// Mock data for gift pass and resort credit
+const MOCK_GIFT_PASS: GiftPassResult = {
+  available: true,
+  balance: 150.00,
+  currency: 'EUR',
+};
+
+const MOCK_RESORT_CREDIT: ResortCreditResult = {
+  available: true,
+  balance: 200.00,
+  currency: 'EUR',
+};
+
 export const useTransactionStore = create<TransactionStore>()((set) => ({
   ...initialState,
 
   loadCatalogs: async () => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isLoadingCatalogs: true, catalogErrors: [] });
+
+    if (!isRealApi) {
+      // Mode Mock - retourne les catalogues fictifs immediatement
+      set({
+        preCheckResult: MOCK_PRE_CHECK,
+        catalogMOP: MOCK_MOP_CATALOG,
+        catalogForfaits: MOCK_FORFAITS,
+        editionConfig: MOCK_EDITION_CONFIG,
+        catalogErrors: [],
+        isLoadingCatalogs: false,
+      });
+      return;
+    }
+
     try {
       const errors: string[] = [];
 
@@ -136,37 +165,16 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
           }),
       ]);
 
-      const state = {
+      set({
         preCheckResult: preCheck.data.data,
         catalogMOP: mop.data.data,
         catalogForfaits: forfaits.data.data,
         editionConfig: edition.data.data,
-      };
-
-      const allEmpty =
-        (!state.catalogMOP || state.catalogMOP.length === 0) &&
-        (!state.catalogForfaits || state.catalogForfaits.length === 0) &&
-        !state.editionConfig;
-
-      if (allEmpty && errors.length > 0) {
-        set({
-          preCheckResult: MOCK_PRE_CHECK,
-          catalogMOP: MOCK_MOP_CATALOG,
-          catalogForfaits: MOCK_FORFAITS,
-          editionConfig: MOCK_EDITION_CONFIG,
-          catalogErrors: [
-            'Mode dev: donnees mock chargees (backend indisponible)',
-          ],
-        });
-      } else {
-        set({
-          preCheckResult: state.preCheckResult,
-          catalogMOP: state.catalogMOP,
-          catalogForfaits: state.catalogForfaits,
-          editionConfig: state.editionConfig,
-          catalogErrors: errors,
-        });
-      }
+        catalogErrors: errors,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erreur chargement catalogues';
+      set({ catalogErrors: [message] });
     } finally {
       set({ isLoadingCatalogs: false });
     }
@@ -201,6 +209,14 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
     })),
 
   checkGiftPass: async (txId, societe, compte, filiation) => {
+    const { isRealApi } = useDataSourceStore.getState();
+
+    if (!isRealApi) {
+      // Mode Mock
+      set({ giftPassBalance: MOCK_GIFT_PASS });
+      return;
+    }
+
     try {
       const response = await transactionLot2Api.checkGiftPass(txId, {
         societe,
@@ -208,12 +224,21 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
         filiation,
       });
       set({ giftPassBalance: response.data.data });
-    } catch {
-      set({ giftPassBalance: null });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erreur vérification Gift Pass';
+      set({ giftPassBalance: null, tpeError: message });
     }
   },
 
   checkResortCredit: async (txId, societe, compte, filiation) => {
+    const { isRealApi } = useDataSourceStore.getState();
+
+    if (!isRealApi) {
+      // Mode Mock
+      set({ resortCreditBalance: MOCK_RESORT_CREDIT });
+      return;
+    }
+
     try {
       const response = await transactionLot2Api.checkResortCredit(txId, {
         societe,
@@ -221,13 +246,22 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
         filiation,
       });
       set({ resortCreditBalance: response.data.data });
-    } catch {
-      set({ resortCreditBalance: null });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erreur vérification Resort Credit';
+      set({ resortCreditBalance: null, tpeError: message });
     }
   },
 
   submitTransaction: async (txId, data) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isSubmitting: true, tpeError: null });
+
+    if (!isRealApi) {
+      // Mode Mock - simule un succes
+      set({ isSubmitting: false });
+      return { success: true };
+    }
+
     try {
       await transactionLot2Api.complete(txId, data);
       return { success: true };
@@ -242,7 +276,15 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
   },
 
   recoverTPE: async (txId, newMOP) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isSubmitting: true, tpeError: null });
+
+    if (!isRealApi) {
+      // Mode Mock - simule recovery
+      set({ selectedMOP: newMOP, isSubmitting: false });
+      return;
+    }
+
     try {
       await transactionLot2Api.recoverTPE(txId, { newMOP });
       set({ selectedMOP: newMOP });

@@ -2,6 +2,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useSessionStore } from '@/stores/sessionStore';
 import { Menu, LogOut, User } from 'lucide-react';
 import { useUiStore } from '@/stores/uiStore';
+import { DataSourceToggle } from '@/components/ui/DataSourceToggle';
 
 export function HeaderBar() {
   const user = useAuthStore((s) => s.user);
@@ -27,6 +28,7 @@ export function HeaderBar() {
         )}
       </div>
       <div className="flex items-center gap-3">
+        <DataSourceToggle />
         {user && (
           <span className="flex items-center gap-1 text-xs">
             <User className="w-4 h-4" />

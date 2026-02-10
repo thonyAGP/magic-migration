@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import type { Session, SessionStatus, DeviseSession, SessionHistoryItem } from '@/types';
 import { sessionApi } from '@/services/api/endpoints';
 import type { OpenSessionRequest, CloseSessionRequest } from '@/services/api/types';
+import { useDataSourceStore } from './dataSourceStore';
 
 interface SessionStore {
   currentSession: Session | null;
@@ -17,6 +18,38 @@ interface SessionStore {
   closeSession: (data: CloseSessionRequest) => Promise<void>;
   loadHistory: (page?: number, pageSize?: number) => Promise<void>;
 }
+
+const MOCK_SESSION: Session = {
+  id: 1,
+  caisseId: 1,
+  userId: 1,
+  dateOuverture: new Date().toISOString(),
+  status: 'open',
+  devises: [],
+};
+
+const MOCK_HISTORY: SessionHistoryItem[] = [
+  {
+    id: 1,
+    caisseId: 1,
+    caisseNumero: 'C01',
+    userId: 1,
+    userLogin: 'demo',
+    dateOuverture: '2026-02-10T08:00:00Z',
+    dateFermeture: '2026-02-10T18:00:00Z',
+    status: 'closed',
+  },
+  {
+    id: 2,
+    caisseId: 1,
+    caisseNumero: 'C01',
+    userId: 1,
+    userLogin: 'demo',
+    dateOuverture: '2026-02-09T08:00:00Z',
+    dateFermeture: '2026-02-09T18:00:00Z',
+    status: 'closed',
+  },
+];
 
 export const useSessionStore = create<SessionStore>()(
   persist(
@@ -53,6 +86,20 @@ export const useSessionStore = create<SessionStore>()(
       clearSession: () => set({ currentSession: null, status: 'closed' }),
 
       openSession: async (data) => {
+        const { isRealApi } = useDataSourceStore.getState();
+
+        if (!isRealApi) {
+          // Mode Mock - retourne une session fictive immediatement
+          const session: Session = {
+            ...MOCK_SESSION,
+            caisseId: data.caisseId,
+            userId: data.userId,
+            dateOuverture: new Date().toISOString(),
+          };
+          set({ currentSession: session, status: 'open' });
+          return session;
+        }
+
         set((state) => ({
           ...state,
           status: 'opening',
@@ -79,6 +126,14 @@ export const useSessionStore = create<SessionStore>()(
       },
 
       closeSession: async (data) => {
+        const { isRealApi } = useDataSourceStore.getState();
+
+        if (!isRealApi) {
+          // Mode Mock - ferme la session immediatement
+          set({ currentSession: null, status: 'closed' });
+          return;
+        }
+
         set((state) => ({
           ...state,
           status: 'closing',
@@ -95,10 +150,18 @@ export const useSessionStore = create<SessionStore>()(
         }
       },
 
-      loadHistory: async (page = 1, pageSize = 20) => {
+      loadHistory: async (_page = 1, pageSize = 20) => {
+        const { isRealApi } = useDataSourceStore.getState();
         set({ isLoadingHistory: true });
+
+        if (!isRealApi) {
+          // Mode Mock - retourne un historique fictif
+          set({ history: MOCK_HISTORY.slice(0, pageSize), isLoadingHistory: false });
+          return;
+        }
+
         try {
-          const response = await sessionApi.getHistory({ page, pageSize });
+          const response = await sessionApi.getHistory({ page: _page, pageSize });
           const items: SessionHistoryItem[] = response.data.items.map((s) => ({
             id: s.id,
             caisseId: 0,
@@ -109,9 +172,11 @@ export const useSessionStore = create<SessionStore>()(
             dateFermeture: s.dateFermeture,
             status: s.dateFermeture ? 'closed' as const : 'open' as const,
           }));
-          set({ history: items });
-        } finally {
+          set({ history: items, isLoadingHistory: false });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Erreur chargement historique';
           set({ isLoadingHistory: false });
+          throw new Error(message);
         }
       },
     }),

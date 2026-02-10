@@ -6,6 +6,7 @@ import type {
   PassSummary,
 } from '@/types/clubmedpass';
 import { passApi } from '@/services/api/endpoints-lot5';
+import { useDataSourceStore } from './dataSourceStore';
 
 interface ClubMedPassState {
   currentPass: ClubMedPass | null;
@@ -53,6 +54,26 @@ const MOCK_PASS: ClubMedPass = {
   derniereUtilisation: '2026-02-09',
 };
 
+const MOCK_TRANSACTIONS: PassTransaction[] = [
+  { id: 1, passId: 1, numeroPass: 'CM-2026-001234', date: '2026-02-09', heure: '14:30', montant: 45.00, type: 'debit', libelle: 'Achat boutique', operateur: 'USR001' },
+  { id: 2, passId: 1, numeroPass: 'CM-2026-001234', date: '2026-02-08', heure: '10:15', montant: 120.00, type: 'credit', libelle: 'Rechargement', operateur: 'USR002' },
+];
+
+const MOCK_VALIDATION: PassValidationResult = {
+  isValid: true,
+  soldeDisponible: 250.00,
+  peutTraiter: true,
+  raison: null,
+  limitJournaliereRestante: 455.00,
+  limitHebdomadaireRestante: 1750.00,
+};
+
+const MOCK_SUMMARY: PassSummary = {
+  nbPassActifs: 150,
+  soldeTotal: 37500.00,
+  nbTransactionsJour: 23,
+};
+
 const initialState: ClubMedPassState = {
   currentPass: null,
   transactions: [],
@@ -69,75 +90,103 @@ export const useClubMedPassStore = create<ClubMedPassStore>()((set, get) => ({
   ...initialState,
 
   validatePass: async (numeroPass, montantTransaction, societe) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isValidating: true, error: null });
+
+    if (!isRealApi) {
+      set({ validationResult: MOCK_VALIDATION, isValidating: false });
+      return { success: true };
+    }
+
     try {
       const response = await passApi.validate({
         numeroPass,
         montantTransaction,
         societe,
       });
-      set({ validationResult: response.data.data ?? null });
+      set({ validationResult: response.data.data ?? null, isValidating: false });
       return { success: true };
     } catch (e: unknown) {
       const message =
         e instanceof Error ? e.message : 'Erreur validation pass';
-      set({ error: message });
+      set({ error: message, isValidating: false });
       return { success: false, error: message };
-    } finally {
-      set({ isValidating: false });
     }
   },
 
   loadPass: async (numeroPass) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isLoadingPass: true, error: null });
+
+    if (!isRealApi) {
+      set({ currentPass: { ...MOCK_PASS, numeroPass }, isLoadingPass: false });
+      return;
+    }
+
     try {
       const response = await passApi.getByNumber(numeroPass);
-      const pass = response.data.data;
-      set({ currentPass: pass ?? MOCK_PASS });
-    } catch {
-      set({ currentPass: MOCK_PASS, error: 'Mode dev: pass mock charge' });
-    } finally {
-      set({ isLoadingPass: false });
+      set({ currentPass: response.data.data ?? null, isLoadingPass: false });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur chargement pass';
+      set({ error: message, isLoadingPass: false });
     }
   },
 
   loadTransactions: async (numeroPass, limit) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isLoadingTransactions: true });
+
+    if (!isRealApi) {
+      const txs = limit ? MOCK_TRANSACTIONS.slice(0, limit) : MOCK_TRANSACTIONS;
+      set({ transactions: txs, isLoadingTransactions: false });
+      return;
+    }
+
     try {
       const response = await passApi.getTransactions(numeroPass, limit);
-      set({ transactions: response.data.data ?? [] });
-    } catch {
-      set({ transactions: [] });
-    } finally {
-      set({ isLoadingTransactions: false });
+      set({ transactions: response.data.data ?? [], isLoadingTransactions: false });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur chargement transactions';
+      set({ error: message, transactions: [], isLoadingTransactions: false });
     }
   },
 
   scanCard: async (numeroPass, societe) => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isScanning: true, error: null });
+
+    if (!isRealApi) {
+      set({ currentPass: { ...MOCK_PASS, numeroPass, societe }, transactions: MOCK_TRANSACTIONS, isScanning: false });
+      return { success: true };
+    }
+
     try {
       const response = await passApi.scan({ numeroPass, societe });
       const pass = response.data.data;
-      set({ currentPass: pass ?? MOCK_PASS });
-      // Load transactions after scan
-      const state = get();
-      await state.loadTransactions(numeroPass);
+      set({ currentPass: pass ?? null, isScanning: false });
+      await get().loadTransactions(numeroPass);
       return { success: true };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Erreur scan pass';
-      set({ currentPass: MOCK_PASS, error: message });
+      set({ error: message, isScanning: false });
       return { success: false, error: message };
-    } finally {
-      set({ isScanning: false });
     }
   },
 
   loadSummary: async (societe) => {
+    const { isRealApi } = useDataSourceStore.getState();
+
+    if (!isRealApi) {
+      set({ summary: MOCK_SUMMARY });
+      return;
+    }
+
     try {
       const response = await passApi.getSummary(societe);
       set({ summary: response.data.data ?? null });
-    } catch {
-      set({ summary: null });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur chargement resume';
+      set({ error: message, summary: null });
     }
   },
 

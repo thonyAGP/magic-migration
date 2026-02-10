@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { DashboardStats, DailyActivity } from '@/types/notification';
 import { dashboardApi } from '@/services/api/endpoints-lot7';
+import { useDataSourceStore } from './dataSourceStore';
 
 const MOCK_STATS: DashboardStats = {
   sessionsAujourdhui: 3,
@@ -53,36 +54,38 @@ export const useDashboardStore = create<DashboardStore>()((set, get) => ({
   ...initialState,
 
   loadStats: async () => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isLoading: true, error: null });
+
+    if (!isRealApi) {
+      set({ stats: MOCK_STATS, isLoading: false });
+      return;
+    }
+
     try {
       const response = await dashboardApi.getStats();
-      set({ stats: response.data.data ?? null });
+      set({ stats: response.data.data ?? null, isLoading: false });
     } catch (e: unknown) {
-      if (import.meta.env.DEV) {
-        set({ stats: MOCK_STATS, error: null });
-        return;
-      }
       const message = e instanceof Error ? e.message : 'Erreur chargement statistiques';
-      set({ error: message });
-    } finally {
-      set({ isLoading: false });
+      set({ error: message, isLoading: false });
     }
   },
 
   loadDailyActivity: async () => {
+    const { isRealApi } = useDataSourceStore.getState();
     set({ isLoading: true, error: null });
+
+    if (!isRealApi) {
+      set({ dailyActivity: MOCK_DAILY_ACTIVITY, isLoading: false });
+      return;
+    }
+
     try {
       const response = await dashboardApi.getDailyActivity();
-      set({ dailyActivity: response.data.data ?? [] });
+      set({ dailyActivity: response.data.data ?? [], isLoading: false });
     } catch (e: unknown) {
-      if (import.meta.env.DEV) {
-        set({ dailyActivity: MOCK_DAILY_ACTIVITY, error: null });
-        return;
-      }
       const message = e instanceof Error ? e.message : 'Erreur chargement activite';
-      set({ error: message });
-    } finally {
-      set({ isLoading: false });
+      set({ error: message, isLoading: false });
     }
   },
 
