@@ -8,10 +8,11 @@ import {
   FacturePreview,
   FactureSearchPanel,
 } from '@/components/caisse/facture';
+import { EmailSendDialog } from '@/components/caisse/dialogs';
 import { useFactureStore } from '@/stores/factureStore';
 import { useAuthStore } from '@/stores';
 import { Button, Badge } from '@/components/ui';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
 import type { Facture, FactureLigne, FactureSummary, FactureTVALine } from '@/types/facture';
 import type { FactureCreateFormData, FactureLigneFormData } from '@/components/caisse/facture/types';
 
@@ -60,6 +61,7 @@ export function FacturePage() {
   const [phase, setPhase] = useState<Phase>('search');
   const [lignes, setLignes] = useState<FactureLigne[]>([]);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
   useEffect(() => {
     return () => reset();
@@ -299,6 +301,13 @@ export function FacturePage() {
                 <Button variant="outline" onClick={handlePreview}>
                   Apercu
                 </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setEmailDialogOpen(true)}
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Email
+                </Button>
                 {currentFacture.statut === 'brouillon' && (
                   <Button
                     onClick={handleValidate}
@@ -326,6 +335,14 @@ export function FacturePage() {
         onClose={() => setPreviewOpen(false)}
         onPrint={handlePrint}
         isPrinting={isPrinting}
+      />
+
+      <EmailSendDialog
+        open={emailDialogOpen}
+        onClose={() => setEmailDialogOpen(false)}
+        documentType="facture"
+        documentId={currentFacture ? String(currentFacture.id) : ''}
+        defaultEmail={currentFacture?.client?.email}
       />
     </ScreenLayout>
   );

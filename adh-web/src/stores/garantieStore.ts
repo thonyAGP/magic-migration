@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type {
   Garantie,
+  GarantieArticle,
   GarantieOperation,
   GarantieSummaryData,
   GarantieSearchResult,
@@ -13,6 +14,7 @@ interface GarantieState {
   operations: GarantieOperation[];
   summary: GarantieSummaryData | null;
   searchResults: GarantieSearchResult | null;
+  selectedArticle: GarantieArticle | null;
   isSearching: boolean;
   isLoadingGarantie: boolean;
   isLoadingOperations: boolean;
@@ -50,6 +52,10 @@ interface GarantieActions {
     garantieId: number,
     motif: string,
   ) => Promise<{ success: boolean; error?: string }>;
+  setSelectedArticle: (article: GarantieArticle | null) => void;
+  addArticle: (article: Omit<GarantieArticle, 'id' | 'garantieId' | 'etat'>) => void;
+  modifyArticle: (updated: GarantieArticle) => void;
+  removeArticle: (articleId: number) => void;
   reset: () => void;
 }
 
@@ -96,6 +102,7 @@ const initialState: GarantieState = {
   operations: [],
   summary: null,
   searchResults: null,
+  selectedArticle: null,
   isSearching: false,
   isLoadingGarantie: false,
   isLoadingOperations: false,
@@ -324,6 +331,54 @@ export const useGarantieStore = create<GarantieStore>()((set, get) => ({
     } finally {
       set({ isCancelling: false });
     }
+  },
+
+  setSelectedArticle: (article) => set({ selectedArticle: article }),
+
+  addArticle: (article) => {
+    set((state) => {
+      if (!state.currentGarantie) return state;
+      const newArticle: GarantieArticle = {
+        ...article,
+        id: Date.now(),
+        garantieId: state.currentGarantie.id,
+        etat: 'depose',
+      };
+      return {
+        currentGarantie: {
+          ...state.currentGarantie,
+          articles: [...state.currentGarantie.articles, newArticle],
+        },
+      };
+    });
+  },
+
+  modifyArticle: (updated) => {
+    set((state) => {
+      if (!state.currentGarantie) return state;
+      return {
+        currentGarantie: {
+          ...state.currentGarantie,
+          articles: state.currentGarantie.articles.map((a) =>
+            a.id === updated.id ? updated : a,
+          ),
+        },
+        selectedArticle: state.selectedArticle?.id === updated.id ? updated : state.selectedArticle,
+      };
+    });
+  },
+
+  removeArticle: (articleId) => {
+    set((state) => {
+      if (!state.currentGarantie) return state;
+      return {
+        currentGarantie: {
+          ...state.currentGarantie,
+          articles: state.currentGarantie.articles.filter((a) => a.id !== articleId),
+        },
+        selectedArticle: state.selectedArticle?.id === articleId ? null : state.selectedArticle,
+      };
+    });
   },
 
   reset: () => set({ ...initialState }),

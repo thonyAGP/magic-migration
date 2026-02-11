@@ -15,9 +15,9 @@ vi.mock('@/services/api/endpoints-lot3', () => ({
 // --- Fixtures ---
 
 const mockTransactions: ExtraitTransaction[] = [
-  { id: 1, date: '2026-02-01', libelle: 'Vente Standard', debit: 0, credit: 50, solde: 50, codeService: 'ADH', codeImputation: 'VTE', giftPassFlag: false },
-  { id: 2, date: '2026-02-02', libelle: 'Retrait GiftPass', debit: 30, credit: 0, solde: 20, codeService: 'GP', codeImputation: 'GP', giftPassFlag: true },
-  { id: 3, date: '2026-02-03', libelle: 'Paiement carte', debit: 0, credit: 100, solde: 120, codeService: 'ADH', codeImputation: 'CB', giftPassFlag: false },
+  { id: 1, date: '2026-02-01', heure: '10:00', libelle: 'Vente Standard', debit: 0, credit: 50, solde: 50, codeService: 'ADH', codeImputation: 'VTE', giftPassFlag: false },
+  { id: 2, date: '2026-02-02', heure: '11:30', libelle: 'Retrait GiftPass', debit: 30, credit: 0, solde: 20, codeService: 'GP', codeImputation: 'GP', giftPassFlag: true },
+  { id: 3, date: '2026-02-03', heure: '15:45', libelle: 'Paiement carte', debit: 0, credit: 100, solde: 120, codeService: 'ADH', codeImputation: 'CB', giftPassFlag: false },
 ];
 
 const mockSummary: ExtraitSummary = {

@@ -1,9 +1,33 @@
+import { OperationRetryDialog } from './OperationRetryDialog';
 import type { SeparationProcessingProps } from './types';
 
 export function SeparationProcessing({
   progress,
   isProcessing,
+  failedStep,
+  onRetry,
+  onMarkDone,
+  onSkip,
 }: SeparationProcessingProps) {
+  if (failedStep && onRetry && onMarkDone && onSkip) {
+    return (
+      <>
+        <div className="flex flex-col items-center justify-center py-12 text-on-surface-muted text-sm">
+          Operation interrompue
+        </div>
+        <OperationRetryDialog
+          open={true}
+          onClose={onSkip}
+          operationName={failedStep.name}
+          errorMessage={failedStep.error}
+          onRetry={onRetry}
+          onMarkDone={onMarkDone}
+          onSkip={onSkip}
+        />
+      </>
+    );
+  }
+
   if (!isProcessing && !progress) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-on-surface-muted text-sm">

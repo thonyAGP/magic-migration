@@ -29,7 +29,7 @@ describe('AddressForm', () => {
     expect(screen.getByPlaceholderText("Complement d'adresse")).toBeDefined();
     expect(screen.getByPlaceholderText('Code postal')).toBeDefined();
     expect(screen.getByPlaceholderText('Ville')).toBeDefined();
-    expect(screen.getByPlaceholderText('Pays')).toBeDefined();
+    expect(screen.getByText('Pays')).toBeDefined();
     expect(screen.getByPlaceholderText('Telephone')).toBeDefined();
     expect(screen.getByPlaceholderText('Email')).toBeDefined();
   });
@@ -86,7 +86,7 @@ describe('AddressForm', () => {
       <AddressForm onSave={vi.fn()} onBack={vi.fn()} />,
     );
 
-    const paysInput = screen.getByPlaceholderText('Pays') as HTMLInputElement;
-    expect(paysInput.value).toBe('France');
+    // Combobox displays "France (FR)" when pays=France
+    expect(screen.getByText('France (FR)')).toBeDefined();
   });
 });

@@ -4,11 +4,16 @@ import type {
   PassTransaction,
   PassValidationResult,
   PassSummary,
+  PassCreationData,
+  PassOppositionData,
 } from '@/types/clubmedpass';
 import type {
   CustomerSearchResult,
   DataCatchSession,
   DataCatchSummary,
+  GuestData,
+  VillageConfig,
+  SystemStatus,
 } from '@/types/datacatch';
 import type {
   ValidatePassRequest,
@@ -37,6 +42,14 @@ export const passApi = {
   getSummary: (societe: string) =>
     apiClient.get<ApiResponse<PassSummary>>(
       `/pass/summary?societe=${societe}`,
+    ),
+  create: (data: PassCreationData) =>
+    apiClient.post<ApiResponse<ClubMedPass>>('/pass', data),
+  oppose: (data: PassOppositionData) =>
+    apiClient.post<ApiResponse<void>>('/pass/oppose', data),
+  delete: (passId: string) =>
+    apiClient.delete<ApiResponse<void>>(
+      `/pass/${encodeURIComponent(passId)}`,
     ),
 };
 
@@ -89,4 +102,29 @@ export const datacatchApi = {
     apiClient.get<ApiResponse<DataCatchSummary>>(
       `/datacatch/summary?societe=${societe}`,
     ),
+  // Checkout endpoints (IDE 8)
+  getGuest: (guestId: string) =>
+    apiClient.get<ApiResponse<GuestData>>(
+      `/datacatch/guest/${encodeURIComponent(guestId)}`,
+    ),
+  acceptCheckout: (guestId: string) =>
+    apiClient.post<ApiResponse<void>>(
+      `/datacatch/guest/${encodeURIComponent(guestId)}/checkout/accept`,
+      {},
+    ),
+  declineCheckout: (guestId: string, reason: string) =>
+    apiClient.post<ApiResponse<void>>(
+      `/datacatch/guest/${encodeURIComponent(guestId)}/checkout/decline`,
+      { reason },
+    ),
+  cancelPass: (guestId: string) =>
+    apiClient.post<ApiResponse<void>>(
+      `/datacatch/guest/${encodeURIComponent(guestId)}/pass/cancel`,
+      {},
+    ),
+  // Village config endpoints (IDE 9)
+  getVillageConfig: () =>
+    apiClient.get<ApiResponse<VillageConfig>>('/datacatch/village/config'),
+  getSystemStatus: () =>
+    apiClient.get<ApiResponse<SystemStatus>>('/datacatch/system/status'),
 };

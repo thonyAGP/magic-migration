@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Button, Input, Label } from '@/components/ui';
 import { personalInfoSchema } from './schemas';
+import { t } from '@/i18n';
 import type { PersonalInfoFormProps } from './types';
 
 const CIVILITE_OPTIONS = ['M', 'Mme', 'Autre'] as const;
@@ -73,11 +74,11 @@ export function PersonalInfoForm({
 
   return (
     <div className="space-y-4 rounded-md border border-border p-4">
-      <h3 className="text-sm font-semibold">Informations personnelles</h3>
+      <h3 className="text-sm font-semibold">{t('datacatch.personalInfo.title')}</h3>
 
       {/* Civilite */}
       <div className="space-y-1.5">
-        <Label className="text-sm">Civilite</Label>
+        <Label className="text-sm">{t('datacatch.personalInfo.civilite')}</Label>
         <div className="flex gap-3">
           {CIVILITE_OPTIONS.map((option) => (
             <label key={option} className="flex items-center gap-1.5 text-sm">
@@ -99,22 +100,22 @@ export function PersonalInfoForm({
 
       {/* Nom */}
       <div className="space-y-1.5">
-        <Label className="text-sm">Nom</Label>
+        <Label className="text-sm">{t('datacatch.personalInfo.nom')}</Label>
         <Input
           value={nom}
           onChange={(e) => setNom(e.target.value)}
-          placeholder="Nom"
+          placeholder={t('datacatch.personalInfo.placeholderNom')}
         />
         {errors.nom && <p className="text-xs text-danger">{errors.nom}</p>}
       </div>
 
       {/* Prenom */}
       <div className="space-y-1.5">
-        <Label className="text-sm">Prenom</Label>
+        <Label className="text-sm">{t('datacatch.personalInfo.prenom')}</Label>
         <Input
           value={prenom}
           onChange={(e) => setPrenom(e.target.value)}
-          placeholder="Prenom"
+          placeholder={t('datacatch.personalInfo.placeholderPrenom')}
         />
         {errors.prenom && (
           <p className="text-xs text-danger">{errors.prenom}</p>
@@ -123,7 +124,7 @@ export function PersonalInfoForm({
 
       {/* Date de naissance */}
       <div className="space-y-1.5">
-        <Label className="text-sm">Date de naissance</Label>
+        <Label className="text-sm">{t('datacatch.personalInfo.dateNaissance')}</Label>
         <Input
           type="date"
           value={dateNaissance}
@@ -136,11 +137,11 @@ export function PersonalInfoForm({
 
       {/* Nationalite */}
       <div className="space-y-1.5">
-        <Label className="text-sm">Nationalite</Label>
+        <Label className="text-sm">{t('datacatch.personalInfo.nationalite')}</Label>
         <Input
           value={nationalite}
           onChange={(e) => setNationalite(e.target.value)}
-          placeholder="Nationalite"
+          placeholder={t('datacatch.personalInfo.placeholderNationalite')}
         />
         {errors.nationalite && (
           <p className="text-xs text-danger">{errors.nationalite}</p>
@@ -149,7 +150,7 @@ export function PersonalInfoForm({
 
       {/* Type identite */}
       <div className="space-y-1.5">
-        <Label className="text-sm">Type identite</Label>
+        <Label className="text-sm">{t('datacatch.personalInfo.typeIdentite')}</Label>
         <select
           value={typeIdentite}
           onChange={(e) =>
@@ -172,11 +173,11 @@ export function PersonalInfoForm({
 
       {/* Numero identite */}
       <div className="space-y-1.5">
-        <Label className="text-sm">Numero identite</Label>
+        <Label className="text-sm">{t('datacatch.personalInfo.numeroIdentite')}</Label>
         <Input
           value={numeroIdentite}
           onChange={(e) => setNumeroIdentite(e.target.value)}
-          placeholder="Numero d'identite"
+          placeholder={t('datacatch.personalInfo.placeholderNumeroIdentite')}
         />
         {errors.numeroIdentite && (
           <p className="text-xs text-danger">{errors.numeroIdentite}</p>
@@ -186,10 +187,10 @@ export function PersonalInfoForm({
       {/* Buttons */}
       <div className="flex justify-between pt-2">
         <Button variant="outline" onClick={onBack}>
-          Retour
+          {t('datacatch.common.back')}
         </Button>
         <Button onClick={handleSubmit} disabled={isSaving}>
-          {isSaving ? 'Enregistrement...' : 'Suivant'}
+          {isSaving ? t('datacatch.common.saving') : t('datacatch.common.next')}
         </Button>
       </div>
     </div>

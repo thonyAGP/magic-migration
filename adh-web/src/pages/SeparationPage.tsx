@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
+import { AlertTriangle } from 'lucide-react';
 import {
   SeparationAccountSelector,
   SeparationPreviewCard,
@@ -26,17 +27,27 @@ export function SeparationPage() {
   const isValidating = useSeparationStore((s) => s.isValidating);
   const isExecuting = useSeparationStore((s) => s.isExecuting);
   const error = useSeparationStore((s) => s.error);
+  const prerequisites = useSeparationStore((s) => s.prerequisites);
+  const filiations = useSeparationStore((s) => s.filiations);
+  const failedStep = useSeparationStore((s) => s.failedStep);
   const searchAccount = useSeparationStore((s) => s.searchAccount);
   const selectSource = useSeparationStore((s) => s.selectSource);
   const selectDestination = useSeparationStore((s) => s.selectDestination);
   const validateSeparation = useSeparationStore((s) => s.validateSeparation);
   const executeSeparation = useSeparationStore((s) => s.executeSeparation);
+  const checkPrerequisites = useSeparationStore((s) => s.checkPrerequisites);
+  const retryFailedStep = useSeparationStore((s) => s.retryFailedStep);
+  const markFailedStepDone = useSeparationStore((s) => s.markFailedStepDone);
+  const skipFailedStep = useSeparationStore((s) => s.skipFailedStep);
   const setStep = useSeparationStore((s) => s.setStep);
   const reset = useSeparationStore((s) => s.reset);
 
+  const [dismissedWarnings, setDismissedWarnings] = useState(false);
+
   useEffect(() => {
+    checkPrerequisites();
     return () => reset();
-  }, [reset]);
+  }, [checkPrerequisites, reset]);
 
   const handleBack = () => {
     if (currentStep === 'selection') {
@@ -57,6 +68,17 @@ export function SeparationPage() {
     const operateur = user?.login ?? 'unknown';
     await executeSeparation(societe, operateur);
   };
+
+  const handleRetry = async () => {
+    retryFailedStep();
+    const operateur = user?.login ?? 'unknown';
+    await executeSeparation(societe, operateur);
+  };
+
+  const hasWarnings =
+    prerequisites &&
+    prerequisites.warnings.length > 0 &&
+    !dismissedWarnings;
 
   const stepLabel: Record<string, string> = {
     selection: 'Selectionner les comptes source et destination',
@@ -83,6 +105,26 @@ export function SeparationPage() {
           )}
         </div>
 
+        {hasWarnings && (
+          <div className="bg-warning/10 border border-warning/30 rounded-md px-4 py-3 space-y-2">
+            <div className="flex items-center gap-2 text-warning font-medium text-sm">
+              <AlertTriangle className="h-4 w-4" />
+              Alertes pre-separation
+            </div>
+            <ul className="list-disc list-inside text-sm text-warning space-y-1">
+              {prerequisites.warnings.map((w, i) => (
+                <li key={i}>{w}</li>
+              ))}
+            </ul>
+            <button
+              onClick={() => setDismissedWarnings(true)}
+              className="text-xs text-warning underline hover:no-underline mt-1"
+            >
+              Continuer malgre les alertes
+            </button>
+          </div>
+        )}
+
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
             {error}
@@ -100,6 +142,7 @@ export function SeparationPage() {
                 selectedAccount={compteSource}
                 excludeAccount={compteDestination}
                 isSearching={isSearching}
+                filiations={compteSource ? filiations : []}
               />
               <SeparationAccountSelector
                 label="Compte destination"
@@ -143,7 +186,14 @@ export function SeparationPage() {
         )}
 
         {currentStep === 'processing' && (
-          <SeparationProcessing progress={progress} isProcessing={isExecuting} />
+          <SeparationProcessing
+            progress={progress}
+            isProcessing={isExecuting}
+            failedStep={failedStep}
+            onRetry={handleRetry}
+            onMarkDone={markFailedStepDone}
+            onSkip={skipFailedStep}
+          />
         )}
 
         {currentStep === 'result' && result && (

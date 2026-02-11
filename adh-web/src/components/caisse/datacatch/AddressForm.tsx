@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
-import { Button, Input, Label } from '@/components/ui';
+import { useState, useCallback, useMemo } from 'react';
+import { Button, Input, Label, Combobox } from '@/components/ui';
 import { addressSchema } from './schemas';
+import { COUNTRIES } from '@/data/countries';
 import type { AddressFormProps } from './types';
 
 export function AddressForm({
@@ -17,6 +18,15 @@ export function AddressForm({
   const [telephone, setTelephone] = useState(initialData?.telephone ?? '');
   const [email, setEmail] = useState(initialData?.email ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const countryOptions = useMemo(
+    () =>
+      COUNTRIES.map((c) => ({
+        value: c.name,
+        label: `${c.name} (${c.code})`,
+      })),
+    [],
+  );
 
   const handleSubmit = useCallback(() => {
     const data = {
@@ -100,10 +110,14 @@ export function AddressForm({
       {/* Pays */}
       <div className="space-y-1.5">
         <Label className="text-sm">Pays</Label>
-        <Input
+        <Combobox
+          options={countryOptions}
           value={pays}
-          onChange={(e) => setPays(e.target.value)}
-          placeholder="Pays"
+          onChange={(val) => setPays(val)}
+          placeholder="Selectionner un pays"
+          searchPlaceholder="Rechercher par nom ou code..."
+          emptyMessage="Aucun pays trouve."
+          error={errors.pays}
         />
         {errors.pays && <p className="text-xs text-danger">{errors.pays}</p>}
       </div>

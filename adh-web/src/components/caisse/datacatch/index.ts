@@ -6,3 +6,6 @@ export { PreferencesForm } from './PreferencesForm';
 export { DataCatchReview } from './DataCatchReview';
 export { DataCatchCompletion } from './DataCatchCompletion';
 export { DataCatchStepIndicator } from './DataCatchStepIndicator';
+export { CounterOccupation } from './CounterOccupation';
+export { CheckoutPanel } from './CheckoutPanel';
+export { VillageConfigPanel } from './VillageConfigPanel';

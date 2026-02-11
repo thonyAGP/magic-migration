@@ -1,17 +1,12 @@
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
+import { t } from '@/i18n';
 import type { DataCatchStepIndicatorProps } from './types';
 import type { DataCatchStep } from '@/types/datacatch';
 
-const STEP_LABELS: Record<DataCatchStep, string> = {
-  welcome: 'Accueil',
-  search: 'Recherche',
-  personal: 'Identite',
-  address: 'Adresse',
-  preferences: 'Preferences',
-  review: 'Verification',
-  complete: 'Fin',
-};
+function getStepLabel(step: DataCatchStep): string {
+  return t(`datacatch.steps.${step}`);
+}
 
 export function DataCatchStepIndicator({
   currentStep,
@@ -49,7 +44,7 @@ export function DataCatchStepIndicator({
                   isCurrent ? 'font-medium text-primary' : 'text-on-surface-muted',
                 )}
               >
-                {STEP_LABELS[step]}
+                {getStepLabel(step)}
               </span>
             </div>
 

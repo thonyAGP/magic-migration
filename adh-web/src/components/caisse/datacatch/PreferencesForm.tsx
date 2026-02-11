@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Button, Label, Checkbox } from '@/components/ui';
 import { preferencesSchema } from './schemas';
+import { t } from '@/i18n';
 import type { PreferencesFormProps } from './types';
 
 const LANGUE_OPTIONS = [
@@ -84,11 +85,11 @@ export function PreferencesForm({
 
   return (
     <div className="space-y-4 rounded-md border border-border p-4">
-      <h3 className="text-sm font-semibold">Preferences et consentements</h3>
+      <h3 className="text-sm font-semibold">{t('datacatch.preferences.title')}</h3>
 
       {/* Langue preferee */}
       <div className="space-y-1.5">
-        <Label className="text-sm">Langue preferee</Label>
+        <Label className="text-sm">{t('datacatch.preferences.langue')}</Label>
         <select
           value={languePreferee}
           onChange={(e) => setLanguePreferee(e.target.value)}
@@ -107,22 +108,22 @@ export function PreferencesForm({
 
       {/* Consentements */}
       <div className="space-y-3">
-        <Label className="text-sm">Consentements</Label>
+        <Label className="text-sm">{t('datacatch.preferences.consentements')}</Label>
         <Checkbox
           id="consentementMarketing"
-          label="Consentement marketing"
+          label={t('datacatch.preferences.consentementMarketing')}
           checked={consentementMarketing}
           onChange={(e) => setConsentementMarketing(e.target.checked)}
         />
         <Checkbox
           id="newsletter"
-          label="Newsletter"
+          label={t('datacatch.preferences.newsletter')}
           checked={newsletter}
           onChange={(e) => setNewsletter(e.target.checked)}
         />
         <Checkbox
           id="consentementCommunication"
-          label="Consentement communication"
+          label={t('datacatch.preferences.consentementCommunication')}
           checked={consentementCommunication}
           onChange={(e) => setConsentementCommunication(e.target.checked)}
         />
@@ -130,7 +131,7 @@ export function PreferencesForm({
 
       {/* Activites preferees */}
       <div className="space-y-3">
-        <Label className="text-sm">Activites preferees</Label>
+        <Label className="text-sm">{t('datacatch.preferences.activites')}</Label>
         {ACTIVITES_OPTIONS.map((activite) => (
           <Checkbox
             key={activite}
@@ -145,10 +146,10 @@ export function PreferencesForm({
       {/* Buttons */}
       <div className="flex justify-between pt-2">
         <Button variant="outline" onClick={onBack}>
-          Retour
+          {t('datacatch.common.back')}
         </Button>
         <Button onClick={handleSubmit} disabled={isSaving}>
-          {isSaving ? 'Enregistrement...' : 'Suivant'}
+          {isSaving ? t('datacatch.common.saving') : t('datacatch.common.next')}
         </Button>
       </div>
     </div>

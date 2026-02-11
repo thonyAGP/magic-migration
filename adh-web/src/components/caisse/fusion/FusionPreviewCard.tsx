@@ -1,11 +1,36 @@
 import { cn } from '@/lib/utils';
 import { Button, Badge } from '@/components/ui';
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Shield } from 'lucide-react';
 import type { FusionPreviewCardProps } from './types';
+import type { GarantieItem } from '@/types/fusion';
+
+function GarantieSection({ title, garanties }: { title: string; garanties: GarantieItem[] }) {
+  return (
+    <div className="space-y-1">
+      <h5 className="text-xs font-medium text-on-surface-muted uppercase tracking-wide">{title}</h5>
+      {garanties.length === 0 ? (
+        <p className="text-sm text-on-surface-muted italic">Aucune garantie</p>
+      ) : (
+        <div className="space-y-1">
+          {garanties.map((g) => (
+            <div key={g.id} className="flex items-center gap-2 text-sm">
+              <Shield className="h-3.5 w-3.5 shrink-0 text-on-surface-muted" />
+              <span className="font-medium">{g.article}</span>
+              <span className="text-on-surface-muted">{g.montant.toFixed(2)} EUR</span>
+              <span className="text-xs text-on-surface-muted ml-auto">{g.dateDepot}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function FusionPreviewCard({ preview, onConfirm, onCancel, className }: FusionPreviewCardProps) {
   const hasErrors = preview.conflits.some((c) => c.resolution === 'manuel');
   const hasWarnings = preview.conflits.length > 0;
+  const hasGaranties =
+    (preview.garantiesSource?.length ?? 0) > 0 || (preview.garantiesDestination?.length ?? 0) > 0;
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -40,6 +65,26 @@ export function FusionPreviewCard({ preview, onConfirm, onCancel, className }: F
           </div>
         </div>
       </div>
+
+      {/* Garanties */}
+      {hasGaranties && (
+        <div className="rounded-lg border border-border bg-surface p-4 space-y-3">
+          <h4 className="text-sm font-medium text-on-surface flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Garanties
+          </h4>
+          <div className="grid grid-cols-2 gap-4">
+            <GarantieSection
+              title={`Principal (${preview.comptePrincipal.codeAdherent})`}
+              garanties={preview.garantiesSource ?? []}
+            />
+            <GarantieSection
+              title={`Secondaire (${preview.compteSecondaire.codeAdherent})`}
+              garanties={preview.garantiesDestination ?? []}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Conflits */}
       {hasWarnings && (

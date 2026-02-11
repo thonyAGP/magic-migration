@@ -21,12 +21,23 @@ export interface FusionAccount {
   nbGaranties: number;
 }
 
+export interface GarantieItem {
+  id: string;
+  article: string;
+  description: string;
+  montant: number;
+  dateDepot: string;
+  compteOrigine: 'source' | 'destination';
+}
+
 export interface FusionPreview {
   comptePrincipal: FusionAccount;
   compteSecondaire: FusionAccount;
   nbOperationsAFusionner: number;
   montantTotal: number;
   garantiesATransferer: number;
+  garantiesSource: GarantieItem[];
+  garantiesDestination: GarantieItem[];
   conflits: FusionConflict[];
   avertissements: string[];
 }
@@ -50,4 +61,9 @@ export interface FusionProgress {
   etape: string;
   progression: number;
   message: string;
+}
+
+export interface FusionPrerequisites {
+  canProceed: boolean;
+  warnings: string[];
 }
