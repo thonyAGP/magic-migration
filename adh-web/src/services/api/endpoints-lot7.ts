@@ -2,7 +2,7 @@ import { apiClient, type ApiResponse } from './apiClient';
 import type {
   AdminSettings,
   UserProfile,
-  CaisseConfig,
+  AdminCaisseConfig,
   PrinterConfig,
   AuditLogEntry,
   AuditLogFilter,
@@ -32,10 +32,10 @@ export const parametresApi = {
     ),
 
   getCaisseConfig: () =>
-    apiClient.get<ApiResponse<CaisseConfig>>('/parametres/caisse'),
+    apiClient.get<ApiResponse<AdminCaisseConfig>>('/parametres/caisse'),
 
   updateCaisseConfig: (data: UpdateCaisseConfigRequest) =>
-    apiClient.put<ApiResponse<CaisseConfig>>('/parametres/caisse', data),
+    apiClient.put<ApiResponse<AdminCaisseConfig>>('/parametres/caisse', data),
 
   getPrinters: () =>
     apiClient.get<ApiResponse<PrinterConfig[]>>('/parametres/printers'),

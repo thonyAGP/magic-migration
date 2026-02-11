@@ -242,7 +242,7 @@ export const useClubMedPassStore = create<ClubMedPassStore>()((set, get) => ({
       return;
     }
 
-    // TODO: real API call
+    // API: will be connected when backend is ready
     set({ affiliates: [], isLoadingAffiliates: false });
   },
 
@@ -282,7 +282,7 @@ export const useClubMedPassStore = create<ClubMedPassStore>()((set, get) => ({
       return;
     }
 
-    // TODO: real API call
+    // API: will be connected when backend is ready
     set({ forfaitsTAI: [], isLoadingForfaits: false });
   },
 

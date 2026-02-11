@@ -30,7 +30,7 @@ describe('ArticleTypeSelector', () => {
     expect(screen.queryByText('Liberation')).toBeNull();
   });
 
-  it('should call onSelect when a non-stub type is clicked', () => {
+  it('should call onSelect when a type is clicked', () => {
     const onSelect = vi.fn();
     render(<ArticleTypeSelector {...defaultProps} onSelect={onSelect} />);
 

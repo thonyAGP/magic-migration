@@ -10,10 +10,11 @@ import {
   GarantieModificationDialog,
   GarantieRetraitDialog,
 } from '@/components/caisse/garantie';
+import { EmailSendDialog } from '@/components/caisse/dialogs';
 import { useGarantieStore } from '@/stores/garantieStore';
 import { useAuthStore } from '@/stores';
 import { Button, Input, Badge, PrinterChoiceDialog } from '@/components/ui';
-import { ArrowLeft, Printer, Plus, Package, Pencil, Trash2, LogOut } from 'lucide-react';
+import { ArrowLeft, Printer, Plus, Package, Pencil, Trash2, LogOut, Mail } from 'lucide-react';
 import { executePrint, TicketType } from '@/services/printer';
 import type { PrinterChoice } from '@/services/printer';
 import type { Garantie, GarantieArticle, GarantieStatus } from '@/types/garantie';
@@ -69,6 +70,7 @@ export function GarantiePage() {
   const [dialogMode, setDialogMode] = useState<'versement' | 'retrait'>('versement');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showPrintDialog, setShowPrintDialog] = useState(false);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [showDepotArticleDialog, setShowDepotArticleDialog] = useState(false);
   const [showModificationDialog, setShowModificationDialog] = useState(false);
   const [showRetraitArticleDialog, setShowRetraitArticleDialog] = useState(false);
@@ -367,6 +369,14 @@ export function GarantiePage() {
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={() => setShowEmailDialog(true)}
+                  title="Envoyer par email"
+                >
+                  <Mail className="h-3.5 w-3.5 mr-1" /> Email
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowPrintDialog(true)}
                   title="Imprimer"
                 >
@@ -497,6 +507,13 @@ export function GarantiePage() {
         open={showPrintDialog}
         onClose={() => setShowPrintDialog(false)}
         onSelect={handlePrint}
+      />
+
+      <EmailSendDialog
+        open={showEmailDialog}
+        onClose={() => setShowEmailDialog(false)}
+        documentType="garantie"
+        documentId={currentGarantie ? String(currentGarantie.id) : ''}
       />
     </ScreenLayout>
   );

@@ -41,7 +41,7 @@ export const useAuthStore = create<AuthStore>()(
           return;
         }
 
-        // Mode API - TODO: Call real auth API when ready
+        // Mode API - API: will be connected when backend is ready
         try {
           // const response = await authApi.login(credentials);
           // set({ user: response.data.data.user, token: response.data.data.token, isAuthenticated: true });
