@@ -15,3 +15,4 @@ export * from './separation';
 export * from './fusion';
 export * from './admin';
 export * from './notification';
+export * from './caisseOps';

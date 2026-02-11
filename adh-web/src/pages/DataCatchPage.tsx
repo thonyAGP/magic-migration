@@ -43,7 +43,9 @@ export function DataCatchPage() {
   const personalInfo = useDataCatchStore((s) => s.personalInfo);
   const address = useDataCatchStore((s) => s.address);
   const preferences = useDataCatchStore((s) => s.preferences);
+  const searchResults = useDataCatchStore((s) => s.searchResults);
   const isSearching = useDataCatchStore((s) => s.isSearching);
+  const searchCustomer = useDataCatchStore((s) => s.searchCustomer);
   const isSaving = useDataCatchStore((s) => s.isSaving);
   const isCompleting = useDataCatchStore((s) => s.isCompleting);
   const error = useDataCatchStore((s) => s.error);
@@ -156,6 +158,8 @@ export function DataCatchPage() {
           <CustomerSearchPanel
             onSelectCustomer={handleSelectCustomer}
             onCreateNew={handleCreateNew}
+            onSearch={(nom, prenom) => searchCustomer(societe, nom, prenom)}
+            searchResults={searchResults}
             isSearching={isSearching}
           />
         );

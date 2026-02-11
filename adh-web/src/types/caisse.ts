@@ -42,7 +42,8 @@ export type CaisseMenuAction =
   | 'changement_compte'
   | 'solde_compte'
   | 'telephone'
-  | 'dashboard';
+  | 'dashboard'
+  | 'operations_caisse';
 
 export interface CaisseMenuItem {
   action: CaisseMenuAction;

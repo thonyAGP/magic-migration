@@ -20,9 +20,12 @@ export function ExtraitPage() {
   const selectedAccount = useExtraitStore((s) => s.selectedAccount);
   const transactions = useExtraitStore((s) => s.transactions);
   const summary = useExtraitStore((s) => s.summary);
+  const searchResults = useExtraitStore((s) => s.searchResults);
+  const isSearching = useExtraitStore((s) => s.isSearching);
   const isLoadingExtrait = useExtraitStore((s) => s.isLoadingExtrait);
   const isPrinting = useExtraitStore((s) => s.isPrinting);
   const error = useExtraitStore((s) => s.error);
+  const searchAccount = useExtraitStore((s) => s.searchAccount);
   const selectAccount = useExtraitStore((s) => s.selectAccount);
   const loadExtrait = useExtraitStore((s) => s.loadExtrait);
   const printExtrait = useExtraitStore((s) => s.printExtrait);
@@ -96,6 +99,9 @@ export function ExtraitPage() {
           <>
             <ExtraitAccountSelector
               onSelect={handleSelectAccount}
+              onSearch={(q) => searchAccount(societe, q)}
+              searchResults={searchResults}
+              isSearching={isSearching}
               isLoading={isLoadingExtrait}
             />
             <div className="flex justify-start">

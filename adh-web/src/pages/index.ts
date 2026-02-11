@@ -15,3 +15,4 @@ export { FusionPage } from './FusionPage';
 export { AccountOpsPage } from './AccountOpsPage';
 export { ParametresPage } from './ParametresPage';
 export { DashboardPage } from './DashboardPage';
+export { CaisseOpsPage } from './CaisseOpsPage';

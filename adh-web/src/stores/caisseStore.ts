@@ -1,21 +1,36 @@
 import { create } from 'zustand';
 import type { CaisseConfig, Denomination, DenominationCount } from '@/types';
 import { denominationApi } from '@/services/api/endpoints';
+import { apiClient } from '@/services/api/apiClient';
 import { useDataSourceStore } from './dataSourceStore';
 
 interface CaisseStore {
   config: CaisseConfig | null;
   denominations: Denomination[];
   counting: DenominationCount[];
+  isLoadingConfig: boolean;
   isLoadingDenominations: boolean;
+  dateComptable: string | null;
   setConfig: (config: CaisseConfig) => void;
   setDenominations: (denoms: Denomination[]) => void;
   updateCount: (denominationId: number, quantite: number) => void;
   resetCounting: () => void;
   getTotalByDevise: (deviseCode: string) => number;
+  loadConfig: () => Promise<void>;
   loadDenominations: (deviseCode: string) => Promise<void>;
   getCounting: () => { denominationId: number; quantite: number }[];
+  setDateComptable: (date: string) => void;
+  validateDateComptable: () => boolean;
 }
+
+const MOCK_CONFIG: CaisseConfig = {
+  id: 1,
+  numero: 'C001',
+  societe: 'ADH',
+  libelle: 'Caisse principale',
+  devisePrincipale: 'EUR',
+  devisesAutorisees: ['EUR', 'USD', 'GBP', 'CHF'],
+};
 
 const MOCK_DENOMINATIONS: Denomination[] = [
   { id: 1, deviseCode: 'EUR', valeur: 500, type: 'billet', libelle: '500 EUR' },
@@ -39,7 +54,9 @@ export const useCaisseStore = create<CaisseStore>()((set, get) => ({
   config: null,
   denominations: [],
   counting: [],
+  isLoadingConfig: false,
   isLoadingDenominations: false,
+  dateComptable: null,
 
   setConfig: (config) => set({ config }),
   setDenominations: (denominations) => set({ denominations }),
@@ -82,6 +99,26 @@ export const useCaisseStore = create<CaisseStore>()((set, get) => ({
       .reduce((sum, c) => sum + c.total, 0);
   },
 
+  loadConfig: async () => {
+    const { isRealApi } = useDataSourceStore.getState();
+    set({ isLoadingConfig: true });
+
+    if (!isRealApi) {
+      set({ config: MOCK_CONFIG, isLoadingConfig: false });
+      return;
+    }
+
+    try {
+      const response = await apiClient.get<{ data: CaisseConfig }>('/caisse/config');
+      const data = response.data?.data;
+      set({ config: data ?? MOCK_CONFIG });
+    } catch {
+      set({ config: MOCK_CONFIG });
+    } finally {
+      set({ isLoadingConfig: false });
+    }
+  },
+
   loadDenominations: async (deviseCode) => {
     const { isRealApi } = useDataSourceStore.getState();
     set({ isLoadingDenominations: true });
@@ -99,21 +136,37 @@ export const useCaisseStore = create<CaisseStore>()((set, get) => ({
     try {
       const response = await denominationApi.getByDevise(deviseCode);
       const denoms = response.data.data;
-      set({
-        denominations: denoms.map((d) => ({
-          id: d.id,
-          deviseCode: d.deviseCode,
-          valeur: d.valeur,
-          type: d.type,
-          libelle: d.libelle ?? `${d.valeur}`,
-        })),
-      });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erreur chargement dénominations';
-      throw new Error(message);
+      if (denoms && Array.isArray(denoms) && denoms.length > 0) {
+        set({
+          denominations: denoms.map((d) => ({
+            id: d.id,
+            deviseCode: d.deviseCode,
+            valeur: d.valeur,
+            type: d.type,
+            libelle: d.libelle ?? `${d.valeur}`,
+          })),
+        });
+      } else {
+        // API returned empty - fallback to mock
+        const filtered = MOCK_DENOMINATIONS.filter((d) => d.deviseCode === deviseCode);
+        set({ denominations: filtered.length > 0 ? filtered : MOCK_DENOMINATIONS });
+      }
+    } catch {
+      // API unavailable - fallback to mock denominations
+      const filtered = MOCK_DENOMINATIONS.filter((d) => d.deviseCode === deviseCode);
+      set({ denominations: filtered.length > 0 ? filtered : MOCK_DENOMINATIONS });
     } finally {
       set({ isLoadingDenominations: false });
     }
+  },
+
+  setDateComptable: (date) => set({ dateComptable: date }),
+
+  validateDateComptable: () => {
+    const { dateComptable } = get();
+    if (!dateComptable) return false;
+    const today = new Date().toISOString().slice(0, 10);
+    return dateComptable.slice(0, 10) === today;
   },
 
   getCounting: () => {

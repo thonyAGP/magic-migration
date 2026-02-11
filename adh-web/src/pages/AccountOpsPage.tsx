@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { accountOpsApi } from '@/services/api/endpoints-lot6';
+import { useAccountOpsStore } from '@/stores';
 
 type AccountOpType = 'changement' | 'solde' | 'telephone';
 
@@ -20,112 +20,24 @@ const OP_DESCRIPTIONS: Record<AccountOpType, string> = {
   telephone: 'Gestion du telephone adherent',
 };
 
-interface FormState {
-  codeAdherent: string;
-  filiation: string;
-  telephone: string;
-  portable: string;
-}
-
 export function AccountOpsPage() {
   const { type } = useParams<{ type: string }>();
   const navigate = useNavigate();
   const opType = (type ?? 'changement') as AccountOpType;
   const societe = 'ADH';
 
-  const [form, setForm] = useState<FormState>({
-    codeAdherent: '',
-    filiation: '0',
-    telephone: '',
-    portable: '',
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [resultMessage, setResultMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { form, resultMessage, error, isLoading, setForm, setOpType, executeOperation, reset } = useAccountOpsStore();
+
+  useEffect(() => {
+    setOpType(opType);
+  }, [opType, setOpType]);
+
+  useEffect(() => {
+    return () => reset();
+  }, [reset]);
 
   const title = OP_TITLES[opType] ?? 'Operation compte';
   const description = OP_DESCRIPTIONS[opType] ?? '';
-
-  const handleChange = (field: keyof FormState, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    setError(null);
-    setResultMessage(null);
-  };
-
-  const handleSubmit = async () => {
-    const code = parseInt(form.codeAdherent, 10);
-    const filiation = parseInt(form.filiation, 10);
-
-    if (isNaN(code)) {
-      setError('Code adherent invalide');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    setResultMessage(null);
-
-    try {
-      if (opType === 'changement') {
-        const response = await accountOpsApi.changeAccount(societe, code, filiation);
-        setResultMessage(
-          response.data.data?.success
-            ? 'Changement de compte effectue avec succes'
-            : 'Erreur lors du changement de compte',
-        );
-      } else if (opType === 'solde') {
-        const response = await accountOpsApi.getSolde(societe, code, filiation);
-        const data = response.data.data;
-        setResultMessage(
-          data
-            ? `Solde: ${data.solde.toFixed(2)} ${data.devise}`
-            : 'Impossible de recuperer le solde',
-        );
-      } else if (opType === 'telephone') {
-        if (form.telephone || form.portable) {
-          await accountOpsApi.updatePhone(
-            societe,
-            code,
-            filiation,
-            form.telephone,
-            form.portable,
-          );
-          setResultMessage('Telephone mis a jour avec succes');
-        } else {
-          const response = await accountOpsApi.getPhoneInfo(societe, code, filiation);
-          const data = response.data.data;
-          if (data) {
-            setForm((prev) => ({
-              ...prev,
-              telephone: data.telephone,
-              portable: data.portable,
-            }));
-            setResultMessage('Informations telephone chargees');
-          }
-        }
-      }
-    } catch (e: unknown) {
-      if (import.meta.env.DEV) {
-        if (opType === 'solde') {
-          setResultMessage(`Solde: ${(Math.random() * 2000).toFixed(2)} EUR`);
-        } else if (opType === 'telephone') {
-          setForm((prev) => ({
-            ...prev,
-            telephone: '01 23 45 67 89',
-            portable: '06 12 34 56 78',
-          }));
-          setResultMessage('Informations telephone chargees (mock)');
-        } else {
-          setResultMessage('Changement de compte effectue (mock)');
-        }
-        return;
-      }
-      const message = e instanceof Error ? e.message : 'Erreur operation';
-      setError(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <ScreenLayout>
@@ -154,7 +66,7 @@ export function AccountOpsPage() {
               id="codeAdherent"
               type="text"
               value={form.codeAdherent}
-              onChange={(e) => handleChange('codeAdherent', e.target.value)}
+              onChange={(e) => setForm('codeAdherent', e.target.value)}
               placeholder="Ex: 1001"
             />
           </div>
@@ -165,7 +77,7 @@ export function AccountOpsPage() {
               id="filiation"
               type="text"
               value={form.filiation}
-              onChange={(e) => handleChange('filiation', e.target.value)}
+              onChange={(e) => setForm('filiation', e.target.value)}
               placeholder="0"
             />
           </div>
@@ -178,7 +90,7 @@ export function AccountOpsPage() {
                   id="telephone"
                   type="tel"
                   value={form.telephone}
-                  onChange={(e) => handleChange('telephone', e.target.value)}
+                  onChange={(e) => setForm('telephone', e.target.value)}
                   placeholder="01 23 45 67 89"
                 />
               </div>
@@ -188,7 +100,7 @@ export function AccountOpsPage() {
                   id="portable"
                   type="tel"
                   value={form.portable}
-                  onChange={(e) => handleChange('portable', e.target.value)}
+                  onChange={(e) => setForm('portable', e.target.value)}
                   placeholder="06 12 34 56 78"
                 />
               </div>
@@ -203,7 +115,7 @@ export function AccountOpsPage() {
           >
             Retour au menu
           </button>
-          <Button onClick={handleSubmit} disabled={isLoading || !form.codeAdherent}>
+          <Button onClick={() => executeOperation(societe)} disabled={isLoading || !form.codeAdherent}>
             {isLoading
               ? 'Chargement...'
               : opType === 'solde'

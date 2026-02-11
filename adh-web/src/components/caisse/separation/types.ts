@@ -3,9 +3,12 @@ import type { SeparationAccount, SeparationPreview, SeparationResult, Separation
 export interface SeparationAccountSelectorProps {
   label: string;
   onSelect: (account: SeparationAccount) => void;
+  onSearch: (query: string) => void;
+  searchResults?: SeparationAccount[];
   selectedAccount: SeparationAccount | null;
   excludeAccount?: SeparationAccount | null;
   isLoading?: boolean;
+  isSearching?: boolean;
   disabled?: boolean;
 }
 

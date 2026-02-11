@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Input, Badge, Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { SeparationAccountSelectorProps } from './types';
 import type { SeparationAccount } from '@/types/separation';
-import { separationApi } from '@/services/api/endpoints-lot6';
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
@@ -11,39 +10,30 @@ const formatCurrency = (value: number) =>
 export function SeparationAccountSelector({
   label,
   onSelect,
+  onSearch,
+  searchResults = [],
   selectedAccount,
   excludeAccount,
   isLoading = false,
+  isSearching = false,
   disabled = false,
 }: SeparationAccountSelectorProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SeparationAccount[]>([]);
-  const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const doSearch = useCallback(async (q: string) => {
+  const doSearch = useCallback((q: string) => {
     if (q.trim().length === 0) {
-      setResults([]);
       setSearched(false);
       return;
     }
-    setSearching(true);
-    try {
-      const response = await separationApi.searchAccount('ADH', q.trim());
-      setResults(response.data.data ?? []);
-    } catch {
-      setResults([]);
-    } finally {
-      setSearching(false);
-      setSearched(true);
-    }
-  }, []);
+    onSearch(q.trim());
+    setSearched(true);
+  }, [onSearch]);
 
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     if (query.trim().length === 0) {
-      setResults([]);
       setSearched(false);
       return;
     }
@@ -53,15 +43,18 @@ export function SeparationAccountSelector({
     };
   }, [query, doSearch]);
 
-  const filteredResults = excludeAccount
-    ? results.filter(
-        (a) =>
-          a.codeAdherent !== excludeAccount.codeAdherent ||
-          a.filiation !== excludeAccount.filiation,
-      )
-    : results;
+  const filteredResults = useMemo(() =>
+    excludeAccount
+      ? searchResults.filter(
+          (a) =>
+            a.codeAdherent !== excludeAccount.codeAdherent ||
+            a.filiation !== excludeAccount.filiation,
+        )
+      : searchResults,
+    [searchResults, excludeAccount],
+  );
 
-  const showLoading = searching || isLoading;
+  const showLoading = isSearching || isLoading;
 
   if (selectedAccount) {
     return (
@@ -88,7 +81,6 @@ export function SeparationAccountSelector({
               onClick={() => {
                 onSelect(null as unknown as SeparationAccount);
                 setQuery('');
-                setResults([]);
                 setSearched(false);
               }}
               disabled={disabled}

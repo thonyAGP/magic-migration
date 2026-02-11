@@ -7,12 +7,13 @@ import {
   Printer,
   Eye,
   Settings,
+  Briefcase,
 } from 'lucide-react';
 import type { CaisseMenuAction } from '@/types';
 import type { CaisseMenuGridProps } from './types';
 import type { LucideIcon } from 'lucide-react';
 
-const ACTION_ICONS: Record<CaisseMenuAction, LucideIcon> = {
+const ACTION_ICONS: Partial<Record<CaisseMenuAction, LucideIcon>> = {
   ouverture: DoorOpen,
   fermeture: DoorClosed,
   comptage: Calculator,
@@ -20,6 +21,7 @@ const ACTION_ICONS: Record<CaisseMenuAction, LucideIcon> = {
   reimpression: Printer,
   consultation: Eye,
   parametres: Settings,
+  operations_caisse: Briefcase,
 };
 
 export function CaisseMenuGrid({ items, onAction, currentStatus }: CaisseMenuGridProps) {

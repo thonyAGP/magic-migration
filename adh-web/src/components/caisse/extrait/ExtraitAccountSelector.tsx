@@ -3,7 +3,6 @@ import { Input, Badge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { ExtraitAccountSelectorProps } from './types';
 import type { ExtraitAccountInfo } from '@/types/extrait';
-import { extraitApi } from '@/services/api/endpoints-lot3';
 
 const statutVariant = (statut: ExtraitAccountInfo['statut']) => {
   if (statut === 'bloque') return 'destructive' as const;
@@ -19,37 +18,28 @@ const statutLabel = (statut: ExtraitAccountInfo['statut']) => {
 
 export function ExtraitAccountSelector({
   onSelect,
+  onSearch,
+  searchResults = [],
   isLoading = false,
+  isSearching = false,
   disabled = false,
 }: ExtraitAccountSelectorProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<ExtraitAccountInfo[]>([]);
-  const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const doSearch = useCallback(async (q: string) => {
+  const doSearch = useCallback((q: string) => {
     if (q.trim().length === 0) {
-      setResults([]);
       setSearched(false);
       return;
     }
-    setSearching(true);
-    try {
-      const response = await extraitApi.searchAccount('ADH', q.trim());
-      setResults(response.data.data ?? []);
-    } catch {
-      setResults([]);
-    } finally {
-      setSearching(false);
-      setSearched(true);
-    }
-  }, []);
+    onSearch(q.trim());
+    setSearched(true);
+  }, [onSearch]);
 
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     if (query.trim().length === 0) {
-      setResults([]);
       setSearched(false);
       return;
     }
@@ -59,7 +49,7 @@ export function ExtraitAccountSelector({
     };
   }, [query, doSearch]);
 
-  const showLoading = searching || isLoading;
+  const showLoading = isSearching || isLoading;
 
   return (
     <div className="space-y-3">
@@ -76,15 +66,15 @@ export function ExtraitAccountSelector({
         </div>
       )}
 
-      {!showLoading && searched && results.length === 0 && (
+      {!showLoading && searched && searchResults.length === 0 && (
         <div className="text-center py-4 text-on-surface-muted text-sm">
           Aucun compte trouve
         </div>
       )}
 
-      {!showLoading && results.length > 0 && (
+      {!showLoading && searchResults.length > 0 && (
         <div className="space-y-2">
-          {results.map((account) => (
+          {searchResults.map((account) => (
             <button
               key={`${account.codeAdherent}-${account.filiation}`}
               type="button"

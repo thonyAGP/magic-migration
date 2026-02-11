@@ -7,7 +7,10 @@ import type {
 
 export interface ExtraitAccountSelectorProps {
   onSelect: (account: ExtraitAccountInfo) => void;
+  onSearch: (query: string) => void;
+  searchResults?: ExtraitAccountInfo[];
   isLoading?: boolean;
+  isSearching?: boolean;
   disabled?: boolean;
 }
 

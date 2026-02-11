@@ -14,4 +14,6 @@ export { useFusionStore } from './fusionStore';
 export { useParametresStore } from './parametresStore';
 export { useDashboardStore } from './dashboardStore';
 export { useNotificationStore } from './notificationStore';
+export { useAccountOpsStore } from './accountOpsStore';
 export { useDataSourceStore } from './dataSourceStore';
+export { useCaisseOpsStore } from './caisseOpsStore';

@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Session, SessionStatus, DeviseSession, SessionHistoryItem } from '@/types';
+import type { Session, SessionStatus, DeviseSession, SessionHistoryItem, ConcurrentSessionInfo, NetworkClosureResult, NetworkClosureStatus, StockCoherenceResult } from '@/types';
 import { sessionApi } from '@/services/api/endpoints';
 import type { OpenSessionRequest, CloseSessionRequest } from '@/services/api/types';
+import { apiClient } from '@/services/api/apiClient';
 import { useDataSourceStore } from './dataSourceStore';
 
 interface SessionStore {
@@ -10,6 +11,8 @@ interface SessionStore {
   status: SessionStatus;
   history: SessionHistoryItem[];
   isLoadingHistory: boolean;
+  vilOpenSessions: boolean;
+  mockConcurrentSession: boolean;
   setSession: (session: Session) => void;
   updateStatus: (status: SessionStatus) => void;
   updateDevise: (deviseCode: string, updates: Partial<DeviseSession>) => void;
@@ -17,6 +20,14 @@ interface SessionStore {
   openSession: (data: OpenSessionRequest) => Promise<Session>;
   closeSession: (data: CloseSessionRequest) => Promise<void>;
   loadHistory: (page?: number, pageSize?: number) => Promise<void>;
+  checkConcurrentSessions: () => Promise<ConcurrentSessionInfo | null>;
+  setVilOpenSessions: (value: boolean) => void;
+  setMockConcurrentSession: (value: boolean) => void;
+  // T4-A1: Network closure + stock coherence checks
+  networkClosureStatus: NetworkClosureStatus | null;
+  stockCoherenceResult: StockCoherenceResult | null;
+  checkNetworkClosure: () => Promise<NetworkClosureResult>;
+  checkStockCoherence: () => Promise<StockCoherenceResult>;
 }
 
 const MOCK_SESSION: Session = {
@@ -51,13 +62,25 @@ const MOCK_HISTORY: SessionHistoryItem[] = [
   },
 ];
 
+const MOCK_CONCURRENT_SESSION: ConcurrentSessionInfo = {
+  sessionId: 99,
+  userId: 2,
+  userName: 'autre_caissier',
+  dateOuverture: new Date(Date.now() - 3600000).toISOString(),
+  caisseId: 1,
+};
+
 export const useSessionStore = create<SessionStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       currentSession: null,
       status: 'closed',
       history: [],
       isLoadingHistory: false,
+      vilOpenSessions: false,
+      mockConcurrentSession: false,
+      networkClosureStatus: null,
+      stockCoherenceResult: null,
 
       setSession: (session) =>
         set({ currentSession: session, status: session.status }),
@@ -147,6 +170,75 @@ export const useSessionStore = create<SessionStore>()(
             status: state.currentSession ? state.currentSession.status : 'closed',
           }));
           throw error;
+        }
+      },
+
+      checkConcurrentSessions: async () => {
+        const { isRealApi } = useDataSourceStore.getState();
+        const { vilOpenSessions, mockConcurrentSession } = get();
+
+        // If VIL allows multiple sessions, skip check
+        if (vilOpenSessions) return null;
+
+        if (!isRealApi) {
+          return mockConcurrentSession ? MOCK_CONCURRENT_SESSION : null;
+        }
+
+        try {
+          const response = await apiClient.get<{ data: ConcurrentSessionInfo | null }>('/caisse/sessions/concurrent');
+          return response.data?.data ?? null;
+        } catch {
+          return null;
+        }
+      },
+
+      setVilOpenSessions: (value) => set({ vilOpenSessions: value }),
+
+      setMockConcurrentSession: (value) => set({ mockConcurrentSession: value }),
+
+      // T4-A1: Network closure check before opening
+      checkNetworkClosure: async (): Promise<NetworkClosureResult> => {
+        const { isRealApi } = useDataSourceStore.getState();
+
+        if (!isRealApi) {
+          // Mock: always completed
+          const result: NetworkClosureResult = { status: 'completed' };
+          set({ networkClosureStatus: result.status });
+          return result;
+        }
+
+        try {
+          const response = await apiClient.get<{ data: NetworkClosureResult }>('/caisse/network-closure/status');
+          const result = response.data?.data ?? { status: 'completed' as const };
+          set({ networkClosureStatus: result.status });
+          return result;
+        } catch {
+          const result: NetworkClosureResult = { status: 'error' };
+          set({ networkClosureStatus: result.status });
+          return result;
+        }
+      },
+
+      // T4-A1: Stock coherence check before opening
+      checkStockCoherence: async (): Promise<StockCoherenceResult> => {
+        const { isRealApi } = useDataSourceStore.getState();
+
+        if (!isRealApi) {
+          // Mock: always coherent
+          const result: StockCoherenceResult = { coherent: true };
+          set({ stockCoherenceResult: result });
+          return result;
+        }
+
+        try {
+          const response = await apiClient.get<{ data: StockCoherenceResult }>('/caisse/stock/coherence');
+          const result = response.data?.data ?? { coherent: true };
+          set({ stockCoherenceResult: result });
+          return result;
+        } catch {
+          const result: StockCoherenceResult = { coherent: true };
+          set({ stockCoherenceResult: result });
+          return result;
         }
       },
 

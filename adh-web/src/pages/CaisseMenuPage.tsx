@@ -160,6 +160,14 @@ function buildMenuItems(sessionStatus: 'open' | 'closed'): CaisseMenuItem[] {
       requiresOpenSession: true,
     },
     {
+      action: 'operations_caisse',
+      label: 'Operations caisse',
+      icon: 'briefcase',
+      description: 'Apports, remises, telecollecte, pointage',
+      enabled: isOpen,
+      requiresOpenSession: true,
+    },
+    {
       action: 'dashboard',
       label: 'Tableau de bord',
       icon: 'bar-chart',
@@ -200,6 +208,7 @@ const actionRoutes: Record<CaisseMenuAction, string> = {
   changement_compte: '/caisse/compte/changement',
   solde_compte: '/caisse/compte/solde',
   telephone: '/caisse/compte/telephone',
+  operations_caisse: '/caisse/operations',
 };
 
 export function CaisseMenuPage() {

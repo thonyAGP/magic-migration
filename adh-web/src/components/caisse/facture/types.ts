@@ -29,6 +29,9 @@ export interface FacturePreviewProps {
 
 export interface FactureSearchPanelProps {
   onSelectFacture: (facture: Facture) => void;
+  onSearch: (query?: string, dateDebut?: string, dateFin?: string) => void;
+  searchResults?: Facture[];
+  isSearching?: boolean;
   isLoading?: boolean;
 }
 

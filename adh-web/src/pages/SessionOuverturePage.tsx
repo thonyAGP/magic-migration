@@ -1,13 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { DenominationGrid, DenominationSummary } from '@/components/caisse/denomination';
 import { PrinterChoiceDialog } from '@/components/ui';
+import { ConcurrentSessionWarning, DeviseTabSelector, NetworkClosureAlert } from '@/components/caisse/session';
 import { useSessionStore, useCaisseStore, useAuthStore } from '@/stores';
 import { executePrint, TicketType } from '@/services/printer';
 import type { PrinterChoice } from '@/services/printer';
 import type { DenominationCatalog, CountingResult } from '@/types/denomination';
-import { Printer } from 'lucide-react';
+import type { ConcurrentSessionInfo, NetworkClosureStatus, StockCoherenceResult } from '@/types';
+import { Printer, AlertTriangle } from 'lucide-react';
 
 type Step = 'comptage' | 'validation' | 'ouverture' | 'succes';
 
@@ -15,25 +17,65 @@ export function SessionOuverturePage() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const openSession = useSessionStore((s) => s.openSession);
+  const checkConcurrentSessions = useSessionStore((s) => s.checkConcurrentSessions);
+  const checkNetworkClosure = useSessionStore((s) => s.checkNetworkClosure);
+  const checkStockCoherence = useSessionStore((s) => s.checkStockCoherence);
   const status = useSessionStore((s) => s.status);
   const config = useCaisseStore((s) => s.config);
   const denominations = useCaisseStore((s) => s.denominations);
   const loadDenominations = useCaisseStore((s) => s.loadDenominations);
   const isLoadingDenominations = useCaisseStore((s) => s.isLoadingDenominations);
   const resetCounting = useCaisseStore((s) => s.resetCounting);
+  const dateComptable = useCaisseStore((s) => s.dateComptable);
+  const validateDateComptable = useCaisseStore((s) => s.validateDateComptable);
 
   const [step, setStep] = useState<Step>('comptage');
   const [counting, setCounting] = useState<Map<number, number>>(new Map());
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPrintDialog, setShowPrintDialog] = useState(false);
+  const [concurrentSession, setConcurrentSession] = useState<ConcurrentSessionInfo | null>(null);
+  const [showConcurrentWarning, setShowConcurrentWarning] = useState(false);
+  const [isCheckingConcurrent, setIsCheckingConcurrent] = useState(false);
+  // T4-A1: Network closure + stock coherence state
+  const [networkClosureStatus, setNetworkClosureStatus] = useState<NetworkClosureStatus | null>(null);
+  const [networkClosureDate, setNetworkClosureDate] = useState<string | undefined>();
+  const [showNetworkAlert, setShowNetworkAlert] = useState(false);
+  const [stockResult, setStockResult] = useState<StockCoherenceResult | null>(null);
+
+  // T4-A2: Multi-devises state
+  const devisesAutorisees = config?.devisesAutorisees ?? [config?.devisePrincipale ?? 'EUR'];
+  const [activeDevise, setActiveDevise] = useState(config?.devisePrincipale ?? 'EUR');
+  const autoPrintDone = useRef(false);
 
   const deviseCode = config?.devisePrincipale ?? 'EUR';
+  const isDateComptableValid = validateDateComptable();
 
+  // T4-A2: Load denominations for all authorized devises
   useEffect(() => {
-    loadDenominations(deviseCode);
+    for (const devise of devisesAutorisees) {
+      loadDenominations(devise);
+    }
     resetCounting();
-  }, [deviseCode, loadDenominations, resetCounting]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [devisesAutorisees.join(','), loadDenominations, resetCounting]);
+
+  // T4-A1: Check network closure + stock coherence on mount
+  useEffect(() => {
+    const runPreChecks = async () => {
+      const [closureResult, stockCheck] = await Promise.all([
+        checkNetworkClosure(),
+        checkStockCoherence(),
+      ]);
+      setNetworkClosureStatus(closureResult.status);
+      setNetworkClosureDate(closureResult.lastDate);
+      if (closureResult.status !== 'completed') {
+        setShowNetworkAlert(true);
+      }
+      setStockResult(stockCheck);
+    };
+    runPreChecks();
+  }, [checkNetworkClosure, checkStockCoherence]);
 
   // Redirect if session already open
   useEffect(() => {
@@ -41,6 +83,15 @@ export function SessionOuverturePage() {
       navigate('/caisse/menu');
     }
   }, [status, navigate]);
+
+  // T4-A2: Auto-print on success step
+  useEffect(() => {
+    if (step === 'succes' && !autoPrintDone.current) {
+      autoPrintDone.current = true;
+      handlePrint('pdf-browser');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
 
   const handleCountChange = useCallback((denominationId: number, quantite: number) => {
     setCounting((prev) => {
@@ -59,37 +110,81 @@ export function SessionOuverturePage() {
     ordre: i,
   }));
 
+  // T4-A2: Compute totals per devise for tab badges
+  const deviseTotals: Record<string, number> = {};
+  for (const devise of devisesAutorisees) {
+    let total = 0;
+    for (const denom of denominations) {
+      if (denom.deviseCode === devise) {
+        const qty = counting.get(denom.id) ?? 0;
+        total += qty * denom.valeur;
+      }
+    }
+    deviseTotals[devise] = total;
+  }
+
+  // T4-A2: Multi-devises computeResults - aggregate all devises
   const computeResults = (): CountingResult[] => {
-    const details = Array.from(counting.entries())
-      .filter(([, qty]) => qty > 0)
-      .map(([denomId, qty]) => {
-        const denom = denominations.find((d) => d.id === denomId);
-        return {
-          denominationId: denomId,
-          quantite: qty,
-          total: qty * (denom?.valeur ?? 0),
-        };
-      });
+    return devisesAutorisees.map((devise) => {
+      const details = Array.from(counting.entries())
+        .filter(([, qty]) => qty > 0)
+        .map(([denomId, qty]) => {
+          const denom = denominations.find((d) => d.id === denomId);
+          if (!denom || denom.deviseCode !== devise) return null;
+          return {
+            denominationId: denomId,
+            quantite: qty,
+            total: qty * denom.valeur,
+          };
+        })
+        .filter((d): d is NonNullable<typeof d> => d !== null);
 
-    const totalCompte = details.reduce((sum, d) => sum + d.total, 0);
+      const totalCompte = details.reduce((sum, d) => sum + d.total, 0);
 
-    return [{
-      deviseCode,
-      totalCompte,
-      totalAttendu: 0,
-      ecart: 0,
-      details,
-    }];
+      return {
+        deviseCode: devise,
+        totalCompte,
+        totalAttendu: 0,
+        ecart: 0,
+        details,
+      };
+    }).filter((r) => r.details.length > 0);
   };
 
-  const handleValidate = () => {
+  const handleValidate = async () => {
     const hasAnyCount = Array.from(counting.values()).some((v) => v > 0);
     if (!hasAnyCount) {
       setError('Veuillez saisir au moins une denomination');
       return;
     }
     setError(null);
+
+    // Check concurrent sessions before proceeding
+    setIsCheckingConcurrent(true);
+    try {
+      const concurrent = await checkConcurrentSessions();
+      if (concurrent) {
+        setConcurrentSession(concurrent);
+        setShowConcurrentWarning(true);
+        return;
+      }
+    } finally {
+      setIsCheckingConcurrent(false);
+    }
+
     setStep('validation');
+  };
+
+  const handleForceOpen = () => {
+    setShowConcurrentWarning(false);
+    setConcurrentSession(null);
+    setStep('validation');
+  };
+
+  const handleCancelConcurrent = () => {
+    setShowConcurrentWarning(false);
+    setConcurrentSession(null);
+    navigate('/caisse/menu');
   };
 
   const handleSubmit = async () => {
@@ -176,6 +271,38 @@ export function SessionOuverturePage() {
           </div>
         </div>
 
+        {dateComptable && !isDateComptableValid && (
+          <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-md text-sm flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+            <span>
+              La date comptable ({new Date(dateComptable).toLocaleDateString('fr-FR')}) ne correspond pas a la date du jour.
+            </span>
+          </div>
+        )}
+
+        {dateComptable && (
+          <div className="text-sm text-on-surface-muted">
+            Date comptable : {new Date(dateComptable).toLocaleDateString('fr-FR')}
+          </div>
+        )}
+
+        {/* T4-A1: Stock coherence warning (non-blocking) */}
+        {stockResult && !stockResult.coherent && (
+          <div className="bg-orange-50 border border-orange-200 text-orange-800 px-4 py-3 rounded-md text-sm">
+            <div className="flex items-center gap-2 font-medium mb-1">
+              <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+              Incoherence de stock detectee
+            </div>
+            {stockResult.details && stockResult.details.length > 0 && (
+              <ul className="list-disc list-inside ml-6 space-y-0.5">
+                {stockResult.details.map((detail, idx) => (
+                  <li key={idx}>{detail}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
             {error}
@@ -184,13 +311,23 @@ export function SessionOuverturePage() {
 
         {step === 'comptage' && (
           <>
+            {/* T4-A2: Multi-devises tab selector */}
+            {devisesAutorisees.length > 1 && (
+              <DeviseTabSelector
+                devises={devisesAutorisees}
+                activeDevise={activeDevise}
+                onSelect={setActiveDevise}
+                totals={deviseTotals}
+              />
+            )}
+
             {isLoadingDenominations ? (
               <div className="text-center py-8 text-on-surface-muted">
                 Chargement des denominations...
               </div>
             ) : (
               <DenominationGrid
-                deviseCode={deviseCode}
+                deviseCode={activeDevise}
                 denominations={catalogDenominations}
                 counting={counting}
                 onCountChange={handleCountChange}
@@ -206,9 +343,10 @@ export function SessionOuverturePage() {
               </button>
               <button
                 onClick={handleValidate}
-                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark"
+                disabled={isCheckingConcurrent}
+                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark disabled:opacity-50"
               >
-                Valider le comptage
+                {isCheckingConcurrent ? 'Verification...' : 'Valider le comptage'}
               </button>
             </div>
           </>
@@ -244,7 +382,7 @@ export function SessionOuverturePage() {
                 onClick={() => setShowPrintDialog(true)}
                 className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-on-surface hover:bg-surface-hover"
               >
-                <Printer className="h-4 w-4" /> Imprimer
+                <Printer className="h-4 w-4" /> Re-imprimer
               </button>
               <button
                 onClick={() => navigate('/caisse/menu')}
@@ -261,6 +399,26 @@ export function SessionOuverturePage() {
           onClose={() => setShowPrintDialog(false)}
           onSelect={handlePrint}
         />
+
+        {concurrentSession && (
+          <ConcurrentSessionWarning
+            open={showConcurrentWarning}
+            onClose={handleCancelConcurrent}
+            onForceOpen={handleForceOpen}
+            concurrentSession={concurrentSession}
+          />
+        )}
+
+        {/* T4-A1: Network closure alert dialog */}
+        {networkClosureStatus && networkClosureStatus !== 'completed' && (
+          <NetworkClosureAlert
+            open={showNetworkAlert}
+            onClose={() => setShowNetworkAlert(false)}
+            onProceed={() => setShowNetworkAlert(false)}
+            lastClosureDate={networkClosureDate}
+            closureStatus={networkClosureStatus}
+          />
+        )}
       </div>
     </ScreenLayout>
   );

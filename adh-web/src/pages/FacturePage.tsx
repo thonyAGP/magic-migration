@@ -39,12 +39,15 @@ export function FacturePage() {
 
   const {
     currentFacture,
+    searchResults: factureSearchResults,
+    isSearching: isSearchingFactures,
     isLoadingFacture,
     isSubmitting,
     isValidating,
     isCancelling,
     isPrinting,
     error,
+    searchFactures,
     loadFacture,
     createFacture,
     updateLignes,
@@ -230,7 +233,12 @@ export function FacturePage() {
             {/* Right: Search */}
             <div className="flex-1 min-w-0 rounded-md border border-border p-4">
               <h3 className="text-sm font-semibold mb-3">Rechercher une facture</h3>
-              <FactureSearchPanel onSelectFacture={handleSelectExisting} />
+              <FactureSearchPanel
+                onSelectFacture={handleSelectExisting}
+                onSearch={(q, dd, df) => searchFactures(societe, q, dd, df)}
+                searchResults={factureSearchResults?.factures ?? []}
+                isSearching={isSearchingFactures}
+              />
             </div>
           </div>
         )}

@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Input, Label, Badge } from '@/components/ui';
-import { factureApi } from '@/services/api/endpoints-lot4';
 import type { Facture } from '@/types/facture';
 import type { FactureSearchPanelProps } from './types';
 
@@ -22,38 +21,24 @@ const statutVariant = (statut: string) => {
 
 export function FactureSearchPanel({
   onSelectFacture,
+  onSearch,
+  searchResults = [],
+  isSearching = false,
 }: FactureSearchPanelProps) {
   const [query, setQuery] = useState('');
   const [dateDebut, setDateDebut] = useState('');
   const [dateFin, setDateFin] = useState('');
-  const [results, setResults] = useState<Facture[]>([]);
-  const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const doSearch = useCallback(async (q: string, dd: string, df: string) => {
+  const doSearch = useCallback((q: string, dd: string, df: string) => {
     if (!q && !dd && !df) {
-      setResults([]);
       setSearched(false);
       return;
     }
-
-    setSearching(true);
-    try {
-      const response = await factureApi.search(
-        '',
-        q || undefined,
-        dd || undefined,
-        df || undefined,
-      );
-      setResults(response.data.data?.factures ?? []);
-    } catch {
-      setResults([]);
-    } finally {
-      setSearching(false);
-      setSearched(true);
-    }
-  }, []);
+    onSearch(q || undefined, dd || undefined, df || undefined);
+    setSearched(true);
+  }, [onSearch]);
 
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -99,15 +84,15 @@ export function FactureSearchPanel({
 
       {/* Results */}
       <div className="space-y-2">
-        {searching && (
+        {isSearching && (
           <p className="text-on-surface-muted text-sm">Recherche en cours...</p>
         )}
 
-        {!searching && searched && results.length === 0 && (
+        {!isSearching && searched && searchResults.length === 0 && (
           <p className="text-on-surface-muted text-sm">Aucune facture trouvee</p>
         )}
 
-        {results.map((facture) => (
+        {searchResults.map((facture) => (
           <button
             key={facture.id}
             type="button"

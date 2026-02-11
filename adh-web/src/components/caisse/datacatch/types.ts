@@ -20,6 +20,8 @@ export interface DataCatchWelcomeProps {
 export interface CustomerSearchPanelProps {
   onSelectCustomer: (customer: CustomerSearchResult) => void;
   onCreateNew: () => void;
+  onSearch?: (nom?: string, prenom?: string) => void;
+  searchResults?: CustomerSearchResult[];
   isSearching?: boolean;
 }
 

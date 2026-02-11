@@ -65,3 +65,56 @@ export interface SessionSummary {
   details: SessionDetail[];
   ecart?: SessionEcart;
 }
+
+export interface ConcurrentSessionInfo {
+  sessionId: number;
+  userId: number;
+  userName: string;
+  dateOuverture: string;
+  caisseId: number;
+}
+
+export interface SessionVilConfig {
+  vilOpenSessions: boolean;
+}
+
+// Network closure status for pre-opening check
+const NETWORK_CLOSURE_STATUS = {
+  pending: 'pending',
+  completed: 'completed',
+  error: 'error',
+} as const;
+
+export type NetworkClosureStatus = (typeof NETWORK_CLOSURE_STATUS)[keyof typeof NETWORK_CLOSURE_STATUS];
+
+export interface NetworkClosureResult {
+  status: NetworkClosureStatus;
+  lastDate?: string;
+}
+
+export interface StockCoherenceResult {
+  coherent: boolean;
+  details?: string[];
+}
+
+// Fermeture recap column types
+const FERMETURE_COLUMN_TYPE = {
+  cash: 'cash',
+  cartes: 'cartes',
+  cheques: 'cheques',
+  produits: 'produits',
+  od: 'od',
+  devises: 'devises',
+} as const;
+
+export type FermetureColumnType = (typeof FERMETURE_COLUMN_TYPE)[keyof typeof FERMETURE_COLUMN_TYPE];
+
+export interface FermetureRecapColumn {
+  type: FermetureColumnType;
+  label: string;
+  montantAttendu: number;
+  montantCompte: number;
+  ecart: number;
+}
+
+export { NETWORK_CLOSURE_STATUS, FERMETURE_COLUMN_TYPE };

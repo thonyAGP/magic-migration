@@ -39,19 +39,26 @@ describe('ArticleTypeSelector', () => {
     expect(onSelect).toHaveBeenCalledWith('VRL');
   });
 
-  it('should not call onSelect for stub types', () => {
+  it('should call onSelect for TRF type', () => {
     const onSelect = vi.fn();
     render(<ArticleTypeSelector {...defaultProps} onSelect={onSelect} />);
 
-    const transfertButton = screen.getByText('Transfert').closest('button');
-    expect(transfertButton?.disabled).toBe(true);
+    fireEvent.click(screen.getByText('Transfert'));
+    expect(onSelect).toHaveBeenCalledWith('TRF');
   });
 
-  it('should show "Bientot" badge on stub types', () => {
+  it('should call onSelect for PYR type', () => {
+    const onSelect = vi.fn();
+    render(<ArticleTypeSelector {...defaultProps} onSelect={onSelect} />);
+
+    fireEvent.click(screen.getByText('Liberation'));
+    expect(onSelect).toHaveBeenCalledWith('PYR');
+  });
+
+  it('should show ANN as destructive with icon', () => {
     render(<ArticleTypeSelector {...defaultProps} />);
 
-    const badges = screen.getAllByText('Bientot');
-    expect(badges.length).toBe(2); // TRF + PYR
+    expect(screen.getByText('Annulation')).toBeDefined();
   });
 
   it('should highlight selected type', () => {

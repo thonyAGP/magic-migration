@@ -18,6 +18,7 @@ import {
   AccountOpsPage,
   ParametresPage,
   DashboardPage,
+  CaisseOpsPage,
 } from '@/pages';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ToastContainer } from '@/components/ui/Toast';
@@ -83,6 +84,7 @@ export function App() {
         <Route path="/caisse/separation" element={<ProtectedRoute><SeparationPage /></ProtectedRoute>} />
         <Route path="/caisse/fusion" element={<ProtectedRoute><FusionPage /></ProtectedRoute>} />
         <Route path="/caisse/compte/:type" element={<ProtectedRoute><AccountOpsPage /></ProtectedRoute>} />
+        <Route path="/caisse/operations" element={<ProtectedRoute><CaisseOpsPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
       <ToastContainer />

@@ -1,47 +1,35 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Input, Label, Badge, Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { datacatchApi } from '@/services/api/endpoints-lot5';
 import type { CustomerSearchPanelProps } from './types';
 import type { CustomerSearchResult } from '@/types/datacatch';
 
 export function CustomerSearchPanel({
   onSelectCustomer,
   onCreateNew,
+  onSearch,
+  searchResults = [],
   isSearching: externalSearching = false,
 }: CustomerSearchPanelProps) {
   const [nom, setNom] = useState('');
   const [prenom, setPrenom] = useState('');
-  const [results, setResults] = useState<CustomerSearchResult[]>([]);
-  const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const doSearch = useCallback(async (n: string, p: string) => {
+  const doSearch = useCallback((n: string, p: string) => {
     if (n.trim().length === 0 && p.trim().length === 0) {
-      setResults([]);
       setSearched(false);
       return;
     }
-    setSearching(true);
-    try {
-      const response = await datacatchApi.searchCustomer({
-        nom: n.trim() || undefined,
-        prenom: p.trim() || undefined,
-      });
-      setResults(response.data.data ?? []);
-    } catch {
-      setResults([]);
-    } finally {
-      setSearching(false);
-      setSearched(true);
+    if (onSearch) {
+      onSearch(n.trim() || undefined, p.trim() || undefined);
     }
-  }, []);
+    setSearched(true);
+  }, [onSearch]);
 
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     if (nom.trim().length === 0 && prenom.trim().length === 0) {
-      setResults([]);
       setSearched(false);
       return;
     }
@@ -51,7 +39,7 @@ export function CustomerSearchPanel({
     };
   }, [nom, prenom, doSearch]);
 
-  const showLoading = searching || externalSearching;
+  const showLoading = externalSearching;
 
   return (
     <div className="space-y-4">
@@ -89,15 +77,15 @@ export function CustomerSearchPanel({
         </div>
       )}
 
-      {!showLoading && searched && results.length === 0 && (
+      {!showLoading && searched && searchResults.length === 0 && (
         <div className="text-center py-4 text-on-surface-muted text-sm">
           Aucun client trouve
         </div>
       )}
 
-      {!showLoading && results.length > 0 && (
+      {!showLoading && searchResults.length > 0 && (
         <div className="space-y-2">
-          {results.map((customer) => (
+          {searchResults.map((customer) => (
             <button
               key={customer.customerId}
               type="button"
