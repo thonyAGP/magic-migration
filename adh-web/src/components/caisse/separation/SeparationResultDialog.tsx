@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -5,8 +6,11 @@ import {
   DialogFooter,
   DialogTitle,
   Button,
+  PrinterChoiceDialog,
 } from '@/components/ui';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Printer } from 'lucide-react';
+import { executePrint, TicketType } from '@/services/printer';
+import type { PrinterChoice } from '@/services/printer';
 import type { SeparationResultDialogProps } from './types';
 
 const formatCurrency = (value: number) =>
@@ -17,6 +21,33 @@ export function SeparationResultDialog({
   result,
   onClose,
 }: SeparationResultDialogProps) {
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
+
+  const handlePrint = (choice: PrinterChoice) => {
+    if (!result?.success) return;
+    executePrint(TicketType.RECAP, {
+      header: {
+        societe: 'ADH',
+        caisse: '',
+        session: '',
+        date: result.dateExecution ?? new Date().toLocaleDateString('fr-FR'),
+        heure: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        operateur: '',
+      },
+      lines: [{
+        description: `Separation: ${result.compteSource.nom} → ${result.compteDestination.nom}`,
+        montant: result.montantDeplace,
+        devise: 'EUR',
+      }],
+      footer: {
+        total: result.montantDeplace,
+        devise: 'EUR',
+        moyenPaiement: `${result.nbOperationsDeplacees} operations`,
+      },
+    }, choice);
+    setShowPrintDialog(false);
+  };
+
   if (!result) return null;
 
   return (
@@ -76,8 +107,19 @@ export function SeparationResultDialog({
         </div>
 
         <DialogFooter>
+          {result.success && (
+            <Button variant="outline" onClick={() => setShowPrintDialog(true)}>
+              <Printer className="h-4 w-4 mr-2" /> Imprimer
+            </Button>
+          )}
           <Button onClick={onClose}>Fermer</Button>
         </DialogFooter>
+
+        <PrinterChoiceDialog
+          open={showPrintDialog}
+          onClose={() => setShowPrintDialog(false)}
+          onSelect={handlePrint}
+        />
       </DialogContent>
     </Dialog>
   );

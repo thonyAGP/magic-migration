@@ -7,7 +7,7 @@ export type TransactionType =
 
 export type TransactionStatus = 'draft' | 'validated' | 'cancelled';
 
-export type ArticleType = 'VRL' | 'VSL' | 'TRF' | 'PYR' | 'default';
+export type ArticleType = 'VRL' | 'VSL' | 'ANN' | 'TRF' | 'PYR' | 'default';
 
 export type PaymentSide = 'unilateral' | 'bilateral';
 

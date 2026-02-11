@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,17 @@ interface ForfaitDialogProps {
   onValidate: (dateDebut: string, dateFin: string) => void;
 }
 
+/** Calculate the number of days between two date strings (inclusive). */
+function calculateDays(dateDebut: string, dateFin: string): number {
+  const start = new Date(dateDebut + 'T00:00:00');
+  const end = new Date(dateFin + 'T00:00:00');
+  const diffMs = end.getTime() - start.getTime();
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+}
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
+
 export function ForfaitDialog({
   open,
   onOpenChange,
@@ -29,6 +40,22 @@ export function ForfaitDialog({
   const [dateDebut, setDateDebut] = useState(today);
   const [dateFin, setDateFin] = useState('');
   const [selectedForfait, setSelectedForfait] = useState<string>('');
+
+  const activeForfait = useMemo(
+    () => catalogForfaits.find((f) => f.code === selectedForfait),
+    [catalogForfaits, selectedForfait],
+  );
+
+  const forfaitCalc = useMemo(() => {
+    if (!dateDebut || !dateFin || dateDebut > dateFin) return null;
+    const nbJours = calculateDays(dateDebut, dateFin);
+    const prixParJour = activeForfait?.prixParJour ?? 0;
+    return {
+      prixParJour,
+      nbJours,
+      total: Math.round(prixParJour * nbJours * 100) / 100,
+    };
+  }, [dateDebut, dateFin, activeForfait]);
 
   const handleForfaitSelect = useCallback(
     (code: string) => {
@@ -104,6 +131,26 @@ export function ForfaitDialog({
               La date de fin doit etre superieure ou egale a la date de debut
             </div>
           )}
+
+          {/* Calcul forfait prix x jours */}
+          {forfaitCalc && forfaitCalc.prixParJour > 0 && (
+            <div className="rounded-md bg-surface-dim p-3 text-sm space-y-1" data-testid="forfait-calc">
+              <div className="flex justify-between">
+                <span className="text-on-surface-muted">Prix/jour</span>
+                <span className="font-medium">{formatCurrency(forfaitCalc.prixParJour)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-on-surface-muted">Nombre de jours</span>
+                <span className="font-medium">{forfaitCalc.nbJours}</span>
+              </div>
+              <div className="flex justify-between border-t border-border pt-1">
+                <span className="font-medium">Total</span>
+                <span className="font-bold">
+                  {formatCurrency(forfaitCalc.prixParJour)} x {forfaitCalc.nbJours} = {formatCurrency(forfaitCalc.total)}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         <DialogFooter>
@@ -118,3 +165,5 @@ export function ForfaitDialog({
     </Dialog>
   );
 }
+
+export { calculateDays };

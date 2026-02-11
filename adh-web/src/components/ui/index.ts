@@ -36,3 +36,6 @@ export type { ComboboxProps, ComboboxOption } from './Combobox';
 export { ErrorBoundary } from './ErrorBoundary';
 
 export { Toast, ToastContainer } from './Toast';
+
+export { PrinterChoiceDialog } from './PrinterChoiceDialog';
+export type { PrinterChoiceDialogProps } from './PrinterChoiceDialog';

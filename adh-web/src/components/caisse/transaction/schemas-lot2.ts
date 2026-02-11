@@ -1,8 +1,13 @@
 import { z } from 'zod';
 
+// Validation caracteres interdits (IDE 84)
+const SAFE_TEXT_REGEX = /^[a-zA-Z0-9\s\-_.,:;!?'éèêëàâäîïôöùûüçÉÈÊËÀÂÄÎÏÔÖÙÛÜÇ€]+$/;
+
+export const safeTextSchema = z.string().regex(SAFE_TEXT_REGEX, 'Caractères spéciaux non autorisés');
+
 // Schema ligne GP
 const transactionLineGPSchema = z.object({
-  description: z.string().min(1, 'Description obligatoire'),
+  description: z.string().min(1, 'Description obligatoire').regex(SAFE_TEXT_REGEX, 'Caractères spéciaux non autorisés'),
   quantite: z.number().positive('Quantite doit etre superieure a 0'),
   prixUnitaire: z.number().min(0, 'Prix unitaire doit etre positif ou nul'),
   montant: z.number(),
@@ -11,7 +16,7 @@ const transactionLineGPSchema = z.object({
 
 // Schema ligne Boutique (codeProduit obligatoire)
 const transactionLineBoutiqueSchema = z.object({
-  description: z.string().min(1, 'Description obligatoire'),
+  description: z.string().min(1, 'Description obligatoire').regex(SAFE_TEXT_REGEX, 'Caractères spéciaux non autorisés'),
   quantite: z.number().positive('Quantite doit etre superieure a 0'),
   prixUnitaire: z.number().min(0, 'Prix unitaire doit etre positif ou nul'),
   montant: z.number(),
@@ -32,12 +37,12 @@ export const transactionLot2GPSchema = z
   .object({
     compteNumero: z.string().min(1, 'Numero de compte requis'),
     compteNom: z.string().min(1, 'Nom de compte requis'),
-    articleType: z.enum(['VRL', 'VSL', 'TRF', 'PYR', 'default']),
+    articleType: z.enum(['VRL', 'VSL', 'ANN', 'TRF', 'PYR', 'default']),
     devise: z.string().min(1, 'Devise obligatoire'),
     lignes: z
       .array(transactionLineGPSchema)
       .min(1, 'Au moins une ligne requise'),
-    commentaire: z.string().optional(),
+    commentaire: z.string().regex(SAFE_TEXT_REGEX, 'Caractères spéciaux non autorisés').optional().or(z.literal('')),
     vrlIdentity: vrlIdentitySchema.optional(),
     forfaitDateDebut: z.string().optional(),
     forfaitDateFin: z.string().optional(),
@@ -61,7 +66,7 @@ export const transactionLot2BoutiqueSchema = z.object({
   lignes: z
     .array(transactionLineBoutiqueSchema)
     .min(1, 'Au moins une ligne requise'),
-  commentaire: z.string().optional(),
+  commentaire: z.string().regex(SAFE_TEXT_REGEX, 'Caractères spéciaux non autorisés').optional().or(z.literal('')),
 });
 
 // Schema paiement

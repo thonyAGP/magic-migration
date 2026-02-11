@@ -7,6 +7,10 @@ export { TPERecoveryDialog } from './TPERecoveryDialog';
 export { TransactionSummary } from './TransactionSummary';
 export { ForfaitDialog } from './ForfaitDialog';
 export { VRLIdentityDialog } from './VRLIdentityDialog';
+export { AnnulationReferenceDialog } from './AnnulationReferenceDialog';
+export { GiftPassConfirmDialog } from './GiftPassConfirmDialog';
+export { BilateraleDialog } from './BilateraleDialog';
+export { GratuitConfirmDialog } from './GratuitConfirmDialog';
 export type {
   TransactionMode,
   TransactionFormData,
@@ -26,4 +30,5 @@ export {
   transactionLot2BoutiqueSchema,
   paymentSchema,
   bilateralPaymentSchema,
+  safeTextSchema,
 } from './schemas-lot2';

@@ -91,24 +91,42 @@ export function SeparationPage() {
 
         {currentStep === 'selection' && (
           <>
-            <SeparationAccountSelector
-              searchResults={searchResults}
-              compteSource={compteSource}
-              compteDestination={compteDestination}
-              isSearching={isSearching}
-              isValidating={isValidating}
-              onSearch={(query) => searchAccount(societe, query)}
-              onSelectSource={selectSource}
-              onSelectDestination={selectDestination}
-              onValidate={handleValidate}
-            />
-            <div className="flex justify-start">
+            <div className="space-y-4">
+              <SeparationAccountSelector
+                label="Compte source"
+                onSelect={selectSource}
+                onSearch={(q) => searchAccount(societe, q)}
+                searchResults={searchResults}
+                selectedAccount={compteSource}
+                excludeAccount={compteDestination}
+                isSearching={isSearching}
+              />
+              <SeparationAccountSelector
+                label="Compte destination"
+                onSelect={selectDestination}
+                onSearch={(q) => searchAccount(societe, q)}
+                searchResults={searchResults}
+                selectedAccount={compteDestination}
+                excludeAccount={compteSource}
+                isSearching={isSearching}
+              />
+            </div>
+            <div className="flex justify-between">
               <button
                 onClick={handleBack}
                 className="px-4 py-2 border border-border rounded-md text-on-surface hover:bg-surface-hover"
               >
                 Retour au menu
               </button>
+              {compteSource && compteDestination && (
+                <button
+                  onClick={handleValidate}
+                  disabled={isValidating}
+                  className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark disabled:opacity-50"
+                >
+                  {isValidating ? 'Validation...' : 'Valider la separation'}
+                </button>
+              )}
             </div>
           </>
         )}
@@ -125,11 +143,12 @@ export function SeparationPage() {
         )}
 
         {currentStep === 'processing' && (
-          <SeparationProcessing progress={progress} />
+          <SeparationProcessing progress={progress} isProcessing={isExecuting} />
         )}
 
         {currentStep === 'result' && result && (
           <SeparationResultDialog
+            open={true}
             result={result}
             onClose={() => {
               reset();

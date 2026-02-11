@@ -2,10 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { DenominationGrid, DenominationSummary } from '@/components/caisse/denomination';
+import { PrinterChoiceDialog } from '@/components/ui';
 import { useSessionStore, useCaisseStore, useAuthStore } from '@/stores';
+import { executePrint, TicketType } from '@/services/printer';
+import type { PrinterChoice } from '@/services/printer';
 import type { DenominationCatalog, CountingResult } from '@/types/denomination';
+import { Printer } from 'lucide-react';
 
-type Step = 'comptage' | 'validation' | 'ouverture';
+type Step = 'comptage' | 'validation' | 'ouverture' | 'succes';
 
 export function SessionOuverturePage() {
   const navigate = useNavigate();
@@ -22,6 +26,7 @@ export function SessionOuverturePage() {
   const [counting, setCounting] = useState<Map<number, number>>(new Map());
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
 
   const deviseCode = config?.devisePrincipale ?? 'EUR';
 
@@ -107,7 +112,7 @@ export function SessionOuverturePage() {
         comptage,
       });
 
-      navigate('/caisse/menu');
+      setStep('succes');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erreur lors de l\'ouverture';
       setError(message);
@@ -115,6 +120,34 @@ export function SessionOuverturePage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handlePrint = (choice: PrinterChoice) => {
+    const results = computeResults();
+    const total = results.reduce((sum, r) => sum + r.totalCompte, 0);
+    executePrint(TicketType.OUVERTURE, {
+      header: {
+        societe: config?.libelle ?? 'ADH',
+        caisse: config?.id?.toString() ?? '',
+        session: '',
+        date: new Date().toLocaleDateString('fr-FR'),
+        heure: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        operateur: user?.login ?? '',
+      },
+      lines: results.flatMap((r) =>
+        r.details.map((d) => {
+          const denom = denominations.find((dn) => dn.id === d.denominationId);
+          return {
+            description: denom?.libelle ?? `Denomination ${d.denominationId}`,
+            quantite: d.quantite,
+            montant: d.total,
+            devise: r.deviseCode,
+          };
+        }),
+      ),
+      footer: { total, devise: deviseCode, moyenPaiement: 'Fond de caisse' },
+    }, choice);
+    setShowPrintDialog(false);
   };
 
   const handleBack = () => {
@@ -135,6 +168,7 @@ export function SessionOuverturePage() {
               {step === 'comptage' && 'Comptez le contenu initial de la caisse'}
               {step === 'validation' && 'Verifiez le comptage avant ouverture'}
               {step === 'ouverture' && 'Ouverture en cours...'}
+              {step === 'succes' && 'Caisse ouverte'}
             </p>
           </div>
           <div className="flex gap-2">
@@ -201,6 +235,32 @@ export function SessionOuverturePage() {
             </div>
           </>
         )}
+
+        {step === 'succes' && (
+          <div className="flex flex-col items-center gap-4 py-8">
+            <div className="text-green-600 text-lg font-semibold">Caisse ouverte avec succes</div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowPrintDialog(true)}
+                className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-on-surface hover:bg-surface-hover"
+              >
+                <Printer className="h-4 w-4" /> Imprimer
+              </button>
+              <button
+                onClick={() => navigate('/caisse/menu')}
+                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark"
+              >
+                Continuer
+              </button>
+            </div>
+          </div>
+        )}
+
+        <PrinterChoiceDialog
+          open={showPrintDialog}
+          onClose={() => setShowPrintDialog(false)}
+          onSelect={handlePrint}
+        />
       </div>
     </ScreenLayout>
   );

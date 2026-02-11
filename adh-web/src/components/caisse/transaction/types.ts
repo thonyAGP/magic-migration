@@ -52,10 +52,21 @@ export interface CommentaireDialogProps {
 export interface BilateraleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onValidate: (data: {
-    compteSource: string;
-    compteDestination: string;
-    montant: number;
-    devise: string;
-  }) => void;
+  totalRestant: number;
+  devise: string;
+  mopLibelle: string;
+  onValidate: (partie1: number, partie2: number) => void;
+}
+
+export interface TransferData {
+  compteSource: string;
+  compteDestination: string;
+  montant: number;
+  motif: string;
+}
+
+export interface LiberationData {
+  compte: string;
+  montant: number;
+  referenceOrigine: string;
 }

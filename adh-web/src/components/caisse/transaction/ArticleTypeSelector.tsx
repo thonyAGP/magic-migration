@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui';
+import { ArrowRightLeft, Unlock, XCircle } from 'lucide-react';
 import type { ArticleType } from '@/types/transaction';
 import type { TransactionMode } from './types';
 
@@ -8,12 +9,14 @@ const ARTICLE_TYPES: {
   label: string;
   gpOnly?: boolean;
   stub?: boolean;
+  destructive?: boolean;
 }[] = [
   { value: 'default', label: 'Standard' },
   { value: 'VRL', label: 'VRL' },
   { value: 'VSL', label: 'VSL' },
-  { value: 'TRF', label: 'Transfert', gpOnly: true, stub: true },
-  { value: 'PYR', label: 'Liberation', gpOnly: true, stub: true },
+  { value: 'ANN', label: 'Annulation', destructive: true },
+  { value: 'TRF', label: 'Transfert', gpOnly: true },
+  { value: 'PYR', label: 'Liberation', gpOnly: true },
 ];
 
 interface ArticleTypeSelectorProps {
@@ -50,13 +53,20 @@ export function ArticleTypeSelector({
             title={item.stub ? 'Fonctionnalite a venir' : undefined}
             className={cn(
               'rounded-md border px-3 py-1.5 text-sm font-medium transition-colors',
-              isSelected
+              isSelected && !item.destructive
                 ? 'border-primary bg-primary text-white'
-                : 'border-border bg-surface text-on-surface hover:border-primary/50',
+                : isSelected && item.destructive
+                  ? 'border-red-400 bg-red-50 text-red-800'
+                  : 'border-border bg-surface text-on-surface hover:border-primary/50',
               isDisabled && !isSelected && 'opacity-50 cursor-not-allowed',
             )}
           >
-            {item.label}
+            <span className="inline-flex items-center gap-1.5">
+              {item.destructive && <XCircle className="h-3.5 w-3.5" />}
+              {item.value === 'TRF' && <ArrowRightLeft className="h-3.5 w-3.5" />}
+              {item.value === 'PYR' && <Unlock className="h-3.5 w-3.5" />}
+              {item.label}
+            </span>
             {item.stub && (
               <Badge variant="secondary" className="ml-1.5 text-xs px-1 py-0">
                 Bientot

@@ -9,8 +9,10 @@ import {
 } from '@/components/caisse/change';
 import { useChangeStore } from '@/stores/changeStore';
 import { useAuthStore } from '@/stores';
-import { Button } from '@/components/ui';
-import { ArrowLeft } from 'lucide-react';
+import { Button, PrinterChoiceDialog } from '@/components/ui';
+import { ArrowLeft, Printer } from 'lucide-react';
+import { executePrint, TicketType } from '@/services/printer';
+import type { PrinterChoice } from '@/services/printer';
 import type { ChangeFormData } from '@/components/caisse/change/types';
 
 export function ChangePage() {
@@ -39,6 +41,7 @@ export function ChangePage() {
 
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [cancelTargetId, setCancelTargetId] = useState<number | null>(null);
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
 
   useEffect(() => {
     loadDevises(societe);
@@ -84,6 +87,33 @@ export function ChangePage() {
     setCancelTargetId(null);
   }, []);
 
+  const handlePrint = useCallback((choice: PrinterChoice) => {
+    const lastOp = operations[0];
+    executePrint(TicketType.CHANGE, {
+      header: {
+        societe: 'ADH',
+        caisse: '',
+        session: '',
+        date: new Date().toLocaleDateString('fr-FR'),
+        heure: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        operateur: user?.login ?? '',
+      },
+      lines: lastOp
+        ? [{
+            description: `Change ${lastOp.type} ${lastOp.deviseCode}`,
+            montant: lastOp.montant,
+            devise: lastOp.deviseCode,
+          }]
+        : [],
+      footer: {
+        total: lastOp?.montantConverti ?? 0,
+        devise: 'EUR',
+        moyenPaiement: lastOp?.modePaiement ?? '',
+      },
+    }, choice);
+    setShowPrintDialog(false);
+  }, [operations, user]);
+
   return (
     <ScreenLayout>
       <div className="space-y-4">
@@ -97,6 +127,11 @@ export function ChangePage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h2 className="text-lg font-semibold">Change devises</h2>
+          <div className="ml-auto">
+            <Button variant="outline" size="sm" onClick={() => setShowPrintDialog(true)}>
+              <Printer className="h-4 w-4 mr-1" /> Imprimer
+            </Button>
+          </div>
         </div>
 
         {error && (
@@ -139,6 +174,12 @@ export function ChangePage() {
         onClose={handleCancelClose}
         onConfirm={handleCancelConfirm}
         isCancelling={isCancelling}
+      />
+
+      <PrinterChoiceDialog
+        open={showPrintDialog}
+        onClose={() => setShowPrintDialog(false)}
+        onSelect={handlePrint}
       />
     </ScreenLayout>
   );
