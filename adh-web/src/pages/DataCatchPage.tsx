@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import {
@@ -10,11 +10,16 @@ import {
   DataCatchReview,
   DataCatchCompletion,
   DataCatchStepIndicator,
+  CheckoutPanel,
+  VillageConfigPanel,
+  CounterOccupation,
 } from '@/components/caisse/datacatch';
 import { useDataCatchStore } from '@/stores/datacatchStore';
 import { useAuthStore } from '@/stores';
 import { Button } from '@/components/ui';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LogOut, Settings, Globe } from 'lucide-react';
+import { t, getLocale, setLocale } from '@/i18n';
+import type { Locale } from '@/i18n';
 import type { DataCatchStep } from '@/types/datacatch';
 import type {
   PersonalInfoFormData,
@@ -55,11 +60,32 @@ export function DataCatchPage() {
   const savePreferences = useDataCatchStore((s) => s.savePreferences);
   const completeSession = useDataCatchStore((s) => s.completeSession);
   const setStep = useDataCatchStore((s) => s.setStep);
+  const guestData = useDataCatchStore((s) => s.guestData);
+  const checkoutStatus = useDataCatchStore((s) => s.checkoutStatus);
+  const loadGuestData = useDataCatchStore((s) => s.loadGuestData);
+  const acceptCheckout = useDataCatchStore((s) => s.acceptCheckout);
+  const declineCheckout = useDataCatchStore((s) => s.declineCheckout);
+  const cancelPass = useDataCatchStore((s) => s.cancelPass);
+  const villageConfig = useDataCatchStore((s) => s.villageConfig);
+  const systemStatus = useDataCatchStore((s) => s.systemStatus);
+  const loadVillageConfig = useDataCatchStore((s) => s.loadVillageConfig);
+  const checkSystemStatus = useDataCatchStore((s) => s.checkSystemStatus);
+  const counterOccupation = useDataCatchStore((s) => s.counterOccupation);
+  const updateCounter = useDataCatchStore((s) => s.updateCounter);
   const reset = useDataCatchStore((s) => s.reset);
 
+  const [locale, setLocaleState] = useState<Locale>(getLocale());
+
+  const toggleLocale = useCallback(() => {
+    const next: Locale = locale === 'fr' ? 'en' : 'fr';
+    setLocale(next);
+    setLocaleState(next);
+  }, [locale]);
+
   useEffect(() => {
+    updateCounter();
     return () => reset();
-  }, [reset]);
+  }, [updateCounter, reset]);
 
   const handleStartNew = useCallback(async () => {
     const result = await createSession(societe, operateur, undefined, true);
@@ -127,6 +153,16 @@ export function DataCatchPage() {
     navigate('/caisse/menu');
   }, [reset, navigate]);
 
+  const handleGoToCheckout = useCallback(() => {
+    loadGuestData('GUEST-001');
+    setStep('checkout');
+  }, [loadGuestData, setStep]);
+
+  const handleGoToConfig = useCallback(() => {
+    loadVillageConfig();
+    setStep('config');
+  }, [loadVillageConfig, setStep]);
+
   const handleBack = useCallback(() => {
     if (currentStep === 'welcome') {
       navigate('/caisse/menu');
@@ -140,6 +176,8 @@ export function DataCatchPage() {
       setStep('address');
     } else if (currentStep === 'review') {
       setStep('preferences');
+    } else if (currentStep === 'checkout' || currentStep === 'config') {
+      setStep('welcome');
     }
   }, [currentStep, currentSession, setStep, navigate]);
 
@@ -209,6 +247,28 @@ export function DataCatchPage() {
             onClose={handleFinish}
           />
         );
+      case 'checkout':
+        return (
+          <CheckoutPanel
+            guestData={guestData}
+            onAccept={acceptCheckout}
+            onDecline={declineCheckout}
+            onCancelPass={cancelPass}
+            isProcessing={checkoutStatus === 'processing'}
+          />
+        );
+      case 'config':
+        return villageConfig && systemStatus ? (
+          <VillageConfigPanel
+            village={villageConfig}
+            systemStatus={systemStatus}
+            onRefreshStatus={checkSystemStatus}
+          />
+        ) : (
+          <div className="text-center text-sm text-on-surface-muted py-4">
+            Chargement configuration...
+          </div>
+        );
       default:
         return null;
     }
@@ -226,8 +286,19 @@ export function DataCatchPage() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-lg font-semibold">Saisie client</h2>
+          <h2 className="flex-1 text-lg font-semibold">{t('datacatch.welcome.title')}</h2>
+          <Button variant="outline" size="sm" onClick={toggleLocale}>
+            <Globe className="mr-1 h-3.5 w-3.5" />
+            {locale.toUpperCase()}
+          </Button>
         </div>
+
+        {/* Counter occupation */}
+        <CounterOccupation
+          currentCount={counterOccupation.current}
+          maxCapacity={counterOccupation.max}
+          waitingCount={counterOccupation.waiting}
+        />
 
         {/* Step indicator */}
         <DataCatchStepIndicator currentStep={currentStep} steps={STEPS} />
@@ -235,6 +306,20 @@ export function DataCatchPage() {
         {error && currentStep !== 'complete' && (
           <div className="rounded-md bg-warning/10 px-3 py-2 text-sm text-warning">
             {error}
+          </div>
+        )}
+
+        {/* Quick access - checkout & config */}
+        {currentStep === 'welcome' && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleGoToCheckout}>
+              <LogOut className="mr-1 h-3.5 w-3.5" />
+              Checkout
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleGoToConfig}>
+              <Settings className="mr-1 h-3.5 w-3.5" />
+              Configuration
+            </Button>
           </div>
         )}
 

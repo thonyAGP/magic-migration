@@ -7,7 +7,9 @@ export type DataCatchStep =
   | 'address'
   | 'preferences'
   | 'review'
-  | 'complete';
+  | 'complete'
+  | 'checkout'
+  | 'config';
 
 export type DataCatchSessionStatus = 'en_cours' | 'termine' | 'annule';
 
@@ -66,4 +68,37 @@ export interface DataCatchSummary {
   nbSessionsJour: number;
   nbNouveauxClients: number;
   nbMisesAJour: number;
+}
+
+// Checkout types (IDE 8)
+export type CheckoutStatus = 'idle' | 'processing' | 'accepted' | 'declined' | 'cancelled';
+
+export interface GuestData {
+  id: string;
+  nom: string;
+  prenom: string;
+  chambre: string;
+  dateArrivee: string;
+  dateDepart: string;
+  passId?: string;
+  solde: number;
+  status: string; // 'checked_in' | 'checking_out' | 'checked_out'
+}
+
+// Village config types (IDE 9)
+export interface VillageConfig {
+  code: string;
+  nom: string;
+  pays: string;
+  timezone: string;
+  saison: string; // 'ete' | 'hiver' | 'toutes_saisons'
+  capacite: number;
+  deviseLocale: string;
+}
+
+export interface SystemStatus {
+  database: 'ok' | 'error';
+  network: 'ok' | 'error';
+  printer: 'ok' | 'error' | 'unavailable';
+  lastSync: string;
 }

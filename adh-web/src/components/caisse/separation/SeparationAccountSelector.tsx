@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Input, Badge, Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { FiliationList } from './FiliationList';
 import type { SeparationAccountSelectorProps } from './types';
 import type { SeparationAccount } from '@/types/separation';
 
@@ -17,6 +18,8 @@ export function SeparationAccountSelector({
   isLoading = false,
   isSearching = false,
   disabled = false,
+  filiations = [],
+  onSelectFiliation,
 }: SeparationAccountSelectorProps) {
   const [query, setQuery] = useState('');
   const [searched, setSearched] = useState(false);
@@ -89,6 +92,13 @@ export function SeparationAccountSelector({
             </Button>
           </div>
         </div>
+        {filiations.length > 0 && (
+          <FiliationList
+            accountId={String(selectedAccount.codeAdherent)}
+            filiations={filiations}
+            onSelectFiliation={onSelectFiliation}
+          />
+        )}
       </div>
     );
   }

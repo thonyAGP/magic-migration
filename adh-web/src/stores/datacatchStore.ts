@@ -7,9 +7,25 @@ import type {
   CustomerPreferences,
   DataCatchSession,
   DataCatchSummary,
+  GuestData,
+  CheckoutStatus,
+  VillageConfig,
+  SystemStatus,
 } from '@/types/datacatch';
 import { datacatchApi } from '@/services/api/endpoints-lot5';
 import { useDataSourceStore } from './dataSourceStore';
+
+interface CounterOccupation {
+  current: number;
+  max: number;
+  waiting: number;
+}
+
+interface CatchingStats {
+  treatedToday: number;
+  avgTimeMinutes: number;
+  completionRate: number;
+}
 
 interface DataCatchState {
   currentSession: DataCatchSession | null;
@@ -19,10 +35,19 @@ interface DataCatchState {
   personalInfo: CustomerPersonalInfo | null;
   address: CustomerAddress | null;
   preferences: CustomerPreferences | null;
+  // Counter & stats (IDE 7/17)
+  counterOccupation: CounterOccupation;
+  catchingStats: CatchingStats;
   isSearching: boolean;
   isSaving: boolean;
   isCompleting: boolean;
   error: string | null;
+  // Checkout (IDE 8)
+  guestData: GuestData | null;
+  checkoutStatus: CheckoutStatus;
+  // Village config (IDE 9)
+  villageConfig: VillageConfig | null;
+  systemStatus: SystemStatus | null;
 }
 
 interface DataCatchActions {
@@ -60,6 +85,17 @@ interface DataCatchActions {
   ) => Promise<{ success: boolean; error?: string }>;
   setStep: (step: DataCatchStep) => void;
   loadSummary: (societe: string) => Promise<void>;
+  // Counter & stats actions (IDE 7/17)
+  updateCounter: () => void;
+  loadCatchingStats: () => void;
+  // Checkout actions (IDE 8)
+  loadGuestData: (guestId: string) => Promise<void>;
+  acceptCheckout: () => Promise<{ success: boolean; error?: string }>;
+  declineCheckout: (reason: string) => Promise<{ success: boolean; error?: string }>;
+  cancelPass: () => Promise<{ success: boolean; error?: string }>;
+  // Village config actions (IDE 9)
+  loadVillageConfig: () => Promise<void>;
+  checkSystemStatus: () => Promise<void>;
   reset: () => void;
 }
 
@@ -90,6 +126,35 @@ const MOCK_SUMMARY: DataCatchSummary = {
   nbMisesAJour: 37,
 };
 
+const MOCK_GUEST: GuestData = {
+  id: 'GUEST-001',
+  nom: 'Dupont',
+  prenom: 'Jean',
+  chambre: '214',
+  dateArrivee: '2026-02-08',
+  dateDepart: '2026-02-15',
+  passId: 'CMP-2026-0042',
+  solde: 45.50,
+  status: 'checking_out',
+};
+
+const MOCK_VILLAGE: VillageConfig = {
+  code: 'OIR',
+  nom: 'Opio en Provence',
+  pays: 'France',
+  timezone: 'Europe/Paris',
+  saison: 'toutes_saisons',
+  capacite: 430,
+  deviseLocale: 'EUR',
+};
+
+const MOCK_SYSTEM_STATUS: SystemStatus = {
+  database: 'ok',
+  network: 'ok',
+  printer: 'ok',
+  lastSync: new Date().toISOString(),
+};
+
 const initialState: DataCatchState = {
   currentSession: null,
   searchResults: [],
@@ -98,10 +163,16 @@ const initialState: DataCatchState = {
   personalInfo: null,
   address: null,
   preferences: null,
+  counterOccupation: { current: 0, max: 20, waiting: 0 },
+  catchingStats: { treatedToday: 0, avgTimeMinutes: 0, completionRate: 0 },
   isSearching: false,
   isSaving: false,
   isCompleting: false,
   error: null,
+  guestData: null,
+  checkoutStatus: 'idle',
+  villageConfig: null,
+  systemStatus: null,
 };
 
 export const useDataCatchStore = create<DataCatchStore>()((set) => ({
@@ -310,6 +381,149 @@ export const useDataCatchStore = create<DataCatchStore>()((set) => ({
   },
 
   setStep: (step) => set({ currentStep: step }),
+
+  updateCounter: () => {
+    set({ counterOccupation: { current: Math.floor(Math.random() * 18) + 2, max: 20, waiting: Math.floor(Math.random() * 3) } });
+  },
+
+  loadCatchingStats: () => {
+    set({ catchingStats: { treatedToday: 32, avgTimeMinutes: 4.2, completionRate: 87 } });
+  },
+
+  loadGuestData: async (guestId) => {
+    const { isRealApi } = useDataSourceStore.getState();
+    set({ isSaving: true, error: null });
+
+    if (!isRealApi) {
+      set({ guestData: { ...MOCK_GUEST, id: guestId }, checkoutStatus: 'idle', isSaving: false });
+      return;
+    }
+
+    try {
+      const response = await datacatchApi.getGuest(guestId);
+      set({ guestData: response.data.data ?? null, checkoutStatus: 'idle', isSaving: false });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur chargement guest';
+      set({ guestData: null, error: message, isSaving: false });
+    }
+  },
+
+  acceptCheckout: async () => {
+    const { isRealApi } = useDataSourceStore.getState();
+    set({ checkoutStatus: 'processing', error: null });
+
+    if (!isRealApi) {
+      set((state) => ({
+        checkoutStatus: 'accepted',
+        guestData: state.guestData ? { ...state.guestData, status: 'checked_out' } : null,
+      }));
+      return { success: true };
+    }
+
+    try {
+      const guestId = useDataCatchStore.getState().guestData?.id;
+      if (!guestId) throw new Error('No guest selected');
+      await datacatchApi.acceptCheckout(guestId);
+      set((state) => ({
+        checkoutStatus: 'accepted',
+        guestData: state.guestData ? { ...state.guestData, status: 'checked_out' } : null,
+      }));
+      return { success: true };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur checkout';
+      set({ checkoutStatus: 'idle', error: message });
+      return { success: false, error: message };
+    }
+  },
+
+  declineCheckout: async (reason) => {
+    const { isRealApi } = useDataSourceStore.getState();
+    set({ checkoutStatus: 'processing', error: null });
+
+    if (!isRealApi) {
+      set({ checkoutStatus: 'declined' });
+      return { success: true };
+    }
+
+    try {
+      const guestId = useDataCatchStore.getState().guestData?.id;
+      if (!guestId) throw new Error('No guest selected');
+      await datacatchApi.declineCheckout(guestId, reason);
+      set({ checkoutStatus: 'declined' });
+      return { success: true };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur refus checkout';
+      set({ checkoutStatus: 'idle', error: message });
+      return { success: false, error: message };
+    }
+  },
+
+  cancelPass: async () => {
+    const { isRealApi } = useDataSourceStore.getState();
+    set({ checkoutStatus: 'processing', error: null });
+
+    if (!isRealApi) {
+      set((state) => ({
+        checkoutStatus: 'cancelled',
+        guestData: state.guestData ? { ...state.guestData, passId: undefined } : null,
+      }));
+      return { success: true };
+    }
+
+    try {
+      const guestId = useDataCatchStore.getState().guestData?.id;
+      if (!guestId) throw new Error('No guest selected');
+      await datacatchApi.cancelPass(guestId);
+      set((state) => ({
+        checkoutStatus: 'cancelled',
+        guestData: state.guestData ? { ...state.guestData, passId: undefined } : null,
+      }));
+      return { success: true };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur annulation pass';
+      set({ checkoutStatus: 'idle', error: message });
+      return { success: false, error: message };
+    }
+  },
+
+  loadVillageConfig: async () => {
+    const { isRealApi } = useDataSourceStore.getState();
+
+    if (!isRealApi) {
+      set({ villageConfig: MOCK_VILLAGE, systemStatus: MOCK_SYSTEM_STATUS });
+      return;
+    }
+
+    try {
+      const response = await datacatchApi.getVillageConfig();
+      set({ villageConfig: response.data.data ?? null });
+    } catch {
+      set({ villageConfig: null });
+    }
+  },
+
+  checkSystemStatus: async () => {
+    const { isRealApi } = useDataSourceStore.getState();
+
+    if (!isRealApi) {
+      set({ systemStatus: { ...MOCK_SYSTEM_STATUS, lastSync: new Date().toISOString() } });
+      return;
+    }
+
+    try {
+      const response = await datacatchApi.getSystemStatus();
+      set({ systemStatus: response.data.data ?? null });
+    } catch {
+      set({
+        systemStatus: {
+          database: 'error',
+          network: 'error',
+          printer: 'unavailable',
+          lastSync: new Date().toISOString(),
+        },
+      });
+    }
+  },
 
   loadSummary: async (societe) => {
     const { isRealApi } = useDataSourceStore.getState();

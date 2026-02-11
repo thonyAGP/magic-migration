@@ -2,8 +2,22 @@ import { useState, useCallback } from 'react';
 import { Button, Input, Label } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { factureCreateSchema } from './schemas';
+import { FactureHebergementSection } from './FactureHebergementSection';
+import { FactureClientSection } from './FactureClientSection';
 import type { FactureFormProps } from './types';
-import type { FactureType } from '@/types/facture';
+import type { FactureType, FactureClient } from '@/types/facture';
+import type { HebergementData } from '@/types/hebergement';
+
+const DEFAULT_CLIENT: FactureClient = {
+  nom: '',
+  prenom: '',
+  adresse1: '',
+  adresse2: '',
+  codePostal: '',
+  ville: '',
+  pays: 'FR',
+  email: '',
+};
 
 export function FactureForm({
   onSubmit,
@@ -15,6 +29,15 @@ export function FactureForm({
   const [type, setType] = useState<FactureType>('facture');
   const [commentaire, setCommentaire] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Client state
+  const [client, setClient] = useState<FactureClient>(DEFAULT_CLIENT);
+  const [sansNom, setSansNom] = useState(false);
+  const [sansAdresse, setSansAdresse] = useState(false);
+
+  // Hebergement state
+  const [hebergementEnabled, setHebergementEnabled] = useState(false);
+  const [hebergement, setHebergement] = useState<HebergementData | null>(null);
 
   const handleSubmit = useCallback(() => {
     const data = {
@@ -35,9 +58,24 @@ export function FactureForm({
       return;
     }
 
+    // Validate client fields
+    const clientErrors: Record<string, string> = {};
+    if (!sansNom && !client.nom.trim()) {
+      clientErrors.nom = 'Nom requis';
+    }
+    if (!sansAdresse) {
+      if (!client.adresse1.trim()) clientErrors.adresse1 = 'Adresse requise';
+      if (!client.codePostal.trim()) clientErrors.codePostal = 'Code postal requis';
+      if (!client.ville.trim()) clientErrors.ville = 'Ville requise';
+    }
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors);
+      return;
+    }
+
     setErrors({});
     onSubmit(result.data);
-  }, [codeAdherent, filiation, type, commentaire, onSubmit]);
+  }, [codeAdherent, filiation, type, commentaire, onSubmit, sansNom, sansAdresse, client]);
 
   return (
     <div className="space-y-4 rounded-md border border-border p-4">
@@ -106,6 +144,29 @@ export function FactureForm({
             Avoir
           </button>
         </div>
+      </div>
+
+      {/* Client section */}
+      <div className="border-t border-border pt-4">
+        <FactureClientSection
+          client={client}
+          onChange={setClient}
+          sansNom={sansNom}
+          sansAdresse={sansAdresse}
+          onSansNomChange={setSansNom}
+          onSansAdresseChange={setSansAdresse}
+          errors={errors}
+        />
+      </div>
+
+      {/* Hebergement section */}
+      <div className="border-t border-border pt-4">
+        <FactureHebergementSection
+          data={hebergement}
+          onChange={setHebergement}
+          onToggle={setHebergementEnabled}
+          enabled={hebergementEnabled}
+        />
       </div>
 
       {/* Commentaire */}

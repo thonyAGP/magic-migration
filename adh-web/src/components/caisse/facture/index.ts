@@ -3,3 +3,5 @@ export { FactureLigneGrid } from './FactureLigneGrid';
 export { FactureTVABreakdown } from './FactureTVABreakdown';
 export { FacturePreview } from './FacturePreview';
 export { FactureSearchPanel } from './FactureSearchPanel';
+export { FactureHebergementSection } from './FactureHebergementSection';
+export { FactureClientSection } from './FactureClientSection';

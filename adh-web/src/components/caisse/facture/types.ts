@@ -1,4 +1,5 @@
-import type { Facture, FactureLigne, FactureSummary } from '@/types/facture';
+import type { Facture, FactureLigne, FactureSummary, FactureClient } from '@/types/facture';
+import type { HebergementData } from '@/types/hebergement';
 import type { FactureLigneFormData, FactureCreateFormData } from './schemas';
 
 export interface FactureFormProps {
@@ -6,6 +7,8 @@ export interface FactureFormProps {
   isSubmitting?: boolean;
   disabled?: boolean;
 }
+
+export type { FactureClient, HebergementData };
 
 export interface FactureLigneGridProps {
   lignes: FactureLigne[];

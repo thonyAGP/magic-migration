@@ -6,14 +6,17 @@ import {
   GarantieOperationGrid,
   GarantieVersementDialog,
   GarantieSummary,
+  GarantieDepotArticleDialog,
+  GarantieModificationDialog,
+  GarantieRetraitDialog,
 } from '@/components/caisse/garantie';
 import { useGarantieStore } from '@/stores/garantieStore';
 import { useAuthStore } from '@/stores';
 import { Button, Input, Badge, PrinterChoiceDialog } from '@/components/ui';
-import { ArrowLeft, Printer } from 'lucide-react';
+import { ArrowLeft, Printer, Plus, Package, Pencil, Trash2, LogOut } from 'lucide-react';
 import { executePrint, TicketType } from '@/services/printer';
 import type { PrinterChoice } from '@/services/printer';
-import type { Garantie, GarantieStatus } from '@/types/garantie';
+import type { Garantie, GarantieArticle, GarantieStatus } from '@/types/garantie';
 import type { GarantieDepotFormData } from '@/components/caisse/garantie/types';
 
 type Phase = 'search' | 'detail';
@@ -38,6 +41,7 @@ export function GarantiePage() {
     operations,
     summary,
     searchResults,
+    selectedArticle,
     isSearching,
     isLoadingGarantie,
     isLoadingOperations,
@@ -53,6 +57,10 @@ export function GarantiePage() {
     recordVersement,
     recordRetrait,
     cancelGarantie,
+    setSelectedArticle,
+    addArticle,
+    modifyArticle,
+    removeArticle,
     reset,
   } = useGarantieStore();
 
@@ -61,6 +69,9 @@ export function GarantiePage() {
   const [dialogMode, setDialogMode] = useState<'versement' | 'retrait'>('versement');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showPrintDialog, setShowPrintDialog] = useState(false);
+  const [showDepotArticleDialog, setShowDepotArticleDialog] = useState(false);
+  const [showModificationDialog, setShowModificationDialog] = useState(false);
+  const [showRetraitArticleDialog, setShowRetraitArticleDialog] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -134,6 +145,28 @@ export function GarantiePage() {
     await cancelGarantie(currentGarantie.id, 'Annulation par caissier');
   }, [currentGarantie, cancelGarantie]);
 
+  const handleAddArticle = useCallback(
+    (article: Omit<GarantieArticle, 'id' | 'garantieId' | 'etat'>) => {
+      addArticle(article);
+      setShowDepotArticleDialog(false);
+    },
+    [addArticle],
+  );
+
+  const handleModifyArticle = useCallback(
+    (updated: GarantieArticle) => {
+      modifyArticle(updated);
+      setShowModificationDialog(false);
+    },
+    [modifyArticle],
+  );
+
+  const handleRemoveArticle = useCallback(() => {
+    if (!selectedArticle) return;
+    removeArticle(selectedArticle.id);
+    setShowRetraitArticleDialog(false);
+  }, [selectedArticle, removeArticle]);
+
   const handlePrint = useCallback((choice: PrinterChoice) => {
     if (!currentGarantie) return;
     executePrint(TicketType.GARANTIE, {
@@ -162,11 +195,14 @@ export function GarantiePage() {
   const handleBack = () => {
     if (phase === 'detail') {
       setPhase('search');
+      setSelectedArticle(null);
       loadSummary(societe);
     } else {
       navigate('/caisse/menu');
     }
   };
+
+  const hasSelectedArticle = selectedArticle !== null;
 
   return (
     <ScreenLayout>
@@ -288,35 +324,134 @@ export function GarantiePage() {
               </div>
             </div>
 
+            {/* ADMRQ Action bar */}
+            {currentGarantie.statut === 'active' && (
+              <div className="flex items-center gap-2 rounded-md border border-border bg-surface-dim p-2">
+                <span className="text-xs font-medium text-on-surface-muted px-2">Actions :</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDepotArticleDialog(true)}
+                  title="Ajouter un article"
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1" /> A
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleVersement}
+                  disabled={isSubmitting}
+                  title="Depot / Versement"
+                >
+                  <Package className="h-3.5 w-3.5 mr-1" /> D
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowModificationDialog(true)}
+                  disabled={!hasSelectedArticle}
+                  title="Modifier l'article selectionne"
+                >
+                  <Pencil className="h-3.5 w-3.5 mr-1" /> M
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowRetraitArticleDialog(true)}
+                  disabled={!hasSelectedArticle}
+                  title="Retirer l'article selectionne"
+                >
+                  <Trash2 className="h-3.5 w-3.5 mr-1" /> R
+                </Button>
+                <div className="flex-1" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPrintDialog(true)}
+                  title="Imprimer"
+                >
+                  <Printer className="h-3.5 w-3.5 mr-1" /> Imprimer
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleBack}
+                  title="Quitter"
+                >
+                  <LogOut className="h-3.5 w-3.5 mr-1" /> Q
+                </Button>
+              </div>
+            )}
+
+            {/* Articles list */}
+            {currentGarantie.articles.length > 0 && (
+              <div className="rounded-md border border-border overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border bg-surface-dim">
+                      <th className="px-3 py-2 text-left text-xs font-medium text-on-surface-muted">Code</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-on-surface-muted">Libelle</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-on-surface-muted">Description</th>
+                      <th className="px-3 py-2 text-right text-xs font-medium text-on-surface-muted">Valeur</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-on-surface-muted">Etat</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentGarantie.articles.map((art) => (
+                      <tr
+                        key={art.id}
+                        onClick={() => setSelectedArticle(selectedArticle?.id === art.id ? null : art)}
+                        className={`border-b border-border last:border-b-0 cursor-pointer transition-colors ${
+                          selectedArticle?.id === art.id
+                            ? 'bg-primary/10'
+                            : 'hover:bg-surface-dim'
+                        }`}
+                      >
+                        <td className="px-3 py-2 font-mono">{art.code}</td>
+                        <td className="px-3 py-2">{art.libelle}</td>
+                        <td className="px-3 py-2 max-w-48 truncate text-on-surface-muted">{art.description}</td>
+                        <td className="px-3 py-2 text-right font-medium">
+                          {formatCurrency(art.valeurEstimee)}
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge variant={art.etat === 'depose' ? 'default' : 'warning'}>
+                            {art.etat === 'depose' ? 'Depose' : 'Restitue'}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
             {/* Operations grid */}
             <GarantieOperationGrid
               operations={operations}
               isLoading={isLoadingOperations}
             />
 
-            {/* Action buttons */}
-            <div className="flex gap-3 justify-end">
-              <Button variant="outline" onClick={() => setShowPrintDialog(true)}>
-                <Printer className="h-4 w-4 mr-2" /> Imprimer
-              </Button>
-              {currentGarantie.statut === 'active' && (
-                <>
-                  <Button variant="outline" onClick={handleVersement} disabled={isSubmitting}>
-                    Versement
-                  </Button>
-                  <Button variant="outline" onClick={handleRetrait} disabled={isSubmitting}>
-                    Retrait
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={handleCancel}
-                    disabled={isCancelling}
-                  >
-                    {isCancelling ? 'Annulation...' : 'Annuler la garantie'}
-                  </Button>
-                </>
-              )}
-            </div>
+            {/* Bottom action buttons (for non-active or fallback) */}
+            {currentGarantie.statut !== 'active' && (
+              <div className="flex gap-3 justify-end">
+                <Button variant="outline" onClick={() => setShowPrintDialog(true)}>
+                  <Printer className="h-4 w-4 mr-2" /> Imprimer
+                </Button>
+              </div>
+            )}
+
+            {/* Cancel guarantee (separate from article actions) */}
+            {currentGarantie.statut === 'active' && (
+              <div className="flex justify-end">
+                <Button
+                  variant="destructive"
+                  onClick={handleCancel}
+                  disabled={isCancelling}
+                >
+                  {isCancelling ? 'Annulation...' : 'Annuler la garantie'}
+                </Button>
+              </div>
+            )}
           </>
         )}
 
@@ -335,6 +470,27 @@ export function GarantiePage() {
         onConfirm={handleDialogConfirm}
         isSubmitting={isSubmitting}
         mode={dialogMode}
+      />
+
+      <GarantieDepotArticleDialog
+        open={showDepotArticleDialog}
+        onClose={() => setShowDepotArticleDialog(false)}
+        compteId={String(currentGarantie?.codeAdherent ?? '')}
+        onValidate={handleAddArticle}
+      />
+
+      <GarantieModificationDialog
+        open={showModificationDialog}
+        onClose={() => setShowModificationDialog(false)}
+        article={selectedArticle}
+        onValidate={handleModifyArticle}
+      />
+
+      <GarantieRetraitDialog
+        open={showRetraitArticleDialog}
+        onClose={() => setShowRetraitArticleDialog(false)}
+        article={selectedArticle}
+        onConfirm={handleRemoveArticle}
       />
 
       <PrinterChoiceDialog

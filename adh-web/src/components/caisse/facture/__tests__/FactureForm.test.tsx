@@ -49,6 +49,10 @@ describe('FactureForm', () => {
     // Filiation
     fireEvent.change(inputs[1], { target: { value: '1' } });
 
+    // Check "Sans Nom" and "Sans Adresse" to bypass client validation
+    fireEvent.click(screen.getByLabelText('Sans Nom'));
+    fireEvent.click(screen.getByLabelText('Sans Adresse'));
+
     fireEvent.click(screen.getByText('Creer la facture'));
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({

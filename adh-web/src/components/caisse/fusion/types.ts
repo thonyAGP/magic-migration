@@ -1,4 +1,6 @@
-import type { FusionAccount, FusionPreview, FusionResult, FusionProgress } from '@/types/fusion';
+import type { FusionAccount, FusionPreview, FusionResult, FusionProgress, GarantieItem } from '@/types/fusion';
+
+export type { GarantieItem } from '@/types/fusion';
 
 export interface FusionComponentProps {
   className?: string;
@@ -25,10 +27,29 @@ export interface FusionPreviewCardProps extends FusionComponentProps {
 
 export interface FusionProcessingProps extends FusionComponentProps {
   progress: FusionProgress;
+  onStepError?: (stepName: string, errorMessage: string) => void;
 }
 
 export interface FusionResultDialogProps extends FusionComponentProps {
   result: FusionResult;
   onRetry: () => void;
   onClose: () => void;
+}
+
+export interface FusionGarantieChoiceProps {
+  open: boolean;
+  onClose: () => void;
+  garantiesSource: GarantieItem[];
+  garantiesDestination: GarantieItem[];
+  onValidate: (selectedIds: string[]) => void;
+}
+
+export interface FusionRetryDialogProps {
+  open: boolean;
+  onClose: () => void;
+  operationName: string;
+  errorMessage?: string;
+  onRetry: () => void;
+  onMarkDone: () => void;
+  onSkip: () => void;
 }

@@ -6,6 +6,7 @@ import {
   ExtraitTransactionGrid,
   ExtraitFormatDialog,
 } from '@/components/caisse/extrait';
+import { EmailSendDialog } from '@/components/caisse/dialogs';
 import { useExtraitStore } from '@/stores/extraitStore';
 import { useAuthStore } from '@/stores';
 import type { ExtraitAccountInfo, ExtraitPrintFormat } from '@/types/extrait';
@@ -33,6 +34,7 @@ export function ExtraitPage() {
 
   const [phase, setPhase] = useState<Phase>('search');
   const [showFormatDialog, setShowFormatDialog] = useState(false);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
 
   useEffect(() => {
     return () => reset();
@@ -130,12 +132,20 @@ export function ExtraitPage() {
               >
                 Nouvelle recherche
               </button>
-              <button
-                onClick={() => setShowFormatDialog(true)}
-                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark"
-              >
-                Imprimer
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowEmailDialog(true)}
+                  className="px-4 py-2 border border-border rounded-md text-on-surface hover:bg-surface-hover"
+                >
+                  Envoyer par email
+                </button>
+                <button
+                  onClick={() => setShowFormatDialog(true)}
+                  className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark"
+                >
+                  Imprimer
+                </button>
+              </div>
             </div>
 
             <ExtraitFormatDialog
@@ -143,6 +153,13 @@ export function ExtraitPage() {
               onClose={() => setShowFormatDialog(false)}
               onSelectFormat={handlePrintFormat}
               isPrinting={isPrinting}
+            />
+
+            <EmailSendDialog
+              open={showEmailDialog}
+              onClose={() => setShowEmailDialog(false)}
+              documentType="extrait"
+              documentId={selectedAccount ? String(selectedAccount.codeAdherent) : ''}
             />
           </>
         )}

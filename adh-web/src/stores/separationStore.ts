@@ -6,8 +6,15 @@ import type {
   SeparationProgress,
   SeparationStep,
 } from '@/types/separation';
+import type { Filiation } from '@/components/caisse/separation/types';
 import { separationApi } from '@/services/api/endpoints-lot6';
 import { useDataSourceStore } from './dataSourceStore';
+import { useSessionStore } from './sessionStore';
+
+interface PrerequisiteCheck {
+  canProceed: boolean;
+  warnings: string[];
+}
 
 interface SeparationState {
   compteSource: SeparationAccount | null;
@@ -21,12 +28,17 @@ interface SeparationState {
   isValidating: boolean;
   isExecuting: boolean;
   error: string | null;
+  prerequisites: PrerequisiteCheck | null;
+  filiations: Filiation[];
+  failedStep: { name: string; error: string } | null;
 }
 
 interface SeparationActions {
+  checkPrerequisites: () => Promise<PrerequisiteCheck>;
   searchAccount: (societe: string, query: string) => Promise<void>;
   selectSource: (account: SeparationAccount) => void;
   selectDestination: (account: SeparationAccount) => void;
+  loadFiliations: (accountId: string) => Promise<void>;
   validateSeparation: (
     societe: string,
     operateur: string,
@@ -36,6 +48,9 @@ interface SeparationActions {
     operateur: string,
   ) => Promise<{ success: boolean; error?: string }>;
   pollProgress: (operationId: string) => Promise<void>;
+  retryFailedStep: () => void;
+  markFailedStepDone: () => void;
+  skipFailedStep: () => void;
   setStep: (step: SeparationStep) => void;
   reset: () => void;
 }
@@ -47,6 +62,17 @@ const MOCK_ACCOUNTS: SeparationAccount[] = [
   { codeAdherent: 1002, filiation: 0, nom: 'Martin', prenom: 'Marie', societe: 'ADH', solde: 890.50, nbTransactions: 23 },
   { codeAdherent: 1003, filiation: 1, nom: 'Durand', prenom: 'Pierre', societe: 'ADH', solde: 320.00, nbTransactions: 12 },
 ];
+
+const MOCK_FILIATIONS: Record<string, Filiation[]> = {
+  '1001': [
+    { id: 'fil-1', nom: 'Dupont', prenom: 'Sophie', typeRelation: 'conjoint', compteId: '1001-1' },
+    { id: 'fil-2', nom: 'Dupont', prenom: 'Lucas', typeRelation: 'enfant', compteId: '1001-2' },
+  ],
+  '1002': [
+    { id: 'fil-3', nom: 'Martin', prenom: 'Paul', typeRelation: 'parent', compteId: '1002-1' },
+  ],
+  '1003': [],
+};
 
 const initialState: SeparationState = {
   compteSource: null,
@@ -60,10 +86,52 @@ const initialState: SeparationState = {
   isValidating: false,
   isExecuting: false,
   error: null,
+  prerequisites: null,
+  filiations: [],
+  failedStep: null,
 };
 
 export const useSeparationStore = create<SeparationStore>()((set, get) => ({
   ...initialState,
+
+  checkPrerequisites: async (): Promise<PrerequisiteCheck> => {
+    const warnings: string[] = [];
+    const session = useSessionStore.getState().currentSession;
+
+    if (!session || useSessionStore.getState().status !== 'open') {
+      warnings.push('Aucune session ouverte. Veuillez ouvrir une session avant de proceder.');
+    }
+
+    const closureResult = await useSessionStore.getState().checkNetworkClosure();
+    if (closureResult.status !== 'completed') {
+      warnings.push('La cloture reseau n\'est pas effectuee. Certaines operations pourraient etre incompletes.');
+    }
+
+    const result: PrerequisiteCheck = {
+      canProceed: true,
+      warnings,
+    };
+    set({ prerequisites: result });
+    return result;
+  },
+
+  loadFiliations: async (accountId: string) => {
+    const { isRealApi } = useDataSourceStore.getState();
+
+    if (!isRealApi) {
+      const filiations = MOCK_FILIATIONS[accountId] ?? [];
+      set({ filiations });
+      return;
+    }
+
+    try {
+      const response = await separationApi.searchAccount('ADH', accountId);
+      // API would return filiations; for now use empty array in real mode
+      set({ filiations: (response.data as unknown as { filiations?: Filiation[] })?.filiations ?? [] });
+    } catch {
+      set({ filiations: [] });
+    }
+  },
 
   searchAccount: async (societe, query) => {
     const { isRealApi } = useDataSourceStore.getState();
@@ -90,7 +158,10 @@ export const useSeparationStore = create<SeparationStore>()((set, get) => ({
   },
 
   selectSource: (account) => {
-    set({ compteSource: account });
+    set({ compteSource: account, filiations: [] });
+    if (account) {
+      get().loadFiliations(String(account.codeAdherent));
+    }
   },
 
   selectDestination: (account) => {
@@ -175,7 +246,11 @@ export const useSeparationStore = create<SeparationStore>()((set, get) => ({
       return { success: true };
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Erreur execution separation';
-      set({ error: message, currentStep: 'confirmation', isExecuting: false });
+      set({
+        error: message,
+        failedStep: { name: 'Execution separation', error: message },
+        isExecuting: false,
+      });
       return { success: false, error: message };
     }
   },
@@ -212,6 +287,39 @@ export const useSeparationStore = create<SeparationStore>()((set, get) => ({
         // Silently ignore progress polling errors
       }
     }
+  },
+
+  retryFailedStep: () => {
+    set({ failedStep: null, error: null });
+    // Re-trigger execution - caller will handle
+  },
+
+  markFailedStepDone: () => {
+    const { compteSource, compteDestination } = get();
+    const mockResult: SeparationResult = {
+      success: true,
+      compteSource: compteSource!,
+      compteDestination: compteDestination!,
+      nbOperationsDeplacees: 0,
+      montantDeplace: 0,
+      message: 'Separation marquee comme terminee manuellement',
+      dateExecution: new Date().toISOString(),
+    };
+    set({ failedStep: null, result: mockResult, currentStep: 'result', isExecuting: false });
+  },
+
+  skipFailedStep: () => {
+    const { compteSource, compteDestination } = get();
+    const mockResult: SeparationResult = {
+      success: false,
+      compteSource: compteSource!,
+      compteDestination: compteDestination!,
+      nbOperationsDeplacees: 0,
+      montantDeplace: 0,
+      message: 'Operation passee par l\'operateur',
+      dateExecution: new Date().toISOString(),
+    };
+    set({ failedStep: null, result: mockResult, currentStep: 'result', isExecuting: false });
   },
 
   setStep: (step) => {

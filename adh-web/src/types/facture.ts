@@ -1,8 +1,21 @@
 // Facture TVA types (IDE 97)
 
+import type { HebergementData } from './hebergement';
+
 export type FactureType = 'facture' | 'avoir';
 
 export type FactureStatus = 'brouillon' | 'emise' | 'payee' | 'annulee';
+
+export interface FactureClient {
+  nom: string;
+  prenom: string;
+  adresse1: string;
+  adresse2?: string;
+  codePostal: string;
+  ville: string;
+  pays: string;
+  email?: string;
+}
 
 export interface Facture {
   id: number;
@@ -22,6 +35,10 @@ export interface Facture {
   devise: string;
   commentaire: string;
   operateur: string;
+  client?: FactureClient;
+  sansNom?: boolean;
+  sansAdresse?: boolean;
+  hebergement?: HebergementData;
 }
 
 export interface FactureLigne {

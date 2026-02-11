@@ -44,3 +44,40 @@ export interface PassSummary {
   soldeTotal: number;
   nbTransactionsJour: number;
 }
+
+export type LienParente = 'conjoint' | 'enfant' | 'parent' | 'autre';
+
+export interface Affiliate {
+  id: string;
+  nom: string;
+  prenom: string;
+  dateNaissance: string;
+  lienParente: LienParente;
+  isActive: boolean;
+}
+
+export interface ForfaitTAI {
+  id: string;
+  libelle: string;
+  dateDebut: string;
+  dateFin: string;
+  montant: number;
+  isActive: boolean;
+}
+
+export interface PassCreationData {
+  nom: string;
+  prenom: string;
+  dateNaissance: string;
+  villageCode: string;
+  typePass: string;
+  plafondJournalier: number;
+  dateDebut: string;
+  dateFin: string;
+}
+
+export interface PassOppositionData {
+  passId: string;
+  motif: string;
+  commentaire?: string;
+}

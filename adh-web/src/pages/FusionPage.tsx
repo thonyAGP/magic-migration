@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import {
@@ -10,11 +10,13 @@ import {
 } from '@/components/caisse/fusion';
 import { useFusionStore } from '@/stores/fusionStore';
 import { useAuthStore } from '@/stores';
+import { AlertTriangle } from 'lucide-react';
 
 export function FusionPage() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const societe = 'ADH';
+  const [dismissedWarnings, setDismissedWarnings] = useState(false);
 
   const currentStep = useFusionStore((s) => s.currentStep);
   const comptePrincipal = useFusionStore((s) => s.comptePrincipal);
@@ -27,17 +29,20 @@ export function FusionPage() {
   const isValidating = useFusionStore((s) => s.isValidating);
   const isExecuting = useFusionStore((s) => s.isExecuting);
   const error = useFusionStore((s) => s.error);
+  const prerequisites = useFusionStore((s) => s.prerequisites);
   const searchAccount = useFusionStore((s) => s.searchAccount);
   const selectPrincipal = useFusionStore((s) => s.selectPrincipal);
   const selectSecondaire = useFusionStore((s) => s.selectSecondaire);
   const validateFusion = useFusionStore((s) => s.validateFusion);
   const executeFusion = useFusionStore((s) => s.executeFusion);
+  const checkPrerequisites = useFusionStore((s) => s.checkPrerequisites);
   const setStep = useFusionStore((s) => s.setStep);
   const reset = useFusionStore((s) => s.reset);
 
   useEffect(() => {
+    void checkPrerequisites();
     return () => reset();
-  }, [reset]);
+  }, [reset, checkPrerequisites]);
 
   const handleBack = () => {
     if (currentStep === 'selection_principal') {
@@ -90,6 +95,26 @@ export function FusionPage() {
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
             {error}
+          </div>
+        )}
+
+        {prerequisites && prerequisites.warnings.length > 0 && !dismissedWarnings && (
+          <div className="bg-yellow-50 border border-yellow-300 rounded-md px-4 py-3 space-y-2">
+            <div className="flex items-center gap-2 text-yellow-800 font-medium text-sm">
+              <AlertTriangle className="h-4 w-4" />
+              <span>Alertes pre-fusion</span>
+            </div>
+            <ul className="list-disc list-inside text-sm text-yellow-700 space-y-1">
+              {prerequisites.warnings.map((w, i) => (
+                <li key={i}>{w}</li>
+              ))}
+            </ul>
+            <button
+              onClick={() => setDismissedWarnings(true)}
+              className="text-xs text-yellow-800 underline hover:text-yellow-900"
+            >
+              Continuer malgre les alertes
+            </button>
           </div>
         )}
 
