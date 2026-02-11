@@ -1,10 +1,11 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui';
 import { Label } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { MoyenPaiementCatalog, SelectedMOP } from '@/types/transaction-lot2';
 import type { PaymentSide } from '@/types/transaction';
+import { BilateraleDialog } from './BilateraleDialog';
 
 const formatCurrency = (value: number, devise = 'EUR') =>
   new Intl.NumberFormat('fr-FR', { style: 'currency', currency: devise }).format(value);
@@ -32,29 +33,59 @@ export function PaymentMethodGrid({
   onTogglePaymentSide,
   disabled = false,
 }: PaymentMethodGridProps) {
+  const [bilateraleOpen, setBilateraleOpen] = useState(false);
+  const [bilateraleMop, setBilateraleMop] = useState<MoyenPaiementCatalog | null>(null);
+
   const totalRegle = selectedMOP.reduce((sum, m) => sum + m.montant, 0);
   const reste = totalTransaction - totalRegle;
 
   const handleAutoFill = useCallback(
     (code: string) => {
+      if (paymentSide === 'bilateral') {
+        const mop = catalog.find((m) => m.code === code);
+        if (mop) {
+          setBilateraleMop(mop);
+          setBilateraleOpen(true);
+        }
+        return;
+      }
       const othersTotal = selectedMOP
         .filter((m) => m.code !== code)
         .reduce((sum, m) => sum + m.montant, 0);
       const remaining = Math.max(0, totalTransaction - othersTotal);
       onAddMOP(code, Math.round(remaining * 100) / 100);
     },
-    [selectedMOP, totalTransaction, onAddMOP],
+    [selectedMOP, totalTransaction, onAddMOP, paymentSide, catalog],
   );
 
   const handleMontantChange = useCallback(
     (code: string, value: number) => {
+      if (paymentSide === 'bilateral') {
+        const mop = catalog.find((m) => m.code === code);
+        if (mop && value > 0) {
+          setBilateraleMop(mop);
+          setBilateraleOpen(true);
+          return;
+        }
+      }
       if (value <= 0) {
         onRemoveMOP(code);
       } else {
         onAddMOP(code, value);
       }
     },
-    [onAddMOP, onRemoveMOP],
+    [onAddMOP, onRemoveMOP, paymentSide, catalog],
+  );
+
+  const handleBilateraleValidate = useCallback(
+    (partie1: number, partie2: number) => {
+      if (!bilateraleMop) return;
+      onAddMOP(bilateraleMop.code, partie1);
+      onAddMOP(`${bilateraleMop.code}_P2`, partie2);
+      setBilateraleOpen(false);
+      setBilateraleMop(null);
+    },
+    [bilateraleMop, onAddMOP],
   );
 
   return (
@@ -96,33 +127,46 @@ export function PaymentMethodGrid({
       <div className="space-y-2">
         {catalog.map((mop) => {
           const selected = selectedMOP.find((m) => m.code === mop.code);
+          const selectedP2 = selectedMOP.find((m) => m.code === `${mop.code}_P2`);
           return (
-            <div key={mop.code} className="flex items-center gap-3">
-              <Label className="w-36 text-right text-sm">{mop.libelle}</Label>
-              <Input
-                type="number"
-                min={0}
-                step={0.01}
-                value={selected?.montant ?? ''}
-                onChange={(e) =>
-                  handleMontantChange(mop.code, Number(e.target.value) || 0)
-                }
-                disabled={disabled}
-                className="w-32 text-right"
-                placeholder="0,00"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => handleAutoFill(mop.code)}
-                disabled={disabled}
-                className="text-xs"
-              >
-                Solde
-              </Button>
-              {mop.estTPE && (
-                <span className="text-xs text-on-surface-muted">TPE</span>
+            <div key={mop.code}>
+              <div className="flex items-center gap-3">
+                <Label className="w-36 text-right text-sm">{mop.libelle}</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  step={0.01}
+                  value={selected?.montant ?? ''}
+                  onChange={(e) =>
+                    handleMontantChange(mop.code, Number(e.target.value) || 0)
+                  }
+                  disabled={disabled}
+                  className="w-32 text-right"
+                  placeholder="0,00"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleAutoFill(mop.code)}
+                  disabled={disabled}
+                  className="text-xs"
+                >
+                  Solde
+                </Button>
+                {mop.estTPE && (
+                  <span className="text-xs text-on-surface-muted">TPE</span>
+                )}
+              </div>
+              {selectedP2 && (
+                <div className="flex items-center gap-3 ml-4 mt-1">
+                  <Label className="w-32 text-right text-xs text-on-surface-muted">
+                    Partie 2
+                  </Label>
+                  <div className="flex h-7 items-center justify-end rounded-md bg-surface-dim px-3 text-xs font-medium w-32">
+                    {formatCurrency(selectedP2.montant, devise)}
+                  </div>
+                </div>
               )}
             </div>
           );
@@ -151,6 +195,16 @@ export function PaymentMethodGrid({
           </div>
         )}
       </div>
+
+      {/* Bilaterale Dialog */}
+      <BilateraleDialog
+        open={bilateraleOpen}
+        onOpenChange={setBilateraleOpen}
+        totalRestant={Math.max(0, reste)}
+        devise={devise}
+        mopLibelle={bilateraleMop?.libelle ?? ''}
+        onValidate={handleBilateraleValidate}
+      />
     </div>
   );
 }

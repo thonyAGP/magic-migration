@@ -9,8 +9,10 @@ import {
 } from '@/components/caisse/garantie';
 import { useGarantieStore } from '@/stores/garantieStore';
 import { useAuthStore } from '@/stores';
-import { Button, Input, Badge } from '@/components/ui';
-import { ArrowLeft } from 'lucide-react';
+import { Button, Input, Badge, PrinterChoiceDialog } from '@/components/ui';
+import { ArrowLeft, Printer } from 'lucide-react';
+import { executePrint, TicketType } from '@/services/printer';
+import type { PrinterChoice } from '@/services/printer';
 import type { Garantie, GarantieStatus } from '@/types/garantie';
 import type { GarantieDepotFormData } from '@/components/caisse/garantie/types';
 
@@ -58,6 +60,7 @@ export function GarantiePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dialogMode, setDialogMode] = useState<'versement' | 'retrait'>('versement');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -130,6 +133,31 @@ export function GarantiePage() {
     if (!currentGarantie) return;
     await cancelGarantie(currentGarantie.id, 'Annulation par caissier');
   }, [currentGarantie, cancelGarantie]);
+
+  const handlePrint = useCallback((choice: PrinterChoice) => {
+    if (!currentGarantie) return;
+    executePrint(TicketType.GARANTIE, {
+      header: {
+        societe: 'ADH',
+        caisse: '',
+        session: '',
+        date: new Date().toLocaleDateString('fr-FR'),
+        heure: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        operateur: user?.login ?? '',
+      },
+      lines: [{
+        description: `Garantie - ${currentGarantie.nomAdherent}`,
+        montant: currentGarantie.montant,
+        devise: currentGarantie.devise,
+      }],
+      footer: {
+        total: currentGarantie.montant,
+        devise: currentGarantie.devise,
+        moyenPaiement: 'Garantie',
+      },
+    }, choice);
+    setShowPrintDialog(false);
+  }, [currentGarantie, user]);
 
   const handleBack = () => {
     if (phase === 'detail') {
@@ -268,6 +296,9 @@ export function GarantiePage() {
 
             {/* Action buttons */}
             <div className="flex gap-3 justify-end">
+              <Button variant="outline" onClick={() => setShowPrintDialog(true)}>
+                <Printer className="h-4 w-4 mr-2" /> Imprimer
+              </Button>
               {currentGarantie.statut === 'active' && (
                 <>
                   <Button variant="outline" onClick={handleVersement} disabled={isSubmitting}>
@@ -304,6 +335,12 @@ export function GarantiePage() {
         onConfirm={handleDialogConfirm}
         isSubmitting={isSubmitting}
         mode={dialogMode}
+      />
+
+      <PrinterChoiceDialog
+        open={showPrintDialog}
+        onClose={() => setShowPrintDialog(false)}
+        onSelect={handlePrint}
       />
     </ScreenLayout>
   );

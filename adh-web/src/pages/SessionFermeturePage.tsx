@@ -7,16 +7,21 @@ import {
   EcartDisplay,
 } from '@/components/caisse/denomination';
 import { EcartJustificationDialog } from '@/components/caisse/session';
-import { useSessionStore, useCaisseStore } from '@/stores';
+import { PrinterChoiceDialog } from '@/components/ui';
+import { useSessionStore, useCaisseStore, useAuthStore } from '@/stores';
+import { executePrint, TicketType } from '@/services/printer';
+import type { PrinterChoice } from '@/services/printer';
 import type { DenominationCatalog, CountingResult } from '@/types/denomination';
 import type { SessionEcart } from '@/types/session';
+import { Printer } from 'lucide-react';
 
-type Step = 'comptage' | 'ecarts' | 'justification' | 'fermeture';
+type Step = 'comptage' | 'ecarts' | 'justification' | 'fermeture' | 'succes';
 
 const SEUIL_ALERTE = 5; // Ecart > 5 EUR requires justification
 
 export function SessionFermeturePage() {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
   const currentSession = useSessionStore((s) => s.currentSession);
   const closeSession = useSessionStore((s) => s.closeSession);
   const status = useSessionStore((s) => s.status);
@@ -32,6 +37,7 @@ export function SessionFermeturePage() {
   const [justificationOpen, setJustificationOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
 
   const deviseCode = config?.devisePrincipale ?? 'EUR';
 
@@ -162,7 +168,7 @@ export function SessionFermeturePage() {
         justification,
       });
 
-      navigate('/caisse/menu');
+      setStep('succes');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erreur lors de la fermeture';
       setError(message);
@@ -170,6 +176,34 @@ export function SessionFermeturePage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handlePrint = (choice: PrinterChoice) => {
+    const results = computeResults();
+    const total = results.reduce((sum, r) => sum + r.totalCompte, 0);
+    executePrint(TicketType.FERMETURE, {
+      header: {
+        societe: config?.libelle ?? 'ADH',
+        caisse: config?.id?.toString() ?? '',
+        session: currentSession?.id?.toString() ?? '',
+        date: new Date().toLocaleDateString('fr-FR'),
+        heure: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        operateur: user?.login ?? '',
+      },
+      lines: results.flatMap((r) =>
+        r.details.map((d) => {
+          const denom = denominations.find((dn) => dn.id === d.denominationId);
+          return {
+            description: denom?.libelle ?? `Denomination ${d.denominationId}`,
+            quantite: d.quantite,
+            montant: d.total,
+            devise: r.deviseCode,
+          };
+        }),
+      ),
+      footer: { total, devise: deviseCode, moyenPaiement: 'Fermeture' },
+    }, choice);
+    setShowPrintDialog(false);
   };
 
   const handleBack = () => {
@@ -191,6 +225,7 @@ export function SessionFermeturePage() {
               {step === 'ecarts' && 'Verification des ecarts'}
               {step === 'justification' && 'Justification de l\'ecart'}
               {step === 'fermeture' && 'Fermeture en cours...'}
+              {step === 'succes' && 'Caisse fermee'}
             </p>
           </div>
           <FermetureStepIndicator current={step} />
@@ -264,6 +299,26 @@ export function SessionFermeturePage() {
           </>
         )}
 
+        {step === 'succes' && (
+          <div className="flex flex-col items-center gap-4 py-8">
+            <div className="text-green-600 text-lg font-semibold">Caisse fermee avec succes</div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowPrintDialog(true)}
+                className="flex items-center gap-2 px-4 py-2 border border-border rounded-md text-on-surface hover:bg-surface-hover"
+              >
+                <Printer className="h-4 w-4" /> Imprimer
+              </button>
+              <button
+                onClick={() => navigate('/caisse/menu')}
+                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark"
+              >
+                Continuer
+              </button>
+            </div>
+          </div>
+        )}
+
         {ecart && (
           <EcartJustificationDialog
             ecart={ecart}
@@ -278,6 +333,12 @@ export function SessionFermeturePage() {
             }}
           />
         )}
+
+        <PrinterChoiceDialog
+          open={showPrintDialog}
+          onClose={() => setShowPrintDialog(false)}
+          onSelect={handlePrint}
+        />
       </div>
     </ScreenLayout>
   );

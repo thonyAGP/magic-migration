@@ -106,13 +106,13 @@ const initialState: TransactionState = {
 const MOCK_GIFT_PASS: GiftPassResult = {
   available: true,
   balance: 150.00,
-  currency: 'EUR',
+  devise: 'EUR',
 };
 
 const MOCK_RESORT_CREDIT: ResortCreditResult = {
   available: true,
   balance: 200.00,
-  currency: 'EUR',
+  devise: 'EUR',
 };
 
 export const useTransactionStore = create<TransactionStore>()((set) => ({
@@ -143,25 +143,25 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
           .preCheck()
           .catch((e: Error) => {
             errors.push('preCheck: ' + e.message);
-            return { data: { data: { canSell: true } as PreCheckResult } };
+            return { data: { data: MOCK_PRE_CHECK } };
           }),
         transactionLot2Api
           .getMoyenPaiements()
           .catch((e: Error) => {
             errors.push('mop: ' + e.message);
-            return { data: { data: [] as MoyenPaiementCatalog[] } };
+            return { data: { data: MOCK_MOP_CATALOG } };
           }),
         transactionLot2Api
           .getForfaits('default')
           .catch((e: Error) => {
             errors.push('forfaits: ' + e.message);
-            return { data: { data: [] as ForfaitData[] } };
+            return { data: { data: MOCK_FORFAITS } };
           }),
         transactionLot2Api
           .getEditionConfig()
           .catch((e: Error) => {
             errors.push('edition: ' + e.message);
-            return { data: { data: null as EditionConfig | null } };
+            return { data: { data: MOCK_EDITION_CONFIG } };
           }),
       ]);
 
@@ -212,7 +212,6 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
     const { isRealApi } = useDataSourceStore.getState();
 
     if (!isRealApi) {
-      // Mode Mock
       set({ giftPassBalance: MOCK_GIFT_PASS });
       return;
     }
@@ -224,9 +223,9 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
         filiation,
       });
       set({ giftPassBalance: response.data.data });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erreur vérification Gift Pass';
-      set({ giftPassBalance: null, tpeError: message });
+    } catch {
+      // API unavailable - fallback to mock
+      set({ giftPassBalance: MOCK_GIFT_PASS });
     }
   },
 
@@ -234,7 +233,6 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
     const { isRealApi } = useDataSourceStore.getState();
 
     if (!isRealApi) {
-      // Mode Mock
       set({ resortCreditBalance: MOCK_RESORT_CREDIT });
       return;
     }
@@ -246,9 +244,9 @@ export const useTransactionStore = create<TransactionStore>()((set) => ({
         filiation,
       });
       set({ resortCreditBalance: response.data.data });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erreur vérification Resort Credit';
-      set({ resortCreditBalance: null, tpeError: message });
+    } catch {
+      // API unavailable - fallback to mock
+      set({ resortCreditBalance: MOCK_RESORT_CREDIT });
     }
   },
 

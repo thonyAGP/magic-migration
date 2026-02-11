@@ -32,3 +32,17 @@ export interface PrinterConfig {
   type: 'pdf' | 'escpos';
   paperWidth?: number;
 }
+
+export const TicketType = {
+  VENTE: 'VENTE',
+  OUVERTURE: 'OUVERTURE',
+  FERMETURE: 'FERMETURE',
+  APPRO: 'APPRO',
+  RECAP: 'RECAP',
+  GARANTIE: 'GARANTIE',
+  CHANGE: 'CHANGE',
+} as const;
+
+export type TicketType = typeof TicketType[keyof typeof TicketType];
+
+export type PrinterChoice = 'pdf-browser' | 'pdf-download' | 'escpos';

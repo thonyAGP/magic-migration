@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useForm, useFieldArray, type SubmitHandler } from 'react-hook-form';
-import { Plus, Trash2, MessageSquare } from 'lucide-react';
+import { Plus, Trash2, MessageSquare, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui';
 import { Input } from '@/components/ui';
@@ -26,6 +26,8 @@ import { TransactionSummary } from './TransactionSummary';
 import { ForfaitDialog } from './ForfaitDialog';
 import { VRLIdentityDialog } from './VRLIdentityDialog';
 import { CommentaireDialog } from '../dialogs/CommentaireDialog';
+import { AnnulationReferenceDialog } from './AnnulationReferenceDialog';
+import { GiftPassConfirmDialog, type GiftPassAction } from './GiftPassConfirmDialog';
 
 const DEVISES = [
   { value: 'EUR', label: 'EUR - Euro' },
@@ -59,6 +61,21 @@ const formatCurrency = (value: number, devise = 'EUR') =>
     value,
   );
 
+const modeLabels = {
+  GP: {
+    clientLabel: 'Adherent',
+    compteLabel: 'Compte GM',
+    articlesLabel: 'Articles Grande Boutique',
+    venteLabel: 'Vente GP',
+  },
+  Boutique: {
+    clientLabel: 'Client',
+    compteLabel: 'Compte Boutique',
+    articlesLabel: 'Articles Boutique',
+    venteLabel: 'Vente Boutique',
+  },
+} as const;
+
 export function TransactionForm({
   mode,
   initialData,
@@ -66,6 +83,7 @@ export function TransactionForm({
   onCancel,
   readOnly = false,
 }: TransactionFormProps) {
+  const labels = modeLabels[mode];
   const [commentaireOpen, setCommentaireOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [articleType, setArticleType] = useState<ArticleType>('default');
@@ -77,6 +95,10 @@ export function TransactionForm({
   const [showSummary, setShowSummary] = useState(false);
   const [isCheckingGiftPass, setIsCheckingGiftPass] = useState(false);
   const [isCheckingResortCredit, setIsCheckingResortCredit] = useState(false);
+  const [showAnnulationDialog, setShowAnnulationDialog] = useState(false);
+  const [annulationRef, setAnnulationRef] = useState<string | null>(null);
+  const [showGiftPassConfirm, setShowGiftPassConfirm] = useState(false);
+  const [giftPassAction, setGiftPassAction] = useState<GiftPassAction | null>(null);
 
   const {
     catalogMOP,
@@ -181,6 +203,11 @@ export function TransactionForm({
     setIsCheckingGiftPass(true);
     try {
       await checkGiftPass(0, '', 0, 0);
+      // After checking, if balance available, open confirm dialog
+      const balance = useTransactionStore.getState().giftPassBalance;
+      if (balance?.available) {
+        setShowGiftPassConfirm(true);
+      }
     } finally {
       setIsCheckingGiftPass(false);
     }
@@ -203,6 +230,30 @@ export function TransactionForm({
   const handleForfaitValidate = useCallback((debut: string, fin: string) => {
     setForfaitDates({ debut, fin });
     setForfaitOpen(false);
+  }, []);
+
+  const handleArticleTypeChange = useCallback((type: ArticleType) => {
+    setArticleType(type);
+    if (type === 'ANN') {
+      setShowAnnulationDialog(true);
+    }
+  }, []);
+
+  const handleAnnulationValidate = useCallback((reference: string) => {
+    setAnnulationRef(reference);
+    setShowAnnulationDialog(false);
+    // Pre-fill lines with negative amounts (mock)
+    const negLine = createEmptyLine();
+    negLine.description = `Annulation ${reference}`;
+    negLine.quantite = 1;
+    negLine.prixUnitaire = -280;
+    negLine.montant = -280;
+    setValue('lignes', [negLine]);
+  }, [setValue]);
+
+  const handleGiftPassConfirmSelect = useCallback((action: GiftPassAction) => {
+    setGiftPassAction(action);
+    setShowGiftPassConfirm(false);
   }, []);
 
   const buildDraft = useCallback((): TransactionDraft => {
@@ -253,7 +304,7 @@ export function TransactionForm({
       {/* Header: Mode badge */}
       <div className="flex items-center justify-between">
         <Badge variant={mode === 'GP' ? 'default' : 'secondary'}>
-          {mode === 'GP' ? 'Vente GP' : 'Vente Boutique'}
+          {labels.venteLabel}
         </Badge>
         {commentaire && (
           <span className="text-xs text-on-surface-muted italic truncate max-w-xs">
@@ -267,7 +318,7 @@ export function TransactionForm({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Compte */}
           <div className="flex flex-col gap-1.5">
-            <Label required>Compte</Label>
+            <Label required>{labels.compteLabel}</Label>
             <Combobox
               options={MOCK_COMPTES}
               value={watch('compteNumero')}
@@ -322,7 +373,7 @@ export function TransactionForm({
       <FormPanel title="Type d'article">
         <ArticleTypeSelector
           selected={articleType}
-          onSelect={setArticleType}
+          onSelect={handleArticleTypeChange}
           mode={mode}
           disabled={readOnly}
         />
@@ -360,9 +411,17 @@ export function TransactionForm({
         )}
       </FormPanel>
 
+      {/* Annulation banner */}
+      {articleType === 'ANN' && annulationRef && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-800 text-sm font-medium flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          Annulation de la transaction #{annulationRef}
+        </div>
+      )}
+
       {/* Section 2: Lines */}
       <FormPanel
-        title="Lignes de transaction"
+        title={labels.articlesLabel}
         actions={
           !readOnly ? (
             <Button
@@ -613,6 +672,19 @@ export function TransactionForm({
         mopCatalog={catalogMOP}
         onRetry={(newMop: string) => addMOP(newMop, totals.totalTTC)}
         onCancel={onCancel}
+      />
+
+      <AnnulationReferenceDialog
+        open={showAnnulationDialog}
+        onClose={() => setShowAnnulationDialog(false)}
+        onValidate={handleAnnulationValidate}
+      />
+
+      <GiftPassConfirmDialog
+        open={showGiftPassConfirm}
+        onClose={() => setShowGiftPassConfirm(false)}
+        onSelect={handleGiftPassConfirmSelect}
+        balance={giftPassBalance?.balance ?? 0}
       />
     </form>
   );

@@ -93,51 +93,53 @@ export function FusionPage() {
           </div>
         )}
 
-        {(currentStep === 'selection_principal' || currentStep === 'selection_secondaire') && (
+        {currentStep === 'selection_principal' && (
           <>
             <FusionAccountSearch
-              searchResults={searchResults}
-              isSearching={isSearching}
-              onSearch={(query) => searchAccount(societe, query)}
-            />
-            <FusionAccountSelection
-              comptePrincipal={comptePrincipal}
-              compteSecondaire={compteSecondaire}
-              searchResults={searchResults}
-              currentStep={currentStep}
-              isValidating={isValidating}
-              onSelectPrincipal={selectPrincipal}
-              onSelectSecondaire={selectSecondaire}
-              onValidate={handleValidate}
-              onNext={() => setStep('selection_secondaire')}
+              onSelect={(principal, secondaire) => {
+                selectPrincipal(principal);
+                selectSecondaire(secondaire);
+                void handleValidate();
+              }}
             />
             <div className="flex justify-start">
               <button
                 onClick={handleBack}
                 className="px-4 py-2 border border-border rounded-md text-on-surface hover:bg-surface-hover"
               >
-                {currentStep === 'selection_principal' ? 'Retour au menu' : 'Retour'}
+                Retour au menu
               </button>
             </div>
+          </>
+        )}
+
+        {currentStep === 'selection_secondaire' && comptePrincipal && compteSecondaire && (
+          <>
+            <FusionAccountSelection
+              principal={comptePrincipal}
+              secondaire={compteSecondaire}
+              onPreview={handleValidate}
+              onBack={handleBack}
+            />
           </>
         )}
 
         {(currentStep === 'preview' || currentStep === 'confirmation') && preview && (
           <FusionPreviewCard
             preview={preview}
-            isExecuting={isExecuting}
             onConfirm={handleExecute}
             onCancel={handleBack}
           />
         )}
 
-        {currentStep === 'processing' && (
+        {currentStep === 'processing' && progress && (
           <FusionProcessing progress={progress} />
         )}
 
         {currentStep === 'result' && result && (
           <FusionResultDialog
             result={result}
+            onRetry={() => setStep('selection_principal')}
             onClose={() => {
               reset();
               navigate('/caisse/menu');
