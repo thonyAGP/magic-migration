@@ -1,14 +1,8 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { SeparationAccountSelector } from '../SeparationAccountSelector';
 import type { SeparationAccount } from '@/types/separation';
-
-vi.mock('@/services/api/endpoints-lot6', () => ({
-  separationApi: {
-    searchAccount: vi.fn(),
-  },
-}));
 
 const mockAccounts: SeparationAccount[] = [
   {
@@ -33,7 +27,12 @@ const mockAccounts: SeparationAccount[] = [
 
 describe('SeparationAccountSelector', () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should render search input with label', () => {
@@ -41,6 +40,7 @@ describe('SeparationAccountSelector', () => {
       <SeparationAccountSelector
         label="Compte source"
         onSelect={vi.fn()}
+        onSearch={vi.fn()}
         selectedAccount={null}
       />,
     );
@@ -54,6 +54,7 @@ describe('SeparationAccountSelector', () => {
       <SeparationAccountSelector
         label="Compte source"
         onSelect={vi.fn()}
+        onSearch={vi.fn()}
         selectedAccount={mockAccounts[0]}
       />,
     );
@@ -67,6 +68,7 @@ describe('SeparationAccountSelector', () => {
       <SeparationAccountSelector
         label="Compte source"
         onSelect={vi.fn()}
+        onSearch={vi.fn()}
         selectedAccount={mockAccounts[0]}
       />,
     );
@@ -74,76 +76,86 @@ describe('SeparationAccountSelector', () => {
     expect(screen.getByText('Changer')).toBeDefined();
   });
 
-  it('should search on input and display results', async () => {
-    const { separationApi } = await import('@/services/api/endpoints-lot6');
-    vi.mocked(separationApi.searchAccount).mockResolvedValue({
-      data: { data: mockAccounts },
-    } as never);
-
+  it('should call onSearch on input and display results', async () => {
+    const onSearch = vi.fn();
     const onSelect = vi.fn();
+
     render(
       <SeparationAccountSelector
         label="Compte source"
         onSelect={onSelect}
+        onSearch={onSearch}
+        searchResults={mockAccounts}
         selectedAccount={null}
       />,
     );
 
     const input = screen.getByPlaceholderText('Rechercher par code ou nom...');
-    fireEvent.change(input, { target: { value: 'Dupont' } });
-
-    await waitFor(() => {
-      expect(screen.getByText('Dupont Jean')).toBeDefined();
+    await act(() => {
+      fireEvent.change(input, { target: { value: 'Dupont' } });
     });
+
+    // Advance timers for debounce
+    await act(() => {
+      vi.advanceTimersByTime(350);
+    });
+
+    expect(onSearch).toHaveBeenCalledWith('Dupont');
+    expect(screen.getByText('Dupont Jean')).toBeDefined();
 
     fireEvent.click(screen.getByText('Dupont Jean'));
     expect(onSelect).toHaveBeenCalledWith(mockAccounts[0]);
   });
 
   it('should filter out excludeAccount from results', async () => {
-    const { separationApi } = await import('@/services/api/endpoints-lot6');
-    vi.mocked(separationApi.searchAccount).mockResolvedValue({
-      data: { data: mockAccounts },
-    } as never);
+    const onSearch = vi.fn();
 
     render(
       <SeparationAccountSelector
         label="Compte destination"
         onSelect={vi.fn()}
+        onSearch={onSearch}
+        searchResults={mockAccounts}
         selectedAccount={null}
         excludeAccount={mockAccounts[0]}
       />,
     );
 
     const input = screen.getByPlaceholderText('Rechercher par code ou nom...');
-    fireEvent.change(input, { target: { value: 'test' } });
-
-    await waitFor(() => {
-      expect(screen.getByText('Martin Marie')).toBeDefined();
+    await act(() => {
+      fireEvent.change(input, { target: { value: 'test' } });
     });
 
+    await act(() => {
+      vi.advanceTimersByTime(350);
+    });
+
+    expect(screen.getByText('Martin Marie')).toBeDefined();
     expect(screen.queryByText('Dupont Jean')).toBeNull();
   });
 
-  it('should show empty message when no results', async () => {
-    const { separationApi } = await import('@/services/api/endpoints-lot6');
-    vi.mocked(separationApi.searchAccount).mockResolvedValue({
-      data: { data: [] },
-    } as never);
+  it('should show empty message when no results after search', async () => {
+    const onSearch = vi.fn();
 
     render(
       <SeparationAccountSelector
         label="Compte source"
         onSelect={vi.fn()}
+        onSearch={onSearch}
+        searchResults={[]}
         selectedAccount={null}
       />,
     );
 
     const input = screen.getByPlaceholderText('Rechercher par code ou nom...');
-    fireEvent.change(input, { target: { value: 'zzz' } });
-
-    await waitFor(() => {
-      expect(screen.getByText('Aucun compte trouve')).toBeDefined();
+    await act(() => {
+      fireEvent.change(input, { target: { value: 'zzz' } });
     });
+
+    await act(() => {
+      vi.advanceTimersByTime(350);
+    });
+
+    expect(screen.getByText('Aucun compte trouve')).toBeDefined();
   });
 });

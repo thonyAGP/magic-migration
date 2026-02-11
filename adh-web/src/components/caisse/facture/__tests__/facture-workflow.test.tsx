@@ -197,7 +197,7 @@ describe('Facture Workflow Integration', () => {
         />,
       );
 
-      expect(screen.getByText(/FAC-2026-001/)).toBeInTheDocument();
+      expect(screen.getAllByText(/FAC-2026-001/).length).toBeGreaterThan(0);
       expect(screen.getByText('DUPONT Jean')).toBeInTheDocument();
       expect(screen.getByText('emise')).toBeInTheDocument();
     });

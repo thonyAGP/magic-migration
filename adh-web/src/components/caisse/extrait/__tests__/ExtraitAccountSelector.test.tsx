@@ -1,14 +1,8 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { ExtraitAccountSelector } from '../ExtraitAccountSelector';
 import type { ExtraitAccountInfo } from '@/types/extrait';
-
-vi.mock('@/services/api/endpoints-lot3', () => ({
-  extraitApi: {
-    searchAccount: vi.fn(),
-  },
-}));
 
 const mockAccounts: ExtraitAccountInfo[] = [
   {
@@ -33,62 +27,98 @@ const mockAccounts: ExtraitAccountInfo[] = [
 
 describe('ExtraitAccountSelector', () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('should render search input', () => {
-    render(<ExtraitAccountSelector onSelect={vi.fn()} />);
+    render(
+      <ExtraitAccountSelector
+        onSelect={vi.fn()}
+        onSearch={vi.fn()}
+      />,
+    );
 
     expect(screen.getByPlaceholderText('Rechercher par code ou nom...')).toBeDefined();
   });
 
   it('should disable input when disabled prop is true', () => {
-    render(<ExtraitAccountSelector onSelect={vi.fn()} disabled />);
+    render(
+      <ExtraitAccountSelector
+        onSelect={vi.fn()}
+        onSearch={vi.fn()}
+        disabled
+      />,
+    );
 
     const input = screen.getByPlaceholderText('Rechercher par code ou nom...');
     expect(input).toHaveProperty('disabled', true);
   });
 
   it('should show loading state', () => {
-    render(<ExtraitAccountSelector onSelect={vi.fn()} isLoading />);
+    render(
+      <ExtraitAccountSelector
+        onSelect={vi.fn()}
+        onSearch={vi.fn()}
+        isLoading
+      />,
+    );
 
-    // isLoading alone doesn't trigger the message - needs to be combined with searching
     expect(screen.getByPlaceholderText('Rechercher par code ou nom...')).toBeDefined();
   });
 
-  it('should call onSelect when clicking a result', async () => {
-    const { extraitApi } = await import('@/services/api/endpoints-lot3');
-    vi.mocked(extraitApi.searchAccount).mockResolvedValue({
-      data: { data: mockAccounts },
-    } as never);
-
+  it('should call onSearch and display results', async () => {
+    const onSearch = vi.fn();
     const onSelect = vi.fn();
-    render(<ExtraitAccountSelector onSelect={onSelect} />);
+
+    render(
+      <ExtraitAccountSelector
+        onSelect={onSelect}
+        onSearch={onSearch}
+        searchResults={mockAccounts}
+      />,
+    );
 
     const input = screen.getByPlaceholderText('Rechercher par code ou nom...');
-    fireEvent.change(input, { target: { value: 'Dupont' } });
-
-    await waitFor(() => {
-      expect(screen.getByText('Dupont Jean')).toBeDefined();
+    await act(() => {
+      fireEvent.change(input, { target: { value: 'Dupont' } });
     });
+
+    await act(() => {
+      vi.advanceTimersByTime(350);
+    });
+
+    expect(onSearch).toHaveBeenCalledWith('Dupont');
+    expect(screen.getByText('Dupont Jean')).toBeDefined();
 
     fireEvent.click(screen.getByText('Dupont Jean'));
     expect(onSelect).toHaveBeenCalledWith(mockAccounts[0]);
   });
 
   it('should show "Aucun compte" when no results', async () => {
-    const { extraitApi } = await import('@/services/api/endpoints-lot3');
-    vi.mocked(extraitApi.searchAccount).mockResolvedValue({
-      data: { data: [] },
-    } as never);
+    const onSearch = vi.fn();
 
-    render(<ExtraitAccountSelector onSelect={vi.fn()} />);
+    render(
+      <ExtraitAccountSelector
+        onSelect={vi.fn()}
+        onSearch={onSearch}
+        searchResults={[]}
+      />,
+    );
 
     const input = screen.getByPlaceholderText('Rechercher par code ou nom...');
-    fireEvent.change(input, { target: { value: 'zzz' } });
-
-    await waitFor(() => {
-      expect(screen.getByText('Aucun compte trouve')).toBeDefined();
+    await act(() => {
+      fireEvent.change(input, { target: { value: 'zzz' } });
     });
+
+    await act(() => {
+      vi.advanceTimersByTime(350);
+    });
+
+    expect(screen.getByText('Aucun compte trouve')).toBeDefined();
   });
 });

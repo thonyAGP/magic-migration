@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type {
   AdminSettings,
   UserProfile,
-  CaisseConfig,
+  AdminCaisseConfig,
   PrinterConfig,
   AuditLogEntry,
   AuditLogFilter,
@@ -33,7 +33,7 @@ const MOCK_PROFILE: UserProfile = {
   passwordExpiry: '2026-05-10',
 };
 
-const MOCK_CAISSE_CONFIG: CaisseConfig = {
+const MOCK_CAISSE_CONFIG: AdminCaisseConfig = {
   id: 'CAI001',
   nom: 'Caisse 1 - Boutique',
   deviseDefaut: 'EUR',
@@ -76,7 +76,7 @@ const MOCK_NETWORK_TEST: NetworkTestResult = {
 interface ParametresState {
   settings: AdminSettings | null;
   profile: UserProfile | null;
-  caisseConfig: CaisseConfig | null;
+  caisseConfig: AdminCaisseConfig | null;
   printers: PrinterConfig[];
   auditLogs: AuditLogEntry[];
   auditTotal: number;
@@ -95,7 +95,7 @@ interface ParametresActions {
   loadProfile: () => Promise<void>;
   updatePassword: (current: string, newPwd: string, confirm: string) => Promise<boolean>;
   loadCaisseConfig: () => Promise<void>;
-  saveCaisseConfig: (config: Partial<CaisseConfig>) => Promise<boolean>;
+  saveCaisseConfig: (config: Partial<AdminCaisseConfig>) => Promise<boolean>;
   loadPrinters: () => Promise<void>;
   testPrinter: (printerId: string) => Promise<boolean>;
   loadAuditLogs: (filter: AuditLogFilter) => Promise<void>;

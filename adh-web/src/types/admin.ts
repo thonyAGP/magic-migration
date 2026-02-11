@@ -21,7 +21,7 @@ export interface UserProfile {
   passwordExpiry: string;
 }
 
-export interface CaisseConfig {
+export interface AdminCaisseConfig {
   id: string;
   nom: string;
   deviseDefaut: string;

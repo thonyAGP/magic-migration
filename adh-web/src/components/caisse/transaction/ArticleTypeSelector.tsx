@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui';
 import { ArrowRightLeft, Unlock, XCircle } from 'lucide-react';
 import type { ArticleType } from '@/types/transaction';
 import type { TransactionMode } from './types';
@@ -8,7 +7,6 @@ const ARTICLE_TYPES: {
   value: ArticleType;
   label: string;
   gpOnly?: boolean;
-  stub?: boolean;
   destructive?: boolean;
 }[] = [
   { value: 'default', label: 'Standard' },
@@ -40,7 +38,7 @@ export function ArticleTypeSelector({
     <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Type article">
       {items.map((item) => {
         const isSelected = selected === item.value;
-        const isDisabled = disabled || item.stub;
+        const isDisabled = disabled;
 
         return (
           <button
@@ -50,7 +48,6 @@ export function ArticleTypeSelector({
             aria-checked={isSelected}
             disabled={isDisabled}
             onClick={() => onSelect(item.value)}
-            title={item.stub ? 'Fonctionnalite a venir' : undefined}
             className={cn(
               'rounded-md border px-3 py-1.5 text-sm font-medium transition-colors',
               isSelected && !item.destructive
@@ -67,11 +64,6 @@ export function ArticleTypeSelector({
               {item.value === 'PYR' && <Unlock className="h-3.5 w-3.5" />}
               {item.label}
             </span>
-            {item.stub && (
-              <Badge variant="secondary" className="ml-1.5 text-xs px-1 py-0">
-                Bientot
-              </Badge>
-            )}
           </button>
         );
       })}

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { FactureSearchPanel } from '../FactureSearchPanel';
 import type { Facture } from '@/types/facture';
 
@@ -26,90 +26,111 @@ const mockFactures: Facture[] = [
   },
 ];
 
-const mockSearch = vi.fn();
-
-vi.mock('@/services/api/endpoints-lot4', () => ({
-  factureApi: {
-    search: (...args: unknown[]) => mockSearch(...args),
-  },
-}));
-
 describe('FactureSearchPanel', () => {
   beforeEach(() => {
-    mockSearch.mockReset();
-    mockSearch.mockResolvedValue({
-      data: { data: { factures: [], total: 0 } },
-    });
+    vi.useFakeTimers();
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should render search input', () => {
-    render(<FactureSearchPanel onSelectFacture={vi.fn()} />);
+    render(
+      <FactureSearchPanel
+        onSelectFacture={vi.fn()}
+        onSearch={vi.fn()}
+      />,
+    );
     expect(
       screen.getByPlaceholderText('Rechercher par reference ou adherent...'),
-    ).toBeInTheDocument();
+    ).toBeDefined();
   });
 
   it('should render date filter inputs', () => {
-    render(<FactureSearchPanel onSelectFacture={vi.fn()} />);
-    expect(screen.getByText('Debut')).toBeInTheDocument();
-    expect(screen.getByText('Fin')).toBeInTheDocument();
+    render(
+      <FactureSearchPanel
+        onSelectFacture={vi.fn()}
+        onSearch={vi.fn()}
+      />,
+    );
+    expect(screen.getByText('Debut')).toBeDefined();
+    expect(screen.getByText('Fin')).toBeDefined();
   });
 
   it('should show empty results message after search', async () => {
-    render(<FactureSearchPanel onSelectFacture={vi.fn()} />);
-
-    fireEvent.change(
-      screen.getByPlaceholderText('Rechercher par reference ou adherent...'),
-      { target: { value: 'inexistant' } },
+    render(
+      <FactureSearchPanel
+        onSelectFacture={vi.fn()}
+        onSearch={vi.fn()}
+        searchResults={[]}
+      />,
     );
 
-    await waitFor(
-      () => {
-        expect(screen.getByText('Aucune facture trouvee')).toBeInTheDocument();
-      },
-      { timeout: 2000 },
-    );
+    await act(() => {
+      fireEvent.change(
+        screen.getByPlaceholderText('Rechercher par reference ou adherent...'),
+        { target: { value: 'inexistant' } },
+      );
+    });
+
+    await act(() => {
+      vi.advanceTimersByTime(350);
+    });
+
+    expect(screen.getByText('Aucune facture trouvee')).toBeDefined();
   });
 
   it('should display search results', async () => {
-    mockSearch.mockResolvedValue({
-      data: { data: { factures: mockFactures, total: 1 } },
+    const onSearch = vi.fn();
+
+    render(
+      <FactureSearchPanel
+        onSelectFacture={vi.fn()}
+        onSearch={onSearch}
+        searchResults={mockFactures}
+      />,
+    );
+
+    await act(() => {
+      fireEvent.change(
+        screen.getByPlaceholderText('Rechercher par reference ou adherent...'),
+        { target: { value: 'FAC' } },
+      );
     });
 
-    render(<FactureSearchPanel onSelectFacture={vi.fn()} />);
+    await act(() => {
+      vi.advanceTimersByTime(350);
+    });
 
-    fireEvent.change(
-      screen.getByPlaceholderText('Rechercher par reference ou adherent...'),
-      { target: { value: 'FAC' } },
-    );
-
-    await waitFor(
-      () => {
-        expect(screen.getByText('FAC-2026-001')).toBeInTheDocument();
-      },
-      { timeout: 2000 },
-    );
+    expect(onSearch).toHaveBeenCalled();
+    expect(screen.getByText('FAC-2026-001')).toBeDefined();
   });
 
   it('should call onSelectFacture on click', async () => {
-    mockSearch.mockResolvedValue({
-      data: { data: { factures: mockFactures, total: 1 } },
+    const onSelect = vi.fn();
+
+    render(
+      <FactureSearchPanel
+        onSelectFacture={onSelect}
+        onSearch={vi.fn()}
+        searchResults={mockFactures}
+      />,
+    );
+
+    await act(() => {
+      fireEvent.change(
+        screen.getByPlaceholderText('Rechercher par reference ou adherent...'),
+        { target: { value: 'FAC' } },
+      );
     });
 
-    const onSelect = vi.fn();
-    render(<FactureSearchPanel onSelectFacture={onSelect} />);
+    await act(() => {
+      vi.advanceTimersByTime(350);
+    });
 
-    fireEvent.change(
-      screen.getByPlaceholderText('Rechercher par reference ou adherent...'),
-      { target: { value: 'FAC' } },
-    );
-
-    await waitFor(
-      () => {
-        expect(screen.getByText('FAC-2026-001')).toBeInTheDocument();
-      },
-      { timeout: 2000 },
-    );
+    expect(screen.getByText('FAC-2026-001')).toBeDefined();
 
     fireEvent.click(screen.getByText('FAC-2026-001'));
     expect(onSelect).toHaveBeenCalledWith(mockFactures[0]);
