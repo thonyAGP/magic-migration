@@ -1700,13 +1700,31 @@
         specsData.forEach(spec => {
           this.add({
             id: spec.id,
-            specId: spec.id || '',              // Index the full ID (ADH-IDE-237)
-            ide: spec.ide ? spec.ide.toString() : '',  // Index the IDE number as string
+            specId: spec.id || '',
+            ide: spec.ide ? spec.ide.toString() : '',
             title: spec.title || '',
             project: spec.project || '',
             type: spec.type || '',
             tables: spec.tables ? spec.tables.toString() : '0',
             folder: spec.folder || ''
+          });
+        });
+
+        // Index tickets too
+        const allTickets = [
+          ...(indexData.tickets ? indexData.tickets.active || [] : []),
+          ...(indexData.tickets ? indexData.tickets.archived || [] : [])
+        ];
+        allTickets.forEach(t => {
+          this.add({
+            id: 'ticket:' + t.id,
+            specId: t.id || '',
+            ide: (t.id || '').replace(/\D/g, ''),
+            title: t.title || '',
+            project: t.id ? t.id.split('-')[0] : '',
+            type: 'ticket',
+            tables: '',
+            folder: ''
           });
         });
       });
@@ -1722,20 +1740,36 @@
       let results = [];
 
       // Use Lunr for text search if there's text beyond filters
+      const allTickets = [
+        ...(indexData.tickets ? indexData.tickets.active || [] : []),
+        ...(indexData.tickets ? indexData.tickets.archived || [] : [])
+      ];
       if (filters.text) {
         try {
           const lunrResults = searchIndex.search(filters.text + '*');
-          results = lunrResults.map(r => specsData.find(s => s.id === r.ref)).filter(Boolean);
+          results = lunrResults.map(r => {
+            if (r.ref.startsWith('ticket:')) {
+              const ticketId = r.ref.replace('ticket:', '');
+              const t = allTickets.find(t => t.id === ticketId);
+              return t ? { id: t.id, title: t.title, file: t.file, _isTicket: true, status: t.status } : null;
+            }
+            return specsData.find(s => s.id === r.ref);
+          }).filter(Boolean);
         } catch (e) {
           // If Lunr fails, do simple text match
           const lowerText = filters.text.toLowerCase();
-          results = specsData.filter(s =>
+          const specResults = specsData.filter(s =>
             (s.id && s.id.toLowerCase().includes(lowerText)) ||
             (s.ide && s.ide.toString().includes(lowerText)) ||
             (s.title && s.title.toLowerCase().includes(lowerText)) ||
             (s.project && s.project.toLowerCase().includes(lowerText)) ||
             (s.folder && s.folder.toLowerCase().includes(lowerText))
           );
+          const ticketResults = allTickets.filter(t =>
+            (t.id && t.id.toLowerCase().includes(lowerText)) ||
+            (t.title && t.title.toLowerCase().includes(lowerText))
+          ).map(t => ({ id: t.id, title: t.title, file: t.file, _isTicket: true, status: t.status }));
+          results = [...ticketResults, ...specResults];
         }
       } else {
         results = [...specsData];
@@ -1811,6 +1845,20 @@
       }
 
       let html = results.slice(0, 15).map(spec => {
+        if (spec._isTicket) {
+          const statusClass = spec.status === 'en-cours' ? 'en-cours' : spec.status === 'recette-ok' ? 'recette-ok' : spec.status;
+          return `
+            <div class="search-result-item" onclick="selectSearchResult('${spec.file}')">
+              <div class="result-title">
+                <span>${spec.id}</span>
+                <span class="status-badge ${statusClass}">${(spec.status || 'en-cours').toUpperCase()}</span>
+              </div>
+              <div class="result-meta">
+                <span>${spec.title}</span>
+              </div>
+            </div>
+          `;
+        }
         const typeClass = spec.type ? spec.type.toLowerCase() : '';
         return `
           <div class="search-result-item" onclick="selectSearchResult('${spec.file}')">
