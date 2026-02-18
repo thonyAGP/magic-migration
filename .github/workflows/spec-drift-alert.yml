@@ -119,15 +119,15 @@ jobs:
                         if ($metric -eq 'write_table_count' -and $diff -gt 0) {
                           $driftLevel = "CRITICAL"
                           $criticalCount++
-                          $driftDetails += "$metric: $specVal -> $kbVal (+$diff)"
+                          $driftDetails += "${metric}: $specVal -> $kbVal (+$diff)"
                         } elseif ($pctDiff -ge 20) {
                           if ($driftLevel -ne "CRITICAL") { $driftLevel = "MAJOR" }
                           $majorCount++
-                          $driftDetails += "$metric: $specVal -> $kbVal ($pctDiff%)"
+                          $driftDetails += "${metric}: $specVal -> $kbVal ($pctDiff%)"
                         } elseif ($pctDiff -ge 5) {
                           if ($driftLevel -eq "IN_SYNC") { $driftLevel = "MINOR" }
                           $minorCount++
-                          $driftDetails += "$metric: $specVal -> $kbVal ($pctDiff%)"
+                          $driftDetails += "${metric}: $specVal -> $kbVal ($pctDiff%)"
                         }
                       }
                     }
