@@ -160,6 +160,15 @@
                              "lastAnalysis":  "2026-01-29",
                              "program":  "PBG IDE 56",
                              "createdDate":  "2025-11-24"
+                         },
+                         {
+                             "hasLocalData":  true,
+                             "status":  "en-cours",
+                             "key":  "PMS-1479",
+                             "summary":  "Taxe sejour libelle Caisse au lieu de TAXE DE SEJOUR - Bug ecriture OD",
+                             "lastAnalysis":  "2026-02-17",
+                             "program":  "ADH IDE 61/105",
+                             "createdDate":  "2026-02-04"
                          }
                      ],
     "tickets":  [
