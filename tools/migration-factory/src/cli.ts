@@ -32,6 +32,9 @@ import { generateHtmlReport, generateMultiProjectHtmlReport } from './dashboard/
 import { estimateProject } from './calculators/effort-estimator.js';
 import { trackStatusChange } from './calculators/effort-tracker.js';
 import { generateAutoContract } from './generators/auto-contract.js';
+import { resolvePipelineConfig } from './pipeline/pipeline-config.js';
+import { preflightBatch, runBatchPipeline, getBatchesStatus } from './pipeline/pipeline-runner.js';
+import { formatCoverageBar } from './core/coverage.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -698,6 +701,120 @@ const run = async () => {
       break;
     }
 
+    case 'pipeline': {
+      const pipelineSubCmd = args[1];
+      const pipelineConfig = resolvePipelineConfig({
+        projectDir,
+        dir: getArg('dir') ?? 'ADH',
+        dryRun: hasFlag('dry-run'),
+        noContract: hasFlag('no-contract'),
+        noVerify: hasFlag('no-verify'),
+        report: hasFlag('report'),
+      });
+
+      switch (pipelineSubCmd) {
+        case 'run': {
+          const batchId = getArg('batch');
+          if (!batchId) {
+            console.error('Usage: pipeline run --batch <id> --project <dir> [--dir ADH] [--dry-run] [--no-contract] [--no-verify] [--report]');
+            process.exit(1);
+          }
+
+          const result = runBatchPipeline(batchId, pipelineConfig);
+
+          console.log(`\nPipeline ${result.dryRun ? '(DRY-RUN) ' : ''}run: ${batchId} - ${result.batchName}\n`);
+
+          for (const step of result.steps) {
+            const icon = step.action === 'verified' ? '\u2714'
+              : step.action === 'already-done' ? '\u25CB'
+              : step.action === 'needs-enrichment' ? '\u25B7'
+              : step.action === 'spec-missing' ? '\u2717'
+              : step.action === 'error' ? '\u2717'
+              : '\u002B';
+            console.log(`  ${icon} [${step.programId}] ${step.programName}`);
+            console.log(`    ${step.message}`);
+          }
+
+          console.log(`\n  --- Summary ---`);
+          console.log(`  Total: ${result.summary.total} | Contracted: ${result.summary.contracted} | Auto-enriched: ${result.summary.autoEnriched} | Needs enrichment: ${result.summary.needsEnrichment} | Verified: ${result.summary.verified} | Already done: ${result.summary.alreadyDone} | Errors: ${result.summary.errors}`);
+
+          const elapsed = (new Date(result.completed).getTime() - new Date(result.started).getTime()) / 1000;
+          console.log(`  Duration: ${elapsed.toFixed(1)}s`);
+          break;
+        }
+
+        case 'status': {
+          const views = getBatchesStatus(pipelineConfig);
+
+          if (views.length === 0) {
+            console.log('No batches found. Run `migration-factory init` and configure batches in tracker.json.');
+            break;
+          }
+
+          const dir = getArg('dir') ?? 'ADH';
+          console.log(`\nPipeline Status - ${dir}\n`);
+          console.log('  Batch  Name                      Progs  Status      Progress');
+          console.log('  -----  ------------------------  -----  ----------  -------------------------');
+
+          let totalVerified = 0;
+          let totalProgs = 0;
+          let totalEstHours = 0;
+
+          for (const v of views) {
+            const bar = formatCoverageBar(Math.round((v.verified / Math.max(v.programCount, 1)) * 100), 20);
+            const statusPad = v.status.padEnd(10);
+            const namePad = v.name.padEnd(24).slice(0, 24);
+            console.log(`  ${v.id.padEnd(5)}  ${namePad}  ${String(v.programCount).padStart(5)}  ${statusPad}  ${bar}`);
+            totalVerified += v.verified;
+            totalProgs += v.programCount;
+            totalEstHours += v.estimatedHours;
+          }
+
+          const totalPct = totalProgs > 0 ? Math.round((totalVerified / totalProgs) * 100) : 0;
+          console.log(`\n  Total: ${totalVerified}/${totalProgs} verified (${totalPct}%)${totalEstHours > 0 ? ` | Est. restant: ${totalEstHours}h` : ''}`);
+          break;
+        }
+
+        case 'preflight': {
+          const pfBatchId = getArg('batch');
+          if (!pfBatchId) {
+            console.error('Usage: pipeline preflight --batch <id> --project <dir> [--dir ADH]');
+            process.exit(1);
+          }
+
+          const pfResult = preflightBatch(pfBatchId, pipelineConfig);
+
+          console.log(`\nPreflight: ${pfBatchId} - ${pfResult.batchName}\n`);
+          console.log('  Prerequisites:');
+          for (const check of pfResult.checks) {
+            const icon = check.passed ? 'OK' : 'FAIL';
+            console.log(`    ${icon}  ${check.check}: ${check.message}`);
+          }
+
+          if (pfResult.programs.length > 0) {
+            console.log('\n  Programs:');
+            for (const prog of pfResult.programs) {
+              const spec = prog.specExists ? 'OK' : 'MISSING';
+              const contract = prog.contractExists ? 'OK' : 'MISSING';
+              console.log(`    IDE ${prog.id} - ${prog.name}`);
+              console.log(`      Spec: ${spec} | Contract: ${contract} | Action: ${prog.action}${prog.gaps > 0 ? ` (${prog.gaps} gaps)` : ''}`);
+            }
+          }
+
+          console.log(`\n  Summary: ${pfResult.summary.willContract} will contract, ${pfResult.summary.willVerify} will verify, ${pfResult.summary.needsEnrichment} needs enrichment, ${pfResult.summary.alreadyDone} already done, ${pfResult.summary.blocked} blocked`);
+          break;
+        }
+
+        default:
+          console.error('Pipeline sub-commands: run, status, preflight');
+          console.error('  pipeline run       --batch <id> --project <dir> [--dry-run] [--no-contract] [--no-verify]');
+          console.error('  pipeline status    --project <dir> [--dir ADH]');
+          console.error('  pipeline preflight --batch <id> --project <dir> [--dir ADH]');
+          process.exit(1);
+      }
+      break;
+    }
+
     default:
       console.log('Migration Factory - Reusable SPECMAP migration pipeline\n');
       console.log('Commands:');
@@ -712,6 +829,7 @@ const run = async () => {
       console.log('  gaps       --project <dir> [--dir ADH] [--status enriched]');
       console.log('  estimate   --project <dir> [--dir ADH]                      Estimate effort');
       console.log('  contract   --auto --project <dir> --program <id> [--dir ADH]  Auto-generate contract');
+      console.log('  pipeline   run|status|preflight                               Pipeline orchestrator v3');
       console.log('\nOptions:');
       console.log('  --adapter magic|generic                     Source adapter (default: magic)');
       console.log('  --programs <file|id,id,...>                  Programs file or IDs');
