@@ -35,6 +35,8 @@ import { generateAutoContract } from './generators/auto-contract.js';
 import { resolvePipelineConfig } from './pipeline/pipeline-config.js';
 import { preflightBatch, runBatchPipeline, getBatchesStatus } from './pipeline/pipeline-runner.js';
 import { formatCoverageBar } from './core/coverage.js';
+import { discoverProjects, readProjectRegistry } from './dashboard/project-discovery.js';
+import { computeGapReport } from './server/gap-report.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -474,54 +476,10 @@ const run = async () => {
         process.exit(1);
       }
 
-      const gapFiles = fs.readdirSync(gapsContractDir).filter(f => f.endsWith('.contract.yaml'));
-      const completedSet = new Set(['IMPL', 'N/A']);
-
-      interface GapEntry { type: string; id: string; status: string; notes: string }
-      interface ContractGaps { id: string; name: string; pipelineStatus: string; gaps: GapEntry[]; total: number; impl: number }
-
-      const allGaps: ContractGaps[] = [];
-      let grandTotalGaps = 0;
-      let grandTotalItems = 0;
-
-      for (const file of gapFiles) {
-        const contract = parseContract(path.join(gapsContractDir, file));
-        if (gapsFilterStatus && contract.overall.status !== gapsFilterStatus) continue;
-        if (contract.overall.status === PipelineStatus.VERIFIED) continue;
-
-        const gaps: GapEntry[] = [];
-        let total = 0;
-        let impl = 0;
-
-        for (const r of contract.rules) {
-          total++;
-          if (completedSet.has(r.status)) { impl++; } else { gaps.push({ type: 'rule', id: r.id, status: r.status, notes: r.gapNotes }); }
-        }
-        for (const v of contract.variables) {
-          total++;
-          if (completedSet.has(v.status)) { impl++; } else { gaps.push({ type: 'var', id: v.localId, status: v.status, notes: v.gapNotes }); }
-        }
-        for (const t of contract.tables) {
-          total++;
-          if (completedSet.has(t.status)) { impl++; } else { gaps.push({ type: 'table', id: String(t.id), status: t.status, notes: t.gapNotes }); }
-        }
-        for (const c of contract.callees) {
-          total++;
-          if (completedSet.has(c.status)) { impl++; } else { gaps.push({ type: 'callee', id: String(c.id), status: c.status, notes: c.gapNotes }); }
-        }
-
-        if (gaps.length > 0) {
-          allGaps.push({ id: String(contract.program.id), name: contract.program.name, pipelineStatus: contract.overall.status, gaps, total, impl });
-          grandTotalGaps += gaps.length;
-        }
-        grandTotalItems += total;
-      }
-
-      // Sort by gap count descending
-      allGaps.sort((a, b) => b.gaps.length - a.gaps.length);
+      const gapReport = computeGapReport(gapsContractDir, gapsFilterStatus ?? undefined);
 
       console.log(`\n  Gap Report (${gapsContractDir})\n`);
-      for (const cg of allGaps) {
+      for (const cg of gapReport.contracts) {
         const pct = cg.total > 0 ? Math.round((cg.impl / cg.total) * 100) : 0;
         console.log(`  IDE ${cg.id} - ${cg.name} [${cg.pipelineStatus}] ${cg.impl}/${cg.total} (${pct}%)`);
         const byStatus = new Map<string, number>();
@@ -529,9 +487,7 @@ const run = async () => {
         console.log(`    ${[...byStatus].map(([s, n]) => `${n} ${s}`).join(', ')}`);
       }
 
-      const implTotal = grandTotalItems - grandTotalGaps;
-      const globalPct = grandTotalItems > 0 ? Math.round((implTotal / grandTotalItems) * 100) : 0;
-      console.log(`\n  Total: ${grandTotalGaps} gaps across ${allGaps.length} contracts (${globalPct}% complete)\n`);
+      console.log(`\n  Total: ${gapReport.grandTotalGaps} gaps across ${gapReport.contracts.length} contracts (${gapReport.globalPct}% complete)\n`);
       break;
     }
 
@@ -818,6 +774,14 @@ const run = async () => {
       break;
     }
 
+    case 'serve': {
+      const servePort = Number(getArg('port') ?? 3070);
+      const serveDir = getArg('dir') ?? 'ADH';
+      const { startActionServer } = await import('./server/action-server.js');
+      await startActionServer({ port: servePort, projectDir, dir: serveDir });
+      break;
+    }
+
     default:
       console.log('Migration Factory - Reusable SPECMAP migration pipeline\n');
       console.log('Commands:');
@@ -833,6 +797,7 @@ const run = async () => {
       console.log('  estimate   --project <dir> [--dir ADH]                      Estimate effort');
       console.log('  contract   --auto --project <dir> --program <id> [--dir ADH]  Auto-generate contract');
       console.log('  pipeline   run|status|preflight                               Pipeline orchestrator v4 (Claude enrichment)');
+      console.log('  serve      [--port 3070] [--dir ADH]                          Interactive dashboard server');
       console.log('\nOptions:');
       console.log('  --adapter magic|generic                     Source adapter (default: magic)');
       console.log('  --programs <file|id,id,...>                  Programs file or IDs');
@@ -843,22 +808,6 @@ const run = async () => {
   }
 };
 
-const discoverProjects = (migrationDir: string): string[] => {
-  if (!fs.existsSync(migrationDir)) return [];
-  return fs.readdirSync(migrationDir, { withFileTypes: true })
-    .filter(d => d.isDirectory() && fs.existsSync(path.join(migrationDir, d.name, 'live-programs.json')))
-    .map(d => d.name)
-    .sort();
-};
-
-interface RegistryEntry { name: string; programs: number; description: string; }
-
-const readProjectRegistry = (migrationDir: string): RegistryEntry[] => {
-  const registryFile = path.join(migrationDir, 'projects-registry.json');
-  if (!fs.existsSync(registryFile)) return [];
-  const raw = JSON.parse(fs.readFileSync(registryFile, 'utf8'));
-  return (raw.projects ?? []) as RegistryEntry[];
-};
 
 const createAdapterFromArgs = async (projectDir: string): Promise<SpecExtractor> => {
   const adapterType = getArg('adapter') ?? 'magic';

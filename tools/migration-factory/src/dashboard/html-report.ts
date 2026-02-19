@@ -464,6 +464,25 @@ ${MULTI_CSS}
   ${projectTabs}
 </nav>
 
+<div class="action-bar" id="action-bar">
+  <span class="server-badge disconnected" id="server-badge">Offline</span>
+  <select id="batch-select" class="action-select" disabled>
+    <option value="">Select batch...</option>
+  </select>
+  <button class="action-btn" id="btn-preflight" disabled title="Run 'migration-factory serve' to enable">Preflight</button>
+  <button class="action-btn primary" id="btn-run" disabled title="Run 'migration-factory serve' to enable">Run Pipeline</button>
+  <button class="action-btn" id="btn-verify" disabled title="Run 'migration-factory serve' to enable">Verify</button>
+  <button class="action-btn" id="btn-gaps" disabled title="Run 'migration-factory serve' to enable">Gaps</button>
+  <label style="margin-left:auto;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px"><input type="checkbox" id="chk-dry" disabled> Dry Run</label>
+</div>
+<div class="action-panel" id="action-panel">
+  <div class="action-panel-header">
+    <strong id="panel-title">Results</strong>
+    <button class="action-btn" id="btn-close" style="padding:2px 8px;font-size:11px">Close</button>
+  </div>
+  <pre id="panel-content"></pre>
+</div>
+
 <div class="tab-content active" data-tab="global">
   ${renderGlobalView(report)}
 </div>
@@ -1129,6 +1148,91 @@ const MULTI_CSS = `
   border-radius: 4px;
   font-size: 11px;
 }
+
+/* Action Bar */
+.action-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+.server-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.server-badge.connected { background: rgba(63,185,80,0.2); color: var(--green); }
+.server-badge.disconnected { background: rgba(72,79,88,0.3); color: var(--text-dim); }
+.action-select {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  min-width: 140px;
+}
+.action-select:disabled { opacity: 0.5; cursor: not-allowed; }
+.action-btn {
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.action-btn:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); }
+.action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.action-btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+.action-btn.primary:hover:not(:disabled) { background: #4b9cf5; }
+.action-btn.primary:disabled { background: var(--gray); border-color: var(--gray); }
+.action-panel {
+  display: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.action-panel.visible { display: block; }
+.action-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.action-panel pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.action-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 `;
 
 // ─── Multi-Project JS ───────────────────────────────────────────
@@ -1154,4 +1258,162 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (tab) tab.click();
   });
 });
+
+// ─── Action Bar ──────────────────────────────────────────────────
+(function() {
+  if (!window.__MF_SERVER__) return;
+
+  var badge = document.getElementById('server-badge');
+  var batchSelect = document.getElementById('batch-select');
+  var btnPreflight = document.getElementById('btn-preflight');
+  var btnRun = document.getElementById('btn-run');
+  var btnVerify = document.getElementById('btn-verify');
+  var btnGaps = document.getElementById('btn-gaps');
+  var chkDry = document.getElementById('chk-dry');
+  var panel = document.getElementById('action-panel');
+  var panelTitle = document.getElementById('panel-title');
+  var panelContent = document.getElementById('panel-content');
+  var btnClose = document.getElementById('btn-close');
+
+  // Activate UI
+  badge.textContent = 'Connected';
+  badge.className = 'server-badge connected';
+  batchSelect.disabled = false;
+  btnPreflight.disabled = false;
+  btnRun.disabled = false;
+  btnVerify.disabled = false;
+  btnGaps.disabled = false;
+  chkDry.disabled = false;
+  [btnPreflight, btnRun, btnVerify, btnGaps].forEach(function(b) { b.title = ''; });
+
+  function showPanel(title, content) {
+    panelTitle.textContent = title;
+    panelContent.textContent = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+    panel.classList.add('visible');
+  }
+
+  function setLoading(btn, loading) {
+    if (loading) {
+      btn.dataset.origText = btn.textContent;
+      btn.innerHTML = '<span class="action-spinner"></span>' + btn.textContent;
+      btn.disabled = true;
+    } else {
+      btn.textContent = btn.dataset.origText || btn.textContent;
+      btn.disabled = false;
+    }
+  }
+
+  btnClose.addEventListener('click', function() { panel.classList.remove('visible'); });
+
+  // Load batches
+  fetch('/api/status').then(function(r) { return r.json(); }).then(function(batches) {
+    if (!Array.isArray(batches)) return;
+    batches.forEach(function(b) {
+      var opt = document.createElement('option');
+      opt.value = b.id;
+      opt.textContent = b.id + ' - ' + b.name + ' (' + b.programCount + ' progs, ' + b.verified + '/' + b.programCount + ' verified)';
+      batchSelect.appendChild(opt);
+    });
+  });
+
+  // Preflight
+  btnPreflight.addEventListener('click', function() {
+    var batch = batchSelect.value;
+    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    setLoading(btnPreflight, true);
+    fetch('/api/preflight?batch=' + encodeURIComponent(batch))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var lines = ['Preflight: ' + data.batchId + ' - ' + data.batchName, ''];
+        data.checks.forEach(function(c) {
+          lines.push((c.passed ? 'OK' : 'FAIL') + '  ' + c.check + ': ' + c.message);
+        });
+        if (data.programs.length > 0) {
+          lines.push('', 'Programs:');
+          data.programs.forEach(function(p) {
+            lines.push('  IDE ' + p.id + ' - ' + p.name + ' [' + p.action + ']' + (p.gaps > 0 ? ' (' + p.gaps + ' gaps)' : ''));
+          });
+        }
+        lines.push('', 'Summary: ' + data.summary.willContract + ' contract, ' + data.summary.willVerify + ' verify, ' + data.summary.needsEnrichment + ' enrich, ' + data.summary.alreadyDone + ' done, ' + data.summary.blocked + ' blocked');
+        showPanel('Preflight: ' + batch, lines.join('\\n'));
+      })
+      .finally(function() { setLoading(btnPreflight, false); });
+  });
+
+  // Run Pipeline
+  btnRun.addEventListener('click', function() {
+    var batch = batchSelect.value;
+    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    setLoading(btnRun, true);
+    fetch('/api/pipeline/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ batch: batch, dryRun: chkDry.checked }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.error) { showPanel('Error', data.error); return; }
+        var lines = ['Pipeline ' + (data.dryRun ? '(DRY-RUN) ' : '') + 'run: ' + data.batchId + ' - ' + data.batchName, ''];
+        data.steps.forEach(function(s) {
+          lines.push('[' + s.programId + '] ' + s.programName + ' -> ' + s.action);
+          lines.push('  ' + s.message);
+        });
+        lines.push('', 'Summary: ' + data.summary.total + ' total, ' + data.summary.contracted + ' contracted, ' + data.summary.verified + ' verified, ' + data.summary.errors + ' errors');
+        var elapsed = ((new Date(data.completed).getTime() - new Date(data.started).getTime()) / 1000).toFixed(1);
+        lines.push('Duration: ' + elapsed + 's');
+        showPanel('Pipeline Run: ' + batch, lines.join('\\n'));
+      })
+      .finally(function() { setLoading(btnRun, false); });
+  });
+
+  // Verify
+  btnVerify.addEventListener('click', function() {
+    setLoading(btnVerify, true);
+    fetch('/api/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dryRun: chkDry.checked }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var lines = ['Verify ' + (data.dryRun ? '(DRY-RUN)' : '') + ' result:', ''];
+        lines.push(data.verified + ' verified, ' + data.notReady + ' not ready, ' + data.alreadyVerified + ' already verified');
+        if (data.details && data.details.length > 0) {
+          lines.push('', 'Details:');
+          data.details.forEach(function(d) {
+            var line = '  IDE ' + d.id + ': ' + d.status;
+            if (d.gaps && d.gaps.length > 0) line += ' (' + d.gaps.length + ' gaps)';
+            lines.push(line);
+          });
+        }
+        showPanel('Verify', lines.join('\\n'));
+      })
+      .finally(function() { setLoading(btnVerify, false); });
+  });
+
+  // Gaps
+  btnGaps.addEventListener('click', function() {
+    setLoading(btnGaps, true);
+    fetch('/api/gaps')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var lines = ['Gap Report', ''];
+        if (data.contracts.length === 0) {
+          lines.push('No gaps found - all contracts are complete!');
+        } else {
+          data.contracts.forEach(function(cg) {
+            var pct = cg.total > 0 ? Math.round((cg.impl / cg.total) * 100) : 0;
+            lines.push('IDE ' + cg.id + ' - ' + cg.name + ' [' + cg.pipelineStatus + '] ' + cg.impl + '/' + cg.total + ' (' + pct + '%)');
+            cg.gaps.slice(0, 5).forEach(function(g) {
+              lines.push('  ' + g.type + ' ' + g.id + ': ' + g.status + (g.notes ? ' - ' + g.notes : ''));
+            });
+            if (cg.gaps.length > 5) lines.push('  ... and ' + (cg.gaps.length - 5) + ' more');
+          });
+        }
+        lines.push('', 'Total: ' + data.grandTotalGaps + ' gaps (' + data.globalPct + '% complete)');
+        showPanel('Gaps', lines.join('\\n'));
+      })
+      .finally(function() { setLoading(btnGaps, false); });
+  });
+})();
 `;
