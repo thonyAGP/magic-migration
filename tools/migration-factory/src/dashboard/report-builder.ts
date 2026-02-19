@@ -6,10 +6,12 @@
 import type {
   Program, PipelineStatus, SCC, Tracker,
   FullMigrationReport, ModuleSummary, ProgramSummary, BatchSummary,
+  ModuleDependency, MigrationWave, ModuleSCC,
 } from '../core/types.js';
 import type { ModuleCalculatorOutput } from '../calculators/module-calculator.js';
 import type { ReadinessReport } from '../core/types.js';
 import type { DecommissionResult } from '../core/types.js';
+import { computeModulePriority } from '../calculators/priority-calculator.js';
 
 export interface ReportInput {
   projectName: string;
@@ -44,21 +46,42 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
     }
   }
 
-  // Module summaries from maximal modules
+  // Compute module priority
+  const priorityResult = computeModulePriority({
+    modules: modulesOutput.maximalModules,
+  });
+  const priorityMap = new Map(
+    priorityResult.prioritizedModules.map(p => [p.root, p])
+  );
+
+  // Module summaries from maximal modules, sorted by priority rank ASC
   const moduleList: ModuleSummary[] = modulesOutput.maximalModules
-    .sort((a, b) => b.readinessPct - a.readinessPct)
-    .map(m => ({
-      root: m.root,
-      rootName: m.rootName,
-      memberCount: m.memberCount,
-      readinessPct: m.readinessPct,
-      verified: m.verified,
-      enriched: m.enriched,
-      contracted: m.contracted,
-      pending: m.pending,
-      deliverable: m.deliverable,
-      blockerIds: m.blockers.map(b => b.programId),
-    }));
+    .sort((a, b) => {
+      const rankA = priorityMap.get(a.root)?.rank ?? 999;
+      const rankB = priorityMap.get(b.root)?.rank ?? 999;
+      return rankA - rankB;
+    })
+    .map(m => {
+      const priority = priorityMap.get(m.root);
+      return {
+        root: m.root,
+        rootName: m.rootName,
+        memberCount: m.memberCount,
+        readinessPct: m.readinessPct,
+        verified: m.verified,
+        enriched: m.enriched,
+        contracted: m.contracted,
+        pending: m.pending,
+        deliverable: m.deliverable,
+        blockerIds: m.blockers.map(b => b.programId),
+        rank: priority?.rank,
+        priorityScore: priority?.priorityScore,
+        dependsOn: priority?.dependsOn,
+        dependedBy: priority?.dependedBy,
+        moduleLevel: priority?.moduleLevel,
+        implementationOrder: priority?.implementationOrder,
+      };
+    });
 
   // Batch summaries
   const batches: BatchSummary[] = (tracker?.batches ?? []).map(b => ({
@@ -105,5 +128,10 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
     decommission: decommission.stats,
     batches,
     programs: programList,
+    priority: {
+      moduleDependencies: priorityResult.moduleDependencies,
+      migrationSequence: priorityResult.migrationSequence,
+      moduleSCCs: priorityResult.moduleSCCs,
+    },
   };
 };

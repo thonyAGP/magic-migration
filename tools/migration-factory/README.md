@@ -56,6 +56,7 @@ src/
     readiness-checker.ts         # Score + blockers per module
     batch-planner.ts             # Auto-suggests batches from topology
     decommission-calculator.ts   # Identifies legacy programs safe to turn off
+    priority-calculator.ts       # Inter-module priority and migration sequencing
 
   adapters/       # Pluggable per legacy technology
     magic-adapter.ts    # Magic Unipaas (reads live-programs.json + contract YAML)
@@ -84,6 +85,44 @@ A program P can be **decommissioned** (turned off in legacy) when:
 Root programs (no callers) only need condition 1. SCC members are treated as atomic units - all external callers must be decommissionable.
 
 This is stricter than "deliverable": a shared leaf called by modules A and B can only be decommissioned when BOTH A and B are fully delivered.
+
+## Key Algorithm: Priority System
+
+Answers the question: **"In what order should I migrate my modules?"**
+
+Given a set of modules (subtrees in the call graph), the priority calculator:
+
+1. **Builds module dependencies**: Module A depends on Module B if B's root program is in A's subtree (A calls B)
+2. **Detects module-level SCCs**: Finds coupled modules (circular dependencies between modules)
+3. **Computes module levels**: Level 0 = foundation modules (no deps), Level N = depends on levels 0..N-1
+4. **Computes unblocking power**: How many modules does completing M unlock? (reverse BFS)
+5. **Assigns priority ranks**: Composite score with configurable weights
+6. **Plans migration waves**: Parallel groups by dependency level
+
+### Priority Score Formula
+
+```
+Score = foundation(0.50) + unblocking(0.35) + readiness(0.15)
+
+Where:
+  foundation = (maxLevel - moduleLevel) / maxLevel * 100   # Lower level = higher score
+  unblocking = unblockingPower / maxUnblocking * 100        # More dependents = higher score
+  readiness  = readinessPct                                 # Higher completion = higher score
+```
+
+Weights are configurable via `PriorityWeights`. Default: foundation=0.50, unblocking=0.35, readiness=0.15.
+
+### Migration Waves
+
+```
+Wave 1 (foundations) : [Session]           ← No dependencies, migrate first
+         ↓
+Wave 2 (operations) : [Sales] [Extract]   ← Depend on Wave 1
+         ↓
+Wave 3 (secondary)  : [Reports]           ← Depend on Waves 1-2
+```
+
+Modules within the same wave can be migrated in parallel. Circular dependencies between modules are detected and placed in the same wave.
 
 ## Key Algorithm: Module Calculator
 
@@ -161,11 +200,12 @@ npm test          # Run all tests
 npm run typecheck # TypeScript type checking
 ```
 
-36 tests covering:
+49 tests covering:
 - Graph algorithms (BFS, Tarjan SCC, levels, transitive closure)
 - Module calculator (deliverability, N/A handling, SCC, maximal filtering)
 - Decommission calculator (caller chains, SCC cycles, shared programs, N/A)
 - Coverage formula (all status combinations)
+- Priority calculator (dependencies, module SCCs, levels, unblocking, ranking, waves)
 
 ## Provenance
 

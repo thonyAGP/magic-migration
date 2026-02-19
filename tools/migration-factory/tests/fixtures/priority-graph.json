@@ -1,0 +1,12 @@
+[
+  { "id": 100, "name": "Session", "complexity": "MEDIUM", "level": 0, "callers": [], "callees": [101, 102], "source": "seed", "domain": "Session" },
+  { "id": 101, "name": "OpenSession", "complexity": "LOW", "level": 0, "callers": [100], "callees": [103], "source": "bfs", "domain": "Session" },
+  { "id": 102, "name": "CloseSession", "complexity": "LOW", "level": 0, "callers": [100], "callees": [103], "source": "bfs", "domain": "Session" },
+  { "id": 103, "name": "SessionUtils", "complexity": "LOW", "level": 0, "callers": [101, 102], "callees": [], "source": "bfs", "domain": "Session" },
+  { "id": 200, "name": "Operations", "complexity": "MEDIUM", "level": 0, "callers": [], "callees": [201, 202, 100], "source": "seed", "domain": "Operations" },
+  { "id": 201, "name": "SaleGP", "complexity": "LOW", "level": 0, "callers": [200], "callees": [203], "source": "bfs", "domain": "Operations" },
+  { "id": 202, "name": "SaleRC", "complexity": "LOW", "level": 0, "callers": [200], "callees": [203], "source": "bfs", "domain": "Operations" },
+  { "id": 203, "name": "PrintTicket", "complexity": "LOW", "level": 0, "callers": [201, 202], "callees": [], "source": "bfs", "domain": "Operations" },
+  { "id": 300, "name": "Reports", "complexity": "HIGH", "level": 0, "callers": [], "callees": [301, 200], "source": "seed", "domain": "Reports" },
+  { "id": 301, "name": "DailyReport", "complexity": "LOW", "level": 0, "callers": [300], "callees": [], "source": "bfs", "domain": "Reports" }
+]
