@@ -225,6 +225,6 @@ overall:
   callees_impl: 0
   callees_missing: 0
   coverage_pct: 100
-  status: contracted
+  status: verified
   generated: "2026-02-11"
   notes: "Backend WS program - writes session detail to 4 histo tables (article, detail, devise, remise). Most called WS in caisse lifecycle (41 total calls from 6 callers). MOYENNE complexity due to 18 tasks and 6 business rules, but all server-side persistence logic. Frontend types SessionDetail and SessionDetailType in types/session.ts mirror the data structure but do not implement the persistence logic."

@@ -104,6 +104,6 @@ overall:
   callees_impl: 0
   callees_missing: 0
   coverage_pct: 100
-  status: contracted
+  status: verified
   generated: "2026-02-11"
   notes: "Pure backend WS program - writes comptage data to 2 histo tables (comptage_caisse_histo + comptage_caisse_devise_histo). Called at multiple caisse lifecycle points. Frontend sends denomination data; server persists via this WS. No frontend equivalent needed."

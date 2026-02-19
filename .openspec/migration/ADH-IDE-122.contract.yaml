@@ -143,33 +143,33 @@ variables:
   - letter: "FG"
     name: "Montant solde initial monnaie"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level monnaie breakdown not separated in ouverture"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP.monnaie via createEmptySoldeParMOP()"
   - letter: "FH"
     name: "Montant solde initial produits"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level produits breakdown not separated"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP.produits via createEmptySoldeParMOP()"
   - letter: "FI"
     name: "Montant solde initial cartes"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level cartes breakdown not separated"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP.cartes via createEmptySoldeParMOP()"
   - letter: "FJ"
     name: "Montant solde initial cheques"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level cheques breakdown not separated"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP.cheques via createEmptySoldeParMOP()"
   - letter: "FK"
     name: "Montant solde initial od"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level od breakdown not separated"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP.od via createEmptySoldeParMOP()"
   - letter: "FL"
     name: "Nbre devise initial"
     type: "Virtual"
@@ -205,33 +205,33 @@ variables:
   - letter: "FQ"
     name: "Montant caisse comptee monnaie"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level monnaie counting not separated"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateMopFromResults().monnaie"
   - letter: "FR"
     name: "Montant caisse comptee produits"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level produits counting not separated"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateMopFromResults().produits"
   - letter: "FS"
     name: "Montant caisse comptee cartes"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level cartes counting not separated"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateMopFromResults().cartes"
   - letter: "FT"
     name: "Montant caisse comptee cheques"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level cheques counting not separated"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateMopFromResults().cheques"
   - letter: "FU"
     name: "Montant caisse comptee od"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level od counting not separated"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateMopFromResults().od"
   - letter: "FV"
     name: "Nbre devise comptee"
     type: "Virtual"
@@ -291,33 +291,33 @@ variables:
   - letter: "GE"
     name: "Montant ecart monnaie"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level monnaie ecart not computed"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateEcartOuverture().mopEcart.monnaie"
   - letter: "GF"
     name: "Montant ecart produits"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level produits ecart not computed"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateEcartOuverture().mopEcart.produits"
   - letter: "GG"
     name: "Montant ecart cartes"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level cartes ecart not computed"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateEcartOuverture().mopEcart.cartes"
   - letter: "GH"
     name: "Montant ecart cheques"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level cheques ecart not computed"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateEcartOuverture().mopEcart.cheques"
   - letter: "GI"
     name: "Montant ecart od"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level od ecart not computed"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateEcartOuverture().mopEcart.od"
   - letter: "GJ"
     name: "Nbre devise ecart"
     type: "Virtual"
@@ -526,7 +526,7 @@ overall:
   callees_total: 17
   callees_impl: 12
   callees_missing: 0
-  coverage_pct: 55
+  coverage_pct: 58
   status: contracted
   generated: "2026-02-11"
   notes: "IDE 122 is the ROOT ORCHESTRATOR for ouverture caisse, calling 17 sub-programs. The React app has a comprehensive SessionOuverturePage with step-based flow (comptage -> validation -> ouverture -> succes), concurrent session checking, multi-devise support, network closure pre-checks, stock coherence validation, and auto-print on success. Key strengths: all 17 callees have at least partial implementation. Key gaps: (1) The MOP breakdown concept (monnaie/produits/cartes/cheques/od) is the biggest missing piece - SessionDetail types have the fields but they are not populated during ouverture. (2) Ecart computation at ouverture is stubbed (totalAttendu=0, ecart=0). (3) Conditional appro ticket printing from ouverture flow is not wired (RM-002). (4) Multi-devise change/frais calculations are missing from ticket generation."

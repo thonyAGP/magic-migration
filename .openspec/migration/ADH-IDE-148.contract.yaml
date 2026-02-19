@@ -90,6 +90,6 @@ overall:
   callees_impl: 0
   callees_missing: 0
   coverage_pct: 100
-  status: contracted
+  status: verified
   generated: "2026-02-11"
   notes: "Backend WS program - resets devise synchronization state at ouverture/fermeture. Reads moyens_reglement_mor (UNI/BI paths) and links gestion_devise_session. No writes - acts as in-memory synchronizer returning state to caller. 58 lines, zero dead code, ideal migration candidate as simple API endpoint. No frontend equivalent needed."

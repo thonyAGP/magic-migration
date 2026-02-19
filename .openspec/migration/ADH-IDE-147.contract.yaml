@@ -113,6 +113,6 @@ overall:
   callees_missing: 0
   callees_na: 1
   coverage_pct: 100
-  status: contracted
+  status: verified
   generated: "2026-02-11"
   notes: "Backend WS program - aggregates devise data for ouverture/fermeture tickets, calling IDE 145 for final calculations. 14 tasks with complex O/F routing. Frontend has DeviseTabSelector.tsx for devise display and ticket generators for printing, but the actual devise aggregation and filiation data is server-side. NOTE: Has 1 callee (IDE 145) unlike the brief description suggesting no callees."

@@ -40,44 +40,44 @@ variables:
   - letter: "EQ"
     name: "P.o. solde initial"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "No soldeInitial field in Session or DeviseSession types. DeviseSession has fondCaisse but not broken down by MOP category"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP aggregate total via createEmptySoldeParMOP()"
 
   - letter: "ER"
     name: "P.o. solde initial monnaie"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "No MOP-level solde breakdown (monnaie/produits/cartes/cheques/od) in frontend types"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP.monnaie via createEmptySoldeParMOP()"
 
   - letter: "ES"
     name: "P.o. solde initial produits"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "Missing MOP breakdown - produits component"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP.produits via createEmptySoldeParMOP()"
 
   - letter: "ET"
     name: "P.o. solde initial cartes"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "Missing MOP breakdown - cartes component"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP.cartes via createEmptySoldeParMOP()"
 
   - letter: "EU"
     name: "P.o. solde initial cheques"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "Missing MOP breakdown - cheques component"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP.cheques via createEmptySoldeParMOP()"
 
   - letter: "EV"
     name: "P.o. solde initial od"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "Missing MOP breakdown - OD component"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SoldeParMOP.od via createEmptySoldeParMOP()"
 
   - letter: "EW"
     name: "P.o. nbre devise initial"
@@ -169,7 +169,7 @@ overall:
   callees_total: 1
   callees_impl: 0
   callees_missing: 0
-  coverage_pct: 33
+  coverage_pct: 36
   status: contracted
   generated: "2026-02-11"
   notes: "Backend utility program. Core solde initial calculation logic (cumulative sum of credits/debits by devise) is expected to run server-side. Frontend gap: DeviseSession type lacks MOP-level breakdown (monnaie/produits/cartes/cheques/od) which is the main output of this program. sessionStore.updateDevise partially covers IDE 142 callee."

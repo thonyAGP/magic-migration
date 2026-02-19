@@ -95,37 +95,37 @@ variables:
   - letter: "EW"
     name: "Param Total caisse monnaie"
     type: "Real"
-    status: PARTIAL
-    target_file: "src/types/session.ts"
-    gap_notes: "SessionDetail.montantMonnaie exists but not populated from denomination counting grid"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateMopFromResults().monnaie populates from counting"
 
   - letter: "EX"
     name: "Param Total caisse produits"
     type: "Real"
-    status: PARTIAL
-    target_file: "src/types/session.ts"
-    gap_notes: "SessionDetail.montantProduits exists but not connected to counting flow"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateMopFromResults().produits populates from counting"
 
   - letter: "EY"
     name: "Param Total caisse cartes"
     type: "Real"
-    status: PARTIAL
-    target_file: "src/types/session.ts"
-    gap_notes: "SessionDetail.montantCartes exists but not connected to counting flow"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateMopFromResults().cartes populates from counting"
 
   - letter: "EZ"
     name: "Param Total caisse cheque"
     type: "Real"
-    status: PARTIAL
-    target_file: "src/types/session.ts"
-    gap_notes: "SessionDetail.montantCheques exists but not connected to counting flow"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateMopFromResults().cheques populates from counting"
 
   - letter: "FA"
     name: "Param Total caisse od"
     type: "Real"
-    status: PARTIAL
-    target_file: "src/types/session.ts"
-    gap_notes: "SessionDetail.montantOd exists but not connected to counting flow"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateMopFromResults().od populates from counting"
 
   - letter: "FB"
     name: "Param Nbre devise"
@@ -493,7 +493,7 @@ overall:
   callees_total: 4
   callees_impl: 2
   callees_missing: 0
-  coverage_pct: 62
+  coverage_pct: 65
   status: contracted
   generated: "2026-02-11"
   notes: |

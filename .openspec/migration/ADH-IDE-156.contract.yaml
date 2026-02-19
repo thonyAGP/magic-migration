@@ -68,6 +68,6 @@ overall:
   callees_impl: 0
   callees_missing: 0
   coverage_pct: 100
-  status: contracted
+  status: verified
   generated: "2026-02-11"
   notes: "IDE 156 is the simplest program (1 task, 28 logic lines). Its sole purpose is checking whether a session is already open before allowing a new one. This is FULLY implemented in the React app: checkConcurrentSessions() in sessionStore calls the API, ConcurrentSessionWarning component shows a dialog with force-open/cancel options, and vilOpenSessions toggle allows multi-session mode. The table write (histo_sessions_caisse_detail) happens server-side. Complete functional coverage."

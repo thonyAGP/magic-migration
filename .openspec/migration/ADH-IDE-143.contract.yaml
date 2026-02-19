@@ -90,6 +90,6 @@ overall:
   callees_impl: 0
   callees_missing: 0
   coverage_pct: 100
-  status: contracted
+  status: verified
   generated: "2026-02-11"
   notes: "Backend WS program - calculates devise ecarts during ouverture/fermeture. Reads moyens_reglement_mor (UNI/BI paths) and links to gestion_devise_session. Frontend has EcartDevise and SessionEcart types in types/session.ts with ecart display in EcartDisplay.tsx and EcartJustificationDialog.tsx, but the actual calculation is server-side. Candidate for partial frontend mirroring if offline mode requires local ecart estimation."

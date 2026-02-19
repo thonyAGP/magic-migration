@@ -79,6 +79,6 @@ overall:
   callees_impl: 0
   callees_missing: 0
   coverage_pct: 100
-  status: contracted
+  status: verified
   generated: "2026-02-11"
   notes: "Backend WS program - central devise session updater. Most connected WS with 11 callers (35+ total calls). Writes to single table gestion_devise_session. Frontend sessionStore.ts has updateDevise() for local state but backend handles persistence and cumul logic. No frontend equivalent needed."

@@ -400,7 +400,7 @@ overall:
   callees_total: 4
   callees_impl: 2
   callees_missing: 0
-  coverage_pct: 38
+  coverage_pct: 40
   status: contracted
   generated: "2026-02-11"
   notes: "IDE 139 is the most complex print program (71 tasks, 1129 logic lines) generating appro/remise tickets. The React app has generateApproTicket() with 3 operation types (APPORT_COFFRE, APPORT_PRODUITS, REMISE_COFFRE) but the ticket content is significantly simplified vs Magic. Key gaps: (1) MOP-level breakdown (monnaie/produits/cartes/cheques/od) for remise amounts, (2) multi-devise accumulation with change/frais, (3) detailed edition mode, (4) versement/retrait/solde tracking, (5) article session and remise history tables. The print infrastructure (generators + PrintService + ESC/POS) is solid but data richness is lacking."

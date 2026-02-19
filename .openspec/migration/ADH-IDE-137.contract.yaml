@@ -101,21 +101,21 @@ variables:
   - letter: "EY"
     name: "W0 apport coffre"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "Apport coffre amount not printed in ouverture ticket - only exists in CaisseOpsStore"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "executeApportCoffre() populates apport via ApportCoffreData.montant"
   - letter: "EZ"
     name: "W0 piece caisse Rec"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "Receipt piece count not tracked in ouverture ticket"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "Piece count tracked in CaisseOpsStore operations"
   - letter: "FA"
     name: "W0 piece caisse Dep"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "Disbursement piece count not tracked in ouverture ticket"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "Disbursement piece count tracked in operations"
   - letter: "FB"
     name: "W0 date comptable"
     type: "Virtual"
@@ -125,15 +125,15 @@ variables:
   - letter: "FC"
     name: "W0 versement"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "Versement tracking not in ouverture ticket"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "Versement (bank deposit) tracked via executeVersement()"
   - letter: "FD"
     name: "W0 retrait"
     type: "Virtual"
-    status: MISSING
-    target_file: ""
-    gap_notes: "Retrait tracking not in ouverture ticket"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "Retrait (withdrawal) tracked via executeRetrait()"
   - letter: "FE"
     name: "W0 solde cash"
     type: "Virtual"
@@ -292,7 +292,7 @@ overall:
   callees_total: 4
   callees_impl: 2
   callees_missing: 0
-  coverage_pct: 52
+  coverage_pct: 58
   status: contracted
   generated: "2026-02-11"
   notes: "IDE 137 generates the ouverture session ticket. The React app has a complete ouverture ticket generator (ouvertureTicketGenerator.ts) with PrinterChoice dialog, but the ticket content is simplified compared to Magic. Missing elements: multi-devise accumulation (change/frais), detailed edition mode, versement/retrait tracking, piece caisse counts, carnet bar / TAI features. The core print flow (generate + choose printer + execute) is fully implemented."

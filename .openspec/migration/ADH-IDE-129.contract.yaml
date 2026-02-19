@@ -140,33 +140,33 @@ variables:
   - letter: "FH"
     name: "Param montant ecart monnaie"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level ecart breakdown not implemented for ouverture"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateEcartOuverture().mopEcart.monnaie"
   - letter: "FI"
     name: "Param montant ecart produits"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level ecart breakdown not implemented for ouverture"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateEcartOuverture().mopEcart.produits"
   - letter: "FJ"
     name: "Param montant ecart cartes"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level ecart breakdown not implemented for ouverture"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateEcartOuverture().mopEcart.cartes"
   - letter: "FK"
     name: "Param montant ecart cheques"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level ecart breakdown not implemented for ouverture"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateEcartOuverture().mopEcart.cheques"
   - letter: "FL"
     name: "Param montant ecart od"
     type: "Parameter"
-    status: MISSING
-    target_file: ""
-    gap_notes: "MOP-level ecart breakdown not implemented for ouverture"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "calculateEcartOuverture().mopEcart.od"
   - letter: "FM"
     name: "Param ecart nb devise"
     type: "Parameter"
@@ -274,7 +274,7 @@ overall:
   callees_total: 2
   callees_impl: 1
   callees_missing: 0
-  coverage_pct: 37
+  coverage_pct: 52
   status: contracted
   generated: "2026-02-11"
   notes: "IDE 129 calculates the opening ecart (variance) between counted and expected amounts. The frontend has ecart infrastructure (SessionEcart type, EcartDisplay component) but it is primarily wired for FERMETURE, not ouverture. The MOP-level breakdown (monnaie/produits/cartes/cheques/od) exists as types in SessionDetail but is not populated during ouverture flow. Key gap: the ouverture ecart calculation with per-MOP granularity is delegated to the backend via openSession API call - no frontend-side ecart computation at ouverture time."
