@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "methodology": "SPECMAP",
+  "created": "{{GENERATED_DATE}}",
+  "updated": "{{GENERATED_DATE}}",
+  "status": "pending",
+  "stats": {
+    "total_programs": 0,
+    "live_programs": 0,
+    "orphan_programs": 0,
+    "ecf_programs": 0,
+    "contracted": 0,
+    "enriched": 0,
+    "verified": 0,
+    "max_level": 0,
+    "last_computed": ""
+  },
+  "batches": [],
+  "notes": [
+    "Migration tracker for {{PROJECT_NAME}}",
+    "SPECMAP methodology: EXTRACT -> MAP -> GAP -> CONTRACT -> ENRICH -> VERIFY"
+  ]
+}

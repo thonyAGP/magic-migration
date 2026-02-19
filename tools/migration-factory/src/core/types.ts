@@ -1,0 +1,375 @@
+/**
+ * Core types for the Migration Factory.
+ * Technology-agnostic interfaces shared across all modules.
+ */
+
+// ─── Program Graph ───────────────────────────────────────────────
+
+export interface Program {
+  id: string | number;
+  name: string;
+  complexity: Complexity;
+  level: number;
+  callers: (string | number)[];
+  callees: (string | number)[];
+  source: ProgramSource;
+  domain: string;
+}
+
+export const Complexity = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+} as const;
+export type Complexity = (typeof Complexity)[keyof typeof Complexity];
+
+export const ProgramSource = {
+  SEED: 'seed',
+  ECF: 'ecf',
+  BFS: 'bfs',
+  MANUAL: 'manual',
+} as const;
+export type ProgramSource = (typeof ProgramSource)[keyof typeof ProgramSource];
+
+export interface ProgramGraph {
+  generated: string;
+  method: string;
+  totalPrograms: number;
+  liveCount: number;
+  orphanCount: number;
+  seeds: (string | number)[];
+  sharedPrograms: (string | number)[];
+  programs: Program[];
+  orphans: OrphanProgram[];
+}
+
+export interface OrphanProgram {
+  id: string | number;
+  name: string;
+  reason: string;
+}
+
+// ─── Dependency Graph ────────────────────────────────────────────
+
+export interface DependencyGraph {
+  generated: string;
+  levels: Record<string, (string | number)[]>;
+  maxLevel: number;
+  programsByLevel: Record<string, number>;
+}
+
+// ─── SCC (Strongly Connected Component) ──────────────────────────
+
+export interface SCC {
+  index: number;
+  members: (string | number)[];
+  level: number;
+}
+
+// ─── Migration Contract ──────────────────────────────────────────
+
+export interface MigrationContract {
+  program: ContractProgram;
+  rules: ContractRule[];
+  variables: ContractVariable[];
+  tables: ContractTable[];
+  callees: ContractCallee[];
+  overall: ContractOverall;
+}
+
+export interface ContractProgram {
+  id: string | number;
+  name: string;
+  complexity: Complexity;
+  callers: (string | number)[];
+  callees: (string | number)[];
+  tasksCount: number;
+  tablesCount: number;
+  expressionsCount: number;
+}
+
+export const ItemStatus = {
+  IMPL: 'IMPL',
+  PARTIAL: 'PARTIAL',
+  MISSING: 'MISSING',
+  NA: 'N/A',
+} as const;
+export type ItemStatus = (typeof ItemStatus)[keyof typeof ItemStatus];
+
+export interface ContractRule {
+  id: string;
+  description: string;
+  condition: string;
+  variables: string[];
+  status: ItemStatus;
+  targetFile: string;
+  gapNotes: string;
+}
+
+export interface ContractVariable {
+  localId: string;
+  name: string;
+  type: 'Parameter' | 'Virtual' | 'Real';
+  status: ItemStatus;
+  targetFile: string;
+  gapNotes: string;
+}
+
+export interface ContractTable {
+  id: string | number;
+  name: string;
+  mode: 'R' | 'W' | 'RW';
+  status: ItemStatus;
+  targetFile: string;
+  gapNotes: string;
+}
+
+export interface ContractCallee {
+  id: string | number;
+  name: string;
+  calls: number;
+  context: string;
+  status: ItemStatus;
+  target: string;
+  gapNotes: string;
+}
+
+export interface ContractOverall {
+  rulesTotal: number;
+  rulesImpl: number;
+  rulesPartial: number;
+  rulesMissing: number;
+  rulesNa: number;
+  variablesKeyCount: number;
+  calleesTotal: number;
+  calleesImpl: number;
+  calleesMissing: number;
+  coveragePct: number;
+  status: PipelineStatus;
+  generated: string;
+  notes: string;
+}
+
+// ─── Pipeline Status ─────────────────────────────────────────────
+
+export const PipelineStatus = {
+  PENDING: 'pending',
+  CONTRACTED: 'contracted',
+  ENRICHED: 'enriched',
+  VERIFIED: 'verified',
+} as const;
+export type PipelineStatus = (typeof PipelineStatus)[keyof typeof PipelineStatus];
+
+// ─── Tracker ─────────────────────────────────────────────────────
+
+export interface Tracker {
+  version: string;
+  methodology: string;
+  created: string;
+  updated: string;
+  status: string;
+  stats: TrackerStats;
+  batches: Batch[];
+  notes: string[];
+}
+
+export interface TrackerStats {
+  totalPrograms: number;
+  livePrograms: number;
+  orphanPrograms: number;
+  sharedPrograms: number;
+  contracted: number;
+  enriched: number;
+  verified: number;
+  maxLevel: number;
+  lastComputed: string;
+}
+
+export interface Batch {
+  id: string;
+  name: string;
+  root: string | number;
+  programs: number;
+  status: PipelineStatus;
+  contractedDate?: string;
+  enrichedDate?: string;
+  verifiedDate?: string;
+  stats: BatchStats;
+  priorityOrder: (string | number)[];
+}
+
+export interface BatchStats {
+  backendNa: number;
+  frontendEnrich: number;
+  fullyImpl: number;
+  coverageAvgFrontend: number;
+  totalPartial: number;
+  totalMissing: number;
+}
+
+// ─── Module (Deliverable Subtree) ────────────────────────────────
+
+export interface DeliverableModule {
+  root: string | number;
+  rootName: string;
+  members: (string | number)[];
+  memberCount: number;
+  verified: number;
+  enriched: number;
+  contracted: number;
+  pending: number;
+  readinessPct: number;
+  deliverable: boolean;
+  blockers: ModuleBlocker[];
+  sccUnits: SCC[];
+}
+
+export interface ModuleBlocker {
+  programId: string | number;
+  programName: string;
+  currentStatus: PipelineStatus;
+  reason: string;
+}
+
+// ─── Batch Plan (auto-suggested) ─────────────────────────────────
+
+export interface BatchPlan {
+  suggestedBatches: SuggestedBatch[];
+  totalPrograms: number;
+  totalBatches: number;
+}
+
+export interface SuggestedBatch {
+  id: string;
+  name: string;
+  root: string | number;
+  members: (string | number)[];
+  memberCount: number;
+  level: number;
+  domain: string;
+  estimatedComplexity: Complexity;
+}
+
+// ─── Adapter Interface ───────────────────────────────────────────
+
+export interface SpecExtractor {
+  name: string;
+  extractProgramGraph(): Promise<ProgramGraph>;
+  extractSpec(programId: string | number): Promise<MigrationContract | null>;
+  getSharedPrograms(): Promise<(string | number)[]>;
+}
+
+// ─── Readiness Report ────────────────────────────────────────────
+
+export interface ReadinessReport {
+  deliverable: DeliverableModule[];
+  close: DeliverableModule[];
+  inProgress: DeliverableModule[];
+  notStarted: DeliverableModule[];
+  global: GlobalReadiness;
+}
+
+export interface GlobalReadiness {
+  totalLive: number;
+  contracted: number;
+  enriched: number;
+  verified: number;
+  modulesDeliverable: number;
+  modulesTotal: number;
+}
+
+// ─── Decommission ───────────────────────────────────────────────
+
+export interface DecommissionResult {
+  decommissionable: DecommissionableProgram[];
+  blocked: BlockedProgram[];
+  stats: DecommissionStats;
+}
+
+export interface DecommissionableProgram {
+  id: string | number;
+  name: string;
+  level: number;
+  reason: string;
+}
+
+export interface BlockedProgram {
+  id: string | number;
+  name: string;
+  level: number;
+  status: PipelineStatus;
+  blockingCallers: (string | number)[];
+  reason: string;
+}
+
+export interface DecommissionStats {
+  totalLive: number;
+  decommissionable: number;
+  decommissionPct: number;
+  blockedByStatus: number;
+  blockedByCallers: number;
+  sharedBlocked: number;
+}
+
+// ─── Full Report (for HTML dashboard) ───────────────────────────
+
+export interface FullMigrationReport {
+  generated: string;
+  projectName: string;
+  graph: {
+    totalPrograms: number;
+    livePrograms: number;
+    orphanPrograms: number;
+    sharedPrograms: number;
+    maxLevel: number;
+    sccCount: number;
+  };
+  pipeline: {
+    pending: number;
+    contracted: number;
+    enriched: number;
+    verified: number;
+  };
+  modules: {
+    total: number;
+    deliverable: number;
+    close: number;
+    inProgress: number;
+    notStarted: number;
+    list: ModuleSummary[];
+  };
+  decommission: DecommissionStats;
+  batches: BatchSummary[];
+  programs: ProgramSummary[];
+}
+
+export interface ModuleSummary {
+  root: string | number;
+  rootName: string;
+  memberCount: number;
+  readinessPct: number;
+  verified: number;
+  enriched: number;
+  contracted: number;
+  pending: number;
+  deliverable: boolean;
+  blockerIds: (string | number)[];
+}
+
+export interface BatchSummary {
+  id: string;
+  name: string;
+  programs: number;
+  status: PipelineStatus;
+  coveragePct: number;
+}
+
+export interface ProgramSummary {
+  id: string | number;
+  name: string;
+  level: number;
+  status: PipelineStatus;
+  decommissionable: boolean;
+  shared: boolean;
+  domain: string;
+}
