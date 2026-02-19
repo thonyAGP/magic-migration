@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "Main", "complexity": "LOW", "level": 3, "callers": [], "callees": [2, 3], "source": "seed", "domain": "Core" },
+  { "id": 2, "name": "MenuA", "complexity": "LOW", "level": 2, "callers": [1], "callees": [4, 5], "source": "bfs", "domain": "Menu" },
+  { "id": 3, "name": "MenuB", "complexity": "LOW", "level": 1, "callers": [1], "callees": [5], "source": "bfs", "domain": "Menu" },
+  { "id": 4, "name": "LeafA", "complexity": "LOW", "level": 0, "callers": [2], "callees": [], "source": "bfs", "domain": "Leaf" },
+  { "id": 5, "name": "SharedLeaf", "complexity": "LOW", "level": 0, "callers": [2, 3], "callees": [], "source": "ecf", "domain": "Shared" }
+]

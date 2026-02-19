@@ -1,0 +1,173 @@
+/**
+ * Batch Planner: auto-suggests batches from program graph topology.
+ *
+ * Strategy:
+ * 1. Find "natural roots" = programs with callers but no parent within same functional group
+ * 2. For each root, compute subtree size
+ * 3. Group by domain if available, otherwise by topology
+ * 4. Target batch size: 10-30 programs (configurable)
+ */
+
+import type { Program, SuggestedBatch, BatchPlan, Complexity, SCC } from '../core/types.js';
+import { transitiveClosure, type AdjacencyGraph } from '../core/graph.js';
+
+type NodeId = string | number;
+
+export interface BatchPlannerConfig {
+  minBatchSize: number;
+  maxBatchSize: number;
+  preferDomainGrouping: boolean;
+}
+
+const DEFAULT_CONFIG: BatchPlannerConfig = {
+  minBatchSize: 5,
+  maxBatchSize: 30,
+  preferDomainGrouping: true,
+};
+
+/**
+ * Auto-suggest batches from the program graph.
+ */
+export const planBatches = (
+  programs: Program[],
+  adjacency: AdjacencyGraph,
+  levels: Map<NodeId, number>,
+  sccs: SCC[],
+  config: Partial<BatchPlannerConfig> = {}
+): BatchPlan => {
+  const cfg = { ...DEFAULT_CONFIG, ...config };
+  const programMap = new Map(programs.map(p => [p.id, p]));
+
+  // Find natural roots: programs at high levels that have significant subtrees
+  const roots = findNaturalRoots(programs, adjacency, levels, cfg);
+
+  const suggestedBatches: SuggestedBatch[] = [];
+  const assigned = new Set<NodeId>();
+  let batchCounter = 1;
+
+  // Sort roots by level DESC (highest = most encompassing)
+  roots.sort((a, b) => {
+    const la = levels.get(a) ?? 0;
+    const lb = levels.get(b) ?? 0;
+    return lb - la;
+  });
+
+  for (const root of roots) {
+    if (assigned.has(root)) continue;
+
+    const subtree = transitiveClosure(adjacency, root);
+    const unassigned = [...subtree].filter(id => !assigned.has(id));
+
+    if (unassigned.length < cfg.minBatchSize) continue;
+
+    // If subtree is too large, it stays as one batch (user can split later)
+    const members = unassigned;
+    for (const m of members) assigned.add(m);
+
+    const rootProgram = programMap.get(root);
+    const level = levels.get(root) ?? 0;
+    const domain = rootProgram?.domain ?? inferDomain(rootProgram?.name ?? '');
+    const complexity = estimateComplexity(members.length);
+
+    suggestedBatches.push({
+      id: `B${batchCounter}`,
+      name: rootProgram?.name ?? `Batch ${batchCounter}`,
+      root,
+      members,
+      memberCount: members.length,
+      level,
+      domain,
+      estimatedComplexity: complexity,
+    });
+    batchCounter++;
+  }
+
+  // Remaining unassigned programs -> "misc" batch if enough
+  const remaining = programs
+    .map(p => p.id)
+    .filter(id => !assigned.has(id));
+
+  if (remaining.length >= cfg.minBatchSize) {
+    suggestedBatches.push({
+      id: `B${batchCounter}`,
+      name: 'Miscellaneous',
+      root: remaining[0],
+      members: remaining,
+      memberCount: remaining.length,
+      level: 0,
+      domain: 'misc',
+      estimatedComplexity: 'MEDIUM',
+    });
+  }
+
+  return {
+    suggestedBatches,
+    totalPrograms: programs.length,
+    totalBatches: suggestedBatches.length,
+  };
+};
+
+/**
+ * Find natural roots for batching.
+ * A natural root is a program that:
+ * - Has a significant subtree (>= minBatchSize)
+ * - Is at a high level (deep in the call chain)
+ * - OR is an entry point (seed/ecf)
+ */
+const findNaturalRoots = (
+  programs: Program[],
+  adjacency: AdjacencyGraph,
+  levels: Map<NodeId, number>,
+  config: BatchPlannerConfig
+): NodeId[] => {
+  const roots: NodeId[] = [];
+
+  // Strategy 1: Programs with high level and significant subtrees
+  const highLevelPrograms = programs
+    .filter(p => (levels.get(p.id) ?? 0) >= 4)
+    .sort((a, b) => (levels.get(b.id) ?? 0) - (levels.get(a.id) ?? 0));
+
+  for (const prog of highLevelPrograms) {
+    const subtree = transitiveClosure(adjacency, prog.id);
+    if (subtree.size >= config.minBatchSize) {
+      roots.push(prog.id);
+    }
+  }
+
+  // Strategy 2: Programs with many direct callees (orchestrators)
+  const orchestrators = programs
+    .filter(p => p.callees.length >= 5)
+    .sort((a, b) => b.callees.length - a.callees.length);
+
+  for (const prog of orchestrators) {
+    if (!roots.includes(prog.id)) {
+      const subtree = transitiveClosure(adjacency, prog.id);
+      if (subtree.size >= config.minBatchSize) {
+        roots.push(prog.id);
+      }
+    }
+  }
+
+  return roots;
+};
+
+const inferDomain = (name: string): string => {
+  const lower = name.toLowerCase();
+  if (lower.includes('caisse') || lower.includes('session')) return 'Caisse';
+  if (lower.includes('vente') || lower.includes('gift') || lower.includes('boutique')) return 'Ventes';
+  if (lower.includes('extrait') || lower.includes('compte')) return 'Compte';
+  if (lower.includes('change') || lower.includes('devise')) return 'Change';
+  if (lower.includes('telephone') || lower.includes('phone')) return 'Telephone';
+  if (lower.includes('garantie') || lower.includes('depot')) return 'Garantie';
+  if (lower.includes('facture')) return 'Factures';
+  if (lower.includes('ticket') || lower.includes('print') || lower.includes('edition')) return 'Impression';
+  if (lower.includes('menu')) return 'Menu';
+  if (lower.includes('data') || lower.includes('catch')) return 'DataCatching';
+  return 'General';
+};
+
+const estimateComplexity = (memberCount: number): Complexity => {
+  if (memberCount <= 5) return 'LOW';
+  if (memberCount <= 15) return 'MEDIUM';
+  return 'HIGH';
+};

@@ -1,0 +1,66 @@
+# SPECMAP Migration Contract
+# Generated: {{GENERATED_DATE}}
+# Program: {{PROJECT}} {{PROGRAM_ID}} - {{PROGRAM_NAME}}
+
+program:
+  id: {{PROGRAM_ID}}
+  name: "{{PROGRAM_NAME}}"
+  complexity: "{{COMPLEXITY}}"
+  callers: {{CALLERS}}
+  callees: {{CALLEES}}
+  tasks_count: {{TASKS_COUNT}}
+  tables_count: {{TABLES_COUNT}}
+  expressions_count: {{EXPRESSIONS_COUNT}}
+
+rules:
+  # Business rules extracted from spec
+  # - id: RM-001
+  #   description: "Rule description"
+  #   condition: "Condition expression"
+  #   variables: ["var1", "var2"]
+  #   status: MISSING
+  #   target_file: ""
+  #   gap_notes: ""
+
+variables:
+  # Key variables from the program
+  # - local_id: "A"
+  #   name: "Variable name"
+  #   type: "Parameter|Virtual|Real"
+  #   status: MISSING
+  #   target_file: ""
+  #   gap_notes: ""
+
+tables:
+  # Tables accessed by this program
+  # - id: 123
+  #   name: "table_name"
+  #   mode: "R|W|RW"
+  #   status: MISSING
+  #   target_file: ""
+  #   gap_notes: ""
+
+callees:
+  # Programs called by this program
+  # - id: 456
+  #   name: "Callee name"
+  #   calls: 1
+  #   context: "Context description"
+  #   status: MISSING
+  #   target: ""
+  #   gap_notes: ""
+
+overall:
+  rules_total: 0
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 0
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 0
+  status: pending
+  generated: "{{GENERATED_DATE}}"
+  notes: ""

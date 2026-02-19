@@ -1,0 +1,6 @@
+[
+  { "id": 1, "name": "Root", "complexity": "MEDIUM", "level": 0, "callers": [], "callees": [2, 3], "source": "seed", "domain": "" },
+  { "id": 2, "name": "CycleA", "complexity": "LOW", "level": 0, "callers": [1, 3], "callees": [3], "source": "bfs", "domain": "" },
+  { "id": 3, "name": "CycleB", "complexity": "LOW", "level": 0, "callers": [1, 2], "callees": [2, 4], "source": "bfs", "domain": "" },
+  { "id": 4, "name": "Leaf", "complexity": "LOW", "level": 0, "callers": [3], "callees": [], "source": "bfs", "domain": "" }
+]
