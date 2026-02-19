@@ -4,6 +4,7 @@
 
 import path from 'node:path';
 import type { PipelineConfig } from '../core/types.js';
+import { EnrichmentMode } from '../core/types.js';
 
 export interface PipelineConfigInput {
   projectDir: string;
@@ -12,6 +13,8 @@ export interface PipelineConfigInput {
   noContract?: boolean;
   noVerify?: boolean;
   report?: boolean;
+  enrich?: string;
+  model?: string;
 }
 
 export const resolvePipelineConfig = (input: PipelineConfigInput): PipelineConfig => {
@@ -29,5 +32,7 @@ export const resolvePipelineConfig = (input: PipelineConfigInput): PipelineConfi
     autoVerify: !input.noVerify,
     dryRun: input.dryRun ?? false,
     generateReport: input.report ?? false,
+    enrichmentMode: input.enrich === 'claude' ? EnrichmentMode.CLAUDE : EnrichmentMode.MANUAL,
+    claudeModel: input.model,
   };
 };

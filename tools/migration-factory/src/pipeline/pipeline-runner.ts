@@ -1,7 +1,8 @@
 /**
- * Pipeline Runner v3: orchestrates the full batch pipeline.
+ * Pipeline Runner v4: orchestrates the full batch pipeline with optional Claude enrichment.
  *
- * pipeline run --batch B2  →  auto-contract → gap-analysis → auto-verify → tracker-sync
+ * pipeline run --batch B2                    → auto-contract → gap-analysis → auto-verify → tracker-sync
+ * pipeline run --batch B2 --enrich claude    → + Claude API enrichment for gaps
  */
 
 import fs from 'node:fs';
@@ -11,13 +12,15 @@ import type {
   PreflightResult, PreflightProgram, PreflightCheck,
   BatchStatusView, MigrationContract, Batch, PipelineAction,
 } from '../core/types.js';
-import { PipelineStatus, PipelineEventType, PipelineAction as PA } from '../core/types.js';
+import { PipelineStatus, PipelineEventType, PipelineAction as PA, EnrichmentMode } from '../core/types.js';
 import { parseContract, writeContract, loadContracts } from '../core/contract.js';
 import { readTracker, writeTracker, updateTrackerStats, updateBatchStatus } from '../core/tracker.js';
 import { isTerminal, statusOrder } from '../core/pipeline.js';
 import { generateAutoContract } from '../generators/auto-contract.js';
 import { trackStatusChange } from '../calculators/effort-tracker.js';
 import { createPipelineEmitter, createEvent } from './event-emitter.js';
+import type { EnrichmentHook } from './enrichment-hook.js';
+import { createClaudeEnrichmentHook } from './claude-enrichment-hook.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────
 
@@ -52,6 +55,13 @@ const countGaps = (contract: MigrationContract): number => {
 const getProgramName = (batch: Batch, programId: string | number, contracts: Map<string | number, MigrationContract>): string => {
   const contract = contracts.get(programId) ?? contracts.get(Number(programId)) ?? contracts.get(String(programId));
   return contract?.program.name ?? `Program ${programId}`;
+};
+
+const resolveEnrichmentHook = (config: PipelineConfig): EnrichmentHook | null => {
+  if (config.enrichmentMode === EnrichmentMode.CLAUDE) {
+    return createClaudeEnrichmentHook({ model: config.claudeModel });
+  }
+  return null;
 };
 
 // ─── computeBatchStatus ──────────────────────────────────────────
@@ -234,10 +244,11 @@ export const preflightBatch = (batchId: string, config: PipelineConfig): Preflig
 
 // ─── runBatchPipeline ────────────────────────────────────────────
 
-export const runBatchPipeline = (batchId: string, config: PipelineConfig): PipelineRunResult => {
+export const runBatchPipeline = async (batchId: string, config: PipelineConfig): Promise<PipelineRunResult> => {
   const started = new Date().toISOString();
   const emitter = createPipelineEmitter();
   const steps: PipelineStepResult[] = [];
+  const enrichmentHook = resolveEnrichmentHook(config);
 
   // Load tracker
   if (!fs.existsSync(config.trackerFile)) {
@@ -262,7 +273,7 @@ export const runBatchPipeline = (batchId: string, config: PipelineConfig): Pipel
 
   // Process each program in priority order
   for (const programId of batch.priorityOrder) {
-    const step = processProgram(programId, batch, config, emitter);
+    const step = await processProgram(programId, batch, config, emitter, enrichmentHook);
     steps.push(step);
   }
 
@@ -282,12 +293,13 @@ export const runBatchPipeline = (batchId: string, config: PipelineConfig): Pipel
 
 // ─── processProgram ──────────────────────────────────────────────
 
-const processProgram = (
+const processProgram = async (
   programId: string | number,
   batch: Batch,
   config: PipelineConfig,
   emitter: ReturnType<typeof createPipelineEmitter>,
-): PipelineStepResult => {
+  enrichmentHook: EnrichmentHook | null,
+): Promise<PipelineStepResult> => {
   const cFilePath = findContractFile(config, programId);
   let contract: MigrationContract | null = null;
 
@@ -366,7 +378,7 @@ const processProgram = (
     };
   }
 
-  // Step 2: Gap analysis → auto-enrich if 0 gaps
+  // Step 2: Gap analysis → auto-enrich if 0 gaps, or Claude enrich if hook available
   if (contract.overall.status === PipelineStatus.CONTRACTED) {
     const gaps = countGaps(contract);
 
@@ -383,7 +395,73 @@ const processProgram = (
       emitter.emit(createEvent(PipelineEventType.PROGRAM_AUTO_ENRICHED,
         `IDE ${programId} auto-enriched (0 gaps)`,
         { batchId: batch.id, programId }));
+    } else if (enrichmentHook && !config.dryRun) {
+      // v4: Try Claude enrichment
+      const context = {
+        contract,
+        specFile: specFile(config, programId),
+        codebaseDir: config.codebaseDir,
+      };
+
+      if (enrichmentHook.canEnrich(context)) {
+        const result = await enrichmentHook.enrich(context);
+
+        emitter.emit(createEvent(PipelineEventType.PROGRAM_CLAUDE_ENRICHED,
+          `IDE ${programId}: ${result.message}`,
+          { batchId: batch.id, programId, data: { gapsResolved: result.gapsResolved, gapsRemaining: result.gapsRemaining } }));
+
+        if (result.enriched && result.updatedContract) {
+          contract = result.updatedContract;
+          const remainingGaps = countGaps(contract);
+
+          if (remainingGaps === 0) {
+            contract.overall.status = PipelineStatus.ENRICHED;
+            contract.overall.effort = trackStatusChange(contract, PipelineStatus.ENRICHED);
+          }
+
+          const outPath = findContractFile(config, programId) ?? contractFile(config, programId);
+          writeContract(contract, outPath);
+
+          if (remainingGaps > 0) {
+            return {
+              programId, programName: contract.program.name,
+              action: PA.CLAUDE_ENRICHED,
+              previousStatus: PipelineStatus.CONTRACTED, newStatus: contract.overall.status,
+              coveragePct: contract.overall.coveragePct, gaps: remainingGaps,
+              message: `${result.message} - ${remainingGaps} gaps remain`,
+            };
+          }
+          // If 0 gaps remaining, fall through to auto-verify
+        } else {
+          // Claude couldn't resolve any gaps → still needs manual enrichment
+          emitter.emit(createEvent(PipelineEventType.PROGRAM_NEEDS_ENRICHMENT,
+            `IDE ${programId} needs enrichment: ${gaps} gaps (Claude could not resolve)`,
+            { batchId: batch.id, programId, data: { gaps } }));
+
+          return {
+            programId, programName: contract.program.name,
+            action: PA.NEEDS_ENRICHMENT,
+            previousStatus: PipelineStatus.CONTRACTED, newStatus: PipelineStatus.CONTRACTED,
+            coveragePct: contract.overall.coveragePct, gaps,
+            message: `${gaps} items need enrichment (Claude: ${result.message})`,
+          };
+        }
+      } else {
+        // Hook can't enrich (no API key or no spec)
+        emitter.emit(createEvent(PipelineEventType.PROGRAM_NEEDS_ENRICHMENT,
+          `IDE ${programId} needs enrichment: ${gaps} gaps`,
+          { batchId: batch.id, programId, data: { gaps } }));
+
+        return {
+          programId, programName: contract.program.name,
+          action: PA.NEEDS_ENRICHMENT,
+          previousStatus: PipelineStatus.CONTRACTED, newStatus: PipelineStatus.CONTRACTED,
+          coveragePct: contract.overall.coveragePct, gaps,
+          message: `${gaps} items need enrichment`,
+        };
+      }
     } else {
+      // No hook or dry-run → report gaps
       emitter.emit(createEvent(PipelineEventType.PROGRAM_NEEDS_ENRICHMENT,
         `IDE ${programId} needs enrichment: ${gaps} gaps`,
         { batchId: batch.id, programId, data: { gaps } }));
@@ -531,6 +609,7 @@ const buildResult = (
     contracted: steps.filter(s => s.action === PA.CONTRACTED).length,
     needsEnrichment: steps.filter(s => s.action === PA.NEEDS_ENRICHMENT).length,
     autoEnriched: steps.filter(s => s.action === PA.AUTO_ENRICHED).length,
+    claudeEnriched: steps.filter(s => s.action === PA.CLAUDE_ENRICHED).length,
     verified: steps.filter(s => s.action === PA.VERIFIED).length,
     verifyFailed: steps.filter(s => s.action === PA.VERIFY_FAILED).length,
     specsMissing: steps.filter(s => s.action === PA.SPEC_MISSING).length,

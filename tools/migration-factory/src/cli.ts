@@ -710,17 +710,19 @@ const run = async () => {
         noContract: hasFlag('no-contract'),
         noVerify: hasFlag('no-verify'),
         report: hasFlag('report'),
+        enrich: getArg('enrich'),
+        model: getArg('model'),
       });
 
       switch (pipelineSubCmd) {
         case 'run': {
           const batchId = getArg('batch');
           if (!batchId) {
-            console.error('Usage: pipeline run --batch <id> --project <dir> [--dir ADH] [--dry-run] [--no-contract] [--no-verify] [--report]');
+            console.error('Usage: pipeline run --batch <id> --project <dir> [--dir ADH] [--dry-run] [--no-contract] [--no-verify] [--enrich manual|claude] [--model haiku|sonnet]');
             process.exit(1);
           }
 
-          const result = runBatchPipeline(batchId, pipelineConfig);
+          const result = await runBatchPipeline(batchId, pipelineConfig);
 
           console.log(`\nPipeline ${result.dryRun ? '(DRY-RUN) ' : ''}run: ${batchId} - ${result.batchName}\n`);
 
@@ -728,6 +730,7 @@ const run = async () => {
             const icon = step.action === 'verified' ? '\u2714'
               : step.action === 'already-done' ? '\u25CB'
               : step.action === 'needs-enrichment' ? '\u25B7'
+              : step.action === 'claude-enriched' ? '\u25C9'
               : step.action === 'spec-missing' ? '\u2717'
               : step.action === 'error' ? '\u2717'
               : '\u002B';
@@ -736,7 +739,7 @@ const run = async () => {
           }
 
           console.log(`\n  --- Summary ---`);
-          console.log(`  Total: ${result.summary.total} | Contracted: ${result.summary.contracted} | Auto-enriched: ${result.summary.autoEnriched} | Needs enrichment: ${result.summary.needsEnrichment} | Verified: ${result.summary.verified} | Already done: ${result.summary.alreadyDone} | Errors: ${result.summary.errors}`);
+          console.log(`  Total: ${result.summary.total} | Contracted: ${result.summary.contracted} | Auto-enriched: ${result.summary.autoEnriched} | Claude-enriched: ${result.summary.claudeEnriched} | Needs enrichment: ${result.summary.needsEnrichment} | Verified: ${result.summary.verified} | Already done: ${result.summary.alreadyDone} | Errors: ${result.summary.errors}`);
 
           const elapsed = (new Date(result.completed).getTime() - new Date(result.started).getTime()) / 1000;
           console.log(`  Duration: ${elapsed.toFixed(1)}s`);
@@ -807,7 +810,7 @@ const run = async () => {
 
         default:
           console.error('Pipeline sub-commands: run, status, preflight');
-          console.error('  pipeline run       --batch <id> --project <dir> [--dry-run] [--no-contract] [--no-verify]');
+          console.error('  pipeline run       --batch <id> --project <dir> [--dry-run] [--no-contract] [--no-verify] [--enrich manual|claude] [--model haiku|sonnet]');
           console.error('  pipeline status    --project <dir> [--dir ADH]');
           console.error('  pipeline preflight --batch <id> --project <dir> [--dir ADH]');
           process.exit(1);
@@ -829,7 +832,7 @@ const run = async () => {
       console.log('  gaps       --project <dir> [--dir ADH] [--status enriched]');
       console.log('  estimate   --project <dir> [--dir ADH]                      Estimate effort');
       console.log('  contract   --auto --project <dir> --program <id> [--dir ADH]  Auto-generate contract');
-      console.log('  pipeline   run|status|preflight                               Pipeline orchestrator v3');
+      console.log('  pipeline   run|status|preflight                               Pipeline orchestrator v4 (Claude enrichment)');
       console.log('\nOptions:');
       console.log('  --adapter magic|generic                     Source adapter (default: magic)');
       console.log('  --programs <file|id,id,...>                  Programs file or IDs');

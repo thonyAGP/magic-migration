@@ -54,3 +54,6 @@ export const createManualEnrichmentHook = (): EnrichmentHook => ({
     };
   },
 });
+
+// Re-export Claude enrichment hook
+export { createClaudeEnrichmentHook } from './claude-enrichment-hook.js';

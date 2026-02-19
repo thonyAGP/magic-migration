@@ -548,6 +548,22 @@ export interface ContractEffort {
   actualHours?: number;
 }
 
+// ─── Enrichment Mode (v4) ───────────────────────────────────────
+
+export const EnrichmentMode = {
+  MANUAL: 'manual',
+  CLAUDE: 'claude',
+} as const;
+export type EnrichmentMode = (typeof EnrichmentMode)[keyof typeof EnrichmentMode];
+
+export interface EnrichmentStats {
+  tokensUsed: { input: number; output: number };
+  itemsProcessed: number;
+  itemsResolved: number;
+  model: string;
+  costEstimate: number;
+}
+
 // ─── Pipeline Orchestrator (v3) ─────────────────────────────────
 
 export const PipelineEventType = {
@@ -557,6 +573,7 @@ export const PipelineEventType = {
   PROGRAM_SPEC_MISSING: 'program_spec_missing',
   PROGRAM_NEEDS_ENRICHMENT: 'program_needs_enrichment',
   PROGRAM_AUTO_ENRICHED: 'program_auto_enriched',
+  PROGRAM_CLAUDE_ENRICHED: 'program_claude_enriched',
   PROGRAM_VERIFIED: 'program_verified',
   PROGRAM_VERIFY_FAILED: 'program_verify_failed',
   BATCH_UPDATED: 'batch_updated',
@@ -578,6 +595,7 @@ export const PipelineAction = {
   CONTRACTED: 'contracted',
   NEEDS_ENRICHMENT: 'needs-enrichment',
   AUTO_ENRICHED: 'auto-enriched',
+  CLAUDE_ENRICHED: 'claude-enriched',
   VERIFIED: 'verified',
   VERIFY_FAILED: 'verify-failed',
   SKIPPED: 'skipped',
@@ -610,6 +628,7 @@ export interface PipelineRunResult {
     contracted: number;
     needsEnrichment: number;
     autoEnriched: number;
+    claudeEnriched: number;
     verified: number;
     verifyFailed: number;
     specsMissing: number;
@@ -676,4 +695,6 @@ export interface PipelineConfig {
   autoVerify: boolean;
   dryRun: boolean;
   generateReport: boolean;
+  enrichmentMode: EnrichmentMode;
+  claudeModel?: string;
 }

@@ -5,7 +5,7 @@ import os from 'node:os';
 import YAML from 'yaml';
 import { preflightBatch, runBatchPipeline, getBatchesStatus } from '../src/pipeline/pipeline-runner.js';
 import type { PipelineConfig, MigrationContract, Tracker } from '../src/core/types.js';
-import { PipelineAction } from '../src/core/types.js';
+import { PipelineAction, EnrichmentMode } from '../src/core/types.js';
 
 // ─── Test Helpers ────────────────────────────────────────────────
 
@@ -25,6 +25,7 @@ const createConfig = (baseDir: string, overrides?: Partial<PipelineConfig>): Pip
   autoVerify: true,
   dryRun: false,
   generateReport: false,
+  enrichmentMode: EnrichmentMode.MANUAL,
   ...overrides,
 });
 
@@ -278,7 +279,7 @@ describe('preflightBatch', () => {
 // ─── Run (dry-run) Tests ─────────────────────────────────────────
 
 describe('runBatchPipeline (dry-run)', () => {
-  it('should not write files in dry-run mode', () => {
+  it('should not write files in dry-run mode', async () => {
     const dir = setup();
     const config = createConfig(dir, { dryRun: true });
     writeTrackerJson(config.trackerFile, {
@@ -290,7 +291,7 @@ describe('runBatchPipeline (dry-run)', () => {
     });
     writeSpecFile(config.specDir, 100);
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     expect(result.dryRun).toBe(true);
 
     // No contract file should be written
@@ -301,7 +302,7 @@ describe('runBatchPipeline (dry-run)', () => {
     expect(contractFiles).toHaveLength(0);
   });
 
-  it('should return predicted actions in dry-run', () => {
+  it('should return predicted actions in dry-run', async () => {
     const dir = setup();
     const config = createConfig(dir, { dryRun: true });
     writeTrackerJson(config.trackerFile, {
@@ -313,13 +314,13 @@ describe('runBatchPipeline (dry-run)', () => {
     });
     writeSpecFile(config.specDir, 100);
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     // Program should be contracted (or auto-enriched+verified depending on spec content)
     expect(result.steps).toHaveLength(1);
     expect(result.summary.total).toBe(1);
   });
 
-  it('should emit correct events in dry-run', () => {
+  it('should emit correct events in dry-run', async () => {
     const dir = setup();
     const config = createConfig(dir, { dryRun: true });
     writeTrackerJson(config.trackerFile, {
@@ -331,7 +332,7 @@ describe('runBatchPipeline (dry-run)', () => {
     });
     writeSpecFile(config.specDir, 100);
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     const eventTypes = result.events.map(e => e.type);
     expect(eventTypes).toContain('pipeline_started');
     expect(eventTypes).toContain('pipeline_completed');
@@ -341,7 +342,7 @@ describe('runBatchPipeline (dry-run)', () => {
 // ─── Run (live) Tests ────────────────────────────────────────────
 
 describe('runBatchPipeline (live)', () => {
-  it('should auto-contract programs without contract when spec exists', () => {
+  it('should auto-contract programs without contract when spec exists', async () => {
     const dir = setup();
     const config = createConfig(dir);
     writeTrackerJson(config.trackerFile, {
@@ -355,7 +356,7 @@ describe('runBatchPipeline (live)', () => {
     // Create codebase dir so scanner can run
     fs.mkdirSync(config.codebaseDir, { recursive: true });
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     expect(result.steps).toHaveLength(1);
 
     // Contract file should be created
@@ -364,7 +365,7 @@ describe('runBatchPipeline (live)', () => {
     expect(files.length).toBeGreaterThan(0);
   });
 
-  it('should skip program when spec is missing', () => {
+  it('should skip program when spec is missing', async () => {
     const dir = setup();
     const config = createConfig(dir);
     writeTrackerJson(config.trackerFile, {
@@ -376,12 +377,12 @@ describe('runBatchPipeline (live)', () => {
     });
     // No spec file written
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     expect(result.steps[0].action).toBe(PipelineAction.SPEC_MISSING);
     expect(result.summary.specsMissing).toBe(1);
   });
 
-  it('should auto-verify enriched program with no gaps', () => {
+  it('should auto-verify enriched program with no gaps', async () => {
     const dir = setup();
     const config = createConfig(dir);
     const contractsDir = path.join(config.migrationDir, 'ADH');
@@ -401,13 +402,13 @@ describe('runBatchPipeline (live)', () => {
       overall: { rulesTotal: 1, rulesImpl: 1, rulesPartial: 0, rulesMissing: 0, rulesNa: 0, variablesKeyCount: 0, calleesTotal: 0, calleesImpl: 0, calleesMissing: 0, coveragePct: 100, status: 'enriched', generated: '', notes: '' },
     });
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     expect(result.steps[0].action).toBe(PipelineAction.VERIFIED);
     expect(result.steps[0].newStatus).toBe('verified');
     expect(result.summary.verified).toBe(1);
   });
 
-  it('should report needs-enrichment for contracted programs with gaps', () => {
+  it('should report needs-enrichment for contracted programs with gaps', async () => {
     const dir = setup();
     const config = createConfig(dir);
     const contractsDir = path.join(config.migrationDir, 'ADH');
@@ -430,12 +431,12 @@ describe('runBatchPipeline (live)', () => {
       overall: { rulesTotal: 2, rulesImpl: 1, rulesPartial: 0, rulesMissing: 1, rulesNa: 0, variablesKeyCount: 0, calleesTotal: 0, calleesImpl: 0, calleesMissing: 0, coveragePct: 50, status: 'contracted', generated: '', notes: '' },
     });
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     expect(result.steps[0].action).toBe(PipelineAction.NEEDS_ENRICHMENT);
     expect(result.steps[0].gaps).toBe(1);
   });
 
-  it('should update tracker stats after run', () => {
+  it('should update tracker stats after run', async () => {
     const dir = setup();
     const config = createConfig(dir);
     const contractsDir = path.join(config.migrationDir, 'ADH');
@@ -455,24 +456,24 @@ describe('runBatchPipeline (live)', () => {
       overall: { rulesTotal: 1, rulesImpl: 1, rulesPartial: 0, rulesMissing: 0, rulesNa: 0, variablesKeyCount: 0, calleesTotal: 0, calleesImpl: 0, calleesMissing: 0, coveragePct: 100, status: 'enriched', generated: '', notes: '' },
     });
 
-    runBatchPipeline('B1', config);
+    await runBatchPipeline('B1', config);
 
     // Re-read tracker
     const raw = JSON.parse(fs.readFileSync(config.trackerFile, 'utf8'));
     expect(raw.stats.verified).toBeGreaterThanOrEqual(1);
   });
 
-  it('should handle batch-not-found gracefully', () => {
+  it('should handle batch-not-found gracefully', async () => {
     const dir = setup();
     const config = createConfig(dir);
     writeTrackerJson(config.trackerFile, { batches: [] });
 
-    const result = runBatchPipeline('B99', config);
+    const result = await runBatchPipeline('B99', config);
     expect(result.steps).toHaveLength(0);
     expect(result.events.some(e => e.type === 'error')).toBe(true);
   });
 
-  it('should respect --no-contract flag', () => {
+  it('should respect --no-contract flag', async () => {
     const dir = setup();
     const config = createConfig(dir, { autoContract: false });
     writeTrackerJson(config.trackerFile, {
@@ -484,11 +485,11 @@ describe('runBatchPipeline (live)', () => {
     });
     writeSpecFile(config.specDir, 100);
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     expect(result.steps[0].action).toBe(PipelineAction.SKIPPED);
   });
 
-  it('should respect --no-verify flag', () => {
+  it('should respect --no-verify flag', async () => {
     const dir = setup();
     const config = createConfig(dir, { autoVerify: false });
     const contractsDir = path.join(config.migrationDir, 'ADH');
@@ -508,12 +509,12 @@ describe('runBatchPipeline (live)', () => {
       overall: { rulesTotal: 1, rulesImpl: 1, rulesPartial: 0, rulesMissing: 0, rulesNa: 0, variablesKeyCount: 0, calleesTotal: 0, calleesImpl: 0, calleesMissing: 0, coveragePct: 100, status: 'enriched', generated: '', notes: '' },
     });
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     // Should not verify since autoVerify is disabled
     expect(result.steps[0].action).not.toBe(PipelineAction.VERIFIED);
   });
 
-  it('should process programs in priorityOrder', () => {
+  it('should process programs in priorityOrder', async () => {
     const dir = setup();
     const config = createConfig(dir);
     const contractsDir = path.join(config.migrationDir, 'ADH');
@@ -526,11 +527,11 @@ describe('runBatchPipeline (live)', () => {
     });
 
     // No specs → all will be spec-missing
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     expect(result.steps.map(s => s.programId)).toEqual([300, 200, 100]);
   });
 
-  it('should report already-done for verified programs', () => {
+  it('should report already-done for verified programs', async () => {
     const dir = setup();
     const config = createConfig(dir);
     const contractsDir = path.join(config.migrationDir, 'ADH');
@@ -550,12 +551,12 @@ describe('runBatchPipeline (live)', () => {
       overall: { rulesTotal: 0, rulesImpl: 0, rulesPartial: 0, rulesMissing: 0, rulesNa: 0, variablesKeyCount: 0, calleesTotal: 0, calleesImpl: 0, calleesMissing: 0, coveragePct: 100, status: 'verified', generated: '', notes: '' },
     });
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     expect(result.steps[0].action).toBe(PipelineAction.ALREADY_DONE);
     expect(result.summary.alreadyDone).toBe(1);
   });
 
-  it('should auto-enrich contracted program with 0 gaps then verify', () => {
+  it('should auto-enrich contracted program with 0 gaps then verify', async () => {
     const dir = setup();
     const config = createConfig(dir);
     const contractsDir = path.join(config.migrationDir, 'ADH');
@@ -575,7 +576,7 @@ describe('runBatchPipeline (live)', () => {
       overall: { rulesTotal: 1, rulesImpl: 1, rulesPartial: 0, rulesMissing: 0, rulesNa: 0, variablesKeyCount: 0, calleesTotal: 0, calleesImpl: 0, calleesMissing: 0, coveragePct: 100, status: 'contracted', generated: '', notes: '' },
     });
 
-    const result = runBatchPipeline('B1', config);
+    const result = await runBatchPipeline('B1', config);
     // Should go contracted → enriched → verified in one pass
     expect(result.steps[0].action).toBe(PipelineAction.VERIFIED);
     expect(result.steps[0].newStatus).toBe('verified');
