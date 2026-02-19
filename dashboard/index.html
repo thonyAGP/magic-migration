@@ -1,0 +1,2867 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPECMAP - Migration Dashboard</title>
+<style>
+
+:root {
+  --bg: #0d1117;
+  --card: #161b22;
+  --border: #30363d;
+  --text: #c9d1d9;
+  --text-dim: #8b949e;
+  --green: #3fb950;
+  --blue: #58a6ff;
+  --purple: #bc8cff;
+  --yellow: #d29922;
+  --orange: #f0883e;
+  --red: #f85149;
+  --gray: #484f58;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+header {
+  text-align: center;
+  padding: 32px 0 24px;
+}
+header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.subtitle { color: var(--text-dim); margin-top: 4px; }
+.last-updated {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+  background: rgba(88,166,255,0.08);
+  display: inline-block;
+  padding: 4px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(88,166,255,0.2);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.card h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+/* KPI Grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+.kpi-value { font-size: 32px; font-weight: 700; }
+.kpi-label { font-size: 14px; color: var(--text-dim); margin-top: 4px; }
+.kpi-detail { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+/* Pipeline bars */
+.pipeline { display: flex; flex-direction: column; gap: 8px; }
+.pipeline-row { display: flex; align-items: center; gap: 12px; }
+.pipeline-label { width: 90px; font-size: 13px; color: var(--text-dim); text-align: right; }
+.pipeline-count { width: 80px; font-size: 13px; color: var(--text-dim); }
+.bar-track {
+  flex: 1;
+  height: 20px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  position: absolute;
+  top: 0;
+}
+.bar-small { height: 12px; }
+.bar-large { height: 28px; border-radius: 6px; }
+.bar-verified { background: var(--green); }
+.bar-enriched { background: var(--blue); }
+.bar-contracted { background: var(--yellow); }
+
+.pipeline-donut-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 16px;
+}
+.donut-container { position: relative; width: 120px; height: 120px; }
+.donut { width: 100%; height: 100%; transform: rotate(-90deg); }
+.donut-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green);
+}
+.legend { display: flex; flex-direction: column; gap: 4px; }
+.legend-item { font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* Modules */
+.module-filters {
+  display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 13px;
+}
+.filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+.filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+.module-list { display: flex; flex-direction: column; gap: 8px; }
+.module-row {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  background: var(--bg);
+}
+.module-row[data-status="deliverable"] { border-left: 3px solid var(--green); }
+.module-row[data-status="close"] { border-left: 3px solid var(--blue); }
+.module-row[data-status="progress"] { border-left: 3px solid var(--yellow); }
+.module-row[data-status="notstarted"] { border-left: 3px solid var(--gray); }
+
+.module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.module-name { font-weight: 600; font-size: 14px; }
+.module-stats { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.module-stats span:first-child { width: 70px; font-size: 12px; color: var(--text-dim); }
+.module-pct { width: 40px; text-align: right; font-weight: 600; font-size: 13px; }
+.module-breakdown { display: flex; gap: 6px; flex-wrap: wrap; }
+.module-blockers { font-size: 12px; color: var(--red); margin-top: 4px; }
+.module-deps { font-size: 12px; color: var(--text-dim); margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap; }
+.dep-separator { color: var(--border); }
+
+.rank-badge {
+  display: inline-block;
+  background: var(--purple);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+.module-sort { display: flex; gap: 6px; margin-bottom: 12px; align-items: center; }
+.sort-label { font-size: 13px; color: var(--text-dim); }
+.sort-btn {
+  padding: 2px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 12px;
+}
+.sort-btn:hover { border-color: var(--purple); color: var(--purple); }
+.sort-btn.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+/* Migration Waves */
+.wave-sequence { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.wave-block {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: var(--bg);
+  width: 100%;
+  max-width: 600px;
+}
+.wave-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.wave-number { font-weight: 600; font-size: 14px; color: var(--purple); }
+.wave-modules { display: flex; gap: 6px; flex-wrap: wrap; }
+.wave-chip {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(188,140,255,0.1);
+  color: var(--text);
+  border: 1px solid rgba(188,140,255,0.3);
+}
+.wave-arrow { font-size: 20px; color: var(--purple); text-align: center; line-height: 1; padding: 4px 0; }
+.complexity-high { background: rgba(248,81,73,0.2); color: var(--red); }
+.complexity-med { background: rgba(210,153,34,0.2); color: var(--yellow); }
+.complexity-low { background: rgba(63,185,80,0.2); color: var(--green); }
+
+.tag {
+  font-size: 11px; padding: 1px 6px; border-radius: 4px; display: inline-block;
+}
+.tag-green { background: rgba(63,185,80,0.15); color: var(--green); }
+.tag-blue { background: rgba(88,166,255,0.15); color: var(--blue); }
+.tag-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
+.tag-gray { background: rgba(72,79,88,0.3); color: var(--text-dim); }
+
+.badge {
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px;
+  display: inline-block; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.badge-sm { font-size: 10px; padding: 1px 5px; }
+.badge-green { background: rgba(63,185,80,0.2); color: var(--green); }
+.badge-blue { background: rgba(88,166,255,0.2); color: var(--blue); }
+.badge-yellow { background: rgba(210,153,34,0.2); color: var(--yellow); }
+.badge-gray { background: rgba(72,79,88,0.3); color: var(--text-dim); }
+.badge-purple { background: rgba(188,140,255,0.2); color: var(--purple); }
+
+/* Decommission */
+.decommission-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 16px;
+}
+.decom-stat { text-align: center; padding: 12px; border-radius: 6px; background: var(--bg); }
+.decom-value { font-size: 28px; font-weight: 700; }
+.decom-label { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.decom-ok { color: var(--green); }
+.decom-blocked { color: var(--red); }
+.decom-wait { color: var(--orange); }
+.decom-shared { color: var(--purple); }
+.decom-bar-container { text-align: center; }
+.decom-bar-label { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
+
+/* Program table */
+.table-controls {
+  display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;
+}
+.search-input {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  flex: 1;
+  min-width: 200px;
+}
+.filter-select {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+}
+.checkbox-label { font-size: 13px; color: var(--text-dim); display: flex; align-items: center; gap: 4px; }
+
+.table-scroll { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--border);
+  color: var(--text-dim);
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+th:hover { color: var(--blue); }
+td { padding: 6px 10px; border-bottom: 1px solid var(--border); }
+.center { text-align: center; }
+
+.status-pill {
+  font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500;
+}
+.status-verified { background: rgba(63,185,80,0.15); color: var(--green); }
+.status-enriched { background: rgba(88,166,255,0.15); color: var(--blue); }
+.status-contracted { background: rgba(210,153,34,0.15); color: var(--yellow); }
+.status-pending { background: rgba(72,79,88,0.3); color: var(--text-dim); }
+
+tr:hover td { background: rgba(88,166,255,0.05); }
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .decommission-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+
+/* Project Tab Bar */
+.project-tabs-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+.project-tab {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.project-tab:hover { color: var(--text); background: rgba(88,166,255,0.08); }
+.project-tab.active { background: var(--blue); color: #fff; }
+.tab-dot {
+  width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+}
+.tab-dot-global { background: var(--purple); }
+.tab-dot-active { background: var(--green); }
+.tab-dot-planned { background: var(--yellow); }
+.tab-dot-idle { background: var(--gray); }
+
+/* Tab Content */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Project Cards Grid */
+.project-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.project-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.project-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+.project-card-idle { opacity: 0.6; cursor: default; }
+.project-card-idle:hover { border-color: var(--border); transform: none; }
+.project-card-name { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+.project-card-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+.project-card-status { margin-bottom: 8px; }
+.project-card-progress { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.project-card-pct { font-weight: 600; font-size: 14px; width: 40px; text-align: right; }
+.project-card-stats {
+  display: flex; gap: 8px; flex-wrap: wrap; font-size: 11px; color: var(--text-dim);
+}
+.project-card-stats span {
+  padding: 1px 6px;
+  background: rgba(72,79,88,0.2);
+  border-radius: 4px;
+}
+.project-card-stat { font-size: 13px; color: var(--text-dim); }
+
+/* Empty project tab */
+.empty-project { text-align: center; padding: 60px 20px; }
+.empty-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-message p { margin-bottom: 8px; }
+.empty-detail { color: var(--text-dim); font-size: 14px; }
+.empty-hint { color: var(--text-dim); font-size: 12px; margin-top: 16px; }
+.empty-hint code {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>SPECMAP Migration Dashboard</h1>
+  <div class="subtitle">29 projets &middot; 1 actif &middot; 212 programmes LIVE</div>
+  <div class="last-updated">Derniere mise a jour : 19 février 2026 a 21:59</div>
+</header>
+
+<nav class="project-tabs-bar">
+  <button class="project-tab active" data-project="global"><span class="tab-dot tab-dot-global"></span>Vue Globale</button>
+  <button class="project-tab" data-project="ADH"><span class="tab-dot tab-dot-active"></span>ADH</button>
+</nav>
+
+<div class="tab-content active" data-tab="global">
+  
+<section class="kpi-grid">
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--purple)">1/29</div>
+    <div class="kpi-label">Projets actifs</div>
+    <div class="kpi-detail">28 en attente</div>
+  </div>
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--blue)">212</div>
+    <div class="kpi-label">Programmes LIVE</div>
+    <div class="kpi-detail">Tous projets confondus</div>
+  </div>
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--green)">18/212</div>
+    <div class="kpi-label">Verified</div>
+    <div class="kpi-detail">8% progression globale</div>
+  </div>
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--yellow)">0</div>
+    <div class="kpi-label">Contracted</div>
+    <div class="kpi-detail">0 enriched</div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Pipeline globale</h2>
+  <div class="pipeline">
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Verified</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 8%; background: var(--green)"></div>
+      </div>
+      <span class="pipeline-count">18 (8%)</span>
+    </div>
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Enriched</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 0%; background: var(--blue)"></div>
+      </div>
+      <span class="pipeline-count">0 (0%)</span>
+    </div>
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Contracted</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 0%; background: var(--yellow)"></div>
+      </div>
+      <span class="pipeline-count">0 (0%)</span>
+    </div>
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Pending</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 92%; background: var(--gray)"></div>
+      </div>
+      <span class="pipeline-count">194 (92%)</span>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Projets</h2>
+  <div class="project-cards-grid">
+    
+      <div class="project-card project-card-active" data-goto="ADH">
+        <div class="project-card-name">ADH</div>
+        <div class="project-card-desc">Adherents/Caisse</div>
+        <div class="project-card-status"><span class="badge badge-blue">EN COURS</span></div>
+        <div class="project-card-progress">
+          <div class="bar-track bar-small">
+            <div class="bar-fill" style="width:8%; background:var(--green)"></div>
+          </div>
+          <span class="project-card-pct">8%</span>
+        </div>
+        <div class="project-card-stats">
+          <span>212 LIVE</span>
+          <span>18 verified</span>
+          <span>0 contracted</span>
+          <span>7 modules</span>
+        </div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">CAB</div>
+        <div class="project-card-desc">Caisse batch</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">23 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">CAP</div>
+        <div class="project-card-desc">Caisse parametres</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">24 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">EXB</div>
+        <div class="project-card-desc">Exports batch</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">25 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">EXF</div>
+        <div class="project-card-desc">Exports fichiers</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">26 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">EXM</div>
+        <div class="project-card-desc">Exports manuels</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">18 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">FIN</div>
+        <div class="project-card-desc">Finance</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">16 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">GES</div>
+        <div class="project-card-desc">Gestion</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">54 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">Import</div>
+        <div class="project-card-desc">Imports donnees</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">454 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">LOG</div>
+        <div class="project-card-desc">Logging</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">20 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">MAI</div>
+        <div class="project-card-desc">Maintenance</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">60 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">Menu</div>
+        <div class="project-card-desc">Menus</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">18 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">NET</div>
+        <div class="project-card-desc">Network</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">10 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PBG</div>
+        <div class="project-card-desc">Planification/Batch</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">180 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PBP</div>
+        <div class="project-card-desc">Editions/Exports</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">242 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PBS</div>
+        <div class="project-card-desc">Batch secondaire</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">59 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">POO</div>
+        <div class="project-card-desc">Pooling</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">59 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PTR</div>
+        <div class="project-card-desc">Pointage</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">27 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PUG</div>
+        <div class="project-card-desc">Purge</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">16 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">PVE</div>
+        <div class="project-card-desc">Point de Vente/POS</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">160 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">QUA</div>
+        <div class="project-card-desc">Qualite</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">22 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">REF</div>
+        <div class="project-card-desc">Reference (tables partagees)</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">738 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">REQ</div>
+        <div class="project-card-desc">Requetes</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">51 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">RET</div>
+        <div class="project-card-desc">Retours</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">12 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">TPE</div>
+        <div class="project-card-desc">Terminal paiement</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">3 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">TST</div>
+        <div class="project-card-desc">Tests</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">5 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">UTILS</div>
+        <div class="project-card-desc">Utilitaires (.NET)</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">2 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">VIL</div>
+        <div class="project-card-desc">Village</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">100 programmes</div>
+      </div>
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">WEL</div>
+        <div class="project-card-desc">Welcome/Accueil</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">68 programmes</div>
+      </div>
+  </div>
+</section>
+</div>
+
+
+<div class="tab-content" data-tab="ADH">
+  
+<section class="kpi-grid">
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--blue)">212</div>
+    <div class="kpi-label">Programmes LIVE</div>
+    <div class="kpi-detail">138 orphelins, 28 partages</div>
+  </div>
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--green)">18/212</div>
+    <div class="kpi-label">Verified</div>
+    <div class="kpi-detail">8% des programmes migres</div>
+  </div>
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--purple)">0/7</div>
+    <div class="kpi-label">Modules livrables</div>
+    <div class="kpi-detail">0% des modules</div>
+  </div>
+  
+  <div class="kpi-card">
+    <div class="kpi-value" style="color: var(--orange)">0/212</div>
+    <div class="kpi-label">Decomissionnable</div>
+    <div class="kpi-detail">0% du legacy</div>
+  </div>
+</section>
+  
+<section class="card">
+  <h2>Pipeline de migration</h2>
+  <div class="pipeline">
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Verified</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 8%; background: var(--green)"></div>
+      </div>
+      <span class="pipeline-count">18 (8%)</span>
+    </div>
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Enriched</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 0%; background: var(--blue)"></div>
+      </div>
+      <span class="pipeline-count">0 (0%)</span>
+    </div>
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Contracted</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 0%; background: var(--yellow)"></div>
+      </div>
+      <span class="pipeline-count">0 (0%)</span>
+    </div>
+    
+    <div class="pipeline-row">
+      <span class="pipeline-label">Pending</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: 92%; background: var(--gray)"></div>
+      </div>
+      <span class="pipeline-count">194 (92%)</span>
+    </div>
+  </div>
+  <div class="pipeline-donut-row">
+    
+    <div class="donut-container">
+      <svg viewBox="0 0 100 100" class="donut">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--green)" stroke-width="18" stroke-dasharray="21.339119911175953 229.9882923760075" stroke-dashoffset="0" />
+        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--gray)" stroke-width="18" stroke-dasharray="229.9882923760075 21.339119911175942" stroke-dashoffset="-21.339119911175953" />
+      </svg>
+      <div class="donut-center">8%</div>
+    </div>
+    <div class="legend"><span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Verified: 18</span><span class="legend-item"><span class="legend-dot" style="background:var(--gray)"></span>Pending: 194</span></div>
+  </div>
+</section>
+  
+<section class="card">
+  <h2>Modules (0 livrables / 7 total)</h2>
+  <div class="module-filters">
+    <button class="filter-btn active" data-filter="all">Tous (7)</button>
+    <button class="filter-btn" data-filter="deliverable">Livrables (0)</button>
+    <button class="filter-btn" data-filter="close">Proches &ge;80% (0)</button>
+    <button class="filter-btn" data-filter="progress">En cours (4)</button>
+    <button class="filter-btn" data-filter="notstarted">Non demarre (3)</button>
+  </div>
+  <div class="module-sort">
+    <span class="sort-label">Trier par:</span>
+    <button class="sort-btn active" data-sort="priority">Priorite</button>
+    <button class="sort-btn" data-sort="readiness">Readiness</button>
+    <button class="sort-btn" data-sort="name">Nom</button>
+  </div>
+  <div class="module-list">
+    
+    <div class="module-row" data-status="progress" data-rank="1" data-readiness="13" data-name="Fermeture Sessions">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P1</span>281 - Fermeture Sessions</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>135 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 13%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 13%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 13%"></div>
+        </div>
+        <span class="module-pct">13%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">18 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">117 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      <div class="module-blockers">Bloqueurs: 281, 121, 48, 116, 119...</div>
+    </div>
+    <div class="module-row" data-status="progress" data-rank="2" data-readiness="9" data-name="Main Program">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P2</span>1 - Main Program</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>204 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 9%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 9%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 9%"></div>
+        </div>
+        <span class="module-pct">9%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">18 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">186 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      <div class="module-blockers">Bloqueurs: 1, 45, 51, 163, 166...</div>
+    </div>
+    <div class="module-row" data-status="progress" data-rank="3" data-readiness="1" data-name="Extrait Easy Check Out à J+1">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P3</span>53 - Extrait Easy Check Out à J+1</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>97 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 1%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 1%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 1%"></div>
+        </div>
+        <span class="module-pct">1%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">1 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">96 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      <div class="module-blockers">Bloqueurs: 53, 71, 76, 178, 21...</div>
+    </div>
+    <div class="module-row" data-status="progress" data-rank="4" data-readiness="1" data-name="Solde Easy Check Out">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P4</span>64 - Solde Easy Check Out</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>110 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 1%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 1%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 1%"></div>
+        </div>
+        <span class="module-pct">1%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">1 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">109 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      <div class="module-blockers">Bloqueurs: 64, 54, 65, 71, 179...</div>
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="5" data-readiness="0" data-name="Calcul si depôt existe">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P5</span>192 - Calcul si depôt existe</span>
+        <span class="badge badge-gray">NON DEMARRE</span>
+      </div>
+      <div class="module-stats">
+        <span>1 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">1 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      <div class="module-blockers">Bloqueurs: 192</div>
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="6" data-readiness="0" data-name="Changement de chambre">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P6</span>210 - Changement de chambre</span>
+        <span class="badge badge-gray">NON DEMARRE</span>
+      </div>
+      <div class="module-stats">
+        <span>1 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">1 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      <div class="module-blockers">Bloqueurs: 210</div>
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="7" data-readiness="0" data-name="Ventilation Lignes Ventes">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P7</span>229 - Ventilation Lignes Ventes</span>
+        <span class="badge badge-gray">NON DEMARRE</span>
+      </div>
+      <div class="module-stats">
+        <span>1 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">1 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      <div class="module-blockers">Bloqueurs: 229</div>
+    </div>
+  </div>
+</section>
+  
+<section class="card">
+  <h2>Sequence de migration</h2>
+  <div class="wave-sequence">
+    
+      <div class="wave-block">
+        <div class="wave-header">
+          <span class="wave-number">Wave 1</span>
+          <span class="badge complexity-high">HIGH</span>
+        </div>
+        <div class="wave-modules"><span class="wave-chip">281 Fermeture Sessions</span><span class="wave-chip">1 Main Program</span><span class="wave-chip">53 Extrait Easy Check Out à J+1</span><span class="wave-chip">64 Solde Easy Check Out</span><span class="wave-chip">192 Calcul si depôt existe</span><span class="wave-chip">210 Changement de chambre</span><span class="wave-chip">229 Ventilation Lignes Ventes</span></div>
+      </div>
+      
+  </div>
+</section>
+  
+<section class="card">
+  <h2>Decommissionnement Legacy</h2>
+  <div class="decommission-grid">
+    <div class="decom-stat">
+      <div class="decom-value decom-ok">0</div>
+      <div class="decom-label">Decomissionnables</div>
+    </div>
+    <div class="decom-stat">
+      <div class="decom-value decom-blocked">194</div>
+      <div class="decom-label">Bloques (non migres)</div>
+    </div>
+    <div class="decom-stat">
+      <div class="decom-value decom-wait">18</div>
+      <div class="decom-label">Migres mais callers actifs</div>
+    </div>
+    <div class="decom-stat">
+      <div class="decom-value decom-shared">0</div>
+      <div class="decom-label">Partages bloques</div>
+    </div>
+  </div>
+  <div class="decom-bar-container">
+    <div class="bar-track bar-large">
+      <div class="bar-fill" style="width: 0%; background: var(--green)"></div>
+    </div>
+    <div class="decom-bar-label">0% du legacy decomissionnable (0/212)</div>
+  </div>
+</section>
+  
+<section class="card">
+  <h2>Programmes (212)</h2>
+  <div class="table-controls">
+    <input type="text" id="prog-search" placeholder="Rechercher par nom ou ID..." class="search-input">
+    <select id="status-filter" class="filter-select">
+      <option value="">Tous les statuts</option>
+      <option value="verified">Verified</option>
+      <option value="enriched">Enriched</option>
+      <option value="contracted">Contracted</option>
+      <option value="pending">Pending</option>
+    </select>
+    <label class="checkbox-label"><input type="checkbox" id="decom-only"> Decomissionnables</label>
+  </div>
+  <div class="table-scroll">
+    <table id="program-table">
+      <thead>
+        <tr>
+          <th data-sort="id">ID</th>
+          <th data-sort="name">Nom</th>
+          <th data-sort="level" class="center">Niveau</th>
+          <th data-sort="status">Statut</th>
+          <th class="center">Tags</th>
+          <th data-sort="domain">Domaine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="status-pending">
+      <td>1</td>
+      <td>Main Program</td>
+      <td class="center">8</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>163</td>
+      <td>Menu caisse GM - scroll</td>
+      <td class="center">7</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>281</td>
+      <td>Fermeture Sessions</td>
+      <td class="center">7</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>121</td>
+      <td>Gestion caisse</td>
+      <td class="center">6</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>122</td>
+      <td>Ouverture caisse</td>
+      <td class="center">6</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>131</td>
+      <td>Fermeture caisse</td>
+      <td class="center">6</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>155</td>
+      <td>Controle fermeture caisse WS</td>
+      <td class="center">6</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>156</td>
+      <td>Verif session caisse ouverte2</td>
+      <td class="center">6</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>37</td>
+      <td>Menu changement compte</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>40</td>
+      <td>Comptes de depôt</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>77</td>
+      <td>Club Med Pass menu</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>78</td>
+      <td>Print Ventes Club Med Pass</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>111</td>
+      <td>Garantie sur compte</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>112</td>
+      <td>Garantie sur compte PMS-584</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>119</td>
+      <td>Affichage sessions</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>151</td>
+      <td>Reimpression tickets fermeture</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>154</td>
+      <td>Tableau recap fermeture</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>168</td>
+      <td>Gratuités</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>169</td>
+      <td>Messages</td>
+      <td class="center">5</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>28</td>
+      <td>Fusion</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>39</td>
+      <td>Print extrait ObjDevSce</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>53</td>
+      <td>Extrait Easy Check Out à J+1</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>64</td>
+      <td>Solde Easy Check Out</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>79</td>
+      <td>Balance Credit de conso</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>82</td>
+      <td>Select affilies</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>86</td>
+      <td>Bar Limit</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>97</td>
+      <td>Factures (Tble Compta&amp;Vent) V3</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>109</td>
+      <td>Print creation garantie TIK V1</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>110</td>
+      <td>Print creation garanti PMS-584</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>117</td>
+      <td>Historique session</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>120</td>
+      <td>Saisie contenu caisse</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>123</td>
+      <td>Apport coffre</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>124</td>
+      <td>Apport articles</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>125</td>
+      <td>Remise en caisse</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>129</td>
+      <td>Ecart ouverture caisse</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>130</td>
+      <td>Ecart fermeture caisse</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>132</td>
+      <td>Historique session</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>137</td>
+      <td>Ticket ouverture session</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>138</td>
+      <td>Ticket fermeture session</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>139</td>
+      <td>Ticket appro remise</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>158</td>
+      <td>Menu Great Member</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>165</td>
+      <td>Saisies cautions</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>167</td>
+      <td>Liste des affiliés</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>170</td>
+      <td>Messagerie</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>172</td>
+      <td>Print Depot Obj/Dev/Sce</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>256</td>
+      <td>Zoom sur table des gratuites</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>262</td>
+      <td>Zoom  des types d'objets</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>263</td>
+      <td>Zoom modes de paiement</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>266</td>
+      <td>Zoom des all devises</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>267</td>
+      <td>Zoom devises</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>268</td>
+      <td>Zoom type depot garantie</td>
+      <td class="center">4</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>22</td>
+      <td>Calcul equivalent</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>23</td>
+      <td>Print reçu change achat</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>24</td>
+      <td>Print reçu change vente</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>25</td>
+      <td>Change GM</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>27</td>
+      <td>Separation</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>36</td>
+      <td>Print Separation ou fusion</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>43</td>
+      <td>Recuperation du titre</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>44</td>
+      <td>Appel programme</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>68</td>
+      <td>Saisie date</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>69</td>
+      <td>Extrait de compte</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>70</td>
+      <td>Print extrait compte /Nom</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>71</td>
+      <td>Print extrait compte /Date</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>72</td>
+      <td>Print extrait compte /Cum</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>73</td>
+      <td>Print extrait compte /Imp</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>74</td>
+      <td>Print extrait DateImp /O</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>76</td>
+      <td>Print extrait compte /Service</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>107</td>
+      <td>Print creation garantie</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>108</td>
+      <td>Print annulation garantie</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>150</td>
+      <td>Print comptage WS</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>152</td>
+      <td>Recup Classe et Lib du MOP</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>171</td>
+      <td>Print versement retrait</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>173</td>
+      <td>Facturation appel</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>174</td>
+      <td>Facturation appel</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>175</td>
+      <td>Facturation appel</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>176</td>
+      <td>Facturation appel</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>179</td>
+      <td>Set Village Address</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>180</td>
+      <td>Printer choice</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>181</td>
+      <td>Set Listing Number</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>182</td>
+      <td>Raz Current Printer</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>183</td>
+      <td>Raz Current Printer</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>185</td>
+      <td>Chained Listing Printer Choice</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>208</td>
+      <td>Print Reçu code autocom</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>226</td>
+      <td>Recherche Adresse Mail</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>234</td>
+      <td>Print ticket vente</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>235</td>
+      <td>Print ticket vente LEX</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>236</td>
+      <td>Print ticket vente PMS-584</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>237</td>
+      <td>Transaction Nouv vente avec GP</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>238</td>
+      <td>Transaction Nouv vente PMS-584</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>239</td>
+      <td>Transaction Nouv vente PMS-721</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>240</td>
+      <td>Transaction Nouv vente PMS-710</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>242</td>
+      <td>Menu Choix Saisie/Annul vente</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>243</td>
+      <td>Histo ventes payantes</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>244</td>
+      <td>Histo ventes payantes /PMS-605</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>245</td>
+      <td>Histo ventes payantes /PMS-623</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>247</td>
+      <td>Deversement Transaction</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>249</td>
+      <td>Reinit Aff PYR</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>253</td>
+      <td>Histo ventes Gratuités</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>257</td>
+      <td>Zoom articles</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>258</td>
+      <td>Zoom mode paiement change GM</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>261</td>
+      <td>Zoom des types de taux</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>265</td>
+      <td>Zoom devise</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>269</td>
+      <td>Zoom services village</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>270</td>
+      <td>Zoom sur modes de paiement a/v</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>272</td>
+      <td>Zoom modes de paiement</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>275</td>
+      <td>Zoom mode de paiement TPE</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>296</td>
+      <td>Print versement/retrait bi</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>316</td>
+      <td>Saisie transaction Nouv vente</td>
+      <td class="center">3</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>7</td>
+      <td>Menu Data Catching</td>
+      <td class="center">2</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>10</td>
+      <td>Print list Checkout (shift F9)</td>
+      <td class="center">2</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>17</td>
+      <td>Print C/O confirmation</td>
+      <td class="center">2</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>18</td>
+      <td>Print extrait compte</td>
+      <td class="center">2</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>166</td>
+      <td>Start</td>
+      <td class="center">2</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>5</td>
+      <td>Alimentation Combos NATION P</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>12</td>
+      <td>Catching stats</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>54</td>
+      <td>Factures_Check_Out</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>87</td>
+      <td>Print Plafonds alloués</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>91</td>
+      <td>Verif boutique</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>126</td>
+      <td>Calcul solde initial WS</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>127</td>
+      <td>Calcul solde ouverture WS</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>224</td>
+      <td>Alimentation Combos LIEU SEJ</td>
+      <td class="center">1</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>6</td>
+      <td>Suppression Carac interdit</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>8</td>
+      <td>Set Village info</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>9</td>
+      <td>System avail (top left corner</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>11</td>
+      <td>Export - address</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>13</td>
+      <td>calculate week #</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>14</td>
+      <td>e-mail list</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>15</td>
+      <td>keyboard</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>16</td>
+      <td>Browse - Countries iso</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>19</td>
+      <td>Program_19</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>20</td>
+      <td>Definition monnaie</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>21</td>
+      <td>Recupere devise local</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>29</td>
+      <td>Write histo Fus_Sep</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>30</td>
+      <td>Read histo Fus_Sep_Det</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>31</td>
+      <td>Write histo_Fus_Sep_Det</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>32</td>
+      <td>Write histo_Fus_Sep_Saisie</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>33</td>
+      <td>Delete histo_Fus_Sep_Saisie</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>34</td>
+      <td>Read histo_Fus_Sep_Log</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>35</td>
+      <td>Write histo_Fus_Sep_Log</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>42</td>
+      <td>Controle Login Informaticien</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>45</td>
+      <td>Recuperation langue</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>47</td>
+      <td>Date/Heure session user</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>48</td>
+      <td>Contrôles - Integrite dates</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>50</td>
+      <td>Initialistaion Easy Arrival</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>51</td>
+      <td>Recherche Droit Solde Free Ext</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>52</td>
+      <td>Creation adresse_village</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>57</td>
+      <td>Factures_Sejour</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>58</td>
+      <td>Incremente N° de Facture</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>59</td>
+      <td>Facture - chargement boutique</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>60</td>
+      <td>Creation entete facture</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>61</td>
+      <td>Maj des lignes saisies</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>62</td>
+      <td>Maj Hebergement Tempo</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>65</td>
+      <td>Edition &amp; Mail Easy Check Out</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>75</td>
+      <td>Creation Pied Facture</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>80</td>
+      <td>Card scan read</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>81</td>
+      <td>Card scan create</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>83</td>
+      <td>Deactivate all cards</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>84</td>
+      <td>SP Caractères Interdits</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>90</td>
+      <td>Edition Facture Tva(Compta&amp;Ve)</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>92</td>
+      <td>flag ligne boutique</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>93</td>
+      <td>Creation Pied Facture</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>95</td>
+      <td>Facture - Sejour archive</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>98</td>
+      <td>EditFactureTva(Compta&amp;Ve) V3</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>101</td>
+      <td>Creation Pied Facture V3</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>104</td>
+      <td>Maj Hebergement Tempo V3</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>105</td>
+      <td>Maj des lignes saisies V3</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>106</td>
+      <td>Maj lignes saisies archive V3</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>113</td>
+      <td>Test Activation ECO</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>114</td>
+      <td>Club Med Pass Filiations</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>116</td>
+      <td>Calcul concurrence sessions</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>118</td>
+      <td>Sessions ouvertes WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>128</td>
+      <td>Controle ouverture caisse WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>133</td>
+      <td>Mise a jour comptage caisse WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>134</td>
+      <td>Mise à jour detail session WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>135</td>
+      <td>Generation tableau recap WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>136</td>
+      <td>Generation ticket WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>140</td>
+      <td>Init apport article session WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>141</td>
+      <td>Init devise session WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>142</td>
+      <td>Devise update session WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>143</td>
+      <td>Devises calcul ecart WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>144</td>
+      <td>Devises finales F/F Nbre WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>145</td>
+      <td>Devises finales F/F Qte WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>146</td>
+      <td>Devises tableau recap WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>147</td>
+      <td>Devises des tickets WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-verified">
+      <td>148</td>
+      <td>Devises RAZ WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-verified">verified</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>149</td>
+      <td>Calcul stock produit WS</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>153</td>
+      <td>Calcul du stock devise</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>162</td>
+      <td>Selection filiations</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>164</td>
+      <td>Operation durant Cloture</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>178</td>
+      <td>Set Village Address</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>184</td>
+      <td>Get Printer for chained list</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>186</td>
+      <td>Get Printer for chained list</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>192</td>
+      <td>Calcul si depôt existe</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>200</td>
+      <td>Verification si client/serveur</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>210</td>
+      <td>Changement de chambre</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>221</td>
+      <td>Verif automatic pooling Tic</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>223</td>
+      <td>Suppression Carac interdit</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>225</td>
+      <td>Get Fidelisation et Remise</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>227</td>
+      <td>Get Matricule</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>228</td>
+      <td>Gestion Chèque</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>229</td>
+      <td>Ventilation Lignes Ventes</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"><span class="badge badge-purple badge-sm">ECF</span></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>231</td>
+      <td>Raisons utilisation ADH</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>232</td>
+      <td>Verif session caisse ouverte</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>233</td>
+      <td>Appel Print ticket vente PMS28</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>241</td>
+      <td>Solde Gift Pass</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>248</td>
+      <td>Choix PYR (plusieurs chambres)</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>251</td>
+      <td>Creation pied Ticket</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>252</td>
+      <td>Histo ventes IGR</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>254</td>
+      <td>Solde Resort Credit</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>274</td>
+      <td>Zoom Logements</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>277</td>
+      <td>Selection Vols /t Ville à côté</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+<tr class="status-pending">
+      <td>278</td>
+      <td>Zoom Pays Vente</td>
+      <td class="center">0</td>
+      <td><span class="status-pill status-pending">pending</span></td>
+      <td class="center"></td>
+      <td></td>
+    </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
+
+<footer>
+  <p>Genere le 19 février 2026 a 21:59 par Migration Factory</p>
+</footer>
+
+</div>
+<script>
+
+// Module filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.module-row').forEach(row => {
+      if (filter === 'all') { row.style.display = ''; return; }
+      row.style.display = row.dataset.status === filter ? '' : 'none';
+    });
+  });
+});
+
+// Module sort buttons
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const sortBy = btn.dataset.sort;
+    const list = document.querySelector('.module-list');
+    if (!list) return;
+    const rows = Array.from(list.querySelectorAll('.module-row'));
+    rows.sort((a, b) => {
+      if (sortBy === 'priority') return (Number(a.dataset.rank) || 999) - (Number(b.dataset.rank) || 999);
+      if (sortBy === 'readiness') return (Number(b.dataset.readiness) || 0) - (Number(a.dataset.readiness) || 0);
+      return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+    });
+    rows.forEach(r => list.appendChild(r));
+  });
+});
+
+// Program search
+const searchInput = document.getElementById('prog-search');
+const statusFilter = document.getElementById('status-filter');
+const decomOnly = document.getElementById('decom-only');
+const table = document.getElementById('program-table');
+
+const filterTable = () => {
+  const query = searchInput.value.toLowerCase();
+  const status = statusFilter.value;
+  const decom = decomOnly.checked;
+  const rows = table.querySelectorAll('tbody tr');
+
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    const id = cells[0].textContent.toLowerCase();
+    const name = cells[1].textContent.toLowerCase();
+    const rowStatus = cells[3].textContent.trim().toLowerCase();
+    const hasDecom = cells[4].textContent.includes('OFF');
+
+    const matchesSearch = !query || id.includes(query) || name.includes(query);
+    const matchesStatus = !status || rowStatus === status;
+    const matchesDecom = !decom || hasDecom;
+
+    row.style.display = matchesSearch && matchesStatus && matchesDecom ? '' : 'none';
+  });
+};
+
+searchInput.addEventListener('input', filterTable);
+statusFilter.addEventListener('change', filterTable);
+decomOnly.addEventListener('change', filterTable);
+
+// Table sort
+let sortCol = null;
+let sortDir = 1;
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.sort;
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const colIndex = { id: 0, name: 1, level: 2, status: 3, domain: 5 }[col] ?? 0;
+
+    rows.sort((a, b) => {
+      const va = a.querySelectorAll('td')[colIndex].textContent.trim();
+      const vb = b.querySelectorAll('td')[colIndex].textContent.trim();
+      const na = Number(va), nb = Number(vb);
+      if (!isNaN(na) && !isNaN(nb)) return (na - nb) * sortDir;
+      return va.localeCompare(vb) * sortDir;
+    });
+
+    rows.forEach(r => tbody.appendChild(r));
+  });
+});
+
+
+// Project tab switching
+document.querySelectorAll('.project-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.project-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const project = tab.dataset.project;
+    document.querySelectorAll('.tab-content').forEach(c => {
+      c.classList.toggle('active', c.dataset.tab === project);
+    });
+  });
+});
+
+// Click on project card -> switch to that tab
+document.querySelectorAll('.project-card[data-goto]').forEach(card => {
+  card.addEventListener('click', () => {
+    const name = card.dataset.goto;
+    const tab = document.querySelector('.project-tab[data-project="' + name + '"]');
+    if (tab) tab.click();
+  });
+});
+
+</script>
+</body>
+</html>

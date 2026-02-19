@@ -1,0 +1,39 @@
+name: Deploy Migration Dashboard
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '.openspec/migration/**'
+      - 'tools/migration-factory/**'
+      - 'dashboard/**'
+      - '.github/workflows/deploy-dashboard.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install migration-factory deps
+        run: cd tools/migration-factory && npm ci
+
+      - name: Regenerate dashboard
+        run: |
+          cd tools/migration-factory
+          npx tsx src/cli.ts report --project ${{ github.workspace }} --multi
+          cp ${{ github.workspace }}/.openspec/migration/migration-report.html ${{ github.workspace }}/dashboard/index.html
+
+      - name: Deploy to Vercel
+        run: npx vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: dashboard
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

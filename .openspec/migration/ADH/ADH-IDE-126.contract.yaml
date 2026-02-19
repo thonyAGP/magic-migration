@@ -71,7 +71,7 @@ variables:
     type: Parameter
     status: N/A
     target_file: src/stores/caisseStore.ts
-    gap_notes: "Backend-only: IDE 126 is a server-side calculation program"
+    gap_notes: "Backend-only: IDE 126 is a server-side calculation program, frontend receives results via API"
   - local_id: EX
     name: P.i. UNI/BI
     type: Parameter
@@ -90,7 +90,7 @@ tables:
     mode: R
     status: N/A
     target_file: src/stores/sessionStore.ts
-    gap_notes: "Backend-only: IDE 126 is a server-side calculation program"
+    gap_notes: "Backend-only: IDE 126 is a server-side calculation program, frontend receives results via API"
   - id: 77
     name: articles_________art
     mode: R
@@ -114,19 +114,19 @@ tables:
     mode: L
     status: N/A
     target_file: ""
-    gap_notes: "Backend-only: IDE 126 is a server-side calculation program"
+    gap_notes: "Backend-only: IDE 126 is a server-side calculation program, frontend receives results via API"
   - id: 222
     name: comptage_caisse_histo
     mode: L
     status: N/A
     target_file: src/types/denomination.ts
-    gap_notes: "Backend-only: IDE 126 is a server-side calculation program"
+    gap_notes: "Backend-only: IDE 126 is a server-side calculation program, frontend receives results via API"
   - id: 247
     name: histo_sessions_caisse_article
     mode: L
     status: N/A
     target_file: ""
-    gap_notes: "Backend-only: IDE 126 is a server-side calculation program"
+    gap_notes: "Backend-only: IDE 126 is a server-side calculation program, frontend receives results via API"
 callees:
   - id: 142
     name: Devise update session WS
@@ -134,7 +134,7 @@ callees:
     context: Updates devise data in session
     status: N/A
     target: sessionStore.updateDevise()
-    gap_notes: "Backend-only: IDE 126 is a server-side calculation program"
+    gap_notes: "Backend-only: IDE 126 is a server-side calculation program, frontend receives results via API"
 overall:
   rules_total: 0
   rules_impl: 0

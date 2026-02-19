@@ -66,9 +66,9 @@ export const createMagicAdapter = (projectRoot: string, overrides?: Partial<Magi
     },
 
     async extractSpec(programId: string | number): Promise<MigrationContract | null> {
-      const pattern = new RegExp(`ADH-IDE-${programId}\\.contract\\.yaml$`);
+      const pattern = new RegExp(`IDE-${programId}\\.contract\\.yaml$`);
       const files = fs.existsSync(config.migrationDir)
-        ? fs.readdirSync(config.migrationDir).filter(f => pattern.test(f))
+        ? fs.readdirSync(config.migrationDir).filter(f => pattern.test(f) || config.contractPattern.test(f))
         : [];
 
       if (files.length === 0) return null;

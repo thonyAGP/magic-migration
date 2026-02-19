@@ -358,6 +358,46 @@ export interface PriorityWeights {
   readiness: number;
 }
 
+// ─── Multi-Project Report ───────────────────────────────────────
+
+export interface MultiProjectReport {
+  generated: string;
+  global: GlobalSummary;
+  projects: ProjectEntry[];
+}
+
+export interface GlobalSummary {
+  totalProjects: number;
+  activeProjects: number;
+  totalLivePrograms: number;
+  totalVerified: number;
+  totalEnriched: number;
+  totalContracted: number;
+  totalPending: number;
+  overallProgressPct: number;
+}
+
+export const ProjectStatus = {
+  ACTIVE: 'active',
+  PLANNED: 'planned',
+  NOT_STARTED: 'not-started',
+} as const;
+export type ProjectStatus = (typeof ProjectStatus)[keyof typeof ProjectStatus];
+
+export interface ProjectEntry {
+  name: string;
+  status: ProjectStatus;
+  programCount: number;
+  description: string;
+  report: FullMigrationReport | null;
+}
+
+export interface ProjectRegistryEntry {
+  name: string;
+  programs: number;
+  description: string;
+}
+
 // ─── Full Report (for HTML dashboard) ───────────────────────────
 
 export interface FullMigrationReport {

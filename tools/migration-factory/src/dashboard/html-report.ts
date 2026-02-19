@@ -3,7 +3,10 @@
  * No external dependencies - all CSS/JS inline.
  */
 
-import type { FullMigrationReport, ModuleSummary, ProgramSummary, MigrationWave } from '../core/types.js';
+import type {
+  FullMigrationReport, ModuleSummary, ProgramSummary, MigrationWave,
+  MultiProjectReport, ProjectEntry, GlobalSummary,
+} from '../core/types.js';
 
 export const generateHtmlReport = (report: FullMigrationReport): string => {
   const { graph, pipeline, modules, decommission, programs } = report;
@@ -41,11 +44,17 @@ ${JS}
 
 // ─── Sections ───────────────────────────────────────────────────
 
-const renderHeader = (r: FullMigrationReport): string => `
+const renderHeader = (r: FullMigrationReport): string => {
+  const dt = new Date(r.generated);
+  const dateStr = dt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const timeStr = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  return `
 <header>
   <h1>Migration Dashboard</h1>
   <div class="subtitle">${escHtml(r.projectName)} &mdash; ${r.graph.livePrograms} programmes LIVE</div>
+  <div class="last-updated">Derniere mise a jour : ${dateStr} a ${timeStr}</div>
 </header>`;
+};
 
 const renderKpiCards = (r: FullMigrationReport): string => {
   const { graph, pipeline, modules, decommission } = r;
@@ -338,6 +347,174 @@ const renderFooter = (r: FullMigrationReport): string => `
   <p>Genere le ${new Date(r.generated).toLocaleString('fr-FR')} par Migration Factory</p>
 </footer>`;
 
+// ═══════════════════════════════════════════════════════════════════
+// Multi-Project Report
+// ═══════════════════════════════════════════════════════════════════
+
+export const generateMultiProjectHtmlReport = (report: MultiProjectReport): string => {
+  const dt = new Date(report.generated);
+  const dateStr = dt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const timeStr = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+  // Only active projects get tabs (those with actual migration data)
+  const activeProjects = report.projects.filter(p => p.status === 'active');
+
+  const projectTabs = activeProjects
+    .map(p => `<button class="project-tab" data-project="${escHtml(p.name)}"><span class="tab-dot tab-dot-active"></span>${escHtml(p.name)}</button>`)
+    .join('\n    ');
+
+  const projectContents = activeProjects
+    .map(p => renderProjectTab(p))
+    .join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPECMAP - Migration Dashboard</title>
+<style>
+${CSS}
+${MULTI_CSS}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>SPECMAP Migration Dashboard</h1>
+  <div class="subtitle">${report.global.totalProjects} projets &middot; ${report.global.activeProjects} actif${report.global.activeProjects > 1 ? 's' : ''} &middot; ${report.global.totalLivePrograms} programmes LIVE</div>
+  <div class="last-updated">Derniere mise a jour : ${dateStr} a ${timeStr}</div>
+</header>
+
+<nav class="project-tabs-bar">
+  <button class="project-tab active" data-project="global"><span class="tab-dot tab-dot-global"></span>Vue Globale</button>
+  ${projectTabs}
+</nav>
+
+<div class="tab-content active" data-tab="global">
+  ${renderGlobalView(report)}
+</div>
+
+${projectContents}
+
+<footer>
+  <p>Genere le ${dateStr} a ${timeStr} par Migration Factory</p>
+</footer>
+
+</div>
+<script>
+${JS}
+${MULTI_JS}
+</script>
+</body>
+</html>`;
+};
+
+const renderGlobalView = (report: MultiProjectReport): string => {
+  const g = report.global;
+  const total = g.totalLivePrograms || 1;
+
+  // Sort: active first, then alphabetically within each group
+  const sortedProjects = [...report.projects].sort((a, b) => {
+    if (a.status === 'active' && b.status !== 'active') return -1;
+    if (a.status !== 'active' && b.status === 'active') return 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  const projectCards = sortedProjects.map(p => {
+    const r = p.report;
+    if (!r) {
+      return `
+      <div class="project-card project-card-idle">
+        <div class="project-card-name">${escHtml(p.name)}</div>
+        <div class="project-card-desc">${escHtml(p.description)}</div>
+        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-stat">${p.programCount > 0 ? p.programCount + ' programmes' : ''}</div>
+      </div>`;
+    }
+    const live = r.graph.livePrograms;
+    const vPct = live > 0 ? Math.round(r.pipeline.verified / live * 100) : 0;
+    const statusBadge = vPct >= 100 ? '<span class="badge badge-green">COMPLETE</span>'
+      : vPct > 0 ? '<span class="badge badge-blue">EN COURS</span>'
+      : r.pipeline.contracted > 0 ? '<span class="badge badge-yellow">CONTRACTED</span>'
+      : '<span class="badge badge-gray">PENDING</span>';
+
+    return `
+      <div class="project-card project-card-active" data-goto="${escHtml(p.name)}">
+        <div class="project-card-name">${escHtml(p.name)}</div>
+        <div class="project-card-desc">${escHtml(p.description)}</div>
+        <div class="project-card-status">${statusBadge}</div>
+        <div class="project-card-progress">
+          <div class="bar-track bar-small">
+            <div class="bar-fill" style="width:${vPct}%; background:var(--green)"></div>
+          </div>
+          <span class="project-card-pct">${vPct}%</span>
+        </div>
+        <div class="project-card-stats">
+          <span>${live} LIVE</span>
+          <span>${r.pipeline.verified} verified</span>
+          <span>${r.pipeline.contracted} contracted</span>
+          <span>${r.modules.total} modules</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  const pBar = (count: number, color: string, label: string) => {
+    const pctVal = Math.round(count / total * 100);
+    return `
+    <div class="pipeline-row">
+      <span class="pipeline-label">${label}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: ${pctVal}%; background: ${color}"></div>
+      </div>
+      <span class="pipeline-count">${count} (${pctVal}%)</span>
+    </div>`;
+  };
+
+  return `
+<section class="kpi-grid">
+  ${kpiCard('Projets actifs', `${g.activeProjects}/${g.totalProjects}`, `${g.totalProjects - g.activeProjects} en attente`, 'var(--purple)')}
+  ${kpiCard('Programmes LIVE', String(g.totalLivePrograms), 'Tous projets confondus', 'var(--blue)')}
+  ${kpiCard('Verified', `${g.totalVerified}/${g.totalLivePrograms}`, `${g.overallProgressPct}% progression globale`, 'var(--green)')}
+  ${kpiCard('Contracted', String(g.totalContracted), `${g.totalEnriched} enriched`, 'var(--yellow)')}
+</section>
+
+<section class="card">
+  <h2>Pipeline globale</h2>
+  <div class="pipeline">
+    ${pBar(g.totalVerified, 'var(--green)', 'Verified')}
+    ${pBar(g.totalEnriched, 'var(--blue)', 'Enriched')}
+    ${pBar(g.totalContracted, 'var(--yellow)', 'Contracted')}
+    ${pBar(g.totalPending, 'var(--gray)', 'Pending')}
+  </div>
+</section>
+
+<section class="card">
+  <h2>Projets</h2>
+  <div class="project-cards-grid">
+    ${projectCards}
+  </div>
+</section>`;
+};
+
+const renderProjectTab = (entry: ProjectEntry): string => {
+  const r = entry.report!;
+  const live = r.graph.livePrograms || 1;
+
+  return `
+<div class="tab-content" data-tab="${escHtml(entry.name)}">
+  ${renderKpiCards(r)}
+  ${renderPipelineSection(r.pipeline, live)}
+  ${renderModulesSection(r.modules)}
+  ${renderMigrationSequence(r)}
+  ${renderDecommissionSection(r.decommission, live)}
+  ${renderProgramTable(r.programs)}
+</div>`;
+};
+
+// Empty project tabs removed: only active projects get tabs
+
 // ─── Helpers ────────────────────────────────────────────────────
 
 const escHtml = (s: string): string =>
@@ -387,6 +564,16 @@ header h1 {
   -webkit-text-fill-color: transparent;
 }
 .subtitle { color: var(--text-dim); margin-top: 4px; }
+.last-updated {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+  background: rgba(88,166,255,0.08);
+  display: inline-block;
+  padding: 4px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(88,166,255,0.2);
+}
 
 .card {
   background: var(--card);
@@ -745,6 +932,121 @@ document.querySelectorAll('th[data-sort]').forEach(th => {
     });
 
     rows.forEach(r => tbody.appendChild(r));
+  });
+});
+`;
+
+// ─── Multi-Project CSS ──────────────────────────────────────────
+
+const MULTI_CSS = `
+/* Project Tab Bar */
+.project-tabs-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+.project-tab {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.project-tab:hover { color: var(--text); background: rgba(88,166,255,0.08); }
+.project-tab.active { background: var(--blue); color: #fff; }
+.tab-dot {
+  width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+}
+.tab-dot-global { background: var(--purple); }
+.tab-dot-active { background: var(--green); }
+.tab-dot-planned { background: var(--yellow); }
+.tab-dot-idle { background: var(--gray); }
+
+/* Tab Content */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Project Cards Grid */
+.project-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.project-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.project-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+.project-card-idle { opacity: 0.6; cursor: default; }
+.project-card-idle:hover { border-color: var(--border); transform: none; }
+.project-card-name { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+.project-card-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+.project-card-status { margin-bottom: 8px; }
+.project-card-progress { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.project-card-pct { font-weight: 600; font-size: 14px; width: 40px; text-align: right; }
+.project-card-stats {
+  display: flex; gap: 8px; flex-wrap: wrap; font-size: 11px; color: var(--text-dim);
+}
+.project-card-stats span {
+  padding: 1px 6px;
+  background: rgba(72,79,88,0.2);
+  border-radius: 4px;
+}
+.project-card-stat { font-size: 13px; color: var(--text-dim); }
+
+/* Empty project tab */
+.empty-project { text-align: center; padding: 60px 20px; }
+.empty-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-message p { margin-bottom: 8px; }
+.empty-detail { color: var(--text-dim); font-size: 14px; }
+.empty-hint { color: var(--text-dim); font-size: 12px; margin-top: 16px; }
+.empty-hint code {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+`;
+
+// ─── Multi-Project JS ───────────────────────────────────────────
+
+const MULTI_JS = `
+// Project tab switching
+document.querySelectorAll('.project-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.project-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const project = tab.dataset.project;
+    document.querySelectorAll('.tab-content').forEach(c => {
+      c.classList.toggle('active', c.dataset.tab === project);
+    });
+  });
+});
+
+// Click on project card -> switch to that tab
+document.querySelectorAll('.project-card[data-goto]').forEach(card => {
+  card.addEventListener('click', () => {
+    const name = card.dataset.goto;
+    const tab = document.querySelector('.project-tab[data-project="' + name + '"]');
+    if (tab) tab.click();
   });
 });
 `;

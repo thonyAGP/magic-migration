@@ -7,6 +7,7 @@ import type {
   Program, PipelineStatus, SCC, Tracker,
   FullMigrationReport, ModuleSummary, ProgramSummary, BatchSummary,
   ModuleDependency, MigrationWave, ModuleSCC,
+  MultiProjectReport, GlobalSummary, ProjectEntry, ProjectStatus,
 } from '../core/types.js';
 import type { ModuleCalculatorOutput } from '../calculators/module-calculator.js';
 import type { ReadinessReport } from '../core/types.js';
@@ -134,4 +135,56 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
       moduleSCCs: priorityResult.moduleSCCs,
     },
   };
+};
+
+// ─── Multi-Project Report ────────────────────────────────────────
+
+export interface MultiProjectInput {
+  projects: {
+    name: string;
+    reportInput?: ReportInput;
+    programCount?: number;
+    description?: string;
+  }[];
+}
+
+export const buildMultiProjectReport = (input: MultiProjectInput): MultiProjectReport => {
+  const entries: ProjectEntry[] = input.projects.map(p => {
+    if (p.reportInput) {
+      const report = buildReport(p.reportInput);
+      return {
+        name: p.name,
+        status: 'active' as ProjectStatus,
+        programCount: report.graph.livePrograms,
+        description: p.description ?? '',
+        report,
+      };
+    }
+    return {
+      name: p.name,
+      status: 'not-started' as ProjectStatus,
+      programCount: p.programCount ?? 0,
+      description: p.description ?? '',
+      report: null,
+    };
+  });
+
+  const activeReports = entries.filter(e => e.report).map(e => e.report!);
+
+  const global: GlobalSummary = {
+    totalProjects: entries.length,
+    activeProjects: activeReports.length,
+    totalLivePrograms: activeReports.reduce((s, r) => s + r.graph.livePrograms, 0),
+    totalVerified: activeReports.reduce((s, r) => s + r.pipeline.verified, 0),
+    totalEnriched: activeReports.reduce((s, r) => s + r.pipeline.enriched, 0),
+    totalContracted: activeReports.reduce((s, r) => s + r.pipeline.contracted, 0),
+    totalPending: activeReports.reduce((s, r) => s + r.pipeline.pending, 0),
+    overallProgressPct: (() => {
+      const total = activeReports.reduce((s, r) => s + r.graph.livePrograms, 0);
+      const verified = activeReports.reduce((s, r) => s + r.pipeline.verified, 0);
+      return total > 0 ? Math.round(verified / total * 100) : 0;
+    })(),
+  };
+
+  return { generated: new Date().toISOString(), global, projects: entries };
 };

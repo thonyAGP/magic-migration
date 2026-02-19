@@ -12,8 +12,9 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import type { SpecExtractor, Program, PipelineStatus } from './core/types.js';
-import { createMagicAdapter } from './adapters/magic-adapter.js';
+import type { SpecExtractor, Program } from './core/types.js';
+import { PipelineStatus } from './core/types.js';
+import { createMagicAdapter, type MagicAdapterConfig } from './adapters/magic-adapter.js';
 import { createGenericAdapter } from './adapters/generic-adapter.js';
 import { resolveDependencies } from './calculators/dependency-resolver.js';
 import { calculateModules } from './calculators/module-calculator.js';
@@ -22,10 +23,12 @@ import { planBatches } from './calculators/batch-planner.js';
 import { calculateDecommission } from './calculators/decommission-calculator.js';
 import { getPipelineStatus } from './orchestrator/orchestrator.js';
 import { readTracker, createTracker, writeTracker } from './core/tracker.js';
+import { parseContract, writeContract } from './core/contract.js';
+import { canTransition } from './core/pipeline.js';
 import { renderDashboard } from './dashboard/dashboard.js';
 import { renderModuleReadiness } from './dashboard/module-readiness.js';
-import { buildReport } from './dashboard/report-builder.js';
-import { generateHtmlReport } from './dashboard/html-report.js';
+import { buildReport, buildMultiProjectReport } from './dashboard/report-builder.js';
+import { generateHtmlReport, generateMultiProjectHtmlReport } from './dashboard/html-report.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -143,79 +146,504 @@ const run = async () => {
     }
 
     case 'report': {
-      const adapter = await createAdapterFromArgs(projectDir);
-      const graph = await adapter.extractProgramGraph();
-      const resolved = resolveDependencies(graph.programs);
-      const shared = new Set(await adapter.getSharedPrograms());
+      const isMulti = hasFlag('multi');
 
-      const statuses = fs.existsSync(trackerFile)
-        ? getPipelineStatus({ migrationDir, trackerFile, adapter })
-        : new Map<string | number, PipelineStatus>();
+      if (isMulti) {
+        // Multi-project mode: auto-discover active projects + read registry for all known
+        const activeProjects = discoverProjects(migrationDir);
+        const registry = readProjectRegistry(migrationDir);
 
-      const calcOutput = calculateModules({
-        programs: graph.programs,
-        adjacency: resolved.adjacency,
-        sccs: resolved.sccs,
-        levels: resolved.levels,
-        programStatuses: statuses,
-        sharedPrograms: shared,
-        naPrograms: new Set(),
+        const projectInputs: { name: string; reportInput?: Parameters<typeof buildReport>[0]; programCount?: number; description?: string }[] = [];
+
+        // Build full reports for active projects (those with live-programs.json)
+        for (const projName of activeProjects) {
+          const projMigDir = path.join(migrationDir, projName);
+          const projLiveFile = path.join(projMigDir, 'live-programs.json');
+          const projTrackerFile = path.join(projMigDir, 'tracker.json');
+
+          const projAdapter = createMagicAdapter(projectDir, {
+            migrationDir: projMigDir,
+            liveProgramsFile: projLiveFile,
+            contractPattern: new RegExp(`${projName}-IDE-.*\\.contract\\.yaml$`),
+          });
+          const graph = await projAdapter.extractProgramGraph();
+          const resolved = resolveDependencies(graph.programs);
+          const shared = new Set(await projAdapter.getSharedPrograms());
+          const statuses = fs.existsSync(projTrackerFile)
+            ? getPipelineStatus({ migrationDir: projMigDir, trackerFile: projTrackerFile, adapter: projAdapter })
+            : new Map<string | number, PipelineStatus>();
+
+          const calcOutput = calculateModules({
+            programs: graph.programs,
+            adjacency: resolved.adjacency,
+            sccs: resolved.sccs,
+            levels: resolved.levels,
+            programStatuses: statuses,
+            sharedPrograms: shared,
+            naPrograms: new Set(),
+          });
+
+          const readinessReport = checkReadiness({
+            calculatorOutput: calcOutput,
+            totalLive: graph.liveCount,
+            programStatuses: statuses,
+          });
+
+          const decommResult = calculateDecommission({
+            programs: graph.programs,
+            programStatuses: statuses,
+            naPrograms: new Set(),
+            sharedPrograms: shared,
+            sccs: resolved.sccs,
+          });
+
+          const projTracker = fs.existsSync(projTrackerFile) ? readTracker(projTrackerFile) : undefined;
+          const regEntry = registry.find(r => r.name === projName);
+
+          projectInputs.push({
+            name: projName,
+            description: regEntry?.description ?? '',
+            reportInput: {
+              projectName: projName,
+              programs: graph.programs,
+              programStatuses: statuses,
+              sharedPrograms: shared,
+              sccs: resolved.sccs,
+              maxLevel: resolved.maxLevel,
+              modulesOutput: calcOutput,
+              readiness: readinessReport,
+              decommission: decommResult,
+              tracker: projTracker,
+            },
+          });
+        }
+
+        // Add non-started projects from registry (not already in active list)
+        const activeSet = new Set(activeProjects);
+        for (const regEntry of registry) {
+          if (!activeSet.has(regEntry.name)) {
+            projectInputs.push({
+              name: regEntry.name,
+              programCount: regEntry.programs,
+              description: regEntry.description,
+            });
+          }
+        }
+
+        const multiReport = buildMultiProjectReport({ projects: projectInputs });
+        const html = generateMultiProjectHtmlReport(multiReport);
+        const outFile = getArg('output') ?? path.join(migrationDir, 'migration-report.html');
+        const outDir = path.dirname(outFile);
+        if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+        fs.writeFileSync(outFile, html, 'utf8');
+        console.log(`Multi-project HTML report generated: ${outFile} (${activeProjects.length} active / ${registry.length} total)`);
+      } else {
+        // Single-project mode (backward compat)
+        const adapter = await createAdapterFromArgs(projectDir);
+        const graph = await adapter.extractProgramGraph();
+        const resolved = resolveDependencies(graph.programs);
+        const shared = new Set(await adapter.getSharedPrograms());
+
+        const statuses = fs.existsSync(trackerFile)
+          ? getPipelineStatus({ migrationDir, trackerFile, adapter })
+          : new Map<string | number, PipelineStatus>();
+
+        const calcOutput = calculateModules({
+          programs: graph.programs,
+          adjacency: resolved.adjacency,
+          sccs: resolved.sccs,
+          levels: resolved.levels,
+          programStatuses: statuses,
+          sharedPrograms: shared,
+          naPrograms: new Set(),
+        });
+
+        const readiness = checkReadiness({
+          calculatorOutput: calcOutput,
+          totalLive: graph.liveCount,
+          programStatuses: statuses,
+        });
+
+        const decommission = calculateDecommission({
+          programs: graph.programs,
+          programStatuses: statuses,
+          naPrograms: new Set(),
+          sharedPrograms: shared,
+          sccs: resolved.sccs,
+        });
+
+        const tracker = fs.existsSync(trackerFile) ? readTracker(trackerFile) : undefined;
+        const projectName = getArg('name') ?? tracker?.methodology ?? path.basename(projectDir);
+
+        const report = buildReport({
+          projectName,
+          programs: graph.programs,
+          programStatuses: statuses,
+          sharedPrograms: shared,
+          sccs: resolved.sccs,
+          maxLevel: resolved.maxLevel,
+          modulesOutput: calcOutput,
+          readiness,
+          decommission,
+          tracker,
+        });
+
+        const html = generateHtmlReport(report);
+        const outFile = getArg('output') ?? path.join(migrationDir, 'migration-report.html');
+        const outDir = path.dirname(outFile);
+        if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+        fs.writeFileSync(outFile, html, 'utf8');
+        console.log(`HTML report generated: ${outFile}`);
+      }
+      break;
+    }
+
+    case 'set-status': {
+      // Batch-update contract pipeline statuses
+      // Usage: set-status --project <dir> --programs 120,122,123 --status enriched [--dir ADH]
+      const programsArg = getArg('programs');
+      const targetStatus = getArg('status') as PipelineStatus | undefined;
+      const subDir = getArg('dir');
+
+      if (!programsArg || !targetStatus) {
+        console.error('Usage: set-status --project <dir> --programs 120,122,... --status <pending|contracted|enriched|verified> [--dir ADH]');
+        process.exit(1);
+      }
+
+      const validStatuses = new Set(Object.values(PipelineStatus));
+      if (!validStatuses.has(targetStatus)) {
+        console.error(`Invalid status "${targetStatus}". Valid: ${[...validStatuses].join(', ')}`);
+        process.exit(1);
+      }
+
+      const programIds = programsArg.split(',').map(s => s.trim()).filter(Boolean);
+      const contractDir = subDir ? path.join(migrationDir, subDir) : migrationDir;
+
+      if (!fs.existsSync(contractDir)) {
+        console.error(`Contract directory not found: ${contractDir}`);
+        process.exit(1);
+      }
+
+      let updated = 0;
+      let skipped = 0;
+      const errors: string[] = [];
+
+      for (const id of programIds) {
+        // Find contract file matching this ID
+        const files = fs.readdirSync(contractDir).filter(f =>
+          f.endsWith('.contract.yaml') && f.includes(`-IDE-${id}.`),
+        );
+
+        if (files.length === 0) {
+          errors.push(`IDE ${id}: no contract file found`);
+          continue;
+        }
+
+        const filePath = path.join(contractDir, files[0]);
+        const contract = parseContract(filePath);
+        const currentStatus = contract.overall.status;
+
+        if (currentStatus === targetStatus) {
+          console.log(`  IDE ${id}: already ${targetStatus}`);
+          skipped++;
+          continue;
+        }
+
+        if (!canTransition(currentStatus, targetStatus)) {
+          errors.push(`IDE ${id}: cannot transition ${currentStatus} → ${targetStatus}`);
+          continue;
+        }
+
+        contract.overall.status = targetStatus;
+        writeContract(contract, filePath);
+        console.log(`  IDE ${id}: ${currentStatus} → ${targetStatus}`);
+        updated++;
+      }
+
+      console.log(`\nResult: ${updated} updated, ${skipped} unchanged, ${errors.length} errors`);
+      for (const err of errors) {
+        console.error(`  ERROR: ${err}`);
+      }
+      break;
+    }
+
+    case 'reclassify': {
+      // Reclassify items in a contract (e.g., PARTIAL → N/A for backend-only items)
+      // Usage: reclassify --project <dir> --program 126 --items "var:EW,table:249,table:250,table:222,table:247,callee:142" --to N/A [--dir ADH]
+      const reclProgram = getArg('program');
+      const reclItems = getArg('items');
+      const reclTo = getArg('to');
+      const reclSubDir = getArg('dir');
+      const reclNotes = getArg('notes');
+
+      if (!reclProgram || !reclItems || !reclTo) {
+        console.error('Usage: reclassify --program <id> --items "type:id,..." --to <IMPL|N/A|PARTIAL|MISSING> [--dir ADH] [--notes "reason"]');
+        process.exit(1);
+      }
+
+      const validItemStatuses = new Set(['IMPL', 'PARTIAL', 'MISSING', 'N/A']);
+      if (!validItemStatuses.has(reclTo.toUpperCase())) {
+        console.error(`Invalid item status "${reclTo}". Valid: ${[...validItemStatuses].join(', ')}`);
+        process.exit(1);
+      }
+
+      const reclContractDir = reclSubDir ? path.join(migrationDir, reclSubDir) : migrationDir;
+      const reclFiles = fs.readdirSync(reclContractDir).filter(f =>
+        f.endsWith('.contract.yaml') && f.includes(`-IDE-${reclProgram}.`),
+      );
+
+      if (reclFiles.length === 0) {
+        console.error(`No contract found for IDE ${reclProgram} in ${reclContractDir}`);
+        process.exit(1);
+      }
+
+      const reclFilePath = path.join(reclContractDir, reclFiles[0]);
+      const contract = parseContract(reclFilePath);
+
+      const itemPairs = reclItems.split(',').map(s => {
+        const [type, id] = s.trim().split(':');
+        return { type, id };
       });
 
-      const readiness = checkReadiness({
-        calculatorOutput: calcOutput,
-        totalLive: graph.liveCount,
-        programStatuses: statuses,
-      });
+      let reclUpdated = 0;
+      const targetStatus = reclTo.toUpperCase() as 'IMPL' | 'PARTIAL' | 'MISSING' | 'N/A';
 
-      const decommission = calculateDecommission({
-        programs: graph.programs,
-        programStatuses: statuses,
-        naPrograms: new Set(),
-        sharedPrograms: shared,
-        sccs: resolved.sccs,
-      });
+      for (const { type, id } of itemPairs) {
+        let found = false;
 
-      const tracker = fs.existsSync(trackerFile) ? readTracker(trackerFile) : undefined;
-      const projectName = getArg('name') ?? tracker?.methodology ?? path.basename(projectDir);
+        if (type === 'rule') {
+          const item = contract.rules.find(r => r.id === id);
+          if (item) { item.status = targetStatus; if (reclNotes) item.gapNotes = reclNotes; found = true; }
+        } else if (type === 'var') {
+          const item = contract.variables.find(v => v.localId === id);
+          if (item) { item.status = targetStatus; if (reclNotes) item.gapNotes = reclNotes; found = true; }
+        } else if (type === 'table') {
+          const item = contract.tables.find(t => String(t.id) === id);
+          if (item) { item.status = targetStatus; if (reclNotes) item.gapNotes = reclNotes; found = true; }
+        } else if (type === 'callee') {
+          const item = contract.callees.find(c => String(c.id) === id);
+          if (item) { item.status = targetStatus; if (reclNotes) item.gapNotes = reclNotes; found = true; }
+        }
 
-      const report = buildReport({
-        projectName,
-        programs: graph.programs,
-        programStatuses: statuses,
-        sharedPrograms: shared,
-        sccs: resolved.sccs,
-        maxLevel: resolved.maxLevel,
-        modulesOutput: calcOutput,
-        readiness,
-        decommission,
-        tracker,
-      });
+        if (found) {
+          console.log(`  ${type}:${id} → ${targetStatus}`);
+          reclUpdated++;
+        } else {
+          console.error(`  ${type}:${id} NOT FOUND`);
+        }
+      }
 
-      const html = generateHtmlReport(report);
-      const outFile = getArg('output') ?? path.join(migrationDir, 'migration-report.html');
-      const outDir = path.dirname(outFile);
-      if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-      fs.writeFileSync(outFile, html, 'utf8');
-      console.log(`HTML report generated: ${outFile}`);
+      // Recalculate coverage
+      const allItems = [...contract.rules, ...contract.variables, ...contract.tables, ...contract.callees];
+      const totalItems = allItems.length;
+      const naItems = allItems.filter(i => i.status === 'N/A').length;
+      const implItems = allItems.filter(i => i.status === 'IMPL').length;
+      const partialItems = allItems.filter(i => i.status === 'PARTIAL').length;
+      const denominator = totalItems - naItems;
+      const newCoverage = denominator > 0 ? Math.round(((implItems + partialItems * 0.5) / denominator) * 100) : 100;
+
+      contract.overall.rulesImpl = contract.rules.filter(r => r.status === 'IMPL').length;
+      contract.overall.rulesPartial = contract.rules.filter(r => r.status === 'PARTIAL').length;
+      contract.overall.rulesMissing = contract.rules.filter(r => r.status === 'MISSING').length;
+      contract.overall.rulesNa = contract.rules.filter(r => r.status === 'N/A').length;
+      contract.overall.calleesImpl = contract.callees.filter(c => c.status === 'IMPL').length;
+      contract.overall.calleesMissing = contract.callees.filter(c => c.status === 'MISSING').length;
+      contract.overall.coveragePct = newCoverage;
+
+      writeContract(contract, reclFilePath);
+      console.log(`\n  IDE ${reclProgram}: ${reclUpdated} items reclassified, coverage ${newCoverage}%`);
+      break;
+    }
+
+    case 'gaps': {
+      // Show consolidated gap report across all contracts
+      // Usage: gaps --project <dir> [--dir ADH] [--status enriched|contracted]
+      const gapsSubDir = getArg('dir');
+      const gapsFilterStatus = getArg('status');
+      const gapsContractDir = gapsSubDir ? path.join(migrationDir, gapsSubDir) : migrationDir;
+
+      if (!fs.existsSync(gapsContractDir)) {
+        console.error(`Contract directory not found: ${gapsContractDir}`);
+        process.exit(1);
+      }
+
+      const gapFiles = fs.readdirSync(gapsContractDir).filter(f => f.endsWith('.contract.yaml'));
+      const completedSet = new Set(['IMPL', 'N/A']);
+
+      interface GapEntry { type: string; id: string; status: string; notes: string }
+      interface ContractGaps { id: string; name: string; pipelineStatus: string; gaps: GapEntry[]; total: number; impl: number }
+
+      const allGaps: ContractGaps[] = [];
+      let grandTotalGaps = 0;
+      let grandTotalItems = 0;
+
+      for (const file of gapFiles) {
+        const contract = parseContract(path.join(gapsContractDir, file));
+        if (gapsFilterStatus && contract.overall.status !== gapsFilterStatus) continue;
+        if (contract.overall.status === PipelineStatus.VERIFIED) continue;
+
+        const gaps: GapEntry[] = [];
+        let total = 0;
+        let impl = 0;
+
+        for (const r of contract.rules) {
+          total++;
+          if (completedSet.has(r.status)) { impl++; } else { gaps.push({ type: 'rule', id: r.id, status: r.status, notes: r.gapNotes }); }
+        }
+        for (const v of contract.variables) {
+          total++;
+          if (completedSet.has(v.status)) { impl++; } else { gaps.push({ type: 'var', id: v.localId, status: v.status, notes: v.gapNotes }); }
+        }
+        for (const t of contract.tables) {
+          total++;
+          if (completedSet.has(t.status)) { impl++; } else { gaps.push({ type: 'table', id: String(t.id), status: t.status, notes: t.gapNotes }); }
+        }
+        for (const c of contract.callees) {
+          total++;
+          if (completedSet.has(c.status)) { impl++; } else { gaps.push({ type: 'callee', id: String(c.id), status: c.status, notes: c.gapNotes }); }
+        }
+
+        if (gaps.length > 0) {
+          allGaps.push({ id: String(contract.program.id), name: contract.program.name, pipelineStatus: contract.overall.status, gaps, total, impl });
+          grandTotalGaps += gaps.length;
+        }
+        grandTotalItems += total;
+      }
+
+      // Sort by gap count descending
+      allGaps.sort((a, b) => b.gaps.length - a.gaps.length);
+
+      console.log(`\n  Gap Report (${gapsContractDir})\n`);
+      for (const cg of allGaps) {
+        const pct = cg.total > 0 ? Math.round((cg.impl / cg.total) * 100) : 0;
+        console.log(`  IDE ${cg.id} - ${cg.name} [${cg.pipelineStatus}] ${cg.impl}/${cg.total} (${pct}%)`);
+        const byStatus = new Map<string, number>();
+        for (const g of cg.gaps) byStatus.set(g.status, (byStatus.get(g.status) ?? 0) + 1);
+        console.log(`    ${[...byStatus].map(([s, n]) => `${n} ${s}`).join(', ')}`);
+      }
+
+      const implTotal = grandTotalItems - grandTotalGaps;
+      const globalPct = grandTotalItems > 0 ? Math.round((implTotal / grandTotalItems) * 100) : 0;
+      console.log(`\n  Total: ${grandTotalGaps} gaps across ${allGaps.length} contracts (${globalPct}% complete)\n`);
+      break;
+    }
+
+    case 'verify': {
+      // Auto-verify enriched contracts: check all items are IMPL or N/A
+      // Usage: verify --project <dir> [--programs 120,122,...] [--dir ADH] [--dry-run]
+      const verifyProgramsArg = getArg('programs');
+      const verifySubDir = getArg('dir');
+      const dryRun = hasFlag('dry-run');
+      const verifyContractDir = verifySubDir ? path.join(migrationDir, verifySubDir) : migrationDir;
+
+      if (!fs.existsSync(verifyContractDir)) {
+        console.error(`Contract directory not found: ${verifyContractDir}`);
+        process.exit(1);
+      }
+
+      // Load all contracts or filter by --programs
+      const allFiles = fs.readdirSync(verifyContractDir).filter(f => f.endsWith('.contract.yaml'));
+      const targetIds = verifyProgramsArg
+        ? new Set(verifyProgramsArg.split(',').map(s => s.trim()))
+        : null;
+
+      let verified = 0;
+      let notReady = 0;
+      let alreadyVerified = 0;
+
+      for (const file of allFiles) {
+        const filePath = path.join(verifyContractDir, file);
+        const contract = parseContract(filePath);
+        const id = String(contract.program.id);
+
+        if (targetIds && !targetIds.has(id)) continue;
+
+        if (contract.overall.status === PipelineStatus.VERIFIED) {
+          alreadyVerified++;
+          continue;
+        }
+
+        if (contract.overall.status !== PipelineStatus.ENRICHED) {
+          console.log(`  IDE ${id}: skip (status=${contract.overall.status}, need enriched)`);
+          continue;
+        }
+
+        // Check all items are IMPL or N/A
+        const completedStatuses = new Set(['IMPL', 'N/A']);
+        const gaps: string[] = [];
+
+        for (const r of contract.rules) {
+          if (!completedStatuses.has(r.status)) gaps.push(`rule ${r.id}: ${r.status}`);
+        }
+        for (const v of contract.variables) {
+          if (!completedStatuses.has(v.status)) gaps.push(`var ${v.localId}: ${v.status}`);
+        }
+        for (const t of contract.tables) {
+          if (!completedStatuses.has(t.status)) gaps.push(`table ${t.id}: ${t.status}`);
+        }
+        for (const c of contract.callees) {
+          if (!completedStatuses.has(c.status)) gaps.push(`callee ${c.id}: ${c.status}`);
+        }
+
+        if (gaps.length > 0) {
+          console.log(`  IDE ${id}: NOT READY (${gaps.length} gaps)`);
+          for (const g of gaps.slice(0, 5)) console.log(`    - ${g}`);
+          if (gaps.length > 5) console.log(`    ... and ${gaps.length - 5} more`);
+          notReady++;
+        } else {
+          if (dryRun) {
+            console.log(`  IDE ${id}: WOULD verify (all items IMPL/N/A)`);
+          } else {
+            contract.overall.status = PipelineStatus.VERIFIED;
+            contract.overall.coveragePct = 100;
+            writeContract(contract, filePath);
+            console.log(`  IDE ${id}: enriched → verified (100%)`);
+          }
+          verified++;
+        }
+      }
+
+      console.log(`\nVerify result: ${verified} ${dryRun ? 'would verify' : 'verified'}, ${notReady} not ready, ${alreadyVerified} already verified`);
       break;
     }
 
     default:
       console.log('Migration Factory - Reusable SPECMAP migration pipeline\n');
       console.log('Commands:');
-      console.log('  init      --project <dir> --name <name>     Initialize migration');
-      console.log('  graph     --project <dir>                   Analyze dependency graph');
-      console.log('  modules   --project <dir>                   Show deliverable modules');
-      console.log('  dashboard --project <dir>                   Show progress dashboard');
-      console.log('  plan      --project <dir>                   Auto-suggest batches');
-      console.log('  report    --project <dir> [--output file]   Generate HTML dashboard');
+      console.log('  init       --project <dir> --name <name>     Initialize migration');
+      console.log('  graph      --project <dir>                   Analyze dependency graph');
+      console.log('  modules    --project <dir>                   Show deliverable modules');
+      console.log('  dashboard  --project <dir>                   Show progress dashboard');
+      console.log('  plan       --project <dir>                   Auto-suggest batches');
+      console.log('  report     --project <dir> [--output file]   Generate HTML dashboard');
+      console.log('  set-status --project <dir> --programs 1,2,3 --status enriched [--dir ADH]');
+      console.log('  verify     --project <dir> [--programs 1,2,3] [--dir ADH] [--dry-run]');
+      console.log('  gaps       --project <dir> [--dir ADH] [--status enriched]');
       console.log('\nOptions:');
       console.log('  --adapter magic|generic                     Source adapter (default: magic)');
-      console.log('  --programs <file>                           Programs file (generic adapter)');
+      console.log('  --programs <file|id,id,...>                  Programs file or IDs');
       console.log('  --output <file>                             Output file for report command');
+      console.log('  --dir <subdir>                              Subdirectory for contracts');
+      console.log('  --dry-run                                   Preview without modifying files');
       break;
   }
+};
+
+const discoverProjects = (migrationDir: string): string[] => {
+  if (!fs.existsSync(migrationDir)) return [];
+  return fs.readdirSync(migrationDir, { withFileTypes: true })
+    .filter(d => d.isDirectory() && fs.existsSync(path.join(migrationDir, d.name, 'live-programs.json')))
+    .map(d => d.name)
+    .sort();
+};
+
+interface RegistryEntry { name: string; programs: number; description: string; }
+
+const readProjectRegistry = (migrationDir: string): RegistryEntry[] => {
+  const registryFile = path.join(migrationDir, 'projects-registry.json');
+  if (!fs.existsSync(registryFile)) return [];
+  const raw = JSON.parse(fs.readFileSync(registryFile, 'utf8'));
+  return (raw.projects ?? []) as RegistryEntry[];
 };
 
 const createAdapterFromArgs = async (projectDir: string): Promise<SpecExtractor> => {

@@ -133,6 +133,7 @@ export function CaisseOpsPage() {
           <ApproProduitsForm
             onSubmit={executeApportProduits}
             isSubmitting={isExecuting}
+            deviseCode={config?.devisePrincipale ?? 'EUR'}
           />
         )}
 
@@ -149,6 +150,7 @@ export function CaisseOpsPage() {
             onExecute={handleTelecollecte}
             result={telecollecteResult}
             isExecuting={isExecuting}
+            deviseCode={config?.devisePrincipale ?? 'EUR'}
           />
         )}
 

@@ -1,0 +1,191 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 128 - Controle ouverture caisse WS
+
+program:
+  id: 128
+  name: "Controle ouverture caisse WS"
+  complexity: "BASSE"
+  callers: [122, 297]
+  callees: []
+  tasks_count: 2
+  tables_count: 3
+  expressions_count: 9
+
+rules:
+  - id: RM-001
+    description: "Condition Param UNI/BI different de B"
+    condition: "Param UNI/BI [C]<>'B'"
+    variables: ["EP (Param UNI/BI)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS validation - UNI/BI routing handled server-side"
+  - id: RM-002
+    description: "Condition Param UNI/BI egale B"
+    condition: "Param UNI/BI [C]='B'"
+    variables: ["EP (Param UNI/BI)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS validation - UNI/BI routing handled server-side"
+
+variables:
+  - letter: "EN"
+    name: "Param societe"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - societe context from server"
+  - letter: "EO"
+    name: "Param devise locale"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - devise locale from config"
+  - letter: "EP"
+    name: "Param UNI/BI"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - mode UNI/BI routing"
+  - letter: "EQ"
+    name: "Param chrono session"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - session chronological ID"
+  - letter: "ER"
+    name: "Param solde initial"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation parameter - initial balance"
+  - letter: "ES"
+    name: "Param solde initial monnaie"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation parameter"
+  - letter: "ET"
+    name: "Param solde initial produits"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation parameter"
+  - letter: "EU"
+    name: "Param solde initial cartes"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation parameter"
+  - letter: "EV"
+    name: "Param solde initial cheques"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation parameter"
+  - letter: "EW"
+    name: "Param solde initial od"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation parameter"
+  - letter: "EX"
+    name: "Param solde initial nbre devise"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation parameter"
+  - letter: "EY"
+    name: "Param appro coffre"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation parameter"
+  - letter: "EZ"
+    name: "Param appro articles"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation parameter"
+  - letter: "FA"
+    name: "Param appro Nbre devises"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation parameter"
+  - letter: "FB"
+    name: "Param caisse calculee"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation output parameter"
+  - letter: "FC"
+    name: "Param caisse calculee monnaie"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation output parameter"
+  - letter: "FD"
+    name: "Param caisse calculee produits"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation output parameter"
+  - letter: "FE"
+    name: "Param caisse calculee cartes"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation output parameter"
+  - letter: "FF"
+    name: "Param caisse calculee cheque"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation output parameter"
+  - letter: "FG"
+    name: "Param caisse calculee od"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation output parameter"
+  - letter: "FH"
+    name: "Param caisse calculee nb devise"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend calculation output parameter"
+
+tables:
+  - id: 139
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table access - payment methods reference"
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "L"
+    status: N/A
+    gap_notes: "Backend table access - session devises lookup"
+  - id: 141
+    name: "devises__________dev"
+    mode: "L"
+    status: N/A
+    gap_notes: "Backend table access - devises reference lookup"
+
+callees: []
+
+overall:
+  rules_total: 2
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 2
+  variables_key_count: 21
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: verified
+  generated: "2026-02-11"
+  notes: "Pure backend WS program - validates conditions before opening caisse session. All logic is server-side. Frontend calls openSession() which triggers this validation through the API facade. No frontend equivalent needed."

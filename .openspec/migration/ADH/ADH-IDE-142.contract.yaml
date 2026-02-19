@@ -1,0 +1,84 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 142 - Devise update session WS
+
+program:
+  id: 142
+  name: "Devise update session WS"
+  complexity: "BASSE"
+  callers: [155, 131, 126, 298, 120, 122, 127, 129, 130, 299, 125]
+  callees: []
+  tasks_count: 1
+  tables_count: 1
+  expressions_count: 9
+
+rules:
+  - id: RM-001
+    description: "Negation de cumul OP change - condition inversee"
+    condition: "NOT (Param cumul OP change [F])"
+    variables: ["ES (Param cumul OP change)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - controls whether to overwrite or accumulate devise quantity in gestion_devise_session. Frontend updateDevise() in sessionStore.ts updates local state but does not replicate this cumul logic."
+
+variables:
+  - letter: "EN"
+    name: "Param Code devise"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - devise code for update"
+  - letter: "EO"
+    name: "Param mode paiement"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - payment mode code"
+  - letter: "EP"
+    name: "Param Quand"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - O/F context"
+  - letter: "EQ"
+    name: "Param Type"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - operation type"
+  - letter: "ER"
+    name: "Param Quantite"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - quantity to update"
+  - letter: "ES"
+    name: "Param cumul OP change"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - cumul/overwrite flag"
+
+tables:
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "W"
+    status: N/A
+    gap_notes: "Backend table write - central devise session persistence"
+
+callees: []
+
+overall:
+  rules_total: 1
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 1
+  variables_key_count: 6
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: verified
+  generated: "2026-02-11"
+  notes: "Backend WS program - central devise session updater. Most connected WS with 11 callers (35+ total calls). Writes to single table gestion_devise_session. Frontend sessionStore.ts has updateDevise() for local state but backend handles persistence and cumul logic. No frontend equivalent needed."

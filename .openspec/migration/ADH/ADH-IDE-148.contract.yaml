@@ -1,0 +1,95 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 148 - Devises RAZ WS
+
+program:
+  id: 148
+  name: "Devises RAZ WS"
+  complexity: "BASSE"
+  callers: [122, 131, 297, 299]
+  callees: []
+  tasks_count: 3
+  tables_count: 3
+  expressions_count: 2
+
+rules:
+  - id: RM-001
+    description: "Condition Param UNI/BI different de B"
+    condition: "Param UNI/BI [E]<>'B'"
+    variables: ["ER (Param UNI/BI)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - routes to unilateral devise reset logic using table 50"
+  - id: RM-002
+    description: "Condition Param UNI/BI egale B"
+    condition: "Param UNI/BI [E]='B'"
+    variables: ["ER (Param UNI/BI)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - routes to bilateral devise reset logic using table 139"
+
+variables:
+  - letter: "EN"
+    name: "Param societe"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EO"
+    name: "Param devise locale"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EP"
+    name: "Param quand"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - O/F context"
+  - letter: "EQ"
+    name: "Param type"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "ER"
+    name: "Param UNI/BI"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - UNI/BI mode discriminator"
+
+tables:
+  - id: 139
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - bilateral payment methods"
+  - id: 50
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - unilateral payment methods"
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "L"
+    status: N/A
+    gap_notes: "Backend table lookup - session devises"
+
+callees: []
+
+overall:
+  rules_total: 2
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 2
+  variables_key_count: 5
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: verified
+  generated: "2026-02-11"
+  notes: "Backend WS program - resets devise synchronization state at ouverture/fermeture. Reads moyens_reglement_mor (UNI/BI paths) and links gestion_devise_session. No writes - acts as in-memory synchronizer returning state to caller. 58 lines, zero dead code, ideal migration candidate as simple API endpoint. No frontend equivalent needed."

@@ -16,6 +16,7 @@ interface ProduitLine {
 interface ApproProduitsFormProps {
   onSubmit: (data: ApportProduitsData) => void;
   isSubmitting: boolean;
+  deviseCode?: string;
 }
 
 const emptyLine = (): ProduitLine => ({
@@ -25,7 +26,7 @@ const emptyLine = (): ProduitLine => ({
   prixUnitaire: '',
 });
 
-export function ApproProduitsForm({ onSubmit, isSubmitting }: ApproProduitsFormProps) {
+export function ApproProduitsForm({ onSubmit, isSubmitting, deviseCode = 'EUR' }: ApproProduitsFormProps) {
   const [lignes, setLignes] = useState<ProduitLine[]>([emptyLine()]);
   const [error, setError] = useState('');
 
@@ -129,7 +130,7 @@ export function ApproProduitsForm({ onSubmit, isSubmitting }: ApproProduitsFormP
 
       <div className="flex items-center justify-between border-t border-border pt-4">
         <span className="text-sm font-medium">
-          Total: <span className="text-lg font-bold">{total.toFixed(2)} EUR</span>
+          Total: <span className="text-lg font-bold">{total.toFixed(2)} {deviseCode}</span>
         </span>
         <Button onClick={handleSubmit} disabled={isSubmitting}>
           {isSubmitting ? 'Validation...' : 'Valider'}

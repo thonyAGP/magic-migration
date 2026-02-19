@@ -138,25 +138,25 @@ variables:
     type: Virtual
     status: N/A
     target_file: src/pages/SessionOuverturePage.tsx
-    gap_notes: Web ticket simplified by design
+    gap_notes: "Web ticket is simplified by design: no MOP breakdown, no change/fees, no detailed edition mode"
   - local_id: FF
     name: W0 solde carte
     type: Virtual
     status: N/A
     target_file: ""
-    gap_notes: Web ticket simplified by design
+    gap_notes: "Web ticket is simplified by design: no MOP breakdown, no change/fees, no detailed edition mode"
   - local_id: FG
     name: W0 change
     type: Virtual
     status: N/A
     target_file: ""
-    gap_notes: Web ticket simplified by design
+    gap_notes: "Web ticket is simplified by design: no MOP breakdown, no change/fees, no detailed edition mode"
   - local_id: FH
     name: W0 frais de change
     type: Virtual
     status: N/A
     target_file: ""
-    gap_notes: Web ticket simplified by design
+    gap_notes: "Web ticket is simplified by design: no MOP breakdown, no change/fees, no detailed edition mode"
   - local_id: FI
     name: W0 fin tache
     type: Virtual
@@ -198,7 +198,7 @@ variables:
     type: Virtual
     status: N/A
     target_file: ""
-    gap_notes: Web ticket simplified by design
+    gap_notes: "Web ticket is simplified by design: no MOP breakdown, no change/fees, no detailed edition mode"
 tables:
   - id: 463
     name: heure_de_passage
@@ -217,7 +217,7 @@ tables:
     mode: R
     status: N/A
     target_file: ""
-    gap_notes: Web ticket simplified by design
+    gap_notes: "Web ticket is simplified by design: no MOP breakdown, no change/fees, no detailed edition mode"
   - id: 30
     name: gm-recherche_____gmr
     mode: R
@@ -235,7 +235,7 @@ tables:
     mode: R
     status: N/A
     target_file: src/stores/sessionStore.ts
-    gap_notes: Web ticket simplified by design
+    gap_notes: "Web ticket is simplified by design: no MOP breakdown, no change/fees, no detailed edition mode"
   - id: 513
     name: pv_invoiceprintfiliationtmp
     mode: L

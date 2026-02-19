@@ -38,3 +38,53 @@ node_modules/
 
 .vercel
 .env*.local
+
+# Playwright MCP logs/screenshots
+.playwright-mcp/
+
+# Temp PowerShell scripts
+temp-*.ps1
+tools/temp-*.ps1
+
+# Temp spec pipeline files
+D:Temp*
+
+# Generated screenshots (keep in tickets only)
+*.png
+!.openspec/tickets/*/attachments/*.png
+
+# SQLite databases (too large for git)
+tools/MagicKnowledgeBase/magic_kb.sqlite
+
+# Spec pipeline generated folders at root (from spec-pipeline runs)
+/API/
+/Booker/
+/Caisse/
+/Compte/
+/DB/
+/DataCatching/
+/Developpement/
+/Filiation/
+/GM/
+/Management/
+/Members/
+/OD/
+/POS/
+/Paiement/
+/Serie/
+/Suppr/
+/Supprimer/
+/Tickets/
+/Ucopia/
+/V3/
+/application/
+/clients/
+/grec/
+/parametres/
+/personnel/
+/pooling/
+/ready/
+/serveur/
+/ski/
+/temporaire/
+/Téléphone/

@@ -1,0 +1,230 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 134 - Mise a jour detail session WS
+
+program:
+  id: 134
+  name: "Mise a jour detail session WS"
+  complexity: "MOYENNE"
+  callers: [131, 122, 297, 299, 121, 298]
+  callees: []
+  tasks_count: 18
+  tables_count: 10
+  expressions_count: 25
+
+rules:
+  - id: RM-001
+    description: "Condition Type E - detail type ecarts"
+    condition: "Param Type [G]='E'"
+    variables: ["ET (Param Type)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - routes detail to histo_sessions_caisse_devise for type E"
+  - id: RM-002
+    description: "Condition Nbre devises non zero - active devise detail"
+    condition: "Param Nbre devises [N]<>0"
+    variables: ["FA (Param Nbre devises)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - conditionally writes devise detail rows when devises > 0"
+  - id: RM-003
+    description: "Condition Type V - detail type ventes"
+    condition: "Param Type [G]='V'"
+    variables: ["ET (Param Type)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - routes to article session history for sales type V"
+  - id: RM-004
+    description: "Condition Type V AND montant produits non zero"
+    condition: "Param Type [G]='V' AND Param montant produits [J]<>0"
+    variables: ["ET (Param Type)", "EU (Param montant)", "EW (Param montant produits)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - writes article detail when products amount non-zero"
+  - id: RM-005
+    description: "Condition Quand O AND Type I - ouverture initiale"
+    condition: "Param Quand [E]='O' AND Param Type [G]='I'"
+    variables: ["ER (Param Quand)", "ET (Param Type)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - special handling for initial opening record"
+  - id: RM-006
+    description: "Si ouverture auto alors O sinon vide"
+    condition: "Param ouverture auto [Q]"
+    variables: ["FD (Param ouverture auto)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - marks auto-opening flag in histo detail"
+
+variables:
+  - letter: "EN"
+    name: "Param societe"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EO"
+    name: "Param devise locale"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EP"
+    name: "Param UNI/BI"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EQ"
+    name: "Param chrono session"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "ER"
+    name: "Param Quand"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - O/F context"
+  - letter: "ES"
+    name: "Param Quoi"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "ET"
+    name: "Param Type"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - E/V/I routing"
+  - letter: "EU"
+    name: "Param montant"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EV"
+    name: "Param montant monnaie"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EW"
+    name: "Param montant produits"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EX"
+    name: "Param montant cartes"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EY"
+    name: "Param montant cheques"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EZ"
+    name: "Param montant od"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "FA"
+    name: "Param Nbre devises"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "FB"
+    name: "Param commentaire ecart"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "FC"
+    name: "Param commentaire ecart devise"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "FD"
+    name: "Param ouverture auto"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+
+tables:
+  - id: 250
+    name: "histo_sessions_caisse_devise"
+    mode: "W"
+    status: N/A
+    gap_notes: "Backend table write - session devise history"
+  - id: 247
+    name: "histo_sessions_caisse_article"
+    mode: "W"
+    status: N/A
+    gap_notes: "Backend table write - session article history"
+  - id: 249
+    name: "histo_sessions_caisse_detail"
+    mode: "W"
+    status: N/A
+    gap_notes: "Backend table write - session detail history"
+  - id: 251
+    name: "histo_sessions_caisse_remise"
+    mode: "W"
+    status: N/A
+    gap_notes: "Backend table write - session remise history"
+  - id: 196
+    name: "gestion_article_session"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - article session data"
+  - id: 244
+    name: "saisie_approvisionnement"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - supply data"
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - session devises"
+  - id: 505
+    name: "pv_comptable"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend temp table read"
+  - id: 139
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - payment methods"
+  - id: 50
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - payment methods (alt view)"
+
+callees: []
+
+overall:
+  rules_total: 6
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 6
+  variables_key_count: 17
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: verified
+  generated: "2026-02-11"
+  notes: "Backend WS program - writes session detail to 4 histo tables (article, detail, devise, remise). Most called WS in caisse lifecycle (41 total calls from 6 callers). MOYENNE complexity due to 18 tasks and 6 business rules, but all server-side persistence logic. Frontend types SessionDetail and SessionDetailType in types/session.ts mirror the data structure but do not implement the persistence logic."

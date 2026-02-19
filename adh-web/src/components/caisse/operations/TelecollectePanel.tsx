@@ -15,9 +15,10 @@ interface TelecollectePanelProps {
   onExecute: (terminalId: string) => void;
   result: TelecollecteResult | null;
   isExecuting: boolean;
+  deviseCode?: string;
 }
 
-export function TelecollectePanel({ onExecute, result, isExecuting }: TelecollectePanelProps) {
+export function TelecollectePanel({ onExecute, result, isExecuting, deviseCode = 'EUR' }: TelecollectePanelProps) {
   const [terminalId, setTerminalId] = useState('');
   const [error, setError] = useState('');
 
@@ -69,7 +70,7 @@ export function TelecollectePanel({ onExecute, result, isExecuting }: Telecollec
           </div>
           <dl className="grid grid-cols-2 gap-2 text-sm">
             <dt className="text-on-surface-muted">Montant collecte</dt>
-            <dd className="font-medium">{result.montantCollecte.toFixed(2)} EUR</dd>
+            <dd className="font-medium">{result.montantCollecte.toFixed(2)} {deviseCode}</dd>
             <dt className="text-on-surface-muted">Transactions traitees</dt>
             <dd className="font-medium">{result.nbTransactionsTraitees}</dd>
           </dl>

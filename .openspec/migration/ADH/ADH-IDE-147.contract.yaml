@@ -1,0 +1,118 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 147 - Devises des tickets WS
+
+program:
+  id: 147
+  name: "Devises des tickets WS"
+  complexity: "BASSE"
+  callers: [131, 299, 122, 297]
+  callees: [145]
+  tasks_count: 14
+  tables_count: 5
+  expressions_count: 3
+
+rules:
+  - id: RM-001
+    description: "Condition Param Quand egale O - ouverture"
+    condition: "Param Quand [D]='O'"
+    variables: ["EQ (Param Quand)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - routes to ticket ouverture path. Frontend has ouvertureTicketGenerator.ts for ESC/POS printing but this WS aggregates devise data for the ticket, not the printing itself."
+  - id: RM-002
+    description: "Condition Param Quand egale F - fermeture"
+    condition: "Param Quand [D]='F'"
+    variables: ["EQ (Param Quand)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - routes to ticket fermeture path. Frontend has fermetureTicketGenerator.ts for ESC/POS printing."
+
+variables:
+  - letter: "EN"
+    name: "Param societe"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EO"
+    name: "Param devise locale"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EP"
+    name: "Param N session"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - session number"
+  - letter: "EQ"
+    name: "Param Quand"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - O/F discriminator"
+  - letter: "ER"
+    name: "Param UNI/BI"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "ES"
+    name: "Quantite devise"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend computed variable - devise quantity from session"
+
+tables:
+  - id: 513
+    name: "pv_invoiceprintfiliationtmp"
+    mode: "W"
+    status: N/A
+    gap_notes: "Backend temp table write - filiation print data"
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - session devises"
+  - id: 139
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - bilateral payment methods"
+  - id: 250
+    name: "histo_sessions_caisse_devise"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - devise history"
+  - id: 50
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - unilateral payment methods"
+
+callees:
+  - id: 145
+    name: "Devises finales F/F Qte WS"
+    calls: 2
+    context: "Sous-programme calcul devises finales"
+    status: N/A
+    gap_notes: "Backend callee - final devise quantities calculation"
+
+overall:
+  rules_total: 2
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 2
+  variables_key_count: 6
+  callees_total: 1
+  callees_impl: 0
+  callees_missing: 0
+  callees_na: 1
+  coverage_pct: 100
+  status: verified
+  generated: "2026-02-11"
+  notes: "Backend WS program - aggregates devise data for ouverture/fermeture tickets, calling IDE 145 for final calculations. 14 tasks with complex O/F routing. Frontend has DeviseTabSelector.tsx for devise display and ticket generators for printing, but the actual devise aggregation and filiation data is server-side. NOTE: Has 1 callee (IDE 145) unlike the brief description suggesting no callees."

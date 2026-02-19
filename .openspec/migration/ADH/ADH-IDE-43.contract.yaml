@@ -1,0 +1,69 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 43 - Recuperation du titre
+
+program:
+  id: 43
+  name: "Recuperation du titre"
+  complexity: "BASSE"
+  callers: [119, 25, 173, 293, 294, 193, 0, 28, 40, 111, 112, 120, 123, 163, 170, 209, 217, 272, 288]
+  callees: []
+  tasks_count: 1
+  tables_count: 1
+  expressions_count: 4
+
+rules:
+  - id: RM-001
+    description: "Valeur par defaut si type prog est vide -> CA"
+    condition: "IF (type prog [C]='','CA',type prog [C])"
+    variables: ["EP (type prog CA si vide)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only logic. Title lookup with default type 'CA' is a server-side reference table concern. Frontend does not perform title resolution from code/type."
+
+variables:
+  - letter: "EN"
+    name: "> code ecran"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - screen code for title lookup"
+
+  - letter: "EO"
+    name: "< nom ecran"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend output - screen name result, not used in frontend"
+
+  - letter: "EP"
+    name: "> type prog (CA si vide)"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - program type with CA default"
+
+tables:
+  - id: 719
+    name: "arc_transac_detail_bar"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend reference table for title/screen lookup. Frontend receives resolved titles from API responses."
+
+callees: []
+
+overall:
+  rules_total: 1
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 1
+  variables_key_count: 3
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: verified
+  generated: "2026-02-11"
+  notes: "Pure backend utility. This is a simple lookup function (code -> title/civilite) used by 20+ callers. In the web architecture, this becomes a server-side helper function or a cached reference table. The frontend never resolves titles from codes directly - it receives pre-resolved data from API. The i18n/fr.ts file contains static titles but for UI labels, not dynamic lookup. Coverage is 0% because all functionality is N/A for frontend - this is a backend-only migration target."

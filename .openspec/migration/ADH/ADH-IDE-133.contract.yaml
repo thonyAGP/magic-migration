@@ -1,0 +1,109 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 133 - Mise a jour comptage caisse WS
+
+program:
+  id: 133
+  name: "Mise a jour comptage caisse WS"
+  complexity: "BASSE"
+  callers: [131, 120, 122, 297, 299]
+  callees: []
+  tasks_count: 6
+  tables_count: 6
+  expressions_count: 14
+
+rules:
+  - id: RM-001
+    description: "Condition Param Quand - determine le contexte du comptage"
+    condition: "Param Quand [A]"
+    variables: ["EN (Param Quand)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - comptage historization is server-side persistence. Frontend sends comptage data via API, server writes to histo tables."
+
+variables:
+  - letter: "EN"
+    name: "Param Quand"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - O/F context (ouverture/fermeture)"
+  - letter: "EO"
+    name: "Param Chrono histo"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - histo chronological ID auto-generated"
+  - letter: "EP"
+    name: "Param Date Validation"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - validation date stamped by server"
+  - letter: "EQ"
+    name: "Param Time Validation"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - validation time stamped by server"
+  - letter: "ER"
+    name: "Param chrono session"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - session chronological ID"
+  - letter: "ES"
+    name: "Param Total caisse"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - total amount from counting"
+
+tables:
+  - id: 222
+    name: "comptage_caisse_histo"
+    mode: "W"
+    status: N/A
+    gap_notes: "Backend table write - comptage history header"
+  - id: 220
+    name: "comptage_caisse_devise_histo"
+    mode: "W"
+    status: N/A
+    gap_notes: "Backend table write - comptage detail by devise"
+  - id: 493
+    name: "edition_ticket"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend temp table read"
+  - id: 492
+    name: "edition_tableau_recap"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read"
+  - id: 491
+    name: "soldes_par_mop"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend temp table read - soldes by payment method"
+  - id: 223
+    name: "comptage_caisse_montant_histo"
+    mode: "L"
+    status: N/A
+    gap_notes: "Backend table lookup"
+
+callees: []
+
+overall:
+  rules_total: 1
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 1
+  variables_key_count: 6
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: verified
+  generated: "2026-02-11"
+  notes: "Pure backend WS program - writes comptage data to 2 histo tables (comptage_caisse_histo + comptage_caisse_devise_histo). Called at multiple caisse lifecycle points. Frontend sends denomination data; server persists via this WS. No frontend equivalent needed."
