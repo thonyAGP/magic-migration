@@ -3,7 +3,7 @@
  * No external dependencies - all CSS/JS inline.
  */
 
-import type { FullMigrationReport, ModuleSummary, ProgramSummary } from '../core/types.js';
+import type { FullMigrationReport, ModuleSummary, ProgramSummary, MigrationWave } from '../core/types.js';
 
 export const generateHtmlReport = (report: FullMigrationReport): string => {
   const { graph, pipeline, modules, decommission, programs } = report;
@@ -26,6 +26,7 @@ ${renderHeader(report)}
 ${renderKpiCards(report)}
 ${renderPipelineSection(pipeline, live)}
 ${renderModulesSection(modules)}
+${renderMigrationSequence(report)}
 ${renderDecommissionSection(decommission, live)}
 ${renderProgramTable(programs)}
 ${renderFooter(report)}
@@ -148,6 +149,12 @@ const renderModulesSection = (modules: FullMigrationReport['modules']): string =
     <button class="filter-btn" data-filter="progress">En cours (${modules.inProgress})</button>
     <button class="filter-btn" data-filter="notstarted">Non demarre (${modules.notStarted})</button>
   </div>
+  <div class="module-sort">
+    <span class="sort-label">Trier par:</span>
+    <button class="sort-btn active" data-sort="priority">Priorite</button>
+    <button class="sort-btn" data-sort="readiness">Readiness</button>
+    <button class="sort-btn" data-sort="name">Nom</button>
+  </div>
   <div class="module-list">
     ${rows}
   </div>
@@ -169,10 +176,22 @@ const renderModuleRow = (m: ModuleSummary): string => {
     ? `<div class="module-blockers">Bloqueurs: ${m.blockerIds.slice(0, 5).join(', ')}${m.blockerIds.length > 5 ? '...' : ''}</div>`
     : '';
 
+  const rankBadge = m.rank != null
+    ? `<span class="rank-badge">P${m.rank}</span>`
+    : '';
+
+  const depsText = (m.dependsOn?.length ?? 0) > 0
+    ? `Depend de: ${m.dependsOn!.join(', ')}`
+    : 'Depend de: (aucun)';
+
+  const unblockText = (m.dependedBy?.length ?? 0) > 0
+    ? `Debloque: ${m.dependedBy!.length} module${m.dependedBy!.length > 1 ? 's' : ''}`
+    : 'Debloque: 0 modules';
+
   return `
-    <div class="module-row" data-status="${statusClass}">
+    <div class="module-row" data-status="${statusClass}" data-rank="${m.rank ?? 999}" data-readiness="${m.readinessPct}" data-name="${escHtml(m.rootName)}">
       <div class="module-header">
-        <span class="module-name">${escHtml(String(m.root))} - ${escHtml(m.rootName)}</span>
+        <span class="module-name">${rankBadge}${escHtml(String(m.root))} - ${escHtml(m.rootName)}</span>
         ${statusBadge}
       </div>
       <div class="module-stats">
@@ -190,8 +209,50 @@ const renderModuleRow = (m: ModuleSummary): string => {
         <span class="tag tag-yellow">${m.contracted} contracted</span>
         <span class="tag tag-gray">${m.pending} pending</span>
       </div>
+      <div class="module-deps">
+        <span>${escHtml(unblockText)}</span>
+        <span class="dep-separator">&middot;</span>
+        <span>${escHtml(depsText)}</span>
+      </div>
       ${blockerText}
     </div>`;
+};
+
+const renderMigrationSequence = (r: FullMigrationReport): string => {
+  const waves = r.priority?.migrationSequence ?? [];
+  if (waves.length === 0) return '';
+
+  // Build a map from module root to name
+  const nameMap = new Map(r.modules.list.map(m => [String(m.root), m.rootName]));
+
+  const waveBlocks = waves.map((w, i) => {
+    const moduleChips = w.modules.map(root => {
+      const name = nameMap.get(String(root)) ?? String(root);
+      return `<span class="wave-chip">${escHtml(String(root))} ${escHtml(name)}</span>`;
+    }).join('');
+
+    const complexityClass = w.estimatedComplexity === 'HIGH' ? 'complexity-high'
+      : w.estimatedComplexity === 'MEDIUM' ? 'complexity-med'
+      : 'complexity-low';
+
+    return `
+      <div class="wave-block">
+        <div class="wave-header">
+          <span class="wave-number">Wave ${w.wave}</span>
+          <span class="badge ${complexityClass}">${w.estimatedComplexity}</span>
+        </div>
+        <div class="wave-modules">${moduleChips}</div>
+      </div>
+      ${i < waves.length - 1 ? '<div class="wave-arrow">&#x2193;</div>' : ''}`;
+  }).join('');
+
+  return `
+<section class="card">
+  <h2>Sequence de migration</h2>
+  <div class="wave-sequence">
+    ${waveBlocks}
+  </div>
+</section>`;
 };
 
 const renderDecommissionSection = (d: FullMigrationReport['decommission'], live: number): string => `
@@ -443,6 +504,59 @@ header h1 {
 .module-pct { width: 40px; text-align: right; font-weight: 600; font-size: 13px; }
 .module-breakdown { display: flex; gap: 6px; flex-wrap: wrap; }
 .module-blockers { font-size: 12px; color: var(--red); margin-top: 4px; }
+.module-deps { font-size: 12px; color: var(--text-dim); margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap; }
+.dep-separator { color: var(--border); }
+
+.rank-badge {
+  display: inline-block;
+  background: var(--purple);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+.module-sort { display: flex; gap: 6px; margin-bottom: 12px; align-items: center; }
+.sort-label { font-size: 13px; color: var(--text-dim); }
+.sort-btn {
+  padding: 2px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 12px;
+}
+.sort-btn:hover { border-color: var(--purple); color: var(--purple); }
+.sort-btn.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+/* Migration Waves */
+.wave-sequence { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.wave-block {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: var(--bg);
+  width: 100%;
+  max-width: 600px;
+}
+.wave-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.wave-number { font-weight: 600; font-size: 14px; color: var(--purple); }
+.wave-modules { display: flex; gap: 6px; flex-wrap: wrap; }
+.wave-chip {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(188,140,255,0.1);
+  color: var(--text);
+  border: 1px solid rgba(188,140,255,0.3);
+}
+.wave-arrow { font-size: 20px; color: var(--purple); text-align: center; line-height: 1; padding: 4px 0; }
+.complexity-high { background: rgba(248,81,73,0.2); color: var(--red); }
+.complexity-med { background: rgba(210,153,34,0.2); color: var(--yellow); }
+.complexity-low { background: rgba(63,185,80,0.2); color: var(--green); }
 
 .tag {
   font-size: 11px; padding: 1px 6px; border-radius: 4px; display: inline-block;
@@ -557,6 +671,24 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
       if (filter === 'all') { row.style.display = ''; return; }
       row.style.display = row.dataset.status === filter ? '' : 'none';
     });
+  });
+});
+
+// Module sort buttons
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const sortBy = btn.dataset.sort;
+    const list = document.querySelector('.module-list');
+    if (!list) return;
+    const rows = Array.from(list.querySelectorAll('.module-row'));
+    rows.sort((a, b) => {
+      if (sortBy === 'priority') return (Number(a.dataset.rank) || 999) - (Number(b.dataset.rank) || 999);
+      if (sortBy === 'readiness') return (Number(b.dataset.readiness) || 0) - (Number(a.dataset.readiness) || 0);
+      return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+    });
+    rows.forEach(r => list.appendChild(r));
   });
 });
 

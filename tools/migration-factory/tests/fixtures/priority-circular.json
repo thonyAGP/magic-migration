@@ -1,0 +1,6 @@
+[
+  { "id": 10, "name": "ModuleA", "complexity": "MEDIUM", "level": 0, "callers": [], "callees": [11, 20], "source": "seed", "domain": "A" },
+  { "id": 11, "name": "SubA", "complexity": "LOW", "level": 0, "callers": [10], "callees": [], "source": "bfs", "domain": "A" },
+  { "id": 20, "name": "ModuleB", "complexity": "MEDIUM", "level": 0, "callers": [], "callees": [21, 10], "source": "seed", "domain": "B" },
+  { "id": 21, "name": "SubB", "complexity": "LOW", "level": 0, "callers": [20], "callees": [], "source": "bfs", "domain": "B" }
+]

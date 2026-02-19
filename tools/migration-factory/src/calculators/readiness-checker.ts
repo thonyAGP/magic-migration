@@ -36,7 +36,7 @@ export const checkReadiness = (input: ReadinessInput): ReadinessReport => {
     }
   }
 
-  // Sort each group: close by readiness DESC, inProgress by readiness DESC
+  // Sort each group by readiness DESC (priority-based sort applied at report level)
   close.sort((a, b) => b.readinessPct - a.readinessPct);
   inProgress.sort((a, b) => b.readinessPct - a.readinessPct);
 

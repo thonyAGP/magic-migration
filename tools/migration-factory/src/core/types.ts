@@ -311,6 +311,53 @@ export interface DecommissionStats {
   sharedBlocked: number;
 }
 
+// ─── Module Priority ────────────────────────────────────────────
+
+export interface ModuleDependency {
+  moduleRoot: string | number;
+  dependsOn: string | number;
+  sharedPrograms: (string | number)[];
+}
+
+export interface ModuleSCC {
+  index: number;
+  moduleRoots: (string | number)[];
+}
+
+export interface MigrationWave {
+  wave: number;
+  modules: (string | number)[];
+  blockedBy: number[];
+  estimatedComplexity: Complexity;
+}
+
+export interface PrioritizedModule {
+  root: string | number;
+  rootName: string;
+  rank: number;
+  priorityScore: number;
+  moduleLevel: number;
+  unblockingPower: number;
+  dependsOn: (string | number)[];
+  dependedBy: (string | number)[];
+  implementationOrder: (string | number)[];
+  readinessPct: number;
+  memberCount: number;
+}
+
+export interface ModulePriorityResult {
+  prioritizedModules: PrioritizedModule[];
+  moduleDependencies: ModuleDependency[];
+  moduleSCCs: ModuleSCC[];
+  migrationSequence: MigrationWave[];
+}
+
+export interface PriorityWeights {
+  foundation: number;
+  unblocking: number;
+  readiness: number;
+}
+
 // ─── Full Report (for HTML dashboard) ───────────────────────────
 
 export interface FullMigrationReport {
@@ -341,6 +388,11 @@ export interface FullMigrationReport {
   decommission: DecommissionStats;
   batches: BatchSummary[];
   programs: ProgramSummary[];
+  priority?: {
+    moduleDependencies: ModuleDependency[];
+    migrationSequence: MigrationWave[];
+    moduleSCCs: ModuleSCC[];
+  };
 }
 
 export interface ModuleSummary {
@@ -354,6 +406,12 @@ export interface ModuleSummary {
   pending: number;
   deliverable: boolean;
   blockerIds: (string | number)[];
+  rank?: number;
+  priorityScore?: number;
+  dependsOn?: (string | number)[];
+  dependedBy?: (string | number)[];
+  moduleLevel?: number;
+  implementationOrder?: (string | number)[];
 }
 
 export interface BatchSummary {
