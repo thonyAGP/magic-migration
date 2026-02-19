@@ -1,5 +1,12 @@
 /**
- * Orchestrator: drives the contract -> enrich -> verify pipeline for a program or batch.
+ * @deprecated Use src/pipeline/pipeline-runner.ts instead.
+ * This orchestrator is superseded by the Pipeline Runner v3 which provides:
+ * - Full batch pipeline execution (auto-contract → gap-analysis → auto-verify)
+ * - Event system for observability
+ * - Preflight checks
+ * - Batch status views
+ *
+ * Kept for backward compatibility. Will be removed in v4.
  */
 
 import type {

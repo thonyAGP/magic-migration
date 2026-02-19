@@ -547,3 +547,133 @@ export interface ContractEffort {
   estimatedHours?: number;
   actualHours?: number;
 }
+
+// ─── Pipeline Orchestrator (v3) ─────────────────────────────────
+
+export const PipelineEventType = {
+  PIPELINE_STARTED: 'pipeline_started',
+  PIPELINE_COMPLETED: 'pipeline_completed',
+  PROGRAM_CONTRACTED: 'program_contracted',
+  PROGRAM_SPEC_MISSING: 'program_spec_missing',
+  PROGRAM_NEEDS_ENRICHMENT: 'program_needs_enrichment',
+  PROGRAM_AUTO_ENRICHED: 'program_auto_enriched',
+  PROGRAM_VERIFIED: 'program_verified',
+  PROGRAM_VERIFY_FAILED: 'program_verify_failed',
+  BATCH_UPDATED: 'batch_updated',
+  TRACKER_SYNCED: 'tracker_synced',
+  ERROR: 'error',
+} as const;
+export type PipelineEventType = (typeof PipelineEventType)[keyof typeof PipelineEventType];
+
+export interface PipelineEvent {
+  type: PipelineEventType;
+  timestamp: string;
+  batchId?: string;
+  programId?: string | number;
+  message: string;
+  data?: Record<string, unknown>;
+}
+
+export const PipelineAction = {
+  CONTRACTED: 'contracted',
+  NEEDS_ENRICHMENT: 'needs-enrichment',
+  AUTO_ENRICHED: 'auto-enriched',
+  VERIFIED: 'verified',
+  VERIFY_FAILED: 'verify-failed',
+  SKIPPED: 'skipped',
+  ALREADY_DONE: 'already-done',
+  SPEC_MISSING: 'spec-missing',
+  ERROR: 'error',
+} as const;
+export type PipelineAction = (typeof PipelineAction)[keyof typeof PipelineAction];
+
+export interface PipelineStepResult {
+  programId: string | number;
+  programName: string;
+  action: PipelineAction;
+  previousStatus: PipelineStatus;
+  newStatus: PipelineStatus;
+  coveragePct: number;
+  gaps: number;
+  message: string;
+}
+
+export interface PipelineRunResult {
+  batchId: string;
+  batchName: string;
+  started: string;
+  completed: string;
+  dryRun: boolean;
+  steps: PipelineStepResult[];
+  summary: {
+    total: number;
+    contracted: number;
+    needsEnrichment: number;
+    autoEnriched: number;
+    verified: number;
+    verifyFailed: number;
+    specsMissing: number;
+    alreadyDone: number;
+    errors: number;
+  };
+  events: PipelineEvent[];
+}
+
+export interface PreflightCheck {
+  check: string;
+  passed: boolean;
+  message: string;
+}
+
+export interface PreflightProgram {
+  id: string | number;
+  name: string;
+  currentStatus: PipelineStatus;
+  specExists: boolean;
+  contractExists: boolean;
+  action: string;
+  gaps: number;
+  blockedBy?: string;
+}
+
+export interface PreflightResult {
+  batchId: string;
+  batchName: string;
+  programs: PreflightProgram[];
+  checks: PreflightCheck[];
+  summary: {
+    ready: number;
+    blocked: number;
+    willContract: number;
+    willVerify: number;
+    needsEnrichment: number;
+    alreadyDone: number;
+  };
+}
+
+export interface BatchStatusView {
+  id: string;
+  name: string;
+  programCount: number;
+  status: PipelineStatus;
+  pending: number;
+  contracted: number;
+  enriched: number;
+  verified: number;
+  coverageAvg: number;
+  estimatedHours: number;
+  lastActivity?: string;
+}
+
+export interface PipelineConfig {
+  projectDir: string;
+  migrationDir: string;
+  specDir: string;
+  codebaseDir: string;
+  contractSubDir: string;
+  trackerFile: string;
+  autoContract: boolean;
+  autoVerify: boolean;
+  dryRun: boolean;
+  generateReport: boolean;
+}
