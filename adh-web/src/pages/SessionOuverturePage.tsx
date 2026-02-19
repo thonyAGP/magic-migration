@@ -7,8 +7,10 @@ import { ConcurrentSessionWarning, DeviseTabSelector, NetworkClosureAlert } from
 import { useSessionStore, useCaisseStore, useAuthStore } from '@/stores';
 import { executePrint, TicketType } from '@/services/printer';
 import type { PrinterChoice } from '@/services/printer';
+import { generateOuvertureTicket } from '@/services/printer/generators/ouvertureTicketGenerator';
 import type { DenominationCatalog, CountingResult } from '@/types/denomination';
-import type { ConcurrentSessionInfo, NetworkClosureStatus, StockCoherenceResult } from '@/types';
+import type { ConcurrentSessionInfo, NetworkClosureStatus, StockCoherenceResult, SessionEcart, SoldeParMOP } from '@/types';
+import { createEmptySoldeParMOP } from '@/types/session';
 import { Printer, AlertTriangle } from 'lucide-react';
 
 type Step = 'comptage' | 'validation' | 'ouverture' | 'succes';
@@ -17,6 +19,8 @@ export function SessionOuverturePage() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const openSession = useSessionStore((s) => s.openSession);
+  const calculateMopFromResults = useSessionStore((s) => s.calculateMopFromResults);
+  const calculateEcartOuverture = useSessionStore((s) => s.calculateEcartOuverture);
   const checkConcurrentSessions = useSessionStore((s) => s.checkConcurrentSessions);
   const checkNetworkClosure = useSessionStore((s) => s.checkNetworkClosure);
   const checkStockCoherence = useSessionStore((s) => s.checkStockCoherence);
@@ -123,7 +127,10 @@ export function SessionOuverturePage() {
     deviseTotals[devise] = total;
   }
 
-  // T4-A2: Multi-devises computeResults - aggregate all devises
+  // B1: MOP breakdown state for ouverture ecart display
+  const [ecartOuverture, setEcartOuverture] = useState<SessionEcart | null>(null);
+
+  // B1: Compute results with MOP breakdown per devise
   const computeResults = (): CountingResult[] => {
     return devisesAutorisees.map((devise) => {
       const details = Array.from(counting.entries())
@@ -141,12 +148,18 @@ export function SessionOuverturePage() {
 
       const totalCompte = details.reduce((sum, d) => sum + d.total, 0);
 
+      // B1: At opening, physical count is always monnaie (cash)
+      const mopBreakdown = createEmptySoldeParMOP();
+      mopBreakdown.monnaie = totalCompte;
+      mopBreakdown.total = totalCompte;
+
       return {
         deviseCode: devise,
         totalCompte,
         totalAttendu: 0,
         ecart: 0,
         details,
+        mopBreakdown,
       };
     }).filter((r) => r.details.length > 0);
   };
@@ -201,11 +214,21 @@ export function SessionOuverturePage() {
           quantite: qty,
         }));
 
+      // B1: Calculate MOP breakdown and send with request (IDE 122/126)
+      const results = computeResults();
+      const mopComptee = calculateMopFromResults(results);
+
       await openSession({
         caisseId: config.id,
         userId: user.id,
         comptage,
+        mopComptee,
       });
+
+      // B1: Calculate ecart ouverture (IDE 129) - solde initial = 0 for first opening
+      const mopSoldeInitial = createEmptySoldeParMOP();
+      const ecart = calculateEcartOuverture(mopComptee, mopSoldeInitial);
+      setEcartOuverture(ecart);
 
       setStep('succes');
     } catch (err) {
@@ -220,28 +243,28 @@ export function SessionOuverturePage() {
   const handlePrint = (choice: PrinterChoice) => {
     const results = computeResults();
     const total = results.reduce((sum, r) => sum + r.totalCompte, 0);
-    executePrint(TicketType.OUVERTURE, {
-      header: {
-        societe: config?.libelle ?? 'ADH',
-        caisse: config?.id?.toString() ?? '',
-        session: '',
-        date: new Date().toLocaleDateString('fr-FR'),
-        heure: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-        operateur: user?.login ?? '',
-      },
-      lines: results.flatMap((r) =>
+    // B1: Use dedicated generator with MOP breakdown (IDE 137)
+    const mopBreakdown = calculateMopFromResults(results);
+    const ticketData = generateOuvertureTicket({
+      village: config?.libelle ?? 'ADH',
+      caisse: config?.id?.toString() ?? '',
+      caissier: user?.login ?? '',
+      denominations: results.flatMap((r) =>
         r.details.map((d) => {
           const denom = denominations.find((dn) => dn.id === d.denominationId);
           return {
-            description: denom?.libelle ?? `Denomination ${d.denominationId}`,
+            valeur: denom?.valeur ?? 0,
             quantite: d.quantite,
-            montant: d.total,
-            devise: r.deviseCode,
+            total: d.total,
           };
         }),
       ),
-      footer: { total, devise: deviseCode, moyenPaiement: 'Fond de caisse' },
-    }, choice);
+      totalFondCaisse: total,
+      date: new Date().toLocaleDateString('fr-FR'),
+      heure: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+      mopBreakdown,
+    });
+    executePrint(TicketType.OUVERTURE, ticketData, choice);
     setShowPrintDialog(false);
   };
 
@@ -356,6 +379,9 @@ export function SessionOuverturePage() {
           <>
             <DenominationSummary results={computeResults()} />
 
+            {/* B1: MOP breakdown recap (IDE 122) */}
+            <MopRecapCard results={computeResults()} calculateMop={calculateMopFromResults} />
+
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleBack}
@@ -377,6 +403,11 @@ export function SessionOuverturePage() {
         {step === 'succes' && (
           <div className="flex flex-col items-center gap-4 py-8">
             <div className="text-green-600 text-lg font-semibold">Caisse ouverte avec succes</div>
+            {ecartOuverture && !ecartOuverture.estEquilibre && (
+              <div className="w-full max-w-md bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-md text-sm">
+                Ecart ouverture : {ecartOuverture.ecart.toFixed(2)} {deviseCode}
+              </div>
+            )}
             <div className="flex gap-3">
               <button
                 onClick={() => setShowPrintDialog(true)}
@@ -421,6 +452,44 @@ export function SessionOuverturePage() {
         )}
       </div>
     </ScreenLayout>
+  );
+}
+
+// B1: MOP breakdown recap card for validation step (IDE 122: FP-FU)
+function MopRecapCard({ results, calculateMop }: {
+  results: CountingResult[];
+  calculateMop: (results: CountingResult[]) => SoldeParMOP;
+}) {
+  const mop = calculateMop(results);
+  const rows: Array<{ label: string; key: keyof Omit<SoldeParMOP, 'total'>; }> = [
+    { label: 'Monnaie (especes)', key: 'monnaie' },
+    { label: 'Produits', key: 'produits' },
+    { label: 'Cartes', key: 'cartes' },
+    { label: 'Cheques', key: 'cheques' },
+    { label: 'OD', key: 'od' },
+  ];
+
+  // Only show if there's something to display
+  if (mop.total === 0) return null;
+
+  return (
+    <div className="bg-surface rounded-lg border border-border p-4">
+      <h3 className="text-sm font-medium text-on-surface-muted mb-3">Ventilation par mode de paiement</h3>
+      <div className="space-y-1.5">
+        {rows.map((row) => (
+          <div key={row.key} className="flex justify-between text-sm">
+            <span className="text-on-surface-muted">{row.label}</span>
+            <span className={mop[row.key] > 0 ? 'font-medium' : 'text-on-surface-muted'}>
+              {mop[row.key].toFixed(2)}
+            </span>
+          </div>
+        ))}
+        <div className="border-t border-border pt-1.5 flex justify-between text-sm font-semibold">
+          <span>Total</span>
+          <span>{mop.total.toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
   );
 }
 

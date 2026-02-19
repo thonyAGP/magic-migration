@@ -1,3 +1,5 @@
+import type { MOPCategory, SoldeParMOP } from './session';
+
 export interface DenominationCatalog {
   id: number;
   deviseCode: string;
@@ -5,6 +7,8 @@ export interface DenominationCatalog {
   type: 'billet' | 'piece';
   libelle: string;
   ordre: number;
+  // MOP category for grouping (IDE 120: monnaie/produits/cartes/cheques/od)
+  mopCategory?: MOPCategory;
 }
 
 export interface DenominationCounting {
@@ -19,6 +23,8 @@ export interface CountingResult {
   totalAttendu: number;
   ecart: number;
   details: DenominationCounting[];
+  // MOP breakdown of counted amounts (IDE 120: EW-FA, IDE 122: FP-FU)
+  mopBreakdown?: SoldeParMOP;
 }
 
 export interface CountingSession {

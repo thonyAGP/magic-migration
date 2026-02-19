@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Session, SessionStatus, DeviseSession, SessionHistoryItem, ConcurrentSessionInfo, NetworkClosureResult, NetworkClosureStatus, StockCoherenceResult } from '@/types';
+import type { Session, SessionStatus, DeviseSession, SessionHistoryItem, ConcurrentSessionInfo, NetworkClosureResult, NetworkClosureStatus, StockCoherenceResult, SoldeParMOP, SessionEcart } from '@/types';
+import { createEmptySoldeParMOP } from '@/types/session';
 import { sessionApi } from '@/services/api/endpoints';
 import type { OpenSessionRequest, CloseSessionRequest } from '@/services/api/types';
+import type { CountingResult } from '@/types/denomination';
 import { apiClient } from '@/services/api/apiClient';
 import { useDataSourceStore } from './dataSourceStore';
 
@@ -13,6 +15,10 @@ interface SessionStore {
   isLoadingHistory: boolean;
   vilOpenSessions: boolean;
   mockConcurrentSession: boolean;
+  // B1 MOP enrichment (IDE 126/129)
+  lastMopComptee: SoldeParMOP | null;
+  lastMopSoldeInitial: SoldeParMOP | null;
+  lastEcartOuverture: SessionEcart | null;
   setSession: (session: Session) => void;
   updateStatus: (status: SessionStatus) => void;
   updateDevise: (deviseCode: string, updates: Partial<DeviseSession>) => void;
@@ -23,6 +29,9 @@ interface SessionStore {
   checkConcurrentSessions: () => Promise<ConcurrentSessionInfo | null>;
   setVilOpenSessions: (value: boolean) => void;
   setMockConcurrentSession: (value: boolean) => void;
+  // B1 MOP enrichment
+  calculateMopFromResults: (results: CountingResult[]) => SoldeParMOP;
+  calculateEcartOuverture: (mopComptee: SoldeParMOP, mopSoldeInitial: SoldeParMOP) => SessionEcart;
   // T4-A1: Network closure + stock coherence checks
   networkClosureStatus: NetworkClosureStatus | null;
   stockCoherenceResult: StockCoherenceResult | null;
@@ -79,6 +88,9 @@ export const useSessionStore = create<SessionStore>()(
       isLoadingHistory: false,
       vilOpenSessions: false,
       mockConcurrentSession: false,
+      lastMopComptee: null,
+      lastMopSoldeInitial: null,
+      lastEcartOuverture: null,
       networkClosureStatus: null,
       stockCoherenceResult: null,
 
@@ -119,7 +131,16 @@ export const useSessionStore = create<SessionStore>()(
             userId: data.userId,
             dateOuverture: new Date().toISOString(),
           };
-          set({ currentSession: session, status: 'open' });
+          // B1: Store MOP if provided, mock solde initial as zero (first opening)
+          const mopComptee = data.mopComptee
+            ? { ...data.mopComptee }
+            : null;
+          set({
+            currentSession: session,
+            status: 'open',
+            lastMopComptee: mopComptee ? { ...mopComptee } : null,
+            lastMopSoldeInitial: createEmptySoldeParMOP(),
+          });
           return session;
         }
 
@@ -242,6 +263,58 @@ export const useSessionStore = create<SessionStore>()(
         }
       },
 
+      // B1: Calculate MOP breakdown from counting results (IDE 126)
+      calculateMopFromResults: (results: CountingResult[]): SoldeParMOP => {
+        const mop = createEmptySoldeParMOP();
+        for (const result of results) {
+          if (result.mopBreakdown) {
+            mop.monnaie += result.mopBreakdown.monnaie;
+            mop.produits += result.mopBreakdown.produits;
+            mop.cartes += result.mopBreakdown.cartes;
+            mop.cheques += result.mopBreakdown.cheques;
+            mop.od += result.mopBreakdown.od;
+          } else {
+            // Fallback: all denominations are monnaie (billets+pieces)
+            mop.monnaie += result.totalCompte;
+          }
+        }
+        mop.total = mop.monnaie + mop.produits + mop.cartes + mop.cheques + mop.od;
+        return mop;
+      },
+
+      // B1: Calculate ouverture ecart with MOP breakdown (IDE 129)
+      calculateEcartOuverture: (mopComptee: SoldeParMOP, mopSoldeInitial: SoldeParMOP): SessionEcart => {
+        const ecartTotal = mopComptee.total - mopSoldeInitial.total;
+        const mopEcart: SoldeParMOP = {
+          total: ecartTotal,
+          monnaie: mopComptee.monnaie - mopSoldeInitial.monnaie,
+          produits: mopComptee.produits - mopSoldeInitial.produits,
+          cartes: mopComptee.cartes - mopSoldeInitial.cartes,
+          cheques: mopComptee.cheques - mopSoldeInitial.cheques,
+          od: mopComptee.od - mopSoldeInitial.od,
+        };
+
+        const statut = Math.abs(ecartTotal) < 0.01 ? 'equilibre' as const
+          : Math.abs(ecartTotal) > 5 ? 'alerte' as const
+          : ecartTotal > 0 ? 'positif' as const
+          : 'negatif' as const;
+
+        const ecart: SessionEcart = {
+          attendu: mopSoldeInitial.total,
+          compte: mopComptee.total,
+          ecart: ecartTotal,
+          estEquilibre: statut === 'equilibre',
+          statut,
+          ecartsDevises: [],
+          mopCompte: mopComptee,
+          mopAttendu: mopSoldeInitial,
+          mopEcart,
+        };
+
+        set({ lastMopComptee: mopComptee, lastMopSoldeInitial: mopSoldeInitial, lastEcartOuverture: ecart });
+        return ecart;
+      },
+
       loadHistory: async (_page = 1, pageSize = 20) => {
         const { isRealApi } = useDataSourceStore.getState();
         set({ isLoadingHistory: true });
@@ -254,7 +327,7 @@ export const useSessionStore = create<SessionStore>()(
 
         try {
           const response = await sessionApi.getHistory({ page: _page, pageSize });
-          const raw = (response.data.data ?? []) as Record<string, unknown>[];
+          const raw = (response.data.data ?? []) as unknown as Record<string, unknown>[];
           const formatMagicDate = (d: string, h: string) => {
             if (!d || d.length < 8) return '';
             const iso = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;

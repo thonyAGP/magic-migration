@@ -1,0 +1,175 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 126 - Calcul solde initial WS
+
+program:
+  id: 126
+  name: "Calcul solde initial WS"
+  complexity: "BASSE"
+  callers: [122, 297]
+  callees: [142]
+  tasks_count: 7
+  tables_count: 7
+  expressions_count: 12
+
+rules: []
+  # No business rules identified in spec (section 5 is empty)
+
+variables:
+  - letter: "EN"
+    name: "P.i. societe"
+    type: "Parameter"
+    status: N/A
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Backend-only context, societe is implicit in API session"
+
+  - letter: "EO"
+    name: "P.i. devise locale"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "DeviseSession.deviseCode in session store"
+
+  - letter: "EP"
+    name: "P.i. session"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "Session.id in sessionStore"
+
+  - letter: "EQ"
+    name: "P.o. solde initial"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "No soldeInitial field in Session or DeviseSession types. DeviseSession has fondCaisse but not broken down by MOP category"
+
+  - letter: "ER"
+    name: "P.o. solde initial monnaie"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "No MOP-level solde breakdown (monnaie/produits/cartes/cheques/od) in frontend types"
+
+  - letter: "ES"
+    name: "P.o. solde initial produits"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Missing MOP breakdown - produits component"
+
+  - letter: "ET"
+    name: "P.o. solde initial cartes"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Missing MOP breakdown - cartes component"
+
+  - letter: "EU"
+    name: "P.o. solde initial cheques"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Missing MOP breakdown - cheques component"
+
+  - letter: "EV"
+    name: "P.o. solde initial od"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Missing MOP breakdown - OD component"
+
+  - letter: "EW"
+    name: "P.o. nbre devise initial"
+    type: "Parameter"
+    status: PARTIAL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "devisesAutorisees.length gives count, but not stored as session param"
+
+  - letter: "EX"
+    name: "P.i. UNI/BI"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "UNI/BI mode is a legacy Magic concept, frontend handles multi-devise natively"
+
+  - letter: "EY"
+    name: "P.i.Session VIL ouverte ?"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "vilOpenSessions boolean in sessionStore"
+
+tables:
+  - id: 249
+    name: "histo_sessions_caisse_detail"
+    mode: "R"
+    status: PARTIAL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "loadHistory reads session history but detail breakdown by MOP not available"
+
+  - id: 77
+    name: "articles_________art"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend lookup table, not needed in frontend"
+
+  - id: 139
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend reference table for payment methods"
+
+  - id: 50
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Duplicate MOR table reference - backend only"
+
+  - id: 250
+    name: "histo_sessions_caisse_devise"
+    mode: "L"
+    status: MISSING
+    target_file: ""
+    gap_notes: "No per-devise session history in frontend"
+
+  - id: 222
+    name: "comptage_caisse_histo"
+    mode: "L"
+    status: PARTIAL
+    target_file: "src/types/denomination.ts"
+    gap_notes: "CountingSession type exists but no persisted history retrieval"
+
+  - id: 247
+    name: "histo_sessions_caisse_article"
+    mode: "L"
+    status: MISSING
+    target_file: ""
+    gap_notes: "No article history per session in frontend"
+
+callees:
+  - ide: 142
+    name: "Devise update session WS"
+    calls: 4
+    context: "Updates devise data in session"
+    status: PARTIAL
+    target: "sessionStore.updateDevise()"
+    gap_notes: "updateDevise exists but only updates fondCaisse/totalVentes/totalEncaissements, not the full solde initial MOP breakdown"
+
+overall:
+  rules_total: 0
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 12
+  callees_total: 1
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 33
+  status: contracted
+  generated: "2026-02-11"
+  notes: "Backend utility program. Core solde initial calculation logic (cumulative sum of credits/debits by devise) is expected to run server-side. Frontend gap: DeviseSession type lacks MOP-level breakdown (monnaie/produits/cartes/cheques/od) which is the main output of this program. sessionStore.updateDevise partially covers IDE 142 callee."

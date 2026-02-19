@@ -1,0 +1,500 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 120 - Saisie contenu caisse
+
+program:
+  id: 120
+  name: "Saisie contenu caisse"
+  complexity: "HAUTE"
+  callers: [122, 131, 297, 299]
+  callees: [43, 142, 133, 150]
+  tasks_count: 105
+  tables_count: 27
+  expressions_count: 11
+
+rules:
+  - id: RM-001
+    description: "Condition de traitement: TotalCaisse<>0 OR NbreDevise<>0 OR FROM_IMS='O'"
+    condition: "TotalCaisse [S]<>0 OR Param Nbre devise [O]<>0 OR FROM_IMS [BE]='O'"
+    variables: ["FF (TotalCaisse)", "FB (Param Nbre devise)", "FR (FROM_IMS)"]
+    status: PARTIAL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "Frontend validates 'at least one denomination counted' (hasAnyCount) which maps to TotalCaisse<>0 condition. NbreDevise and FROM_IMS conditions are not explicitly checked. FROM_IMS (IMS integration flag) is N/A in web context."
+
+variables:
+  - letter: "FD"
+    name: "p.i.Host courant coffre 2 ?"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Coffre 2 (secondary safe) concept not implemented in frontend"
+
+  - letter: "EN"
+    name: "Param societe"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend context, implicit in API"
+
+  - letter: "EO"
+    name: "Param devise locale"
+    type: "Real"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "config.devisePrincipale"
+
+  - letter: "EP"
+    name: "Param masque montant"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Legacy display mask, frontend uses Intl.NumberFormat"
+
+  - letter: "EQ"
+    name: "Param quand"
+    type: "Real"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetailQuand 'O'|'F' (ouverture/fermeture) maps to this"
+
+  - letter: "ER"
+    name: "Param chrono session"
+    type: "Real"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "Session.id in sessionStore"
+
+  - letter: "ES"
+    name: "Param chrono histo"
+    type: "Real"
+    status: PARTIAL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "History items have id but no explicit chrono histo concept"
+
+  - letter: "ET"
+    name: "Param date validation"
+    type: "Real"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "dateComptable + validateDateComptable() in caisseStore"
+
+  - letter: "EU"
+    name: "Param time validation"
+    type: "Real"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "new Date().toLocaleTimeString() used in print context"
+
+  - letter: "EV"
+    name: "Param Total caisse"
+    type: "Real"
+    status: IMPL
+    target_file: "src/components/caisse/denomination/DenominationGrid.tsx"
+    gap_notes: "totalDevise computed in DenominationGrid and SessionOuverturePage"
+
+  - letter: "EW"
+    name: "Param Total caisse monnaie"
+    type: "Real"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.montantMonnaie exists but not populated from denomination counting grid"
+
+  - letter: "EX"
+    name: "Param Total caisse produits"
+    type: "Real"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.montantProduits exists but not connected to counting flow"
+
+  - letter: "EY"
+    name: "Param Total caisse cartes"
+    type: "Real"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.montantCartes exists but not connected to counting flow"
+
+  - letter: "EZ"
+    name: "Param Total caisse cheque"
+    type: "Real"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.montantCheques exists but not connected to counting flow"
+
+  - letter: "FA"
+    name: "Param Total caisse od"
+    type: "Real"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.montantOd exists but not connected to counting flow"
+
+  - letter: "FB"
+    name: "Param Nbre devise"
+    type: "Real"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "config.devisesAutorisees.length"
+
+  - letter: "FC"
+    name: "Param UNI/BI"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Legacy UNI/BI concept, frontend handles multi-devise natively"
+
+  - letter: "FE"
+    name: "SortieSaisieCaisse"
+    type: "Real"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "Step-based workflow (comptage->validation->ouverture->succes) replaces this flag"
+
+  - letter: "FF"
+    name: "TotalCaisse"
+    type: "Real"
+    status: IMPL
+    target_file: "src/components/caisse/denomination/DenominationGrid.tsx"
+    gap_notes: "totalDevise computed from counting map"
+
+  - letter: "FG"
+    name: "TotalMonnaie"
+    type: "Real"
+    status: PARTIAL
+    target_file: "src/components/caisse/denomination/DenominationGrid.tsx"
+    gap_notes: "Grid separates billets/pieces visually but no separate TotalMonnaie (cash) aggregate"
+
+  - letter: "FH"
+    name: "RecuperationPrecedent"
+    type: "Real"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Recover previous counting feature not implemented"
+
+  - letter: "FI"
+    name: "RecuperationStandard"
+    type: "Real"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Recover standard fond de caisse not implemented"
+
+  - letter: "FJ"
+    name: "Faire Raz"
+    type: "Real"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "resetCounting() in caisseStore"
+
+  - letter: "FK"
+    name: "Ordre cigarettes"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Legacy display ordering, not relevant"
+
+  - letter: "FL"
+    name: "Ordre od"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Legacy display ordering, not relevant"
+
+  - letter: "FM"
+    name: "Ordre devise"
+    type: "Real"
+    status: IMPL
+    target_file: "src/types/denomination.ts"
+    gap_notes: "DenominationCatalog.ordre field"
+
+  - letter: "FN"
+    name: "Ordre cartes"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Legacy display ordering, not relevant"
+
+  - letter: "FO"
+    name: "Ordre cheques"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Legacy display ordering, not relevant"
+
+  - letter: "FP"
+    name: "Faire la sauvegarde du comptage"
+    type: "Real"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "handleSubmit calls openSession with comptage data"
+
+  - letter: "FQ"
+    name: "Recup precedent possible"
+    type: "Real"
+    status: MISSING
+    target_file: ""
+    gap_notes: "No 'recover previous counting' button/feature"
+
+  - letter: "FR"
+    name: "FROM_IMS"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "IMS integration flag, not applicable to web"
+
+  - letter: "FS"
+    name: "Date_Debut_Session"
+    type: "Real"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "Session.dateOuverture"
+
+  - letter: "FT"
+    name: "Time_Debut_Session"
+    type: "Real"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "Embedded in Session.dateOuverture ISO string"
+
+  - letter: "FU"
+    name: "Login_Informaticien"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Admin/debug flag, not relevant for web"
+
+tables:
+  - id: 493
+    name: "edition_ticket"
+    mode: "RWL"
+    status: IMPL
+    target_file: "src/services/printer/generators/ouvertureTicketGenerator.ts"
+    gap_notes: "Ticket generation for ouverture implemented via PrintService"
+
+  - id: 491
+    name: "soldes_par_mop"
+    mode: "RWL"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "FermetureRecapColumn has per-MOP columns (cash/cartes/cheques/produits/od) for fermeture, but not used in ouverture counting"
+
+  - id: 492
+    name: "edition_tableau_recap"
+    mode: "RWL"
+    status: IMPL
+    target_file: "src/components/caisse/session/FermetureRecapTable.tsx"
+    gap_notes: "FermetureRecapTable renders MOP recap table with attendu/compte/ecart"
+
+  - id: 501
+    name: "email_reprise"
+    mode: "WL"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Email recovery feature not implemented"
+
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "WL"
+    status: PARTIAL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "updateDevise() updates DeviseSession but schema is simpler than legacy"
+
+  - id: 222
+    name: "comptage_caisse_histo"
+    mode: "RL"
+    status: PARTIAL
+    target_file: "src/types/denomination.ts"
+    gap_notes: "CountingSession type defined but no persistent history retrieval from server"
+
+  - id: 89
+    name: "moyen_paiement___mop"
+    mode: "RL"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend reference table"
+
+  - id: 246
+    name: "histo_sessions_caisse"
+    mode: "RL"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "loadHistory() reads session history"
+
+  - id: 200
+    name: "fond_de_caisse_std"
+    mode: "RL"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Standard fond de caisse recovery not implemented (linked to RecuperationStandard)"
+
+  - id: 40
+    name: "comptable________cte"
+    mode: "R"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "dateComptable + validateDateComptable()"
+
+  - id: 263
+    name: "vente"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Sales reference, backend provides aggregated data"
+
+  - id: 249
+    name: "histo_sessions_caisse_detail"
+    mode: "R"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail type exists with MOP fields but not populated from counting"
+
+  - id: 140
+    name: "moyen_paiement___mop"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend reference table"
+
+  - id: 77
+    name: "articles_________art"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend reference table"
+
+  - id: 139
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend reference table"
+
+  - id: 70
+    name: "date_comptable___dat"
+    mode: "R"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "dateComptable in caisseStore"
+
+  - id: 50
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Duplicate MOR reference"
+
+  - id: 219
+    name: "communication_ims"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "IMS communication table, not applicable to web"
+
+  - id: 372
+    name: "pv_budget"
+    mode: "R"
+    status: PARTIAL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "V Titre (A) -> page title, buttons RecupPrecedent/RecupStandard/Impression/Raz -> only Raz + Impression implemented"
+
+  - id: 67
+    name: "tables___________tab"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend reference table"
+
+  - id: 197
+    name: "articles_en_stock"
+    mode: "L"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend stock query"
+
+  - id: 220
+    name: "comptage_caisse_devise_histo"
+    mode: "L"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Per-devise counting history not implemented"
+
+  - id: 223
+    name: "comptage_caisse_montant_histo"
+    mode: "L"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Amount counting history not implemented"
+
+  - id: 90
+    name: "devises__________dev"
+    mode: "L"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "loadDenominations(deviseCode) loads per-devise catalog"
+
+  - id: 199
+    name: "fond_de_caisse_std_montant"
+    mode: "L"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Standard fond amounts not implemented"
+
+  - id: 198
+    name: "coupures_monnaie_locale"
+    mode: "L"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "MOCK_DENOMINATIONS + loadDenominations provides denomination catalog"
+
+  - id: 141
+    name: "devises__________dev"
+    mode: "L"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "devisesAutorisees in config"
+
+callees:
+  - ide: 43
+    name: "Recuperation du titre"
+    calls: 2
+    context: "Lookup titre/civilite"
+    status: N/A
+    target: ""
+    gap_notes: "Backend utility, frontend receives pre-resolved data"
+
+  - ide: 142
+    name: "Devise update session WS"
+    calls: 2
+    context: "Updates devise data in session"
+    status: PARTIAL
+    target: "sessionStore.updateDevise()"
+    gap_notes: "updateDevise exists but simplified schema vs legacy"
+
+  - ide: 133
+    name: "Mise a jour comptage caisse WS"
+    calls: 1
+    context: "Persists counting data"
+    status: IMPL
+    target: "sessionStore.openSession() + caisseOpsApi"
+    gap_notes: "Counting data sent via openSession/closeSession API calls"
+
+  - ide: 150
+    name: "Print comptage WS"
+    calls: 1
+    context: "Prints counting ticket"
+    status: IMPL
+    target: "src/services/printer/generators/ouvertureTicketGenerator.ts"
+    gap_notes: "Auto-print on success step with ouvertureTicketGenerator"
+
+overall:
+  rules_total: 1
+  rules_impl: 0
+  rules_partial: 1
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 34
+  callees_total: 4
+  callees_impl: 2
+  callees_missing: 0
+  coverage_pct: 62
+  status: contracted
+  generated: "2026-02-11"
+  notes: |
+    Most complex B1 program (105 tasks, 1378 logic lines, 27 tables). The frontend has strong coverage of the core denomination counting workflow (DenominationGrid, DenominationRow, DenominationSummary, EcartDisplay) and the session opening flow (SessionOuverturePage with multi-step wizard). Key gaps: (1) MOP-level solde breakdown (monnaie/produits/cartes/cheques/od) types exist in SessionDetail but are not populated from counting; (2) RecuperationPrecedent/RecuperationStandard (fond de caisse recovery) not implemented; (3) email_reprise feature missing; (4) comptage history retrieval missing. The FermetureRecapTable provides per-MOP comparison (attendu/compte/ecart) for closure but this is not yet connected to opening flow.

@@ -1,0 +1,406 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 139 - Ticket appro remise
+
+program:
+  id: 139
+  name: "Ticket appro remise"
+  complexity: "BASSE"
+  callers: [121, 298, 122, 131, 151, 297, 299]
+  callees: [43, 179, 181, 182]
+  tasks_count: 71
+  tables_count: 15
+  expressions_count: 10
+
+rules:
+  - id: RM-001
+    description: "Condition: W0 fin tache egale F"
+    condition: "W0 fin tache [BG]='F'"
+    variables: ["FT (W0 fin tache)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Internal task control flag - not needed in React print flow"
+  - id: RM-002
+    description: "Verification que l'imprimante courante est la n1"
+    condition: "GetParam ('CURRENTPRINTERNUM')=1"
+    variables: []
+    status: IMPL
+    target_file: "src/services/printer/printService.ts"
+    gap_notes: "Printer 1 (A4) mapped to pdf-browser/pdf-download in PrinterChoice"
+  - id: RM-003
+    description: "Verification que l'imprimante courante est la n9"
+    condition: "GetParam ('CURRENTPRINTERNUM')=9"
+    variables: []
+    status: IMPL
+    target_file: "src/services/printer/printService.ts"
+    gap_notes: "Printer 9 (TMT88IV) mapped to escpos choice in PrinterChoice"
+
+variables:
+  # Parameters (19 received from callers)
+  - letter: "EN"
+    name: "P0 societe"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/services/printer/generators/approTicketGenerator.ts"
+    gap_notes: "Mapped to ApproTicketData.village"
+  - letter: "EO"
+    name: "P0 nbre decimales"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Number formatting handled by JS"
+  - letter: "EP"
+    name: "P0 nom village"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/services/printer/generators/approTicketGenerator.ts"
+    gap_notes: "ApproTicketData.village field"
+  - letter: "EQ"
+    name: "P0 masque cumul"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Display mask handled by JS formatting"
+  - letter: "ER"
+    name: "P0 devise locale"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/services/printer/generators/approTicketGenerator.ts"
+    gap_notes: "Hardcoded 'EUR' in ticket lines devise field"
+  - letter: "ES"
+    name: "P0 Uni/Bilateral"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend routing parameter"
+  - letter: "ET"
+    name: "P0 village TAI"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "TAI village code not migrated"
+  - letter: "EU"
+    name: "P0 date comptable"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/services/printer/generators/approTicketGenerator.ts"
+    gap_notes: "ApproTicketData.date field"
+  - letter: "EV"
+    name: "P0 session"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "currentSession.id available for ticket context"
+  - letter: "EW"
+    name: "P0 quand"
+    type: "Parameter"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetailQuand type exists but not used in appro ticket generation"
+  - letter: "EX"
+    name: "P0 Montant appro monnaie"
+    type: "Parameter"
+    status: PARTIAL
+    target_file: "src/types/caisseOps.ts"
+    gap_notes: "ApportCoffreData.montant is global, not MOP-broken down as monnaie"
+  - letter: "EY"
+    name: "P0 Montant appro produit"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/types/caisseOps.ts"
+    gap_notes: "ApportProduitsData.montantTotal maps product supply amount"
+  - letter: "EZ"
+    name: "P0 Nbre devises appro"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Multi-devise supply count not tracked"
+  - letter: "FA"
+    name: "P0 Montant remise monnaie"
+    type: "Parameter"
+    status: PARTIAL
+    target_file: "src/types/caisseOps.ts"
+    gap_notes: "RemiseCoffreData.montant exists but not broken down by MOP"
+  - letter: "FB"
+    name: "P0 Montant remise cartes"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Card remise amount not separately tracked"
+  - letter: "FC"
+    name: "P0 Montant remise cheques"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Cheque remise amount not separately tracked"
+  - letter: "FD"
+    name: "P0 Montant remise od"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "OD remise amount not separately tracked"
+  - letter: "FE"
+    name: "P0 Montant remise nbre devises"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Per-devise remise count not tracked"
+  - letter: "FF"
+    name: "P0 Montant remise produit"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Product remise amount not separately tracked"
+  # Work variables (18)
+  - letter: "FH"
+    name: "W0 caisse depart"
+    type: "Virtual"
+    status: PARTIAL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "Opening balance computed but not used in appro ticket context"
+  - letter: "FI"
+    name: "W0 apport coffre"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "executeApportCoffre tracks apport coffre amount"
+  - letter: "FJ"
+    name: "W0 piece caisse Rec"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Receipt piece count not tracked"
+  - letter: "FK"
+    name: "W0 piece caisse Dep"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Disbursement piece count not tracked"
+  - letter: "FL"
+    name: "W0 confirmation"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Internal confirmation flag"
+  - letter: "FM"
+    name: "W0 date comptable"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "dateComptable from caisseStore"
+  - letter: "FN"
+    name: "W0 versement"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Versement amount not in appro ticket"
+  - letter: "FO"
+    name: "W0 retrait"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Retrait amount not in appro ticket"
+  - letter: "FP"
+    name: "W0 solde cash"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Cash balance not computed in appro ticket"
+  - letter: "FQ"
+    name: "W0 solde carte"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Card balance not computed in appro ticket"
+  - letter: "FR"
+    name: "W0 change"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Exchange rate not in appro ticket"
+  - letter: "FS"
+    name: "W0 frais de change"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Exchange fees not in appro ticket"
+  - letter: "FT"
+    name: "W0 fin tache"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Internal task control"
+  - letter: "FU"
+    name: "W0 Existe Carnet Bar"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Carnet Bar feature not migrated"
+  - letter: "FV"
+    name: "W0 Existe TAI"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "TAI feature not migrated"
+  - letter: "FW"
+    name: "W0 titre"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/services/printer/generators/approTicketGenerator.ts"
+    gap_notes: "OPERATION_LABELS constant maps Apport Coffre/Produits/Remise Coffre"
+  - letter: "FX"
+    name: "W0 date debut session"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "currentSession.dateOuverture"
+  - letter: "FY"
+    name: "W0 heure debut session"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/services/printer/generators/approTicketGenerator.ts"
+    gap_notes: "Computed via new Date().toLocaleTimeString in generator"
+  # Other
+  - letter: "FG"
+    name: "Edition detaillee"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Detailed edition flag not implemented - always simplified"
+
+tables:
+  - id: 463
+    name: "heure_de_passage"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend time reference"
+  - id: 249
+    name: "histo_sessions_caisse_detail"
+    mode: "R"
+    status: PARTIAL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Session history loaded but not all detail fields"
+  - id: 196
+    name: "gestion_article_session"
+    mode: "R"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Article/stock session table not mapped in frontend"
+  - id: 244
+    name: "saisie_approvisionnement"
+    mode: "R"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Supply entry table not mapped"
+  - id: 251
+    name: "histo_sessions_caisse_remise"
+    mode: "R"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Remise history table not mapped in frontend"
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "R"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "DeviseSession interface"
+  - id: 505
+    name: "pv_comptable"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Temp accounting table"
+  - id: 693
+    name: "devise_in"
+    mode: "R"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Devise info in caisseStore"
+  - id: 266
+    name: "cc_comptable"
+    mode: "R"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Accounting accumulation table"
+  - id: 30
+    name: "gm-recherche_____gmr"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend search index"
+  - id: 250
+    name: "histo_sessions_caisse_devise"
+    mode: "R"
+    status: PARTIAL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Session devise history partially loaded"
+  - id: 44
+    name: "change___________chg"
+    mode: "R"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Exchange rate table not mapped"
+  - id: 70
+    name: "date_comptable___dat"
+    mode: "R"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "dateComptable from caisseStore"
+  - id: 513
+    name: "pv_invoiceprintfiliationtmp"
+    mode: "L"
+    status: N/A
+    target_file: ""
+    gap_notes: "Temp print table - not applicable"
+  - id: 147
+    name: "change_vente_____chg"
+    mode: "L"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Sale exchange rate table not mapped"
+
+callees:
+  - ide: 43
+    name: "Recuperation du titre"
+    calls: 1
+    context: "Recuperation donnees"
+    status: IMPL
+    target: "OPERATION_LABELS in approTicketGenerator.ts"
+    gap_notes: "Title labels hardcoded as Apport Coffre/Produits/Remise Coffre"
+  - ide: 179
+    name: "Get Printer"
+    calls: 1
+    context: "Impression ticket/document"
+    status: IMPL
+    target: "PrinterChoiceDialog + executePrint()"
+    gap_notes: "Printer selection via dialog"
+  - ide: 181
+    name: "Set Listing Number"
+    calls: 1
+    context: "Configuration impression"
+    status: N/A
+    target: ""
+    gap_notes: "Listing number not applicable in web printing"
+  - ide: 182
+    name: "Raz Current Printer"
+    calls: 1
+    context: "Impression ticket/document"
+    status: N/A
+    target: ""
+    gap_notes: "Printer reset not needed in web"
+
+overall:
+  rules_total: 3
+  rules_impl: 2
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 1
+  variables_key_count: 38
+  callees_total: 4
+  callees_impl: 2
+  callees_missing: 0
+  coverage_pct: 38
+  status: contracted
+  generated: "2026-02-11"
+  notes: "IDE 139 is the most complex print program (71 tasks, 1129 logic lines) generating appro/remise tickets. The React app has generateApproTicket() with 3 operation types (APPORT_COFFRE, APPORT_PRODUITS, REMISE_COFFRE) but the ticket content is significantly simplified vs Magic. Key gaps: (1) MOP-level breakdown (monnaie/produits/cartes/cheques/od) for remise amounts, (2) multi-devise accumulation with change/frais, (3) detailed edition mode, (4) versement/retrait/solde tracking, (5) article session and remise history tables. The print infrastructure (generators + PrintService + ESC/POS) is solid but data richness is lacking."

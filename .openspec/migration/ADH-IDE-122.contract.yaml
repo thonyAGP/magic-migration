@@ -1,0 +1,532 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 122 - Ouverture caisse (ROOT ORCHESTRATOR)
+
+program:
+  id: 122
+  name: "Ouverture caisse"
+  complexity: "HAUTE"
+  callers: [121, 298]
+  callees: [120, 123, 124, 126, 128, 129, 133, 134, 136, 137, 139, 142, 143, 147, 148, 156, 43]
+  tasks_count: 9
+  tables_count: 3
+  expressions_count: 8
+
+rules:
+  - id: RM-001
+    description: "Condition: Action egale 0 (user cancelled)"
+    condition: "Action [Q]=0"
+    variables: ["FD (Action)"]
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "Cancel action handled by handleBack() navigating to /caisse/menu and step flow control"
+  - id: RM-002
+    description: "Condition: Montant apport coffre OR produits OR devise different de 0"
+    condition: "Montant apport coffre [Z]<>0 OR Montant apport produits [BA]<>0 OR Nbre devise apport [BB]<>0"
+    variables: ["FM (Montant apport coffre)", "FN (Montant apport produits)", "FO (Nbre devise apport)"]
+    status: PARTIAL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "Apport coffre/produits exists in CaisseOpsStore but not wired into ouverture flow as conditional. The ouverture page does not branch on apport presence to trigger IDE 139 ticket printing."
+
+variables:
+  # Parameters (2 received from IDE 121)
+  - letter: "EZ"
+    name: "p.i.Host courant coffre 2 ?"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Dual-safe hardware feature - not applicable in web"
+  - letter: "FB"
+    name: "P.Session VIL ouverte ?"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "vilOpenSessions boolean in sessionStore"
+  # Config/session variables
+  - letter: "EN"
+    name: "Param societe"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "config.libelle from caisseStore"
+  - letter: "EO"
+    name: "Param devise locale"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "config.devisePrincipale from caisseStore"
+  - letter: "EP"
+    name: "Param Nbre decimales"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "JS handles decimal formatting natively"
+  - letter: "EQ"
+    name: "Param masque montant"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Display mask handled by JS Intl"
+  - letter: "ER"
+    name: "Param code village"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Village code available from server config, not used in frontend logic"
+  - letter: "ES"
+    name: "Param nom village"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/services/printer/generators/ouvertureTicketGenerator.ts"
+    gap_notes: "OuvertureTicketData.village"
+  - letter: "ET"
+    name: "Param masque cumul"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Display mask"
+  - letter: "EU"
+    name: "Param Uni/Bi"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend routing parameter"
+  - letter: "EV"
+    name: "Param village TAI"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "TAI feature not migrated"
+  - letter: "EW"
+    name: "Param date comptable"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "dateComptable from caisseStore, displayed and validated"
+  - letter: "EX"
+    name: "Param ouverture validee"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "Step flow: comptage -> validation -> ouverture -> succes"
+  - letter: "EY"
+    name: "Param chrono session"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Session ID returned from openSession API call"
+  - letter: "FA"
+    name: "Param coffre 2 est ouvert"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Dual-safe hardware feature"
+  - letter: "FC"
+    name: "Fin"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Internal control flag"
+  - letter: "FD"
+    name: "Action"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "Step-based flow control replaces Action numeric flag"
+  # Solde initial MOP breakdown
+  - letter: "FF"
+    name: "Montant solde initial"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "computeResults() totalCompte - aggregate counting total"
+  - letter: "FG"
+    name: "Montant solde initial monnaie"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level monnaie breakdown not separated in ouverture"
+  - letter: "FH"
+    name: "Montant solde initial produits"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level produits breakdown not separated"
+  - letter: "FI"
+    name: "Montant solde initial cartes"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level cartes breakdown not separated"
+  - letter: "FJ"
+    name: "Montant solde initial cheques"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level cheques breakdown not separated"
+  - letter: "FK"
+    name: "Montant solde initial od"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level od breakdown not separated"
+  - letter: "FL"
+    name: "Nbre devise initial"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "devisesAutorisees array from config - multi-devise support"
+  # Apport variables
+  - letter: "FM"
+    name: "Montant apport coffre"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "executeApportCoffre with montant in ApportCoffreData"
+  - letter: "FN"
+    name: "Montant apport produits"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "executeApportProduits with montantTotal in ApportProduitsData"
+  - letter: "FO"
+    name: "Nbre devise apport"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Multi-devise supply count not tracked"
+  # Comptage MOP breakdown
+  - letter: "FP"
+    name: "Montant caisse comptee"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "totalCompte from computeResults()"
+  - letter: "FQ"
+    name: "Montant caisse comptee monnaie"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level monnaie counting not separated"
+  - letter: "FR"
+    name: "Montant caisse comptee produits"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level produits counting not separated"
+  - letter: "FS"
+    name: "Montant caisse comptee cartes"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level cartes counting not separated"
+  - letter: "FT"
+    name: "Montant caisse comptee cheques"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level cheques counting not separated"
+  - letter: "FU"
+    name: "Montant caisse comptee od"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level od counting not separated"
+  - letter: "FV"
+    name: "Nbre devise comptee"
+    type: "Virtual"
+    status: PARTIAL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "Multi-devise counting via devisesAutorisees tabs but not exported as count"
+  # Calculated MOP breakdown
+  - letter: "FW"
+    name: "Montant caisse calcule"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Expected total from backend - not computed in frontend"
+  - letter: "FX"
+    name: "Montant caisse calcule monnaie"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Expected monnaie from backend"
+  - letter: "FY"
+    name: "Montant caisse calcule produits"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Expected produits from backend"
+  - letter: "FZ"
+    name: "Montant caisse calcule cartes"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Expected cartes from backend"
+  - letter: "GA"
+    name: "Montant caisse calcule cheques"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Expected cheques from backend"
+  - letter: "GB"
+    name: "Montant caisse calcule od"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Expected od from backend"
+  - letter: "GC"
+    name: "Nbre devise calcule"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Expected devise count from backend"
+  # Ecart MOP breakdown
+  - letter: "GD"
+    name: "Montant ecart"
+    type: "Virtual"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionEcart.ecart exists but only wired for fermeture, not ouverture"
+  - letter: "GE"
+    name: "Montant ecart monnaie"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level monnaie ecart not computed"
+  - letter: "GF"
+    name: "Montant ecart produits"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level produits ecart not computed"
+  - letter: "GG"
+    name: "Montant ecart cartes"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level cartes ecart not computed"
+  - letter: "GH"
+    name: "Montant ecart cheques"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level cheques ecart not computed"
+  - letter: "GI"
+    name: "Montant ecart od"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level od ecart not computed"
+  - letter: "GJ"
+    name: "Nbre devise ecart"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Per-devise ecart count not computed"
+  - letter: "GK"
+    name: "Commentaire ecart"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Ecart comment for ouverture not implemented (exists in fermeture)"
+  - letter: "GL"
+    name: "Commentaire ecart devise"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Per-devise ecart comment not implemented"
+  - letter: "GM"
+    name: "Existe ecart devise"
+    type: "Virtual"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Per-devise ecart existence flag not tracked"
+  # Validation comptage
+  - letter: "GN"
+    name: "Validation comptage chrono his"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Audit trail chrono - backend managed"
+  - letter: "GO"
+    name: "Validation comptage date"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Audit trail date - backend managed"
+  - letter: "GP"
+    name: "Validation comptage time"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Audit trail time - backend managed"
+  # Edition flags
+  - letter: "GQ"
+    name: "Edition ticket appro"
+    type: "Virtual"
+    status: PARTIAL
+    target_file: "src/services/printer/generators/approTicketGenerator.ts"
+    gap_notes: "ApproTicket generator exists but not triggered conditionally from ouverture flow"
+  - letter: "GR"
+    name: "Edition ticket"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "Auto-print on success step + re-print button via PrinterChoiceDialog"
+
+tables:
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "R"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "DeviseSession interface covers session devise data"
+  - id: 693
+    name: "devise_in"
+    mode: "R"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Devise config loaded via caisseStore"
+  - id: 67
+    name: "tables___________tab"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Generic table config - backend internal"
+
+callees:
+  - ide: 120
+    name: "Saisie contenu caisse"
+    calls: 1
+    context: "Sous-programme"
+    status: IMPL
+    target: "SessionOuverturePage: DenominationGrid + counting state"
+    gap_notes: "Denomination grid with count change handler fully replaces IDE 120"
+  - ide: 123
+    name: "Apport coffre"
+    calls: 1
+    context: "Approvisionnement"
+    status: IMPL
+    target: "CaisseOpsPage + caisseOpsStore.executeApportCoffre()"
+    gap_notes: "Apport coffre implemented as separate CaisseOps page, not inline in ouverture"
+  - ide: 124
+    name: "Apport articles"
+    calls: 1
+    context: "Approvisionnement"
+    status: IMPL
+    target: "CaisseOpsPage + caisseOpsStore.executeApportProduits()"
+    gap_notes: "Apport produits implemented as separate CaisseOps page"
+  - ide: 126
+    name: "Calcul solde initial WS"
+    calls: 1
+    context: "Calcul de donnees"
+    status: PARTIAL
+    target: "sessionStore.openSession() -> API"
+    gap_notes: "Solde initial calculation delegated to backend via openSession API. No frontend-side MOP breakdown computation."
+  - ide: 128
+    name: "Controle ouverture caisse WS"
+    calls: 1
+    context: "Controle/validation"
+    status: IMPL
+    target: "sessionStore.openSession() -> API"
+    gap_notes: "Validation handled backend-side during openSession call (has own contract)"
+  - ide: 129
+    name: "Ecart ouverture caisse"
+    calls: 1
+    context: "Ouverture session"
+    status: PARTIAL
+    target: "SessionOuverturePage.computeResults().ecart"
+    gap_notes: "Basic ecart field set to 0 in ouverture. Full ecart computation with MOP breakdown is missing."
+  - ide: 133
+    name: "Mise a jour comptage caisse WS"
+    calls: 1
+    context: "Mise a jour donnees"
+    status: IMPL
+    target: "sessionStore.openSession() -> API (comptage in request)"
+    gap_notes: "Comptage data sent in OpenSessionRequest.comptage array"
+  - ide: 134
+    name: "Mise a jour detail session WS"
+    calls: 7
+    context: "Mise a jour donnees"
+    status: IMPL
+    target: "sessionStore.openSession() -> API"
+    gap_notes: "Session detail updates handled by backend during openSession flow"
+  - ide: 136
+    name: "Generation ticket WS"
+    calls: 7
+    context: "Impression ticket/document"
+    status: IMPL
+    target: "executePrint(TicketType.OUVERTURE, ...) in SessionOuverturePage"
+    gap_notes: "Ticket generation via ouvertureTicketGenerator + PrintService"
+  - ide: 137
+    name: "Ticket ouverture session"
+    calls: 1
+    context: "Impression ticket/document"
+    status: IMPL
+    target: "ouvertureTicketGenerator.ts + handlePrint()"
+    gap_notes: "Ouverture ticket generated and printed (auto-print on success + manual re-print)"
+  - ide: 139
+    name: "Ticket appro remise"
+    calls: 1
+    context: "Impression ticket/document"
+    status: PARTIAL
+    target: "approTicketGenerator.ts"
+    gap_notes: "Generator exists but not triggered from ouverture flow. Only available from CaisseOpsPage."
+  - ide: 142
+    name: "Devise update session WS"
+    calls: 2
+    context: "Mise a jour donnees"
+    status: IMPL
+    target: "sessionStore.openSession() -> API"
+    gap_notes: "Devise session updates handled backend-side"
+  - ide: 143
+    name: "Devises calcul ecart WS"
+    calls: 1
+    context: "Calcul de donnees"
+    status: PARTIAL
+    target: "SessionOuverturePage.computeResults()"
+    gap_notes: "Per-devise ecart computation limited - no MOP breakdown, totalAttendu hardcoded to 0"
+  - ide: 147
+    name: "Devises des tickets WS"
+    calls: 1
+    context: "Impression ticket/document"
+    status: PARTIAL
+    target: "executePrint with multi-devise results"
+    gap_notes: "Multi-devise ticket data generated but without full change/frais details"
+  - ide: 148
+    name: "Devises RAZ WS"
+    calls: 3
+    context: "Reinitialisation"
+    status: IMPL
+    target: "sessionStore.openSession() -> API"
+    gap_notes: "Devise reset handled backend-side during session initialization"
+  - ide: 156
+    name: "Verif session caisse ouverte2"
+    calls: 1
+    context: "Controle/validation"
+    status: IMPL
+    target: "sessionStore.checkConcurrentSessions() + ConcurrentSessionWarning"
+    gap_notes: "Full concurrent session check with warning dialog and force-open option"
+  - ide: 43
+    name: "Recuperation du titre"
+    calls: 1
+    context: "Recuperation donnees"
+    status: IMPL
+    target: "Hardcoded labels in generators"
+    gap_notes: "Title retrieval replaced by constant labels"
+
+overall:
+  rules_total: 2
+  rules_impl: 1
+  rules_partial: 1
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 57
+  callees_total: 17
+  callees_impl: 12
+  callees_missing: 0
+  coverage_pct: 55
+  status: contracted
+  generated: "2026-02-11"
+  notes: "IDE 122 is the ROOT ORCHESTRATOR for ouverture caisse, calling 17 sub-programs. The React app has a comprehensive SessionOuverturePage with step-based flow (comptage -> validation -> ouverture -> succes), concurrent session checking, multi-devise support, network closure pre-checks, stock coherence validation, and auto-print on success. Key strengths: all 17 callees have at least partial implementation. Key gaps: (1) The MOP breakdown concept (monnaie/produits/cartes/cheques/od) is the biggest missing piece - SessionDetail types have the fields but they are not populated during ouverture. (2) Ecart computation at ouverture is stubbed (totalAttendu=0, ecart=0). (3) Conditional appro ticket printing from ouverture flow is not wired (RM-002). (4) Multi-devise change/frais calculations are missing from ticket generation."

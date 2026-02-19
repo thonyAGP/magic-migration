@@ -7,16 +7,40 @@ export interface Session {
   userId: number;
 }
 
+export interface MOPBreakdown {
+  total: number;
+  monnaie: number;
+  produits: number;
+  cartes: number;
+  cheques: number;
+  od: number;
+}
+
 export interface OpenSessionRequest {
   caisseId: number;
   userId: number;
   comptage: { denominationId: number; quantite: number }[];
+  // MOP breakdown of counted amounts (IDE 122/126)
+  mopComptee?: MOPBreakdown;
+}
+
+export interface OpenSessionResponse {
+  id: number;
+  caisseId: number;
+  userId: number;
+  dateOuverture: string;
+  // Backend-calculated MOP amounts (IDE 126: solde initial)
+  mopSoldeInitial?: MOPBreakdown;
+  // Backend-calculated ecart (IDE 129)
+  mopEcart?: MOPBreakdown;
 }
 
 export interface CloseSessionRequest {
   sessionId: number;
   comptage: { denominationId: number; quantite: number }[];
   justification?: string;
+  // MOP breakdown of counted amounts at closing (IDE 129)
+  mopComptee?: MOPBreakdown;
 }
 
 export interface SessionSummary {

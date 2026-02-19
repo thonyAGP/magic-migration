@@ -1,0 +1,130 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 136 - Generation ticket WS
+
+program:
+  id: 136
+  name: "Generation ticket WS"
+  complexity: "BASSE"
+  callers: [122, 131, 297, 299]
+  callees: []
+  tasks_count: 3
+  tables_count: 3
+  expressions_count: 17
+
+rules:
+  - id: RM-001
+    description: "Condition montant produits non zero"
+    condition: "Param montant produits [F]<>0"
+    variables: ["EQ (Param montant)", "ES (Param montant produits)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - conditionally generates ticket line for products when non-zero. Frontend ticket generation uses ouvertureTicketGenerator.ts and fermetureTicketGenerator.ts but those are ESC/POS print generators, not the recap table WS."
+
+variables:
+  - letter: "EN"
+    name: "Param chrono session"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EO"
+    name: "Param Quand"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - O/F context"
+  - letter: "EP"
+    name: "Param Type"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EQ"
+    name: "Param montant"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "ER"
+    name: "Param montant monnaie"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "ES"
+    name: "Param montant produits"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "ET"
+    name: "Param montant cartes"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EU"
+    name: "Param montant cheques"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EV"
+    name: "Param montant od"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EW"
+    name: "Param nbre devise"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EX"
+    name: "Param commentaire ecart"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EY"
+    name: "Param commentaire ecart devise"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+
+tables:
+  - id: 512
+    name: "pv_equip_histo"
+    mode: "W"
+    status: N/A
+    gap_notes: "Backend temp table write - equipment history"
+  - id: 511
+    name: "pv_invoicedisplaytmp"
+    mode: "W"
+    status: N/A
+    gap_notes: "Backend temp table write - invoice display temporary"
+  - id: 196
+    name: "gestion_article_session"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - article session data"
+
+callees: []
+
+overall:
+  rules_total: 1
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 1
+  variables_key_count: 12
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: contracted
+  generated: "2026-02-11"
+  notes: "Backend WS program - generates recap ticket by writing to temp tables (pv_invoicedisplaytmp, pv_equip_histo). Called 28 times per caisse cycle. Frontend has separate ticket generators (ouvertureTicketGenerator.ts, fermetureTicketGenerator.ts) for ESC/POS printing, but this WS builds the server-side recap table. No frontend equivalent needed."

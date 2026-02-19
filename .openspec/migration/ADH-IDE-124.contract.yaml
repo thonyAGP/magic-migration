@@ -1,0 +1,140 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 124 - Apport articles
+
+program:
+  id: 124
+  name: "Apport articles"
+  complexity: "BASSE"
+  callers: [121, 122, 131, 297, 298, 299]
+  callees: [43]
+  tasks_count: 5
+  tables_count: 5
+  expressions_count: 4
+
+rules:
+  - id: RM-001
+    description: "Negation: coffre 2 non ouvert AND host non courant coffre 2"
+    condition: "NOT (Param coffre 2 est ouvert [E]) AND NOT p.i.Host courant coffr... [F]"
+    variables: ["ER (Param coffre 2 est ouvert)"]
+    status: MISSING
+    target_file: ""
+    gap_notes: "Coffre 2 (secondary safe) concept not implemented in frontend"
+
+variables:
+  - letter: "ES"
+    name: "p.i.Host courant coffre 2 ?"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Coffre 2 concept not implemented"
+
+  - letter: "EU"
+    name: "v.Date/Time"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "mockOperation generates date+heure from Date.now()"
+
+  - letter: "EN"
+    name: "Param masque montant"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Legacy display mask, frontend uses Intl.NumberFormat"
+
+  - letter: "EO"
+    name: "Param montant articles"
+    type: "Real"
+    status: IMPL
+    target_file: "src/components/caisse/operations/ApproProduitsForm.tsx"
+    gap_notes: "total computed from lignes[].quantite * prixUnitaire"
+
+  - letter: "EP"
+    name: "Param devise locale"
+    type: "Real"
+    status: PARTIAL
+    target_file: "src/components/caisse/operations/ApproProduitsForm.tsx"
+    gap_notes: "Hardcoded EUR in total display, should use session devise"
+
+  - letter: "EQ"
+    name: "Param quand"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Context (O/F) implicit from page navigation"
+
+  - letter: "ER"
+    name: "Param coffre 2 est ouvert"
+    type: "Real"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Coffre 2 not implemented"
+
+  - letter: "ET"
+    name: "Fin"
+    type: "Real"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "isExecuting flag + reset() controls flow"
+
+tables:
+  - id: 196
+    name: "gestion_article_session"
+    mode: "W"
+    status: IMPL
+    target_file: "src/services/api/endpoints-caisse-ops.ts"
+    gap_notes: "caisseOpsApi.apportProduits() POST persists via API with produits array"
+
+  - id: 248
+    name: "sessions_coffre2"
+    mode: "L"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Coffre 2 sessions not implemented"
+
+  - id: 246
+    name: "histo_sessions_caisse"
+    mode: "L"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "loadHistory() reads session history"
+
+  - id: 217
+    name: "comptage_coffre_histo"
+    mode: "L"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Coffre counting history not implemented"
+
+  - id: 222
+    name: "comptage_caisse_histo"
+    mode: "L"
+    status: PARTIAL
+    target_file: "src/types/denomination.ts"
+    gap_notes: "CountingSession type defined but no retrieval"
+
+callees:
+  - ide: 43
+    name: "Recuperation du titre"
+    calls: 1
+    context: "Lookup article title"
+    status: N/A
+    target: ""
+    gap_notes: "Backend utility, article libelle provided by user input in form"
+
+overall:
+  rules_total: 1
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 1
+  rules_na: 0
+  variables_key_count: 8
+  callees_total: 1
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 60
+  status: contracted
+  generated: "2026-02-11"
+  notes: |
+    Well-implemented core: ApproProduitsForm with multi-line product entry (code/libelle/quantite/prixUnitaire), Zod validation, dynamic add/remove lines. caisseOpsStore.executeApportProduits() with mock/API dual mode. Key gaps: (1) Coffre 2 feature entirely missing - RM-001 rule; (2) devise hardcoded to EUR in total display (should be dynamic); (3) no article reference lookup (user types libelle manually vs legacy which calls IDE 43 to lookup from DB); (4) coffre counting history not tracked. The gestion_article_session write columns (Montant articles, titre, Coffre 2 ouvert, Mvt stock, Quantite Dispo Max) are partially covered: Montant + titre yes, Coffre 2/stock fields no.

@@ -1,0 +1,280 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 129 - Ecart ouverture caisse
+
+program:
+  id: 129
+  name: "Ecart ouverture caisse"
+  complexity: "BASSE"
+  callers: [122, 297]
+  callees: [142, 43]
+  tasks_count: 9
+  tables_count: 8
+  expressions_count: 1
+
+rules: []
+# No business rules identified in the spec (section 5 is empty)
+
+variables:
+  # Parameters received from IDE 122 / IDE 297 - MOP breakdown pattern
+  - letter: "EN"
+    name: "Param societe"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - societe context from server config"
+  - letter: "EO"
+    name: "Param chrono session"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Session ID passed through openSession flow"
+  - letter: "EP"
+    name: "Param devise locale"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "DeviseSession.deviseCode in session store"
+  - letter: "EQ"
+    name: "Param masque montant"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Display formatting - handled by Intl.NumberFormat in React"
+  - letter: "ER"
+    name: "Param quand"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetailQuand type: 'O' | 'F' implemented"
+  - letter: "ES"
+    name: "Param caisse comptee"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/pages/SessionOuverturePage.tsx"
+    gap_notes: "Total comptage computed from DenominationGrid counting"
+  - letter: "ET"
+    name: "Param caisse comptee monnaie"
+    type: "Parameter"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.montantMonnaie exists but no MOP-level breakdown in ouverture flow"
+  - letter: "EU"
+    name: "Param caisse comptee produits"
+    type: "Parameter"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.montantProduits type exists but not populated at ouverture"
+  - letter: "EV"
+    name: "Param caisse comptee cartes"
+    type: "Parameter"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.montantCartes type exists but not populated at ouverture"
+  - letter: "EW"
+    name: "Param caisse comptee cheques"
+    type: "Parameter"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.montantCheques type exists but not populated at ouverture"
+  - letter: "EX"
+    name: "Param caisse comptee od"
+    type: "Parameter"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.montantOd type exists but not populated at ouverture"
+  - letter: "EY"
+    name: "Param caisse comptee nb devise"
+    type: "Parameter"
+    status: PARTIAL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionDetail.nbreDevises type exists but not populated at ouverture"
+  - letter: "EZ"
+    name: "Param caisse calculee"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Backend-calculated expected total - no frontend equivalent for calculated amount"
+  - letter: "FA"
+    name: "Param caisse calculee monnaie"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Backend-calculated expected monnaie - MOP breakdown not computed in frontend"
+  - letter: "FB"
+    name: "Param caisse calculee produits"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Backend-calculated expected produits"
+  - letter: "FC"
+    name: "Param caisse calculee cartes"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Backend-calculated expected cartes"
+  - letter: "FD"
+    name: "Param caisse calculee cheques"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Backend-calculated expected cheques"
+  - letter: "FE"
+    name: "Param caisse calculee od"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Backend-calculated expected od"
+  - letter: "FF"
+    name: "Param caisse calculee nb devise"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Backend-calculated expected nb devises"
+  - letter: "FG"
+    name: "Param montant ecart"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionEcart.ecart computed in SessionFermeturePage and types"
+  - letter: "FH"
+    name: "Param montant ecart monnaie"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level ecart breakdown not implemented for ouverture"
+  - letter: "FI"
+    name: "Param montant ecart produits"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level ecart breakdown not implemented for ouverture"
+  - letter: "FJ"
+    name: "Param montant ecart cartes"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level ecart breakdown not implemented for ouverture"
+  - letter: "FK"
+    name: "Param montant ecart cheques"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level ecart breakdown not implemented for ouverture"
+  - letter: "FL"
+    name: "Param montant ecart od"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "MOP-level ecart breakdown not implemented for ouverture"
+  - letter: "FM"
+    name: "Param ecart nb devise"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Per-devise ecart count not implemented for ouverture"
+  - letter: "FN"
+    name: "Param commentaire"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Ecart comment field exists in fermeture (justification) but not in ouverture"
+  - letter: "FO"
+    name: "Param commentaire devise"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Per-devise ecart comment not implemented"
+  - letter: "FP"
+    name: "Param UNI/BI"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend routing parameter - UNI/Bilateral mode"
+  - letter: "FQ"
+    name: "Fin"
+    type: "Virtual"
+    status: N/A
+    target_file: ""
+    gap_notes: "Internal control flag - not needed in React flow"
+
+tables:
+  - id: 139
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend reference table - payment methods"
+  - id: 50
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend reference table - payment methods (alternate view)"
+  - id: 706
+    name: "parametre_port_serie"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Serial port config - not applicable in web"
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "L"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "DeviseSession interface maps this table"
+  - id: 141
+    name: "devises__________dev"
+    mode: "L"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Devise config loaded via caisseStore"
+  - id: 492
+    name: "edition_tableau_recap"
+    mode: "L"
+    status: N/A
+    target_file: ""
+    gap_notes: "Recap edition table - backend print formatting"
+  - id: 250
+    name: "histo_sessions_caisse_devise"
+    mode: "L"
+    status: PARTIAL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Session history exists but per-devise detail limited"
+  - id: 90
+    name: "devises__________dev"
+    mode: "L"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Same devise reference table, mapped via DeviseSession"
+
+callees:
+  - ide: 142
+    name: "Devise update session WS"
+    calls: 2
+    context: "Mise a jour donnees"
+    status: IMPL
+    target: "sessionStore.openSession() -> API"
+    gap_notes: "Backend WS called through API facade during openSession"
+  - ide: 43
+    name: "Recuperation du titre"
+    calls: 1
+    context: "Recuperation donnees"
+    status: N/A
+    target: ""
+    gap_notes: "Title/label retrieval - not needed in React (labels are hardcoded or from config)"
+
+overall:
+  rules_total: 0
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 30
+  callees_total: 2
+  callees_impl: 1
+  callees_missing: 0
+  coverage_pct: 37
+  status: contracted
+  generated: "2026-02-11"
+  notes: "IDE 129 calculates the opening ecart (variance) between counted and expected amounts. The frontend has ecart infrastructure (SessionEcart type, EcartDisplay component) but it is primarily wired for FERMETURE, not ouverture. The MOP-level breakdown (monnaie/produits/cartes/cheques/od) exists as types in SessionDetail but is not populated during ouverture flow. Key gap: the ouverture ecart calculation with per-MOP granularity is delegated to the backend via openSession API call - no frontend-side ecart computation at ouverture time."

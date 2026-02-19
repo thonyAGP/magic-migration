@@ -1,0 +1,73 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 156 - Verif session caisse ouverte2
+
+program:
+  id: 156
+  name: "Verif session caisse ouverte2"
+  complexity: "BASSE"
+  callers: [121, 122]
+  callees: []
+  tasks_count: 1
+  tables_count: 1
+  expressions_count: 9
+
+rules:
+  - id: RM-001
+    description: "Condition composite: NOT([V]) OR [U]"
+    condition: "NOT([V]) OR [U]"
+    variables: ["EP (e.Caisse ouverte aujourd'hui?)", "EO (Po.Ouverture caisse possible?)"]
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "checkConcurrentSessions() returns ConcurrentSessionInfo if session already open, blocking new opening. Composite logic simplified: if concurrent session found, opening blocked unless VIL allows multiple sessions."
+
+variables:
+  - letter: "EN"
+    name: "Pi.terminal"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Terminal/caisse ID mapped through config.id in caisseStore"
+  - letter: "EO"
+    name: "Po.Ouverture caisse possible?"
+    type: "Parameter"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Output parameter - checkConcurrentSessions returns null (possible) or ConcurrentSessionInfo (blocked)"
+  - letter: "EP"
+    name: "e.Caisse ouverte aujourd'hui?"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Implicit in session status check - if current date session exists, it is detected"
+  - letter: "EQ"
+    name: "e.Caisse fermee?"
+    type: "Virtual"
+    status: IMPL
+    target_file: "src/types/session.ts"
+    gap_notes: "SessionStatus type: 'closed' | 'opening' | 'open' | 'closing'"
+
+tables:
+  - id: 249
+    name: "histo_sessions_caisse_detail"
+    mode: "W"
+    status: IMPL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "Session status check via API call /caisse/sessions/concurrent - backend reads and updates this table"
+
+callees: []
+
+overall:
+  rules_total: 1
+  rules_impl: 1
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 4
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: contracted
+  generated: "2026-02-11"
+  notes: "IDE 156 is the simplest program (1 task, 28 logic lines). Its sole purpose is checking whether a session is already open before allowing a new one. This is FULLY implemented in the React app: checkConcurrentSessions() in sessionStore calls the API, ConcurrentSessionWarning component shows a dialog with force-open/cancel options, and vilOpenSessions toggle allows multi-session mode. The table write (histo_sessions_caisse_detail) happens server-side. Complete functional coverage."

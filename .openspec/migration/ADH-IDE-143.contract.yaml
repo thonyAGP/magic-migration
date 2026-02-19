@@ -1,0 +1,95 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 143 - Devises calcul ecart WS
+
+program:
+  id: 143
+  name: "Devises calcul ecart WS"
+  complexity: "BASSE"
+  callers: [122, 131, 297, 299]
+  callees: []
+  tasks_count: 3
+  tables_count: 3
+  expressions_count: 2
+
+rules:
+  - id: RM-001
+    description: "Condition Param UNI/BI different de B"
+    condition: "Param UNI/BI [E]<>'B'"
+    variables: ["ER (Param UNI/BI)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - UNI/BI routing for ecart calculation. Frontend has EcartDevise type and ecart calculation display in denomination components but does not replicate the UNI/BI routing logic."
+  - id: RM-002
+    description: "Condition Param UNI/BI egale B"
+    condition: "Param UNI/BI [E]='B'"
+    variables: ["ER (Param UNI/BI)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend-only WS - bilateral mode ecart calculation"
+
+variables:
+  - letter: "EN"
+    name: "Param societe"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EO"
+    name: "Param devise locale"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter"
+  - letter: "EP"
+    name: "Param quand"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - O/F context"
+  - letter: "EQ"
+    name: "Param difference"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - difference flag"
+  - letter: "ER"
+    name: "Param UNI/BI"
+    type: "Parameter"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend parameter - UNI/BI mode discriminator"
+
+tables:
+  - id: 139
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - bilateral payment methods"
+  - id: 50
+    name: "moyens_reglement_mor"
+    mode: "R"
+    status: N/A
+    gap_notes: "Backend table read - unilateral payment methods"
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "L"
+    status: N/A
+    gap_notes: "Backend table lookup - session devises"
+
+callees: []
+
+overall:
+  rules_total: 2
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 2
+  variables_key_count: 5
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: contracted
+  generated: "2026-02-11"
+  notes: "Backend WS program - calculates devise ecarts during ouverture/fermeture. Reads moyens_reglement_mor (UNI/BI paths) and links to gestion_devise_session. Frontend has EcartDevise and SessionEcart types in types/session.ts with ecart display in EcartDisplay.tsx and EcartJustificationDialog.tsx, but the actual calculation is server-side. Candidate for partial frontend mirroring if offline mode requires local ecart estimation."

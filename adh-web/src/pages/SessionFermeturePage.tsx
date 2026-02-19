@@ -17,7 +17,8 @@ import { useSessionStore, useCaisseStore, useAuthStore } from '@/stores';
 import { executePrint, TicketType } from '@/services/printer';
 import type { PrinterChoice } from '@/services/printer';
 import type { DenominationCatalog, CountingResult } from '@/types/denomination';
-import type { SessionEcart, FermetureRecapColumn } from '@/types/session';
+import type { SessionEcart, FermetureRecapColumn, SoldeParMOP } from '@/types/session';
+import { createEmptySoldeParMOP } from '@/types/session';
 import { Printer, Plus } from 'lucide-react';
 
 type Step = 'comptage' | 'ecarts' | 'justification' | 'fermeture' | 'succes';
@@ -30,6 +31,8 @@ export function SessionFermeturePage() {
   const currentSession = useSessionStore((s) => s.currentSession);
   const closeSession = useSessionStore((s) => s.closeSession);
   const status = useSessionStore((s) => s.status);
+  const calculateMopFromResults = useSessionStore((s) => s.calculateMopFromResults);
+  const lastMopSoldeInitial = useSessionStore((s) => s.lastMopSoldeInitial);
   const config = useCaisseStore((s) => s.config);
   const denominations = useCaisseStore((s) => s.denominations);
   const loadDenominations = useCaisseStore((s) => s.loadDenominations);
@@ -83,11 +86,6 @@ export function SessionFermeturePage() {
     setApports((prev) => [...prev, { type, montant, motif, devise: activeDevise }]);
     setShowApportDialog(false);
   };
-
-  // T4-A2: Total apports for active devise
-  const totalApports = apports
-    .filter((a) => a.devise === activeDevise)
-    .reduce((sum, a) => sum + a.montant, 0);
 
   const handleCountChange = useCallback((denominationId: number, quantite: number) => {
     setCounting((prev) => {
@@ -184,33 +182,28 @@ export function SessionFermeturePage() {
     };
   };
 
-  // T4-A1: Compute 6-column recap for fermeture
+  // B1: Compute 6-column recap using MOP breakdown from counting results
   const computeFermetureRecap = (): FermetureRecapColumn[] => {
     const results = computeResults();
-    const totalCompte = results.reduce((sum, r) => sum + r.totalCompte, 0);
-    const totalAttendu = results.reduce((sum, r) => sum + r.totalAttendu, 0);
+    const mopComptee = calculateMopFromResults(results);
+    // Solde initial from last opening (attendu), fallback to empty
+    const mopAttendu = lastMopSoldeInitial ?? createEmptySoldeParMOP();
 
-    // Mock: proportional distribution across 6 types
-    const types: Array<{ type: FermetureRecapColumn['type']; label: string; pct: number }> = [
-      { type: 'cash', label: 'Cash', pct: 0.40 },
-      { type: 'cartes', label: 'Cartes', pct: 0.30 },
-      { type: 'cheques', label: 'Cheques', pct: 0.10 },
-      { type: 'produits', label: 'Produits', pct: 0.10 },
-      { type: 'od', label: 'OD', pct: 0.05 },
-      { type: 'devises', label: 'Devises', pct: 0.05 },
+    const columns: Array<{ type: FermetureRecapColumn['type']; label: string; key: keyof Omit<SoldeParMOP, 'total'> }> = [
+      { type: 'cash', label: 'Cash', key: 'monnaie' },
+      { type: 'cartes', label: 'Cartes', key: 'cartes' },
+      { type: 'cheques', label: 'Cheques', key: 'cheques' },
+      { type: 'produits', label: 'Produits', key: 'produits' },
+      { type: 'od', label: 'OD', key: 'od' },
     ];
 
-    return types.map((t) => {
-      const montantAttendu = Math.round(totalAttendu * t.pct * 100) / 100;
-      const montantCompte = Math.round(totalCompte * t.pct * 100) / 100;
-      return {
-        type: t.type,
-        label: t.label,
-        montantAttendu,
-        montantCompte,
-        ecart: Math.round((montantCompte - montantAttendu) * 100) / 100,
-      };
-    });
+    return columns.map((col) => ({
+      type: col.type,
+      label: col.label,
+      montantAttendu: mopAttendu[col.key],
+      montantCompte: mopComptee[col.key],
+      ecart: Math.round((mopComptee[col.key] - mopAttendu[col.key]) * 100) / 100,
+    }));
   };
 
   const handleValidate = () => {

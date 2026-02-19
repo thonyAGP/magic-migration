@@ -1,0 +1,185 @@
+# SPECMAP Migration Contract
+# Generated: 2026-02-11
+# Program: ADH IDE 123 - Apport coffre
+
+program:
+  id: 123
+  name: "Apport coffre"
+  complexity: "BASSE"
+  callers: [121, 122, 131, 297, 298, 299]
+  callees: [43]
+  tasks_count: 15
+  tables_count: 5
+  expressions_count: 8
+
+rules:
+  - id: RM-001
+    description: "Condition UNI/BI different de B (mode UNI)"
+    condition: "Param UNI/BI [F]<>'B'"
+    variables: ["ES (Param UNI/BI)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "UNI/BI mode is legacy Magic concept, frontend handles multi-devise natively"
+
+  - id: RM-002
+    description: "Condition UNI/BI egal B (mode BI-devise)"
+    condition: "Param UNI/BI [F]='B'"
+    variables: ["ES (Param UNI/BI)"]
+    status: N/A
+    target_file: ""
+    gap_notes: "UNI/BI mode not applicable, frontend supports any number of devises"
+
+  - id: RM-003
+    description: "Negation: devise a la vente n'existe pas"
+    condition: "NOT (Existe devise a la vente [J])"
+    variables: ["EW (Existe devise a la vente)"]
+    status: MISSING
+    target_file: ""
+    gap_notes: "No check for whether a devise is available for sale/apport. ApproCoffreForm accepts any devise from config.devisesAutorisees without validating availability"
+
+  - id: RM-004
+    description: "Negation: coffre 2 non ouvert AND host non courant coffre 2"
+    condition: "NOT (Param coffre 2 ouvert [H]) AND NOT p.i.Host courant coffr... [I]"
+    variables: ["EU (Param coffre 2 ouvert)"]
+    status: MISSING
+    target_file: ""
+    gap_notes: "Coffre 2 (secondary safe) concept not implemented in frontend"
+
+variables:
+  - letter: "EV"
+    name: "p.i.Host courant coffre 2 ?"
+    type: "Parameter"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Coffre 2 concept not implemented"
+
+  - letter: "EN"
+    name: "Param societe"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend context"
+
+  - letter: "EO"
+    name: "Param masque montant"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Legacy display mask, frontend uses Intl.NumberFormat"
+
+  - letter: "EP"
+    name: "Param Montant apport"
+    type: "Real"
+    status: IMPL
+    target_file: "src/components/caisse/operations/ApproCoffreForm.tsx"
+    gap_notes: "montant field in ApproCoffreForm, validated by apportCoffreSchema"
+
+  - letter: "EQ"
+    name: "Param devise locale"
+    type: "Real"
+    status: IMPL
+    target_file: "src/components/caisse/operations/ApproCoffreForm.tsx"
+    gap_notes: "deviseCode select in form, populated from devises prop"
+
+  - letter: "ER"
+    name: "Param quand"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Context (O/F) is implicit from page navigation"
+
+  - letter: "ES"
+    name: "Param UNI/BI"
+    type: "Real"
+    status: N/A
+    target_file: ""
+    gap_notes: "Legacy concept, not applicable"
+
+  - letter: "ET"
+    name: "Param Nombre devises apport"
+    type: "Real"
+    status: PARTIAL
+    target_file: "src/types/caisseOps.ts"
+    gap_notes: "Single devise per apport in current form vs multi-devise loop in legacy"
+
+  - letter: "EU"
+    name: "Param coffre 2 ouvert"
+    type: "Real"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Coffre 2 not implemented"
+
+  - letter: "EW"
+    name: "Existe devise a la vente"
+    type: "Real"
+    status: MISSING
+    target_file: ""
+    gap_notes: "No devise availability check"
+
+  - letter: "EX"
+    name: "Fin"
+    type: "Real"
+    status: IMPL
+    target_file: "src/stores/caisseOpsStore.ts"
+    gap_notes: "isExecuting flag controls flow, reset() terminates"
+
+tables:
+  - id: 244
+    name: "saisie_approvisionnement"
+    mode: "RWL"
+    status: IMPL
+    target_file: "src/services/api/endpoints-caisse-ops.ts"
+    gap_notes: "caisseOpsApi.apportCoffre() POST persists via API"
+
+  - id: 232
+    name: "gestion_devise_session"
+    mode: "W"
+    status: PARTIAL
+    target_file: "src/stores/sessionStore.ts"
+    gap_notes: "updateDevise() updates session devises but not Nombre devises apport or Libelle devise specifically"
+
+  - id: 67
+    name: "tables___________tab"
+    mode: "R"
+    status: N/A
+    target_file: ""
+    gap_notes: "Backend reference table"
+
+  - id: 141
+    name: "devises__________dev"
+    mode: "R"
+    status: IMPL
+    target_file: "src/stores/caisseStore.ts"
+    gap_notes: "devisesAutorisees provides devise list"
+
+  - id: 215
+    name: "comptage_coffre_devise_histo"
+    mode: "L"
+    status: MISSING
+    target_file: ""
+    gap_notes: "Coffre counting history per devise not implemented"
+
+callees:
+  - ide: 43
+    name: "Recuperation du titre"
+    calls: 2
+    context: "Lookup titre devise"
+    status: N/A
+    target: ""
+    gap_notes: "Backend utility, devise names come from config"
+
+overall:
+  rules_total: 4
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 2
+  rules_na: 2
+  variables_key_count: 11
+  callees_total: 1
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 55
+  status: contracted
+  generated: "2026-02-11"
+  notes: |
+    Well-implemented core: ApproCoffreForm with Zod validation, caisseOpsStore.executeApportCoffre() with mock/API dual mode, and caisseOpsApi endpoint. Key gaps: (1) Coffre 2 (secondary safe) feature entirely missing - RM-004 rule; (2) devise availability check missing - RM-003 rule; (3) multi-devise loop in single apport (legacy iterates devises, frontend submits one at a time); (4) coffre counting history (table 215) not tracked. The optional denominations field in ApportCoffreData shows foresight but is not yet used in the form UI.

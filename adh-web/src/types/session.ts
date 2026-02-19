@@ -1,5 +1,32 @@
 export type SessionStatus = 'closed' | 'opening' | 'open' | 'closing';
 
+// MOP (Modes de Paiement) categories - maps Magic IDE 120/126/129 MOP breakdown
+const MOP_CATEGORY = {
+  monnaie: 'monnaie',
+  produits: 'produits',
+  cartes: 'cartes',
+  cheques: 'cheques',
+  od: 'od',
+} as const;
+
+export type MOPCategory = (typeof MOP_CATEGORY)[keyof typeof MOP_CATEGORY];
+
+// Reusable MOP breakdown (IDE 122: FG-FK, FP-FU, FW-GB, GD-GI)
+export interface SoldeParMOP {
+  total: number;
+  monnaie: number;
+  produits: number;
+  cartes: number;
+  cheques: number;
+  od: number;
+}
+
+export function createEmptySoldeParMOP(): SoldeParMOP {
+  return { total: 0, monnaie: 0, produits: 0, cartes: 0, cheques: 0, od: 0 };
+}
+
+export { MOP_CATEGORY };
+
 export interface DeviseSession {
   deviseCode: string;
   fondCaisse: number;
@@ -46,6 +73,12 @@ export interface SessionEcart {
   estEquilibre: boolean;
   statut: 'equilibre' | 'positif' | 'negatif' | 'alerte';
   ecartsDevises: EcartDevise[];
+  // MOP-level ecart breakdown (IDE 129: FH-FM)
+  mopCompte?: SoldeParMOP;
+  mopAttendu?: SoldeParMOP;
+  mopEcart?: SoldeParMOP;
+  commentaire?: string;
+  commentaireDevise?: string;
 }
 
 export interface SessionHistoryItem {
