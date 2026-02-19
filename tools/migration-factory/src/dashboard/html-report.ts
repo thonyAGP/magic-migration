@@ -5,7 +5,7 @@
 
 import type {
   FullMigrationReport, ModuleSummary, ProgramSummary, MigrationWave,
-  MultiProjectReport, ProjectEntry, GlobalSummary,
+  MultiProjectReport, ProjectEntry, GlobalSummary, ProgramEstimation,
 } from '../core/types.js';
 
 export const generateHtmlReport = (report: FullMigrationReport): string => {
@@ -28,6 +28,7 @@ ${CSS}
 ${renderHeader(report)}
 ${renderKpiCards(report)}
 ${renderPipelineSection(pipeline, live)}
+${renderEstimationSection(report)}
 ${renderModulesSection(modules)}
 ${renderMigrationSequence(report)}
 ${renderDecommissionSection(decommission, live)}
@@ -140,6 +141,68 @@ const renderDonut = (segments: { value: number; color: string; label: string }[]
       <div class="donut-center">${Math.round((segments[0]?.value ?? 0) / (total || 1) * 100)}%</div>
     </div>
     <div class="legend">${legend}</div>`;
+};
+
+const gradeBadge = (grade: string): string => {
+  const colorMap: Record<string, string> = { S: 'var(--red)', A: 'var(--orange)', B: 'var(--yellow)', C: 'var(--blue)', D: 'var(--green)' };
+  const color = colorMap[grade] ?? 'var(--gray)';
+  return `<span class="grade-badge" style="background:${color}">${grade}</span>`;
+};
+
+const renderEstimationSection = (r: FullMigrationReport): string => {
+  const est = r.estimation;
+  if (!est) return '';
+
+  const { totalEstimatedHours, remainingHours, avgScore, gradeDistribution, top10 } = est;
+  const completedHours = totalEstimatedHours - remainingHours;
+  const progressPct = totalEstimatedHours > 0 ? Math.round(completedHours / totalEstimatedHours * 100) : 0;
+
+  // Donut for grade distribution
+  const gradeColors: Record<string, string> = { S: 'var(--red)', A: 'var(--orange)', B: 'var(--yellow)', C: 'var(--blue)', D: 'var(--green)' };
+  const gradeSegments = Object.entries(gradeDistribution)
+    .filter(([, v]) => v > 0)
+    .map(([grade, value]) => ({ value, color: gradeColors[grade] ?? 'var(--gray)', label: `Grade ${grade}` }));
+  const gradeTotal = gradeSegments.reduce((s, seg) => s + seg.value, 0);
+
+  const top10Rows = top10.map(p =>
+    `<tr>
+      <td>${escHtml(String(p.id))}</td>
+      <td>${escHtml(p.name)}</td>
+      <td class="center">${gradeBadge(p.score.grade)}</td>
+      <td class="center">${p.score.normalizedScore}</td>
+      <td class="center">${p.score.estimatedHours}h</td>
+      <td><span class="status-pill status-${p.status}">${p.status}</span></td>
+    </tr>`).join('');
+
+  return `
+<section class="card">
+  <h2>Estimation &amp; Effort</h2>
+  <div class="estimation-grid">
+    <div class="estimation-kpi">
+      ${kpiCard('Effort total', `${totalEstimatedHours}h`, `Score moyen: ${avgScore}`, 'var(--purple)')}
+      ${kpiCard('Effort restant', `${remainingHours}h`, `${progressPct}% complete`, 'var(--orange)')}
+    </div>
+    <div class="estimation-donut">
+      ${gradeTotal > 0 ? renderDonut(gradeSegments, gradeTotal) : '<div class="no-data">Pas de donnees</div>'}
+    </div>
+  </div>
+  <div class="effort-bar-container">
+    <div class="bar-track bar-large">
+      <div class="bar-fill" style="width: ${progressPct}%; background: linear-gradient(90deg, var(--green), var(--blue))"></div>
+    </div>
+    <div class="effort-bar-label">${completedHours}h completes / ${totalEstimatedHours}h total (${progressPct}%)</div>
+  </div>
+  ${top10.length > 0 ? `
+  <h3 style="margin-top:16px;margin-bottom:8px;font-size:14px;color:var(--text-dim)">Top 10 programmes les plus complexes</h3>
+  <div class="table-scroll">
+    <table>
+      <thead><tr>
+        <th>ID</th><th>Nom</th><th class="center">Grade</th><th class="center">Score</th><th class="center">Est.</th><th>Statut</th>
+      </tr></thead>
+      <tbody>${top10Rows}</tbody>
+    </table>
+  </div>` : ''}
+</section>`;
 };
 
 const renderModulesSection = (modules: FullMigrationReport['modules']): string => {
@@ -298,11 +361,17 @@ const renderProgramTable = (programs: ProgramSummary[]): string => {
     const statusClass = `status-${p.status}`;
     const decom = p.decommissionable ? '<span class="badge badge-green badge-sm">OFF</span>' : '';
     const shared = p.shared ? '<span class="badge badge-purple badge-sm">ECF</span>' : '';
+    const gradeCell = p.complexityGrade ? gradeBadge(p.complexityGrade) : '-';
+    const scoreCell = p.complexityScore != null ? String(p.complexityScore) : '-';
+    const estCell = p.estimatedHours != null ? `${p.estimatedHours}h` : '-';
     return `<tr class="${statusClass}">
       <td>${escHtml(String(p.id))}</td>
       <td>${escHtml(p.name)}</td>
       <td class="center">${p.level}</td>
       <td><span class="status-pill status-${p.status}">${p.status}</span></td>
+      <td class="center">${gradeCell}</td>
+      <td class="center">${scoreCell}</td>
+      <td class="center">${estCell}</td>
       <td class="center">${decom}${shared}</td>
       <td>${escHtml(p.domain)}</td>
     </tr>`;
@@ -330,6 +399,9 @@ const renderProgramTable = (programs: ProgramSummary[]): string => {
           <th data-sort="name">Nom</th>
           <th data-sort="level" class="center">Niveau</th>
           <th data-sort="status">Statut</th>
+          <th data-sort="grade" class="center">Grade</th>
+          <th data-sort="score" class="center">Score</th>
+          <th data-sort="est" class="center">Est.</th>
           <th class="center">Tags</th>
           <th data-sort="domain">Domaine</th>
         </tr>
@@ -506,6 +578,7 @@ const renderProjectTab = (entry: ProjectEntry): string => {
 <div class="tab-content" data-tab="${escHtml(entry.name)}">
   ${renderKpiCards(r)}
   ${renderPipelineSection(r.pipeline, live)}
+  ${renderEstimationSection(r)}
   ${renderModulesSection(r.modules)}
   ${renderMigrationSequence(r)}
   ${renderDecommissionSection(r.decommission, live)}
@@ -832,6 +905,38 @@ td { padding: 6px 10px; border-bottom: 1px solid var(--border); }
 
 tr:hover td { background: rgba(88,166,255,0.05); }
 
+/* Grade badge */
+.grade-badge {
+  display: inline-block;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Estimation section */
+.estimation-grid {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.estimation-kpi {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.estimation-kpi .kpi-card { flex: 1; min-width: 180px; }
+.estimation-donut { flex: 0 0 auto; }
+.effort-bar-container { text-align: center; margin-top: 8px; }
+.effort-bar-label { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
+.no-data { color: var(--text-dim); font-style: italic; padding: 20px; }
+
 footer {
   text-align: center;
   padding: 20px;
@@ -921,7 +1026,7 @@ document.querySelectorAll('th[data-sort]').forEach(th => {
 
     const tbody = table.querySelector('tbody');
     const rows = Array.from(tbody.querySelectorAll('tr'));
-    const colIndex = { id: 0, name: 1, level: 2, status: 3, domain: 5 }[col] ?? 0;
+    const colIndex = { id: 0, name: 1, level: 2, status: 3, grade: 4, score: 5, est: 6, domain: 8 }[col] ?? 0;
 
     rows.sort((a, b) => {
       const va = a.querySelectorAll('td')[colIndex].textContent.trim();

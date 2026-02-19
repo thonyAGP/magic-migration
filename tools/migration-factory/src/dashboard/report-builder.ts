@@ -8,11 +8,14 @@ import type {
   FullMigrationReport, ModuleSummary, ProgramSummary, BatchSummary,
   ModuleDependency, MigrationWave, ModuleSCC,
   MultiProjectReport, GlobalSummary, ProjectEntry, ProjectStatus,
+  MigrationContract, ProgramEstimation,
 } from '../core/types.js';
 import type { ModuleCalculatorOutput } from '../calculators/module-calculator.js';
 import type { ReadinessReport } from '../core/types.js';
 import type { DecommissionResult } from '../core/types.js';
 import { computeModulePriority } from '../calculators/priority-calculator.js';
+import { estimateProject, computeRemainingHours } from '../calculators/effort-estimator.js';
+import { scoreProgram, DEFAULT_ESTIMATION_CONFIG } from '../calculators/complexity-scorer.js';
 
 export interface ReportInput {
   projectName: string;
@@ -25,6 +28,7 @@ export interface ReportInput {
   readiness: ReadinessReport;
   decommission: DecommissionResult;
   tracker?: Tracker;
+  contracts?: Map<string | number, MigrationContract>;
 }
 
 export const buildReport = (input: ReportInput): FullMigrationReport => {
@@ -93,18 +97,37 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
     coveragePct: b.stats.coverageAvgFrontend,
   }));
 
+  // Estimation: score each program
+  const estimation = estimateProject({
+    programs,
+    contracts: input.contracts ?? new Map(),
+    programStatuses,
+    maxLevel,
+  });
+
+  // Build a quick lookup for scores
+  const scoreMap = new Map(estimation.programs.map(e => [e.id, e]));
+
   // Program list
   const programList: ProgramSummary[] = programs
     .sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
-    .map(p => ({
-      id: p.id,
-      name: p.name,
-      level: p.level ?? 0,
-      status: programStatuses.get(p.id) ?? 'pending' as PipelineStatus,
-      decommissionable: decommissionSet.has(p.id),
-      shared: sharedPrograms.has(p.id),
-      domain: p.domain ?? '',
-    }));
+    .map(p => {
+      const est = scoreMap.get(p.id);
+      return {
+        id: p.id,
+        name: p.name,
+        level: p.level ?? 0,
+        status: programStatuses.get(p.id) ?? 'pending' as PipelineStatus,
+        decommissionable: decommissionSet.has(p.id),
+        shared: sharedPrograms.has(p.id),
+        domain: p.domain ?? '',
+        complexityScore: est?.score.normalizedScore,
+        complexityGrade: est?.score.grade,
+        estimatedHours: est?.score.estimatedHours,
+      };
+    });
+
+  const remaining = computeRemainingHours(estimation);
 
   return {
     generated: new Date().toISOString(),
@@ -133,6 +156,13 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
       moduleDependencies: priorityResult.moduleDependencies,
       migrationSequence: priorityResult.migrationSequence,
       moduleSCCs: priorityResult.moduleSCCs,
+    },
+    estimation: {
+      totalEstimatedHours: estimation.totalEstimatedHours,
+      remainingHours: remaining,
+      avgScore: estimation.avgComplexityScore,
+      gradeDistribution: estimation.gradeDistribution,
+      top10: estimation.programs.slice(0, 10),
     },
   };
 };

@@ -7,7 +7,7 @@ import path from 'node:path';
 import YAML from 'yaml';
 import type {
   MigrationContract, ContractRule, ContractVariable,
-  ContractTable, ContractCallee, ContractOverall, ItemStatus,
+  ContractTable, ContractCallee, ContractOverall, ContractEffort, ItemStatus,
 } from './types.js';
 
 // ─── Parse contract from YAML file ──────────────────────────────
@@ -100,6 +100,15 @@ export const writeContract = (contract: MigrationContract, filePath: string): vo
       status: contract.overall.status,
       generated: contract.overall.generated,
       notes: contract.overall.notes,
+      ...(contract.overall.effort ? {
+        effort: {
+          contracted_at: contract.overall.effort.contractedAt,
+          enriched_at: contract.overall.effort.enrichedAt,
+          verified_at: contract.overall.effort.verifiedAt,
+          estimated_hours: contract.overall.effort.estimatedHours,
+          actual_hours: contract.overall.effort.actualHours,
+        },
+      } : {}),
     },
   };
 
@@ -205,6 +214,17 @@ const mapCallee = (c: Record<string, unknown>): ContractCallee => ({
   gapNotes: String(c.gap_notes ?? ''),
 });
 
+const mapEffort = (e: Record<string, unknown> | undefined): ContractEffort | undefined => {
+  if (!e) return undefined;
+  return {
+    contractedAt: e.contracted_at ? String(e.contracted_at) : undefined,
+    enrichedAt: e.enriched_at ? String(e.enriched_at) : undefined,
+    verifiedAt: e.verified_at ? String(e.verified_at) : undefined,
+    estimatedHours: e.estimated_hours != null ? Number(e.estimated_hours) : undefined,
+    actualHours: e.actual_hours != null ? Number(e.actual_hours) : undefined,
+  };
+};
+
 const mapOverall = (o: Record<string, unknown>): ContractOverall => ({
   rulesTotal: Number(o.rules_total ?? 0),
   rulesImpl: Number(o.rules_impl ?? 0),
@@ -219,4 +239,5 @@ const mapOverall = (o: Record<string, unknown>): ContractOverall => ({
   status: String(o.status ?? 'pending') as MigrationContract['overall']['status'],
   generated: String(o.generated ?? ''),
   notes: String(o.notes ?? ''),
+  effort: mapEffort(o.effort as Record<string, unknown> | undefined),
 });

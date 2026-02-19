@@ -23,12 +23,15 @@ import { planBatches } from './calculators/batch-planner.js';
 import { calculateDecommission } from './calculators/decommission-calculator.js';
 import { getPipelineStatus } from './orchestrator/orchestrator.js';
 import { readTracker, createTracker, writeTracker } from './core/tracker.js';
-import { parseContract, writeContract } from './core/contract.js';
+import { parseContract, writeContract, loadContracts } from './core/contract.js';
 import { canTransition } from './core/pipeline.js';
 import { renderDashboard } from './dashboard/dashboard.js';
 import { renderModuleReadiness } from './dashboard/module-readiness.js';
 import { buildReport, buildMultiProjectReport } from './dashboard/report-builder.js';
 import { generateHtmlReport, generateMultiProjectHtmlReport } from './dashboard/html-report.js';
+import { estimateProject } from './calculators/effort-estimator.js';
+import { trackStatusChange } from './calculators/effort-tracker.js';
+import { generateAutoContract } from './generators/auto-contract.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -355,6 +358,7 @@ const run = async () => {
         }
 
         contract.overall.status = targetStatus;
+        contract.overall.effort = trackStatusChange(contract, targetStatus);
         writeContract(contract, filePath);
         console.log(`  IDE ${id}: ${currentStatus} → ${targetStatus}`);
         updated++;
@@ -607,6 +611,93 @@ const run = async () => {
       break;
     }
 
+    case 'estimate': {
+      const adapter = await createAdapterFromArgs(projectDir);
+      const graph = await adapter.extractProgramGraph();
+      const estSubDir = getArg('dir');
+      const estContractDir = estSubDir ? path.join(migrationDir, estSubDir) : migrationDir;
+      const contracts = loadContracts(estContractDir);
+
+      const statuses = fs.existsSync(trackerFile)
+        ? getPipelineStatus({ migrationDir, trackerFile, adapter })
+        : new Map<string | number, PipelineStatus>();
+
+      const estimation = estimateProject({
+        programs: graph.programs,
+        contracts,
+        programStatuses: statuses,
+      });
+
+      console.log(`\nEstimation for ${graph.programs.length} programs:\n`);
+      console.log(`  Total estimated: ${estimation.totalEstimatedHours}h`);
+      console.log(`  Average score: ${estimation.avgComplexityScore}/100`);
+      console.log(`  Grade distribution:`);
+      for (const [grade, count] of Object.entries(estimation.gradeDistribution)) {
+        if (count > 0) console.log(`    ${grade}: ${count} programs`);
+      }
+
+      console.log(`\n  Top 10 most complex:`);
+      for (const p of estimation.programs.slice(0, 10)) {
+        console.log(`    IDE ${p.id} - ${p.name}: ${p.score.grade} (${p.score.normalizedScore}) ~${p.score.estimatedHours}h`);
+      }
+      break;
+    }
+
+    case 'contract': {
+      if (!hasFlag('auto')) {
+        console.error('Usage: contract --auto --project <dir> --program <id> [--programs <id,id,...>] [--dir ADH]');
+        process.exit(1);
+      }
+
+      const contractSubDir = getArg('dir') ?? 'ADH';
+      const contractContractDir = path.join(migrationDir, contractSubDir);
+      const specDir = path.join(projectDir, '.openspec', 'specs');
+      const codebaseDir = path.join(projectDir, 'adh-web', 'src');
+
+      const singleProg = getArg('program');
+      const multiProgs = getArg('programs');
+      const programIds = singleProg
+        ? [singleProg]
+        : multiProgs
+          ? multiProgs.split(',').map(s => s.trim()).filter(Boolean)
+          : [];
+
+      if (programIds.length === 0) {
+        console.error('Specify --program <id> or --programs <id,id,...>');
+        process.exit(1);
+      }
+
+      if (!fs.existsSync(contractContractDir)) fs.mkdirSync(contractContractDir, { recursive: true });
+
+      let generated = 0;
+      for (const id of programIds) {
+        const specFile = path.join(specDir, `${contractSubDir}-IDE-${id}.md`);
+        if (!fs.existsSync(specFile)) {
+          console.error(`  IDE ${id}: spec not found (${specFile})`);
+          continue;
+        }
+
+        const contract = generateAutoContract({
+          specFile,
+          codebaseDir,
+          projectDir,
+        });
+
+        if (!contract) {
+          console.error(`  IDE ${id}: failed to generate contract`);
+          continue;
+        }
+
+        const outFile = path.join(contractContractDir, `${contractSubDir}-IDE-${id}.contract.yaml`);
+        writeContract(contract, outFile);
+        console.log(`  IDE ${id}: contract generated (${contract.rules.length} rules, ${contract.tables.length} tables, ${contract.callees.length} callees, ${contract.overall.coveragePct}% coverage)`);
+        generated++;
+      }
+
+      console.log(`\nResult: ${generated} contracts generated out of ${programIds.length} requested`);
+      break;
+    }
+
     default:
       console.log('Migration Factory - Reusable SPECMAP migration pipeline\n');
       console.log('Commands:');
@@ -619,6 +710,8 @@ const run = async () => {
       console.log('  set-status --project <dir> --programs 1,2,3 --status enriched [--dir ADH]');
       console.log('  verify     --project <dir> [--programs 1,2,3] [--dir ADH] [--dry-run]');
       console.log('  gaps       --project <dir> [--dir ADH] [--status enriched]');
+      console.log('  estimate   --project <dir> [--dir ADH]                      Estimate effort');
+      console.log('  contract   --auto --project <dir> --program <id> [--dir ADH]  Auto-generate contract');
       console.log('\nOptions:');
       console.log('  --adapter magic|generic                     Source adapter (default: magic)');
       console.log('  --programs <file|id,id,...>                  Programs file or IDs');

@@ -148,6 +148,7 @@ export interface ContractOverall {
   status: PipelineStatus;
   generated: string;
   notes: string;
+  effort?: ContractEffort;
 }
 
 // ─── Pipeline Status ─────────────────────────────────────────────
@@ -433,6 +434,13 @@ export interface FullMigrationReport {
     migrationSequence: MigrationWave[];
     moduleSCCs: ModuleSCC[];
   };
+  estimation?: {
+    totalEstimatedHours: number;
+    remainingHours: number;
+    avgScore: number;
+    gradeDistribution: Record<string, number>;
+    top10: ProgramEstimation[];
+  };
 }
 
 export interface ModuleSummary {
@@ -470,4 +478,72 @@ export interface ProgramSummary {
   decommissionable: boolean;
   shared: boolean;
   domain: string;
+  complexityScore?: number;
+  complexityGrade?: ComplexityGrade;
+  estimatedHours?: number;
+}
+
+// ─── Complexity Estimation ──────────────────────────────────────
+
+export interface ComplexityFactors {
+  structural: number;
+  dataAccess: number;
+  integration: number;
+  depth: number;
+  uiComplexity: number;
+}
+
+export const ComplexityGrade = {
+  S: 'S',
+  A: 'A',
+  B: 'B',
+  C: 'C',
+  D: 'D',
+} as const;
+export type ComplexityGrade = (typeof ComplexityGrade)[keyof typeof ComplexityGrade];
+
+export interface ComplexityScore {
+  factors: ComplexityFactors;
+  rawScore: number;
+  normalizedScore: number;
+  grade: ComplexityGrade;
+  estimatedHours: number;
+  confidence: 'high' | 'medium' | 'low';
+}
+
+export interface EstimationConfig {
+  weights: {
+    structural: number;
+    dataAccess: number;
+    integration: number;
+    depth: number;
+    uiComplexity: number;
+  };
+  hoursPerPoint: number;
+  calibrationSource?: string;
+}
+
+export interface ProgramEstimation {
+  id: string | number;
+  name: string;
+  score: ComplexityScore;
+  status: PipelineStatus;
+}
+
+export interface ProjectEstimation {
+  programs: ProgramEstimation[];
+  totalEstimatedHours: number;
+  avgComplexityScore: number;
+  gradeDistribution: Record<string, number>;
+  calibration: EstimationConfig;
+}
+
+// ─── Contract Effort Tracking ───────────────────────────────────
+
+export interface ContractEffort {
+  contractedAt?: string;
+  enrichedAt?: string;
+  verifiedAt?: string;
+  estimatedHours?: number;
+  actualHours?: number;
 }
