@@ -1,3 +1,3 @@
 @echo off
 cd /d "D:\Projects\Lecteur Magic\.openspec"
-npx serve -l 3000 . --no-clipboard
+npx serve -l 3070 . --no-clipboard

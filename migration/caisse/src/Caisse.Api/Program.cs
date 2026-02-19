@@ -64,9 +64,9 @@ try
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
 
-    // CORS for ADH Web frontend (dev: Vite on port 3050)
+    // CORS for ADH Web frontend (dev: Vite on port 3071)
     builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:3050")
+        policy.WithOrigins("http://localhost:3071")
               .AllowAnyMethod()
               .AllowAnyHeader()));
 

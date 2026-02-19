@@ -4,7 +4,7 @@ type MessageHandler<T = unknown> = (message: WsMessage<T>) => void;
 type StatusHandler = (status: WsStatus) => void;
 
 const DEFAULT_CONFIG: WsConfig = {
-  url: `ws://${globalThis.location?.host ?? 'localhost:3050'}/ws`,
+  url: `ws://${globalThis.location?.host ?? 'localhost:3071'}/ws`,
   reconnectMaxRetries: 10,
   reconnectBaseDelay: 1000,
   heartbeatInterval: 30000,

@@ -3,4 +3,4 @@
 
 Set WshShell = CreateObject("WScript.Shell")
 WshShell.CurrentDirectory = "D:\Projects\Lecteur Magic\.openspec"
-WshShell.Run "cmd /c npx serve -l 3000 . --no-clipboard", 0, False
+WshShell.Run "cmd /c npx serve -l 3070 . --no-clipboard", 0, False

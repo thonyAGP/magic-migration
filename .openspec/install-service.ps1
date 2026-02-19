@@ -9,7 +9,7 @@ param(
 
 $taskName = "OpenSpecViewer"
 $workingDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$port = 3000
+$port = 3070
 
 function Install-Service {
     Write-Host "`n  Installation du service OpenSpec Viewer..." -ForegroundColor Cyan
