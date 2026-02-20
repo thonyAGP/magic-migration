@@ -672,7 +672,7 @@ footer {
 <header>
   <h1>SPECMAP Migration Dashboard</h1>
   <div class="subtitle">29 projets &middot; 1 actif &middot; 212 programmes LIVE</div>
-  <div class="last-updated">Derniere mise a jour : 20 février 2026 a 18:16</div>
+  <div class="last-updated">Derniere mise a jour : 20 février 2026 a 18:58</div>
 </header>
 
 <nav class="project-tabs-bar">
@@ -692,6 +692,7 @@ footer {
   <button class="action-btn" id="btn-calibrate" disabled title="Run 'migration-factory serve' to enable">Calibrate</button>
   <button class="action-btn" id="btn-generate" disabled title="Run 'migration-factory serve' to enable" style="background:#7c3aed;color:#fff">Generate Code</button>
   <button class="action-btn" id="btn-migrate" disabled title="Run 'migration-factory serve' to enable" style="background:#059669;color:#fff">Migrate Module</button>
+  <button class="action-btn" id="btn-migrate-auto" disabled title="Run 'migration-factory serve' to enable" style="background:#0d9488;color:#fff">Migration Auto</button>
   <button class="action-btn" id="btn-analyze" disabled title="Run 'migration-factory serve' to enable" style="background:#6366f1;color:#fff">Analyze Project</button>
   <select id="sel-enrich" disabled title="Enrichment mode" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-main);font-size:12px">
     <option value="none">No enrich</option>
@@ -780,6 +781,7 @@ footer {
         <tr><td><strong>Calibrate</strong></td><td>Recalculate hours-per-point estimate from verified contracts</td></tr>
         <tr><td><strong>Generate Code</strong></td><td>Generate React/TS scaffold files from contracts</td></tr>
         <tr><td><strong>Migrate Module</strong></td><td>Full 15-phase migration pipeline (spec &rarr; code &rarr; test &rarr; review)</td></tr>
+        <tr><td><strong>Migration Auto</strong></td><td>Same as Migrate Module but skips confirmation modal (target: adh-web, parallel: 1)</td></tr>
       </table>
     </div>
 
@@ -944,7 +946,7 @@ migration-factory calibrate                        # Recalculate estimates</pre>
           <span>212 LIVE</span>
           <span>18 verified</span>
           <span>0 contracted</span>
-          <span>10 modules</span>
+          <span>18 modules</span>
         </div>
       </div>
       <div class="project-card project-card-idle">
@@ -1137,9 +1139,9 @@ migration-factory calibrate                        # Recalculate estimates</pre>
   </div>
   
   <div class="kpi-card">
-    <div class="kpi-value" style="color: var(--purple)">1/10</div>
+    <div class="kpi-value" style="color: var(--purple)">1/18</div>
     <div class="kpi-label">Modules livrables</div>
-    <div class="kpi-detail">10% des modules</div>
+    <div class="kpi-detail">6% des modules</div>
   </div>
   
   <div class="kpi-card">
@@ -1316,13 +1318,13 @@ migration-factory calibrate                        # Recalculate estimates</pre>
 </section>
   
 <section class="card">
-  <h2>Modules (1 livrables / 10 total)</h2>
+  <h2>Modules (1 livrables / 18 total)</h2>
   <div class="module-filters">
-    <button class="filter-btn active" data-filter="all">Tous (10)</button>
+    <button class="filter-btn active" data-filter="all">Tous (18)</button>
     <button class="filter-btn" data-filter="deliverable">Livrables (1)</button>
     <button class="filter-btn" data-filter="close">Proches &ge;80% (0)</button>
-    <button class="filter-btn" data-filter="progress">En cours (1)</button>
-    <button class="filter-btn" data-filter="notstarted">Non demarre (8)</button>
+    <button class="filter-btn" data-filter="progress">En cours (5)</button>
+    <button class="filter-btn" data-filter="notstarted">Non demarre (12)</button>
   </div>
   <div class="module-sort">
     <span class="sort-label">Trier par:</span>
@@ -1360,26 +1362,26 @@ migration-factory calibrate                        # Recalculate estimates</pre>
       </div>
       
     </div>
-    <div class="module-row" data-status="progress" data-rank="2" data-readiness="8" data-name="Fermeture Sessions">
+    <div class="module-row" data-status="progress" data-rank="2" data-readiness="29" data-name="Caisse">
       <div class="module-header">
-        <span class="module-name"><span class="rank-badge">P2</span><span class="tag tag-purple">B2</span>Fermeture Sessions</span>
-        <span class="tag tag-orange">D grade</span><span class="tag tag-dim">~142.9h</span>
+        <span class="module-name"><span class="rank-badge">P2</span><span class="tag tag-purple">B2</span>Caisse</span>
+        <span class="tag tag-teal">Caisse</span><span class="tag tag-orange">D grade</span><span class="tag tag-dim">~25.7h</span>
         <span class="badge badge-yellow">EN COURS</span>
       </div>
       <div class="module-stats">
-        <span>123 progs</span>
+        <span>17 progs</span>
         <div class="bar-track bar-small">
-          <div class="bar-fill bar-verified" style="width: 8%"></div>
-          <div class="bar-fill bar-enriched" style="width: 0%; left: 8%"></div>
-          <div class="bar-fill bar-contracted" style="width: 0%; left: 8%"></div>
+          <div class="bar-fill bar-verified" style="width: 29%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 29%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 29%"></div>
         </div>
-        <span class="module-pct">8%</span>
+        <span class="module-pct">29%</span>
       </div>
       <div class="module-breakdown">
-        <span class="tag tag-green">10 verified</span>
+        <span class="tag tag-green">5 verified</span>
         <span class="tag tag-blue">0 enriched</span>
         <span class="tag tag-yellow">0 contracted</span>
-        <span class="tag tag-gray">113 pending</span>
+        <span class="tag tag-gray">12 pending</span>
       </div>
       <div class="module-deps">
         <span>Debloque: 0 modules</span>
@@ -1388,9 +1390,233 @@ migration-factory calibrate                        # Recalculate estimates</pre>
       </div>
       
     </div>
-    <div class="module-row" data-status="notstarted" data-rank="3" data-readiness="0" data-name="Comptes de depôt">
+    <div class="module-row" data-status="progress" data-rank="3" data-readiness="4" data-name="General (1/2)">
       <div class="module-header">
-        <span class="module-name"><span class="rank-badge">P3</span><span class="tag tag-purple">B3</span>Comptes de depôt</span>
+        <span class="module-name"><span class="rank-badge">P3</span><span class="tag tag-purple">B3</span>General (1/2)</span>
+        <span class="tag tag-teal">General</span><span class="tag tag-orange">D grade</span><span class="tag tag-dim">~29.3h</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>25 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 4%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 4%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 4%"></div>
+        </div>
+        <span class="module-pct">4%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">1 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">24 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="4" data-readiness="0" data-name="General (2/2)">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P4</span><span class="tag tag-purple">B4</span>General (2/2)</span>
+        <span class="tag tag-teal">General</span><span class="tag tag-orange">D grade</span><span class="tag tag-dim">~9.6h</span>
+        <span class="badge badge-gray">NON DEMARRE</span>
+      </div>
+      <div class="module-stats">
+        <span>23 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">23 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="progress" data-rank="5" data-readiness="8" data-name="Impression">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P5</span><span class="tag tag-purple">B5</span>Impression</span>
+        <span class="tag tag-teal">Impression</span><span class="tag tag-orange">D grade</span><span class="tag tag-dim">~17.1h</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>13 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 8%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 8%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 8%"></div>
+        </div>
+        <span class="module-pct">8%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">1 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">12 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="6" data-readiness="0" data-name="Compte">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P6</span><span class="tag tag-purple">B6</span>Compte</span>
+        <span class="tag tag-teal">Compte</span><span class="tag tag-orange">D grade</span><span class="tag tag-dim">~14.6h</span>
+        <span class="badge badge-gray">NON DEMARRE</span>
+      </div>
+      <div class="module-stats">
+        <span>8 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">8 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="progress" data-rank="7" data-readiness="20" data-name="Change">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P7</span><span class="tag tag-purple">B7</span>Change</span>
+        <span class="tag tag-teal">Change</span><span class="tag tag-orange">D grade</span><span class="tag tag-dim">~10h</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>10 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 20%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 20%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 20%"></div>
+        </div>
+        <span class="module-pct">20%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">2 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">8 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="8" data-readiness="0" data-name="Stock">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P8</span><span class="tag tag-purple">B8</span>Stock</span>
+        <span class="tag tag-teal">Stock</span><span class="tag tag-orange">D grade</span><span class="tag tag-dim">~2h</span>
+        <span class="badge badge-gray">NON DEMARRE</span>
+      </div>
+      <div class="module-stats">
+        <span>3 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">3 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="9" data-readiness="0" data-name="Ventes">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P9</span><span class="tag tag-purple">B9</span>Ventes</span>
+        <span class="tag tag-teal">Ventes</span><span class="tag tag-orange">D grade</span><span class="tag tag-dim">~24.9h</span>
+        <span class="badge badge-gray">NON DEMARRE</span>
+      </div>
+      <div class="module-stats">
+        <span>16 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 0%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 0%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 0%"></div>
+        </div>
+        <span class="module-pct">0%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">0 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">16 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="progress" data-rank="10" data-readiness="13" data-name="Divers">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P10</span><span class="tag tag-purple">B10</span>Divers</span>
+        <span class="tag tag-teal">misc</span><span class="tag tag-orange">D grade</span><span class="tag tag-dim">~9.7h</span>
+        <span class="badge badge-yellow">EN COURS</span>
+      </div>
+      <div class="module-stats">
+        <span>8 progs</span>
+        <div class="bar-track bar-small">
+          <div class="bar-fill bar-verified" style="width: 13%"></div>
+          <div class="bar-fill bar-enriched" style="width: 0%; left: 13%"></div>
+          <div class="bar-fill bar-contracted" style="width: 0%; left: 13%"></div>
+        </div>
+        <span class="module-pct">13%</span>
+      </div>
+      <div class="module-breakdown">
+        <span class="tag tag-green">1 verified</span>
+        <span class="tag tag-blue">0 enriched</span>
+        <span class="tag tag-yellow">0 contracted</span>
+        <span class="tag tag-gray">7 pending</span>
+      </div>
+      <div class="module-deps">
+        <span>Debloque: 0 modules</span>
+        <span class="dep-separator">&middot;</span>
+        <span>Depend de: (aucun)</span>
+      </div>
+      
+    </div>
+    <div class="module-row" data-status="notstarted" data-rank="11" data-readiness="0" data-name="Comptes de depôt">
+      <div class="module-header">
+        <span class="module-name"><span class="rank-badge">P11</span><span class="tag tag-purple">B11</span>Comptes de depôt</span>
         <span class="tag tag-orange">D grade</span><span class="tag tag-dim">~9h</span>
         <span class="badge badge-gray">NON DEMARRE</span>
       </div>
@@ -1416,9 +1642,9 @@ migration-factory calibrate                        # Recalculate estimates</pre>
       </div>
       
     </div>
-    <div class="module-row" data-status="notstarted" data-rank="4" data-readiness="0" data-name="Club Med Pass menu">
+    <div class="module-row" data-status="notstarted" data-rank="12" data-readiness="0" data-name="Club Med Pass menu">
       <div class="module-header">
-        <span class="module-name"><span class="rank-badge">P4</span><span class="tag tag-purple">B4</span>Club Med Pass menu</span>
+        <span class="module-name"><span class="rank-badge">P12</span><span class="tag tag-purple">B12</span>Club Med Pass menu</span>
         <span class="tag tag-orange">D grade</span><span class="tag tag-dim">~11.2h</span>
         <span class="badge badge-gray">NON DEMARRE</span>
       </div>
@@ -1444,9 +1670,9 @@ migration-factory calibrate                        # Recalculate estimates</pre>
       </div>
       
     </div>
-    <div class="module-row" data-status="notstarted" data-rank="5" data-readiness="0" data-name="Garantie sur compte">
+    <div class="module-row" data-status="notstarted" data-rank="13" data-readiness="0" data-name="Garantie sur compte">
       <div class="module-header">
-        <span class="module-name"><span class="rank-badge">P5</span><span class="tag tag-purple">B5</span>Garantie sur compte</span>
+        <span class="module-name"><span class="rank-badge">P13</span><span class="tag tag-purple">B13</span>Garantie sur compte</span>
         <span class="tag tag-orange">D grade</span><span class="tag tag-dim">~10.3h</span>
         <span class="badge badge-gray">NON DEMARRE</span>
       </div>
@@ -1472,9 +1698,9 @@ migration-factory calibrate                        # Recalculate estimates</pre>
       </div>
       
     </div>
-    <div class="module-row" data-status="notstarted" data-rank="6" data-readiness="0" data-name="Fusion">
+    <div class="module-row" data-status="notstarted" data-rank="14" data-readiness="0" data-name="Fusion">
       <div class="module-header">
-        <span class="module-name"><span class="rank-badge">P6</span><span class="tag tag-purple">B6</span>Fusion</span>
+        <span class="module-name"><span class="rank-badge">P14</span><span class="tag tag-purple">B14</span>Fusion</span>
         <span class="tag tag-orange">D grade</span><span class="tag tag-dim">~3.4h</span>
         <span class="badge badge-gray">NON DEMARRE</span>
       </div>
@@ -1500,9 +1726,9 @@ migration-factory calibrate                        # Recalculate estimates</pre>
       </div>
       
     </div>
-    <div class="module-row" data-status="notstarted" data-rank="7" data-readiness="0" data-name="Solde Easy Check Out">
+    <div class="module-row" data-status="notstarted" data-rank="15" data-readiness="0" data-name="Solde Easy Check Out">
       <div class="module-header">
-        <span class="module-name"><span class="rank-badge">P7</span><span class="tag tag-purple">B7</span>Solde Easy Check Out</span>
+        <span class="module-name"><span class="rank-badge">P15</span><span class="tag tag-purple">B15</span>Solde Easy Check Out</span>
         <span class="tag tag-orange">D grade</span><span class="tag tag-dim">~9.6h</span>
         <span class="badge badge-gray">NON DEMARRE</span>
       </div>
@@ -1528,9 +1754,9 @@ migration-factory calibrate                        # Recalculate estimates</pre>
       </div>
       
     </div>
-    <div class="module-row" data-status="notstarted" data-rank="8" data-readiness="0" data-name="Factures (Tble Compta&amp;Vent) V3">
+    <div class="module-row" data-status="notstarted" data-rank="16" data-readiness="0" data-name="Factures (Tble Compta&amp;Vent) V3">
       <div class="module-header">
-        <span class="module-name"><span class="rank-badge">P8</span><span class="tag tag-purple">B8</span>Factures (Tble Compta&amp;Vent) V3</span>
+        <span class="module-name"><span class="rank-badge">P16</span><span class="tag tag-purple">B16</span>Factures (Tble Compta&amp;Vent) V3</span>
         <span class="tag tag-orange">D grade</span><span class="tag tag-dim">~4.4h</span>
         <span class="badge badge-gray">NON DEMARRE</span>
       </div>
@@ -1556,9 +1782,9 @@ migration-factory calibrate                        # Recalculate estimates</pre>
       </div>
       
     </div>
-    <div class="module-row" data-status="notstarted" data-rank="9" data-readiness="0" data-name="Start">
+    <div class="module-row" data-status="notstarted" data-rank="17" data-readiness="0" data-name="Start">
       <div class="module-header">
-        <span class="module-name"><span class="rank-badge">P9</span><span class="tag tag-purple">B9</span>Start</span>
+        <span class="module-name"><span class="rank-badge">P17</span><span class="tag tag-purple">B17</span>Start</span>
         <span class="tag tag-orange">D grade</span><span class="tag tag-dim">~3.2h</span>
         <span class="badge badge-gray">NON DEMARRE</span>
       </div>
@@ -1584,9 +1810,9 @@ migration-factory calibrate                        # Recalculate estimates</pre>
       </div>
       
     </div>
-    <div class="module-row" data-status="notstarted" data-rank="10" data-readiness="0" data-name="Miscellaneous">
+    <div class="module-row" data-status="notstarted" data-rank="18" data-readiness="0" data-name="Miscellaneous">
       <div class="module-header">
-        <span class="module-name"><span class="rank-badge">P10</span><span class="tag tag-purple">B10</span>Miscellaneous</span>
+        <span class="module-name"><span class="rank-badge">P18</span><span class="tag tag-purple">B18</span>Miscellaneous</span>
         <span class="tag tag-teal">misc</span><span class="tag tag-orange">D grade</span><span class="tag tag-dim">~15.3h</span>
         <span class="badge badge-gray">NON DEMARRE</span>
       </div>
@@ -1624,7 +1850,7 @@ migration-factory calibrate                        # Recalculate estimates</pre>
           <span class="wave-number">Wave 1</span>
           <span class="badge complexity-high">HIGH</span>
         </div>
-        <div class="wave-modules"><span class="wave-chip">281 Fermeture Sessions</span><span class="wave-chip">1 1</span><span class="wave-chip">53 53</span><span class="wave-chip">64 Solde Easy Check Out</span><span class="wave-chip">192 192</span><span class="wave-chip">210 210</span><span class="wave-chip">229 229</span></div>
+        <div class="wave-modules"><span class="wave-chip">281 Caisse</span><span class="wave-chip">1 1</span><span class="wave-chip">53 53</span><span class="wave-chip">64 Solde Easy Check Out</span><span class="wave-chip">192 192</span><span class="wave-chip">210 210</span><span class="wave-chip">229 229</span></div>
       </div>
       
   </div>
@@ -4026,7 +4252,7 @@ migration-factory calibrate                        # Recalculate estimates</pre>
 </div>
 
 <footer>
-  <p>Genere le 20 février 2026 a 18:16 par Migration Factory</p>
+  <p>Genere le 20 février 2026 a 18:58 par Migration Factory</p>
 </footer>
 
 </div>
@@ -4131,8 +4357,19 @@ document.querySelectorAll('.project-tab').forEach(tab => {
     document.querySelectorAll('.tab-content').forEach(c => {
       c.classList.toggle('active', c.dataset.tab === project);
     });
+    // Persist active tab in URL hash
+    history.replaceState(null, '', '#' + project);
   });
 });
+
+// Restore active tab from URL hash on load
+(function() {
+  var hash = location.hash.replace('#', '');
+  if (hash) {
+    var tab = document.querySelector('.project-tab[data-project="' + hash + '"]');
+    if (tab) tab.click();
+  }
+})();
 
 // Click on project card -> switch to that tab
 document.querySelectorAll('.project-card[data-goto]').forEach(card => {
@@ -4156,6 +4393,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   var btnCalibrate = document.getElementById('btn-calibrate');
   var btnGenerate = document.getElementById('btn-generate');
   var btnMigrate = document.getElementById('btn-migrate');
+  var btnMigrateAuto = document.getElementById('btn-migrate-auto');
   var btnAnalyze = document.getElementById('btn-analyze');
   var chkDry = document.getElementById('chk-dry');
   var panel = document.getElementById('action-panel');
@@ -4174,10 +4412,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   btnCalibrate.disabled = false;
   btnGenerate.disabled = false;
   btnMigrate.disabled = false;
+  btnMigrateAuto.disabled = false;
   btnAnalyze.disabled = false;
   document.getElementById('sel-enrich').disabled = false;
   chkDry.disabled = false;
-  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate, btnMigrate, btnAnalyze].forEach(function(b) { b.title = ''; });
+  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate, btnMigrate, btnMigrateAuto, btnAnalyze].forEach(function(b) { b.title = ''; });
 
   function showPanel(title, content) {
     panelTitle.textContent = title;
@@ -4653,6 +4892,16 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       var parallel = document.getElementById('modal-parallel').value || '1';
       launchMigration(batch, targetDir, parallel, claudeMode, dryRun);
     };
+  });
+
+  // ─── Migration Auto (skip modal, launch immediately) ─────────
+  btnMigrateAuto.addEventListener('click', function() {
+    var batch = batchSelect.value;
+    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    var enrichSel = document.getElementById('sel-enrich').value || 'none';
+    var claudeMode = enrichSel === 'claude' ? 'api' : 'cli';
+    var dryRun = chkDry.checked;
+    launchMigration(batch, 'adh-web', '1', claudeMode, dryRun);
   });
 
   // ─── Reconnect on page load if migration is active ───────────
