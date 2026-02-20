@@ -11,6 +11,7 @@ import {
   buildPagePrompt, buildComponentPrompt,
 } from '../migrate-prompts.js';
 import { buildContext, loadReferencePatterns, toPascalCase } from '../migrate-context.js';
+import { getModelForPhase, MigratePhase as MP } from '../migrate-types.js';
 import type { MigrateConfig, AnalysisDocument } from '../migrate-types.js';
 
 export interface GenerateResult {
@@ -49,7 +50,7 @@ export const runTypesPhase = async (
   const patterns = loadReferencePatterns(config.targetDir);
 
   const prompt = buildTypesPrompt(ctx, analysis, patterns.types);
-  const result = await callClaude({ prompt, model: config.model, cliBin: config.cliBin });
+  const result = await callClaude({ prompt, model: getModelForPhase(config, MP.TYPES), cliBin: config.cliBin });
   const content = parseFileResponse(result.output);
 
   writeFile(outFile, content, config.dryRun);
@@ -80,7 +81,7 @@ export const runStorePhase = async (
   const prompt = buildStorePrompt(ctx, analysis, typesContent, patterns.store);
   const result = await callClaude({
     prompt,
-    model: config.model,
+    model: getModelForPhase(config, MP.STORE),
     cliBin: config.cliBin,
     timeoutMs: 180_000,
   });
@@ -110,7 +111,7 @@ export const runApiPhase = async (
   const typesContent = readIfExists(typesFile) ?? '';
 
   const prompt = buildApiPrompt(analysis, typesContent, patterns.api);
-  const result = await callClaude({ prompt, model: config.model, cliBin: config.cliBin });
+  const result = await callClaude({ prompt, model: getModelForPhase(config, MP.API), cliBin: config.cliBin });
   const content = parseFileResponse(result.output);
 
   writeFile(outFile, content, config.dryRun);
@@ -143,7 +144,7 @@ export const runPagePhase = async (
   const prompt = buildPagePrompt(ctx, analysis, storeContent, typesContent, patterns.page);
   const result = await callClaude({
     prompt,
-    model: config.model,
+    model: getModelForPhase(config, MP.PAGE),
     cliBin: config.cliBin,
     timeoutMs: 180_000,
   });
@@ -191,7 +192,7 @@ export const runComponentsPhase = async (
 
     const sectionStart = Date.now();
     const prompt = buildComponentPrompt(compName, analysis, section, typesContent, pageContent);
-    const result = await callClaude({ prompt, model: config.model, cliBin: config.cliBin });
+    const result = await callClaude({ prompt, model: getModelForPhase(config, MP.COMPONENTS), cliBin: config.cliBin });
     const content = parseFileResponse(result.output);
 
     writeFile(outFile, content, config.dryRun);

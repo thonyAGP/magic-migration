@@ -1,12 +1,15 @@
 /**
  * Claude CLI wrapper for the migration pipeline.
- * Calls `claude --print` with system + user prompts and parses the response.
+ * Uses temp file + pipe to avoid Windows command-line length limits (~8KB).
  */
 
-import { execFile } from 'node:child_process';
+import { exec } from 'node:child_process';
+import { writeFileSync, unlinkSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { promisify } from 'node:util';
 
-const execFileAsync = promisify(execFile);
+const execAsync = promisify(exec);
 
 export interface ClaudeCallOptions {
   prompt: string;
@@ -27,26 +30,36 @@ export const callClaude = async (options: ClaudeCallOptions): Promise<ClaudeCall
     model,
     cliBin = 'claude',
     timeoutMs = 120_000,
-    maxBuffer = 2 * 1024 * 1024,
+    maxBuffer = 4 * 1024 * 1024,
   } = options;
 
-  const modelArgs = model ? ['--model', model] : [];
+  const modelArgs = model ? `--model ${model}` : '';
   const start = Date.now();
 
-  const { stdout } = await execFileAsync(cliBin, [
-    '--print',
-    ...modelArgs,
-    prompt,
-  ], {
-    timeout: timeoutMs,
-    maxBuffer,
-    env: { ...process.env },
-  });
+  // Write prompt to temp file to avoid command-line length limits
+  const tmpFile = join(tmpdir(), `mf-prompt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.txt`);
+  writeFileSync(tmpFile, prompt, 'utf8');
 
-  return {
-    output: stdout.trim(),
-    durationMs: Date.now() - start,
-  };
+  try {
+    // Use platform-appropriate pipe: type (Windows) or < (Unix)
+    const cmd = process.platform === 'win32'
+      ? `type "${tmpFile}" | ${cliBin} --print ${modelArgs}`
+      : `${cliBin} --print ${modelArgs} < "${tmpFile}"`;
+
+    const { stdout } = await execAsync(cmd, {
+      timeout: timeoutMs,
+      maxBuffer,
+      env: { ...process.env },
+      windowsHide: true,
+    });
+
+    return {
+      output: stdout.trim(),
+      durationMs: Date.now() - start,
+    };
+  } finally {
+    try { unlinkSync(tmpFile); } catch { /* ignore cleanup errors */ }
+  }
 };
 
 /**

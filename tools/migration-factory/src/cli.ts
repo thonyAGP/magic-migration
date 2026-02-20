@@ -921,7 +921,7 @@ const run = async () => {
       const dbMetaFile = path.join(projectDir, 'tools', 'db-metadata', 'PHU2512-metadata.json');
 
       const { runMigration, runSinglePhase, getMigrateStatus, createBatch } = await import('./migrate/migrate-runner.js');
-      const { MigratePhase } = await import('./migrate/migrate-types.js');
+      const { MigratePhase, DEFAULT_PHASE_MODELS } = await import('./migrate/migrate-types.js');
 
       const migrateConfig = {
         projectDir,
@@ -931,6 +931,7 @@ const run = async () => {
         contractSubDir: migrateDir,
         dbMetadataFile: fs.existsSync(dbMetaFile) ? dbMetaFile : undefined,
         model: migrateModel,
+        phaseModels: DEFAULT_PHASE_MODELS,
         dryRun: migrateDryRun,
         parallel: migrateParallel,
         maxPasses: migratePasses,

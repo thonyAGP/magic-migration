@@ -8,6 +8,7 @@ import path from 'node:path';
 import { callClaudeJson } from '../migrate-claude.js';
 import { buildAnalyzePrompt } from '../migrate-prompts.js';
 import { buildContext } from '../migrate-context.js';
+import { getModelForPhase, MigratePhase } from '../migrate-types.js';
 import type { MigrateConfig, AnalysisDocument } from '../migrate-types.js';
 
 export interface AnalyzeResult {
@@ -41,7 +42,7 @@ export const runAnalyzePhase = async (
   const prompt = buildAnalyzePrompt(ctx);
   const analysis = await callClaudeJson<AnalysisDocument>({
     prompt,
-    model: config.model,
+    model: getModelForPhase(config, MigratePhase.ANALYZE),
     cliBin: config.cliBin,
     timeoutMs: 180_000,
   });

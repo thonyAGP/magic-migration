@@ -18,6 +18,7 @@ import { readTracker } from '../core/tracker.js';
 import { runCodegen, runCodegenEnriched } from '../generators/codegen/codegen-runner.js';
 import type { CodegenEnrichConfig, EnrichMode } from '../generators/codegen/enrich-model.js';
 import { runMigration, getMigrateStatus, createBatch } from '../migrate/migrate-runner.js';
+import { DEFAULT_PHASE_MODELS } from '../migrate/migrate-types.js';
 import type { MigrateConfig, MigratePhase } from '../migrate/migrate-types.js';
 
 export interface RouteContext {
@@ -334,6 +335,7 @@ export const handleMigrateStream = async (
     maxPasses,
     dryRun,
     model,
+    phaseModels: DEFAULT_PHASE_MODELS,
     cliBin: 'claude',
     onEvent: undefined,
   };

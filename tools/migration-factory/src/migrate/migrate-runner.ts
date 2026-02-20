@@ -26,6 +26,7 @@ import { runTestsUnitPhase, runTestsUiPhase } from './phases/phase-tests.js';
 import { runVerifyFixLoop } from './phases/phase-verify.js';
 import { runIntegratePhase } from './phases/phase-integrate.js';
 import { runReviewPhase } from './phases/phase-review.js';
+import { scaffoldTargetDir } from './migrate-scaffold.js';
 
 // ─── Main Entry Point ──────────────────────────────────────────
 
@@ -39,6 +40,14 @@ export const runMigration = async (
   const trackerFile = path.join(config.migrationDir, config.contractSubDir, 'tracker.json');
 
   emit(config, ET.MIGRATION_STARTED, `Starting migration for batch ${batchId} (${programIds.length} programs)`);
+
+  // Scaffold target directory with infrastructure stubs if needed
+  if (!config.dryRun) {
+    const scaffold = scaffoldTargetDir(config);
+    if (scaffold.created > 0) {
+      emit(config, ET.PHASE_STARTED, `Scaffolded target dir: ${scaffold.created} files created, ${scaffold.skipped} skipped`);
+    }
+  }
 
   // Phase 0-9: Generate per program (parallelizable)
   const programResults: ProgramMigrateResult[] = [];
@@ -160,6 +169,7 @@ const runProgramGeneration = async (
     // Phase 0: SPEC
     if (!isPhaseCompleted(prog, MP.SPEC)) {
       startPhase(prog, MP.SPEC);
+      emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating spec`, { phase: MP.SPEC, programId });
       const specResult = await runSpecPhase(programId, config);
       completePhase(prog, MP.SPEC, { file: specResult.specFile, duration: specResult.duration });
       if (!specResult.skipped) files.push(specResult.specFile);
@@ -169,6 +179,7 @@ const runProgramGeneration = async (
     // Phase 1: CONTRACT
     if (!isPhaseCompleted(prog, MP.CONTRACT)) {
       startPhase(prog, MP.CONTRACT);
+      emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating contract`, { phase: MP.CONTRACT, programId });
       const contractResult = runContractPhase(programId, config);
       completePhase(prog, MP.CONTRACT, { file: contractResult.contractFile, duration: contractResult.duration });
       saveMigrateTracker(trackerFile, migrateData);
@@ -176,17 +187,28 @@ const runProgramGeneration = async (
 
     // Phase 2: ANALYZE
     if (!isPhaseCompleted(prog, MP.ANALYZE)) {
+      emit(config, ET.PHASE_STARTED, `IDE ${programId}: analyzing (Claude CLI)`, { phase: MP.ANALYZE, programId });
       startPhase(prog, MP.ANALYZE);
       const analyzeResult = await runAnalyzePhase(programId, config);
       analysis = analyzeResult.analysis;
       completePhase(prog, MP.ANALYZE, { file: analyzeResult.analysisFile, duration: analyzeResult.duration });
       saveMigrateTracker(trackerFile, migrateData);
+      emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: analysis done (${analyzeResult.duration}ms, domain=${analysis.domain})`, { phase: MP.ANALYZE, programId });
     } else {
-      // Load existing analysis
+      // Load existing analysis - verify file actually exists
       const project = config.contractSubDir;
       const analysisFile = path.join(config.migrationDir, project, `${project}-IDE-${programId}.analysis.json`);
       if (fs.existsSync(analysisFile)) {
         analysis = JSON.parse(fs.readFileSync(analysisFile, 'utf8'));
+      } else {
+        // Phase marked complete but file missing - re-run
+        delete prog.phases[MP.ANALYZE];
+        startPhase(prog, MP.ANALYZE);
+        emit(config, ET.PHASE_STARTED, `IDE ${programId}: re-analyzing (file missing)`, { phase: MP.ANALYZE, programId });
+        const analyzeResult = await runAnalyzePhase(programId, config);
+        analysis = analyzeResult.analysis;
+        completePhase(prog, MP.ANALYZE, { file: analyzeResult.analysisFile, duration: analyzeResult.duration });
+        saveMigrateTracker(trackerFile, migrateData);
       }
     }
 

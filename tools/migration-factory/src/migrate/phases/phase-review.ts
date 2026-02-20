@@ -8,6 +8,7 @@ import path from 'node:path';
 import { callClaudeJson } from '../migrate-claude.js';
 import { buildReviewPrompt } from '../migrate-prompts.js';
 import { buildContext } from '../migrate-context.js';
+import { getModelForPhase, MigratePhase as MP } from '../migrate-types.js';
 import type { MigrateConfig, AnalysisDocument, ReviewReport } from '../migrate-types.js';
 
 export interface ReviewResult {
@@ -67,7 +68,7 @@ export const runReviewPhase = async (
   try {
     const report = await callClaudeJson<ReviewReport>({
       prompt,
-      model: config.model,
+      model: getModelForPhase(config, MP.REVIEW),
       cliBin: config.cliBin,
       timeoutMs: 180_000,
     });

@@ -93,10 +93,11 @@ describe('loadReferencePatterns', () => {
 
   it('should load existing pattern files', () => {
     const targetDir = path.join(tmpDir, 'adh-web');
-    fs.writeFileSync(path.join(targetDir, 'src', 'stores', 'changeStore.ts'), 'export const useChangeStore = () => {};');
+    fs.mkdirSync(path.join(targetDir, 'src', 'stores', '__tests__'), { recursive: true });
+    fs.writeFileSync(path.join(targetDir, 'src', 'stores', 'extraitStore.ts'), 'export const useExtraitStore = () => {};');
     fs.writeFileSync(path.join(targetDir, 'src', 'types', 'change.ts'), 'export interface Change {}');
     const patterns = loadReferencePatterns(targetDir);
-    expect(patterns.store).toContain('useChangeStore');
+    expect(patterns.store).toContain('useExtraitStore');
     expect(patterns.types).toContain('interface Change');
     expect(patterns.page).toBeUndefined();
   });

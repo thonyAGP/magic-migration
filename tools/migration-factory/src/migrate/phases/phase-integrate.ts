@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { callClaude, parseFileResponse } from '../migrate-claude.js';
 import { buildIntegratePrompt } from '../migrate-prompts.js';
+import { getModelForPhase, MigratePhase as MP } from '../migrate-types.js';
 import type { MigrateConfig, AnalysisDocument } from '../migrate-types.js';
 
 export interface IntegrateResult {
@@ -51,7 +52,7 @@ export const runIntegratePhase = async (
   const prompt = buildIntegratePrompt(existingRoutes, newDomains);
   const result = await callClaude({
     prompt,
-    model: config.model,
+    model: getModelForPhase(config, MP.INTEGRATE),
     cliBin: config.cliBin,
   });
   const updatedContent = parseFileResponse(result.output);

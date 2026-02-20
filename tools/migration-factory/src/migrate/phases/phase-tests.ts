@@ -7,6 +7,7 @@ import path from 'node:path';
 import { callClaude, parseFileResponse } from '../migrate-claude.js';
 import { buildTestUnitPrompt, buildTestUiPrompt } from '../migrate-prompts.js';
 import { loadReferencePatterns } from '../migrate-context.js';
+import { getModelForPhase, MigratePhase as MP } from '../migrate-types.js';
 import type { MigrateConfig, AnalysisDocument } from '../migrate-types.js';
 
 export interface TestResult {
@@ -52,7 +53,7 @@ export const runTestsUnitPhase = async (
   const prompt = buildTestUnitPrompt(analysis, storeContent, typesContent, patterns.testStore);
   const result = await callClaude({
     prompt,
-    model: config.model,
+    model: getModelForPhase(config, MP.TESTS_UNIT),
     cliBin: config.cliBin,
     timeoutMs: 180_000,
   });
@@ -86,7 +87,7 @@ export const runTestsUiPhase = async (
   const prompt = buildTestUiPrompt(analysis, pageContent, typesContent);
   const result = await callClaude({
     prompt,
-    model: config.model,
+    model: getModelForPhase(config, MP.TESTS_UI),
     cliBin: config.cliBin,
     timeoutMs: 180_000,
   });

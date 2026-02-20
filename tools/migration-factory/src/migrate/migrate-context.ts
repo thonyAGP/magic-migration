@@ -78,11 +78,11 @@ export const loadReferencePatterns = (targetDir: string): Record<string, string>
   const patterns: Record<string, string> = {};
 
   const patternPaths: Record<string, string> = {
-    store: 'src/stores/changeStore.ts',
-    page: 'src/pages/ChangePage.tsx',
+    store: 'src/stores/extraitStore.ts',
+    page: 'src/pages/ExtraitPage.tsx',
     api: 'src/services/api/endpoints-lot3.ts',
     types: 'src/types/change.ts',
-    testStore: 'src/__tests__/changeStore.test.ts',
+    testStore: 'src/stores/__tests__/transactionStore.test.ts',
   };
 
   for (const [key, relPath] of Object.entries(patternPaths)) {

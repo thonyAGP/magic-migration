@@ -158,7 +158,34 @@ export interface MigrateConfig {
   parallel: number;
   maxPasses: number;
   onEvent?: (event: MigrateEvent) => void;
+  /** Per-phase model overrides. Unset phases fallback to `model`. */
+  phaseModels?: Partial<Record<MigratePhase, string>>;
 }
+
+/**
+ * Returns the model to use for a given phase.
+ * Checks phaseModels first, falls back to config.model.
+ */
+export const getModelForPhase = (config: MigrateConfig, phase: MigratePhase): string | undefined =>
+  config.phaseModels?.[phase] ?? config.model;
+
+/**
+ * Default phase model recommendations:
+ * - Opus: analyze, store, page, review (complex reasoning)
+ * - Sonnet: types, api, tests-unit, tests-ui, fix-tsc, fix-tests (structural)
+ */
+export const DEFAULT_PHASE_MODELS: Partial<Record<MigratePhase, string>> = {
+  [MigratePhase.ANALYZE]: 'sonnet',
+  [MigratePhase.TYPES]: 'haiku',
+  [MigratePhase.STORE]: 'sonnet',
+  [MigratePhase.API]: 'haiku',
+  [MigratePhase.PAGE]: 'sonnet',
+  [MigratePhase.TESTS_UNIT]: 'sonnet',
+  [MigratePhase.TESTS_UI]: 'sonnet',
+  [MigratePhase.FIX_TSC]: 'sonnet',
+  [MigratePhase.FIX_TESTS]: 'sonnet',
+  [MigratePhase.REVIEW]: 'sonnet',
+};
 
 // ─── Events ─────────────────────────────────────────────────────
 

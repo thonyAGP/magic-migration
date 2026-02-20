@@ -14,9 +14,17 @@ const COMMON_RULES = `RULES (MANDATORY):
 - Tailwind v4 classes for styling (no tailwind.config.js)
 - Arrow functions everywhere (no function declarations)
 - \`as const\` instead of TypeScript enum
+- verbatimModuleSyntax is enabled: use \`import type { X }\` ONLY for types/interfaces, use \`import { X }\` for values/consts
 - File must be COMPLETE and ready to write - NO placeholders, NO TODOs, NO "// implement here"
 - NO comments except for genuinely complex logic
-- Output ONLY the code inside a single markdown code block (\`\`\`typescript ... \`\`\` or \`\`\`tsx ... \`\`\`)`;
+- Output ONLY the code inside a single markdown code block (\`\`\`typescript ... \`\`\` or \`\`\`tsx ... \`\`\`)
+
+SHARED INFRASTRUCTURE (use these exact imports):
+- Data source toggle: \`import { useDataSourceStore } from "@/stores/dataSourceStore"\` (has .getState().isRealApi)
+- API client: \`import { apiClient } from "@/services/api/apiClient"\` and \`import type { ApiResponse } from "@/services/api/apiClient"\`
+- Screen layout: \`import { ScreenLayout } from "@/components/layout"\` (wrapper with sidebar, takes children + className)
+- UI components: \`import { Button, Dialog, Input } from "@/components/ui"\`
+- cn utility: \`import { cn } from "@/lib/utils"\``;
 
 // ─── Phase 0: SPEC ─────────────────────────────────────────────
 
@@ -144,6 +152,7 @@ export const buildStorePrompt = (
     'STORE REQUIREMENTS:',
     '- Use `create` from zustand (import { create } from "zustand")',
     '- Import types from @/types/' + analysis.domain,
+    '- Import useDataSourceStore from @/stores/dataSourceStore',
     '- Mock/API branching via useDataSourceStore.getState().isRealApi',
     '- try/catch with `e instanceof Error` for error handling',
     '- Realistic mock data (not lorem ipsum)',
@@ -182,8 +191,8 @@ export const buildApiPrompt = (
     COMMON_RULES,
     '',
     'API REQUIREMENTS:',
-    '- Use apiClient from @/services/api/client',
-    '- Use ApiResponse<T> wrapper type',
+    '- Use apiClient from @/services/api/apiClient (import { apiClient })',
+    '- Use ApiResponse<T> from @/services/api/apiClient (import type { ApiResponse })',
     '- Each endpoint maps to a function: verbNoun pattern (e.g. getExtrait, createFacture)',
     '- Import types from @/types/' + analysis.domain,
     '',
@@ -220,7 +229,8 @@ export const buildPagePrompt = (
     '- Destructure 20+ fields from store',
     '- useCallback for event handlers',
     '- useEffect for init + cleanup (call reset on unmount)',
-    '- ScreenLayout wrapper from @/components/ui/ScreenLayout',
+    '- ScreenLayout wrapper from @/components/layout (import { ScreenLayout } from "@/components/layout")',
+    '- ScreenLayout takes children + className props (no title prop)',
     '- Tailwind v4 classes for styling',
     '- Handle loading, error, and empty states',
     '',
@@ -338,8 +348,10 @@ export const buildTestUiPrompt = (
     '',
     'TEST REQUIREMENTS:',
     '- Use @vitest-environment jsdom',
-    '- import { render, screen, fireEvent } from "@testing-library/react"',
+    '- import { render, screen, fireEvent, waitFor } from "@testing-library/react"',
     '- Mock the store with vi.mock()',
+    '- CRITICAL: import the page component using @/ alias: import { ' + analysis.domainPascal + 'Page } from "@/pages/' + analysis.domainPascal + 'Page"',
+    '- Place vi.mock() calls BEFORE the page import (vitest hoisting)',
     '- Test: renders without crashing',
     '- Test: displays loading state',
     '- Test: displays data when loaded',

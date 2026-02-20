@@ -12,9 +12,13 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { callClaude, parseFileResponse } from '../migrate-claude.js';
 import { buildFixTscPrompt, buildFixTestsPrompt } from '../migrate-prompts.js';
+import { getModelForPhase, MigratePhase as MP } from '../migrate-types.js';
 import type { MigrateConfig } from '../migrate-types.js';
 
 const execFileAsync = promisify(execFile);
+
+// Windows: npm/npx/pnpm are .cmd scripts, need shell:true
+const EXEC_OPTS = { shell: process.platform === 'win32' } as const;
 
 // ─── TSC Error Parsing ─────────────────────────────────────────
 
@@ -59,11 +63,35 @@ export interface VerifyTscResult {
 export const runVerifyTscPhase = async (config: MigrateConfig): Promise<VerifyTscResult> => {
   const start = Date.now();
 
+  // Ensure node_modules exist in target dir
+  const nodeModules = path.join(config.targetDir, 'node_modules');
+  if (!fs.existsSync(nodeModules)) {
+    try {
+      await execFileAsync('npm', ['install', '--no-audit', '--no-fund'], {
+        cwd: config.targetDir,
+        timeout: 180_000,
+        maxBuffer: 4 * 1024 * 1024,
+        ...EXEC_OPTS,
+      });
+    } catch {
+      // Fall back to pnpm if npm fails
+      try {
+        await execFileAsync('pnpm', ['install', '--no-frozen-lockfile'], {
+          cwd: config.targetDir,
+          timeout: 180_000,
+          maxBuffer: 4 * 1024 * 1024,
+          ...EXEC_OPTS,
+        });
+      } catch { /* continue anyway - TSC may still work with skipLibCheck */ }
+    }
+  }
+
   try {
     await execFileAsync('npx', ['tsc', '--noEmit', '--pretty', 'false'], {
       cwd: config.targetDir,
       timeout: 120_000,
       maxBuffer: 2 * 1024 * 1024,
+      ...EXEC_OPTS,
     });
     return { clean: true, errors: [], errorCount: 0, duration: Date.now() - start };
   } catch (err: unknown) {
@@ -118,7 +146,7 @@ export const runFixTscPhase = async (
     try {
       const result = await callClaude({
         prompt,
-        model: config.model,
+        model: getModelForPhase(config, MP.FIX_TSC),
         cliBin: config.cliBin,
         timeoutMs: 120_000,
       });
@@ -166,6 +194,7 @@ export const runVerifyTestsPhase = async (
       cwd: config.targetDir,
       timeout: 180_000,
       maxBuffer: 4 * 1024 * 1024,
+      ...EXEC_OPTS,
     });
 
     const report = JSON.parse(stdout);
@@ -267,7 +296,7 @@ export const runFixTestsPhase = async (
     try {
       const result = await callClaude({
         prompt,
-        model: config.model,
+        model: getModelForPhase(config, MP.FIX_TESTS),
         cliBin: config.cliBin,
         timeoutMs: 120_000,
       });

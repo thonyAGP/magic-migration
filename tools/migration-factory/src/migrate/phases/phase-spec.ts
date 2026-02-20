@@ -9,6 +9,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { callClaude, parseFileResponse } from '../migrate-claude.js';
 import { buildSpecPrompt } from '../migrate-prompts.js';
+import { getModelForPhase, MigratePhase as MP } from '../migrate-types.js';
 import type { MigrateConfig } from '../migrate-types.js';
 
 const execFileAsync = promisify(execFile);
@@ -43,7 +44,7 @@ export const runSpecPhase = async (
   const prompt = buildSpecPrompt(kbData, programId, project);
   const result = await callClaude({
     prompt,
-    model: config.model,
+    model: getModelForPhase(config, MP.SPEC),
     cliBin: config.cliBin,
     timeoutMs: 180_000,
   });

@@ -1,0 +1,149 @@
+{
+  "domain": "calculSoldeInitial",
+  "domainPascal": "CalculSoldeInitial",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "SoldeInitial",
+      "fields": [
+        {
+          "name": "soldeTotal",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_initial",
+          "nullable": false
+        },
+        {
+          "name": "soldeMonnaie",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_initial_monnaie",
+          "nullable": false
+        },
+        {
+          "name": "soldeProduits",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_initial_produits",
+          "nullable": false
+        },
+        {
+          "name": "soldeCartes",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_initial_cartes",
+          "nullable": false
+        },
+        {
+          "name": "soldeCheques",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_initial_cheques",
+          "nullable": false
+        },
+        {
+          "name": "soldeOd",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_initial_od",
+          "nullable": false
+        },
+        {
+          "name": "nbreDevise",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.nbre_devise_initial",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "SoldeParMOP",
+      "fields": [
+        {
+          "name": "monnaie",
+          "type": "number",
+          "source": "computed.sum_credits_debits_monnaie",
+          "nullable": false
+        },
+        {
+          "name": "produits",
+          "type": "number",
+          "source": "computed.sum_credits_debits_produits",
+          "nullable": false
+        },
+        {
+          "name": "cartes",
+          "type": "number",
+          "source": "computed.sum_credits_debits_cartes",
+          "nullable": false
+        },
+        {
+          "name": "cheques",
+          "type": "number",
+          "source": "computed.sum_credits_debits_cheques",
+          "nullable": false
+        },
+        {
+          "name": "od",
+          "type": "number",
+          "source": "computed.sum_credits_debits_od",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "soldeInitial",
+      "type": "SoldeInitial | null",
+      "default": "null"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "calculerSoldeInitial",
+      "params": [
+        "sessionId: number",
+        "deviseCode: string"
+      ],
+      "businessRules": [
+        "Sum cumulative credits and debits from previous session movements filtered by devise",
+        "Compute solde breakdown by MOP category (monnaie, produits, cartes, cheques, od)",
+        "Update session devise with computed initial solde via updateDevise"
+      ],
+      "returns": "Promise<SoldeInitial>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/session/{sessionId}/solde-initial",
+      "queryParams": [
+        "deviseCode"
+      ],
+      "response": "SoldeInitial"
+    }
+  ],
+  "uiLayout": {
+    "type": "none",
+    "sections": []
+  },
+  "mockData": {
+    "count": 3,
+    "description": "Sample solde initial responses with varying MOP breakdowns for EUR, USD, GBP devises"
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore"
+    ],
+    "sharedTypes": [
+      "SoldeParMOP",
+      "DeviseSession"
+    ],
+    "externalApis": []
+  }
+}
