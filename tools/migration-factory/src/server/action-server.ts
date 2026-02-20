@@ -12,6 +12,7 @@ import {
   json, handleStatus, handleGaps, handlePreflight, handlePipelineRun, handlePipelineStream,
   handleVerify, handleProjects, handleCalibrate, handleGenerate, handleGenerateStream,
   handleMigrateStream, handleMigrateStatus, handleMigrateBatchCreate, handleMigrateActive,
+  handleAnalyze, handleAnalyzeGet,
 } from './api-routes.js';
 import type { RouteContext } from './api-routes.js';
 import { generateServerDashboard } from './dashboard-html.js';
@@ -132,6 +133,11 @@ export const startActionServer = async (config: ActionServerConfig): Promise<htt
       } else if (pathname === '/api/migrate/batch' && req.method === 'POST') {
         const body = await readBody(req);
         handleMigrateBatchCreate(ctx, body, res);
+      } else if (pathname === '/api/analyze' && req.method === 'POST') {
+        const body = await readBody(req);
+        await handleAnalyze(ctx, body, res);
+      } else if (pathname === '/api/analyze' && req.method === 'GET') {
+        await handleAnalyzeGet(ctx, res);
       } else {
         json(res, { error: 'Not found' }, 404);
       }

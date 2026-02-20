@@ -205,6 +205,10 @@ export interface Batch {
   verifiedDate?: string;
   stats: BatchStats;
   priorityOrder: (string | number)[];
+  domain?: string;
+  complexityGrade?: ComplexityGrade;
+  estimatedHours?: number;
+  autoDetected?: boolean;
 }
 
 export interface BatchStats {
@@ -257,6 +261,30 @@ export interface SuggestedBatch {
   level: number;
   domain: string;
   estimatedComplexity: Complexity;
+}
+
+// ─── Project Analysis ────────────────────────────────────────────
+
+export interface ProjectAnalysis {
+  projectName: string;
+  analyzedAt: string;
+  totalLivePrograms: number;
+  batchesCreated: number;
+  batchesPreserved: number;
+  batches: AnalyzedBatch[];
+  unassignedCount: number;
+}
+
+export interface AnalyzedBatch {
+  id: string;
+  name: string;
+  domain: string;
+  members: (string | number)[];
+  memberCount: number;
+  root: string | number;
+  complexityGrade: ComplexityGrade;
+  estimatedHours: number;
+  isNew: boolean;
 }
 
 // ─── Adapter Interface ───────────────────────────────────────────
@@ -468,6 +496,10 @@ export interface ModuleSummary {
   dependedBy?: (string | number)[];
   moduleLevel?: number;
   implementationOrder?: (string | number)[];
+  batchId?: string;
+  domain?: string;
+  complexityGrade?: ComplexityGrade;
+  estimatedHours?: number;
 }
 
 export interface BatchSummary {

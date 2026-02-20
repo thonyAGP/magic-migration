@@ -22,6 +22,10 @@ import { DEFAULT_PHASE_MODELS } from '../migrate/migrate-types.js';
 import type { MigrateConfig, MigratePhase } from '../migrate/migrate-types.js';
 import { configureClaudeMode } from '../migrate/migrate-claude.js';
 import { startMigration, addMigrateEvent, endMigration, getMigrateActiveState } from './migrate-state.js';
+import { createMagicAdapter } from '../adapters/magic-adapter.js';
+import { resolveDependencies } from '../calculators/dependency-resolver.js';
+import { analyzeProject, analyzedBatchesToTrackerBatches } from '../calculators/project-analyzer.js';
+import { upsertBatches, writeTracker } from '../core/tracker.js';
 
 export interface RouteContext {
   projectDir: string;
@@ -422,4 +426,75 @@ export const handleMigrateBatchCreate = (
 
 export const handleMigrateActive = (_ctx: RouteContext, res: ServerResponse): void => {
   json(res, getMigrateActiveState());
+};
+
+// ─── Analyze Project (v11) ───────────────────────────────────────
+
+export const handleAnalyze = async (
+  ctx: RouteContext,
+  body: Record<string, unknown>,
+  res: ServerResponse,
+): Promise<void> => {
+  const dryRun = body.dryRun === true;
+  const config = resolveConfig(ctx);
+  const projMigDir = path.join(config.migrationDir, config.contractSubDir);
+  const projLiveFile = path.join(projMigDir, 'live-programs.json');
+  const projTrackerFile = path.join(projMigDir, 'tracker.json');
+
+  const adapter = createMagicAdapter(ctx.projectDir, {
+    migrationDir: projMigDir,
+    liveProgramsFile: projLiveFile,
+    contractPattern: new RegExp(`${config.contractSubDir}-IDE-.*\\.contract\\.yaml$`),
+  });
+
+  const graph = await adapter.extractProgramGraph();
+  const resolved = resolveDependencies(graph.programs);
+
+  const tracker = fs.existsSync(projTrackerFile) ? readTracker(projTrackerFile) : undefined;
+
+  const analysis = analyzeProject({
+    projectName: ctx.dir,
+    programs: graph.programs,
+    adjacency: resolved.adjacency,
+    levels: resolved.levels,
+    sccs: resolved.sccs,
+    maxLevel: resolved.maxLevel,
+    tracker,
+  });
+
+  if (!dryRun && tracker) {
+    const newBatches = analyzedBatchesToTrackerBatches(analysis.batches);
+    const updated = upsertBatches(tracker, newBatches);
+    writeTracker(updated, projTrackerFile);
+  }
+
+  json(res, analysis);
+};
+
+export const handleAnalyzeGet = async (
+  ctx: RouteContext,
+  res: ServerResponse,
+): Promise<void> => {
+  const config = resolveConfig(ctx);
+  const projMigDir = path.join(config.migrationDir, config.contractSubDir);
+  const projTrackerFile = path.join(projMigDir, 'tracker.json');
+
+  if (!fs.existsSync(projTrackerFile)) {
+    json(res, { batches: [], message: 'No tracker found' });
+    return;
+  }
+
+  const tracker = readTracker(projTrackerFile);
+  json(res, {
+    batches: tracker.batches.map(b => ({
+      id: b.id,
+      name: b.name,
+      programs: b.programs,
+      domain: b.domain,
+      complexityGrade: b.complexityGrade,
+      estimatedHours: b.estimatedHours,
+      autoDetected: b.autoDetected,
+      status: b.status,
+    })),
+  });
 };

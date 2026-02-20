@@ -22,7 +22,7 @@ import { checkReadiness } from './calculators/readiness-checker.js';
 import { planBatches } from './calculators/batch-planner.js';
 import { calculateDecommission } from './calculators/decommission-calculator.js';
 import { getPipelineStatus } from './orchestrator/orchestrator.js';
-import { readTracker, createTracker, writeTracker } from './core/tracker.js';
+import { readTracker, createTracker, writeTracker, upsertBatches } from './core/tracker.js';
 import { parseContract, writeContract, loadContracts } from './core/contract.js';
 import { canTransition } from './core/pipeline.js';
 import { renderDashboard } from './dashboard/dashboard.js';
@@ -36,6 +36,7 @@ import { resolvePipelineConfig } from './pipeline/pipeline-config.js';
 import { preflightBatch, runBatchPipeline, getBatchesStatus } from './pipeline/pipeline-runner.js';
 import { formatCoverageBar } from './core/coverage.js';
 import { discoverProjects, readProjectRegistry, resolveCodebaseDir } from './dashboard/project-discovery.js';
+import { analyzeProject, analyzedBatchesToTrackerBatches } from './calculators/project-analyzer.js';
 import { computeGapReport } from './server/gap-report.js';
 import { runCalibration } from './calculators/calibration-runner.js';
 import { runCodegen, runCodegenEnriched } from './generators/codegen/codegen-runner.js';
@@ -1036,6 +1037,49 @@ const run = async () => {
       break;
     }
 
+    case 'analyze': {
+      const analyzeSubDir = getArg('dir') ?? 'ADH';
+      const analyzeDryRun = hasFlag('dry-run');
+      const analyzeAdapter = await createAdapterFromArgs(projectDir);
+      const analyzeGraph = await analyzeAdapter.extractProgramGraph();
+      const analyzeResolved = resolveDependencies(analyzeGraph.programs);
+      const analyzeMigDir = path.join(migrationDir, analyzeSubDir);
+      const analyzeTrackerFile = path.join(analyzeMigDir, 'tracker.json');
+
+      const analyzeTracker = fs.existsSync(analyzeTrackerFile)
+        ? readTracker(analyzeTrackerFile)
+        : undefined;
+
+      const analysis = analyzeProject({
+        projectName: analyzeSubDir,
+        programs: analyzeGraph.programs,
+        adjacency: analyzeResolved.adjacency,
+        levels: analyzeResolved.levels,
+        sccs: analyzeResolved.sccs,
+        maxLevel: analyzeResolved.maxLevel,
+        tracker: analyzeTracker,
+      });
+
+      console.log(`\nProject Analysis: ${analysis.projectName}`);
+      console.log(`  Live programs: ${analysis.totalLivePrograms}`);
+      console.log(`  Batches preserved: ${analysis.batchesPreserved} | Created: ${analysis.batchesCreated} | Unassigned: ${analysis.unassignedCount}\n`);
+
+      for (const b of analysis.batches) {
+        const flag = b.isNew ? 'NEW' : 'EXISTING';
+        console.log(`  ${b.id}  ${b.name.padEnd(28).slice(0, 28)}  [${b.domain.padEnd(14).slice(0, 14)}]  ${String(b.memberCount).padStart(3)} progs  ${b.complexityGrade} grade  ~${b.estimatedHours}h  ${flag}`);
+      }
+
+      if (!analyzeDryRun && analyzeTracker) {
+        const newBatches = analyzedBatchesToTrackerBatches(analysis.batches);
+        const updated = upsertBatches(analyzeTracker, newBatches);
+        writeTracker(updated, analyzeTrackerFile);
+        console.log(`\n  ${newBatches.length} new batches persisted to tracker.`);
+      } else if (analyzeDryRun) {
+        console.log(`\n  (dry-run: no changes written)`);
+      }
+      break;
+    }
+
     case 'serve': {
       const servePort = Number(getArg('port') ?? 3070);
       const serveDir = getArg('dir') ?? 'ADH';
@@ -1045,29 +1089,51 @@ const run = async () => {
     }
 
     default:
-      console.log('Migration Factory - Reusable SPECMAP migration pipeline\n');
-      console.log('Commands:');
-      console.log('  init       --project <dir> --name <name>     Initialize migration');
-      console.log('  graph      --project <dir>                   Analyze dependency graph');
-      console.log('  modules    --project <dir>                   Show deliverable modules');
-      console.log('  dashboard  --project <dir>                   Show progress dashboard');
-      console.log('  plan       --project <dir>                   Auto-suggest batches');
-      console.log('  report     --project <dir> [--output file]   Generate HTML dashboard');
-      console.log('  set-status --project <dir> --programs 1,2,3 --status enriched [--dir ADH]');
-      console.log('  verify     --project <dir> [--programs 1,2,3] [--dir ADH] [--dry-run]');
-      console.log('  gaps       --project <dir> [--dir ADH] [--status enriched]');
-      console.log('  estimate   --project <dir> [--dir ADH]                      Estimate effort');
-      console.log('  contract   --auto --project <dir> --program <id> [--dir ADH]  Auto-generate contract');
-      console.log('  pipeline   run|status|preflight                               Pipeline orchestrator v4 (Claude enrichment)');
-      console.log('  calibrate  --project <dir> [--dir ADH] [--dry-run]             Calibrate hoursPerPoint from verified contracts');
-      console.log('  generate   --batch <id>|--contract <name> --output <dir>      Generate React/TS scaffolds [--enrich none|heuristic|claude|claude-cli]');
-      console.log('  serve      [--port 3070] [--dir ADH]                          Interactive dashboard server');
-      console.log('\nOptions:');
-      console.log('  --adapter magic|generic                     Source adapter (default: magic)');
-      console.log('  --programs <file|id,id,...>                  Programs file or IDs');
-      console.log('  --output <file>                             Output file for report command');
-      console.log('  --dir <subdir>                              Subdirectory for contracts');
-      console.log('  --dry-run                                   Preview without modifying files');
+      console.log('Migration Factory - Pipeline de migration SPECMAP generique\n');
+      console.log('Commandes principales :');
+      console.log('  init       --project <dir> --name <nom>        Initialiser un nouveau projet de migration');
+      console.log('  graph      --project <dir>                     Analyser le graphe de dependances (niveaux, cycles, SCC)');
+      console.log('  modules    --project <dir>                     Afficher les modules livrables et leurs bloqueurs');
+      console.log('  dashboard  --project <dir>                     Afficher le tableau de bord de progression en console');
+      console.log('  plan       --project <dir>                     Suggerer automatiquement des batches depuis le graphe');
+      console.log('  report     --project <dir> [--output fichier]  Generer le dashboard HTML (mono ou multi-projet avec --multi)');
+      console.log('');
+      console.log('Gestion des contrats :');
+      console.log('  set-status --programs 1,2,3 --status <statut>  Mettre a jour le statut pipeline (pending/contracted/enriched/verified)');
+      console.log('  verify     [--programs 1,2,3] [--dry-run]      Auto-verifier les contrats enrichis (tous items IMPL/N/A)');
+      console.log('  gaps       [--status enriched]                 Rapport consolide des ecarts par contrat');
+      console.log('  contract   --auto --program <id>               Generer automatiquement un contrat depuis une specification');
+      console.log('  reclassify --program <id> --items "type:id,..." --to <statut>  Reclassifier des items dans un contrat');
+      console.log('');
+      console.log('Pipeline et estimation :');
+      console.log('  pipeline run       --batch <id> [--enrich claude]  Executer le pipeline SPECMAP sur un batch');
+      console.log('  pipeline status                                    Afficher la progression de tous les batches');
+      console.log('  pipeline preflight --batch <id>                    Verifier les prerequis avant execution');
+      console.log('  estimate   [--dir <sous-dossier>]                  Estimer l\'effort de migration (heures, complexite)');
+      console.log('  calibrate  [--dry-run]                             Calibrer les heures/point depuis les contrats verifies');
+      console.log('');
+      console.log('Generation et migration :');
+      console.log('  generate   --batch <id> --output <dir>             Generer les scaffolds React/TS depuis les contrats');
+      console.log('             [--enrich none|heuristic|claude|claude-cli]  Mode d\'enrichissement (types, defaults, corps)');
+      console.log('  migrate    --batch <id> --target <dir>             Lancer la migration complete en 15 phases');
+      console.log('             [--parallel N] [--passes N] [--mode cli|api]');
+      console.log('  migrate phase <nom> --programs "1,2,3"             Executer une seule phase de migration');
+      console.log('  migrate status                                     Afficher l\'etat de migration en cours');
+      console.log('  migrate batch-create --id <id> --name <nom>        Creer un batch manuellement');
+      console.log('');
+      console.log('Analyse et serveur :');
+      console.log('  analyze    [--dry-run]                             Detecter les modules fonctionnels et estimer l\'effort');
+      console.log('                                                     Exclut les programmes d\'infrastructure (Main, Menu, Init)');
+      console.log('                                                     Preserve les batches existants, ajoute les nouveaux au tracker');
+      console.log('  serve      [--port 3070]                           Lancer le dashboard interactif avec API REST');
+      console.log('');
+      console.log('Options globales :');
+      console.log('  --project <dir>          Repertoire du projet (defaut : repertoire courant)');
+      console.log('  --dir <sous-dossier>     Sous-dossier pour les contrats (ex: --dir MON_PROJET)');
+      console.log('  --adapter magic|generic  Adapteur source (defaut : magic)');
+      console.log('  --programs <fichier|ids> Fichier de programmes ou liste d\'IDs separees par des virgules');
+      console.log('  --output <fichier>       Fichier de sortie pour la commande report');
+      console.log('  --dry-run                Apercu sans modifier les fichiers');
       break;
   }
 };
