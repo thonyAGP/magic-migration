@@ -39,7 +39,8 @@ export const generateStore = (model: CodegenModel): string => {
   lines.push('  isLoading: false,');
   lines.push('  error: null,');
   for (const field of model.stateFields) {
-    const defaultVal = field.source === 'prop' ? "''" : 'null';
+    const enrichedDefault = model.enrichments?.stateFieldDefaults[field.name];
+    const defaultVal = enrichedDefault ?? (field.source === 'prop' ? "''" : 'null');
     lines.push(`  ${field.name}: ${defaultVal},`);
   }
   for (const entity of model.entities) {
@@ -55,6 +56,7 @@ export const generateStore = (model: CodegenModel): string => {
 
   // Actions from rules
   for (const action of model.actions) {
+    const enrichedBody = model.enrichments?.actionBodies[action.id];
     lines.push(`  // TODO: ${action.id} - ${action.description}`);
     if (action.condition) {
       lines.push(`  // Condition: ${action.condition}`);
@@ -62,7 +64,11 @@ export const generateStore = (model: CodegenModel): string => {
     lines.push(`  ${action.handlerName}: async () => {`);
     lines.push(`    set({ isLoading: true, error: null });`);
     lines.push(`    try {`);
-    lines.push(`      // TODO: implement ${action.id}`);
+    if (enrichedBody) {
+      lines.push(`      ${enrichedBody}`);
+    } else {
+      lines.push(`      // TODO: implement ${action.id}`);
+    }
     lines.push(`    } catch (err) {`);
     lines.push(`      set({ error: String(err) });`);
     lines.push(`    } finally {`);

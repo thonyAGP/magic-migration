@@ -475,6 +475,11 @@ ${MULTI_CSS}
   <button class="action-btn" id="btn-gaps" disabled title="Run 'migration-factory serve' to enable">Gaps</button>
   <button class="action-btn" id="btn-calibrate" disabled title="Run 'migration-factory serve' to enable">Calibrate</button>
   <button class="action-btn" id="btn-generate" disabled title="Run 'migration-factory serve' to enable" style="background:#7c3aed;color:#fff">Generate Code</button>
+  <select id="sel-enrich" disabled title="Enrichment mode" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-main);font-size:12px">
+    <option value="none">No enrich</option>
+    <option value="heuristic" selected>Heuristic</option>
+    <option value="claude">Claude AI</option>
+  </select>
   <label style="margin-left:auto;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px"><input type="checkbox" id="chk-dry" disabled> Dry Run</label>
 </div>
 <div class="action-panel" id="action-panel">
@@ -1295,6 +1300,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   btnGaps.disabled = false;
   btnCalibrate.disabled = false;
   btnGenerate.disabled = false;
+  document.getElementById('sel-enrich').disabled = false;
   chkDry.disabled = false;
   [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate].forEach(function(b) { b.title = ''; });
 
@@ -1520,9 +1526,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (!outputDir) return;
     setLoading(btnGenerate, true);
     var dryRun = chkDry.checked;
-    var url = '/api/generate/stream?batch=' + encodeURIComponent(batch) + '&outputDir=' + encodeURIComponent(outputDir) + '&dryRun=' + dryRun;
+    var enrichMode = document.getElementById('sel-enrich').value || 'none';
+    var url = '/api/generate/stream?batch=' + encodeURIComponent(batch) + '&outputDir=' + encodeURIComponent(outputDir) + '&dryRun=' + dryRun + '&enrich=' + enrichMode;
 
-    var lines = ['Code Generation' + (dryRun ? ' (DRY-RUN)' : '') + ' - Batch ' + batch, 'Output: ' + outputDir, ''];
+    var enrichLabel = enrichMode !== 'none' ? ' [enrich: ' + enrichMode + ']' : '';
+    var lines = ['Code Generation' + (dryRun ? ' (DRY-RUN)' : '') + enrichLabel + ' - Batch ' + batch, 'Output: ' + outputDir, ''];
     showPanel('Generate Code', lines.join('\\n'));
 
     var es = new EventSource(url);

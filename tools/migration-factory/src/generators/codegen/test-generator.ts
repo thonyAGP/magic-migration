@@ -22,7 +22,8 @@ export const generateTests = (model: CodegenModel): string => {
   lines.push('      isLoading: false,');
   lines.push('      error: null,');
   for (const field of model.stateFields) {
-    const defaultVal = field.source === 'prop' ? "''" : 'null';
+    const enrichedDefault = model.enrichments?.stateFieldDefaults[field.name];
+    const defaultVal = enrichedDefault ?? (field.source === 'prop' ? "''" : 'null');
     lines.push(`      ${field.name}: ${defaultVal},`);
   }
   for (const entity of model.entities) {
@@ -37,6 +38,15 @@ export const generateTests = (model: CodegenModel): string => {
   lines.push(`    const state = use${domainPascal}Store.getState();`);
   lines.push('    expect(state.isLoading).toBe(false);');
   lines.push('    expect(state.error).toBeNull();');
+  // Enriched assertions for state fields
+  if (model.enrichments?.testAssertions) {
+    for (const field of model.stateFields) {
+      const assertion = model.enrichments.testAssertions[field.name];
+      if (assertion) {
+        lines.push(`    ${assertion}`);
+      }
+    }
+  }
   for (const entity of model.entities) {
     lines.push(`    expect(state.${entity.name}List).toEqual([]);`);
   }

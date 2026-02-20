@@ -38,7 +38,8 @@ import { formatCoverageBar } from './core/coverage.js';
 import { discoverProjects, readProjectRegistry, resolveCodebaseDir } from './dashboard/project-discovery.js';
 import { computeGapReport } from './server/gap-report.js';
 import { runCalibration } from './calculators/calibration-runner.js';
-import { runCodegen } from './generators/codegen/codegen-runner.js';
+import { runCodegen, runCodegenEnriched } from './generators/codegen/codegen-runner.js';
+import type { CodegenEnrichConfig, EnrichMode } from './generators/codegen/enrich-model.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -800,7 +801,7 @@ const run = async () => {
 
     case 'generate': {
       // Generate React/TS scaffolds from verified/enriched contracts
-      // Usage: generate --batch B1 --project <dir> --output ./adh-web/src [--dir ADH] [--dry-run] [--overwrite]
+      // Usage: generate --batch B1 --project <dir> --output ./adh-web/src [--dir ADH] [--dry-run] [--overwrite] [--enrich none|heuristic|claude] [--model sonnet]
       //        generate --contract ADH-IDE-131 --project <dir> --output ./adh-web/src [--dry-run]
       const genBatch = getArg('batch');
       const genContract = getArg('contract');
@@ -808,9 +809,11 @@ const run = async () => {
       const genSubDir = getArg('dir') ?? 'ADH';
       const genDryRun = hasFlag('dry-run');
       const genOverwrite = hasFlag('overwrite');
+      const genEnrichMode = (getArg('enrich') ?? 'none') as EnrichMode;
+      const genModel = getArg('model');
 
       if (!genOutput) {
-        console.error('Usage: generate --batch <id> --project <dir> --output <dir> [--dir ADH] [--dry-run] [--overwrite]');
+        console.error('Usage: generate --batch <id> --project <dir> --output <dir> [--dir ADH] [--dry-run] [--overwrite] [--enrich none|heuristic|claude] [--model sonnet]');
         console.error('       generate --contract <name> --project <dir> --output <dir> [--dry-run]');
         process.exit(1);
       }
@@ -822,6 +825,17 @@ const run = async () => {
       }
 
       const genConfig = { outputDir: genOutput, dryRun: genDryRun, overwrite: genOverwrite };
+      const enrichConfig: CodegenEnrichConfig = {
+        mode: genEnrichMode,
+        model: genModel ?? undefined,
+      };
+
+      const runGenForContract = async (contract: ReturnType<typeof parseContract>) => {
+        if (enrichConfig.mode !== 'none') {
+          return runCodegenEnriched(contract, genConfig, enrichConfig);
+        }
+        return runCodegen(contract, genConfig);
+      };
 
       if (genContract) {
         // Single contract mode
@@ -833,7 +847,7 @@ const run = async () => {
           process.exit(1);
         }
         const contract = parseContract(path.join(genContractDir, files[0]));
-        const result = runCodegen(contract, genConfig);
+        const result = await runGenForContract(contract);
         console.log(`\n  IDE ${result.programId} - ${result.programName}: ${result.written} files generated, ${result.skipped} skipped`);
         for (const f of result.files) {
           const icon = f.skipped ? 'SKIP' : genDryRun ? 'WOULD' : 'OK';
@@ -857,8 +871,10 @@ const run = async () => {
         let totalWritten = 0;
         let totalSkipped = 0;
         let processed = 0;
+        let estimatedCost = 0;
 
-        console.log(`\nGenerate${genDryRun ? ' (DRY-RUN)' : ''}: batch ${genBatch} - ${batch.name}\n`);
+        const enrichLabel = enrichConfig.mode === 'none' ? '' : ` [enrich: ${enrichConfig.mode}]`;
+        console.log(`\nGenerate${genDryRun ? ' (DRY-RUN)' : ''}${enrichLabel}: batch ${genBatch} - ${batch.name}\n`);
 
         for (const progId of batch.priorityOrder) {
           const contract = contracts.get(progId);
@@ -866,14 +882,21 @@ const run = async () => {
             console.log(`  IDE ${progId}: no contract, skipping`);
             continue;
           }
-          const result = runCodegen(contract, genConfig);
+          const result = await runGenForContract(contract);
           console.log(`  IDE ${result.programId} - ${result.programName}: ${result.written} written, ${result.skipped} skipped`);
           totalWritten += result.written;
           totalSkipped += result.skipped;
           processed++;
+
+          if (enrichConfig.mode === 'claude') {
+            estimatedCost += 0.028; // ~$0.028 per program (Sonnet estimate)
+          }
         }
 
         console.log(`\n  Summary: ${processed} programs, ${totalWritten} files ${genDryRun ? 'would be written' : 'written'}, ${totalSkipped} skipped`);
+        if (enrichConfig.mode !== 'none') {
+          console.log(`  Enrichment: ${enrichConfig.mode}${enrichConfig.mode === 'claude' ? ` (~$${estimatedCost.toFixed(2)} estimated)` : ' ($0.00)'}`);
+        }
       } else {
         console.error('Specify --batch <id> or --contract <name>');
         process.exit(1);
@@ -905,7 +928,7 @@ const run = async () => {
       console.log('  contract   --auto --project <dir> --program <id> [--dir ADH]  Auto-generate contract');
       console.log('  pipeline   run|status|preflight                               Pipeline orchestrator v4 (Claude enrichment)');
       console.log('  calibrate  --project <dir> [--dir ADH] [--dry-run]             Calibrate hoursPerPoint from verified contracts');
-      console.log('  generate   --batch <id>|--contract <name> --output <dir>      Generate React/TS scaffolds from contracts');
+      console.log('  generate   --batch <id>|--contract <name> --output <dir>      Generate React/TS scaffolds from contracts [--enrich none|heuristic|claude]');
       console.log('  serve      [--port 3070] [--dir ADH]                          Interactive dashboard server');
       console.log('\nOptions:');
       console.log('  --adapter magic|generic                     Source adapter (default: magic)');

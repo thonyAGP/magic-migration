@@ -1,20 +1,23 @@
 /**
- * Code generation runner: orchestrates model building + 5 generators + file writing.
+ * Code generation runner: orchestrates model building + enrichment + 5 generators + file writing.
+ * v8: sync runCodegen (no enrichment, backward compat)
+ * v9: async runCodegenEnriched (heuristic or Claude enrichment)
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 import type { MigrationContract } from '../../core/types.js';
-import { buildCodegenModel, type CodegenConfig, type CodegenResult, type GeneratedFile } from './codegen-model.js';
+import { buildCodegenModel, type CodegenConfig, type CodegenResult, type CodegenModel, type GeneratedFile } from './codegen-model.js';
+import type { CodegenEnrichConfig } from './enrich-model.js';
+import { applyHeuristicEnrichment } from './enrich-heuristics.js';
+import { applyClaudeEnrichment } from './enrich-prompt.js';
 import { generateTypes } from './type-generator.js';
 import { generateStore } from './store-generator.js';
 import { generatePage } from './page-generator.js';
 import { generateApi } from './api-generator.js';
 import { generateTests } from './test-generator.js';
 
-export const runCodegen = (contract: MigrationContract, config: CodegenConfig): CodegenResult => {
-  const model = buildCodegenModel(contract);
-
+const runFromModel = (model: CodegenModel, contract: MigrationContract, config: CodegenConfig): CodegenResult => {
   const files: GeneratedFile[] = [
     makeFile(`types/${model.domain}.ts`, generateTypes(model), config),
     makeFile(`stores/${model.domain}Store.ts`, generateStore(model), config),
@@ -40,6 +43,31 @@ export const runCodegen = (contract: MigrationContract, config: CodegenConfig): 
     written: files.filter(f => !f.skipped).length,
     skipped: files.filter(f => f.skipped).length,
   };
+};
+
+/** v8 sync API (backward compat, no enrichment) */
+export const runCodegen = (contract: MigrationContract, config: CodegenConfig): CodegenResult => {
+  const model = buildCodegenModel(contract);
+  return runFromModel(model, contract, config);
+};
+
+/** v9 async API with enrichment */
+export const runCodegenEnriched = async (
+  contract: MigrationContract,
+  config: CodegenConfig,
+  enrichConfig: CodegenEnrichConfig,
+): Promise<CodegenResult> => {
+  let model = buildCodegenModel(contract);
+
+  if (enrichConfig.mode === 'heuristic' || enrichConfig.mode === 'claude') {
+    model = applyHeuristicEnrichment(model);
+  }
+
+  if (enrichConfig.mode === 'claude') {
+    model = await applyClaudeEnrichment(model, enrichConfig);
+  }
+
+  return runFromModel(model, contract, config);
 };
 
 const makeFile = (relativePath: string, content: string, config: CodegenConfig): GeneratedFile => {

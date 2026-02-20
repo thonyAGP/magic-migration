@@ -4,6 +4,7 @@
  */
 
 import type { CodegenModel, CodegenEntity } from './codegen-model.js';
+import type { EnrichmentData } from './enrich-model.js';
 
 export const generateTypes = (model: CodegenModel): string => {
   const lines: string[] = [];
@@ -14,7 +15,7 @@ export const generateTypes = (model: CodegenModel): string => {
 
   // Entity interfaces from tables
   for (const entity of model.entities) {
-    lines.push(generateEntityInterface(entity));
+    lines.push(generateEntityInterface(entity, model.enrichments));
     lines.push('');
   }
 
@@ -23,7 +24,8 @@ export const generateTypes = (model: CodegenModel): string => {
   lines.push('  isLoading: boolean;');
   lines.push('  error: string | null;');
   for (const field of model.stateFields) {
-    const tsType = field.source === 'prop' ? 'string' : 'unknown';
+    const enrichedType = model.enrichments?.stateFieldTypes[field.name];
+    const tsType = enrichedType ?? (field.source === 'prop' ? 'string' : 'unknown');
     lines.push(`  ${field.name}: ${tsType}; // ${field.source}: ${field.description}`);
   }
   for (const entity of model.entities) {
@@ -55,12 +57,18 @@ export const generateTypes = (model: CodegenModel): string => {
   return lines.join('\n');
 };
 
-const generateEntityInterface = (entity: CodegenEntity): string => {
+const generateEntityInterface = (entity: CodegenEntity, enrichments?: EnrichmentData): string => {
   const lines: string[] = [];
   lines.push(`export interface ${entity.interfaceName} {`);
 
+  const enrichedFields = enrichments?.entityFields[entity.interfaceName];
+
   if (entity.fields.length > 0) {
     for (const field of entity.fields) {
+      lines.push(`  ${field.name}: ${field.type};`);
+    }
+  } else if (enrichedFields && enrichedFields.length > 0) {
+    for (const field of enrichedFields) {
       lines.push(`  ${field.name}: ${field.type};`);
     }
   } else {

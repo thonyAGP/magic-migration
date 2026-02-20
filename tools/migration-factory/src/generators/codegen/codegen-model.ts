@@ -4,6 +4,7 @@
  */
 
 import type { MigrationContract } from '../../core/types.js';
+import type { EnrichmentData } from './enrich-model.js';
 
 // ─── Codegen Model Types ────────────────────────────────────────
 
@@ -19,6 +20,7 @@ export interface CodegenField {
   type: string;
   source: 'state' | 'prop' | 'computed' | 'table';
   description: string;
+  localId?: string;
 }
 
 export interface CodegenAction {
@@ -46,6 +48,7 @@ export interface CodegenModel {
   actions: CodegenAction[];
   apiCalls: CodegenApiCall[];
   stateFields: CodegenField[];
+  enrichments?: EnrichmentData;
 }
 
 // ─── Result types ───────────────────────────────────────────────
@@ -176,6 +179,7 @@ export const buildCodegenModel = (contract: MigrationContract): CodegenModel => 
     type: 'unknown',
     source: variableTypeToSource(v.type),
     description: v.gapNotes || v.name,
+    localId: v.localId,
   }));
 
   return {

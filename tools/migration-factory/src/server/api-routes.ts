@@ -15,7 +15,8 @@ import { runCalibration } from '../calculators/calibration-runner.js';
 import { createSSEStream } from './sse-stream.js';
 import { loadContracts } from '../core/contract.js';
 import { readTracker } from '../core/tracker.js';
-import { runCodegen } from '../generators/codegen/codegen-runner.js';
+import { runCodegen, runCodegenEnriched } from '../generators/codegen/codegen-runner.js';
+import type { CodegenEnrichConfig, EnrichMode } from '../generators/codegen/enrich-model.js';
 
 export interface RouteContext {
   projectDir: string;
@@ -107,15 +108,17 @@ export const handleCalibrate = (ctx: RouteContext, body: Record<string, unknown>
   json(res, result);
 };
 
-export const handleGenerate = (
+export const handleGenerate = async (
   ctx: RouteContext,
   body: Record<string, unknown>,
   res: ServerResponse,
-): void => {
+): Promise<void> => {
   const batch = body.batch as string | undefined;
   const outputDir = body.outputDir as string | undefined;
   const dryRun = body.dryRun === true;
   const overwrite = body.overwrite === true;
+  const enrichMode = (body.enrich as EnrichMode) ?? 'none';
+  const enrichModel = body.model as string | undefined;
 
   if (!batch || !outputDir) {
     json(res, { error: 'Missing batch or outputDir in body' }, 400);
@@ -140,18 +143,21 @@ export const handleGenerate = (
 
   const contracts = loadContracts(contractDir);
   const results = [];
+  const enrichConfig: CodegenEnrichConfig = { mode: enrichMode, model: enrichModel };
 
   for (const progId of batchDef.priorityOrder) {
     const contract = contracts.get(progId);
     if (!contract) continue;
-    const result = runCodegen(contract, { outputDir, dryRun, overwrite });
+    const result = enrichMode !== 'none'
+      ? await runCodegenEnriched(contract, { outputDir, dryRun, overwrite }, enrichConfig)
+      : runCodegen(contract, { outputDir, dryRun, overwrite });
     results.push(result);
   }
 
   const totalWritten = results.reduce((sum, r) => sum + r.written, 0);
   const totalSkipped = results.reduce((sum, r) => sum + r.skipped, 0);
 
-  json(res, { batch, programs: results.length, totalWritten, totalSkipped, dryRun, results });
+  json(res, { batch, programs: results.length, totalWritten, totalSkipped, dryRun, enrich: enrichMode, results });
 };
 
 export const handleGenerateStream = async (
@@ -163,6 +169,8 @@ export const handleGenerateStream = async (
   const outputDir = query.get('outputDir');
   const dryRun = query.get('dryRun') === 'true';
   const overwrite = query.get('overwrite') === 'true';
+  const enrichMode = (query.get('enrich') ?? 'none') as EnrichMode;
+  const enrichModel = query.get('model') ?? undefined;
 
   if (!batch || !outputDir) {
     json(res, { error: 'Missing batch or outputDir parameter' }, 400);
@@ -187,8 +195,9 @@ export const handleGenerateStream = async (
 
   const contracts = loadContracts(contractDir);
   const sse = createSSEStream(res);
+  const enrichConfig: CodegenEnrichConfig = { mode: enrichMode, model: enrichModel };
 
-  sse.send({ type: 'codegen_started', batch, total: batchDef.priorityOrder.length });
+  sse.send({ type: 'codegen_started', batch, total: batchDef.priorityOrder.length, enrich: enrichMode });
 
   let totalWritten = 0;
   let totalSkipped = 0;
@@ -201,7 +210,9 @@ export const handleGenerateStream = async (
       continue;
     }
 
-    const result = runCodegen(contract, { outputDir, dryRun, overwrite });
+    const result = enrichMode !== 'none'
+      ? await runCodegenEnriched(contract, { outputDir, dryRun, overwrite }, enrichConfig)
+      : runCodegen(contract, { outputDir, dryRun, overwrite });
     totalWritten += result.written;
     totalSkipped += result.skipped;
     processed++;
@@ -217,7 +228,7 @@ export const handleGenerateStream = async (
     });
   }
 
-  sse.send({ type: 'codegen_completed', batch, processed, totalWritten, totalSkipped, dryRun });
+  sse.send({ type: 'codegen_completed', batch, processed, totalWritten, totalSkipped, dryRun, enrich: enrichMode });
   sse.close();
 };
 
