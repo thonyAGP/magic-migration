@@ -801,7 +801,7 @@ const run = async () => {
 
     case 'generate': {
       // Generate React/TS scaffolds from verified/enriched contracts
-      // Usage: generate --batch B1 --project <dir> --output ./adh-web/src [--dir ADH] [--dry-run] [--overwrite] [--enrich none|heuristic|claude] [--model sonnet]
+      // Usage: generate --batch B1 --project <dir> --output ./adh-web/src [--dir ADH] [--dry-run] [--overwrite] [--enrich none|heuristic|claude|claude-cli] [--model sonnet]
       //        generate --contract ADH-IDE-131 --project <dir> --output ./adh-web/src [--dry-run]
       const genBatch = getArg('batch');
       const genContract = getArg('contract');
@@ -813,7 +813,7 @@ const run = async () => {
       const genModel = getArg('model');
 
       if (!genOutput) {
-        console.error('Usage: generate --batch <id> --project <dir> --output <dir> [--dir ADH] [--dry-run] [--overwrite] [--enrich none|heuristic|claude] [--model sonnet]');
+        console.error('Usage: generate --batch <id> --project <dir> --output <dir> [--dir ADH] [--dry-run] [--overwrite] [--enrich none|heuristic|claude|claude-cli] [--model sonnet]');
         console.error('       generate --contract <name> --project <dir> --output <dir> [--dry-run]');
         process.exit(1);
       }
@@ -895,7 +895,12 @@ const run = async () => {
 
         console.log(`\n  Summary: ${processed} programs, ${totalWritten} files ${genDryRun ? 'would be written' : 'written'}, ${totalSkipped} skipped`);
         if (enrichConfig.mode !== 'none') {
-          console.log(`  Enrichment: ${enrichConfig.mode}${enrichConfig.mode === 'claude' ? ` (~$${estimatedCost.toFixed(2)} estimated)` : ' ($0.00)'}`);
+          const costLabel = enrichConfig.mode === 'claude'
+            ? ` (~$${estimatedCost.toFixed(2)} estimated)`
+            : enrichConfig.mode === 'claude-cli'
+              ? ' (local CLI, no API cost)'
+              : ' ($0.00)';
+          console.log(`  Enrichment: ${enrichConfig.mode}${costLabel}`);
         }
       } else {
         console.error('Specify --batch <id> or --contract <name>');
@@ -928,7 +933,7 @@ const run = async () => {
       console.log('  contract   --auto --project <dir> --program <id> [--dir ADH]  Auto-generate contract');
       console.log('  pipeline   run|status|preflight                               Pipeline orchestrator v4 (Claude enrichment)');
       console.log('  calibrate  --project <dir> [--dir ADH] [--dry-run]             Calibrate hoursPerPoint from verified contracts');
-      console.log('  generate   --batch <id>|--contract <name> --output <dir>      Generate React/TS scaffolds from contracts [--enrich none|heuristic|claude]');
+      console.log('  generate   --batch <id>|--contract <name> --output <dir>      Generate React/TS scaffolds [--enrich none|heuristic|claude|claude-cli]');
       console.log('  serve      [--port 3070] [--dir ADH]                          Interactive dashboard server');
       console.log('\nOptions:');
       console.log('  --adapter magic|generic                     Source adapter (default: magic)');

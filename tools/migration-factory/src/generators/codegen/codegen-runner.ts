@@ -11,6 +11,7 @@ import { buildCodegenModel, type CodegenConfig, type CodegenResult, type Codegen
 import type { CodegenEnrichConfig } from './enrich-model.js';
 import { applyHeuristicEnrichment } from './enrich-heuristics.js';
 import { applyClaudeEnrichment } from './enrich-prompt.js';
+import { applyClaudeCliEnrichment } from './enrich-cli.js';
 import { generateTypes } from './type-generator.js';
 import { generateStore } from './store-generator.js';
 import { generatePage } from './page-generator.js';
@@ -59,12 +60,14 @@ export const runCodegenEnriched = async (
 ): Promise<CodegenResult> => {
   let model = buildCodegenModel(contract);
 
-  if (enrichConfig.mode === 'heuristic' || enrichConfig.mode === 'claude') {
+  if (enrichConfig.mode !== 'none') {
     model = applyHeuristicEnrichment(model);
   }
 
   if (enrichConfig.mode === 'claude') {
     model = await applyClaudeEnrichment(model, enrichConfig);
+  } else if (enrichConfig.mode === 'claude-cli') {
+    model = await applyClaudeCliEnrichment(model, enrichConfig);
   }
 
   return runFromModel(model, contract, config);

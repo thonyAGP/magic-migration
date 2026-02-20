@@ -16,12 +16,14 @@ export interface EnrichmentData {
   testAssertions: Record<string, string>;
 }
 
-export type EnrichMode = 'none' | 'heuristic' | 'claude';
+export type EnrichMode = 'none' | 'heuristic' | 'claude' | 'claude-cli';
 
 export interface CodegenEnrichConfig {
   mode: EnrichMode;
   model?: string;
   apiKey?: string;
+  /** Path to claude CLI binary (default: 'claude') */
+  cliBin?: string;
 }
 
 export const emptyEnrichment = (): EnrichmentData => ({

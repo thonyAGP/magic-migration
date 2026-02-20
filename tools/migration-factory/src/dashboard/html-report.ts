@@ -478,7 +478,8 @@ ${MULTI_CSS}
   <select id="sel-enrich" disabled title="Enrichment mode" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-main);font-size:12px">
     <option value="none">No enrich</option>
     <option value="heuristic" selected>Heuristic</option>
-    <option value="claude">Claude AI</option>
+    <option value="claude">Claude API</option>
+    <option value="claude-cli">Claude CLI</option>
   </select>
   <label style="margin-left:auto;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px"><input type="checkbox" id="chk-dry" disabled> Dry Run</label>
 </div>
