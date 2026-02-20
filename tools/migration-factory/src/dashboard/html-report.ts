@@ -475,6 +475,7 @@ ${MULTI_CSS}
   <button class="action-btn" id="btn-gaps" disabled title="Run 'migration-factory serve' to enable">Gaps</button>
   <button class="action-btn" id="btn-calibrate" disabled title="Run 'migration-factory serve' to enable">Calibrate</button>
   <button class="action-btn" id="btn-generate" disabled title="Run 'migration-factory serve' to enable" style="background:#7c3aed;color:#fff">Generate Code</button>
+  <button class="action-btn" id="btn-migrate" disabled title="Run 'migration-factory serve' to enable" style="background:#059669;color:#fff">Migrate Module</button>
   <select id="sel-enrich" disabled title="Enrichment mode" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-main);font-size:12px">
     <option value="none">No enrich</option>
     <option value="heuristic" selected>Heuristic</option>
@@ -1285,6 +1286,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   var btnGaps = document.getElementById('btn-gaps');
   var btnCalibrate = document.getElementById('btn-calibrate');
   var btnGenerate = document.getElementById('btn-generate');
+  var btnMigrate = document.getElementById('btn-migrate');
   var chkDry = document.getElementById('chk-dry');
   var panel = document.getElementById('action-panel');
   var panelTitle = document.getElementById('panel-title');
@@ -1301,9 +1303,10 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   btnGaps.disabled = false;
   btnCalibrate.disabled = false;
   btnGenerate.disabled = false;
+  btnMigrate.disabled = false;
   document.getElementById('sel-enrich').disabled = false;
   chkDry.disabled = false;
-  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate].forEach(function(b) { b.title = ''; });
+  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate, btnMigrate].forEach(function(b) { b.title = ''; });
 
   function showPanel(title, content) {
     panelTitle.textContent = title;
@@ -1564,6 +1567,95 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       setLoading(btnGenerate, false);
       lines.push('Connection lost');
       panelContent.textContent = lines.join('\\n');
+    };
+  });
+
+  // Migrate Module (Streaming SSE)
+  btnMigrate.addEventListener('click', function() {
+    var batch = batchSelect.value;
+    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    var targetDir = prompt('Target directory (e.g., adh-web):', 'adh-web');
+    if (!targetDir) return;
+    var parallelCount = prompt('Parallel programs (1-8):', '1');
+    if (!parallelCount) return;
+
+    setLoading(btnMigrate, true);
+    var dryRun = chkDry.checked;
+    var url = '/api/migrate/stream?batch=' + encodeURIComponent(batch)
+      + '&targetDir=' + encodeURIComponent(targetDir)
+      + '&dryRun=' + dryRun
+      + '&parallel=' + parallelCount;
+
+    panelTitle.textContent = 'Migrate: ' + batch + (dryRun ? ' (DRY-RUN)' : '');
+    panelContent.innerHTML = '<div class="pipeline-progress">'
+      + '<div class="progress-bar"><div class="progress-fill" id="mbar"></div></div>'
+      + '<div class="p-status" id="mstatus">Connecting...</div>'
+      + '<div class="p-log" id="mlog"></div></div>';
+    panel.classList.add('visible');
+
+    var mbar = document.getElementById('mbar');
+    var mstatus = document.getElementById('mstatus');
+    var mlog = document.getElementById('mlog');
+    var totalProgs = 0;
+    var doneProgs = 0;
+
+    function addMLog(text) {
+      var line = document.createElement('div');
+      line.textContent = text;
+      mlog.appendChild(line);
+      mlog.scrollTop = mlog.scrollHeight;
+    }
+
+    var es = new EventSource(url);
+    es.onmessage = function(ev) {
+      var msg = JSON.parse(ev.data);
+
+      if (msg.type === 'migrate_started') {
+        totalProgs = msg.programs;
+        mstatus.textContent = 'Starting migration: ' + totalProgs + ' programs -> ' + msg.targetDir;
+        addMLog('Migration started: ' + totalProgs + ' programs');
+        return;
+      }
+
+      if (msg.type === 'stream_end') {
+        es.close();
+        setLoading(btnMigrate, false);
+        return;
+      }
+
+      if (msg.type === 'migrate_result') {
+        var r = msg.data;
+        mbar.style.width = '100%';
+        mstatus.textContent = 'Done: ' + r.summary.completed + '/' + r.summary.total
+          + ' completed, ' + r.summary.totalFiles + ' files, '
+          + (r.summary.tscClean ? 'TSC clean' : 'TSC errors') + ', '
+          + (r.summary.testsPass ? 'tests pass' : 'tests fail')
+          + ', coverage ' + r.summary.reviewAvgCoverage + '%';
+        addMLog('Migration completed');
+        return;
+      }
+
+      if (msg.type === 'error') {
+        addMLog('ERROR: ' + (msg.message || ''));
+        mstatus.textContent = 'Error: ' + (msg.message || '');
+        return;
+      }
+
+      if (msg.type === 'program_completed' || msg.type === 'program_failed') {
+        doneProgs++;
+        var pct = totalProgs > 0 ? Math.round((doneProgs / totalProgs) * 100) : 0;
+        mbar.style.width = pct + '%';
+        mstatus.textContent = doneProgs + '/' + totalProgs + ' (' + pct + '%)';
+      }
+
+      addMLog('[' + (msg.phase || '') + '] ' + (msg.message || msg.type));
+    };
+
+    es.onerror = function() {
+      es.close();
+      setLoading(btnMigrate, false);
+      addMLog('Connection lost');
+      mstatus.textContent = 'Connection lost - check server';
     };
   });
 })();

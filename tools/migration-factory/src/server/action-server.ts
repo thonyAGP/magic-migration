@@ -11,6 +11,7 @@ import path from 'node:path';
 import {
   json, handleStatus, handleGaps, handlePreflight, handlePipelineRun, handlePipelineStream,
   handleVerify, handleProjects, handleCalibrate, handleGenerate, handleGenerateStream,
+  handleMigrateStream, handleMigrateStatus, handleMigrateBatchCreate,
 } from './api-routes.js';
 import type { RouteContext } from './api-routes.js';
 import { generateServerDashboard } from './dashboard-html.js';
@@ -111,6 +112,22 @@ export const startActionServer = async (config: ActionServerConfig): Promise<htt
         } finally {
           pipelineRunning = false;
         }
+      } else if (pathname === '/api/migrate/stream' && req.method === 'GET') {
+        if (pipelineRunning) {
+          json(res, { error: 'Pipeline already running' }, 409);
+          return;
+        }
+        pipelineRunning = true;
+        try {
+          await handleMigrateStream(ctx, url.searchParams, res);
+        } finally {
+          pipelineRunning = false;
+        }
+      } else if (pathname === '/api/migrate/status' && req.method === 'GET') {
+        handleMigrateStatus(ctx, res);
+      } else if (pathname === '/api/migrate/batch' && req.method === 'POST') {
+        const body = await readBody(req);
+        handleMigrateBatchCreate(ctx, body, res);
       } else {
         json(res, { error: 'Not found' }, 404);
       }

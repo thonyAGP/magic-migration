@@ -17,6 +17,8 @@ import { loadContracts } from '../core/contract.js';
 import { readTracker } from '../core/tracker.js';
 import { runCodegen, runCodegenEnriched } from '../generators/codegen/codegen-runner.js';
 import type { CodegenEnrichConfig, EnrichMode } from '../generators/codegen/enrich-model.js';
+import { runMigration, getMigrateStatus, createBatch } from '../migrate/migrate-runner.js';
+import type { MigrateConfig, MigratePhase } from '../migrate/migrate-types.js';
 
 export interface RouteContext {
   projectDir: string;
@@ -268,4 +270,131 @@ export const handlePipelineStream = async (
 
   sse.send({ type: 'pipeline_result', data: result });
   sse.close();
+};
+
+// ─── Migrate Module (v10) ─────────────────────────────────────
+
+export const handleMigrateStream = async (
+  ctx: RouteContext,
+  query: URLSearchParams,
+  res: ServerResponse,
+): Promise<void> => {
+  const batch = query.get('batch');
+  const programs = query.get('programs');
+  const targetDir = query.get('targetDir');
+  const dryRun = query.get('dryRun') === 'true';
+  const parallel = Number(query.get('parallel') ?? '1');
+  const maxPasses = Number(query.get('maxPasses') ?? '5');
+  const model = query.get('model') ?? 'sonnet';
+
+  if (!targetDir) {
+    json(res, { error: 'Missing targetDir parameter' }, 400);
+    return;
+  }
+
+  const config = resolveConfig(ctx);
+  const trackerFile = path.join(config.migrationDir, config.contractSubDir, 'tracker.json');
+
+  if (!fs.existsSync(trackerFile)) {
+    json(res, { error: 'Tracker not found' }, 404);
+    return;
+  }
+
+  // Resolve program IDs
+  let programIds: (string | number)[];
+  let batchId: string;
+  let batchName: string;
+
+  if (batch) {
+    const tracker = readTracker(trackerFile);
+    const batchDef = tracker.batches.find(b => b.id === batch);
+    if (!batchDef) {
+      json(res, { error: `Batch "${batch}" not found` }, 404);
+      return;
+    }
+    programIds = batchDef.priorityOrder;
+    batchId = batchDef.id;
+    batchName = batchDef.name;
+  } else if (programs) {
+    programIds = programs.split(',').map(s => s.trim()).filter(Boolean);
+    batchId = `auto-${Date.now()}`;
+    batchName = 'Ad-hoc migration';
+  } else {
+    json(res, { error: 'Missing batch or programs parameter' }, 400);
+    return;
+  }
+
+  const migrateConfig: MigrateConfig = {
+    projectDir: ctx.projectDir,
+    targetDir,
+    migrationDir: config.migrationDir,
+    specDir: path.join(ctx.projectDir, '.openspec', 'specs'),
+    contractSubDir: config.contractSubDir,
+    parallel,
+    maxPasses,
+    dryRun,
+    model,
+    cliBin: 'claude',
+    onEvent: undefined,
+  };
+
+  const sse = createSSEStream(res);
+  migrateConfig.onEvent = (event) => sse.send(event);
+
+  sse.send({ type: 'migrate_started', batch: batchId, programs: programIds.length, targetDir, dryRun });
+
+  try {
+    const result = await runMigration(programIds, batchId, batchName, migrateConfig);
+    sse.send({ type: 'migrate_result', data: result });
+  } catch (err) {
+    sse.send({ type: 'error', message: String(err) });
+  }
+
+  sse.close();
+};
+
+export const handleMigrateStatus = (ctx: RouteContext, res: ServerResponse): void => {
+  const config = resolveConfig(ctx);
+  const trackerFile = path.join(config.migrationDir, config.contractSubDir, 'tracker.json');
+  if (!fs.existsSync(trackerFile)) {
+    json(res, []);
+    return;
+  }
+  json(res, getMigrateStatus(trackerFile));
+};
+
+export const handleMigrateBatchCreate = (
+  ctx: RouteContext,
+  body: Record<string, unknown>,
+  res: ServerResponse,
+): void => {
+  const id = body.id as string;
+  const name = body.name as string;
+  const programs = body.programs as (string | number)[];
+
+  if (!id || !name || !programs?.length) {
+    json(res, { error: 'Missing id, name, or programs' }, 400);
+    return;
+  }
+
+  const config = resolveConfig(ctx);
+  const migrateConfig: MigrateConfig = {
+    projectDir: ctx.projectDir,
+    targetDir: '',
+    migrationDir: config.migrationDir,
+    specDir: '',
+    contractSubDir: config.contractSubDir,
+    parallel: 1,
+    maxPasses: 5,
+    dryRun: false,
+    model: 'sonnet',
+    cliBin: 'claude',
+  };
+
+  try {
+    createBatch(id, name, programs, migrateConfig);
+    json(res, { ok: true, id, name, programs: programs.length });
+  } catch (err) {
+    json(res, { error: err instanceof Error ? err.message : String(err) }, 400);
+  }
 };

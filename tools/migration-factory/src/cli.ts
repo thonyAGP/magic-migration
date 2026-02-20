@@ -909,6 +909,126 @@ const run = async () => {
       break;
     }
 
+    case 'migrate': {
+      const migrateSubCmd = args[1];
+      const migrateDir = getArg('dir') ?? 'ADH';
+      const migrateTargetDir = getArg('target') ?? path.join(projectDir, 'adh-web');
+      const migrateDryRun = hasFlag('dry-run');
+      const migrateParallel = Number(getArg('parallel') ?? 1);
+      const migratePasses = Number(getArg('passes') ?? 5);
+      const migrateModel = getArg('model');
+      const specDir = path.join(projectDir, '.openspec', 'specs');
+      const dbMetaFile = path.join(projectDir, 'tools', 'db-metadata', 'PHU2512-metadata.json');
+
+      const { runMigration, runSinglePhase, getMigrateStatus, createBatch } = await import('./migrate/migrate-runner.js');
+      const { MigratePhase } = await import('./migrate/migrate-types.js');
+
+      const migrateConfig = {
+        projectDir,
+        targetDir: migrateTargetDir,
+        migrationDir,
+        specDir,
+        contractSubDir: migrateDir,
+        dbMetadataFile: fs.existsSync(dbMetaFile) ? dbMetaFile : undefined,
+        model: migrateModel,
+        dryRun: migrateDryRun,
+        parallel: migrateParallel,
+        maxPasses: migratePasses,
+        onEvent: (event: { type: string; message: string; programId?: string | number; phase?: string }) => {
+          const prefix = event.programId ? `[${event.programId}]` : '';
+          const phaseLabel = event.phase ? `(${event.phase})` : '';
+          console.log(`  ${prefix}${phaseLabel} ${event.message}`);
+        },
+      };
+
+      if (migrateSubCmd === 'phase') {
+        // migrate phase <name> --programs "69,70,71"
+        const phaseName = args[2] as string;
+        const phaseProgs = getArg('programs');
+        if (!phaseName || !phaseProgs) {
+          console.error('Usage: migrate phase <name> --programs "69,70,71" [--dir ADH] [--target ./adh-web]');
+          console.error(`Phases: ${Object.values(MigratePhase).join(', ')}`);
+          process.exit(1);
+        }
+        const programIds = phaseProgs.split(',').map(s => s.trim()).filter(Boolean);
+        await runSinglePhase(phaseName as typeof MigratePhase[keyof typeof MigratePhase], programIds, migrateConfig);
+      } else if (migrateSubCmd === 'status') {
+        const statusTrackerFile = path.join(migrationDir, migrateDir, 'tracker.json');
+        const views = getMigrateStatus(statusTrackerFile);
+        if (views.length === 0) {
+          console.log('No migration in progress.');
+        } else {
+          console.log(`\nMigration Status - ${migrateDir}\n`);
+          console.log('  IDE    Status      Phase           Phases  Files  Errors');
+          console.log('  -----  ----------  --------------  ------  -----  ------');
+          for (const v of views) {
+            console.log(`  ${v.programId.padEnd(5)}  ${v.status.padEnd(10)}  ${(v.currentPhase ?? '-').padEnd(14)}  ${String(v.completedPhases).padStart(2)}/${String(v.totalPhases).padStart(2)}    ${String(v.files).padStart(3)}    ${String(v.errors).padStart(3)}`);
+          }
+        }
+      } else if (migrateSubCmd === 'batch-create') {
+        const bcId = getArg('id');
+        const bcName = getArg('name');
+        const bcProgs = getArg('programs');
+        if (!bcId || !bcName || !bcProgs) {
+          console.error('Usage: migrate batch-create --id B2 --name "Extrait Compte" --programs "69,70,71"');
+          process.exit(1);
+        }
+        const programIds = bcProgs.split(',').map(s => s.trim()).filter(Boolean);
+        createBatch(bcId, bcName, programIds, migrateConfig);
+        console.log(`Batch ${bcId} created: ${bcName} (${programIds.length} programs)`);
+      } else {
+        // Default: full migration
+        const migrateBatch = getArg('batch');
+        const migratePrograms = getArg('programs');
+        const migrateBatchName = getArg('batch-name');
+
+        let programIds: (string | number)[] = [];
+        let batchId = migrateBatch ?? 'auto';
+        let batchName = migrateBatchName ?? 'Auto';
+
+        if (migratePrograms) {
+          programIds = migratePrograms.split(',').map(s => s.trim()).filter(Boolean);
+          batchId = migrateBatchName ?? `custom-${Date.now()}`;
+          batchName = migrateBatchName ?? 'Custom migration';
+        } else if (migrateBatch) {
+          const batchTrackerFile = path.join(migrationDir, migrateDir, 'tracker.json');
+          if (!fs.existsSync(batchTrackerFile)) {
+            console.error(`Tracker not found: ${batchTrackerFile}`);
+            process.exit(1);
+          }
+          const tracker = readTracker(batchTrackerFile);
+          const batch = tracker.batches.find(b => b.id === migrateBatch);
+          if (!batch) {
+            console.error(`Batch "${migrateBatch}" not found. Available: ${tracker.batches.map(b => b.id).join(', ')}`);
+            process.exit(1);
+          }
+          programIds = batch.priorityOrder;
+          batchId = batch.id;
+          batchName = batch.name;
+        } else {
+          console.error('Usage: migrate --batch <id> --target <dir> [--parallel 4] [--passes 5] [--dry-run]');
+          console.error('       migrate --programs "69,70,71" --batch-name "Custom" --target <dir>');
+          console.error('       migrate phase <name> --programs "69,70,71"');
+          console.error('       migrate status [--dir ADH]');
+          console.error('       migrate batch-create --id B2 --name "Name" --programs "69,70,71"');
+          process.exit(1);
+        }
+
+        console.log(`\nMigrate${migrateDryRun ? ' (DRY-RUN)' : ''}: ${batchId} - ${batchName} (${programIds.length} programs, parallel=${migrateParallel})\n`);
+
+        const result = await runMigration(programIds, batchId, batchName, migrateConfig);
+
+        console.log(`\n  --- Summary ---`);
+        console.log(`  Total: ${result.summary.total} | Completed: ${result.summary.completed} | Failed: ${result.summary.failed} | Skipped: ${result.summary.skipped}`);
+        console.log(`  Files: ${result.summary.totalFiles} | TSC: ${result.summary.tscClean ? 'CLEAN' : 'ERRORS'} | Tests: ${result.summary.testsPass ? 'PASS' : 'FAIL'}`);
+        console.log(`  Review coverage: ${result.summary.reviewAvgCoverage}%`);
+
+        const elapsed = (new Date(result.completed).getTime() - new Date(result.started).getTime()) / 1000;
+        console.log(`  Duration: ${elapsed.toFixed(1)}s`);
+      }
+      break;
+    }
+
     case 'serve': {
       const servePort = Number(getArg('port') ?? 3070);
       const serveDir = getArg('dir') ?? 'ADH';
