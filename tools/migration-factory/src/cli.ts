@@ -917,11 +917,17 @@ const run = async () => {
       const migrateParallel = Number(getArg('parallel') ?? 1);
       const migratePasses = Number(getArg('passes') ?? 5);
       const migrateModel = getArg('model');
+      const migrateMode = (getArg('mode') ?? 'cli') as 'api' | 'cli';
       const specDir = path.join(projectDir, '.openspec', 'specs');
       const dbMetaFile = path.join(projectDir, 'tools', 'db-metadata', 'PHU2512-metadata.json');
 
       const { runMigration, runSinglePhase, getMigrateStatus, createBatch } = await import('./migrate/migrate-runner.js');
       const { MigratePhase, DEFAULT_PHASE_MODELS } = await import('./migrate/migrate-types.js');
+      const { configureClaudeMode } = await import('./migrate/migrate-claude.js');
+
+      // Configure Claude mode (API key or CLI)
+      configureClaudeMode(migrateMode, migrateMode === 'api' ? process.env.ANTHROPIC_API_KEY : undefined);
+      console.log(`\n  Claude mode: ${migrateMode.toUpperCase()}${migrateMode === 'api' ? ' (Anthropic SDK)' : ' (claude --print)'}`);
 
       const migrateConfig = {
         projectDir,
