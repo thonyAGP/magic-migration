@@ -474,6 +474,7 @@ ${MULTI_CSS}
   <button class="action-btn" id="btn-verify" disabled title="Run 'migration-factory serve' to enable">Verify</button>
   <button class="action-btn" id="btn-gaps" disabled title="Run 'migration-factory serve' to enable">Gaps</button>
   <button class="action-btn" id="btn-calibrate" disabled title="Run 'migration-factory serve' to enable">Calibrate</button>
+  <button class="action-btn" id="btn-generate" disabled title="Run 'migration-factory serve' to enable" style="background:#7c3aed;color:#fff">Generate Code</button>
   <label style="margin-left:auto;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px"><input type="checkbox" id="chk-dry" disabled> Dry Run</label>
 </div>
 <div class="action-panel" id="action-panel">
@@ -1277,6 +1278,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   var btnVerify = document.getElementById('btn-verify');
   var btnGaps = document.getElementById('btn-gaps');
   var btnCalibrate = document.getElementById('btn-calibrate');
+  var btnGenerate = document.getElementById('btn-generate');
   var chkDry = document.getElementById('chk-dry');
   var panel = document.getElementById('action-panel');
   var panelTitle = document.getElementById('panel-title');
@@ -1292,8 +1294,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   btnVerify.disabled = false;
   btnGaps.disabled = false;
   btnCalibrate.disabled = false;
+  btnGenerate.disabled = false;
   chkDry.disabled = false;
-  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate].forEach(function(b) { b.title = ''; });
+  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate].forEach(function(b) { b.title = ''; });
 
   function showPanel(title, content) {
     panelTitle.textContent = title;
@@ -1507,6 +1510,52 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         showPanel('Calibration', lines.join('\\n'));
       })
       .finally(function() { setLoading(btnCalibrate, false); });
+  });
+
+  // Generate Code (Streaming SSE)
+  btnGenerate.addEventListener('click', function() {
+    var batch = batchSelect.value;
+    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    var outputDir = prompt('Output directory for generated files:', './adh-web/src');
+    if (!outputDir) return;
+    setLoading(btnGenerate, true);
+    var dryRun = chkDry.checked;
+    var url = '/api/generate/stream?batch=' + encodeURIComponent(batch) + '&outputDir=' + encodeURIComponent(outputDir) + '&dryRun=' + dryRun;
+
+    var lines = ['Code Generation' + (dryRun ? ' (DRY-RUN)' : '') + ' - Batch ' + batch, 'Output: ' + outputDir, ''];
+    showPanel('Generate Code', lines.join('\\n'));
+
+    var es = new EventSource(url);
+    es.onmessage = function(ev) {
+      var msg = JSON.parse(ev.data);
+
+      if (msg.type === 'stream_end') {
+        es.close();
+        setLoading(btnGenerate, false);
+        return;
+      }
+
+      if (msg.type === 'codegen_started') {
+        lines.push('Starting: ' + msg.total + ' programs');
+      } else if (msg.type === 'codegen_program') {
+        lines.push('[' + msg.progress + '] IDE ' + msg.programId + ' ' + msg.programName + ': ' + msg.written + ' written, ' + msg.skipped + ' skipped');
+      } else if (msg.type === 'codegen_skip') {
+        lines.push('SKIP IDE ' + msg.programId + ': ' + msg.message);
+      } else if (msg.type === 'codegen_completed') {
+        lines.push('', 'Done: ' + msg.processed + ' programs, ' + msg.totalWritten + ' files ' + (msg.dryRun ? 'would be written' : 'written') + ', ' + msg.totalSkipped + ' skipped');
+      } else if (msg.type === 'error') {
+        lines.push('ERROR: ' + msg.message);
+      }
+
+      panelContent.textContent = lines.join('\\n');
+    };
+
+    es.onerror = function() {
+      es.close();
+      setLoading(btnGenerate, false);
+      lines.push('Connection lost');
+      panelContent.textContent = lines.join('\\n');
+    };
   });
 })();
 `;

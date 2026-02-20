@@ -4,6 +4,7 @@
  */
 
 import type { ServerResponse } from 'node:http';
+import fs from 'node:fs';
 import path from 'node:path';
 import { resolvePipelineConfig } from '../pipeline/pipeline-config.js';
 import { getBatchesStatus, preflightBatch, runBatchPipeline } from '../pipeline/pipeline-runner.js';
@@ -12,6 +13,9 @@ import { verifyContracts } from './verify-contracts.js';
 import { discoverProjects, readProjectRegistry } from '../dashboard/project-discovery.js';
 import { runCalibration } from '../calculators/calibration-runner.js';
 import { createSSEStream } from './sse-stream.js';
+import { loadContracts } from '../core/contract.js';
+import { readTracker } from '../core/tracker.js';
+import { runCodegen } from '../generators/codegen/codegen-runner.js';
 
 export interface RouteContext {
   projectDir: string;
@@ -101,6 +105,120 @@ export const handleCalibrate = (ctx: RouteContext, body: Record<string, unknown>
   const config = resolveConfig({ ...ctx, dir });
   const result = runCalibration(config, body.dryRun === true);
   json(res, result);
+};
+
+export const handleGenerate = (
+  ctx: RouteContext,
+  body: Record<string, unknown>,
+  res: ServerResponse,
+): void => {
+  const batch = body.batch as string | undefined;
+  const outputDir = body.outputDir as string | undefined;
+  const dryRun = body.dryRun === true;
+  const overwrite = body.overwrite === true;
+
+  if (!batch || !outputDir) {
+    json(res, { error: 'Missing batch or outputDir in body' }, 400);
+    return;
+  }
+
+  const config = resolveConfig(ctx);
+  const contractDir = path.join(config.migrationDir, config.contractSubDir);
+  const trackerFile = path.join(config.migrationDir, config.contractSubDir, 'tracker.json');
+
+  if (!fs.existsSync(trackerFile)) {
+    json(res, { error: `Tracker not found: ${trackerFile}` }, 404);
+    return;
+  }
+
+  const tracker = readTracker(trackerFile);
+  const batchDef = tracker.batches.find(b => b.id === batch);
+  if (!batchDef) {
+    json(res, { error: `Batch "${batch}" not found` }, 404);
+    return;
+  }
+
+  const contracts = loadContracts(contractDir);
+  const results = [];
+
+  for (const progId of batchDef.priorityOrder) {
+    const contract = contracts.get(progId);
+    if (!contract) continue;
+    const result = runCodegen(contract, { outputDir, dryRun, overwrite });
+    results.push(result);
+  }
+
+  const totalWritten = results.reduce((sum, r) => sum + r.written, 0);
+  const totalSkipped = results.reduce((sum, r) => sum + r.skipped, 0);
+
+  json(res, { batch, programs: results.length, totalWritten, totalSkipped, dryRun, results });
+};
+
+export const handleGenerateStream = async (
+  ctx: RouteContext,
+  query: URLSearchParams,
+  res: ServerResponse,
+): Promise<void> => {
+  const batch = query.get('batch');
+  const outputDir = query.get('outputDir');
+  const dryRun = query.get('dryRun') === 'true';
+  const overwrite = query.get('overwrite') === 'true';
+
+  if (!batch || !outputDir) {
+    json(res, { error: 'Missing batch or outputDir parameter' }, 400);
+    return;
+  }
+
+  const config = resolveConfig(ctx);
+  const contractDir = path.join(config.migrationDir, config.contractSubDir);
+  const trackerFile = path.join(config.migrationDir, config.contractSubDir, 'tracker.json');
+
+  if (!fs.existsSync(trackerFile)) {
+    json(res, { error: `Tracker not found` }, 404);
+    return;
+  }
+
+  const tracker = readTracker(trackerFile);
+  const batchDef = tracker.batches.find(b => b.id === batch);
+  if (!batchDef) {
+    json(res, { error: `Batch "${batch}" not found` }, 404);
+    return;
+  }
+
+  const contracts = loadContracts(contractDir);
+  const sse = createSSEStream(res);
+
+  sse.send({ type: 'codegen_started', batch, total: batchDef.priorityOrder.length });
+
+  let totalWritten = 0;
+  let totalSkipped = 0;
+  let processed = 0;
+
+  for (const progId of batchDef.priorityOrder) {
+    const contract = contracts.get(progId);
+    if (!contract) {
+      sse.send({ type: 'codegen_skip', programId: progId, message: 'No contract found' });
+      continue;
+    }
+
+    const result = runCodegen(contract, { outputDir, dryRun, overwrite });
+    totalWritten += result.written;
+    totalSkipped += result.skipped;
+    processed++;
+
+    sse.send({
+      type: 'codegen_program',
+      programId: result.programId,
+      programName: result.programName,
+      written: result.written,
+      skipped: result.skipped,
+      files: result.files.map(f => ({ path: f.relativePath, skipped: f.skipped })),
+      progress: `${processed}/${batchDef.priorityOrder.length}`,
+    });
+  }
+
+  sse.send({ type: 'codegen_completed', batch, processed, totalWritten, totalSkipped, dryRun });
+  sse.close();
 };
 
 export const handlePipelineStream = async (

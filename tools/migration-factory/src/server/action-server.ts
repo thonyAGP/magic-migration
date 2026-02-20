@@ -10,7 +10,7 @@ import { URL } from 'node:url';
 import path from 'node:path';
 import {
   json, handleStatus, handleGaps, handlePreflight, handlePipelineRun, handlePipelineStream,
-  handleVerify, handleProjects, handleCalibrate,
+  handleVerify, handleProjects, handleCalibrate, handleGenerate, handleGenerateStream,
 } from './api-routes.js';
 import type { RouteContext } from './api-routes.js';
 import { generateServerDashboard } from './dashboard-html.js';
@@ -93,6 +93,24 @@ export const startActionServer = async (config: ActionServerConfig): Promise<htt
       } else if (pathname === '/api/calibrate' && req.method === 'POST') {
         const body = await readBody(req);
         handleCalibrate(ctx, body, res);
+      } else if (pathname === '/api/generate' && req.method === 'POST') {
+        if (pipelineRunning) {
+          json(res, { error: 'Pipeline already running' }, 409);
+          return;
+        }
+        const body = await readBody(req);
+        handleGenerate(ctx, body, res);
+      } else if (pathname === '/api/generate/stream' && req.method === 'GET') {
+        if (pipelineRunning) {
+          json(res, { error: 'Pipeline already running' }, 409);
+          return;
+        }
+        pipelineRunning = true;
+        try {
+          await handleGenerateStream(ctx, url.searchParams, res);
+        } finally {
+          pipelineRunning = false;
+        }
       } else {
         json(res, { error: 'Not found' }, 404);
       }

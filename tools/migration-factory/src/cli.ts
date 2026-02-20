@@ -38,6 +38,7 @@ import { formatCoverageBar } from './core/coverage.js';
 import { discoverProjects, readProjectRegistry, resolveCodebaseDir } from './dashboard/project-discovery.js';
 import { computeGapReport } from './server/gap-report.js';
 import { runCalibration } from './calculators/calibration-runner.js';
+import { runCodegen } from './generators/codegen/codegen-runner.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -797,6 +798,89 @@ const run = async () => {
       break;
     }
 
+    case 'generate': {
+      // Generate React/TS scaffolds from verified/enriched contracts
+      // Usage: generate --batch B1 --project <dir> --output ./adh-web/src [--dir ADH] [--dry-run] [--overwrite]
+      //        generate --contract ADH-IDE-131 --project <dir> --output ./adh-web/src [--dry-run]
+      const genBatch = getArg('batch');
+      const genContract = getArg('contract');
+      const genOutput = getArg('output');
+      const genSubDir = getArg('dir') ?? 'ADH';
+      const genDryRun = hasFlag('dry-run');
+      const genOverwrite = hasFlag('overwrite');
+
+      if (!genOutput) {
+        console.error('Usage: generate --batch <id> --project <dir> --output <dir> [--dir ADH] [--dry-run] [--overwrite]');
+        console.error('       generate --contract <name> --project <dir> --output <dir> [--dry-run]');
+        process.exit(1);
+      }
+
+      const genContractDir = path.join(migrationDir, genSubDir);
+      if (!fs.existsSync(genContractDir)) {
+        console.error(`Contract directory not found: ${genContractDir}`);
+        process.exit(1);
+      }
+
+      const genConfig = { outputDir: genOutput, dryRun: genDryRun, overwrite: genOverwrite };
+
+      if (genContract) {
+        // Single contract mode
+        const files = fs.readdirSync(genContractDir).filter(f =>
+          f.endsWith('.contract.yaml') && f.includes(genContract),
+        );
+        if (files.length === 0) {
+          console.error(`No contract found matching "${genContract}" in ${genContractDir}`);
+          process.exit(1);
+        }
+        const contract = parseContract(path.join(genContractDir, files[0]));
+        const result = runCodegen(contract, genConfig);
+        console.log(`\n  IDE ${result.programId} - ${result.programName}: ${result.written} files generated, ${result.skipped} skipped`);
+        for (const f of result.files) {
+          const icon = f.skipped ? 'SKIP' : genDryRun ? 'WOULD' : 'OK';
+          console.log(`    ${icon}  ${f.relativePath}`);
+        }
+      } else if (genBatch) {
+        // Batch mode: load tracker to find programs in batch
+        const genTrackerFile = path.join(migrationDir, genSubDir, 'tracker.json');
+        if (!fs.existsSync(genTrackerFile)) {
+          console.error(`Tracker not found: ${genTrackerFile}`);
+          process.exit(1);
+        }
+        const tracker = readTracker(genTrackerFile);
+        const batch = tracker.batches.find(b => b.id === genBatch);
+        if (!batch) {
+          console.error(`Batch "${genBatch}" not found in tracker. Available: ${tracker.batches.map(b => b.id).join(', ')}`);
+          process.exit(1);
+        }
+
+        const contracts = loadContracts(genContractDir);
+        let totalWritten = 0;
+        let totalSkipped = 0;
+        let processed = 0;
+
+        console.log(`\nGenerate${genDryRun ? ' (DRY-RUN)' : ''}: batch ${genBatch} - ${batch.name}\n`);
+
+        for (const progId of batch.priorityOrder) {
+          const contract = contracts.get(progId);
+          if (!contract) {
+            console.log(`  IDE ${progId}: no contract, skipping`);
+            continue;
+          }
+          const result = runCodegen(contract, genConfig);
+          console.log(`  IDE ${result.programId} - ${result.programName}: ${result.written} written, ${result.skipped} skipped`);
+          totalWritten += result.written;
+          totalSkipped += result.skipped;
+          processed++;
+        }
+
+        console.log(`\n  Summary: ${processed} programs, ${totalWritten} files ${genDryRun ? 'would be written' : 'written'}, ${totalSkipped} skipped`);
+      } else {
+        console.error('Specify --batch <id> or --contract <name>');
+        process.exit(1);
+      }
+      break;
+    }
+
     case 'serve': {
       const servePort = Number(getArg('port') ?? 3070);
       const serveDir = getArg('dir') ?? 'ADH';
@@ -821,6 +905,7 @@ const run = async () => {
       console.log('  contract   --auto --project <dir> --program <id> [--dir ADH]  Auto-generate contract');
       console.log('  pipeline   run|status|preflight                               Pipeline orchestrator v4 (Claude enrichment)');
       console.log('  calibrate  --project <dir> [--dir ADH] [--dry-run]             Calibrate hoursPerPoint from verified contracts');
+      console.log('  generate   --batch <id>|--contract <name> --output <dir>      Generate React/TS scaffolds from contracts');
       console.log('  serve      [--port 3070] [--dir ADH]                          Interactive dashboard server');
       console.log('\nOptions:');
       console.log('  --adapter magic|generic                     Source adapter (default: magic)');
