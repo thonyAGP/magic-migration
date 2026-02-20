@@ -1491,8 +1491,19 @@ document.querySelectorAll('.project-tab').forEach(tab => {
     document.querySelectorAll('.tab-content').forEach(c => {
       c.classList.toggle('active', c.dataset.tab === project);
     });
+    // Persist active tab in URL hash
+    history.replaceState(null, '', '#' + project);
   });
 });
+
+// Restore active tab from URL hash on load
+(function() {
+  var hash = location.hash.replace('#', '');
+  if (hash) {
+    var tab = document.querySelector('.project-tab[data-project="' + hash + '"]');
+    if (tab) tab.click();
+  }
+})();
 
 // Click on project card -> switch to that tab
 document.querySelectorAll('.project-card[data-goto]').forEach(card => {
