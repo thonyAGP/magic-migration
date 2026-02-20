@@ -11,6 +11,7 @@ import { computeGapReport } from './gap-report.js';
 import { verifyContracts } from './verify-contracts.js';
 import { discoverProjects, readProjectRegistry } from '../dashboard/project-discovery.js';
 import { runCalibration } from '../calculators/calibration-runner.js';
+import { createSSEStream } from './sse-stream.js';
 
 export interface RouteContext {
   projectDir: string;
@@ -100,4 +101,42 @@ export const handleCalibrate = (ctx: RouteContext, body: Record<string, unknown>
   const config = resolveConfig({ ...ctx, dir });
   const result = runCalibration(config, body.dryRun === true);
   json(res, result);
+};
+
+export const handlePipelineStream = async (
+  ctx: RouteContext,
+  query: URLSearchParams,
+  res: ServerResponse,
+): Promise<void> => {
+  const batch = query.get('batch');
+  if (!batch) {
+    json(res, { error: 'Missing batch parameter' }, 400);
+    return;
+  }
+
+  const dryRun = query.get('dryRun') === 'true';
+  const enrich = query.get('enrich') ?? undefined;
+  const model = query.get('model') ?? undefined;
+
+  // Auto-preflight
+  const preConfig = resolveConfig(ctx);
+  const preflight = preflightBatch(batch, preConfig);
+
+  const sse = createSSEStream(res);
+  sse.send({ type: 'preflight', data: preflight });
+
+  if (preflight.summary.blocked > 0 && preflight.summary.ready === 0 && preflight.summary.alreadyDone === 0) {
+    sse.send({ type: 'error', message: `Batch ${batch} blocked: ${preflight.summary.blocked} programs cannot proceed` });
+    sse.close();
+    return;
+  }
+
+  // Run pipeline with live events
+  const config = resolveConfig(ctx, { dryRun, enrich, model });
+  config.onEvent = (event) => sse.send(event);
+
+  const result = await runBatchPipeline(batch, config);
+
+  sse.send({ type: 'pipeline_result', data: result });
+  sse.close();
 };

@@ -9,8 +9,8 @@ import http from 'node:http';
 import { URL } from 'node:url';
 import path from 'node:path';
 import {
-  json, handleStatus, handleGaps, handlePreflight, handlePipelineRun, handleVerify,
-  handleProjects, handleCalibrate,
+  json, handleStatus, handleGaps, handlePreflight, handlePipelineRun, handlePipelineStream,
+  handleVerify, handleProjects, handleCalibrate,
 } from './api-routes.js';
 import type { RouteContext } from './api-routes.js';
 import { generateServerDashboard } from './dashboard-html.js';
@@ -62,6 +62,17 @@ export const startActionServer = async (config: ActionServerConfig): Promise<htt
         handleGaps(ctx, url.searchParams, res);
       } else if (pathname === '/api/preflight' && req.method === 'GET') {
         handlePreflight(ctx, url.searchParams, res);
+      } else if (pathname === '/api/pipeline/stream' && req.method === 'GET') {
+        if (pipelineRunning) {
+          json(res, { error: 'Pipeline already running' }, 409);
+          return;
+        }
+        pipelineRunning = true;
+        try {
+          await handlePipelineStream(ctx, url.searchParams, res);
+        } finally {
+          pipelineRunning = false;
+        }
       } else if (pathname === '/api/pipeline/run' && req.method === 'POST') {
         if (pipelineRunning) {
           json(res, { error: 'Pipeline already running' }, 409);

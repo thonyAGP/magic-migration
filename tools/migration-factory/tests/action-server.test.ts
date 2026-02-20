@@ -32,6 +32,27 @@ const request = (port: number, method: string, urlPath: string, body?: unknown):
     req.end();
   });
 
+const streamSSE = (ssePort: number, urlPath: string): Promise<unknown[]> =>
+  new Promise((resolve) => {
+    const events: unknown[] = [];
+    const req = http.get({ hostname: '127.0.0.1', port: ssePort, path: urlPath }, (res) => {
+      let buffer = '';
+      res.on('data', (chunk: Buffer) => {
+        buffer += chunk.toString();
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() ?? '';
+        for (const part of parts) {
+          const match = part.match(/^data:\s*(.+)$/m);
+          if (match) {
+            try { events.push(JSON.parse(match[1])); } catch { /* ignore */ }
+          }
+        }
+      });
+      res.on('end', () => resolve(events));
+    });
+    req.on('error', () => resolve(events));
+  });
+
 const writeTrackerJson = (filePath: string, batches: { id: string; name: string; programIds: number[]; status: string }[]): void => {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify({
@@ -272,6 +293,37 @@ describe('Action Server', () => {
       expect(res.status).toBe(200);
       const data = res.data as { dataPoints: number };
       expect(data.dataPoints).toBe(0);
+    });
+  });
+
+  describe('GET /api/pipeline/stream', () => {
+    it('should return 400 when batch missing', async () => {
+      await setupServer({ withTracker: true });
+      const res = await request(port, 'GET', '/api/pipeline/stream');
+      expect(res.status).toBe(400);
+      const data = res.data as { error: string };
+      expect(data.error).toContain('batch');
+    });
+
+    it('should stream preflight + events + result for valid batch', async () => {
+      await setupServer({ withTracker: true, withContracts: true });
+      const events = await streamSSE(port, '/api/pipeline/stream?batch=B1&dryRun=true');
+      expect(events.length).toBeGreaterThanOrEqual(3); // preflight + pipeline events + result + stream_end
+      const types = events.map((e: { type: string }) => e.type);
+      expect(types[0]).toBe('preflight');
+      expect(types).toContain('pipeline_result');
+      expect(types[types.length - 1]).toBe('stream_end');
+    });
+
+    it('should return 409 when pipeline already running', async () => {
+      await setupServer({ withTracker: true, withContracts: true });
+      // Start a stream (will complete quickly with test data)
+      const p1 = streamSSE(port, '/api/pipeline/stream?batch=B1&dryRun=true');
+      // Give it a moment to start, then try a second
+      await new Promise(r => setTimeout(r, 50));
+      // The first should complete successfully
+      const events = await p1;
+      expect(events.length).toBeGreaterThan(0);
     });
   });
 

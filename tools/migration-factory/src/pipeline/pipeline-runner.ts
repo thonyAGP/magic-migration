@@ -247,6 +247,7 @@ export const preflightBatch = (batchId: string, config: PipelineConfig): Preflig
 export const runBatchPipeline = async (batchId: string, config: PipelineConfig): Promise<PipelineRunResult> => {
   const started = new Date().toISOString();
   const emitter = createPipelineEmitter();
+  if (config.onEvent) emitter.on('*', config.onEvent);
   const steps: PipelineStepResult[] = [];
   const enrichmentHook = resolveEnrichmentHook(config);
 

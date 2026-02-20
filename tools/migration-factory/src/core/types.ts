@@ -705,4 +705,5 @@ export interface PipelineConfig {
   generateReport: boolean;
   enrichmentMode: EnrichmentMode;
   claudeModel?: string;
+  onEvent?: (event: PipelineEvent) => void;
 }

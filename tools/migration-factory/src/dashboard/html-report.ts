@@ -1209,6 +1209,12 @@ const MULTI_CSS = `
   overflow-y: auto;
 }
 .action-panel.visible { display: block; }
+.pipeline-progress { padding: 8px 0; }
+.progress-bar { height: 20px; background: #1e293b; border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981); width: 0%; transition: width 0.3s; }
+.p-status { margin-top: 6px; font-size: 13px; color: #94a3b8; }
+.p-log { max-height: 300px; overflow-y: auto; font-size: 12px; margin-top: 8px; }
+.p-log > div { padding: 2px 0; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
 .action-panel-header {
   display: flex;
   justify-content: space-between;
@@ -1343,30 +1349,88 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       .finally(function() { setLoading(btnPreflight, false); });
   });
 
-  // Run Pipeline
+  // Run Pipeline (Streaming SSE)
   btnRun.addEventListener('click', function() {
     var batch = batchSelect.value;
     if (!batch) { showPanel('Error', 'Select a batch first'); return; }
     setLoading(btnRun, true);
-    fetch('/api/pipeline/run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ batch: batch, dryRun: chkDry.checked }),
-    })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data.error) { showPanel('Error', data.error); return; }
-        var lines = ['Pipeline ' + (data.dryRun ? '(DRY-RUN) ' : '') + 'run: ' + data.batchId + ' - ' + data.batchName, ''];
-        data.steps.forEach(function(s) {
-          lines.push('[' + s.programId + '] ' + s.programName + ' -> ' + s.action);
-          lines.push('  ' + s.message);
-        });
-        lines.push('', 'Summary: ' + data.summary.total + ' total, ' + data.summary.contracted + ' contracted, ' + data.summary.verified + ' verified, ' + data.summary.errors + ' errors');
-        var elapsed = ((new Date(data.completed).getTime() - new Date(data.started).getTime()) / 1000).toFixed(1);
-        lines.push('Duration: ' + elapsed + 's');
-        showPanel('Pipeline Run: ' + batch, lines.join('\\n'));
-      })
-      .finally(function() { setLoading(btnRun, false); });
+    var dryRun = chkDry.checked;
+    var url = '/api/pipeline/stream?batch=' + encodeURIComponent(batch) + '&dryRun=' + dryRun;
+
+    panelTitle.textContent = 'Pipeline: ' + batch + (dryRun ? ' (DRY-RUN)' : '');
+    panelContent.innerHTML = '<div class="pipeline-progress">'
+      + '<div class="progress-bar"><div class="progress-fill" id="pbar"></div></div>'
+      + '<div class="p-status" id="pstatus">Connecting...</div>'
+      + '<div class="p-log" id="plog"></div></div>';
+    panel.classList.add('visible');
+
+    var pbar = document.getElementById('pbar');
+    var pstatus = document.getElementById('pstatus');
+    var plog = document.getElementById('plog');
+    var totalProgs = 0;
+    var doneProgs = 0;
+
+    function addLog(text) {
+      var line = document.createElement('div');
+      line.textContent = text;
+      plog.appendChild(line);
+      plog.scrollTop = plog.scrollHeight;
+    }
+
+    var es = new EventSource(url);
+
+    es.onmessage = function(e) {
+      var msg = JSON.parse(e.data);
+
+      if (msg.type === 'preflight') {
+        totalProgs = msg.data.programs.length;
+        pstatus.textContent = 'Preflight OK: ' + totalProgs + ' programs ('
+          + msg.data.summary.alreadyDone + ' done, '
+          + msg.data.summary.ready + ' ready)';
+        addLog('Preflight: ' + msg.data.summary.ready + ' ready, '
+          + msg.data.summary.alreadyDone + ' already done, '
+          + msg.data.summary.blocked + ' blocked');
+        return;
+      }
+
+      if (msg.type === 'stream_end') {
+        es.close();
+        setLoading(btnRun, false);
+        return;
+      }
+
+      if (msg.type === 'pipeline_result') {
+        var r = msg.data;
+        var elapsed = ((new Date(r.completed).getTime() - new Date(r.started).getTime()) / 1000).toFixed(1);
+        pbar.style.width = '100%';
+        pstatus.textContent = 'Done in ' + elapsed + 's: '
+          + r.summary.verified + ' verified, '
+          + r.summary.contracted + ' contracted, '
+          + r.summary.errors + ' errors';
+        addLog('Pipeline completed in ' + elapsed + 's');
+        setTimeout(function() { location.reload(); }, 2000);
+        return;
+      }
+
+      if (msg.type === 'error') {
+        addLog('ERROR: ' + (msg.message || ''));
+        pstatus.textContent = 'Error: ' + (msg.message || '');
+        return;
+      }
+
+      doneProgs++;
+      var pct = totalProgs > 0 ? Math.round((doneProgs / totalProgs) * 100) : 0;
+      pbar.style.width = pct + '%';
+      pstatus.textContent = doneProgs + '/' + totalProgs + ' (' + pct + '%) - ' + (msg.message || msg.type);
+      addLog('[' + (msg.programId || '') + '] ' + (msg.message || msg.type));
+    };
+
+    es.onerror = function() {
+      es.close();
+      setLoading(btnRun, false);
+      addLog('Connection lost');
+      pstatus.textContent = 'Connection lost - check server';
+    };
   });
 
   // Verify
