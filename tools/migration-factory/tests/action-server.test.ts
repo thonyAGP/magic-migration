@@ -327,6 +327,136 @@ describe('Action Server', () => {
     });
   });
 
+  describe('POST /api/generate', () => {
+    it('should return 400 when batch is missing', async () => {
+      await setupServer({ withTracker: true, withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const res = await request(port, 'POST', '/api/generate', { outputDir: '/tmp/test' });
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when outputDir is missing', async () => {
+      await setupServer({ withTracker: true, withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const res = await request(port, 'POST', '/api/generate', { batch: 'B1' });
+      expect(res.status).toBe(400);
+    });
+
+    it('should generate code for valid batch in dry-run', async () => {
+      await setupServer({ withTracker: true, withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const res = await request(port, 'POST', '/api/generate', { batch: 'B1', outputDir: '/tmp/test-gen', dryRun: true });
+      expect(res.status).toBe(200);
+      const data = res.data as { totalWritten: number; results: unknown[] };
+      expect(data.totalWritten).toBeGreaterThan(0);
+      expect(data.results.length).toBe(1);
+    });
+
+    it('should accept enrich=heuristic mode', async () => {
+      await setupServer({ withTracker: true, withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const res = await request(port, 'POST', '/api/generate', { batch: 'B1', outputDir: '/tmp/test-gen', dryRun: true, enrich: 'heuristic' });
+      expect(res.status).toBe(200);
+      const data = res.data as { totalWritten: number };
+      expect(data.totalWritten).toBeGreaterThan(0);
+    });
+
+    it('should accept enrich=none mode (v8 compat)', async () => {
+      await setupServer({ withTracker: true, withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const res = await request(port, 'POST', '/api/generate', { batch: 'B1', outputDir: '/tmp/test-gen', dryRun: true, enrich: 'none' });
+      expect(res.status).toBe(200);
+      const data = res.data as { totalWritten: number };
+      expect(data.totalWritten).toBeGreaterThan(0);
+    });
+  });
+
+  describe('GET /api/generate/stream', () => {
+    it('should return 400 when batch is missing', async () => {
+      await setupServer({ withTracker: true });
+      const res = await request(port, 'GET', '/api/generate/stream?outputDir=/tmp');
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 when outputDir is missing', async () => {
+      await setupServer({ withTracker: true });
+      const res = await request(port, 'GET', '/api/generate/stream?batch=B1');
+      expect(res.status).toBe(400);
+    });
+
+    it('should stream SSE events for code generation', async () => {
+      await setupServer({ withTracker: true, withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const events = await streamSSE(port, '/api/generate/stream?batch=B1&outputDir=/tmp/test-gen&dryRun=true');
+      expect(events.length).toBeGreaterThanOrEqual(3); // started + program(s) + completed + stream_end
+      const types = events.map((e: { type: string }) => e.type);
+      expect(types[0]).toBe('codegen_started');
+      expect(types).toContain('codegen_completed');
+      expect(types[types.length - 1]).toBe('stream_end');
+    });
+
+    it('should include enrich mode in SSE events', async () => {
+      await setupServer({ withTracker: true, withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const events = await streamSSE(port, '/api/generate/stream?batch=B1&outputDir=/tmp/test-gen&dryRun=true&enrich=heuristic');
+      const started = events.find((e: { type: string }) => e.type === 'codegen_started') as { type: string; enrich: string } | undefined;
+      expect(started).toBeDefined();
+      expect(started!.enrich).toBe('heuristic');
+    });
+
+    it('should stream per-program progress events', async () => {
+      await setupServer({ withTracker: true, withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const events = await streamSSE(port, '/api/generate/stream?batch=B1&outputDir=/tmp/test-gen&dryRun=true&enrich=heuristic');
+      const programEvents = events.filter((e: { type: string }) => e.type === 'codegen_program') as { type: string; written: number; programId: number }[];
+      expect(programEvents.length).toBeGreaterThanOrEqual(1);
+      expect(programEvents[0].written).toBeGreaterThan(0);
+      expect(programEvents[0].programId).toBe(100);
+    });
+
+    it('should include file count in completed event', async () => {
+      await setupServer({ withTracker: true, withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const events = await streamSSE(port, '/api/generate/stream?batch=B1&outputDir=/tmp/test-gen&dryRun=true');
+      const completed = events.find((e: { type: string }) => e.type === 'codegen_completed') as { type: string; totalWritten: number; dryRun: boolean } | undefined;
+      expect(completed).toBeDefined();
+      expect(completed!.totalWritten).toBeGreaterThan(0);
+      expect(completed!.dryRun).toBe(true);
+    });
+  });
+
+  describe('Dashboard HTML content', () => {
+    it('should contain enrichment dropdown with 4 options', async () => {
+      await setupServer();
+      const res = await request(port, 'GET', '/');
+      const html = res.data as string;
+      expect(html).toContain('sel-enrich');
+      expect(html).toContain('No enrich');
+      expect(html).toContain('Heuristic');
+      expect(html).toContain('Claude API');
+      expect(html).toContain('Claude CLI');
+    });
+
+    it('should contain Generate Code button', async () => {
+      await setupServer();
+      const res = await request(port, 'GET', '/');
+      const html = res.data as string;
+      expect(html).toContain('btn-generate');
+      expect(html).toContain('Generate Code');
+    });
+
+    it('should contain all 6 action buttons', async () => {
+      await setupServer();
+      const res = await request(port, 'GET', '/');
+      const html = res.data as string;
+      expect(html).toContain('btn-preflight');
+      expect(html).toContain('btn-run');
+      expect(html).toContain('btn-verify');
+      expect(html).toContain('btn-gaps');
+      expect(html).toContain('btn-calibrate');
+      expect(html).toContain('btn-generate');
+    });
+
+    it('should contain dry-run checkbox', async () => {
+      await setupServer();
+      const res = await request(port, 'GET', '/');
+      const html = res.data as string;
+      expect(html).toContain('chk-dry');
+      expect(html).toContain('Dry Run');
+    });
+  });
+
   describe('404', () => {
     it('should return 404 for unknown routes', async () => {
       await setupServer();
