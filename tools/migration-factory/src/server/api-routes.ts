@@ -9,6 +9,8 @@ import { resolvePipelineConfig } from '../pipeline/pipeline-config.js';
 import { getBatchesStatus, preflightBatch, runBatchPipeline } from '../pipeline/pipeline-runner.js';
 import { computeGapReport } from './gap-report.js';
 import { verifyContracts } from './verify-contracts.js';
+import { discoverProjects, readProjectRegistry } from '../dashboard/project-discovery.js';
+import { runCalibration } from '../calculators/calibration-runner.js';
 
 export interface RouteContext {
   projectDir: string;
@@ -83,5 +85,19 @@ export const handleVerify = (ctx: RouteContext, body: Record<string, unknown>, r
     programs: body.programs as string | undefined,
     dryRun: body.dryRun === true,
   });
+  json(res, result);
+};
+
+export const handleProjects = (ctx: RouteContext, res: ServerResponse): void => {
+  const migDir = path.join(ctx.projectDir, '.openspec', 'migration');
+  const active = discoverProjects(migDir);
+  const registry = readProjectRegistry(migDir);
+  json(res, { active, registry });
+};
+
+export const handleCalibrate = (ctx: RouteContext, body: Record<string, unknown>, res: ServerResponse): void => {
+  const dir = (body.dir as string) ?? ctx.dir;
+  const config = resolveConfig({ ...ctx, dir });
+  const result = runCalibration(config, body.dryRun === true);
   json(res, result);
 };

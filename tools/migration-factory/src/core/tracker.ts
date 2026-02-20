@@ -30,6 +30,12 @@ export const readTracker = (filePath: string): Tracker => {
     },
     batches: (doc.batches ?? []).map(mapBatch),
     notes: doc.notes ?? [],
+    calibration: doc.calibration ? {
+      hoursPerPoint: Number(doc.calibration.hoursPerPoint ?? doc.calibration.hours_per_point ?? 0),
+      dataPoints: Number(doc.calibration.dataPoints ?? doc.calibration.data_points ?? 0),
+      calibratedAt: String(doc.calibration.calibratedAt ?? doc.calibration.calibrated_at ?? ''),
+      accuracy: Number(doc.calibration.accuracy ?? 0),
+    } : undefined,
   };
 };
 
@@ -73,6 +79,14 @@ export const writeTracker = (tracker: Tracker, filePath: string): void => {
       priority_order: b.priorityOrder,
     })),
     notes: tracker.notes,
+    ...(tracker.calibration ? {
+      calibration: {
+        hoursPerPoint: tracker.calibration.hoursPerPoint,
+        dataPoints: tracker.calibration.dataPoints,
+        calibratedAt: tracker.calibration.calibratedAt,
+        accuracy: tracker.calibration.accuracy,
+      },
+    } : {}),
   };
 
   fs.writeFileSync(filePath, JSON.stringify(doc, null, 2), 'utf8');

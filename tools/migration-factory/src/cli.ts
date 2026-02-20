@@ -35,8 +35,9 @@ import { generateAutoContract } from './generators/auto-contract.js';
 import { resolvePipelineConfig } from './pipeline/pipeline-config.js';
 import { preflightBatch, runBatchPipeline, getBatchesStatus } from './pipeline/pipeline-runner.js';
 import { formatCoverageBar } from './core/coverage.js';
-import { discoverProjects, readProjectRegistry } from './dashboard/project-discovery.js';
+import { discoverProjects, readProjectRegistry, resolveCodebaseDir } from './dashboard/project-discovery.js';
 import { computeGapReport } from './server/gap-report.js';
+import { runCalibration } from './calculators/calibration-runner.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -611,7 +612,8 @@ const run = async () => {
       const contractSubDir = getArg('dir') ?? 'ADH';
       const contractContractDir = path.join(migrationDir, contractSubDir);
       const specDir = path.join(projectDir, '.openspec', 'specs');
-      const codebaseDir = path.join(projectDir, 'adh-web', 'src');
+      const registry = readProjectRegistry(migrationDir);
+      const codebaseDir = resolveCodebaseDir(projectDir, contractSubDir, registry);
 
       const singleProg = getArg('program');
       const multiProgs = getArg('programs');
@@ -774,6 +776,27 @@ const run = async () => {
       break;
     }
 
+    case 'calibrate': {
+      const calDir = getArg('dir') ?? 'ADH';
+      const calConfig = resolvePipelineConfig({ projectDir, dir: calDir });
+      const calDryRun = hasFlag('dry-run');
+      const result = runCalibration(calConfig, calDryRun);
+
+      console.log(`\n  Calibration${calDryRun ? ' (DRY-RUN)' : ''} - ${calDir}`);
+      console.log(`  Verified contracts: ${result.dataPoints}`);
+      console.log(`  Previous: ${result.previousHpp} h/pt → Calibrated: ${result.calibratedHpp} h/pt`);
+      console.log(`  Estimated: ${result.totalEstimated}h | Actual: ${result.totalActual}h`);
+      console.log(`  Accuracy: ${result.accuracyPct}%`);
+
+      if (result.details.length > 0) {
+        console.log(`\n  Details:`);
+        for (const d of result.details) {
+          console.log(`    IDE ${d.programId}: score=${d.score} est=${d.estimated}h act=${d.actual}h`);
+        }
+      }
+      break;
+    }
+
     case 'serve': {
       const servePort = Number(getArg('port') ?? 3070);
       const serveDir = getArg('dir') ?? 'ADH';
@@ -797,6 +820,7 @@ const run = async () => {
       console.log('  estimate   --project <dir> [--dir ADH]                      Estimate effort');
       console.log('  contract   --auto --project <dir> --program <id> [--dir ADH]  Auto-generate contract');
       console.log('  pipeline   run|status|preflight                               Pipeline orchestrator v4 (Claude enrichment)');
+      console.log('  calibrate  --project <dir> [--dir ADH] [--dry-run]             Calibrate hoursPerPoint from verified contracts');
       console.log('  serve      [--port 3070] [--dir ADH]                          Interactive dashboard server');
       console.log('\nOptions:');
       console.log('  --adapter magic|generic                     Source adapter (default: magic)');

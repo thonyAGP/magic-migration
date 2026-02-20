@@ -237,6 +237,44 @@ describe('Action Server', () => {
     });
   });
 
+  describe('GET /api/projects', () => {
+    it('should return active and registry arrays', async () => {
+      await setupServer();
+      const res = await request(port, 'GET', '/api/projects');
+      expect(res.status).toBe(200);
+      const data = res.data as { active: string[]; registry: unknown[] };
+      expect(Array.isArray(data.active)).toBe(true);
+      expect(Array.isArray(data.registry)).toBe(true);
+    });
+  });
+
+  describe('POST /api/calibrate', () => {
+    it('should return CalibrationResult', async () => {
+      await setupServer({ withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const res = await request(port, 'POST', '/api/calibrate', { dryRun: true });
+      expect(res.status).toBe(200);
+      const data = res.data as { dataPoints: number; calibratedHpp: number };
+      expect(typeof data.dataPoints).toBe('number');
+      expect(typeof data.calibratedHpp).toBe('number');
+    });
+
+    it('should respect dry-run flag', async () => {
+      await setupServer({ withTracker: true, withContracts: true, contractStatus: PipelineStatus.VERIFIED, contractAllImpl: true });
+      const res = await request(port, 'POST', '/api/calibrate', { dryRun: true });
+      expect(res.status).toBe(200);
+      const data = res.data as { dataPoints: number };
+      expect(data.dataPoints).toBe(0); // no effort timestamps in test contracts
+    });
+
+    it('should return 0 dataPoints when no verified contracts', async () => {
+      await setupServer({ withContracts: true, contractStatus: PipelineStatus.ENRICHED });
+      const res = await request(port, 'POST', '/api/calibrate', {});
+      expect(res.status).toBe(200);
+      const data = res.data as { dataPoints: number };
+      expect(data.dataPoints).toBe(0);
+    });
+  });
+
   describe('404', () => {
     it('should return 404 for unknown routes', async () => {
       await setupServer();

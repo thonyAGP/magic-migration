@@ -2,7 +2,7 @@
   "generated": "2026-02-19",
   "source": "Magic Knowledge Base (magic_migration_projects)",
   "projects": [
-    { "name": "ADH", "programs": 135, "description": "Adherents/Caisse" },
+    { "name": "ADH", "programs": 135, "description": "Adherents/Caisse", "codebaseDir": "adh-web/src" },
     { "name": "CAB", "programs": 23, "description": "Caisse batch" },
     { "name": "CAP", "programs": 24, "description": "Caisse parametres" },
     { "name": "EXB", "programs": 25, "description": "Exports batch" },

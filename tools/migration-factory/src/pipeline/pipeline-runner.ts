@@ -17,7 +17,7 @@ import { parseContract, writeContract, loadContracts } from '../core/contract.js
 import { readTracker, writeTracker, updateTrackerStats, updateBatchStatus } from '../core/tracker.js';
 import { isTerminal, statusOrder } from '../core/pipeline.js';
 import { generateAutoContract } from '../generators/auto-contract.js';
-import { trackStatusChange } from '../calculators/effort-tracker.js';
+import { trackStatusChange, computeActualHours } from '../calculators/effort-tracker.js';
 import { createPipelineEmitter, createEvent } from './event-emitter.js';
 import type { EnrichmentHook } from './enrichment-hook.js';
 import { createClaudeEnrichmentHook } from './claude-enrichment-hook.js';
@@ -484,6 +484,14 @@ const processProgram = async (
       contract.overall.status = PipelineStatus.VERIFIED;
       contract.overall.coveragePct = 100;
       contract.overall.effort = trackStatusChange(contract, PipelineStatus.VERIFIED);
+
+      // Auto-compute actualHours from timestamps
+      if (contract.overall.effort) {
+        const actual = computeActualHours(contract.overall.effort);
+        if (actual !== null) {
+          contract.overall.effort.actualHours = actual;
+        }
+      }
 
       if (!config.dryRun) {
         const outPath = findContractFile(config, programId) ?? contractFile(config, programId);

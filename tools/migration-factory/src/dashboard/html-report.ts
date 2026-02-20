@@ -473,6 +473,7 @@ ${MULTI_CSS}
   <button class="action-btn primary" id="btn-run" disabled title="Run 'migration-factory serve' to enable">Run Pipeline</button>
   <button class="action-btn" id="btn-verify" disabled title="Run 'migration-factory serve' to enable">Verify</button>
   <button class="action-btn" id="btn-gaps" disabled title="Run 'migration-factory serve' to enable">Gaps</button>
+  <button class="action-btn" id="btn-calibrate" disabled title="Run 'migration-factory serve' to enable">Calibrate</button>
   <label style="margin-left:auto;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px"><input type="checkbox" id="chk-dry" disabled> Dry Run</label>
 </div>
 <div class="action-panel" id="action-panel">
@@ -1269,6 +1270,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   var btnRun = document.getElementById('btn-run');
   var btnVerify = document.getElementById('btn-verify');
   var btnGaps = document.getElementById('btn-gaps');
+  var btnCalibrate = document.getElementById('btn-calibrate');
   var chkDry = document.getElementById('chk-dry');
   var panel = document.getElementById('action-panel');
   var panelTitle = document.getElementById('panel-title');
@@ -1283,8 +1285,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   btnRun.disabled = false;
   btnVerify.disabled = false;
   btnGaps.disabled = false;
+  btnCalibrate.disabled = false;
   chkDry.disabled = false;
-  [btnPreflight, btnRun, btnVerify, btnGaps].forEach(function(b) { b.title = ''; });
+  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate].forEach(function(b) { b.title = ''; });
 
   function showPanel(title, content) {
     panelTitle.textContent = title;
@@ -1414,6 +1417,32 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         showPanel('Gaps', lines.join('\\n'));
       })
       .finally(function() { setLoading(btnGaps, false); });
+  });
+
+  // Calibrate
+  btnCalibrate.addEventListener('click', function() {
+    setLoading(btnCalibrate, true);
+    fetch('/api/calibrate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dryRun: chkDry.checked }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var lines = ['Calibration' + (chkDry.checked ? ' (DRY-RUN)' : ''), ''];
+        lines.push('Verified contracts: ' + data.dataPoints);
+        lines.push('Previous: ' + data.previousHpp + ' h/pt -> Calibrated: ' + data.calibratedHpp + ' h/pt');
+        lines.push('Estimated: ' + data.totalEstimated + 'h | Actual: ' + data.totalActual + 'h');
+        lines.push('Accuracy: ' + data.accuracyPct + '%');
+        if (data.details && data.details.length > 0) {
+          lines.push('', 'Details:');
+          data.details.forEach(function(d) {
+            lines.push('  IDE ' + d.programId + ': score=' + d.score + ' est=' + d.estimated + 'h act=' + d.actual + 'h');
+          });
+        }
+        showPanel('Calibration', lines.join('\\n'));
+      })
+      .finally(function() { setLoading(btnCalibrate, false); });
   });
 })();
 `;

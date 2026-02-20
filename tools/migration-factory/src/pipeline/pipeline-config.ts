@@ -5,6 +5,7 @@
 import path from 'node:path';
 import type { PipelineConfig } from '../core/types.js';
 import { EnrichmentMode } from '../core/types.js';
+import { readProjectRegistry, resolveCodebaseDir } from '../dashboard/project-discovery.js';
 
 export interface PipelineConfigInput {
   projectDir: string;
@@ -20,12 +21,13 @@ export interface PipelineConfigInput {
 export const resolvePipelineConfig = (input: PipelineConfigInput): PipelineConfig => {
   const { projectDir, dir = 'ADH' } = input;
   const migrationDir = path.join(projectDir, '.openspec', 'migration');
+  const registry = readProjectRegistry(migrationDir);
 
   return {
     projectDir,
     migrationDir,
     specDir: path.join(projectDir, '.openspec', 'specs'),
-    codebaseDir: path.join(projectDir, 'adh-web', 'src'),
+    codebaseDir: resolveCodebaseDir(projectDir, dir, registry),
     contractSubDir: dir,
     trackerFile: path.join(migrationDir, dir, 'tracker.json'),
     autoContract: !input.noContract,

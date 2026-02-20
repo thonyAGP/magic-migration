@@ -6,10 +6,25 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+/**
+ * Resolve the codebase directory for a project.
+ * Priority: registry.codebaseDir → convention {name}-web/src → projectDir fallback.
+ */
+export const resolveCodebaseDir = (
+  projectDir: string, projectName: string, registry: RegistryEntry[],
+): string => {
+  const entry = registry.find(r => r.name === projectName);
+  if (entry?.codebaseDir) return path.join(projectDir, entry.codebaseDir);
+  const convention = path.join(projectDir, `${projectName.toLowerCase()}-web`, 'src');
+  if (fs.existsSync(convention)) return convention;
+  return projectDir;
+};
+
 export interface RegistryEntry {
   name: string;
   programs: number;
   description: string;
+  codebaseDir?: string;
 }
 
 export const discoverProjects = (migrationDir: string): string[] => {

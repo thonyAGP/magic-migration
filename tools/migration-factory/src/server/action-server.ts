@@ -10,6 +10,7 @@ import { URL } from 'node:url';
 import path from 'node:path';
 import {
   json, handleStatus, handleGaps, handlePreflight, handlePipelineRun, handleVerify,
+  handleProjects, handleCalibrate,
 } from './api-routes.js';
 import type { RouteContext } from './api-routes.js';
 import { generateServerDashboard } from './dashboard-html.js';
@@ -76,6 +77,11 @@ export const startActionServer = async (config: ActionServerConfig): Promise<htt
       } else if (pathname === '/api/verify' && req.method === 'POST') {
         const body = await readBody(req);
         handleVerify(ctx, body, res);
+      } else if (pathname === '/api/projects' && req.method === 'GET') {
+        handleProjects(ctx, res);
+      } else if (pathname === '/api/calibrate' && req.method === 'POST') {
+        const body = await readBody(req);
+        handleCalibrate(ctx, body, res);
       } else {
         json(res, { error: 'Not found' }, 404);
       }

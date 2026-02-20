@@ -163,6 +163,13 @@ export type PipelineStatus = (typeof PipelineStatus)[keyof typeof PipelineStatus
 
 // ─── Tracker ─────────────────────────────────────────────────────
 
+export interface TrackerCalibration {
+  hoursPerPoint: number;
+  dataPoints: number;
+  calibratedAt: string;
+  accuracy: number;
+}
+
 export interface Tracker {
   version: string;
   methodology: string;
@@ -172,6 +179,7 @@ export interface Tracker {
   stats: TrackerStats;
   batches: Batch[];
   notes: string[];
+  calibration?: TrackerCalibration;
 }
 
 export interface TrackerStats {

@@ -48,12 +48,12 @@ export const parseSpecContent = (content: string): ParsedSpec => {
 // ─── Header parsing ──────────────────────────────────────────────
 
 const parseIdFromHeader = (content: string): number => {
-  const match = content.match(/^#\s+ADH\s+IDE\s+(\d+)/m);
+  const match = content.match(/^#\s+\w+\s+IDE\s+(\d+)/m);
   return match ? parseInt(match[1], 10) : 0;
 };
 
 const parseNameFromHeader = (content: string): string => {
-  const match = content.match(/^#\s+ADH\s+IDE\s+\d+\s*-\s*(.+)$/m);
+  const match = content.match(/^#\s+\w+\s+IDE\s+\d+\s*-\s*(.+)$/m);
   return match ? match[1].trim() : '';
 };
 
