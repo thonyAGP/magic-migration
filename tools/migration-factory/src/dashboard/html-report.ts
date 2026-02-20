@@ -1581,12 +1581,15 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
     setLoading(btnMigrate, true);
     var dryRun = chkDry.checked;
+    var enrichSel = document.getElementById('sel-enrich').value || 'none';
+    var claudeMode = enrichSel === 'claude' ? 'api' : 'cli';
     var url = '/api/migrate/stream?batch=' + encodeURIComponent(batch)
       + '&targetDir=' + encodeURIComponent(targetDir)
       + '&dryRun=' + dryRun
-      + '&parallel=' + parallelCount;
+      + '&parallel=' + parallelCount
+      + '&mode=' + claudeMode;
 
-    panelTitle.textContent = 'Migrate: ' + batch + (dryRun ? ' (DRY-RUN)' : '');
+    panelTitle.textContent = 'Migrate: ' + batch + ' [' + claudeMode.toUpperCase() + ']' + (dryRun ? ' (DRY-RUN)' : '');
     panelContent.innerHTML = '<div class="pipeline-progress">'
       + '<div class="progress-bar"><div class="progress-fill" id="mbar"></div></div>'
       + '<div class="p-status" id="mstatus">Connecting...</div>'

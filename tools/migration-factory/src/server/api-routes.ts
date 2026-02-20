@@ -20,6 +20,7 @@ import type { CodegenEnrichConfig, EnrichMode } from '../generators/codegen/enri
 import { runMigration, getMigrateStatus, createBatch } from '../migrate/migrate-runner.js';
 import { DEFAULT_PHASE_MODELS } from '../migrate/migrate-types.js';
 import type { MigrateConfig, MigratePhase } from '../migrate/migrate-types.js';
+import { configureClaudeMode } from '../migrate/migrate-claude.js';
 
 export interface RouteContext {
   projectDir: string;
@@ -287,11 +288,15 @@ export const handleMigrateStream = async (
   const parallel = Number(query.get('parallel') ?? '1');
   const maxPasses = Number(query.get('maxPasses') ?? '5');
   const model = query.get('model') ?? 'sonnet';
+  const claudeMode = (query.get('mode') ?? 'cli') as 'api' | 'cli';
 
   if (!rawTargetDir) {
     json(res, { error: 'Missing targetDir parameter' }, 400);
     return;
   }
+
+  // Configure Claude invocation mode (API key or CLI)
+  configureClaudeMode(claudeMode, claudeMode === 'api' ? process.env.ANTHROPIC_API_KEY : undefined);
 
   // Resolve relative paths against project dir
   const targetDir = path.isAbsolute(rawTargetDir) ? rawTargetDir : path.resolve(ctx.projectDir, rawTargetDir);
@@ -346,7 +351,7 @@ export const handleMigrateStream = async (
   const sse = createSSEStream(res);
   migrateConfig.onEvent = (event) => sse.send(event);
 
-  sse.send({ type: 'migrate_started', batch: batchId, programs: programIds.length, targetDir, dryRun });
+  sse.send({ type: 'migrate_started', batch: batchId, programs: programIds.length, targetDir, dryRun, mode: claudeMode });
 
   try {
     const result = await runMigration(programIds, batchId, batchName, migrateConfig);
