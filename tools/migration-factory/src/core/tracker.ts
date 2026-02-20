@@ -3,7 +3,7 @@
  */
 
 import fs from 'node:fs';
-import type { Tracker, Batch, PipelineStatus } from './types.js';
+import type { Tracker, Batch, PipelineStatus, ComplexityGrade } from './types.js';
 
 // ─── Read tracker ────────────────────────────────────────────────
 
@@ -77,6 +77,10 @@ export const writeTracker = (tracker: Tracker, filePath: string): void => {
         total_missing: b.stats.totalMissing,
       },
       priority_order: b.priorityOrder,
+      ...(b.domain != null ? { domain: b.domain } : {}),
+      ...(b.complexityGrade != null ? { complexity_grade: b.complexityGrade } : {}),
+      ...(b.estimatedHours != null ? { estimated_hours: b.estimatedHours } : {}),
+      ...(b.autoDetected != null ? { auto_detected: b.autoDetected } : {}),
     })),
     notes: tracker.notes,
     ...(tracker.calibration ? {
@@ -166,4 +170,24 @@ const mapBatch = (b: Record<string, unknown>): Batch => ({
     totalMissing: Number((b.stats as Record<string, unknown>)?.total_missing ?? 0),
   },
   priorityOrder: (b.priority_order as (string | number)[]) ?? [],
+  domain: b.domain as string | undefined,
+  complexityGrade: b.complexity_grade as ComplexityGrade | undefined,
+  estimatedHours: b.estimated_hours != null ? Number(b.estimated_hours) : undefined,
+  autoDetected: b.auto_detected != null ? Boolean(b.auto_detected) : undefined,
 });
+
+// ─── Upsert batches (preserve existing, add new) ────────────────
+
+export const upsertBatches = (
+  tracker: Tracker,
+  newBatches: Batch[],
+): Tracker => {
+  const existingIds = new Set(tracker.batches.map(b => b.id));
+  const toAdd = newBatches.filter(b => !existingIds.has(b.id));
+
+  return {
+    ...tracker,
+    updated: new Date().toISOString().slice(0, 10),
+    batches: [...tracker.batches, ...toAdd],
+  };
+};

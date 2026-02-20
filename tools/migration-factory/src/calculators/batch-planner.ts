@@ -107,6 +107,120 @@ export const planBatches = (
   };
 };
 
+// ─── Infrastructure detection ─────────────────────────────────────
+
+const INFRASTRUCTURE_PATTERNS = /^(main|menu|init)/i;
+
+export const isInfrastructureProgram = (name: string, level: number, maxLevel: number): boolean => {
+  if (INFRASTRUCTURE_PATTERNS.test(name)) return true;
+  // Programs at the top level that encompass everything are infrastructure
+  if (maxLevel > 2 && level === maxLevel) return true;
+  return false;
+};
+
+// ─── Enhanced batch planning with exclusions ──────────────────────
+
+export interface EnhancedBatchPlannerConfig extends BatchPlannerConfig {
+  existingBatchPrograms: Set<NodeId>;
+  excludeInfrastructure: boolean;
+  startBatchNumber: number;
+}
+
+const DEFAULT_ENHANCED_CONFIG: EnhancedBatchPlannerConfig = {
+  ...DEFAULT_CONFIG,
+  existingBatchPrograms: new Set(),
+  excludeInfrastructure: true,
+  startBatchNumber: 1,
+};
+
+export const planBatchesWithExclusions = (
+  programs: Program[],
+  adjacency: AdjacencyGraph,
+  levels: Map<NodeId, number>,
+  sccs: SCC[],
+  config: Partial<EnhancedBatchPlannerConfig> = {}
+): BatchPlan => {
+  const cfg = { ...DEFAULT_ENHANCED_CONFIG, ...config };
+  const maxLevel = Math.max(0, ...[...levels.values()]);
+  const programMap = new Map(programs.map(p => [p.id, p]));
+
+  // Pre-filter: remove already-assigned and infrastructure programs
+  const eligible = programs.filter(p => {
+    if (cfg.existingBatchPrograms.has(p.id)) return false;
+    if (cfg.excludeInfrastructure && isInfrastructureProgram(p.name, p.level, maxLevel)) return false;
+    return true;
+  });
+
+  const eligibleIds = new Set(eligible.map(p => p.id));
+
+  // Find natural roots among eligible programs only
+  const roots = findNaturalRoots(eligible, adjacency, levels, cfg);
+
+  const suggestedBatches: SuggestedBatch[] = [];
+  const assigned = new Set<NodeId>();
+  let batchCounter = cfg.startBatchNumber;
+
+  // Sort roots by level DESC
+  roots.sort((a, b) => {
+    const la = levels.get(a) ?? 0;
+    const lb = levels.get(b) ?? 0;
+    return lb - la;
+  });
+
+  for (const root of roots) {
+    if (assigned.has(root)) continue;
+
+    const subtree = transitiveClosure(adjacency, root);
+    // Only include eligible, unassigned programs
+    const unassigned = [...subtree].filter(id => eligibleIds.has(id) && !assigned.has(id));
+
+    if (unassigned.length < cfg.minBatchSize) continue;
+
+    for (const m of unassigned) assigned.add(m);
+
+    const rootProgram = programMap.get(root);
+    const level = levels.get(root) ?? 0;
+    const domain = rootProgram?.domain ?? inferDomain(rootProgram?.name ?? '');
+    const complexity = estimateComplexity(unassigned.length);
+
+    suggestedBatches.push({
+      id: `B${batchCounter}`,
+      name: rootProgram?.name ?? `Batch ${batchCounter}`,
+      root,
+      members: unassigned,
+      memberCount: unassigned.length,
+      level,
+      domain,
+      estimatedComplexity: complexity,
+    });
+    batchCounter++;
+  }
+
+  // Remaining eligible unassigned -> "misc" batch
+  const remaining = eligible
+    .map(p => p.id)
+    .filter(id => !assigned.has(id));
+
+  if (remaining.length >= cfg.minBatchSize) {
+    suggestedBatches.push({
+      id: `B${batchCounter}`,
+      name: 'Miscellaneous',
+      root: remaining[0],
+      members: remaining,
+      memberCount: remaining.length,
+      level: 0,
+      domain: 'misc',
+      estimatedComplexity: 'MEDIUM',
+    });
+  }
+
+  return {
+    suggestedBatches,
+    totalPrograms: eligible.length,
+    totalBatches: suggestedBatches.length,
+  };
+};
+
 /**
  * Find natural roots for batching.
  * A natural root is a program that:
@@ -151,8 +265,13 @@ const findNaturalRoots = (
   return roots;
 };
 
-const inferDomain = (name: string): string => {
+export const inferDomain = (name: string): string => {
   const lower = name.toLowerCase();
+  if (lower.includes('separation') || lower.includes('fusion')) return 'Regroupement';
+  if (lower.includes('stock') || lower.includes('produit') || lower.includes('article') || lower.includes('appro')) return 'Stock';
+  if (lower.includes('coffre') || lower.includes('apport')) return 'Coffre';
+  if (lower.includes('club') || lower.includes('datacatch') || lower.includes('easy')) return 'EasyCheckout';
+  if (lower.includes('ecart') || lower.includes('contenu')) return 'Session';
   if (lower.includes('caisse') || lower.includes('session')) return 'Caisse';
   if (lower.includes('vente') || lower.includes('gift') || lower.includes('boutique')) return 'Ventes';
   if (lower.includes('extrait') || lower.includes('compte')) return 'Compte';

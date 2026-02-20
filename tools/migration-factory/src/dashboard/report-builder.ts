@@ -4,7 +4,7 @@
  */
 
 import type {
-  Program, PipelineStatus, SCC, Tracker,
+  Program, PipelineStatus, SCC, Tracker, Batch,
   FullMigrationReport, ModuleSummary, ProgramSummary, BatchSummary,
   ModuleDependency, MigrationWave, ModuleSCC,
   MultiProjectReport, GlobalSummary, ProjectEntry, ProjectStatus,
@@ -16,6 +16,7 @@ import type { DecommissionResult } from '../core/types.js';
 import { computeModulePriority } from '../calculators/priority-calculator.js';
 import { estimateProject, computeRemainingHours } from '../calculators/effort-estimator.js';
 import { scoreProgram, DEFAULT_ESTIMATION_CONFIG } from '../calculators/complexity-scorer.js';
+import { inferDomain } from '../calculators/batch-planner.js';
 
 export interface ReportInput {
   projectName: string;
@@ -51,42 +52,56 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
     }
   }
 
-  // Compute module priority
+  // Modules: use tracker batches as functional modules when available
+  const trackerBatches = tracker?.batches ?? [];
+  const useBatchesAsModules = trackerBatches.length > 0;
+
+  let moduleList: ModuleSummary[];
+
+  if (useBatchesAsModules) {
+    moduleList = buildModulesFromBatches(trackerBatches, programStatuses);
+  } else {
+    // Fallback: compute from maximal modules (old behavior)
+    const priorityResult = computeModulePriority({
+      modules: modulesOutput.maximalModules,
+    });
+    const priorityMap = new Map(
+      priorityResult.prioritizedModules.map(p => [p.root, p])
+    );
+
+    moduleList = modulesOutput.maximalModules
+      .sort((a, b) => {
+        const rankA = priorityMap.get(a.root)?.rank ?? 999;
+        const rankB = priorityMap.get(b.root)?.rank ?? 999;
+        return rankA - rankB;
+      })
+      .map(m => {
+        const priority = priorityMap.get(m.root);
+        return {
+          root: m.root,
+          rootName: m.rootName,
+          memberCount: m.memberCount,
+          readinessPct: m.readinessPct,
+          verified: m.verified,
+          enriched: m.enriched,
+          contracted: m.contracted,
+          pending: m.pending,
+          deliverable: m.deliverable,
+          blockerIds: m.blockers.map(b => b.programId),
+          rank: priority?.rank,
+          priorityScore: priority?.priorityScore,
+          dependsOn: priority?.dependsOn,
+          dependedBy: priority?.dependedBy,
+          moduleLevel: priority?.moduleLevel,
+          implementationOrder: priority?.implementationOrder,
+        };
+      });
+  }
+
+  // Recompute priority from old modules for sequence/dependencies
   const priorityResult = computeModulePriority({
     modules: modulesOutput.maximalModules,
   });
-  const priorityMap = new Map(
-    priorityResult.prioritizedModules.map(p => [p.root, p])
-  );
-
-  // Module summaries from maximal modules, sorted by priority rank ASC
-  const moduleList: ModuleSummary[] = modulesOutput.maximalModules
-    .sort((a, b) => {
-      const rankA = priorityMap.get(a.root)?.rank ?? 999;
-      const rankB = priorityMap.get(b.root)?.rank ?? 999;
-      return rankA - rankB;
-    })
-    .map(m => {
-      const priority = priorityMap.get(m.root);
-      return {
-        root: m.root,
-        rootName: m.rootName,
-        memberCount: m.memberCount,
-        readinessPct: m.readinessPct,
-        verified: m.verified,
-        enriched: m.enriched,
-        contracted: m.contracted,
-        pending: m.pending,
-        deliverable: m.deliverable,
-        blockerIds: m.blockers.map(b => b.programId),
-        rank: priority?.rank,
-        priorityScore: priority?.priorityScore,
-        dependsOn: priority?.dependsOn,
-        dependedBy: priority?.dependedBy,
-        moduleLevel: priority?.moduleLevel,
-        implementationOrder: priority?.implementationOrder,
-      };
-    });
 
   // Batch summaries
   const batches: BatchSummary[] = (tracker?.batches ?? []).map(b => ({
@@ -142,11 +157,11 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
     },
     pipeline: { pending, contracted, enriched, verified },
     modules: {
-      total: modulesOutput.maximalModules.length,
-      deliverable: readiness.deliverable.length,
-      close: readiness.close.length,
-      inProgress: readiness.inProgress.length,
-      notStarted: readiness.notStarted.length,
+      total: moduleList.length,
+      deliverable: moduleList.filter(m => m.deliverable).length,
+      close: moduleList.filter(m => !m.deliverable && m.readinessPct >= 80).length,
+      inProgress: moduleList.filter(m => !m.deliverable && m.readinessPct > 0 && m.readinessPct < 80).length,
+      notStarted: moduleList.filter(m => m.readinessPct === 0).length,
       list: moduleList,
     },
     decommission: decommission.stats,
@@ -166,6 +181,46 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
     },
   };
 };
+
+// ─── Build modules from tracker batches ──────────────────────────
+
+const buildModulesFromBatches = (
+  batches: Batch[],
+  programStatuses: Map<string | number, PipelineStatus>,
+): ModuleSummary[] =>
+  batches.map((b, i) => {
+    let vCount = 0, eCount = 0, cCount = 0, pCount = 0;
+    for (const pid of b.priorityOrder) {
+      const status = programStatuses.get(pid) ?? 'pending';
+      switch (status) {
+        case 'verified': vCount++; break;
+        case 'enriched': eCount++; break;
+        case 'contracted': cCount++; break;
+        default: pCount++;
+      }
+    }
+    const total = b.priorityOrder.length || 1;
+    const readinessPct = Math.round((vCount / total) * 100);
+    const deliverable = vCount === total && total > 0;
+
+    return {
+      root: b.root,
+      rootName: b.name,
+      memberCount: b.priorityOrder.length,
+      readinessPct,
+      verified: vCount,
+      enriched: eCount,
+      contracted: cCount,
+      pending: pCount,
+      deliverable,
+      blockerIds: [],
+      rank: i + 1,
+      batchId: b.id,
+      domain: b.domain ?? inferDomain(b.name),
+      complexityGrade: b.complexityGrade,
+      estimatedHours: b.estimatedHours,
+    };
+  });
 
 // ─── Multi-Project Report ────────────────────────────────────────
 

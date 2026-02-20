@@ -252,6 +252,22 @@ const renderModuleRow = (m: ModuleSummary): string => {
     ? `<span class="rank-badge">P${m.rank}</span>`
     : '';
 
+  const batchLabel = m.batchId
+    ? `<span class="tag tag-purple">${escHtml(m.batchId)}</span>`
+    : '';
+
+  const domainLabel = m.domain
+    ? `<span class="tag tag-teal">${escHtml(m.domain)}</span>`
+    : '';
+
+  const gradeLabel = m.complexityGrade
+    ? `<span class="tag tag-orange">${escHtml(m.complexityGrade)} grade</span>`
+    : '';
+
+  const hoursLabel = m.estimatedHours != null
+    ? `<span class="tag tag-dim">~${m.estimatedHours}h</span>`
+    : '';
+
   const depsText = (m.dependsOn?.length ?? 0) > 0
     ? `Depend de: ${m.dependsOn!.join(', ')}`
     : 'Depend de: (aucun)';
@@ -263,7 +279,8 @@ const renderModuleRow = (m: ModuleSummary): string => {
   return `
     <div class="module-row" data-status="${statusClass}" data-rank="${m.rank ?? 999}" data-readiness="${m.readinessPct}" data-name="${escHtml(m.rootName)}">
       <div class="module-header">
-        <span class="module-name">${rankBadge}${escHtml(String(m.root))} - ${escHtml(m.rootName)}</span>
+        <span class="module-name">${rankBadge}${batchLabel}${escHtml(m.rootName)}</span>
+        ${domainLabel}${gradeLabel}${hoursLabel}
         ${statusBadge}
       </div>
       <div class="module-stats">
@@ -476,6 +493,7 @@ ${MULTI_CSS}
   <button class="action-btn" id="btn-calibrate" disabled title="Run 'migration-factory serve' to enable">Calibrate</button>
   <button class="action-btn" id="btn-generate" disabled title="Run 'migration-factory serve' to enable" style="background:#7c3aed;color:#fff">Generate Code</button>
   <button class="action-btn" id="btn-migrate" disabled title="Run 'migration-factory serve' to enable" style="background:#059669;color:#fff">Migrate Module</button>
+  <button class="action-btn" id="btn-analyze" disabled title="Run 'migration-factory serve' to enable" style="background:#6366f1;color:#fff">Analyze Project</button>
   <select id="sel-enrich" disabled title="Enrichment mode" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-main);font-size:12px">
     <option value="none">No enrich</option>
     <option value="heuristic" selected>Heuristic</option>
@@ -483,6 +501,7 @@ ${MULTI_CSS}
     <option value="claude-cli">Claude CLI</option>
   </select>
   <label style="margin-left:auto;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px"><input type="checkbox" id="chk-dry" disabled> Dry Run</label>
+  <button class="action-btn" id="btn-help" style="padding:4px 10px;font-weight:700;font-size:14px;border-radius:50%;min-width:28px" title="Help &amp; Documentation">?</button>
 </div>
 <div class="action-panel" id="action-panel">
   <div class="action-panel-header">
@@ -490,6 +509,155 @@ ${MULTI_CSS}
     <button class="action-btn" id="btn-close" style="padding:2px 8px;font-size:11px">Close</button>
   </div>
   <pre id="panel-content"></pre>
+</div>
+
+<!-- Migration progress overlay (fullscreen, no double scroll) -->
+<div class="migrate-overlay" id="migrate-overlay">
+  <div class="migrate-overlay-header">
+    <strong id="migrate-overlay-title">Migration</strong>
+    <button class="action-btn" id="migrate-overlay-close" style="padding:2px 8px;font-size:11px">Close</button>
+  </div>
+  <div class="migrate-overlay-body">
+    <div class="progress-bar"><div class="progress-fill" id="mbar"></div></div>
+    <div class="p-status" id="mstatus">Connecting...</div>
+    <div class="p-elapsed" id="melapsed" style="font-size:12px;color:#8b949e;margin:4px 0;"></div>
+    <div class="p-log" id="mlog"></div>
+  </div>
+</div>
+
+<!-- Confirmation modal before migration launch -->
+<div class="modal-backdrop" id="migrate-confirm-modal">
+  <div class="modal-content">
+    <h3 style="margin:0 0 16px 0;font-size:18px">Launch Migration</h3>
+    <div class="modal-field">
+      <label>Batch</label>
+      <div id="modal-batch-info" style="font-weight:600"></div>
+    </div>
+    <div class="modal-field">
+      <label for="modal-target-dir">Target directory</label>
+      <input type="text" id="modal-target-dir" class="modal-input" value="adh-web" placeholder="e.g., adh-web">
+      <div id="modal-target-resolved" style="font-size:11px;color:#8b949e;margin-top:2px"></div>
+    </div>
+    <div class="modal-field">
+      <label for="modal-parallel">Parallel programs</label>
+      <input type="number" id="modal-parallel" class="modal-input" value="1" min="1" max="8" style="width:80px">
+    </div>
+    <div class="modal-field">
+      <label>Claude mode</label>
+      <div id="modal-claude-mode" style="font-size:13px;color:#8b949e"></div>
+    </div>
+    <div class="modal-field">
+      <label>Dry Run</label>
+      <div id="modal-dry-run" style="font-size:13px;color:#8b949e"></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+      <button class="action-btn" id="modal-cancel">Cancel</button>
+      <button class="action-btn primary" id="modal-launch" style="background:#059669;border-color:#059669">Launch Migration</button>
+    </div>
+  </div>
+</div>
+
+<!-- Help overlay -->
+<div class="help-overlay" id="help-overlay">
+  <div class="help-content">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h2 style="margin:0;font-size:20px">Migration Factory - Guide</h2>
+      <button class="action-btn" id="help-close" style="padding:4px 12px">Close</button>
+    </div>
+
+    <div class="help-section">
+      <h3>What is this?</h3>
+      <p>The Migration Factory Dashboard is an interactive tool for managing the migration of legacy Magic Unipaas programs to modern React/TypeScript web applications.</p>
+      <p>It orchestrates the full SPECMAP pipeline: <strong>EXTRACT &rarr; MAP &rarr; GAP &rarr; CONTRACT &rarr; ENRICH &rarr; VERIFY</strong></p>
+    </div>
+
+    <div class="help-section">
+      <h3>Action Bar Buttons</h3>
+      <table class="help-table">
+        <tr><td><strong>Preflight</strong></td><td>Check prerequisites before running a batch (contracts, dependencies, gaps)</td></tr>
+        <tr><td><strong>Run Pipeline</strong></td><td>Execute the SPECMAP pipeline on a batch (contract &rarr; verify)</td></tr>
+        <tr><td><strong>Verify</strong></td><td>Auto-verify all contracts where all items are IMPL or N/A</td></tr>
+        <tr><td><strong>Gaps</strong></td><td>Show consolidated gap report by contract</td></tr>
+        <tr><td><strong>Calibrate</strong></td><td>Recalculate hours-per-point estimate from verified contracts</td></tr>
+        <tr><td><strong>Generate Code</strong></td><td>Generate React/TS scaffold files from contracts</td></tr>
+        <tr><td><strong>Migrate Module</strong></td><td>Full 15-phase migration pipeline (spec &rarr; code &rarr; test &rarr; review)</td></tr>
+      </table>
+    </div>
+
+    <div class="help-section">
+      <h3>Enrichment Modes</h3>
+      <table class="help-table">
+        <tr><td><strong>No enrich</strong></td><td>Generate skeleton code only (types, empty components)</td></tr>
+        <tr><td><strong>Heuristic</strong></td><td>Auto-fill types and defaults based on contract data</td></tr>
+        <tr><td><strong>Claude API</strong></td><td>Use Anthropic API with ANTHROPIC_API_KEY for AI-assisted enrichment</td></tr>
+        <tr><td><strong>Claude CLI</strong></td><td>Use local <code>claude --print</code> command for AI-assisted enrichment</td></tr>
+      </table>
+    </div>
+
+    <div class="help-section">
+      <h3>Migration Phases (15)</h3>
+      <p>Each program goes through these phases during <strong>Migrate Module</strong>:</p>
+      <ol class="help-phases">
+        <li><strong>SPEC</strong> - Extract program specification</li>
+        <li><strong>CONTRACT</strong> - Generate migration contract</li>
+        <li><strong>ENRICH</strong> - AI-enrich contract details</li>
+        <li><strong>SCAFFOLD</strong> - Generate React/TS files</li>
+        <li><strong>IMPLEMENT</strong> - Implement business logic</li>
+        <li><strong>TYPES</strong> - Generate TypeScript types</li>
+        <li><strong>STORE</strong> - Generate Zustand store</li>
+        <li><strong>API</strong> - Generate API endpoints</li>
+        <li><strong>COMPONENT</strong> - Generate React component</li>
+        <li><strong>TEST</strong> - Generate test files</li>
+        <li><strong>INTEGRATE</strong> - Wire into app routing</li>
+        <li><strong>LINT</strong> - Fix lint/type errors</li>
+        <li><strong>BUILD</strong> - Verify build passes</li>
+        <li><strong>TEST_RUN</strong> - Run tests</li>
+        <li><strong>REVIEW</strong> - Final code review</li>
+      </ol>
+    </div>
+
+    <div class="help-section">
+      <h3>Batches</h3>
+      <table class="help-table">
+        <tr><td><strong>B1</strong></td><td>Ouverture session (18 progs) - 100% VERIFIED</td></tr>
+        <tr><td><strong>B2</strong></td><td>Fermeture session (IDE 131)</td></tr>
+        <tr><td><strong>B3</strong></td><td>Ventes GP/Boutique (~24 progs)</td></tr>
+        <tr><td><strong>B4</strong></td><td>Extrait compte (~9 progs)</td></tr>
+        <tr><td><strong>B5</strong></td><td>Separation/Fusion (~8 progs)</td></tr>
+      </table>
+    </div>
+
+    <div class="help-section">
+      <h3>CLI Commands</h3>
+      <pre class="help-cli">migration-factory serve --port 3070 --dir ADH    # Start dashboard
+migration-factory report --multi                   # Generate static HTML
+migration-factory pipeline run --batch B1          # Run pipeline
+migration-factory migrate --batch B1 --target adh-web  # Full migration
+migration-factory migrate status                   # Check progress
+migration-factory verify                           # Auto-verify contracts
+migration-factory gaps                             # Gap report
+migration-factory calibrate                        # Recalculate estimates</pre>
+    </div>
+
+    <div class="help-section">
+      <h3>Tips</h3>
+      <ul>
+        <li>Use <strong>Dry Run</strong> checkbox to preview actions without modifying files</li>
+        <li>You can <strong>refresh the page</strong> during a migration - it will reconnect and show progress</li>
+        <li>The elapsed timer shows how long the current migration has been running</li>
+        <li>Events are polled every 3 seconds after reconnection</li>
+      </ul>
+    </div>
+
+    <div class="help-section" style="opacity:0.7">
+      <h3>Planned Improvements</h3>
+      <ul>
+        <li>Timer per event to detect blockages (green/orange/red)</li>
+        <li>Estimated time remaining based on average speed</li>
+        <li>Target directory browser with history</li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <div class="tab-content active" data-tab="global">
@@ -853,6 +1021,10 @@ header h1 {
 .tag-blue { background: rgba(88,166,255,0.15); color: var(--blue); }
 .tag-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
 .tag-gray { background: rgba(72,79,88,0.3); color: var(--text-dim); }
+.tag-purple { background: rgba(139,92,246,0.2); color: #a78bfa; font-weight: 600; }
+.tag-teal { background: rgba(20,184,166,0.15); color: #5eead4; }
+.tag-orange { background: rgba(249,115,22,0.15); color: #fb923c; }
+.tag-dim { background: rgba(72,79,88,0.15); color: var(--text-dim); }
 
 .badge {
   font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px;
@@ -1250,6 +1422,132 @@ const MULTI_CSS = `
   vertical-align: middle;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Migration Overlay (fullscreen, no double scroll) */
+.migrate-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+}
+.migrate-overlay.visible { display: flex; flex-direction: column; }
+.migrate-overlay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  color: #e2e8f0;
+  flex-shrink: 0;
+}
+.migrate-overlay-header strong { font-size: 16px; }
+.migrate-overlay-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.migrate-overlay-body .progress-bar { flex-shrink: 0; }
+.migrate-overlay-body .p-status { flex-shrink: 0; }
+.migrate-overlay-body .p-elapsed { flex-shrink: 0; }
+.migrate-overlay-body .p-log {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 12px;
+  margin-top: 8px;
+  min-height: 0;
+}
+.migrate-overlay-body .p-log > div {
+  padding: 2px 0;
+  border-bottom: 1px solid #1e293b;
+  color: #cbd5e1;
+}
+
+/* Confirmation Modal */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1100;
+  justify-content: center;
+  align-items: center;
+}
+.modal-backdrop.visible { display: flex; }
+.modal-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 400px;
+  max-width: 500px;
+  color: var(--text);
+}
+.modal-field {
+  margin-bottom: 12px;
+}
+.modal-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.modal-input {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.modal-input:focus { border-color: var(--blue); outline: none; }
+
+/* Help Overlay */
+.help-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1200;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 40px 20px;
+}
+.help-overlay.visible { display: flex; }
+.help-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 700px;
+  width: 100%;
+  color: var(--text);
+  align-self: flex-start;
+}
+.help-section { margin-bottom: 20px; }
+.help-section h3 { font-size: 15px; margin: 0 0 8px 0; color: var(--blue); }
+.help-section p { font-size: 13px; line-height: 1.6; margin: 0 0 6px 0; color: #94a3b8; }
+.help-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.help-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); color: #94a3b8; }
+.help-table td:first-child { white-space: nowrap; width: 140px; }
+.help-phases { font-size: 13px; line-height: 1.8; color: #94a3b8; padding-left: 20px; }
+.help-phases li { margin-bottom: 2px; }
+.help-cli {
+  background: var(--bg);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-x: auto;
+  color: #94a3b8;
+}
 `;
 
 // ─── Multi-Project JS ───────────────────────────────────────────
@@ -1289,6 +1587,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   var btnCalibrate = document.getElementById('btn-calibrate');
   var btnGenerate = document.getElementById('btn-generate');
   var btnMigrate = document.getElementById('btn-migrate');
+  var btnAnalyze = document.getElementById('btn-analyze');
   var chkDry = document.getElementById('chk-dry');
   var panel = document.getElementById('action-panel');
   var panelTitle = document.getElementById('panel-title');
@@ -1306,9 +1605,10 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   btnCalibrate.disabled = false;
   btnGenerate.disabled = false;
   btnMigrate.disabled = false;
+  btnAnalyze.disabled = false;
   document.getElementById('sel-enrich').disabled = false;
   chkDry.disabled = false;
-  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate, btnMigrate].forEach(function(b) { b.title = ''; });
+  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate, btnMigrate, btnAnalyze].forEach(function(b) { b.title = ''; });
 
   function showPanel(title, content) {
     panelTitle.textContent = title;
@@ -1524,6 +1824,38 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       .finally(function() { setLoading(btnCalibrate, false); });
   });
 
+  // Analyze Project
+  btnAnalyze.addEventListener('click', function() {
+    setLoading(btnAnalyze, true);
+    fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dryRun: chkDry.checked }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var lines = ['Project Analysis: ' + data.projectName, ''];
+        lines.push('Live programs: ' + data.totalLivePrograms);
+        lines.push('Batches preserved: ' + data.batchesPreserved + ' | Created: ' + data.batchesCreated + ' | Unassigned: ' + data.unassignedCount);
+        lines.push('');
+        if (data.batches) {
+          data.batches.forEach(function(b) {
+            var flag = b.isNew ? 'NEW' : 'EXISTING';
+            lines.push(b.id + '  ' + b.name + '  [' + b.domain + ']  ' + b.memberCount + ' progs  ' + b.complexityGrade + ' grade  ~' + b.estimatedHours + 'h  ' + flag);
+          });
+        }
+        if (!chkDry.checked) {
+          lines.push('', 'Batches persisted. Reloading...');
+        }
+        showPanel('Project Analysis', lines.join('\\n'));
+        if (!chkDry.checked) {
+          setTimeout(function() { location.reload(); }, 2000);
+        }
+      })
+      .catch(function(err) { showPanel('Error', String(err)); })
+      .finally(function() { setLoading(btnAnalyze, false); });
+  });
+
   // Generate Code (Streaming SSE)
   btnGenerate.addEventListener('click', function() {
     var batch = batchSelect.value;
@@ -1572,7 +1904,21 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     };
   });
 
+  // ─── Help button ─────────────────────────────────────────────
+  var btnHelp = document.getElementById('btn-help');
+  var helpOverlay = document.getElementById('help-overlay');
+  var helpClose = document.getElementById('help-close');
+  if (btnHelp && helpOverlay) {
+    btnHelp.addEventListener('click', function() { helpOverlay.classList.add('visible'); });
+    helpClose.addEventListener('click', function() { helpOverlay.classList.remove('visible'); });
+    helpOverlay.addEventListener('click', function(e) { if (e.target === helpOverlay) helpOverlay.classList.remove('visible'); });
+  }
+
   // ─── Shared helpers ────────────────────────────────────────────
+  var migrateOverlay = document.getElementById('migrate-overlay');
+  var migrateOverlayTitle = document.getElementById('migrate-overlay-title');
+  var migrateOverlayClose = document.getElementById('migrate-overlay-close');
+
   function formatElapsed(ms) {
     var totalSec = Math.floor(ms / 1000);
     var h = Math.floor(totalSec / 3600);
@@ -1583,15 +1929,20 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     return s + 's';
   }
 
-  function showMigratePanel(title) {
-    panelTitle.textContent = title;
-    panelContent.innerHTML = '<div class="pipeline-progress">'
-      + '<div class="progress-bar"><div class="progress-fill" id="mbar"></div></div>'
-      + '<div class="p-status" id="mstatus">Connecting...</div>'
-      + '<div class="p-elapsed" id="melapsed" style="font-size:12px;color:#8b949e;margin:4px 0;"></div>'
-      + '<div class="p-log" id="mlog"></div></div>';
-    panel.classList.add('visible');
+  function showMigrateOverlay(title) {
+    migrateOverlayTitle.textContent = title;
+    document.getElementById('mbar').style.width = '0%';
+    document.getElementById('mstatus').textContent = 'Connecting...';
+    document.getElementById('melapsed').textContent = '';
+    document.getElementById('mlog').innerHTML = '';
+    migrateOverlay.classList.add('visible');
   }
+
+  function closeMigrateOverlay() {
+    migrateOverlay.classList.remove('visible');
+  }
+
+  migrateOverlayClose.addEventListener('click', closeMigrateOverlay);
 
   function startElapsedTimer(startedAt) {
     var elDiv = document.getElementById('melapsed');
@@ -1623,26 +1974,25 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     mstatus.textContent = done + '/' + total + ' (' + pct + '%)';
   }
 
-  // ─── Migrate Module (Streaming SSE) ──────────────────────────
-  btnMigrate.addEventListener('click', function() {
-    var batch = batchSelect.value;
-    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
-    var targetDir = prompt('Target directory (e.g., adh-web):', 'adh-web');
-    if (!targetDir) return;
-    var parallelCount = prompt('Parallel programs (1-8):', '1');
-    if (!parallelCount) return;
+  // ─── Confirmation modal ──────────────────────────────────────
+  var confirmModal = document.getElementById('migrate-confirm-modal');
+  var modalCancel = document.getElementById('modal-cancel');
+  var modalLaunch = document.getElementById('modal-launch');
 
+  modalCancel.addEventListener('click', function() { confirmModal.classList.remove('visible'); });
+  confirmModal.addEventListener('click', function(e) { if (e.target === confirmModal) confirmModal.classList.remove('visible'); });
+
+  function launchMigration(batch, targetDir, parallelCount, claudeMode, dryRun) {
+    confirmModal.classList.remove('visible');
     setLoading(btnMigrate, true);
-    var dryRun = chkDry.checked;
-    var enrichSel = document.getElementById('sel-enrich').value || 'none';
-    var claudeMode = enrichSel === 'claude' ? 'api' : 'cli';
+
     var url = '/api/migrate/stream?batch=' + encodeURIComponent(batch)
       + '&targetDir=' + encodeURIComponent(targetDir)
       + '&dryRun=' + dryRun
       + '&parallel=' + parallelCount
       + '&mode=' + claudeMode;
 
-    showMigratePanel('Migrate: ' + batch + ' [' + claudeMode.toUpperCase() + ']' + (dryRun ? ' (DRY-RUN)' : ''));
+    showMigrateOverlay('Migrate: ' + batch + ' [' + claudeMode.toUpperCase() + ']' + (dryRun ? ' (DRY-RUN)' : ''));
     var migrationStart = Date.now();
     var elapsedTid = startElapsedTimer(migrationStart);
     var totalProgs = 0;
@@ -1706,6 +2056,34 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       var mstatus = document.getElementById('mstatus');
       if (mstatus) mstatus.textContent = 'Connection lost - check server';
     };
+  }
+
+  // ─── Migrate Module (opens confirmation modal) ────────────────
+  btnMigrate.addEventListener('click', function() {
+    var batch = batchSelect.value;
+    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+
+    var enrichSel = document.getElementById('sel-enrich').value || 'none';
+    var claudeMode = enrichSel === 'claude' ? 'api' : 'cli';
+    var dryRun = chkDry.checked;
+
+    // Populate modal
+    document.getElementById('modal-batch-info').textContent = batch;
+    document.getElementById('modal-target-dir').value = 'adh-web';
+    document.getElementById('modal-target-resolved').textContent = '(resolved server-side relative to project root)';
+    document.getElementById('modal-parallel').value = '1';
+    document.getElementById('modal-claude-mode').textContent = claudeMode.toUpperCase() + ' (enrichment: ' + enrichSel + ')';
+    document.getElementById('modal-dry-run').textContent = dryRun ? 'Yes (no files modified)' : 'No (files will be written)';
+
+    // Show modal
+    confirmModal.classList.add('visible');
+
+    // Wire launch button (replace handler to avoid duplicates)
+    modalLaunch.onclick = function() {
+      var targetDir = document.getElementById('modal-target-dir').value || 'adh-web';
+      var parallel = document.getElementById('modal-parallel').value || '1';
+      launchMigration(batch, targetDir, parallel, claudeMode, dryRun);
+    };
   });
 
   // ─── Reconnect on page load if migration is active ───────────
@@ -1713,7 +2091,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (!state.running && state.events.length === 0) return;
 
     var isDone = !state.running;
-    showMigratePanel('Migrate: ' + state.batch + ' [' + state.mode.toUpperCase() + ']' + (state.dryRun ? ' (DRY-RUN)' : ''));
+    showMigrateOverlay('Migrate: ' + state.batch + ' [' + state.mode.toUpperCase() + ']' + (state.dryRun ? ' (DRY-RUN)' : ''));
     setLoading(btnMigrate, !isDone);
 
     // Replay buffered events
