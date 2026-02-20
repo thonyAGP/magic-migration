@@ -1019,6 +1019,7 @@ const decomOnly = document.getElementById('decom-only');
 const table = document.getElementById('program-table');
 
 const filterTable = () => {
+  if (!searchInput || !statusFilter || !decomOnly) return;
   const query = searchInput.value.toLowerCase();
   const status = statusFilter.value;
   const decom = decomOnly.checked;
@@ -1039,15 +1040,16 @@ const filterTable = () => {
   });
 };
 
-searchInput.addEventListener('input', filterTable);
-statusFilter.addEventListener('change', filterTable);
-decomOnly.addEventListener('change', filterTable);
+if (searchInput) searchInput.addEventListener('input', filterTable);
+if (statusFilter) statusFilter.addEventListener('change', filterTable);
+if (decomOnly) decomOnly.addEventListener('change', filterTable);
 
 // Table sort
 let sortCol = null;
 let sortDir = 1;
 document.querySelectorAll('th[data-sort]').forEach(th => {
   th.addEventListener('click', () => {
+    if (!table) return;
     const col = th.dataset.sort;
     if (sortCol === col) sortDir *= -1;
     else { sortCol = col; sortDir = 1; }

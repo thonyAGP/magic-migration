@@ -542,7 +542,7 @@ footer {
 <header>
   <h1>SPECMAP Migration Dashboard</h1>
   <div class="subtitle">29 projets &middot; 1 actif &middot; 212 programmes LIVE</div>
-  <div class="last-updated">Derniere mise a jour : 20 février 2026 a 15:18</div>
+  <div class="last-updated">Derniere mise a jour : 20 février 2026 a 15:48</div>
 </header>
 
 <nav class="project-tabs-bar">
@@ -3654,7 +3654,7 @@ footer {
 </div>
 
 <footer>
-  <p>Genere le 20 février 2026 a 15:18 par Migration Factory</p>
+  <p>Genere le 20 février 2026 a 15:48 par Migration Factory</p>
 </footer>
 
 </div>
@@ -3698,6 +3698,7 @@ const decomOnly = document.getElementById('decom-only');
 const table = document.getElementById('program-table');
 
 const filterTable = () => {
+  if (!searchInput || !statusFilter || !decomOnly) return;
   const query = searchInput.value.toLowerCase();
   const status = statusFilter.value;
   const decom = decomOnly.checked;
@@ -3718,15 +3719,16 @@ const filterTable = () => {
   });
 };
 
-searchInput.addEventListener('input', filterTable);
-statusFilter.addEventListener('change', filterTable);
-decomOnly.addEventListener('change', filterTable);
+if (searchInput) searchInput.addEventListener('input', filterTable);
+if (statusFilter) statusFilter.addEventListener('change', filterTable);
+if (decomOnly) decomOnly.addEventListener('change', filterTable);
 
 // Table sort
 let sortCol = null;
 let sortDir = 1;
 document.querySelectorAll('th[data-sort]').forEach(th => {
   th.addEventListener('click', () => {
+    if (!table) return;
     const col = th.dataset.sort;
     if (sortCol === col) sortDir *= -1;
     else { sortCol = col; sortDir = 1; }
