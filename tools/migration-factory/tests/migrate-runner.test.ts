@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { getMigrateStatus, createBatch } from '../src/migrate/migrate-runner.js';
+import { getMigrateStatus, createBatch, formatDuration } from '../src/migrate/migrate-runner.js';
 import { writeMigrateTracker, getOrCreateProgram, completePhase } from '../src/migrate/migrate-tracker.js';
 import { MigratePhase } from '../src/migrate/migrate-types.js';
 import type { MigrateConfig } from '../src/migrate/migrate-types.js';
@@ -33,6 +33,33 @@ beforeEach(() => {
 
 afterEach(() => {
   fs.rmSync(tmpDir, { recursive: true, force: true });
+});
+
+describe('formatDuration', () => {
+  it('should format seconds only', () => {
+    expect(formatDuration(5000)).toBe('5s (5000ms)');
+  });
+
+  it('should format minutes and seconds', () => {
+    expect(formatDuration(80547)).toBe('1m 21s (80547ms)');
+  });
+
+  it('should format hours, minutes and seconds', () => {
+    expect(formatDuration(3_661_000)).toBe('1h 1m 1s (3661000ms)');
+  });
+
+  it('should show 0m for hours with zero minutes', () => {
+    expect(formatDuration(3_600_000)).toBe('1h 0m 0s (3600000ms)');
+  });
+
+  it('should handle zero', () => {
+    expect(formatDuration(0)).toBe('0s (0ms)');
+  });
+
+  it('should round sub-second to nearest second', () => {
+    expect(formatDuration(1499)).toBe('1s (1499ms)');
+    expect(formatDuration(1500)).toBe('2s (1500ms)');
+  });
 });
 
 describe('getMigrateStatus', () => {

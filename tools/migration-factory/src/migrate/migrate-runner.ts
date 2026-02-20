@@ -28,6 +28,20 @@ import { runIntegratePhase } from './phases/phase-integrate.js';
 import { runReviewPhase } from './phases/phase-review.js';
 import { scaffoldTargetDir } from './migrate-scaffold.js';
 
+// ─── Duration Formatter ────────────────────────────────────────
+
+export const formatDuration = (ms: number): string => {
+  const totalSec = Math.round(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  const parts: string[] = [];
+  if (h > 0) parts.push(`${h}h`);
+  if (m > 0 || h > 0) parts.push(`${m}m`);
+  parts.push(`${s}s`);
+  return `${parts.join(' ')} (${ms}ms)`;
+};
+
 // ─── Main Entry Point ──────────────────────────────────────────
 
 export const runMigration = async (
@@ -37,6 +51,7 @@ export const runMigration = async (
   config: MigrateConfig,
 ): Promise<MigrateResult> => {
   const started = new Date().toISOString();
+  const migrationStart = Date.now();
   const trackerFile = path.join(config.migrationDir, config.contractSubDir, 'tracker.json');
 
   emit(config, ET.MIGRATION_STARTED, `Starting migration for batch ${batchId} (${programIds.length} programs)`);
@@ -132,7 +147,8 @@ export const runMigration = async (
     reviewAvgCoverage: reviewCount > 0 ? Math.round(totalCoverage / reviewCount) : 0,
   };
 
-  emit(config, ET.MIGRATION_COMPLETED, `Migration complete: ${summary.completed}/${summary.total} programs, ${summary.totalFiles} files`);
+  const totalDuration = Date.now() - migrationStart;
+  emit(config, ET.MIGRATION_COMPLETED, `Migration complete: ${summary.completed}/${summary.total} programs, ${summary.totalFiles} files in ${formatDuration(totalDuration)}`);
 
   return {
     batchId,
@@ -193,7 +209,7 @@ const runProgramGeneration = async (
       analysis = analyzeResult.analysis;
       completePhase(prog, MP.ANALYZE, { file: analyzeResult.analysisFile, duration: analyzeResult.duration });
       saveMigrateTracker(trackerFile, migrateData);
-      emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: analysis done (${analyzeResult.duration}ms, domain=${analysis.domain})`, { phase: MP.ANALYZE, programId });
+      emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: analysis done in ${formatDuration(analyzeResult.duration)}, domain=${analysis.domain}`, { phase: MP.ANALYZE, programId });
     } else {
       // Load existing analysis - verify file actually exists
       const project = config.contractSubDir;
@@ -284,7 +300,8 @@ const runProgramGeneration = async (
     markProgramCompleted(prog);
     saveMigrateTracker(trackerFile, migrateData);
 
-    emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: ${files.length} files generated`, { programId });
+    const elapsed = Date.now() - start;
+    emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: ${files.length} files generated in ${formatDuration(elapsed)}`, { programId });
 
     return {
       result: {
@@ -306,7 +323,8 @@ const runProgramGeneration = async (
     markProgramFailed(prog, errorMsg);
     saveMigrateTracker(trackerFile, migrateData);
 
-    emit(config, ET.PROGRAM_FAILED, `IDE ${programId} failed at ${currentPhase ?? 'unknown'}: ${errorMsg}`, { programId });
+    const failedElapsed = Date.now() - start;
+    emit(config, ET.PROGRAM_FAILED, `IDE ${programId} failed at ${currentPhase ?? 'unknown'} after ${formatDuration(failedElapsed)}: ${errorMsg}`, { programId });
 
     return {
       result: {
@@ -481,7 +499,7 @@ const emit = (
     phase: extra?.phase,
     programId: extra?.programId,
     ...(extra?.data ? { data: extra.data } : {}),
-  });
+  } as MigrateEvent);
 };
 
 const saveMigrateTracker = (trackerFile: string, data: Record<string, import('./migrate-types.js').ProgramMigration>): void => {
