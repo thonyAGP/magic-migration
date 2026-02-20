@@ -493,6 +493,7 @@ ${MULTI_CSS}
   <button class="action-btn" id="btn-calibrate" disabled title="Run 'migration-factory serve' to enable">Calibrate</button>
   <button class="action-btn" id="btn-generate" disabled title="Run 'migration-factory serve' to enable" style="background:#7c3aed;color:#fff">Generate Code</button>
   <button class="action-btn" id="btn-migrate" disabled title="Run 'migration-factory serve' to enable" style="background:#059669;color:#fff">Migrate Module</button>
+  <button class="action-btn" id="btn-migrate-auto" disabled title="Run 'migration-factory serve' to enable" style="background:#0d9488;color:#fff">Migration Auto</button>
   <button class="action-btn" id="btn-analyze" disabled title="Run 'migration-factory serve' to enable" style="background:#6366f1;color:#fff">Analyze Project</button>
   <select id="sel-enrich" disabled title="Enrichment mode" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-main);font-size:12px">
     <option value="none">No enrich</option>
@@ -581,6 +582,7 @@ ${MULTI_CSS}
         <tr><td><strong>Calibrate</strong></td><td>Recalculate hours-per-point estimate from verified contracts</td></tr>
         <tr><td><strong>Generate Code</strong></td><td>Generate React/TS scaffold files from contracts</td></tr>
         <tr><td><strong>Migrate Module</strong></td><td>Full 15-phase migration pipeline (spec &rarr; code &rarr; test &rarr; review)</td></tr>
+        <tr><td><strong>Migration Auto</strong></td><td>Same as Migrate Module but skips confirmation modal (target: adh-web, parallel: 1)</td></tr>
       </table>
     </div>
 
@@ -1598,6 +1600,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   var btnCalibrate = document.getElementById('btn-calibrate');
   var btnGenerate = document.getElementById('btn-generate');
   var btnMigrate = document.getElementById('btn-migrate');
+  var btnMigrateAuto = document.getElementById('btn-migrate-auto');
   var btnAnalyze = document.getElementById('btn-analyze');
   var chkDry = document.getElementById('chk-dry');
   var panel = document.getElementById('action-panel');
@@ -1616,10 +1619,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   btnCalibrate.disabled = false;
   btnGenerate.disabled = false;
   btnMigrate.disabled = false;
+  btnMigrateAuto.disabled = false;
   btnAnalyze.disabled = false;
   document.getElementById('sel-enrich').disabled = false;
   chkDry.disabled = false;
-  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate, btnMigrate, btnAnalyze].forEach(function(b) { b.title = ''; });
+  [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate, btnMigrate, btnMigrateAuto, btnAnalyze].forEach(function(b) { b.title = ''; });
 
   function showPanel(title, content) {
     panelTitle.textContent = title;
@@ -2095,6 +2099,16 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       var parallel = document.getElementById('modal-parallel').value || '1';
       launchMigration(batch, targetDir, parallel, claudeMode, dryRun);
     };
+  });
+
+  // ─── Migration Auto (skip modal, launch immediately) ─────────
+  btnMigrateAuto.addEventListener('click', function() {
+    var batch = batchSelect.value;
+    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    var enrichSel = document.getElementById('sel-enrich').value || 'none';
+    var claudeMode = enrichSel === 'claude' ? 'api' : 'cli';
+    var dryRun = chkDry.checked;
+    launchMigration(batch, 'adh-web', '1', claudeMode, dryRun);
   });
 
   // ─── Reconnect on page load if migration is active ───────────

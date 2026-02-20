@@ -1,22 +1,59 @@
 /**
- * Claude CLI wrapper for the migration pipeline.
- * Uses temp file + pipe to avoid Windows command-line length limits (~8KB).
+ * Claude wrapper for the migration pipeline.
+ * Supports two modes:
+ *   - CLI mode: uses `claude --print` via temp file + pipe (default)
+ *   - API mode: uses Anthropic SDK directly (faster, no process spawn)
+ *
+ * Mode is set via configureClaudeMode() before running migration.
  */
 
 import { exec } from 'node:child_process';
-import { writeFileSync, unlinkSync } from 'node:fs';
+import { writeFileSync, unlinkSync, mkdirSync, appendFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { promisify } from 'node:util';
+import Anthropic from '@anthropic-ai/sdk';
 
 const execAsync = promisify(exec);
 
+// ─── Module-level mode configuration ─────────────────────────────
+let _mode: 'api' | 'cli' = 'cli';
+let _apiKey: string | undefined;
+let _globalLogDir: string | undefined;
+
+/** Configure Claude invocation mode before starting migration. */
+export const configureClaudeMode = (mode: 'api' | 'cli', apiKey?: string): void => {
+  _mode = mode;
+  _apiKey = apiKey;
+};
+
+/** Set global log directory for all subsequent calls. */
+export const setClaudeLogDir = (dir: string | undefined): void => {
+  _globalLogDir = dir;
+};
+
+/** Get current mode (for logging/display). */
+export const getClaudeMode = (): 'api' | 'cli' => _mode;
+
+// ─── Model name resolution ───────────────────────────────────────
+const MODEL_MAP: Record<string, string> = {
+  haiku: 'claude-haiku-4-5-20251001',
+  sonnet: 'claude-sonnet-4-5-20250929',
+  opus: 'claude-opus-4-6',
+};
+
+const resolveModelId = (shortName?: string): string =>
+  MODEL_MAP[shortName ?? 'sonnet'] ?? shortName ?? MODEL_MAP.sonnet;
+
+// ─── Types ───────────────────────────────────────────────────────
 export interface ClaudeCallOptions {
   prompt: string;
   model?: string;
   cliBin?: string;
   timeoutMs?: number;
   maxBuffer?: number;
+  logDir?: string;
+  logLabel?: string;
 }
 
 export interface ClaudeCallResult {
@@ -24,7 +61,51 @@ export interface ClaudeCallResult {
   durationMs: number;
 }
 
+// ─── Main entry point (transparent switch) ───────────────────────
+
 export const callClaude = async (options: ClaudeCallOptions): Promise<ClaudeCallResult> => {
+  const result = _mode === 'api'
+    ? await callClaudeApi(options)
+    : await callClaudeCli(options);
+
+  const logDir = options.logDir ?? _globalLogDir;
+  if (logDir) {
+    logClaudeCall({ ...options, logDir }, result);
+  }
+
+  return result;
+};
+
+// ─── API mode (Anthropic SDK) ────────────────────────────────────
+
+const callClaudeApi = async (options: ClaudeCallOptions): Promise<ClaudeCallResult> => {
+  const apiKey = _apiKey ?? process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY required for API mode');
+
+  const client = new Anthropic({ apiKey });
+  const model = resolveModelId(options.model);
+  const start = Date.now();
+
+  const response = await client.messages.create({
+    model,
+    max_tokens: 8192,
+    messages: [{ role: 'user', content: options.prompt }],
+  });
+
+  const text = response.content
+    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
+    .map(b => b.text)
+    .join('');
+
+  return {
+    output: text.trim(),
+    durationMs: Date.now() - start,
+  };
+};
+
+// ─── CLI mode (claude --print via temp file) ─────────────────────
+
+const callClaudeCli = async (options: ClaudeCallOptions): Promise<ClaudeCallResult> => {
   const {
     prompt,
     model,
@@ -36,12 +117,10 @@ export const callClaude = async (options: ClaudeCallOptions): Promise<ClaudeCall
   const modelArgs = model ? `--model ${model}` : '';
   const start = Date.now();
 
-  // Write prompt to temp file to avoid command-line length limits
   const tmpFile = join(tmpdir(), `mf-prompt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.txt`);
   writeFileSync(tmpFile, prompt, 'utf8');
 
   try {
-    // Use platform-appropriate pipe: type (Windows) or < (Unix)
     const cmd = process.platform === 'win32'
       ? `type "${tmpFile}" | ${cliBin} --print ${modelArgs}`
       : `${cliBin} --print ${modelArgs} < "${tmpFile}"`;
@@ -106,4 +185,40 @@ export const parseFileResponse = (raw: string): string => {
 
   // If no code block, return as-is (might be raw code)
   return trimmed;
+};
+
+// ─── Decision logging ───────────────────────────────────────────
+
+const logClaudeCall = (options: ClaudeCallOptions, result: ClaudeCallResult): void => {
+  try {
+    const logDir = options.logDir!;
+    if (!existsSync(logDir)) {
+      mkdirSync(logDir, { recursive: true });
+    }
+
+    const label = options.logLabel ?? 'call';
+    const ts = Date.now();
+
+    // Save prompt and response files
+    const promptFile = `prompt-${label}-${ts}.md`;
+    const responseFile = `response-${label}-${ts}.md`;
+    writeFileSync(join(logDir, promptFile), options.prompt, 'utf8');
+    writeFileSync(join(logDir, responseFile), result.output, 'utf8');
+
+    // Append JSONL decision log
+    const entry = {
+      timestamp: new Date().toISOString(),
+      label,
+      model: options.model ?? 'default',
+      mode: _mode,
+      promptFile,
+      responseFile,
+      promptLength: options.prompt.length,
+      responseLength: result.output.length,
+      durationMs: result.durationMs,
+    };
+    appendFileSync(join(logDir, 'decisions.jsonl'), JSON.stringify(entry) + '\n', 'utf8');
+  } catch {
+    // Non-critical: logging failure shouldn't stop migration
+  }
 };

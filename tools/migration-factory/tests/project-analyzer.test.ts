@@ -309,6 +309,66 @@ describe('analyzeProject', () => {
       expect(b.domain).toBeTruthy();
     }
   });
+
+  it('should split large subtrees into batches of max 25', () => {
+    // Create a large graph with 50 programs under one root
+    const children = Array.from({ length: 49 }, (_, i) =>
+      makeProgram(i + 2, `Worker${i + 1}`, 1, [], [1]),
+    );
+    const root = makeProgram(1, 'BigRoot', 5, children.map(c => c.id as number), []);
+    const programs = [root, ...children];
+
+    const resolved = resolveDependencies(programs);
+    const result = analyzeProject({
+      projectName: 'TEST-SPLIT',
+      programs,
+      adjacency: resolved.adjacency,
+      levels: resolved.levels,
+      sccs: resolved.sccs,
+      maxLevel: resolved.maxLevel,
+    });
+
+    // No batch should exceed 25 members
+    for (const b of result.batches) {
+      expect(b.memberCount).toBeLessThanOrEqual(25);
+    }
+
+    // All programs should be accounted for (minus infrastructure)
+    const totalInBatches = result.batches.reduce((sum, b) => sum + b.memberCount, 0);
+    expect(totalInBatches + result.unassignedCount).toBeLessThanOrEqual(programs.length);
+  });
+
+  it('should create multiple batches from domain splitting', () => {
+    // 15 Vente + 15 Session = 30 > maxBatchSize 25
+    const venteProgs = Array.from({ length: 15 }, (_, i) =>
+      makeProgram(i + 2, `VenteW${i}`, 1, [], [1]),
+    );
+    const sessionProgs = Array.from({ length: 15 }, (_, i) =>
+      makeProgram(i + 17, `SessionW${i}`, 1, [], [1]),
+    );
+    const allChildren = [...venteProgs, ...sessionProgs];
+    const root = makeProgram(1, 'Orchestrator', 5, allChildren.map(c => c.id as number), []);
+    const programs = [root, ...allChildren];
+
+    const resolved = resolveDependencies(programs);
+    const result = analyzeProject({
+      projectName: 'TEST-DOMAINS',
+      programs,
+      adjacency: resolved.adjacency,
+      levels: resolved.levels,
+      sccs: resolved.sccs,
+      maxLevel: resolved.maxLevel,
+    });
+
+    // Should have > 1 new batch
+    const newBatches = result.batches.filter(b => b.isNew);
+    expect(newBatches.length).toBeGreaterThanOrEqual(2);
+
+    // No batch > 25
+    for (const b of newBatches) {
+      expect(b.memberCount).toBeLessThanOrEqual(25);
+    }
+  });
 });
 
 describe('analyzedBatchesToTrackerBatches', () => {

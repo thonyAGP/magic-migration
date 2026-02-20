@@ -160,6 +160,8 @@ export interface MigrateConfig {
   onEvent?: (event: MigrateEvent) => void;
   /** Per-phase model overrides. Unset phases fallback to `model`. */
   phaseModels?: Partial<Record<MigratePhase, string>>;
+  /** Directory for decision logging (prompts, responses, JSONL). */
+  logDir?: string;
 }
 
 /**

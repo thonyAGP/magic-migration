@@ -5,6 +5,8 @@ import {
   isInfrastructureProgram,
   planBatchesWithExclusions,
   inferDomain,
+  groupByDomain,
+  chunkArray,
 } from '../src/calculators/batch-planner.js';
 
 const makeProgram = (id: number, name: string, level: number, callees: number[] = [], callers: number[] = []): Program => ({
@@ -251,5 +253,169 @@ describe('planBatchesWithExclusions', () => {
 
     // Subtree of 2 programs < minBatchSize of 5
     expect(result.suggestedBatches).toHaveLength(0);
+  });
+
+  it('should split large subtrees exceeding maxBatchSize', () => {
+    // Build a root with 40 children (exceeds maxBatchSize=10)
+    const children = Array.from({ length: 40 }, (_, i) =>
+      makeProgram(i + 2, `Worker${i + 1}`, 1, [], [1]),
+    );
+    const root = makeProgram(1, 'BigRoot', 5, children.map(c => c.id as number), []);
+    const programs = [root, ...children];
+
+    const resolved = resolveDependencies(programs);
+    const result = planBatchesWithExclusions(programs, resolved.adjacency, resolved.levels, resolved.sccs, {
+      maxBatchSize: 10,
+      minBatchSize: 3,
+    });
+
+    // All batches should be <= maxBatchSize
+    for (const batch of result.suggestedBatches) {
+      expect(batch.memberCount).toBeLessThanOrEqual(10);
+    }
+    // All programs should be assigned
+    const allMembers = result.suggestedBatches.flatMap(b => b.members);
+    expect(allMembers.length).toBeGreaterThanOrEqual(40);
+  });
+
+  it('should group split batches by domain', () => {
+    // 10 Vente programs + 10 Session programs = 20 > maxBatchSize 15
+    const venteProgs = Array.from({ length: 10 }, (_, i) =>
+      makeProgram(i + 2, `VenteWorker${i}`, 1, [], [1]),
+    );
+    const sessionProgs = Array.from({ length: 10 }, (_, i) =>
+      makeProgram(i + 12, `SessionWorker${i}`, 1, [], [1]),
+    );
+    const allChildren = [...venteProgs, ...sessionProgs];
+    const root = makeProgram(1, 'Orchestrator', 5, allChildren.map(c => c.id as number), []);
+    const programs = [root, ...allChildren];
+
+    const resolved = resolveDependencies(programs);
+    const result = planBatchesWithExclusions(programs, resolved.adjacency, resolved.levels, resolved.sccs, {
+      maxBatchSize: 15,
+      minBatchSize: 3,
+    });
+
+    // Should create at least 2 batches (Ventes + Session)
+    expect(result.suggestedBatches.length).toBeGreaterThanOrEqual(2);
+
+    // Check domains
+    const domains = result.suggestedBatches.map(b => b.domain);
+    expect(domains).toContain('Ventes');
+    expect(domains).toContain('Caisse'); // SessionWorker -> 'Caisse' domain
+  });
+
+  it('should merge small domain groups into misc batch', () => {
+    // 8 Vente (>minBatchSize) + 2 Session (<minBatchSize) = 10
+    const venteProgs = Array.from({ length: 8 }, (_, i) =>
+      makeProgram(i + 2, `VenteWorker${i}`, 1, [], [1]),
+    );
+    const sessionProgs = Array.from({ length: 2 }, (_, i) =>
+      makeProgram(i + 10, `SessionWorker${i}`, 1, [], [1]),
+    );
+    const allChildren = [...venteProgs, ...sessionProgs];
+    const root = makeProgram(1, 'Orchestrator', 5, allChildren.map(c => c.id as number), []);
+    const programs = [root, ...allChildren];
+
+    const resolved = resolveDependencies(programs);
+    const result = planBatchesWithExclusions(programs, resolved.adjacency, resolved.levels, resolved.sccs, {
+      maxBatchSize: 5,
+      minBatchSize: 3,
+    });
+
+    // All batches <= maxBatchSize
+    for (const batch of result.suggestedBatches) {
+      expect(batch.memberCount).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('should chunk a single large domain into multiple batches', () => {
+    // 30 Vente programs, maxBatchSize=10 -> 3 batches
+    const venteProgs = Array.from({ length: 30 }, (_, i) =>
+      makeProgram(i + 2, `VenteWorker${i}`, 1, [], [1]),
+    );
+    const root = makeProgram(1, 'VenteRoot', 5, venteProgs.map(c => c.id as number), []);
+    const programs = [root, ...venteProgs];
+
+    const resolved = resolveDependencies(programs);
+    const result = planBatchesWithExclusions(programs, resolved.adjacency, resolved.levels, resolved.sccs, {
+      maxBatchSize: 10,
+      minBatchSize: 3,
+    });
+
+    // Should have at least 3 batches (30/10)
+    const venteBatches = result.suggestedBatches.filter(b => b.domain === 'Ventes');
+    expect(venteBatches.length).toBeGreaterThanOrEqual(3);
+
+    // Each batch <= 10
+    for (const b of venteBatches) {
+      expect(b.memberCount).toBeLessThanOrEqual(10);
+    }
+  });
+
+  it('should not split small subtrees', () => {
+    const programs: Program[] = [
+      makeProgram(1, 'Root', 5, [2, 3, 4, 5, 6], []),
+      makeProgram(2, 'W1', 3, [], [1]),
+      makeProgram(3, 'W2', 2, [], [1]),
+      makeProgram(4, 'W3', 1, [], [1]),
+      makeProgram(5, 'W4', 0, [], [1]),
+      makeProgram(6, 'W5', 0, [], [1]),
+    ];
+
+    const resolved = resolveDependencies(programs);
+    const result = planBatchesWithExclusions(programs, resolved.adjacency, resolved.levels, resolved.sccs, {
+      maxBatchSize: 30,
+      minBatchSize: 3,
+    });
+
+    // Should create exactly 1 batch (6 programs <= 30)
+    expect(result.suggestedBatches.length).toBe(1);
+    expect(result.suggestedBatches[0].memberCount).toBe(6);
+  });
+});
+
+describe('chunkArray', () => {
+  it('should chunk array into parts', () => {
+    expect(chunkArray([1, 2, 3, 4, 5], 2)).toEqual([[1, 2], [3, 4], [5]]);
+  });
+
+  it('should return single chunk if array fits', () => {
+    expect(chunkArray([1, 2, 3], 5)).toEqual([[1, 2, 3]]);
+  });
+
+  it('should handle empty array', () => {
+    expect(chunkArray([], 5)).toEqual([]);
+  });
+});
+
+describe('groupByDomain', () => {
+  it('should group programs by inferred domain', () => {
+    const programMap = new Map<string | number, Program>([
+      [1, makeProgram(1, 'VenteGP', 5)],
+      [2, makeProgram(2, 'SessionOuverture', 4)],
+      [3, makeProgram(3, 'VenteBoutique', 3)],
+    ]);
+
+    const result = groupByDomain([1, 2, 3], programMap);
+    expect(result.get('Ventes')).toEqual([1, 3]);
+    expect(result.get('Caisse')).toEqual([2]);
+  });
+
+  it('should use program domain if not General', () => {
+    const prog = { ...makeProgram(1, 'Unknown', 5), domain: 'Custom' };
+    const programMap = new Map<string | number, Program>([[1, prog]]);
+
+    const result = groupByDomain([1], programMap);
+    expect(result.get('Custom')).toEqual([1]);
+  });
+
+  it('should infer domain for General programs', () => {
+    const programMap = new Map<string | number, Program>([
+      [1, makeProgram(1, 'ExtraitCompte', 5)],
+    ]);
+
+    const result = groupByDomain([1], programMap);
+    expect(result.get('Compte')).toEqual([1]);
   });
 });

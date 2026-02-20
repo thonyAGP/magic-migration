@@ -16,6 +16,7 @@ import {
   startPhase, completePhase, failPhase, markProgramCompleted, markProgramFailed,
   isPhaseCompleted,
 } from './migrate-tracker.js';
+import { setClaudeLogDir } from './migrate-claude.js';
 import { readTracker, writeTracker } from '../core/tracker.js';
 import { loadContracts } from '../core/contract.js';
 import { runSpecPhase } from './phases/phase-spec.js';
@@ -55,6 +56,17 @@ export const runMigration = async (
   const trackerFile = path.join(config.migrationDir, config.contractSubDir, 'tracker.json');
 
   emit(config, ET.MIGRATION_STARTED, `Starting migration for batch ${batchId} (${programIds.length} programs)`);
+
+  // Setup decision log directory
+  if (!config.dryRun && !config.logDir) {
+    const logDir = path.join(config.targetDir, '.migration-log', batchId);
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
+    }
+    config.logDir = logDir;
+    setClaudeLogDir(logDir);
+    emit(config, ET.PHASE_STARTED, `Decision log: ${logDir}`);
+  }
 
   // Scaffold target directory with infrastructure stubs if needed
   if (!config.dryRun) {
