@@ -103,4 +103,39 @@ describe('buildCodegenModel', () => {
     expect(model.programId).toBe(131);
     expect(model.programName).toBe('Fermeture_Session');
   });
+
+  it('should sanitize messy variable and table names to valid JS identifiers', () => {
+    const contract = makeContract({
+      variables: [
+        { localId: 'A', name: 'p.i.Host courant coffre 2 ?', type: 'Virtual', status: 'IMPL', targetFile: '', gapNotes: '' },
+        { localId: 'B', name: 'P.Session VIL ouverte ?', type: 'Parameter', status: 'IMPL', targetFile: '', gapNotes: '' },
+        { localId: 'C', name: 'Param societe', type: 'Parameter', status: 'IMPL', targetFile: '', gapNotes: '' },
+        { localId: 'D', name: 'Montant solde initial monnaie', type: 'Virtual', status: 'IMPL', targetFile: '', gapNotes: '' },
+      ],
+      tables: [
+        { id: 100, name: 'gestion_devise_session', mode: 'R', status: 'IMPL', targetFile: '', gapNotes: '' },
+        { id: 101, name: 'tables___________tab', mode: 'W', status: 'IMPL', targetFile: '', gapNotes: '' },
+      ],
+    });
+    const model = buildCodegenModel(contract);
+
+    // Variable names should be valid camelCase
+    const varNames = model.stateFields.map(f => f.name);
+    expect(varNames).toContain('pIHostCourantCoffre2');
+    expect(varNames).toContain('pSessionVilOuverte');
+    expect(varNames).toContain('paramSociete');
+    expect(varNames).toContain('montantSoldeInitialMonnaie');
+
+    // Table names should be valid camelCase
+    expect(model.entities[0].name).toBe('gestionDeviseSession');
+    expect(model.entities[1].name).toBe('tablesTab');
+
+    // All names should be valid JS identifiers
+    for (const f of model.stateFields) {
+      expect(f.name).toMatch(/^[a-zA-Z_][a-zA-Z0-9_]*$/);
+    }
+    for (const e of model.entities) {
+      expect(e.name).toMatch(/^[a-zA-Z_][a-zA-Z0-9_]*$/);
+    }
+  });
 });

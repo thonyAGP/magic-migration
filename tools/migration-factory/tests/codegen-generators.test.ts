@@ -48,7 +48,7 @@ describe('generateTypes', () => {
     expect(output).toContain('isLoading: boolean');
     expect(output).toContain('error: string | null');
     expect(output).toContain('montant:');
-    expect(output).toContain('cc_ventesList:');
+    expect(output).toContain('ccVentesList:');
   });
 
   it('should use type for action unions', () => {

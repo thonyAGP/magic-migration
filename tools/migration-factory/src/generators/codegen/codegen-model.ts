@@ -119,6 +119,21 @@ const calleeToEndpointName = (name: string): string => {
   return 'call' + pascal;
 };
 
+const toPropertyName = (name: string): string => {
+  const clean = name.replace(/[?!]/g, '').trim();
+  // Already a valid camelCase identifier → return as-is
+  if (/^[a-z][a-zA-Z0-9]*$/.test(clean)) return clean;
+  // Has word boundaries → split, camelCase, sanitize
+  const parts = clean.split(/[\s._/]+/).filter(Boolean);
+  if (parts.length === 0) return 'unknown';
+  const camel = parts
+    .map((w, i) => i === 0 ? w.toLowerCase() : w[0].toUpperCase() + w.slice(1).toLowerCase())
+    .join('')
+    .replace(/[^a-zA-Z0-9]/g, '');
+  if (camel.length === 0) return 'unknown';
+  return /^\d/.test(camel) ? '_' + camel : camel;
+};
+
 const calleeToPath = (name: string, domain: string): string => {
   const slug = name
     .toLowerCase()
@@ -134,7 +149,7 @@ export const buildCodegenModel = (contract: MigrationContract): CodegenModel => 
   const domainPascal = toPascalCase(contract.program.name);
 
   const entities: CodegenEntity[] = contract.tables.map(t => ({
-    name: t.name,
+    name: toPropertyName(t.name),
     interfaceName: toInterfaceName(t.name),
     fields: [],
     mode: t.mode,
@@ -157,7 +172,7 @@ export const buildCodegenModel = (contract: MigrationContract): CodegenModel => 
   }));
 
   const stateFields: CodegenField[] = contract.variables.map(v => ({
-    name: v.name || v.localId,
+    name: toPropertyName(v.name || v.localId),
     type: 'unknown',
     source: variableTypeToSource(v.type),
     description: v.gapNotes || v.name,
