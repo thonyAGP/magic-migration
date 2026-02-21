@@ -4,10 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { DeviseSelector } from '../DeviseSelector';
 import { ChangeOperationGrid } from '../ChangeOperationGrid';
 import { DeviseStockPanel } from '../DeviseStockPanel';
-import { ChangeCancellationDialog } from '../ChangeCancellationDialog';
 import type { Devise, ChangeOperation, ChangeOperationSummary, DeviseStock } from '@/types/change';
-
-// --- Fixtures ---
 
 const devises: Devise[] = [
   { code: 'USD', libelle: 'Dollar US', symbole: '$', tauxActuel: 1.0845, nbDecimales: 2 },
@@ -32,8 +29,6 @@ const stock: DeviseStock[] = [
   { deviseCode: 'GBP', deviseLibelle: 'Livre Sterling', montant: 0, nbOperations: 0 },
   { deviseCode: 'CHF', deviseLibelle: 'Franc Suisse', montant: 200, nbOperations: 2 },
 ];
-
-// --- Tests ---
 
 describe('Change Workflow Integration', () => {
   describe('DeviseSelector', () => {
@@ -101,7 +96,7 @@ describe('Change Workflow Integration', () => {
       render(<ChangeOperationGrid operations={operations} summary={summary} onCancel={vi.fn()} />);
 
       const cancelButtons = screen.getAllByRole('button', { name: /annuler operation/i });
-      expect(cancelButtons.length).toBe(2); // Only ops 1 and 2 (op 3 is annule)
+      expect(cancelButtons.length).toBe(2);
     });
 
     it('should call onCancel with operation id', () => {
@@ -137,12 +132,13 @@ describe('Change Workflow Integration', () => {
 
   describe('DeviseStockPanel', () => {
     it('should display all devises stock with amounts', () => {
-      render(<DeviseStockPanel stock={stock} />);
+      const { container } = render(<DeviseStockPanel stock={stock} />);
 
       expect(screen.getByText('Stock devises')).toBeInTheDocument();
       expect(screen.getByText('USD')).toBeInTheDocument();
-      expect(screen.getByText('500.00')).toBeInTheDocument();
-      expect(screen.getByText('(5 op.)')).toBeInTheDocument();
+      
+      expect(container.textContent).toContain('500,00');
+      expect(container.textContent).toContain('(5 op.)');
     });
 
     it('should show empty message when no stock', () => {

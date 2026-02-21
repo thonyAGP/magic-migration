@@ -14,18 +14,37 @@ vi.mock('@/services/api/endpoints-lot4', () => ({
   },
 }));
 
+vi.mock('../dataSourceStore', () => ({
+  useDataSourceStore: {
+    getState: vi.fn(() => ({ isRealApi: true })),
+  },
+}));
+
 import { factureApi } from '@/services/api/endpoints-lot4';
+import { useDataSourceStore } from '../dataSourceStore';
 
 const mockFacture = {
   id: 1,
   reference: 'FAC-2026-001',
   societe: 'ADH',
+  codeAdherent: 1001,
+  filiation: 0,
+  nomAdherent: 'DUPONT Jean',
   type: 'standard' as const,
   statut: 'draft' as const,
+  dateEmission: '2026-02-10',
+  dateEcheance: '2026-03-10',
   montantHT: 100,
+  montantTVA: 20,
   montantTTC: 120,
+  devise: 'EUR',
+  commentaire: '',
+  operateur: 'CAISSIER1',
   dateCreation: '2026-02-10',
   lignes: [],
+  totalHT: 100,
+  totalTVA: 20,
+  totalTTC: 120,
 };
 
 const mockSearchResult = {
@@ -37,7 +56,7 @@ const mockSummary = {
   totalHT: 100,
   totalTVA: 20,
   totalTTC: 120,
-  lignesTVA: [{ tauxTVA: 20, baseHT: 100, montantTVA: 20 }],
+  ventilationTVA: [{ tauxTVA: 20, baseHT: 100, montantTVA: 20 }],
 };
 
 describe('useFactureStore', () => {
@@ -55,6 +74,7 @@ describe('useFactureStore', () => {
       error: null,
     });
     vi.clearAllMocks();
+    vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true } as never);
   });
 
   describe('initial state', () => {

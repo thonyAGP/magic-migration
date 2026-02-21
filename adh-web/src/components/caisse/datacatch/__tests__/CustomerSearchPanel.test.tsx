@@ -4,12 +4,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { CustomerSearchPanel } from '../CustomerSearchPanel';
 import type { CustomerSearchResult } from '@/types/datacatch';
 
-vi.mock('@/services/api/endpoints-lot5', () => ({
-  datacatchApi: {
-    searchCustomer: vi.fn(),
-  },
-}));
-
 const mockCustomers: CustomerSearchResult[] = [
   {
     customerId: 1,
@@ -43,48 +37,131 @@ describe('CustomerSearchPanel', () => {
     expect(screen.getByPlaceholderText('Prenom du client')).toBeDefined();
   });
 
-  it('should show loading state', async () => {
-    const { datacatchApi } = await import('@/services/api/endpoints-lot5');
-    vi.mocked(datacatchApi.searchCustomer).mockImplementation(
-      () => new Promise(() => {}),
-    );
-
+  it('should show loading state', () => {
     render(
-      <CustomerSearchPanel onSelectCustomer={vi.fn()} onCreateNew={vi.fn()} />,
+      <CustomerSearchPanel
+        onSelectCustomer={vi.fn()}
+        onCreateNew={vi.fn()}
+        isSearching={true}
+      />,
     );
 
-    const input = screen.getByPlaceholderText('Nom du client');
-    fireEvent.change(input, { target: { value: 'Dupont' } });
-
-    await waitFor(() => {
-      expect(screen.getByText('Recherche en cours...')).toBeDefined();
-    });
+    expect(screen.getByText('Recherche en cours...')).toBeDefined();
   });
 
-  it('should show empty results message', async () => {
-    const { datacatchApi } = await import('@/services/api/endpoints-lot5');
-    vi.mocked(datacatchApi.searchCustomer).mockResolvedValue({
-      data: { data: [] },
-    } as never);
-
+  it('should show empty results message', () => {
     render(
-      <CustomerSearchPanel onSelectCustomer={vi.fn()} onCreateNew={vi.fn()} />,
+      <CustomerSearchPanel
+        onSelectCustomer={vi.fn()}
+        onCreateNew={vi.fn()}
+        searchResults={[]}
+        isSearching={false}
+        onSearch={vi.fn()}
+      />,
     );
 
     const input = screen.getByPlaceholderText('Nom du client');
     fireEvent.change(input, { target: { value: 'zzz' } });
 
-    await waitFor(() => {
+    waitFor(() => {
       expect(screen.getByText('Aucun client trouve')).toBeDefined();
     });
   });
 
-  it('should display results with score badge', async () => {
-    const { datacatchApi } = await import('@/services/api/endpoints-lot5');
-    vi.mocked(datacatchApi.searchCustomer).mockResolvedValue({
-      data: { data: mockCustomers },
-    } as never);
+  it('should display results with score badge', () => {
+    render(
+      <CustomerSearchPanel
+        onSelectCustomer={vi.fn()}
+        onCreateNew={vi.fn()}
+        searchResults={mockCustomers}
+        isSearching={false}
+      />,
+    );
 
+    expect(screen.getByText('Dupont Jean')).toBeDefined();
+    expect(screen.getByText('95%')).toBeDefined();
+    expect(screen.getByText('Martin Marie')).toBeDefined();
+    expect(screen.getByText('78%')).toBeDefined();
+  });
+
+  it('should call onSelectCustomer on click', () => {
+    const onSelect = vi.fn();
+    render(
+      <CustomerSearchPanel
+        onSelectCustomer={onSelect}
+        onCreateNew={vi.fn()}
+        searchResults={mockCustomers}
+        isSearching={false}
+      />,
+    );
+
+    const customerElement = screen.getByText('Dupont Jean');
+    fireEvent.click(customerElement);
+
+    expect(onSelect).toHaveBeenCalledWith(mockCustomers[0]);
+  });
+
+  it('should call onSearch with debounced nom input', async () => {
+    const onSearch = vi.fn();
+    render(
+      <CustomerSearchPanel
+        onSelectCustomer={vi.fn()}
+        onCreateNew={vi.fn()}
+        onSearch={onSearch}
+      />,
+    );
+
+    const input = screen.getByPlaceholderText('Nom du client');
+    fireEvent.change(input, { target: { value: 'Dupont' } });
+
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenCalledWith('Dupont', undefined);
+    }, { timeout: 500 });
+  });
+
+  it('should call onSearch with debounced prenom input', async () => {
+    const onSearch = vi.fn();
+    render(
+      <CustomerSearchPanel
+        onSelectCustomer={vi.fn()}
+        onCreateNew={vi.fn()}
+        onSearch={onSearch}
+      />,
+    );
+
+    const input = screen.getByPlaceholderText('Prenom du client');
+    fireEvent.change(input, { target: { value: 'Jean' } });
+
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenCalledWith(undefined, 'Jean');
+    }, { timeout: 500 });
+  });
+
+  it('should call onCreateNew when create button clicked', () => {
+    const onCreate = vi.fn();
+    render(
+      <CustomerSearchPanel
+        onSelectCustomer={vi.fn()}
+        onCreateNew={onCreate}
+      />,
+    );
+
+    const createButton = screen.getByText('Creer nouveau client');
+    fireEvent.click(createButton);
+
+    expect(onCreate).toHaveBeenCalled();
+  });
+
+  it('should disable search button when both fields empty', () => {
+    render(
+      <CustomerSearchPanel onSelectCustomer={vi.fn()} onCreateNew={vi.fn()} />,
+    );
+
+    const searchButton = screen.getByText('Rechercher');
+    expect(searchButton).toHaveProperty('disabled', true);
+  });
+
+  it('should enable search button when nom is filled', () => {
     render(
       <CustomerSearchPanel onSelectCustomer={vi.fn()} onCreateNew={vi.fn()} />,
     );
@@ -92,31 +169,7 @@ describe('CustomerSearchPanel', () => {
     const input = screen.getByPlaceholderText('Nom du client');
     fireEvent.change(input, { target: { value: 'Dupont' } });
 
-    await waitFor(() => {
-      expect(screen.getByText('Dupont Jean')).toBeDefined();
-      expect(screen.getByText('95%')).toBeDefined();
-    });
-  });
-
-  it('should call onSelectCustomer on click', async () => {
-    const { datacatchApi } = await import('@/services/api/endpoints-lot5');
-    vi.mocked(datacatchApi.searchCustomer).mockResolvedValue({
-      data: { data: mockCustomers },
-    } as never);
-
-    const onSelect = vi.fn();
-    render(
-      <CustomerSearchPanel onSelectCustomer={onSelect} onCreateNew={vi.fn()} />,
-    );
-
-    const input = screen.getByPlaceholderText('Nom du client');
-    fireEvent.change(input, { target: { value: 'Dupont' } });
-
-    await waitFor(() => {
-      expect(screen.getByText('Dupont Jean')).toBeDefined();
-    });
-
-    fireEvent.click(screen.getByText('Dupont Jean'));
-    expect(onSelect).toHaveBeenCalledWith(mockCustomers[0]);
+    const searchButton = screen.getByText('Rechercher');
+    expect(searchButton).toHaveProperty('disabled', false);
   });
 });

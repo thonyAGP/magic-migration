@@ -1,4 +1,4 @@
-import type { TicketData, PrinterConfig } from './types';
+import type { TicketData } from './types';
 import { encodeTicket } from './escposEncoder';
 
 // WebUSB/WebSerial type declarations
@@ -82,7 +82,7 @@ interface SerialConnection {
 
 type PrinterConnection = UsbConnection | SerialConnection | null;
 
-export function createEscPosPrinter(_config: PrinterConfig): EscPosPrinter {
+export function createEscPosPrinter(): EscPosPrinter {
   let connection: PrinterConnection = null;
 
   async function sendData(data: Uint8Array): Promise<void> {
@@ -117,7 +117,7 @@ export function createEscPosPrinter(_config: PrinterConfig): EscPosPrinter {
           await device.claimInterface(0);
           connection = { type: 'usb', device };
           return;
-        } catch (err: unknown) {
+        } catch (_err: unknown) {
           /* WebUSB not available or denied, try serial */
         }
       }

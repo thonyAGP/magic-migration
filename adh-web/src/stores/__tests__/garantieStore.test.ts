@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useGarantieStore } from '../garantieStore';
 
@@ -15,18 +14,30 @@ vi.mock('@/services/api/endpoints-lot4', () => ({
   },
 }));
 
+vi.mock('../dataSourceStore', () => ({
+  useDataSourceStore: {
+    getState: vi.fn(() => ({ isRealApi: true })),
+  },
+}));
+
 import { garantieApi } from '@/services/api/endpoints-lot4';
+import { useDataSourceStore } from '../dataSourceStore';
 
 const mockGarantie = {
   id: 1,
   societe: 'ADH',
   codeAdherent: 1001,
   filiation: 0,
+  nomAdherent: 'DUPONT Jean',
+  type: 'depot' as const,
+  statut: 'active' as const,
   montant: 500,
   devise: 'EUR',
-  statut: 'active' as const,
-  description: 'Depot garantie chambre',
   dateCreation: '2026-02-10',
+  dateExpiration: '2026-03-10',
+  description: 'Depot garantie chambre',
+  operateur: 'CAISSIER1',
+  articles: [],
 };
 
 const mockSearchResult = {
@@ -35,7 +46,7 @@ const mockSearchResult = {
 };
 
 const mockOperations = [
-  { id: 1, garantieId: 1, type: 'depot' as const, montant: 500, date: '2026-02-10', motif: 'Initial' },
+  { id: 1, garantieId: 1, type: 'depot' as const, montant: 500, date: '2026-02-10', heure: '09:00', operateur: 'CAISSIER1', motif: 'Initial' },
 ];
 
 const mockSummary = {
@@ -52,6 +63,7 @@ describe('useGarantieStore', () => {
       operations: [],
       summary: null,
       searchResults: null,
+      selectedArticle: null,
       isSearching: false,
       isLoadingGarantie: false,
       isLoadingOperations: false,
@@ -61,6 +73,7 @@ describe('useGarantieStore', () => {
       error: null,
     });
     vi.clearAllMocks();
+    vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true } as never);
   });
 
   describe('initial state', () => {
@@ -256,7 +269,7 @@ describe('useGarantieStore', () => {
   describe('cancelGarantie', () => {
     it('should cancel and reload garantie', async () => {
       vi.mocked(garantieApi.cancel).mockResolvedValue({ data: { data: undefined } } as never);
-      vi.mocked(garantieApi.getById).mockResolvedValue({ data: { data: { ...mockGarantie, statut: 'cancelled' } } } as never);
+      vi.mocked(garantieApi.getById).mockResolvedValue({ data: { data: { ...mockGarantie, statut: 'annulee' as const } } } as never);
 
       const result = await useGarantieStore.getState().cancelGarantie(1, 'Client parti');
 

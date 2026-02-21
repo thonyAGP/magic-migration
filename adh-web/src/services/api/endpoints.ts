@@ -1,4 +1,4 @@
-import { apiClient, type ApiResponse, type PaginatedResponse } from './apiClient';
+import { apiClient, type ApiResponse } from './apiClient';
 import type {
   Session,
   OpenSessionRequest,

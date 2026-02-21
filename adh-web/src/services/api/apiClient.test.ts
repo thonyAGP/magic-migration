@@ -4,8 +4,8 @@ import { AxiosHeaders } from 'axios';
 import { apiClient } from './apiClient';
 
 type InterceptorHandler<T> = {
-  fulfilled?: (value: T) => T;
-  rejected?: (error: unknown) => Promise<never>;
+  fulfilled?: (value: T) => T | Promise<T>;
+  rejected?: (error: unknown) => unknown;
 };
 
 type InterceptorManager<T> = {
@@ -14,7 +14,6 @@ type InterceptorManager<T> = {
 
 describe('apiClient', () => {
   beforeEach(() => {
-    // node env has no localStorage by default, create a simple mock
     if (typeof globalThis.localStorage === 'undefined') {
       const store: Record<string, string> = {};
       Object.defineProperty(globalThis, 'localStorage', {
@@ -72,7 +71,7 @@ describe('apiClient', () => {
   describe('response interceptor - error handling', () => {
     it('should normalize API error response into ApiError format', async () => {
       const resInterceptors = apiClient.interceptors.response as unknown as InterceptorManager<unknown>;
-      const interceptor = resInterceptors.handlers[0];
+      const interceptor = resInterceptors.handlers[1];
 
       const mockError = {
         response: {
@@ -83,18 +82,26 @@ describe('apiClient', () => {
         isAxiosError: true,
       };
 
-      await expect(interceptor.rejected!(mockError)).rejects.toEqual({
-        status: 404,
-        code: 'NOT_FOUND',
-        message: 'Resource not found',
-      });
+      if (!interceptor.rejected) {
+        throw new Error('Response interceptor rejected handler not found');
+      }
+
+      try {
+        await interceptor.rejected(mockError);
+        throw new Error('Expected rejection');
+      } catch (error) {
+        expect(error).toEqual({
+          status: 404,
+          code: 'NOT_FOUND',
+          message: 'Resource not found',
+        });
+      }
     });
 
     it('should return NETWORK_ERROR when no response and online', async () => {
       const resInterceptors = apiClient.interceptors.response as unknown as InterceptorManager<unknown>;
-      const interceptor = resInterceptors.handlers[0];
+      const interceptor = resInterceptors.handlers[1];
 
-      // In node env, navigator may not exist, mock it
       if (typeof globalThis.navigator === 'undefined') {
         Object.defineProperty(globalThis, 'navigator', {
           value: { onLine: true },
@@ -114,16 +121,25 @@ describe('apiClient', () => {
         isAxiosError: true,
       };
 
-      await expect(interceptor.rejected!(mockError)).rejects.toEqual({
-        status: 0,
-        code: 'NETWORK_ERROR',
-        message: 'timeout of 30000ms exceeded',
-      });
+      if (!interceptor.rejected) {
+        throw new Error('Response interceptor rejected handler not found');
+      }
+
+      try {
+        await interceptor.rejected(mockError);
+        throw new Error('Expected rejection');
+      } catch (error) {
+        expect(error).toEqual({
+          status: 0,
+          code: 'NETWORK_ERROR',
+          message: 'timeout of 30000ms exceeded',
+        });
+      }
     });
 
     it('should return OFFLINE error when navigator is offline', async () => {
       const resInterceptors = apiClient.interceptors.response as unknown as InterceptorManager<unknown>;
-      const interceptor = resInterceptors.handlers[0];
+      const interceptor = resInterceptors.handlers[1];
 
       Object.defineProperty(globalThis, 'navigator', {
         value: { onLine: false },
@@ -136,13 +152,21 @@ describe('apiClient', () => {
         isAxiosError: true,
       };
 
-      await expect(interceptor.rejected!(mockError)).rejects.toEqual({
-        status: 0,
-        code: 'OFFLINE',
-        message: 'No network connection',
-      });
+      if (!interceptor.rejected) {
+        throw new Error('Response interceptor rejected handler not found');
+      }
 
-      // Restore
+      try {
+        await interceptor.rejected(mockError);
+        throw new Error('Expected rejection');
+      } catch (error) {
+        expect(error).toEqual({
+          status: 0,
+          code: 'OFFLINE',
+          message: 'No network connection',
+        });
+      }
+
       Object.defineProperty(globalThis, 'navigator', {
         value: { onLine: true },
         writable: true,

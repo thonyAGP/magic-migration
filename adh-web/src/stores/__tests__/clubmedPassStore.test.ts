@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useClubMedPassStore } from '../clubmedPassStore';
+import { useDataSourceStore } from '../dataSourceStore';
 
 vi.mock('@/services/api/endpoints-lot5', () => ({
   passApi: {
@@ -9,6 +10,9 @@ vi.mock('@/services/api/endpoints-lot5', () => ({
     getTransactions: vi.fn(),
     scan: vi.fn(),
     getSummary: vi.fn(),
+    create: vi.fn(),
+    oppose: vi.fn(),
+    delete: vi.fn(),
   },
 }));
 
@@ -32,31 +36,44 @@ const mockPass = {
 
 const mockValidation = {
   isValid: true,
-  soldeApres: 200,
-  message: 'Validation OK',
+  soldeDisponible: 250.0,
+  peutTraiter: true,
+  raison: null,
+  limitJournaliereRestante: 455.0,
+  limitHebdomadaireRestante: 1750.0,
 };
 
 const mockTransactions = [
-  { id: 1, date: '2026-02-09', type: 'debit' as const, montant: -50, description: 'Achat boutique' },
+  { id: 1, passId: 1, numeroPass: 'CM-2026-001234', date: '2026-02-09', heure: '14:30', montant: 45.00, type: 'debit' as const, libelle: 'Achat boutique', operateur: 'USR001' },
+  { id: 2, passId: 1, numeroPass: 'CM-2026-001234', date: '2026-02-08', heure: '10:15', montant: 120.00, type: 'credit' as const, libelle: 'Rechargement', operateur: 'USR002' },
 ];
 
 const mockSummary = {
-  totalTransactions: 150,
-  montantTotal: 12500,
   nbPassActifs: 42,
+  soldeTotal: 37500.0,
+  nbTransactionsJour: 23,
 };
 
 describe('useClubMedPassStore', () => {
   beforeEach(() => {
+    useDataSourceStore.setState({ isRealApi: true });
     useClubMedPassStore.setState({
       currentPass: null,
       transactions: [],
       validationResult: null,
       summary: null,
+      affiliates: [],
+      barLimit: 200,
+      maxBarLimit: 1000,
+      forfaitsTAI: [],
       isValidating: false,
       isLoadingPass: false,
       isLoadingTransactions: false,
       isScanning: false,
+      isLoadingAffiliates: false,
+      isLoadingForfaits: false,
+      isCreating: false,
+      creationResult: null,
       error: null,
     });
     vi.clearAllMocks();
@@ -135,14 +152,14 @@ describe('useClubMedPassStore', () => {
     });
 
     it('should use mock pass on API failure', async () => {
-      vi.mocked(passApi.getByNumber).mockRejectedValue(new Error('Not found'));
+      useDataSourceStore.setState({ isRealApi: false });
 
       await useClubMedPassStore.getState().loadPass('CM-XXX');
 
       const pass = useClubMedPassStore.getState().currentPass;
       expect(pass).not.toBeNull();
-      expect(pass?.numeroPass).toBe('CM-2026-001234'); // MOCK_PASS
-      expect(useClubMedPassStore.getState().error).toBe('Mode dev: pass mock charge');
+      expect(pass?.numeroPass).toBe('CM-XXX');
+      expect(useClubMedPassStore.getState().error).toBeNull();
     });
 
     it('should use mock when API returns null', async () => {
@@ -152,8 +169,7 @@ describe('useClubMedPassStore', () => {
 
       await useClubMedPassStore.getState().loadPass('CM-XXX');
 
-      // MOCK_PASS is used when data is null/falsy
-      expect(useClubMedPassStore.getState().currentPass).not.toBeNull();
+      expect(useClubMedPassStore.getState().currentPass).toBeNull();
     });
   });
 
@@ -211,7 +227,7 @@ describe('useClubMedPassStore', () => {
       const result = await useClubMedPassStore.getState().scanCard('CM-BAD', 'ADH');
 
       expect(result).toEqual({ success: false, error: 'Card not readable' });
-      expect(useClubMedPassStore.getState().currentPass).not.toBeNull(); // MOCK_PASS
+      expect(useClubMedPassStore.getState().currentPass).toBeNull();
     });
   });
 

@@ -15,17 +15,6 @@ const mockEcart: SessionEcart = {
   ],
 };
 
-const mockEcartEquilibre: SessionEcart = {
-  attendu: 1000,
-  compte: 1000,
-  ecart: 0,
-  estEquilibre: true,
-  statut: 'equilibre',
-  ecartsDevises: [
-    { deviseCode: 'EUR', attendu: 1000, compte: 1000, ecart: 0 },
-  ],
-};
-
 describe('EcartJustificationDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks();

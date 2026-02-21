@@ -10,7 +10,6 @@ import {
 } from '@/components/caisse/facture';
 import { EmailSendDialog } from '@/components/caisse/dialogs';
 import { useFactureStore } from '@/stores/factureStore';
-import { useAuthStore } from '@/stores';
 import { Button, Badge } from '@/components/ui';
 import { ArrowLeft, Mail } from 'lucide-react';
 import type { Facture, FactureLigne, FactureSummary, FactureTVALine } from '@/types/facture';
@@ -19,9 +18,6 @@ import type { FactureCreateFormData, FactureLigneFormData } from '@/components/c
 type Phase = 'search' | 'edit' | 'preview';
 
 const round2 = (x: number) => Math.round(x * 100) / 100;
-
-const formatEUR = (value: number) =>
-  new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
 
 const statutVariant = (statut: string) => {
   switch (statut) {
@@ -35,7 +31,6 @@ const statutVariant = (statut: string) => {
 
 export function FacturePage() {
   const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
   const societe = 'ADH';
 
   const {
@@ -45,7 +40,7 @@ export function FacturePage() {
     isLoadingFacture,
     isSubmitting,
     isValidating,
-    isCancelling,
+    _isCancelling,
     isPrinting,
     error,
     searchFactures,
@@ -53,7 +48,7 @@ export function FacturePage() {
     createFacture,
     updateLignes,
     validateFacture,
-    cancelFacture,
+    _cancelFacture,
     printFacture,
     reset,
   } = useFactureStore();
@@ -63,16 +58,16 @@ export function FacturePage() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
-  useEffect(() => {
-    return () => reset();
-  }, [reset]);
-
   // Sync local lignes when currentFacture changes
   useEffect(() => {
     if (currentFacture) {
       setLignes(currentFacture.lignes);
     }
   }, [currentFacture]);
+
+  useEffect(() => {
+    return () => reset();
+  }, [reset]);
 
   // Compute local summary from lignes
   const localSummary = useMemo((): FactureSummary | null => {

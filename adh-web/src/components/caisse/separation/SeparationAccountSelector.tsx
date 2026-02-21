@@ -40,7 +40,10 @@ export function SeparationAccountSelector({
       setSearched(false);
       return;
     }
-    timerRef.current = setTimeout(() => doSearch(query), 300);
+    timerRef.current = setTimeout(() => {
+      doSearch(query);
+      setSearched(true);
+    }, 300);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };

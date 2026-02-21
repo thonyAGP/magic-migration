@@ -10,24 +10,34 @@ vi.mock('@/services/api/endpoints-lot3', () => ({
   },
 }));
 
+vi.mock('../dataSourceStore', () => ({
+  useDataSourceStore: {
+    getState: vi.fn(() => ({ isRealApi: true })),
+  },
+}));
+
 import { extraitApi } from '@/services/api/endpoints-lot3';
+import { useDataSourceStore } from '../dataSourceStore';
 
 const mockAccount = {
+  societe: 'ADH',
   codeAdherent: 1001,
   filiation: 0,
   nom: 'Dupont',
   prenom: 'Jean',
-  societe: 'ADH',
+  statut: 'normal' as const,
+  hasGiftPass: false,
 };
 
 const mockTransactions = [
-  { id: 1, date: '2026-02-01', libelle: 'Achat', montant: -50, devise: 'EUR' },
-  { id: 2, date: '2026-02-02', libelle: 'Credit', montant: 100, devise: 'EUR' },
+  { id: 1, date: '2026-02-01', heure: '09:00', libelle: 'Achat', debit: 50, credit: 0, solde: -50, codeService: 'BTQ', codeImputation: 'IMP01', giftPassFlag: false, status: 'debit' as const },
+  { id: 2, date: '2026-02-02', heure: '10:00', libelle: 'Credit', debit: 0, credit: 100, solde: 50, codeService: 'CAI', codeImputation: 'IMP02', giftPassFlag: false, status: 'credit' as const },
 ];
 
 const mockSummary = {
-  solde: 250,
-  devise: 'EUR',
+  totalDebit: 50,
+  totalCredit: 100,
+  soldeActuel: 50,
   nbTransactions: 2,
 };
 
@@ -44,6 +54,7 @@ describe('useExtraitStore', () => {
       error: null,
     });
     vi.clearAllMocks();
+    vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
   });
 
   describe('initial state', () => {
@@ -80,7 +91,10 @@ describe('useExtraitStore', () => {
       vi.mocked(extraitApi.searchAccount).mockReturnValue(promise as never);
 
       const searchPromise = useExtraitStore.getState().searchAccount('ADH', 'Dupont');
-      expect(useExtraitStore.getState().isSearching).toBe(true);
+      
+      await vi.waitFor(() => {
+        expect(useExtraitStore.getState().isSearching).toBe(true);
+      });
 
       resolve!({ data: { data: [] } });
       await searchPromise;
@@ -118,9 +132,9 @@ describe('useExtraitStore', () => {
 
   describe('selectAccount', () => {
     it('should set selected account and clear transactions', () => {
-      useExtraitStore.setState({ transactions: mockTransactions, summary: mockSummary, error: 'old' });
+      useExtraitStore.setState({ transactions: mockTransactions as never, summary: mockSummary, error: 'old' });
 
-      useExtraitStore.getState().selectAccount(mockAccount as never);
+      useExtraitStore.getState().selectAccount(mockAccount);
 
       const state = useExtraitStore.getState();
       expect(state.selectedAccount).toEqual(mockAccount);
@@ -151,7 +165,10 @@ describe('useExtraitStore', () => {
       vi.mocked(extraitApi.getExtrait).mockReturnValue(promise as never);
 
       const loadPromise = useExtraitStore.getState().loadExtrait('ADH', 1001, 0);
-      expect(useExtraitStore.getState().isLoadingExtrait).toBe(true);
+      
+      await vi.waitFor(() => {
+        expect(useExtraitStore.getState().isLoadingExtrait).toBe(true);
+      });
 
       resolve!({ data: { data: { transactions: [], summary: null } } });
       await loadPromise;
@@ -199,7 +216,10 @@ describe('useExtraitStore', () => {
       vi.mocked(extraitApi.printExtrait).mockReturnValue(promise as never);
 
       const printPromise = useExtraitStore.getState().printExtrait('ADH', 1001, 0, 'PDF');
-      expect(useExtraitStore.getState().isPrinting).toBe(true);
+      
+      await vi.waitFor(() => {
+        expect(useExtraitStore.getState().isPrinting).toBe(true);
+      });
 
       resolve!({ data: { data: { jobId: 'j1' } } });
       await printPromise;
@@ -219,10 +239,10 @@ describe('useExtraitStore', () => {
   describe('reset', () => {
     it('should reset all state to initial values', () => {
       useExtraitStore.setState({
-        selectedAccount: mockAccount as never,
+        selectedAccount: mockAccount,
         transactions: mockTransactions as never,
-        summary: mockSummary as never,
-        searchResults: [mockAccount as never],
+        summary: mockSummary,
+        searchResults: [mockAccount],
         isSearching: true,
         isLoadingExtrait: true,
         isPrinting: true,

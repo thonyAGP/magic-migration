@@ -4,7 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { FusionAccountSelection } from '../FusionAccountSelection';
 import { FusionPreviewCard } from '../FusionPreviewCard';
 import { FusionResultDialog } from '../FusionResultDialog';
-import type { FusionAccount, FusionPreview, FusionResult, FusionProgress } from '@/types/fusion';
+import type { FusionAccount, FusionPreview, FusionResult } from '@/types/fusion';
 
 // --- Fixtures ---
 

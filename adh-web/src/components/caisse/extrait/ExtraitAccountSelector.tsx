@@ -47,7 +47,7 @@ export function ExtraitAccountSelector({
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [query, doSearch]);
+  }, [query, doSearch, disabled]);
 
   const showLoading = isSearching || isLoading;
 

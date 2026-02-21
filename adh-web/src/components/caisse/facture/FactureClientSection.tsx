@@ -23,7 +23,7 @@ export interface FactureClientSectionProps {
   errors?: Record<string, string>;
 }
 
-const EMPTY_CLIENT: FactureClient = {
+const _EMPTY_CLIENT: FactureClient = {
   nom: '',
   prenom: '',
   adresse1: '',

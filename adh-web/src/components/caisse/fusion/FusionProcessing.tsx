@@ -3,7 +3,7 @@ import { Loader2, Lock, CheckCircle } from 'lucide-react';
 import { useFusionStore } from '@/stores/fusionStore';
 import type { FusionProcessingProps } from './types';
 
-export function FusionProcessing({ progress, onStepError, className }: FusionProcessingProps) {
+export function FusionProcessing({ progress, _onStepError, className }: FusionProcessingProps) {
   const percent = Math.min(100, Math.max(0, progress.progression));
   const isLocked = useFusionStore((s) => s.isLocked);
 

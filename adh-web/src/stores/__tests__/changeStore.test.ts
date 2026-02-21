@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useChangeStore } from '../changeStore';
+import { useDataSourceStore } from '../dataSourceStore';
 
 vi.mock('@/services/api/endpoints-lot3', () => ({
   changeApi: {
@@ -12,6 +13,12 @@ vi.mock('@/services/api/endpoints-lot3', () => ({
   },
 }));
 
+vi.mock('../dataSourceStore', () => ({
+  useDataSourceStore: {
+    getState: vi.fn(() => ({ isRealApi: true })),
+  },
+}));
+
 import { changeApi } from '@/services/api/endpoints-lot3';
 
 const mockDevises = [
@@ -20,12 +27,12 @@ const mockDevises = [
 ];
 
 const mockStock = [
-  { deviseCode: 'USD', montant: 5000, nbBillets: 50 },
-  { deviseCode: 'GBP', montant: 2000, nbBillets: 20 },
+  { deviseCode: 'USD', deviseLibelle: 'Dollar US', montant: 5000, nbOperations: 12 },
+  { deviseCode: 'GBP', deviseLibelle: 'Livre Sterling', montant: 2000, nbOperations: 8 },
 ];
 
 const mockOperations = [
-  { id: 1, type: 'achat' as const, deviseCode: 'USD', montant: 100, taux: 1.08, montantEUR: 92.59, date: '2026-02-10', operateur: 'user1', annule: false },
+  { id: 1, type: 'achat' as const, deviseCode: 'USD', deviseLibelle: 'Dollar US', montant: 100, taux: 1.08, contreValeur: 92.59, modePaiement: 'ESP', date: '2026-02-10', heure: '10:00', operateur: 'user1', annule: false },
 ];
 
 const mockSummary = {
@@ -49,6 +56,7 @@ describe('useChangeStore', () => {
       error: null,
     });
     vi.clearAllMocks();
+    vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true } as never);
   });
 
   describe('initial state', () => {
@@ -86,8 +94,8 @@ describe('useChangeStore', () => {
       await useChangeStore.getState().loadDevises('ADH');
 
       const state = useChangeStore.getState();
-      expect(state.devises).toHaveLength(3); // MOCK_DEVISES has 3
-      expect(state.error).toBe('Mode dev: devises mock chargees');
+      expect(state.devises).toEqual([]);
+      expect(state.error).toBe('fail');
       expect(state.isLoadingDevises).toBe(false);
     });
 
@@ -98,7 +106,7 @@ describe('useChangeStore', () => {
 
       await useChangeStore.getState().loadDevises('ADH');
 
-      expect(useChangeStore.getState().devises).toHaveLength(3); // MOCK_DEVISES
+      expect(useChangeStore.getState().devises).toEqual([]);
     });
 
     it('should set isLoadingDevises during load', async () => {
@@ -208,19 +216,17 @@ describe('useChangeStore', () => {
       let resolve: (v: unknown) => void;
       const promise = new Promise((r) => { resolve = r; });
       vi.mocked(changeApi.createOperation).mockReturnValue(promise as never);
-
-      const createPromise = useChangeStore.getState().createOperation(
-        'ADH', 'achat', 'USD', 100, 1.08, 'ESP', 'user1',
-      );
-      expect(useChangeStore.getState().isSubmitting).toBe(true);
-
-      // Need to also mock the reload calls
       vi.mocked(changeApi.getOperations).mockResolvedValue({
         data: { data: { operations: [], summary: null } },
       } as never);
       vi.mocked(changeApi.getStock).mockResolvedValue({
         data: { data: [] },
       } as never);
+
+      const createPromise = useChangeStore.getState().createOperation(
+        'ADH', 'achat', 'USD', 100, 1.08, 'ESP', 'user1',
+      );
+      expect(useChangeStore.getState().isSubmitting).toBe(true);
 
       resolve!({ data: { data: { id: 1 } } });
       await createPromise;

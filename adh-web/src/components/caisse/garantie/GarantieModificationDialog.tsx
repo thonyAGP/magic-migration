@@ -41,13 +41,13 @@ export function GarantieModificationDialog({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (article && open) {
-      setCode(article.code);
-      setLibelle(article.libelle);
-      setDescription(article.description);
-      setValeurEstimee(article.valeurEstimee);
-      setErrors({});
-    }
+    if (!article || !open) return;
+
+    setCode(article.code);
+    setLibelle(article.libelle);
+    setDescription(article.description);
+    setValeurEstimee(article.valeurEstimee);
+    setErrors({});
   }, [article, open]);
 
   const handleClose = useCallback(() => {

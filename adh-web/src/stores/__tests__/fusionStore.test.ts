@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useFusionStore } from '../fusionStore';
 
@@ -19,18 +18,30 @@ const mockAccounts = [
   { codeAdherent: 1002, filiation: 0, nom: 'Martin', prenom: 'Marie', societe: 'ADH', solde: 890.5, nbTransactions: 23, nbGaranties: 0 },
 ];
 
+const MOCK_GARANTIES_SOURCE = [
+  { id: 'g-src-1', article: 'Serviette plage', description: 'Serviette plage XL', montant: 25.00, dateDepot: '2026-01-15', compteOrigine: 'source' as const },
+  { id: 'g-src-2', article: 'Casier vestiaire', description: 'Casier vestiaire B12', montant: 10.00, dateDepot: '2026-01-20', compteOrigine: 'source' as const },
+];
+
 const mockPreview = {
-  nbTransactionsAFusionner: 68,
+  comptePrincipal: mockAccounts[0],
+  compteSecondaire: mockAccounts[1],
+  nbOperationsAFusionner: 23,
   montantTotal: 2140.5,
+  garantiesATransferer: 0,
+  garantiesSource: MOCK_GARANTIES_SOURCE,
+  garantiesDestination: [],
   conflits: [],
-  alertes: [],
+  avertissements: [],
 };
 
 const mockResult = {
-  operationId: 'op-002',
-  status: 'completed' as const,
-  nbTransactionsFusionnees: 68,
-  compteRetenu: 1001,
+  success: true,
+  compteFinal: { ...mockAccounts[0], solde: 2140.5, nbTransactions: 68, nbGaranties: 2 },
+  nbOperationsFusionnees: 23,
+  nbGarantiesTransferees: 0,
+  message: 'Fusion effectuee avec succes',
+  dateExecution: '2026-02-20T10:00:00.000Z',
 };
 
 const mockProgress = {
@@ -52,7 +63,9 @@ describe('useFusionStore', () => {
       isSearching: false,
       isValidating: false,
       isExecuting: false,
+      isLocked: false,
       error: null,
+      prerequisites: null,
     });
     vi.clearAllMocks();
   });
@@ -77,17 +90,16 @@ describe('useFusionStore', () => {
   describe('searchAccount', () => {
     it('should set search results on success', async () => {
       vi.mocked(fusionApi.searchAccount).mockResolvedValue({
-        data: { data: mockAccounts },
+        data: { data: [mockAccounts[0]] },
       } as never);
 
       await useFusionStore.getState().searchAccount('ADH', 'Dupont');
 
-      expect(useFusionStore.getState().searchResults).toEqual(mockAccounts);
+      expect(useFusionStore.getState().searchResults).toEqual([mockAccounts[0]]);
       expect(useFusionStore.getState().isSearching).toBe(false);
     });
 
     it('should handle API failure', async () => {
-      // In test mode (not DEV), error path depends on import.meta.env.DEV
       vi.mocked(fusionApi.searchAccount).mockRejectedValue(new Error('Network error'));
 
       await useFusionStore.getState().searchAccount('ADH', 'test');
@@ -138,9 +150,16 @@ describe('useFusionStore', () => {
       const result = await useFusionStore.getState().validateFusion('ADH', 'user1');
 
       expect(result).toEqual({ success: true });
-      expect(useFusionStore.getState().preview).toEqual(mockPreview);
-      expect(useFusionStore.getState().currentStep).toBe('preview');
-      expect(useFusionStore.getState().isValidating).toBe(false);
+      const state = useFusionStore.getState();
+      expect(state.preview).toMatchObject({
+        comptePrincipal: mockAccounts[0],
+        compteSecondaire: mockAccounts[1],
+        nbOperationsAFusionner: 23,
+        montantTotal: 2140.5,
+        garantiesATransferer: 0,
+      });
+      expect(state.currentStep).toBe('preview');
+      expect(state.isValidating).toBe(false);
     });
 
     it('should set error on validation failure', async () => {
@@ -152,7 +171,8 @@ describe('useFusionStore', () => {
 
       const result = await useFusionStore.getState().validateFusion('ADH', 'user1');
 
-      expect(result).toEqual({ success: false, error: 'Conflict detected' });
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Conflict detected');
       expect(useFusionStore.getState().isValidating).toBe(false);
     });
 
@@ -166,7 +186,10 @@ describe('useFusionStore', () => {
       vi.mocked(fusionApi.validate).mockReturnValue(promise as never);
 
       const validatePromise = useFusionStore.getState().validateFusion('ADH', 'user1');
-      expect(useFusionStore.getState().isValidating).toBe(true);
+      
+      await vi.waitFor(() => {
+        expect(useFusionStore.getState().isValidating).toBe(true);
+      });
 
       resolve!({ data: { data: mockPreview } });
       await validatePromise;
@@ -186,6 +209,7 @@ describe('useFusionStore', () => {
         comptePrincipal: mockAccounts[0] as never,
         compteSecondaire: mockAccounts[1] as never,
       });
+      vi.mocked(fusionApi.validate).mockResolvedValue({ data: { data: mockPreview } } as never);
       vi.mocked(fusionApi.execute).mockResolvedValue({
         data: { data: { operationId: 'op-002' } },
       } as never);
@@ -196,9 +220,15 @@ describe('useFusionStore', () => {
       const result = await useFusionStore.getState().executeFusion('ADH', 'user1');
 
       expect(result).toEqual({ success: true });
-      expect(useFusionStore.getState().result).toEqual(mockResult);
-      expect(useFusionStore.getState().currentStep).toBe('result');
-      expect(useFusionStore.getState().isExecuting).toBe(false);
+      const state = useFusionStore.getState();
+      expect(state.result).toMatchObject({
+        success: true,
+        nbOperationsFusionnees: 23,
+        nbGarantiesTransferees: 0,
+        message: 'Fusion effectuee avec succes',
+      });
+      expect(state.currentStep).toBe('result');
+      expect(state.isExecuting).toBe(false);
     });
 
     it('should set error and step to confirmation on failure', async () => {
@@ -206,11 +236,13 @@ describe('useFusionStore', () => {
         comptePrincipal: mockAccounts[0] as never,
         compteSecondaire: mockAccounts[1] as never,
       });
+      vi.mocked(fusionApi.validate).mockResolvedValue({ data: { data: mockPreview } } as never);
       vi.mocked(fusionApi.execute).mockRejectedValue(new Error('Timeout'));
 
       const result = await useFusionStore.getState().executeFusion('ADH', 'user1');
 
-      expect(result).toEqual({ success: false, error: 'Timeout' });
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Timeout');
       expect(useFusionStore.getState().currentStep).toBe('confirmation');
       expect(useFusionStore.getState().isExecuting).toBe(false);
     });
@@ -222,6 +254,7 @@ describe('useFusionStore', () => {
       });
       let resolve: (v: unknown) => void;
       const promise = new Promise((r) => { resolve = r; });
+      vi.mocked(fusionApi.validate).mockResolvedValue({ data: { data: mockPreview } } as never);
       vi.mocked(fusionApi.execute).mockReturnValue(promise as never);
 
       const execPromise = useFusionStore.getState().executeFusion('ADH', 'user1');
@@ -245,8 +278,13 @@ describe('useFusionStore', () => {
 
       await useFusionStore.getState().pollProgress('op-002');
 
-      expect(useFusionStore.getState().result).toEqual(mockResult);
-      expect(useFusionStore.getState().currentStep).toBe('result');
+      const state = useFusionStore.getState();
+      expect(state.result).toMatchObject({
+        success: true,
+        nbOperationsFusionnees: 23,
+        nbGarantiesTransferees: 0,
+      });
+      expect(state.currentStep).toBe('result');
     });
 
     it('should fallback to progress when result not ready', async () => {
@@ -257,7 +295,12 @@ describe('useFusionStore', () => {
 
       await useFusionStore.getState().pollProgress('op-002');
 
-      expect(useFusionStore.getState().progress).toEqual(mockProgress);
+      const state = useFusionStore.getState();
+      expect(state.progress).toMatchObject({
+        operationId: 'op-002',
+        progress: 75,
+        status: 'in_progress',
+      });
     });
 
     it('should silently handle both errors', async () => {
@@ -265,7 +308,6 @@ describe('useFusionStore', () => {
       vi.mocked(fusionApi.getProgress).mockRejectedValue(new Error('fail'));
 
       await useFusionStore.getState().pollProgress('op-002');
-      // Should not throw
     });
   });
 

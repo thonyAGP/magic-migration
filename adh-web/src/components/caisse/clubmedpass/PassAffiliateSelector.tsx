@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Badge } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { Users, Trash2, Plus } from 'lucide-react';
 import type { Affiliate, LienParente } from '@/types/clubmedpass';
 
@@ -22,6 +22,7 @@ const LIEN_LABELS: Record<LienParente, { label: string; color: string }> = {
 const LIEN_OPTIONS: LienParente[] = ['conjoint', 'enfant', 'parent', 'autre'];
 
 export function PassAffiliateSelector({
+  passId: _passId,
   affiliates,
   onAdd,
   onRemove,

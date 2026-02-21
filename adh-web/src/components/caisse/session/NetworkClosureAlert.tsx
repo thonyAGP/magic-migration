@@ -10,13 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { AlertTriangle, Clock, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const NETWORK_CLOSURE_STATUS = {
-  pending: 'pending',
-  completed: 'completed',
-  error: 'error',
-} as const;
-
-type NetworkClosureStatus = (typeof NETWORK_CLOSURE_STATUS)[keyof typeof NETWORK_CLOSURE_STATUS];
+type NetworkClosureStatus = 'pending' | 'completed' | 'error';
 
 interface NetworkClosureAlertProps {
   open: boolean;

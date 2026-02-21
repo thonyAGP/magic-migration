@@ -98,7 +98,7 @@ export function TransactionForm({
   const [showAnnulationDialog, setShowAnnulationDialog] = useState(false);
   const [annulationRef, setAnnulationRef] = useState<string | null>(null);
   const [showGiftPassConfirm, setShowGiftPassConfirm] = useState(false);
-  const [giftPassAction, setGiftPassAction] = useState<GiftPassAction | null>(null);
+  const [_giftPassAction, setGiftPassAction] = useState<GiftPassAction | null>(null);
 
   const {
     catalogMOP,
