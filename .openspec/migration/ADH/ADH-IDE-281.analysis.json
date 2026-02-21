@@ -1,0 +1,226 @@
+{
+  "domain": "fermetureSessions",
+  "domainPascal": "FermetureSessions",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "Session",
+      "fields": [
+        {
+          "name": "id",
+          "type": "number",
+          "source": "internal.sessionId",
+          "nullable": false
+        },
+        {
+          "name": "dateOuverture",
+          "type": "Date",
+          "source": "initialisation___ini.date_ouverture",
+          "nullable": false
+        },
+        {
+          "name": "dateFermeture",
+          "type": "Date",
+          "source": "initialisation___ini.date_fermeture",
+          "nullable": true
+        },
+        {
+          "name": "statut",
+          "type": "string",
+          "source": "initialisation___ini.statut",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "UnilateralBilateral",
+      "fields": [
+        {
+          "name": "code",
+          "type": "string",
+          "source": "unilateral_bilateral.code",
+          "nullable": false
+        },
+        {
+          "name": "libelle",
+          "type": "string",
+          "source": "unilateral_bilateral.libelle",
+          "nullable": false
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "source": "unilateral_bilateral.type",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "sessions",
+      "type": "Session[]",
+      "default": "[]"
+    },
+    {
+      "name": "currentSession",
+      "type": "Session | null",
+      "default": "null"
+    },
+    {
+      "name": "unilateralBilateralTypes",
+      "type": "UnilateralBilateral[]",
+      "default": "[]"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "isClosing",
+      "type": "boolean",
+      "default": "false"
+    }
+  ],
+  "actions": [
+    {
+      "name": "loadSessions",
+      "params": [],
+      "businessRules": [
+        "Retrieve all sessions from initialisation___ini table",
+        "Filter sessions with status 'O' (open)"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "loadUnilateralBilateralTypes",
+      "params": [],
+      "businessRules": [
+        "Load unilateral/bilateral type reference data",
+        "Used for session closure validation"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "fermerSession",
+      "params": [
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "Apply rule RM-001: Generate code format 'N15'&IF([D]>0,'.'&Trim(Str([D],'1')),'')&'CZ'",
+        "Set session status to 'C' (closed)",
+        "Record closure timestamp",
+        "Validate session closure eligibility"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "generateClosureCode",
+      "params": [
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "Implement RM-001: Format code as 'N15' + optional decimal part + 'CZ'",
+        "If [D] > 0, append '.' and trimmed string representation of [D]",
+        "Concatenate with 'CZ' suffix"
+      ],
+      "returns": "string"
+    },
+    {
+      "name": "validateSessionClosure",
+      "params": [
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "Check session exists and is open (status = 'O')",
+        "Verify no pending operations",
+        "Ensure all required closure data is present"
+      ],
+      "returns": "Promise<boolean>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/fermeture-sessions/sessions",
+      "queryParams": [
+        "statut?"
+      ],
+      "response": "Session[]"
+    },
+    {
+      "method": "GET",
+      "path": "/api/fermeture-sessions/types",
+      "queryParams": [],
+      "response": "UnilateralBilateral[]"
+    },
+    {
+      "method": "POST",
+      "path": "/api/fermeture-sessions/close/{sessionId}",
+      "queryParams": [],
+      "response": "{ success: boolean, closureCode: string }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/fermeture-sessions/validate/{sessionId}",
+      "queryParams": [],
+      "response": "{ valid: boolean, errors: string[] }"
+    }
+  ],
+  "uiLayout": {
+    "type": "batch-process",
+    "sections": [
+      {
+        "name": "SessionList",
+        "controls": [
+          "DataGrid with open sessions",
+          "Session selection checkbox",
+          "Closure button",
+          "Status indicator"
+        ]
+      },
+      {
+        "name": "ClosureConfirmation",
+        "controls": [
+          "Confirmation dialog",
+          "Generated closure code display",
+          "Validation messages",
+          "Confirm/Cancel buttons"
+        ]
+      },
+      {
+        "name": "ClosureResults",
+        "controls": [
+          "Success/error message",
+          "Closure details summary",
+          "Print closure report button"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 5,
+    "description": "5 open sessions with varying dates and IDs, 3 unilateral/bilateral types (codes: 'UNI', 'BIL', 'MIX'), closure codes following RM-001 format pattern"
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionOuvertureStore"
+    ],
+    "sharedTypes": [
+      "Session",
+      "UnilateralBilateral"
+    ],
+    "externalApis": [
+      "/api/fermeture-sessions/sessions",
+      "/api/fermeture-sessions/types",
+      "/api/fermeture-sessions/close/{sessionId}",
+      "/api/fermeture-sessions/validate/{sessionId}"
+    ]
+  }
+}

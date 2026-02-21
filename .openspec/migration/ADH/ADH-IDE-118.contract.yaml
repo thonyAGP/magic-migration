@@ -1,0 +1,55 @@
+program:
+  id: 118
+  name: Sessions ouvertes WS
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 1
+  tables_count: 0
+  expressions_count: 5
+rules:
+  - id: RM-001
+    description: "Condition: [C] egale 0"
+    condition: "[C]=0"
+    variables:
+      - EN
+    status: IMPL
+    target_file: adh-web/src/stores/saisieContenuCaisseStore.ts
+    gap_notes: ""
+  - id: RM-002
+    description: "Condition composite: Param existe session [A] AND Param existe session o... [B]"
+    condition: Param existe session [A] AND Param existe session o... [B]
+    variables:
+      - EN
+    status: IMPL
+    target_file: adh-web/src/services/printer/generators/ouvertureTicketGenerator.ts
+    gap_notes: ""
+variables:
+  - local_id: EN
+    name: Param existe session
+    type: Real
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+tables:
+  - id: 246
+    name: histo_sessions_caisse
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+callees: []
+overall:
+  rules_total: 2
+  rules_impl: 2
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 1
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 50
+  status: contracted
+  generated: 2026-02-21T00:04:16.874Z
+  notes: Auto-generated from ADH-IDE-118.md

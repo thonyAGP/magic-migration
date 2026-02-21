@@ -1,0 +1,211 @@
+{
+  "domain": "sessionConcurrency",
+  "domainPascal": "SessionConcurrency",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "SessionConcurrency",
+      "fields": [
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "concurrence_sessions.societe",
+          "nullable": false
+        },
+        {
+          "name": "compte",
+          "type": "number",
+          "source": "concurrence_sessions.compte",
+          "nullable": false
+        },
+        {
+          "name": "filiation",
+          "type": "number",
+          "source": "concurrence_sessions.filiation",
+          "nullable": false
+        },
+        {
+          "name": "terminalId",
+          "type": "string",
+          "source": "concurrence_sessions.terminal_id",
+          "nullable": false
+        },
+        {
+          "name": "timestamp",
+          "type": "Date",
+          "source": "concurrence_sessions.timestamp",
+          "nullable": false
+        },
+        {
+          "name": "codeCalcul",
+          "type": "string",
+          "source": "concurrence_sessions.code_calcul",
+          "nullable": true
+        },
+        {
+          "name": "coffreEnCoursComptage",
+          "type": "boolean",
+          "source": "concurrence_sessions.coffre_comptage",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "activeSessions",
+      "type": "SessionConcurrency[]",
+      "default": "[]"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "conflictDetected",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "conflictingSession",
+      "type": "SessionConcurrency | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "checkConcurrency",
+      "params": [
+        "societe: string",
+        "compte: number",
+        "filiation: number"
+      ],
+      "businessRules": [
+        "RM-001: Si code calcul = 'C', traiter mode Creation",
+        "RM-002: Si code calcul = 'D', traiter mode Destruction",
+        "RM-003: Vérifier que coffre n'est pas en cours comptage",
+        "RM-004: Vérifier condition VG78 (système)"
+      ],
+      "returns": "Promise<{ allowed: boolean; conflictingSession?: SessionConcurrency }>"
+    },
+    {
+      "name": "registerSession",
+      "params": [
+        "societe: string",
+        "compte: number",
+        "filiation: number",
+        "terminalId: string",
+        "codeCalcul: 'C' | 'D'"
+      ],
+      "businessRules": [
+        "Enregistrer nouvelle session active avec timestamp",
+        "Mettre à jour code_calcul et terminal_id"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "releaseSession",
+      "params": [
+        "societe: string",
+        "compte: number",
+        "filiation: number",
+        "terminalId: string"
+      ],
+      "businessRules": [
+        "Supprimer session active lors de fermeture propre",
+        "Nettoyer enregistrements orphelins"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "forceOpenSession",
+      "params": [
+        "societe: string",
+        "compte: number",
+        "filiation: number",
+        "terminalId: string",
+        "reason: string"
+      ],
+      "businessRules": [
+        "Permettre ouverture forcée après validation opérateur",
+        "Logger le bypass pour traçabilité"
+      ],
+      "returns": "Promise<void>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/sessions/check-concurrency",
+      "queryParams": [
+        "societe",
+        "compte",
+        "filiation"
+      ],
+      "response": "{ allowed: boolean; conflictingSession?: SessionConcurrency }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/sessions/register",
+      "queryParams": [],
+      "response": "{ success: boolean }"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/sessions/release",
+      "queryParams": [
+        "societe",
+        "compte",
+        "filiation",
+        "terminalId"
+      ],
+      "response": "{ success: boolean }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/sessions/force-open",
+      "queryParams": [],
+      "response": "{ success: boolean }"
+    }
+  ],
+  "uiLayout": {
+    "type": "modal-dialog",
+    "sections": [
+      {
+        "name": "conflictWarning",
+        "controls": [
+          "Message d'avertissement",
+          "Détails session conflictuelle (terminal, timestamp)",
+          "Bouton Annuler",
+          "Bouton Forcer Ouverture"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "3 sessions actives : 1 normale (terminal T01), 1 en comptage coffre (terminal T02), 1 session zombie >2h (terminal T03). Permet de tester détection conflits, mode force, et cleanup automatique."
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore",
+      "useAuthStore"
+    ],
+    "sharedTypes": [
+      "SessionConcurrency",
+      "SessionConflictResult"
+    ],
+    "externalApis": [
+      "/api/sessions/check-concurrency",
+      "/api/sessions/register",
+      "/api/sessions/release",
+      "/api/sessions/force-open"
+    ]
+  }
+}

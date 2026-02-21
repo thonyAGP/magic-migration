@@ -1,0 +1,187 @@
+{
+  "domain": "sessionList",
+  "domainPascal": "SessionList",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "Session",
+      "fields": [
+        {
+          "name": "id",
+          "type": "number",
+          "source": "histo_sessions_caisse.id",
+          "nullable": false
+        },
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "histo_sessions_caisse.societe",
+          "nullable": false
+        },
+        {
+          "name": "caisse",
+          "type": "string",
+          "source": "histo_sessions_caisse.caisse",
+          "nullable": false
+        },
+        {
+          "name": "operateur",
+          "type": "string",
+          "source": "histo_sessions_caisse.operateur",
+          "nullable": false
+        },
+        {
+          "name": "dateOuverture",
+          "type": "Date",
+          "source": "histo_sessions_caisse.date_ouverture",
+          "nullable": false
+        },
+        {
+          "name": "etat",
+          "type": "string",
+          "source": "histo_sessions_caisse.etat",
+          "nullable": false
+        },
+        {
+          "name": "montantOuverture",
+          "type": "number",
+          "source": "histo_sessions_caisse.montant_ouverture",
+          "nullable": true
+        }
+      ]
+    },
+    {
+      "name": "SessionFilter",
+      "fields": [
+        {
+          "name": "existeSession",
+          "type": "boolean",
+          "source": "parameter",
+          "nullable": false
+        },
+        {
+          "name": "existeSessionOuverte",
+          "type": "boolean",
+          "source": "parameter",
+          "nullable": false
+        },
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "parameter",
+          "nullable": true
+        },
+        {
+          "name": "deviseLocale",
+          "type": "string",
+          "source": "parameter",
+          "nullable": true
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "sessions",
+      "type": "Session[]",
+      "default": "[]"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "filters",
+      "type": "SessionFilter",
+      "default": "{ existeSession: true, existeSessionOuverte: true, societe: null, deviseLocale: null }"
+    }
+  ],
+  "actions": [
+    {
+      "name": "fetchSessions",
+      "params": [
+        "filters: SessionFilter"
+      ],
+      "businessRules": [
+        "RM-003: Filter sessions where existeSession is true",
+        "RM-004: Filter sessions where existeSessionOuverte is true",
+        "RM-001: Check if session state (etat) is empty string",
+        "RM-002: Check if session state (etat) equals 'O' (ouvert)"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "setFilters",
+      "params": [
+        "filters: Partial<SessionFilter>"
+      ],
+      "businessRules": [
+        "Update filter state and trigger data refresh"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "clearError",
+      "params": [],
+      "businessRules": [
+        "Clear error state"
+      ],
+      "returns": "void"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/sessions/list",
+      "queryParams": [
+        "societe?",
+        "existeSession?",
+        "existeSessionOuverte?",
+        "deviseLocale?"
+      ],
+      "response": "Session[]"
+    }
+  ],
+  "uiLayout": {
+    "type": "data-provider",
+    "sections": [
+      {
+        "name": "filterSection",
+        "controls": [
+          "existeSessionCheckbox",
+          "existeSessionOuverteCheckbox",
+          "societeSelect"
+        ]
+      },
+      {
+        "name": "dataSection",
+        "controls": [
+          "sessionsDataGrid"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 5,
+    "description": "5 sessions de caisse avec états variés (ouvertes/fermées), différents opérateurs et montants d'ouverture formatés selon le masque devise locale"
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionListStore",
+      "useAuthStore"
+    ],
+    "sharedTypes": [
+      "Session",
+      "SessionFilter"
+    ],
+    "externalApis": [
+      "GET /api/sessions/list"
+    ]
+  }
+}

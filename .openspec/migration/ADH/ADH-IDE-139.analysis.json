@@ -1,0 +1,211 @@
+{
+  "domain": "approTicket",
+  "domainPascal": "ApproTicket",
+  "complexity": "MEDIUM",
+  "entities": [
+    {
+      "name": "ApproTicketLine",
+      "fields": [
+        {
+          "name": "operation",
+          "type": "string",
+          "source": "hardcoded",
+          "nullable": false
+        },
+        {
+          "name": "devise",
+          "type": "string",
+          "source": "parameter",
+          "nullable": false
+        },
+        {
+          "name": "montant",
+          "type": "number",
+          "source": "parameter",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "ApproTicketData",
+      "fields": [
+        {
+          "name": "village",
+          "type": "string",
+          "source": "parameter",
+          "nullable": false
+        },
+        {
+          "name": "date",
+          "type": "Date",
+          "source": "date_comptable.date_comptable",
+          "nullable": false
+        },
+        {
+          "name": "sessionId",
+          "type": "number",
+          "source": "gestion_article_session.session_num",
+          "nullable": false
+        },
+        {
+          "name": "deviseLocale",
+          "type": "string",
+          "source": "parameter",
+          "nullable": false
+        },
+        {
+          "name": "montantApproProduit",
+          "type": "number",
+          "source": "parameter",
+          "nullable": true
+        },
+        {
+          "name": "lines",
+          "type": "ApproTicketLine[]",
+          "source": "computed",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "PrinterChoice",
+      "fields": [
+        {
+          "name": "type",
+          "type": "string",
+          "source": "user_selection",
+          "nullable": false
+        },
+        {
+          "name": "format",
+          "type": "string",
+          "source": "user_selection",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "ticketData",
+      "type": "ApproTicketData | null",
+      "default": "null"
+    },
+    {
+      "name": "isGenerating",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "printerChoice",
+      "type": "PrinterChoice | null",
+      "default": "null"
+    },
+    {
+      "name": "showPrinterDialog",
+      "type": "boolean",
+      "default": "false"
+    }
+  ],
+  "actions": [
+    {
+      "name": "generateApproTicket",
+      "params": [
+        "village: string",
+        "date: Date",
+        "sessionId: number",
+        "deviseLocale: string",
+        "montantApproProduit?: number"
+      ],
+      "businessRules": [
+        "Must aggregate supply amounts by currency (devise locale hardcoded to EUR)",
+        "Ticket lines include: Apport Coffre, Apport Produits, Remise Coffre",
+        "If montantApproProduit provided, include Apport Produits line"
+      ],
+      "returns": "Promise<ApproTicketData>"
+    },
+    {
+      "name": "selectPrinter",
+      "params": [],
+      "businessRules": [
+        "RM-002: Printer 1 maps to pdf-browser/pdf-download",
+        "RM-003: Printer 9 maps to escpos thermal printer"
+      ],
+      "returns": "Promise<PrinterChoice>"
+    },
+    {
+      "name": "printTicket",
+      "params": [
+        "ticketData: ApproTicketData",
+        "printerChoice: PrinterChoice"
+      ],
+      "businessRules": [
+        "Route to appropriate printer based on choice type",
+        "PDF format for printer 1 (A4)",
+        "ESC/POS format for printer 9 (thermal)"
+      ],
+      "returns": "Promise<void>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/appro-ticket/generate",
+      "queryParams": [],
+      "response": "ApproTicketData"
+    },
+    {
+      "method": "POST",
+      "path": "/api/appro-ticket/print",
+      "queryParams": [
+        "format: 'pdf' | 'escpos'"
+      ],
+      "response": "{ success: boolean; url?: string }"
+    }
+  ],
+  "uiLayout": {
+    "type": "dialog-overlay",
+    "sections": [
+      {
+        "name": "printerSelection",
+        "controls": [
+          "PrinterChoiceDialog (radio buttons for printer 1/9)",
+          "Format selection (pdf-browser/pdf-download/escpos)"
+        ]
+      },
+      {
+        "name": "ticketPreview",
+        "controls": [
+          "Village header",
+          "Date and session number",
+          "Line items table (operation, devise, montant)",
+          "Print button",
+          "Cancel button"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "Three ticket scenarios: (1) Apport Coffre only, (2) Apport Produits with 500 EUR, (3) Full ticket with Apport Coffre + Produits + Remise Coffre. Villages: PHU, OPI, DAH. Dates: recent session dates. Session IDs: 1001, 1002, 1003."
+  },
+  "dependencies": {
+    "stores": [
+      "useCaisseStore",
+      "useSessionStore"
+    ],
+    "sharedTypes": [
+      "DeviseSession",
+      "ApportProduitsData",
+      "PrinterChoice"
+    ],
+    "externalApis": [
+      "PrintService (executePrint)"
+    ]
+  }
+}
