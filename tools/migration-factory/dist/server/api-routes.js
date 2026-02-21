@@ -279,15 +279,22 @@ export const handleMigrateStream = async (ctx, query, res) => {
         onEvent: undefined,
         autoCommit: true,
     };
+    // Build program list with names for dashboard grid
+    const contractDir = path.join(config.migrationDir, config.contractSubDir);
+    const contracts = loadContracts(contractDir);
+    const programList = programIds.map(id => ({
+        id,
+        name: contracts.get(id)?.program.name ?? `IDE-${id}`,
+    }));
     const sse = createSSEStream(res);
     // Buffer events for dashboard reconnection after page refresh
-    startMigration(batchId, programIds.length, targetDir, claudeMode, dryRun);
+    startMigration(batchId, programIds.length, targetDir, claudeMode, dryRun, programList);
     const bufferedSend = (event) => {
         addMigrateEvent(event);
         sse.send(event);
     };
     migrateConfig.onEvent = (event) => bufferedSend(event);
-    bufferedSend({ type: 'migrate_started', batch: batchId, programs: programIds.length, targetDir, dryRun, mode: claudeMode });
+    bufferedSend({ type: 'migrate_started', batch: batchId, programs: programIds.length, targetDir, dryRun, mode: claudeMode, programList });
     try {
         const result = await runMigration(programIds, batchId, batchName, migrateConfig);
         bufferedSend({ type: 'migrate_result', data: result });

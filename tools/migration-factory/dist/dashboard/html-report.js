@@ -472,10 +472,34 @@ ${MULTI_CSS}
     </div>
   </div>
   <div class="migrate-panel-body" id="migrate-panel-body">
-    <div class="progress-bar"><div class="progress-fill" id="mbar"></div></div>
-    <div class="p-status" id="mstatus">Connecting...</div>
-    <div class="p-elapsed" id="melapsed" style="font-size:12px;color:#8b949e;margin:4px 0;"></div>
-    <div class="p-log" id="mlog"></div>
+    <!-- Section 1: Module progress bar -->
+    <div class="mp-section">
+      <div class="mp-bar-row">
+        <div class="mp-bar-track"><div class="mp-bar-fill mp-bar-module" id="mp-module-bar"></div></div>
+        <span class="mp-bar-label" id="mp-module-label">0/0 (0%)</span>
+      </div>
+      <div class="mp-elapsed" id="mp-elapsed"></div>
+    </div>
+    <!-- Section 2: Current program progress bar -->
+    <div class="mp-section" id="mp-prog-section" style="display:none">
+      <div class="mp-prog-title" id="mp-prog-title"></div>
+      <div class="mp-bar-row">
+        <div class="mp-bar-track"><div class="mp-bar-fill mp-bar-prog" id="mp-prog-bar"></div></div>
+        <span class="mp-bar-label" id="mp-prog-label"></span>
+      </div>
+    </div>
+    <!-- Section 3: Program grid -->
+    <div class="mp-grid-section" id="mp-grid-section" style="display:none">
+      <table class="mp-grid">
+        <thead><tr><th>IDE</th><th>Programme</th><th></th><th>Phases</th></tr></thead>
+        <tbody id="mp-grid-body"></tbody>
+      </table>
+    </div>
+    <!-- Section 4: Log (collapsible) -->
+    <div class="mp-log-section">
+      <div class="mp-log-toggle" id="mp-log-toggle"><span class="mp-log-arrow">&#9660;</span> Log</div>
+      <div class="mp-log" id="mp-log"></div>
+    </div>
   </div>
 </div>
 
@@ -1400,26 +1424,42 @@ const MULTI_CSS = `
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: 8px 16px 12px;
+  padding: 0;
   overflow: hidden;
 }
 .migrate-panel.collapsed .migrate-panel-body { display: none; }
-.migrate-panel-body .progress-bar { flex-shrink: 0; }
-.migrate-panel-body .p-status { flex-shrink: 0; }
-.migrate-panel-body .p-elapsed { flex-shrink: 0; }
-.migrate-panel-body .p-log {
-  flex: 1;
-  overflow-y: auto;
-  font-size: 12px;
-  margin-top: 8px;
-  min-height: 0;
-  max-height: calc(50vh - 130px);
-}
-.migrate-panel-body .p-log > div {
-  padding: 2px 0;
-  border-bottom: 1px solid #1e293b;
-  color: #cbd5e1;
-}
+.mp-section { padding: 6px 16px 2px; flex-shrink: 0; }
+.mp-bar-row { display: flex; align-items: center; gap: 8px; }
+.mp-bar-track { flex: 1; height: 14px; background: #1e293b; border-radius: 7px; overflow: hidden; }
+.mp-bar-fill { height: 100%; border-radius: 7px; transition: width 0.4s ease; }
+.mp-bar-module { background: linear-gradient(90deg, #3b82f6, #3fb950); }
+.mp-bar-prog { background: #f59e0b; }
+.mp-bar-label { font-size: 12px; color: #e2e8f0; white-space: nowrap; min-width: 90px; }
+.mp-elapsed { font-size: 11px; color: #8b949e; margin-top: 2px; }
+.mp-prog-title { font-size: 12px; color: #e2e8f0; margin-bottom: 3px; font-weight: 600; }
+.mp-grid-section { padding: 4px 16px; max-height: 200px; overflow-y: auto; flex-shrink: 0; }
+.mp-grid { width: 100%; border-collapse: collapse; font-size: 12px; }
+.mp-grid th { text-align: left; color: #8b949e; font-weight: 500; padding: 2px 6px; border-bottom: 1px solid #334155; font-size: 11px; }
+.mp-grid td { padding: 3px 6px; color: #cbd5e1; border-bottom: 1px solid #1e293b; }
+.mp-grid td:first-child { color: #8b949e; font-variant-numeric: tabular-nums; }
+.mp-grid td:nth-child(2) { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mp-grid td:nth-child(3) { text-align: center; width: 24px; }
+.mp-row-active { background: rgba(59,130,246,0.1); }
+.mp-row-done td { opacity: 0.6; }
+.mp-dots { display: flex; gap: 2px; }
+.mp-dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; flex-shrink: 0; }
+.mp-dot.done { background: #3fb950; }
+.mp-dot.active { background: #f59e0b; animation: mp-pulse 1s ease-in-out infinite; }
+.mp-dot.failed { background: #f85149; }
+@keyframes mp-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.mp-log-section { padding: 0 16px 8px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.mp-log-toggle { font-size: 12px; color: #8b949e; cursor: pointer; padding: 4px 0; user-select: none; }
+.mp-log-toggle:hover { color: #e2e8f0; }
+.mp-log-arrow { display: inline-block; transition: transform 0.2s; }
+.mp-log-section.collapsed .mp-log-arrow { transform: rotate(-90deg); }
+.mp-log { flex: 1; overflow-y: auto; font-size: 11px; min-height: 0; max-height: calc(50vh - 280px); }
+.mp-log-section.collapsed .mp-log { display: none; }
+.mp-log > div { padding: 1px 0; border-bottom: 1px solid #1e293b; color: #94a3b8; }
 
 /* Confirmation Modal */
 .modal-backdrop {
@@ -1900,12 +1940,28 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   var migratePanelToggle = document.getElementById('migrate-panel-toggle');
   var migrateBadge = document.getElementById('migrate-panel-badge');
 
+  // ─── Migration state ──────────────────────────────────────────
+  var ALL_PHASES = ['spec','contract','analyze','types','store','api','page','components',
+    'tests-unit','tests-ui','verify-tsc','fix-tsc','verify-tests','fix-tests','integrate','review'];
+
+  var migrateState = {
+    totalProgs: 0, doneProgs: 0,
+    programList: [],
+    programPhases: {},
+    migrationStart: 0, elapsedTid: 0, logCollapsed: false
+  };
+
+  function escAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
   function showMigrateOverlay(title) {
     migrateOverlayTitle.textContent = title;
-    document.getElementById('mbar').style.width = '0%';
-    document.getElementById('mstatus').textContent = 'Connecting...';
-    document.getElementById('melapsed').textContent = '';
-    document.getElementById('mlog').innerHTML = '';
+    document.getElementById('mp-module-bar').style.width = '0%';
+    document.getElementById('mp-module-label').textContent = '0/0 (0%)';
+    document.getElementById('mp-elapsed').textContent = '';
+    document.getElementById('mp-prog-section').style.display = 'none';
+    document.getElementById('mp-grid-section').style.display = 'none';
+    document.getElementById('mp-grid-body').innerHTML = '';
+    document.getElementById('mp-log').innerHTML = '';
     migrateOverlay.classList.remove('collapsed');
     migrateOverlay.classList.add('visible');
     migrateMinimize.textContent = '_';
@@ -1926,11 +1982,19 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   migrateMinimize.addEventListener('click', function(e) { e.stopPropagation(); toggleMigratePanel(); });
   migratePanelToggle.addEventListener('dblclick', toggleMigratePanel);
 
+  // Log toggle
+  var mpLogToggle = document.getElementById('mp-log-toggle');
+  mpLogToggle.addEventListener('click', function() {
+    var section = document.querySelector('.mp-log-section');
+    section.classList.toggle('collapsed');
+    migrateState.logCollapsed = section.classList.contains('collapsed');
+  });
+
   function startElapsedTimer(startedAt) {
-    var elDiv = document.getElementById('melapsed');
+    var elDiv = document.getElementById('mp-elapsed');
     if (!elDiv) return 0;
     var tid = setInterval(function() {
-      var el = document.getElementById('melapsed');
+      var el = document.getElementById('mp-elapsed');
       if (!el) { clearInterval(tid); return; }
       el.textContent = 'Elapsed: ' + formatElapsed(Date.now() - startedAt);
     }, 1000);
@@ -1939,7 +2003,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   }
 
   function addMLog(text) {
-    var mlog = document.getElementById('mlog');
+    var mlog = document.getElementById('mp-log');
     if (!mlog) return;
     var line = document.createElement('div');
     line.textContent = text;
@@ -1947,14 +2011,211 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     mlog.scrollTop = mlog.scrollHeight;
   }
 
-  function updateMigrateProgress(done, total) {
-    var mbar = document.getElementById('mbar');
-    var mstatus = document.getElementById('mstatus');
-    if (!mbar || !mstatus) return;
+  // ─── Grid construction ────────────────────────────────────────
+  function buildProgramGrid(list) {
+    var tbody = document.getElementById('mp-grid-body');
+    tbody.innerHTML = '';
+    migrateState.programPhases = {};
+    for (var i = 0; i < list.length; i++) {
+      var p = list[i];
+      migrateState.programPhases[p.id] = { status: 'pending', currentPhase: null, completedPhases: {} };
+      var tr = document.createElement('tr');
+      tr.id = 'mp-row-' + p.id;
+      var dotsHtml = '';
+      for (var j = 0; j < ALL_PHASES.length; j++) {
+        dotsHtml += '<span class="mp-dot" data-prog="' + escAttr(p.id) + '" data-phase="' + ALL_PHASES[j] + '" title="' + ALL_PHASES[j] + '"></span>';
+      }
+      tr.innerHTML = '<td>' + escAttr(p.id) + '</td>'
+        + '<td title="' + escAttr(p.name) + '">' + escAttr(p.name) + '</td>'
+        + '<td class="mp-icon" id="mp-icon-' + escAttr(p.id) + '">&#9203;</td>'
+        + '<td><div class="mp-dots">' + dotsHtml + '</div></td>';
+      tbody.appendChild(tr);
+    }
+    document.getElementById('mp-grid-section').style.display = '';
+  }
+
+  function updateProgramIcon(id, status) {
+    var el = document.getElementById('mp-icon-' + id);
+    if (!el) return;
+    var row = document.getElementById('mp-row-' + id);
+    if (status === 'running') { el.innerHTML = '&#9654;'; if (row) { row.classList.add('mp-row-active'); row.classList.remove('mp-row-done'); } }
+    else if (status === 'done') { el.innerHTML = '&#10003;'; if (row) { row.classList.remove('mp-row-active'); row.classList.add('mp-row-done'); } }
+    else if (status === 'failed') { el.innerHTML = '&#10007;'; if (row) { row.classList.remove('mp-row-active'); row.classList.add('mp-row-done'); } }
+    else { el.innerHTML = '&#9203;'; }
+  }
+
+  function updatePhaseDot(progId, phase, state) {
+    var dots = document.querySelectorAll('.mp-dot[data-prog="' + progId + '"][data-phase="' + phase + '"]');
+    for (var i = 0; i < dots.length; i++) {
+      dots[i].className = 'mp-dot' + (state === 'done' ? ' done' : state === 'active' ? ' active' : state === 'failed' ? ' failed' : '');
+    }
+  }
+
+  function updateModuleProgress(done, total) {
+    var bar = document.getElementById('mp-module-bar');
+    var label = document.getElementById('mp-module-label');
+    if (!bar || !label) return;
     var pct = total > 0 ? Math.round((done / total) * 100) : 0;
-    mbar.style.width = pct + '%';
-    mstatus.textContent = done + '/' + total + ' (' + pct + '%)';
+    bar.style.width = pct + '%';
+    label.textContent = done + '/' + total + ' programmes (' + pct + '%)';
     if (migrateBadge) { migrateBadge.textContent = done + '/' + total; migrateBadge.style.display = ''; }
+  }
+
+  function updateProgramProgress(progId, phase) {
+    var section = document.getElementById('mp-prog-section');
+    var titleEl = document.getElementById('mp-prog-title');
+    var bar = document.getElementById('mp-prog-bar');
+    var label = document.getElementById('mp-prog-label');
+    if (!section || !titleEl || !bar || !label) return;
+
+    if (!progId) { section.style.display = 'none'; return; }
+    section.style.display = '';
+
+    var ps = migrateState.programPhases[progId];
+    var progName = '';
+    for (var i = 0; i < migrateState.programList.length; i++) {
+      if (String(migrateState.programList[i].id) === String(progId)) { progName = migrateState.programList[i].name; break; }
+    }
+
+    var phaseIdx = phase ? ALL_PHASES.indexOf(phase) : -1;
+    var doneCount = ps ? Object.keys(ps.completedPhases).length : 0;
+    var total = ALL_PHASES.length;
+
+    titleEl.textContent = 'IDE ' + progId + ' ' + progName + (phase ? ' (' + (phaseIdx + 1) + '/' + total + ' - ' + phase + ')' : '');
+    var pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+    bar.style.width = pct + '%';
+    label.textContent = doneCount + '/' + total;
+  }
+
+  // ─── Central event dispatch ───────────────────────────────────
+  function processMigrateEvent(msg) {
+    if (msg.type === 'migrate_started') {
+      migrateState.totalProgs = msg.programs || 0;
+      migrateState.doneProgs = 0;
+      if (msg.programList && msg.programList.length) {
+        migrateState.programList = msg.programList;
+        buildProgramGrid(msg.programList);
+      }
+      updateModuleProgress(0, migrateState.totalProgs);
+      addMLog('Migration started: ' + migrateState.totalProgs + ' programs');
+      return;
+    }
+
+    if (msg.type === 'program_started') {
+      var pid = msg.programId;
+      if (migrateState.programPhases[pid]) {
+        migrateState.programPhases[pid].status = 'running';
+        migrateState.programPhases[pid].currentPhase = null;
+      }
+      updateProgramIcon(pid, 'running');
+      updateProgramProgress(pid, null);
+      addMLog('[start] IDE ' + pid);
+      return;
+    }
+
+    if (msg.type === 'phase_started') {
+      var pid = msg.programId;
+      var phase = msg.phase;
+      if (migrateState.programPhases[pid]) {
+        var prev = migrateState.programPhases[pid].currentPhase;
+        if (prev && prev !== phase) {
+          migrateState.programPhases[pid].completedPhases[prev] = true;
+          updatePhaseDot(pid, prev, 'done');
+        }
+        migrateState.programPhases[pid].currentPhase = phase;
+      }
+      if (phase) updatePhaseDot(pid, phase, 'active');
+      updateProgramProgress(pid, phase);
+      addMLog('[' + (phase || '') + '] ' + (msg.message || ''));
+      return;
+    }
+
+    if (msg.type === 'phase_completed') {
+      var pid = msg.programId;
+      var phase = msg.phase;
+      if (migrateState.programPhases[pid] && phase) {
+        migrateState.programPhases[pid].completedPhases[phase] = true;
+        if (migrateState.programPhases[pid].currentPhase === phase) {
+          migrateState.programPhases[pid].currentPhase = null;
+        }
+      }
+      if (phase) updatePhaseDot(pid, phase, 'done');
+      updateProgramProgress(pid, null);
+      addMLog('[' + (phase || '') + '] ' + (msg.message || ''));
+      return;
+    }
+
+    if (msg.type === 'phase_failed') {
+      var pid = msg.programId;
+      var phase = msg.phase;
+      if (phase) updatePhaseDot(pid, phase, 'failed');
+      addMLog('[' + (phase || '') + '] FAIL: ' + (msg.message || ''));
+      return;
+    }
+
+    if (msg.type === 'program_completed') {
+      var pid = msg.programId;
+      if (migrateState.programPhases[pid]) {
+        // Mark all remaining phases as done (program finished all 10 gen phases)
+        var cur = migrateState.programPhases[pid].currentPhase;
+        if (cur) { migrateState.programPhases[pid].completedPhases[cur] = true; updatePhaseDot(pid, cur, 'done'); }
+        migrateState.programPhases[pid].status = 'done';
+        migrateState.programPhases[pid].currentPhase = null;
+      }
+      updateProgramIcon(pid, 'done');
+      migrateState.doneProgs++;
+      updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
+      updateProgramProgress(null, null);
+      addMLog('[done] IDE ' + pid + ': ' + (msg.message || ''));
+      return;
+    }
+
+    if (msg.type === 'program_failed') {
+      var pid = msg.programId;
+      if (migrateState.programPhases[pid]) {
+        var cur = migrateState.programPhases[pid].currentPhase;
+        if (cur) updatePhaseDot(pid, cur, 'failed');
+        migrateState.programPhases[pid].status = 'failed';
+      }
+      updateProgramIcon(pid, 'failed');
+      migrateState.doneProgs++;
+      updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
+      updateProgramProgress(null, null);
+      addMLog('[FAIL] IDE ' + pid + ': ' + (msg.message || ''));
+      return;
+    }
+
+    if (msg.type === 'migrate_result') {
+      var r = msg.data;
+      clearInterval(migrateState.elapsedTid);
+      var bar = document.getElementById('mp-module-bar');
+      if (bar) bar.style.width = '100%';
+      var label = document.getElementById('mp-module-label');
+      if (label && r && r.summary) {
+        label.textContent = 'Done: ' + r.summary.completed + '/' + r.summary.total
+          + ' completed, ' + r.summary.totalFiles + ' files'
+          + (r.summary.tscClean ? ', TSC clean' : ', TSC errors')
+          + (r.summary.testsPass ? ', tests pass' : ', tests fail')
+          + ', coverage ' + r.summary.reviewAvgCoverage + '%';
+      }
+      var elapsed = document.getElementById('mp-elapsed');
+      if (elapsed) elapsed.textContent = 'Total: ' + formatElapsed(Date.now() - migrateState.migrationStart);
+      if (migrateBadge) { migrateBadge.textContent = 'Done'; migrateBadge.style.background = 'var(--green)'; }
+      document.getElementById('mp-prog-section').style.display = 'none';
+      addMLog('Migration completed');
+      if (r && r.git) addMLog('[git] Committed ' + r.git.commitSha + ' pushed to ' + r.git.branch);
+      return;
+    }
+
+    if (msg.type === 'stream_end') return;
+
+    if (msg.type === 'error') {
+      addMLog('ERROR: ' + (msg.message || ''));
+      return;
+    }
+
+    // Default: log anything else
+    addMLog('[' + (msg.phase || msg.type || '') + '] ' + (msg.message || msg.type || ''));
   }
 
   // ─── Confirmation modal ──────────────────────────────────────
@@ -1976,70 +2237,32 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       + '&mode=' + claudeMode;
 
     showMigrateOverlay('Migrate: ' + batch + ' [' + claudeMode.toUpperCase() + ']' + (dryRun ? ' (DRY-RUN)' : ''));
-    var migrationStart = Date.now();
-    var elapsedTid = startElapsedTimer(migrationStart);
-    var totalProgs = 0;
-    var doneProgs = 0;
+    migrateState.migrationStart = Date.now();
+    migrateState.elapsedTid = startElapsedTimer(migrateState.migrationStart);
+    migrateState.totalProgs = 0;
+    migrateState.doneProgs = 0;
+    migrateState.programList = [];
+    migrateState.programPhases = {};
 
     var es = new EventSource(url);
     es.onmessage = function(ev) {
       var msg = JSON.parse(ev.data);
 
-      if (msg.type === 'migrate_started') {
-        totalProgs = msg.programs;
-        document.getElementById('mstatus').textContent = 'Starting migration: ' + totalProgs + ' programs -> ' + msg.targetDir;
-        addMLog('Migration started: ' + totalProgs + ' programs');
-        return;
-      }
-
       if (msg.type === 'stream_end') {
         es.close();
-        clearInterval(elapsedTid);
+        clearInterval(migrateState.elapsedTid);
         setLoading(btnMigrate, false);
         return;
       }
 
-      if (msg.type === 'migrate_result') {
-        var r = msg.data;
-        clearInterval(elapsedTid);
-        var mbar = document.getElementById('mbar');
-        var mstatus = document.getElementById('mstatus');
-        if (mbar) mbar.style.width = '100%';
-        if (mstatus) mstatus.textContent = 'Done: ' + r.summary.completed + '/' + r.summary.total
-          + ' completed, ' + r.summary.totalFiles + ' files, '
-          + (r.summary.tscClean ? 'TSC clean' : 'TSC errors') + ', '
-          + (r.summary.testsPass ? 'tests pass' : 'tests fail')
-          + ', coverage ' + r.summary.reviewAvgCoverage + '%';
-        var melapsed = document.getElementById('melapsed');
-        if (melapsed) melapsed.textContent = 'Total: ' + formatElapsed(Date.now() - migrationStart);
-        if (migrateBadge) { migrateBadge.textContent = 'Done'; migrateBadge.style.background = 'var(--green)'; }
-        addMLog('Migration completed');
-        if (r.git) addMLog('[git] Committed ' + r.git.commitSha + ' pushed to ' + r.git.branch);
-        return;
-      }
-
-      if (msg.type === 'error') {
-        addMLog('ERROR: ' + (msg.message || ''));
-        var mstatus = document.getElementById('mstatus');
-        if (mstatus) mstatus.textContent = 'Error: ' + (msg.message || '');
-        return;
-      }
-
-      if (msg.type === 'program_completed' || msg.type === 'program_failed') {
-        doneProgs++;
-        updateMigrateProgress(doneProgs, totalProgs);
-      }
-
-      addMLog('[' + (msg.phase || '') + '] ' + (msg.message || msg.type));
+      processMigrateEvent(msg);
     };
 
     es.onerror = function() {
       es.close();
-      clearInterval(elapsedTid);
+      clearInterval(migrateState.elapsedTid);
       setLoading(btnMigrate, false);
       addMLog('Connection lost');
-      var mstatus = document.getElementById('mstatus');
-      if (mstatus) mstatus.textContent = 'Connection lost - check server';
     };
   }
 
@@ -2089,45 +2312,52 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     showMigrateOverlay('Migrate: ' + state.batch + ' [' + state.mode.toUpperCase() + ']' + (state.dryRun ? ' (DRY-RUN)' : ''));
     setLoading(btnMigrate, !isDone);
 
-    // Replay buffered events
+    // Set programList first so grid builds during replay
+    if (state.programList && state.programList.length) {
+      migrateState.programList = state.programList;
+    }
+    migrateState.migrationStart = state.startedAt;
+    migrateState.totalProgs = state.totalPrograms;
+    migrateState.doneProgs = 0;
+
+    // Replay buffered events through central dispatch
     state.events.forEach(function(msg) {
-      addMLog('[' + (msg.phase || msg.type || '') + '] ' + (msg.message || msg.type || ''));
+      processMigrateEvent(msg);
     });
 
-    updateMigrateProgress(state.completedPrograms, state.totalPrograms);
+    // Sync done count from server state
+    migrateState.doneProgs = state.completedPrograms;
+    updateModuleProgress(state.completedPrograms, state.totalPrograms);
 
     if (isDone) {
-      var melapsed = document.getElementById('melapsed');
-      if (melapsed) melapsed.textContent = 'Completed';
+      var elapsed = document.getElementById('mp-elapsed');
+      if (elapsed) elapsed.textContent = 'Completed';
+      if (migrateBadge) { migrateBadge.textContent = 'Done'; migrateBadge.style.background = 'var(--green)'; }
       return;
     }
 
     // Live elapsed timer
-    var elapsedTid = startElapsedTimer(state.startedAt);
+    migrateState.elapsedTid = startElapsedTimer(state.startedAt);
     var lastEventCount = state.events.length;
 
     // Poll for updates every 3s
     var pollTid = setInterval(function() {
       fetch('/api/migrate/active').then(function(r) { return r.json(); }).then(function(s) {
-        // Append new events
+        // Process new events only
         for (var i = lastEventCount; i < s.events.length; i++) {
-          var evt = s.events[i];
-          addMLog('[' + (evt.phase || evt.type || '') + '] ' + (evt.message || evt.type || ''));
+          processMigrateEvent(s.events[i]);
         }
         lastEventCount = s.events.length;
 
-        updateMigrateProgress(s.completedPrograms, s.totalPrograms);
-
         if (!s.running) {
           clearInterval(pollTid);
-          clearInterval(elapsedTid);
+          clearInterval(migrateState.elapsedTid);
           setLoading(btnMigrate, false);
-          var melapsed = document.getElementById('melapsed');
-          if (melapsed) melapsed.textContent = 'Total: ' + formatElapsed(Date.now() - s.startedAt);
-          var mstatus = document.getElementById('mstatus');
-          if (mstatus) mstatus.textContent = 'Migration completed - ' + s.completedPrograms + '/' + s.totalPrograms;
-          var mbar = document.getElementById('mbar');
-          if (mbar) mbar.style.width = '100%';
+          var elapsed = document.getElementById('mp-elapsed');
+          if (elapsed) elapsed.textContent = 'Total: ' + formatElapsed(Date.now() - s.startedAt);
+          var bar = document.getElementById('mp-module-bar');
+          if (bar) bar.style.width = '100%';
+          if (migrateBadge) { migrateBadge.textContent = 'Done'; migrateBadge.style.background = 'var(--green)'; }
         }
       });
     }, 3000);

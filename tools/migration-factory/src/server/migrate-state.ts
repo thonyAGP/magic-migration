@@ -13,6 +13,7 @@ export interface MigrateActiveState {
   targetDir: string;
   mode: string;
   dryRun: boolean;
+  programList: Array<{ id: string | number; name: string }>;
   events: unknown[];
 }
 
@@ -27,12 +28,13 @@ let state: MigrateActiveState = {
   targetDir: '',
   mode: '',
   dryRun: false,
+  programList: [],
   events: [],
 };
 
-export const getMigrateActiveState = (): MigrateActiveState => ({ ...state, events: [...state.events] });
+export const getMigrateActiveState = (): MigrateActiveState => ({ ...state, programList: [...state.programList], events: [...state.events] });
 
-export const startMigration = (batch: string, totalPrograms: number, targetDir: string, mode: string, dryRun: boolean): void => {
+export const startMigration = (batch: string, totalPrograms: number, targetDir: string, mode: string, dryRun: boolean, programList: Array<{ id: string | number; name: string }> = []): void => {
   state = {
     running: true,
     batch,
@@ -42,6 +44,7 @@ export const startMigration = (batch: string, totalPrograms: number, targetDir: 
     targetDir,
     mode,
     dryRun,
+    programList,
     events: [],
   };
 };

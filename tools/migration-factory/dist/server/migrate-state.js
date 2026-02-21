@@ -13,10 +13,11 @@ let state = {
     targetDir: '',
     mode: '',
     dryRun: false,
+    programList: [],
     events: [],
 };
-export const getMigrateActiveState = () => ({ ...state, events: [...state.events] });
-export const startMigration = (batch, totalPrograms, targetDir, mode, dryRun) => {
+export const getMigrateActiveState = () => ({ ...state, programList: [...state.programList], events: [...state.events] });
+export const startMigration = (batch, totalPrograms, targetDir, mode, dryRun, programList = []) => {
     state = {
         running: true,
         batch,
@@ -26,6 +27,7 @@ export const startMigration = (batch, totalPrograms, targetDir, mode, dryRun) =>
         targetDir,
         mode,
         dryRun,
+        programList,
         events: [],
     };
 };
