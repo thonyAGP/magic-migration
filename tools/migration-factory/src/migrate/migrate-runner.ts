@@ -19,7 +19,8 @@ import {
 } from './migrate-tracker.js';
 import { setClaudeLogDir } from './migrate-claude.js';
 import { readTracker, writeTracker } from '../core/tracker.js';
-import { loadContracts } from '../core/contract.js';
+import { loadContracts, parseContract, writeContract } from '../core/contract.js';
+import { PipelineStatus } from '../core/types.js';
 import { runSpecPhase } from './phases/phase-spec.js';
 import { runContractPhase } from './phases/phase-contract.js';
 import { runAnalyzePhase } from './phases/phase-analyze.js';
@@ -186,6 +187,19 @@ export const runMigration = async (
     } catch {
       // Non-critical: tracker update failure shouldn't break the result
     }
+  }
+
+  // Auto-verify: promote enriched contracts → verified
+  if (!config.dryRun && summary.completed > 0) {
+    try {
+      const { verifyContracts } = await import('../server/verify-contracts.js');
+      const contractDir = path.join(config.migrationDir, config.contractSubDir);
+      const programIds = programResults.filter(r => r.status === 'completed').map(r => String(r.programId));
+      const verifyResult = verifyContracts(contractDir, { programs: programIds.join(',') });
+      if (verifyResult.verified > 0) {
+        emit(config, ET.PHASE_COMPLETED, `Auto-verify: ${verifyResult.verified} contracts promoted to verified`);
+      }
+    } catch { /* non-critical */ }
   }
 
   // Auto git commit + push if enabled
@@ -380,6 +394,21 @@ const runProgramGeneration = async (
 
     markProgramCompleted(prog);
     saveMigrateTracker(trackerFile, migrateData);
+
+    // Promote contract status: contracted → enriched (so verify can then → verified)
+    if (!config.dryRun) {
+      try {
+        const project = config.contractSubDir;
+        const contractFile = path.join(config.migrationDir, project, `${project}-IDE-${programId}.contract.yaml`);
+        if (fs.existsSync(contractFile)) {
+          const contract = parseContract(contractFile);
+          if (contract.overall.status === PipelineStatus.CONTRACTED) {
+            contract.overall.status = PipelineStatus.ENRICHED;
+            writeContract(contract, contractFile);
+          }
+        }
+      } catch { /* non-critical */ }
+    }
 
     const elapsed = Date.now() - start;
     emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: ${files.length} files generated in ${formatDuration(elapsed)}`, { programId });
