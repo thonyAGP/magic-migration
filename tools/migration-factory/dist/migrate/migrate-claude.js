@@ -7,7 +7,7 @@
  * Mode is set via configureClaudeMode() before running migration.
  */
 import { exec } from 'node:child_process';
-import { writeFileSync, unlinkSync } from 'node:fs';
+import { writeFileSync, unlinkSync, mkdirSync, appendFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { promisify } from 'node:util';
@@ -16,10 +16,15 @@ const execAsync = promisify(exec);
 // ─── Module-level mode configuration ─────────────────────────────
 let _mode = 'cli';
 let _apiKey;
+let _globalLogDir;
 /** Configure Claude invocation mode before starting migration. */
 export const configureClaudeMode = (mode, apiKey) => {
     _mode = mode;
     _apiKey = apiKey;
+};
+/** Set global log directory for all subsequent calls. */
+export const setClaudeLogDir = (dir) => {
+    _globalLogDir = dir;
 };
 /** Get current mode (for logging/display). */
 export const getClaudeMode = () => _mode;
@@ -32,10 +37,14 @@ const MODEL_MAP = {
 const resolveModelId = (shortName) => MODEL_MAP[shortName ?? 'sonnet'] ?? shortName ?? MODEL_MAP.sonnet;
 // ─── Main entry point (transparent switch) ───────────────────────
 export const callClaude = async (options) => {
-    if (_mode === 'api') {
-        return callClaudeApi(options);
+    const result = _mode === 'api'
+        ? await callClaudeApi(options)
+        : await callClaudeCli(options);
+    const logDir = options.logDir ?? _globalLogDir;
+    if (logDir) {
+        logClaudeCall({ ...options, logDir }, result);
     }
-    return callClaudeCli(options);
+    return result;
 };
 // ─── API mode (Anthropic SDK) ────────────────────────────────────
 const callClaudeApi = async (options) => {
@@ -126,5 +135,37 @@ export const parseFileResponse = (raw) => {
     }
     // If no code block, return as-is (might be raw code)
     return trimmed;
+};
+// ─── Decision logging ───────────────────────────────────────────
+const logClaudeCall = (options, result) => {
+    try {
+        const logDir = options.logDir;
+        if (!existsSync(logDir)) {
+            mkdirSync(logDir, { recursive: true });
+        }
+        const label = options.logLabel ?? 'call';
+        const ts = Date.now();
+        // Save prompt and response files
+        const promptFile = `prompt-${label}-${ts}.md`;
+        const responseFile = `response-${label}-${ts}.md`;
+        writeFileSync(join(logDir, promptFile), options.prompt, 'utf8');
+        writeFileSync(join(logDir, responseFile), result.output, 'utf8');
+        // Append JSONL decision log
+        const entry = {
+            timestamp: new Date().toISOString(),
+            label,
+            model: options.model ?? 'default',
+            mode: _mode,
+            promptFile,
+            responseFile,
+            promptLength: options.prompt.length,
+            responseLength: result.output.length,
+            durationMs: result.durationMs,
+        };
+        appendFileSync(join(logDir, 'decisions.jsonl'), JSON.stringify(entry) + '\n', 'utf8');
+    }
+    catch {
+        // Non-critical: logging failure shouldn't stop migration
+    }
 };
 //# sourceMappingURL=migrate-claude.js.map

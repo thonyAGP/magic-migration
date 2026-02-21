@@ -123,27 +123,81 @@ export const planBatchesWithExclusions = (programs, adjacency, levels, sccs, con
         if (assigned.has(root))
             continue;
         const subtree = transitiveClosure(adjacency, root);
-        // Only include eligible, unassigned programs
         const unassigned = [...subtree].filter(id => eligibleIds.has(id) && !assigned.has(id));
         if (unassigned.length < cfg.minBatchSize)
             continue;
-        for (const m of unassigned)
-            assigned.add(m);
-        const rootProgram = programMap.get(root);
-        const level = levels.get(root) ?? 0;
-        const domain = rootProgram?.domain ?? inferDomain(rootProgram?.name ?? '');
-        const complexity = estimateComplexity(unassigned.length);
-        suggestedBatches.push({
-            id: `B${batchCounter}`,
-            name: rootProgram?.name ?? `Batch ${batchCounter}`,
-            root,
-            members: unassigned,
-            memberCount: unassigned.length,
-            level,
-            domain,
-            estimatedComplexity: complexity,
-        });
-        batchCounter++;
+        if (unassigned.length <= cfg.maxBatchSize) {
+            // Fits in a single batch
+            for (const m of unassigned)
+                assigned.add(m);
+            const rootProgram = programMap.get(root);
+            const level = levels.get(root) ?? 0;
+            const domain = rootProgram?.domain ?? inferDomain(rootProgram?.name ?? '');
+            suggestedBatches.push({
+                id: `B${batchCounter}`,
+                name: rootProgram?.name ?? `Batch ${batchCounter}`,
+                root,
+                members: unassigned,
+                memberCount: unassigned.length,
+                level,
+                domain,
+                estimatedComplexity: estimateComplexity(unassigned.length),
+            });
+            batchCounter++;
+        }
+        else {
+            // Too large: split by domain
+            const byDomain = groupByDomain(unassigned, programMap);
+            const miscMembers = [];
+            for (const [domain, members] of byDomain) {
+                if (members.length < cfg.minBatchSize) {
+                    miscMembers.push(...members);
+                    continue;
+                }
+                const chunks = chunkArray(members, cfg.maxBatchSize);
+                for (let ci = 0; ci < chunks.length; ci++) {
+                    const chunk = chunks[ci];
+                    for (const m of chunk)
+                        assigned.add(m);
+                    const suffix = chunks.length > 1 ? ` (${ci + 1}/${chunks.length})` : '';
+                    suggestedBatches.push({
+                        id: `B${batchCounter}`,
+                        name: `${domain}${suffix}`,
+                        root: chunk[0],
+                        members: chunk,
+                        memberCount: chunk.length,
+                        level: levels.get(chunk[0]) ?? 0,
+                        domain,
+                        estimatedComplexity: estimateComplexity(chunk.length),
+                    });
+                    batchCounter++;
+                }
+            }
+            // Leftover small groups -> misc batch(es)
+            if (miscMembers.length >= cfg.minBatchSize) {
+                const miscChunks = chunkArray(miscMembers, cfg.maxBatchSize);
+                for (const chunk of miscChunks) {
+                    for (const m of chunk)
+                        assigned.add(m);
+                    suggestedBatches.push({
+                        id: `B${batchCounter}`,
+                        name: `Divers`,
+                        root: chunk[0],
+                        members: chunk,
+                        memberCount: chunk.length,
+                        level: 0,
+                        domain: 'misc',
+                        estimatedComplexity: estimateComplexity(chunk.length),
+                    });
+                    batchCounter++;
+                }
+            }
+            else {
+                // Too few for a batch, mark as assigned anyway to avoid losing them in remaining
+                for (const m of miscMembers)
+                    assigned.add(m);
+            }
+        }
     }
     // Remaining eligible unassigned -> "misc" batch
     const remaining = eligible
@@ -200,6 +254,28 @@ const findNaturalRoots = (programs, adjacency, levels, config) => {
     }
     return roots;
 };
+// ─── Splitting helpers ─────────────────────────────────────────
+export const groupByDomain = (ids, programMap) => {
+    const byDomain = new Map();
+    for (const id of ids) {
+        const prog = programMap.get(id);
+        const domain = prog?.domain && prog.domain !== 'General'
+            ? prog.domain
+            : inferDomain(prog?.name ?? '');
+        const list = byDomain.get(domain) ?? [];
+        list.push(id);
+        byDomain.set(domain, list);
+    }
+    return byDomain;
+};
+export const chunkArray = (arr, size) => {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+        chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
+};
+// ─── Domain inference ──────────────────────────────────────────
 export const inferDomain = (name) => {
     const lower = name.toLowerCase();
     if (lower.includes('separation') || lower.includes('fusion'))

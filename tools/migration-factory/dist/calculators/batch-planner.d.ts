@@ -26,5 +26,7 @@ export interface EnhancedBatchPlannerConfig extends BatchPlannerConfig {
     startBatchNumber: number;
 }
 export declare const planBatchesWithExclusions: (programs: Program[], adjacency: AdjacencyGraph, levels: Map<NodeId, number>, sccs: SCC[], config?: Partial<EnhancedBatchPlannerConfig>) => BatchPlan;
+export declare const groupByDomain: (ids: NodeId[], programMap: Map<string | number, Program>) => Map<string, NodeId[]>;
+export declare const chunkArray: <T>(arr: T[], size: number) => T[][];
 export declare const inferDomain: (name: string) => string;
 export {};

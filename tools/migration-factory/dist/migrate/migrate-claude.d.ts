@@ -8,6 +8,8 @@
  */
 /** Configure Claude invocation mode before starting migration. */
 export declare const configureClaudeMode: (mode: "api" | "cli", apiKey?: string) => void;
+/** Set global log directory for all subsequent calls. */
+export declare const setClaudeLogDir: (dir: string | undefined) => void;
 /** Get current mode (for logging/display). */
 export declare const getClaudeMode: () => "api" | "cli";
 export interface ClaudeCallOptions {
@@ -16,6 +18,8 @@ export interface ClaudeCallOptions {
     cliBin?: string;
     timeoutMs?: number;
     maxBuffer?: number;
+    logDir?: string;
+    logLabel?: string;
 }
 export interface ClaudeCallResult {
     output: string;

@@ -83,6 +83,9 @@ export const MigrateEventType = {
     PHASE_FAILED: 'phase_failed',
     VERIFY_PASS: 'verify_pass',
     FIX_APPLIED: 'fix_applied',
+    GIT_STARTED: 'git_started',
+    GIT_COMPLETED: 'git_completed',
+    GIT_FAILED: 'git_failed',
     ERROR: 'error',
 };
 //# sourceMappingURL=migrate-types.js.map
