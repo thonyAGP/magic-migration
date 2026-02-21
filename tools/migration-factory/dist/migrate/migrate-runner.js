@@ -3,10 +3,12 @@
  * Supports per-program parallel execution (phases 0-9) and
  * sequential batch verification (phases 10-15).
  */
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { MigratePhase as MP, MigrateEventType as ET } from './migrate-types.js';
 import { readMigrateTracker, writeMigrateTracker, getOrCreateProgram, startPhase, completePhase, failPhase, markProgramCompleted, markProgramFailed, isPhaseCompleted, } from './migrate-tracker.js';
+import { setClaudeLogDir } from './migrate-claude.js';
 import { readTracker, writeTracker } from '../core/tracker.js';
 import { runSpecPhase } from './phases/phase-spec.js';
 import { runContractPhase } from './phases/phase-contract.js';
@@ -37,6 +39,16 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
     const migrationStart = Date.now();
     const trackerFile = path.join(config.migrationDir, config.contractSubDir, 'tracker.json');
     emit(config, ET.MIGRATION_STARTED, `Starting migration for batch ${batchId} (${programIds.length} programs)`);
+    // Setup decision log directory
+    if (!config.dryRun && !config.logDir) {
+        const logDir = path.join(config.targetDir, '.migration-log', batchId);
+        if (!fs.existsSync(logDir)) {
+            fs.mkdirSync(logDir, { recursive: true });
+        }
+        config.logDir = logDir;
+        setClaudeLogDir(logDir);
+        emit(config, ET.PHASE_STARTED, `Decision log: ${logDir}`);
+    }
     // Scaffold target directory with infrastructure stubs if needed
     if (!config.dryRun) {
         const scaffold = scaffoldTargetDir(config);
@@ -115,6 +127,52 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
     };
     const totalDuration = Date.now() - migrationStart;
     emit(config, ET.MIGRATION_COMPLETED, `Migration complete: ${summary.completed}/${summary.total} programs, ${summary.totalFiles} files in ${formatDuration(totalDuration)}`);
+    // Update main tracker batch stats after migration
+    if (!config.dryRun && summary.completed > 0) {
+        try {
+            const tracker = readTracker(trackerFile);
+            const batchDef = tracker.batches.find(b => b.id === batchId);
+            if (batchDef) {
+                batchDef.stats.fullyImpl = summary.completed;
+                batchDef.stats.coverageAvgFrontend = summary.reviewAvgCoverage;
+                batchDef.stats.totalPartial = summary.failed;
+                batchDef.stats.totalMissing = summary.total - summary.completed - summary.failed;
+                if (summary.completed === summary.total && summary.tscClean && summary.testsPass) {
+                    batchDef.status = 'verified';
+                    batchDef.verifiedDate = new Date().toISOString().slice(0, 10);
+                }
+                else if (summary.completed > 0) {
+                    batchDef.status = 'enriched';
+                    batchDef.enrichedDate = batchDef.enrichedDate ?? new Date().toISOString().slice(0, 10);
+                }
+                writeTracker(tracker, trackerFile);
+                emit(config, ET.PHASE_COMPLETED, `Tracker updated: ${batchId} → ${batchDef.status} (${summary.completed}/${summary.total} impl, ${summary.reviewAvgCoverage}% coverage)`);
+            }
+        }
+        catch {
+            // Non-critical: tracker update failure shouldn't break the result
+        }
+    }
+    // Auto git commit + push if enabled
+    let gitResult;
+    if (config.autoCommit && !config.dryRun && summary.completed > 0) {
+        try {
+            emit(config, ET.GIT_STARTED, 'Auto-commit: staging files...');
+            execSync(`git add "${config.targetDir}"`, { cwd: config.projectDir });
+            execSync(`git add .openspec/migration/`, { cwd: config.projectDir });
+            const msg = `feat(migration): ${batchId} - ${batchName} (${summary.completed} programs, ${summary.totalFiles} files)`;
+            execSync(`git commit --no-verify -m "${msg}"`, { cwd: config.projectDir });
+            const sha = execSync('git rev-parse --short HEAD', { cwd: config.projectDir }).toString().trim();
+            const branch = execSync('git branch --show-current', { cwd: config.projectDir }).toString().trim();
+            execSync(`git push origin ${branch}`, { cwd: config.projectDir });
+            emit(config, ET.GIT_COMPLETED, `Committed ${sha} and pushed to ${branch}`);
+            gitResult = { commitSha: sha, pushed: true, branch };
+        }
+        catch (err) {
+            const errMsg = err instanceof Error ? err.message : 'unknown';
+            emit(config, ET.GIT_FAILED, `Git failed: ${errMsg}`);
+        }
+    }
     return {
         batchId,
         batchName,
@@ -123,6 +181,7 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
         dryRun: config.dryRun,
         programs: programResults,
         summary,
+        git: gitResult,
     };
 };
 const runProgramGeneration = async (programId, config, trackerFile) => {

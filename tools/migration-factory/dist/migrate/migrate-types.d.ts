@@ -118,6 +118,10 @@ export interface MigrateConfig {
     onEvent?: (event: MigrateEvent) => void;
     /** Per-phase model overrides. Unset phases fallback to `model`. */
     phaseModels?: Partial<Record<MigratePhase, string>>;
+    /** Directory for decision logging (prompts, responses, JSONL). */
+    logDir?: string;
+    /** Auto git add + commit + push after successful migration. Default false for CLI, true from dashboard. */
+    autoCommit?: boolean;
 }
 /**
  * Returns the model to use for a given phase.
@@ -141,6 +145,9 @@ export declare const MigrateEventType: {
     readonly PHASE_FAILED: "phase_failed";
     readonly VERIFY_PASS: "verify_pass";
     readonly FIX_APPLIED: "fix_applied";
+    readonly GIT_STARTED: "git_started";
+    readonly GIT_COMPLETED: "git_completed";
+    readonly GIT_FAILED: "git_failed";
     readonly ERROR: "error";
 };
 export type MigrateEventType = (typeof MigrateEventType)[keyof typeof MigrateEventType];
@@ -160,6 +167,11 @@ export interface MigrateResult {
     dryRun: boolean;
     programs: ProgramMigrateResult[];
     summary: MigrateSummary;
+    git?: {
+        commitSha: string;
+        pushed: boolean;
+        branch: string;
+    };
 }
 export interface ProgramMigrateResult {
     programId: string | number;

@@ -41,6 +41,7 @@ export const analyzeProject = (input) => {
         excludeInfrastructure: true,
         startBatchNumber,
         minBatchSize: 3,
+        maxBatchSize: 25,
     });
     // 3. Build analyzed batches - existing ones first
     const analyzedBatches = [];

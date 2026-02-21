@@ -277,6 +277,7 @@ export const handleMigrateStream = async (ctx, query, res) => {
         phaseModels: DEFAULT_PHASE_MODELS,
         cliBin: 'claude',
         onEvent: undefined,
+        autoCommit: true,
     };
     const sse = createSSEStream(res);
     // Buffer events for dashboard reconnection after page refresh
