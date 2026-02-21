@@ -1,0 +1,338 @@
+{
+  "domain": "saisieContenuCaisse",
+  "domainPascal": "SaisieContenuCaisse",
+  "complexity": "HIGH",
+  "entities": [
+    {
+      "name": "ComptageDetail",
+      "fields": [
+        {
+          "name": "denominationId",
+          "type": "number",
+          "source": "coupures_monnaie_locale.id",
+          "nullable": false
+        },
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "devises__________dev.code",
+          "nullable": false
+        },
+        {
+          "name": "valeur",
+          "type": "number",
+          "source": "coupures_monnaie_locale.valeur",
+          "nullable": false
+        },
+        {
+          "name": "quantite",
+          "type": "number",
+          "source": "user_input",
+          "nullable": false
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "source": "computed: valeur * quantite",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "RecapMOP",
+      "fields": [
+        {
+          "name": "moyenPaiement",
+          "type": "string",
+          "source": "moyen_paiement___mop.code",
+          "nullable": false
+        },
+        {
+          "name": "attendu",
+          "type": "number",
+          "source": "computed_backend",
+          "nullable": false
+        },
+        {
+          "name": "compte",
+          "type": "number",
+          "source": "user_counting",
+          "nullable": false
+        },
+        {
+          "name": "ecart",
+          "type": "number",
+          "source": "computed: compte - attendu",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "DeviseComptage",
+      "fields": [
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "devises__________dev.code",
+          "nullable": false
+        },
+        {
+          "name": "totalSaisi",
+          "type": "number",
+          "source": "computed_from_details",
+          "nullable": false
+        },
+        {
+          "name": "denominations",
+          "type": "ComptageDetail[]",
+          "source": "coupures_monnaie_locale",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "ValidationResult",
+      "fields": [
+        {
+          "name": "totalCaisse",
+          "type": "number",
+          "source": "computed_sum_all_devises",
+          "nullable": false
+        },
+        {
+          "name": "totalMonnaie",
+          "type": "number",
+          "source": "computed_monnaie",
+          "nullable": false
+        },
+        {
+          "name": "totalProduits",
+          "type": "number",
+          "source": "computed_produits",
+          "nullable": false
+        },
+        {
+          "name": "totalCartes",
+          "type": "number",
+          "source": "computed_cartes",
+          "nullable": false
+        },
+        {
+          "name": "totalCheques",
+          "type": "number",
+          "source": "computed_cheques",
+          "nullable": false
+        },
+        {
+          "name": "totalOD",
+          "type": "number",
+          "source": "computed_od",
+          "nullable": false
+        },
+        {
+          "name": "shouldProcess",
+          "type": "boolean",
+          "source": "computed_from_RM001",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "activeDevise",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "comptageDevises",
+      "type": "Map<string, DeviseComptage>",
+      "default": "new Map()"
+    },
+    {
+      "name": "recapMOP",
+      "type": "RecapMOP[]",
+      "default": "[]"
+    },
+    {
+      "name": "validationResult",
+      "type": "ValidationResult | null",
+      "default": "null"
+    },
+    {
+      "name": "isValidating",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "validationError",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "isPersisting",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "canSubmit",
+      "type": "boolean",
+      "default": "false"
+    }
+  ],
+  "actions": [
+    {
+      "name": "initComptage",
+      "params": [
+        "sessionId: number",
+        "quand: 'O' | 'F'",
+        "devisesAutorisees: string[]"
+      ],
+      "businessRules": [
+        "Load denomination catalog for each authorized devise",
+        "Initialize empty counting map for each devise",
+        "Set active devise to first in list"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "updateQuantite",
+      "params": [
+        "deviseCode: string",
+        "denominationId: number",
+        "quantite: number"
+      ],
+      "businessRules": [
+        "Update quantity for specific denomination",
+        "Recalculate total for this denomination (valeur * quantite)",
+        "Recalculate totalSaisi for this devise",
+        "Update canSubmit flag based on validation"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "switchDevise",
+      "params": [
+        "deviseCode: string"
+      ],
+      "businessRules": [
+        "Set activeDevise to specified code",
+        "Ensure devise exists in authorized list"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "validateComptage",
+      "params": [],
+      "businessRules": [
+        "Sum all devise totals → totalCaisse",
+        "Apply RM-001: shouldProcess = totalCaisse <> 0 OR nbreDevise <> 0 OR FROM_IMS = 'O'",
+        "If shouldProcess = false, throw validation error",
+        "Compute totalMonnaie, totalProduits, totalCartes, totalCheques, totalOD",
+        "Return ValidationResult with all computed totals"
+      ],
+      "returns": "Promise<ValidationResult>"
+    },
+    {
+      "name": "loadRecapMOP",
+      "params": [
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "Fetch expected MOP totals (attendu) from backend",
+        "Match counted totals (compte) from validationResult",
+        "Compute ecart = compte - attendu for each MOP",
+        "Return RecapMOP array"
+      ],
+      "returns": "Promise<RecapMOP[]>"
+    },
+    {
+      "name": "persistComptage",
+      "params": [
+        "sessionId: number",
+        "validationResult: ValidationResult"
+      ],
+      "businessRules": [
+        "Persist counting data to 5 tables (edition_ticket, soldes_par_mop, edition_tableau_recap, email_reprise, gestion_devise_session)",
+        "Generate ticket via ouvertureTicketGenerator",
+        "Auto-print on success",
+        "Return success flag"
+      ],
+      "returns": "Promise<boolean>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/caisse/denominations/:deviseCode",
+      "queryParams": [],
+      "response": "Denomination[]"
+    },
+    {
+      "method": "POST",
+      "path": "/api/caisse/comptage/validate",
+      "queryParams": [],
+      "response": "ValidationResult"
+    },
+    {
+      "method": "GET",
+      "path": "/api/caisse/session/:sessionId/recap-mop",
+      "queryParams": [],
+      "response": "RecapMOP[]"
+    },
+    {
+      "method": "POST",
+      "path": "/api/caisse/comptage/persist",
+      "queryParams": [],
+      "response": "{ success: boolean; ticketUrl?: string }"
+    }
+  ],
+  "uiLayout": {
+    "type": "multi-step-modal",
+    "sections": [
+      {
+        "name": "comptageDevise",
+        "controls": [
+          "DeviseSelector (tabs)",
+          "DenominationGrid (denomination catalog + quantity inputs)",
+          "TotalDevise (computed display)"
+        ]
+      },
+      {
+        "name": "recapitulatif",
+        "controls": [
+          "FermetureRecapTable (MOP recap with attendu/compte/ecart)",
+          "ValidationSummary (totalCaisse, totalMonnaie, etc.)",
+          "ErrorMessage (if validation fails)"
+        ]
+      },
+      {
+        "name": "confirmation",
+        "controls": [
+          "SuccessMessage",
+          "PrintTicketButton",
+          "ReturnButton"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "3 devises with 8-12 denominations each, 2 MOP entries (monnaie, cartes), 1 validation result with totals"
+  },
+  "dependencies": {
+    "stores": [
+      "useCaisseStore",
+      "useSessionStore"
+    ],
+    "sharedTypes": [
+      "Denomination",
+      "Session",
+      "SessionDetailQuand"
+    ],
+    "externalApis": [
+      "PrintService (ouvertureTicketGenerator)",
+      "caisseOpsApi"
+    ]
+  }
+}

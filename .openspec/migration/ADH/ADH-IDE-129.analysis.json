@@ -1,0 +1,239 @@
+{
+  "domain": "sessionEcart",
+  "domainPascal": "SessionEcart",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "SessionEcart",
+      "fields": [
+        {
+          "name": "sessionId",
+          "type": "number",
+          "source": "Parameter EO - Param chrono session",
+          "nullable": false
+        },
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "Parameter EP - Param devise locale",
+          "nullable": false
+        },
+        {
+          "name": "quand",
+          "type": "string",
+          "source": "Parameter ER - Param quand ('O' | 'F')",
+          "nullable": false
+        },
+        {
+          "name": "caisseComptee",
+          "type": "number",
+          "source": "Parameter ES - Total from denomination counting",
+          "nullable": false
+        },
+        {
+          "name": "montantEcart",
+          "type": "number",
+          "source": "Parameter FG - Computed difference",
+          "nullable": false
+        },
+        {
+          "name": "commentaire",
+          "type": "string",
+          "source": "Parameter FN - User input",
+          "nullable": true
+        },
+        {
+          "name": "commentaireDevise",
+          "type": "string",
+          "source": "Parameter FO - Devise-specific comment",
+          "nullable": true
+        }
+      ]
+    },
+    {
+      "name": "DeviseSession",
+      "fields": [
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "Table 232/141/90 - devises__________dev",
+          "nullable": false
+        },
+        {
+          "name": "soldePrecedent",
+          "type": "number",
+          "source": "Table 232 - gestion_devise_session (expected amount)",
+          "nullable": false
+        },
+        {
+          "name": "unibi",
+          "type": "string",
+          "source": "Parameter FP - UNI/BI indicator",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "sessionId",
+      "type": "number | null",
+      "default": "null"
+    },
+    {
+      "name": "deviseCode",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "caisseComptee",
+      "type": "number",
+      "default": "0"
+    },
+    {
+      "name": "soldePrecedent",
+      "type": "number",
+      "default": "0"
+    },
+    {
+      "name": "montantEcart",
+      "type": "number",
+      "default": "0"
+    },
+    {
+      "name": "commentaire",
+      "type": "string",
+      "default": "''"
+    },
+    {
+      "name": "commentaireDevise",
+      "type": "string",
+      "default": "''"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "ecartSaved",
+      "type": "boolean",
+      "default": "false"
+    }
+  ],
+  "actions": [
+    {
+      "name": "calculerEcart",
+      "params": [
+        "caisseComptee: number",
+        "soldePrecedent: number"
+      ],
+      "businessRules": [
+        "Compute difference: montantEcart = caisseComptee - soldePrecedent",
+        "If ecart exceeds threshold, trigger alert (threshold from config)",
+        "Return computed ecart value"
+      ],
+      "returns": "number"
+    },
+    {
+      "name": "sauvegarderEcart",
+      "params": [
+        "ecart: SessionEcart"
+      ],
+      "businessRules": [
+        "Validate ecart data (sessionId, deviseCode, quand required)",
+        "Persist ecart to backend via API POST /api/session/ecart",
+        "Call backend WS to update session state (ADH IDE 142 - Devise update session WS)",
+        "Set ecartSaved flag on success",
+        "Handle validation errors and API failures"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "validerSeuilEcart",
+      "params": [
+        "ecart: number",
+        "seuilAlerte: number"
+      ],
+      "businessRules": [
+        "Compare absolute value of ecart to configured threshold",
+        "Return warning/blocking status if threshold exceeded",
+        "Allow override with user confirmation (commentaire required if exceeded)"
+      ],
+      "returns": "{ exceeded: boolean; blocking: boolean }"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/session/ecart",
+      "queryParams": [],
+      "response": "{ success: boolean; ecartId?: number }"
+    },
+    {
+      "method": "GET",
+      "path": "/api/session/devise/:sessionId/:deviseCode",
+      "queryParams": [],
+      "response": "DeviseSession"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/session/:sessionId/devise/:deviseCode",
+      "queryParams": [],
+      "response": "{ success: boolean }"
+    }
+  ],
+  "uiLayout": {
+    "type": "dialog-overlay",
+    "sections": [
+      {
+        "name": "ecartSummary",
+        "controls": [
+          "deviseCode (read-only label)",
+          "caisseComptee (read-only formatted amount)",
+          "soldePrecedent (read-only formatted amount)",
+          "montantEcart (computed, highlighted if exceeds threshold)"
+        ]
+      },
+      {
+        "name": "commentaireSection",
+        "controls": [
+          "commentaire (textarea, required if ecart exceeds threshold)",
+          "commentaireDevise (textarea, optional)"
+        ]
+      },
+      {
+        "name": "actions",
+        "controls": [
+          "Valider button (primary, saves ecart and updates session)",
+          "Annuler button (secondary, closes dialog)"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "3 mock ecart scenarios: (1) Positive ecart within threshold, (2) Negative ecart exceeding threshold, (3) Zero ecart. Mock DeviseSession with soldePrecedent values for EUR, USD, GBP. Mock threshold config at 50 EUR."
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore (sessionId, deviseCode, soldePrecedent)",
+      "useCaisseStore (denomination grid data for caisseComptee)"
+    ],
+    "sharedTypes": [
+      "SessionEcart",
+      "DeviseSession",
+      "SessionDetailQuand"
+    ],
+    "externalApis": [
+      "POST /api/session/ecart",
+      "GET /api/session/devise/:sessionId/:deviseCode",
+      "PUT /api/session/:sessionId/devise/:deviseCode (ADH IDE 142 facade)"
+    ]
+  }
+}

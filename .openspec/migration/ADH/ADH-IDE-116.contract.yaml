@@ -1,0 +1,76 @@
+program:
+  id: 0
+  name: ""
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 5
+  tables_count: 1
+  expressions_count: 9
+rules:
+  - id: RM-001
+    description: "Condition: PI code calcul [A] egale 'C'"
+    condition: PI code calcul [A]='C'
+    variables:
+      - EN
+    status: IMPL
+    target_file: adh-web/src/stores/saisieContenuCaisseStore.ts
+    gap_notes: ""
+  - id: RM-002
+    description: "Condition: PI code calcul [A] egale 'D'"
+    condition: PI code calcul [A]='D'
+    variables:
+      - EN
+    status: IMPL
+    target_file: adh-web/src/services/printer/generators/ouvertureTicketGenerator.ts
+    gap_notes: ""
+  - id: RM-003
+    description: Negation de (coffre en cours comptage [C]) (condition inversee)
+    condition: NOT (coffre en cours comptage [C])
+    variables:
+      - EP
+    status: IMPL
+    target_file: adh-web/src/__tests__/approTicketStore.test.ts
+    gap_notes: ""
+  - id: RM-004
+    description: Negation de VG78 (condition inversee)
+    condition: NOT VG78
+    variables: []
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+variables:
+  - local_id: EN
+    name: PI code calcul
+    type: Real
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - local_id: EP
+    name: coffre en cours comptage
+    type: Real
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+tables:
+  - id: 227
+    name: concurrence_sessions
+    mode: RW
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+callees: []
+overall:
+  rules_total: 4
+  rules_impl: 3
+  rules_partial: 0
+  rules_missing: 1
+  rules_na: 0
+  variables_key_count: 2
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 43
+  status: contracted
+  generated: 2026-02-20T23:56:07.536Z
+  notes: Auto-generated from ADH-IDE-116.md

@@ -2635,6 +2635,14 @@
           return;
         }
 
+        // Handle HTML files via iframe (dashboards, reports)
+        const isHtml = path.endsWith('.html');
+        if (isHtml) {
+          const fileName = path.split('/').pop().replace('.html', '');
+          content.innerHTML = backLinkHtml + `<iframe src="${path}?t=${Date.now()}" style="width:100%;height:calc(100vh - 60px);border:none;border-radius:8px;"></iframe>`;
+          return;
+        }
+
         // Check for spec tabs (<!-- TAB:xxx --> markers) - works for both specs/ and renders/
         if ((isSpec || isRender) && text.includes('<!-- TAB:')) {
           const renderedContent = renderSpecWithTabs(text, headerHtml);

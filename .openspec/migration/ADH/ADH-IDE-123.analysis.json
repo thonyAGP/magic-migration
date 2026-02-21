@@ -1,0 +1,179 @@
+{
+  "domain": "apportCoffre",
+  "domainPascal": "ApportCoffre",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "ApportCoffre",
+      "fields": [
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "devises__________dev.code",
+          "nullable": false
+        },
+        {
+          "name": "montant",
+          "type": "number",
+          "source": "saisie_approvisionnement.montant",
+          "nullable": false
+        },
+        {
+          "name": "dateHeure",
+          "type": "Date",
+          "source": "saisie_approvisionnement.date_heure",
+          "nullable": false
+        },
+        {
+          "name": "context",
+          "type": "string",
+          "source": "derived from caller IDE (122=O, 131=F, 121=G)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "Devise",
+      "fields": [
+        {
+          "name": "code",
+          "type": "string",
+          "source": "devises__________dev.code",
+          "nullable": false
+        },
+        {
+          "name": "libelle",
+          "type": "string",
+          "source": "devises__________dev.libelle",
+          "nullable": false
+        },
+        {
+          "name": "venteAutorisee",
+          "type": "boolean",
+          "source": "config.devisesAutorisees",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "devises",
+      "type": "Devise[]",
+      "default": "[]"
+    },
+    {
+      "name": "isExecuting",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "deviseSelectionnee",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "montantSaisi",
+      "type": "number",
+      "default": "0"
+    }
+  ],
+  "actions": [
+    {
+      "name": "chargerDevises",
+      "params": [],
+      "businessRules": [
+        "Charger uniquement les devises autorisées à la vente (RM-003 implicite via config)",
+        "Filtrer par session active (RM-004 N/A - pas de coffre 2 en web)"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "validerApport",
+      "params": [
+        "deviseCode: string",
+        "montant: number"
+      ],
+      "businessRules": [
+        "RM-001/RM-002 N/A - frontend multi-devise natif",
+        "Montant > 0 obligatoire",
+        "Devise doit être autorisée (config.devisesAutorisees)",
+        "Persister via POST /api/caisse/operations/apport-coffre"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "reset",
+      "params": [],
+      "businessRules": [
+        "Réinitialiser le formulaire après succès",
+        "Correspondance variable 'Fin' [EX]"
+      ],
+      "returns": "void"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/caisse/config",
+      "queryParams": [],
+      "response": "CaisseConfig (include devisesAutorisees: Devise[])"
+    },
+    {
+      "method": "POST",
+      "path": "/api/caisse/operations/apport-coffre",
+      "queryParams": [],
+      "response": "ApportCoffreResponse { success: boolean, montantCoffre: number }"
+    }
+  ],
+  "uiLayout": {
+    "type": "dialog-form",
+    "sections": [
+      {
+        "name": "header",
+        "controls": [
+          "title: 'Apport coffre'",
+          "context badge (Ouverture/Fermeture/Gestion)"
+        ]
+      },
+      {
+        "name": "saisie",
+        "controls": [
+          "select devise (code + libellé)",
+          "input montant (number, min=0.01)",
+          "display format avec masque locale Intl.NumberFormat"
+        ]
+      },
+      {
+        "name": "actions",
+        "controls": [
+          "button Valider (primary)",
+          "button Annuler (secondary)"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "3 devises autorisées (EUR, USD, GBP) avec libellés. 1 apport EUR de 500.00 déjà saisi."
+  },
+  "dependencies": {
+    "stores": [
+      "useCaisseStore (pour config.devisesAutorisees)",
+      "useCaisseOpsStore (isExecuting, error, actions)"
+    ],
+    "sharedTypes": [
+      "Devise (src/types/caisse.ts)",
+      "ApportCoffreRequest (src/types/caisseOps.ts)",
+      "ApportCoffreResponse (src/types/caisseOps.ts)"
+    ],
+    "externalApis": [
+      "caisseOpsApi.apportCoffre() via src/services/api/endpoints-caisse-ops.ts"
+    ]
+  }
+}

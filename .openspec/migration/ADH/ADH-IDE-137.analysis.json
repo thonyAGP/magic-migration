@@ -1,0 +1,228 @@
+{
+  "domain": "sessionOuverture",
+  "domainPascal": "SessionOuverture",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "SessionOuvertureTicket",
+      "fields": [
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "config.libelle",
+          "nullable": false
+        },
+        {
+          "name": "village",
+          "type": "string",
+          "source": "parameter.nomVillage",
+          "nullable": false
+        },
+        {
+          "name": "sessionId",
+          "type": "number",
+          "source": "session.id",
+          "nullable": false
+        },
+        {
+          "name": "dateComptable",
+          "type": "Date",
+          "source": "date_comptable.date",
+          "nullable": false
+        },
+        {
+          "name": "dateDebut",
+          "type": "Date",
+          "source": "session.dateDebut",
+          "nullable": false
+        },
+        {
+          "name": "heureDebut",
+          "type": "string",
+          "source": "session.heureDebut",
+          "nullable": false
+        },
+        {
+          "name": "deviseLocale",
+          "type": "string",
+          "source": "config.devisePrincipale",
+          "nullable": false
+        },
+        {
+          "name": "caisseDepart",
+          "type": "number",
+          "source": "computed.totalCompte",
+          "nullable": false
+        },
+        {
+          "name": "apportCoffre",
+          "type": "number",
+          "source": "caisseOps.apport",
+          "nullable": false
+        },
+        {
+          "name": "versement",
+          "type": "number",
+          "source": "caisseOps.versement",
+          "nullable": false
+        },
+        {
+          "name": "retrait",
+          "type": "number",
+          "source": "caisseOps.retrait",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "PrinterChoice",
+      "fields": [
+        {
+          "name": "type",
+          "type": "string",
+          "source": "user_selection",
+          "nullable": false
+        },
+        {
+          "name": "format",
+          "type": "string",
+          "source": "user_selection",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "ticketData",
+      "type": "SessionOuvertureTicket | null",
+      "default": "null"
+    },
+    {
+      "name": "printerChoice",
+      "type": "PrinterChoice | null",
+      "default": "null"
+    },
+    {
+      "name": "isGeneratingTicket",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "isPrinting",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "showPrinterDialog",
+      "type": "boolean",
+      "default": "false"
+    }
+  ],
+  "actions": [
+    {
+      "name": "generateTicket",
+      "params": [
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "RM-001: Internal task control flag (not needed in React)",
+        "Load session data from sessionStore",
+        "Load config from caisseStore (societe, village, deviseLocale)",
+        "Load dateComptable from caisseStore",
+        "Compute caisseDepart from counting aggregation",
+        "Load apportCoffre, versement, retrait from caisseOpsStore",
+        "Build SessionOuvertureTicket entity"
+      ],
+      "returns": "Promise<SessionOuvertureTicket>"
+    },
+    {
+      "name": "printTicket",
+      "params": [
+        "ticket: SessionOuvertureTicket",
+        "choice: PrinterChoice"
+      ],
+      "businessRules": [
+        "RM-002: Route to pdf-browser/pdf-download if choice.type is pdf",
+        "RM-003: Route to escpos if choice.type is escpos (replaces printer 9)",
+        "Generate PDF or ESC/POS commands based on choice",
+        "Execute print via printService"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "showPrinterSelection",
+      "params": [],
+      "businessRules": [
+        "Open PrinterChoiceDialog",
+        "Allow user to select: pdf-browser, pdf-download, or escpos"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "onPrinterSelected",
+      "params": [
+        "choice: PrinterChoice"
+      ],
+      "businessRules": [
+        "Store printer choice in state",
+        "Trigger printTicket action"
+      ],
+      "returns": "Promise<void>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/session/ouverture/ticket/:sessionId",
+      "queryParams": [],
+      "response": "SessionOuvertureTicket"
+    }
+  ],
+  "uiLayout": {
+    "type": "modal-dialog",
+    "sections": [
+      {
+        "name": "ticketPreview",
+        "controls": [
+          "ticketHeader (societe, village, sessionId)",
+          "ticketDates (dateComptable, dateDebut, heureDebut)",
+          "ticketMontants (caisseDepart, apportCoffre, versement, retrait)",
+          "printButton"
+        ]
+      },
+      {
+        "name": "printerDialog",
+        "controls": [
+          "printerTypeRadio (pdf-browser, pdf-download, escpos)",
+          "confirmButton",
+          "cancelButton"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "Mock 3 session ouverture tickets with varying amounts and dates. Include typical caisseDepart values (500-2000), apportCoffre (0-500), versement (0-1000), retrait (0-500). Use realistic village names and session IDs."
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore",
+      "useCaisseStore",
+      "useCaisseOpsStore"
+    ],
+    "sharedTypes": [
+      "SessionOuvertureTicket",
+      "PrinterChoice"
+    ],
+    "externalApis": [
+      "printService.executePrint()",
+      "ouvertureTicketGenerator.generate()"
+    ]
+  }
+}

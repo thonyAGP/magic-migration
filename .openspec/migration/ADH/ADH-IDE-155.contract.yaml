@@ -1,0 +1,254 @@
+program:
+  id: 0
+  name: ""
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 147
+  tables_count: 7
+  expressions_count: 14
+rules:
+  - id: RM-001
+    description: "Condition: Param UNI/BI [O] egale 'B'"
+    condition: Param UNI/BI [O]='B'
+    variables:
+      - FB
+    status: IMPL
+    target_file: adh-web/src/stores/saisieContenuCaisseStore.ts
+    gap_notes: ""
+  - id: RM-002
+    description: "Condition composite: V parametre 2 caisses [V]='O' AND (p.i.Host courant coffr... [R] AND NOT Param
+      session ouverte ... [S] OR [BQ] AND Param session ouverte ... [S])"
+    condition: V parametre 2 caisses [V]='O' AND (p.i.Host courant coffr... [R] AND NOT Param session ouverte ... [S] OR
+      [BQ] AND Param session ouverte ... [S])
+    variables:
+      - FI
+    status: IMPL
+    target_file: adh-web/src/services/printer/generators/ouvertureTicketGenerator.ts
+    gap_notes: ""
+  - id: RM-003
+    description: "Condition: Param K/T [A] egale 'K'"
+    condition: Param K/T [A]='K'
+    variables:
+      - EN
+    status: IMPL
+    target_file: adh-web/src/__tests__/approTicketStore.test.ts
+    gap_notes: ""
+  - id: RM-004
+    description: "Condition: Param K/T [A] egale 'T'"
+    condition: Param K/T [A]='T'
+    variables:
+      - EN
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: RM-005
+    description: Si VG78 alors Val([BO] sinon '3')=p.i.Terminal coffre2 [P], [BP]=p.i.Hostname coffre2 [Q])
+    condition: VG78
+    variables:
+      - FC
+      - FD
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: RM-006
+    description: Negation de VG78 (condition inversee)
+    condition: NOT VG78
+    variables: []
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+variables:
+  - local_id: FB
+    name: Param UNI/BI
+    type: Real
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - local_id: FI
+    name: V parametre 2 caisses
+    type: Real
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - local_id: EN
+    name: Param K/T
+    type: Real
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - local_id: FC
+    name: p.i.Terminal coffre2
+    type: Real
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - local_id: FD
+    name: p.i.Hostname coffre2
+    type: Real
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+tables:
+  - id: 243
+    name: pointage_devise
+    mode: RW
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 242
+    name: pointage_article
+    mode: RW
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 241
+    name: pointage_appro_remise
+    mode: RW
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 246
+    name: histo_sessions_caisse
+    mode: RW
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 232
+    name: gestion_devise_session
+    mode: RW
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 505
+    name: pv_comptable
+    mode: W
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 510
+    name: pv_discounts
+    mode: W
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 249
+    name: histo_sessions_caisse_detail
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 250
+    name: histo_sessions_caisse_devise
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 90
+    name: devises__________dev
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/components/caisse/apportCoffre/SaisiePanel.tsx
+    gap_notes: ""
+  - id: 31
+    name: gm-complet_______gmc
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 251
+    name: histo_sessions_caisse_remise
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 44
+    name: change___________chg
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/App.tsx
+    gap_notes: ""
+  - id: 147
+    name: change_vente_____chg
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 697
+    name: droits_applications
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 248
+    name: sessions_coffre2
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 40
+    name: comptable________cte
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/components/caisse/sessionOuverture/SuccesPanel.tsx
+    gap_notes: ""
+  - id: 247
+    name: histo_sessions_caisse_article
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 197
+    name: articles_en_stock
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 77
+    name: articles_________art
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/components/caisse/apportArticles/ArticleEntryPanel.tsx
+    gap_notes: ""
+  - id: 263
+    name: vente
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/App.tsx
+    gap_notes: ""
+callees:
+  - id: 135
+    name: Generation tableau recap WS
+    calls: 13
+    context: Sous-programme
+    status: MISSING
+    target: ""
+    gap_notes: ""
+  - id: 142
+    name: Devise update session WS
+    calls: 11
+    context: Mise a jour donnees
+    status: MISSING
+    target: ""
+    gap_notes: ""
+  - id: 152
+    name: Recup Classe et Lib du MOP
+    calls: 3
+    context: Recuperation donnees
+    status: IMPL
+    target: adh-web/src/types/transaction-lot2.ts
+    gap_notes: ""
+overall:
+  rules_total: 6
+  rules_impl: 3
+  rules_partial: 0
+  rules_missing: 3
+  rules_na: 0
+  variables_key_count: 5
+  callees_total: 3
+  callees_impl: 1
+  callees_missing: 2
+  coverage_pct: 26
+  status: contracted
+  generated: 2026-02-21T00:04:16.727Z
+  notes: Auto-generated from ADH-IDE-155.md

@@ -1,0 +1,243 @@
+{
+  "domain": "apportArticles",
+  "domainPascal": "ApportArticles",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "ArticleApport",
+      "fields": [
+        {
+          "name": "articleCode",
+          "type": "string",
+          "source": "gestion_article_session.titre",
+          "nullable": false
+        },
+        {
+          "name": "libelle",
+          "type": "string",
+          "source": "gestion_article_session.titre",
+          "nullable": false
+        },
+        {
+          "name": "quantite",
+          "type": "number",
+          "source": "gestion_article_session.V.Quantité Dispo Max Coffre 2",
+          "nullable": false
+        },
+        {
+          "name": "prixUnitaire",
+          "type": "number",
+          "source": "gestion_article_session.Montant articles",
+          "nullable": false
+        },
+        {
+          "name": "montant",
+          "type": "number",
+          "source": "gestion_article_session.Montant articles",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "ApportArticlesPayload",
+      "fields": [
+        {
+          "name": "sessionId",
+          "type": "string",
+          "source": "gestion_article_session.hischronohisto",
+          "nullable": false
+        },
+        {
+          "name": "operateur",
+          "type": "string",
+          "source": "gestion_article_session.hisuser",
+          "nullable": false
+        },
+        {
+          "name": "articles",
+          "type": "ArticleApport[]",
+          "source": "gestion_article_session",
+          "nullable": false
+        },
+        {
+          "name": "dateTime",
+          "type": "Date",
+          "source": "gestion_article_session.v.Date/Time",
+          "nullable": false
+        },
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "parameter",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "articles",
+      "type": "ArticleApport[]",
+      "default": "[]"
+    },
+    {
+      "name": "total",
+      "type": "number",
+      "default": "0"
+    },
+    {
+      "name": "deviseCode",
+      "type": "string",
+      "default": "'EUR'"
+    },
+    {
+      "name": "isExecuting",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "editingIndex",
+      "type": "number | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "addArticle",
+      "params": [
+        "article: Omit<ArticleApport, 'montant'>"
+      ],
+      "businessRules": [
+        "Calculate montant as quantite * prixUnitaire",
+        "Add article to articles array",
+        "Recalculate total from all articles"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "updateArticle",
+      "params": [
+        "index: number",
+        "article: Omit<ArticleApport, 'montant'>"
+      ],
+      "businessRules": [
+        "Calculate montant as quantite * prixUnitaire",
+        "Update article at index",
+        "Recalculate total from all articles"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "removeArticle",
+      "params": [
+        "index: number"
+      ],
+      "businessRules": [
+        "Remove article from articles array",
+        "Recalculate total from remaining articles"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "submitApport",
+      "params": [
+        "sessionId: string",
+        "operateur: string"
+      ],
+      "businessRules": [
+        "Validate that articles array is not empty",
+        "Generate dateTime from current timestamp",
+        "Call API POST /api/caisse/operations/apport-articles with payload",
+        "Clear articles array and total on success",
+        "Handle error and set error state on failure"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "reset",
+      "params": [],
+      "businessRules": [
+        "Clear articles array",
+        "Reset total to 0",
+        "Clear error state",
+        "Reset editingIndex to null"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "calculateTotal",
+      "params": [],
+      "businessRules": [
+        "Sum all article montants",
+        "Update total state"
+      ],
+      "returns": "void"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/caisse/operations/apport-articles",
+      "queryParams": [],
+      "response": "{ success: boolean, message?: string }"
+    }
+  ],
+  "uiLayout": {
+    "type": "modal-form",
+    "sections": [
+      {
+        "name": "articleEntry",
+        "controls": [
+          "articleCodeInput",
+          "libelleInput",
+          "quantiteInput",
+          "prixUnitaireInput",
+          "addButton"
+        ]
+      },
+      {
+        "name": "articlesGrid",
+        "controls": [
+          "dataGrid",
+          "editButton",
+          "deleteButton"
+        ]
+      },
+      {
+        "name": "totalSummary",
+        "controls": [
+          "totalLabel",
+          "deviseLabel"
+        ]
+      },
+      {
+        "name": "actions",
+        "controls": [
+          "submitButton",
+          "cancelButton"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 5,
+    "description": "Mock 5 articles with varying quantities (1-10), prices (5-150 EUR), and common resort articles (towels, beach items, drinks). Total should sum correctly. Include French article names matching resort context."
+  },
+  "dependencies": {
+    "stores": [
+      "useCaisseOpsStore",
+      "useSessionStore"
+    ],
+    "sharedTypes": [
+      "DeviseCode"
+    ],
+    "externalApis": [
+      "caisseOpsApi.apportProduits"
+    ]
+  }
+}

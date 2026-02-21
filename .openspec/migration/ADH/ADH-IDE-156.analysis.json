@@ -1,0 +1,127 @@
+{
+  "domain": "sessionConcurrency",
+  "domainPascal": "SessionConcurrency",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "ConcurrentSessionInfo",
+      "fields": [
+        {
+          "name": "sessionId",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.session_id",
+          "nullable": false
+        },
+        {
+          "name": "terminal",
+          "type": "string",
+          "source": "histo_sessions_caisse_detail.terminal",
+          "nullable": false
+        },
+        {
+          "name": "openedAt",
+          "type": "Date",
+          "source": "histo_sessions_caisse_detail.timestamp_ouverture",
+          "nullable": false
+        },
+        {
+          "name": "openedBy",
+          "type": "string",
+          "source": "histo_sessions_caisse_detail.operateur",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "source": "histo_sessions_caisse_detail.statut",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "concurrentSession",
+      "type": "ConcurrentSessionInfo | null",
+      "default": "null"
+    },
+    {
+      "name": "isChecking",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "checkError",
+      "type": "string | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "checkConcurrentSessions",
+      "params": [
+        "terminal: string",
+        "devise?: string"
+      ],
+      "businessRules": [
+        "RM-001: Si session ouverte détectée ET config VIL n'autorise pas multi-sessions, bloquer ouverture",
+        "Vérifier sessions du jour actuel uniquement (timestamp >= Date())",
+        "Vérifier absence de timestamp de fermeture",
+        "Retourner null si aucune session concurrente, sinon ConcurrentSessionInfo"
+      ],
+      "returns": "Promise<ConcurrentSessionInfo | null>"
+    },
+    {
+      "name": "canOpenNewSession",
+      "params": [
+        "terminal: string"
+      ],
+      "businessRules": [
+        "Appelle checkConcurrentSessions en interne",
+        "Retourne true si aucune session concurrente OU si config VIL autorise multi-sessions",
+        "Retourne false si session concurrente détectée et multi-sessions non autorisé"
+      ],
+      "returns": "Promise<boolean>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/caisse/sessions/concurrent",
+      "queryParams": [
+        "terminal",
+        "devise?"
+      ],
+      "response": "ConcurrentSessionInfo | null"
+    }
+  ],
+  "uiLayout": {
+    "type": "validation-service",
+    "sections": [
+      {
+        "name": "backgroundValidation",
+        "controls": [
+          "Pre-opening session check (no visible UI)",
+          "Error modal if concurrent session detected",
+          "Blocking message with session details"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "Mock concurrent session scenarios: (1) No concurrent session (null), (2) Active session on same terminal today (blocked), (3) Closed session from yesterday (allowed)"
+  },
+  "dependencies": {
+    "stores": [
+      "useCaisseStore (for terminal/config.id)",
+      "useSessionStore (for session state management)"
+    ],
+    "sharedTypes": [
+      "SessionStatus: 'closed' | 'opening' | 'open' | 'closing'"
+    ],
+    "externalApis": [
+      "GET /api/caisse/sessions/concurrent - backend queries histo_sessions_caisse_detail"
+    ]
+  }
+}

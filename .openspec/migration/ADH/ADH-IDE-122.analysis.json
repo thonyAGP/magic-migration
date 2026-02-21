@@ -1,0 +1,448 @@
+{
+  "domain": "sessionOuverture",
+  "domainPascal": "SessionOuverture",
+  "complexity": "HIGH",
+  "entities": [
+    {
+      "name": "SessionOuverture",
+      "fields": [
+        {
+          "name": "chrono",
+          "type": "number",
+          "source": "gestion_devise_session.chrono_session",
+          "nullable": false
+        },
+        {
+          "name": "dateComptable",
+          "type": "Date",
+          "source": "computed",
+          "nullable": false
+        },
+        {
+          "name": "village",
+          "type": "string",
+          "source": "config.nom_village",
+          "nullable": false
+        },
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "config.societe",
+          "nullable": false
+        },
+        {
+          "name": "deviseLocale",
+          "type": "string",
+          "source": "config.devise_locale",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "DenominationCount",
+      "fields": [
+        {
+          "name": "denominationId",
+          "type": "number",
+          "source": "denomination.id",
+          "nullable": false
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "source": "denomination.value",
+          "nullable": false
+        },
+        {
+          "name": "count",
+          "type": "number",
+          "source": "user_input",
+          "nullable": false
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "source": "computed: value * count",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "SoldeParMOP",
+      "fields": [
+        {
+          "name": "monnaie",
+          "type": "number",
+          "source": "computed from denominations",
+          "nullable": false
+        },
+        {
+          "name": "produits",
+          "type": "number",
+          "source": "apport_produits or 0",
+          "nullable": false
+        },
+        {
+          "name": "cartes",
+          "type": "number",
+          "source": "stock_cartes",
+          "nullable": false
+        },
+        {
+          "name": "cheques",
+          "type": "number",
+          "source": "stock_cheques",
+          "nullable": false
+        },
+        {
+          "name": "od",
+          "type": "number",
+          "source": "stock_od",
+          "nullable": false
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "source": "computed: sum of all MOPs",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "DeviseSession",
+      "fields": [
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "devise_in.code_devise",
+          "nullable": false
+        },
+        {
+          "name": "nbInitial",
+          "type": "number",
+          "source": "gestion_devise_session.nbre_devise_initial",
+          "nullable": false
+        },
+        {
+          "name": "nbApport",
+          "type": "number",
+          "source": "gestion_devise_session.nbre_devise_apport",
+          "nullable": false
+        },
+        {
+          "name": "nbCompte",
+          "type": "number",
+          "source": "gestion_devise_session.nbre_devise_comptee",
+          "nullable": false
+        },
+        {
+          "name": "nbCalcule",
+          "type": "number",
+          "source": "gestion_devise_session.nbre_devise_calcule",
+          "nullable": false
+        },
+        {
+          "name": "nbEcart",
+          "type": "number",
+          "source": "gestion_devise_session.nbre_devise_ecart",
+          "nullable": false
+        },
+        {
+          "name": "commentaireEcart",
+          "type": "string",
+          "source": "gestion_devise_session.commentaire_ecart_devise",
+          "nullable": true
+        },
+        {
+          "name": "existeEcart",
+          "type": "boolean",
+          "source": "gestion_devise_session.existe_ecart_devise",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "OuvertureTicketData",
+      "fields": [
+        {
+          "name": "village",
+          "type": "string",
+          "source": "config.nom_village",
+          "nullable": false
+        },
+        {
+          "name": "dateComptable",
+          "type": "Date",
+          "source": "session.dateComptable",
+          "nullable": false
+        },
+        {
+          "name": "chrono",
+          "type": "number",
+          "source": "session.chrono",
+          "nullable": false
+        },
+        {
+          "name": "soldeParMOP",
+          "type": "SoldeParMOP",
+          "source": "computed",
+          "nullable": false
+        },
+        {
+          "name": "devises",
+          "type": "DeviseSession[]",
+          "source": "gestion_devise_session",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "currentStep",
+      "type": "'comptage' | 'validation' | 'ouverture' | 'succes'",
+      "default": "'comptage'"
+    },
+    {
+      "name": "comptage",
+      "type": "DenominationCount[]",
+      "default": "[]"
+    },
+    {
+      "name": "devises",
+      "type": "DeviseSession[]",
+      "default": "[]"
+    },
+    {
+      "name": "soldeParMOP",
+      "type": "SoldeParMOP | null",
+      "default": "null"
+    },
+    {
+      "name": "sessionChrono",
+      "type": "number | null",
+      "default": "null"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "showConcurrentWarning",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "concurrentSessions",
+      "type": "SessionInfo[]",
+      "default": "[]"
+    },
+    {
+      "name": "vilOpenSessions",
+      "type": "boolean",
+      "default": "false"
+    }
+  ],
+  "actions": [
+    {
+      "name": "initOuverture",
+      "params": [],
+      "businessRules": [
+        "Verify no concurrent sessions open (RM-001 variant: Action=0 means cancel)",
+        "Load denomination config from caisseStore",
+        "Initialize empty comptage array",
+        "Check VIL open sessions flag",
+        "Load devise config"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "handleCountChange",
+      "params": [
+        "denominationId: number",
+        "count: number"
+      ],
+      "businessRules": [
+        "Update denomination count",
+        "Recalculate denomination total (value * count)",
+        "Trigger computeResults to update aggregate totals"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "computeResults",
+      "params": [],
+      "businessRules": [
+        "Sum all denomination totals for soldeParMOP.monnaie",
+        "Add apport produits if any (RM-002 condition check)",
+        "Add apport coffre if any (RM-002 condition check)",
+        "Compute total solde initial (FF variable)",
+        "Compute ecart if attendu vs compte differs",
+        "Return SoldeParMOP object"
+      ],
+      "returns": "SoldeParMOP"
+    },
+    {
+      "name": "validateComptage",
+      "params": [],
+      "businessRules": [
+        "Verify at least one denomination counted",
+        "Check total solde > 0",
+        "Advance to 'validation' step if valid",
+        "Show error if validation fails"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "executeOuverture",
+      "params": [],
+      "businessRules": [
+        "Call sessionStore.openSession with comptage data",
+        "Handle concurrent session check (IDE 156)",
+        "If concurrent warning shown, allow force-open option",
+        "On success, store session chrono (EY variable)",
+        "Trigger backend flows: MAJ detail session (IDE 134), MAJ comptage (IDE 133), devise updates (IDE 142, 148), apport handling (IDE 123, 124)",
+        "Advance to 'succes' step"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "handlePrint",
+      "params": [],
+      "businessRules": [
+        "Generate ouverture ticket (IDE 137)",
+        "Include village name (ES variable)",
+        "Include date comptable (EW variable)",
+        "Include solde par MOP breakdown",
+        "Include devise session data if multi-devise",
+        "Call PrintService.executePrint with TicketType.OUVERTURE"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "handleBack",
+      "params": [],
+      "businessRules": [
+        "If step = 'comptage', navigate to /caisse/menu (RM-001 cancel)",
+        "If step = 'validation', go back to 'comptage' step",
+        "If step = 'ouverture', stay on current step (prevent accidental cancel)",
+        "If step = 'succes', navigate to /caisse/menu"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "checkConcurrentSessions",
+      "params": [],
+      "businessRules": [
+        "Call sessionStore.checkConcurrentSessions (IDE 156)",
+        "If concurrent sessions found, show warning dialog",
+        "Provide force-open option for supervisor override",
+        "Return boolean: canProceed"
+      ],
+      "returns": "Promise<boolean>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/session/open",
+      "queryParams": [],
+      "response": "{ chrono: number, soldeParMOP: SoldeParMOP, devises: DeviseSession[] }"
+    },
+    {
+      "method": "GET",
+      "path": "/api/session/check-concurrent",
+      "queryParams": [],
+      "response": "{ hasOpen: boolean, sessions: SessionInfo[] }"
+    },
+    {
+      "method": "GET",
+      "path": "/api/config/denominations",
+      "queryParams": [],
+      "response": "Denomination[]"
+    },
+    {
+      "method": "GET",
+      "path": "/api/config/devises",
+      "queryParams": [],
+      "response": "Devise[]"
+    },
+    {
+      "method": "POST",
+      "path": "/api/print/ticket",
+      "queryParams": [],
+      "response": "{ success: boolean, ticketId?: string }"
+    }
+  ],
+  "uiLayout": {
+    "type": "multi-step-wizard",
+    "sections": [
+      {
+        "name": "comptage",
+        "controls": [
+          "DenominationGrid (editable counts)",
+          "Total display (read-only)",
+          "Validate button",
+          "Cancel button"
+        ]
+      },
+      {
+        "name": "validation",
+        "controls": [
+          "Solde par MOP summary (read-only)",
+          "Devise breakdown (if multi-devise)",
+          "Ecart display (if any)",
+          "Confirm button",
+          "Back button"
+        ]
+      },
+      {
+        "name": "ouverture",
+        "controls": [
+          "Progress indicator (opening session...)",
+          "Concurrent session warning dialog (conditional)",
+          "Force-open option (supervisor only)"
+        ]
+      },
+      {
+        "name": "succes",
+        "controls": [
+          "Success message with session chrono",
+          "Print ticket button",
+          "Return to menu button"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 5,
+    "description": "5 denomination types (billets: 500, 200, 100; pieces: 2, 1) with sample counts, 2 devises (EUR principale, USD secondaire), 1 solde par MOP breakdown, 1 concurrent session warning scenario"
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore",
+      "useCaisseStore",
+      "usePrintStore"
+    ],
+    "sharedTypes": [
+      "DenominationCount",
+      "SoldeParMOP",
+      "DeviseSession",
+      "SessionInfo",
+      "OuvertureTicketData"
+    ],
+    "externalApis": [
+      "sessionStore.openSession",
+      "sessionStore.checkConcurrentSessions",
+      "caisseStore.getDenominations",
+      "caisseStore.getDevises",
+      "PrintService.executePrint"
+    ]
+  }
+}
