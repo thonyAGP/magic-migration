@@ -163,6 +163,31 @@ export const runMigration = async (
   const totalDuration = Date.now() - migrationStart;
   emit(config, ET.MIGRATION_COMPLETED, `Migration complete: ${summary.completed}/${summary.total} programs, ${summary.totalFiles} files in ${formatDuration(totalDuration)}`);
 
+  // Update main tracker batch stats after migration
+  if (!config.dryRun && summary.completed > 0) {
+    try {
+      const tracker = readTracker(trackerFile);
+      const batchDef = tracker.batches.find(b => b.id === batchId);
+      if (batchDef) {
+        batchDef.stats.fullyImpl = summary.completed;
+        batchDef.stats.coverageAvgFrontend = summary.reviewAvgCoverage;
+        batchDef.stats.totalPartial = summary.failed;
+        batchDef.stats.totalMissing = summary.total - summary.completed - summary.failed;
+        if (summary.completed === summary.total && summary.tscClean && summary.testsPass) {
+          batchDef.status = 'verified';
+          batchDef.verifiedDate = new Date().toISOString().slice(0, 10);
+        } else if (summary.completed > 0) {
+          batchDef.status = 'enriched';
+          batchDef.enrichedDate = batchDef.enrichedDate ?? new Date().toISOString().slice(0, 10);
+        }
+        writeTracker(tracker, trackerFile);
+        emit(config, ET.PHASE_COMPLETED, `Tracker updated: ${batchId} → ${batchDef.status} (${summary.completed}/${summary.total} impl, ${summary.reviewAvgCoverage}% coverage)`);
+      }
+    } catch {
+      // Non-critical: tracker update failure shouldn't break the result
+    }
+  }
+
   // Auto git commit + push if enabled
   let gitResult: MigrateResult['git'];
 

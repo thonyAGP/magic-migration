@@ -88,15 +88,17 @@ const makeConfig = (overrides: Partial<MigrateConfig> = {}): MigrateConfig => {
   };
 };
 
-const setupTracker = () => {
+const setupTracker = (batchId = 'B-test', batchName = 'Test Batch') => {
   const trackerDir = path.join(tmpDir, '.openspec', 'migration', 'ADH');
   fs.mkdirSync(trackerDir, { recursive: true });
   fs.writeFileSync(path.join(trackerDir, 'tracker.json'), JSON.stringify({
-    version: '1.0', project: 'ADH', programs: {}, batches: [],
+    version: '1.0', project: 'ADH', programs: {}, batches: [{
+      id: batchId, name: batchName, root: 99, programs: 1, status: 'pending',
+      stats: { backend_na: 0, frontend_enrich: 0, fully_impl: 0, coverage_avg_frontend: 0, total_partial: 0, total_missing: 0 },
+      priority_order: [99],
+    }],
   }));
-  // Also create migrate tracker (separate file used by migrate-tracker.ts)
-  const migrateTrackerFile = path.join(trackerDir, 'tracker.json');
-  return migrateTrackerFile;
+  return path.join(trackerDir, 'tracker.json');
 };
 
 beforeEach(() => {
@@ -205,6 +207,7 @@ describe('migrate-runner git auto-commit', () => {
   });
 
   it('should include batch info in commit message', async () => {
+    setupTracker('B2', 'Caisse modules');
     const config = makeConfig({ autoCommit: true });
 
     await runMigration(['99'], 'B2', 'Caisse modules', config);
@@ -215,5 +218,33 @@ describe('migrate-runner git auto-commit', () => {
     expect(commitCall).toBeDefined();
     const commitMsg = commitCall![0] as string;
     expect(commitMsg).toContain('feat(migration): B2 - Caisse modules');
+  });
+});
+
+describe('migrate-runner tracker update', () => {
+  it('should update batch stats and status after successful migration', async () => {
+    const config = makeConfig({ autoCommit: false });
+
+    await runMigration(['99'], 'B-test', 'Test Batch', config);
+
+    const trackerFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'tracker.json');
+    const raw = JSON.parse(fs.readFileSync(trackerFile, 'utf8'));
+    const batch = raw.batches[0];
+
+    expect(batch.status).not.toBe('pending');
+    expect(batch.stats.fully_impl).toBeGreaterThan(0);
+  });
+
+  it('should NOT update tracker when dryRun is true', async () => {
+    const config = makeConfig({ dryRun: true });
+
+    await runMigration(['99'], 'B-test', 'Test Batch', config);
+
+    const trackerFile = path.join(tmpDir, '.openspec', 'migration', 'ADH', 'tracker.json');
+    const raw = JSON.parse(fs.readFileSync(trackerFile, 'utf8'));
+    const batch = raw.batches[0];
+
+    expect(batch.status).toBe('pending');
+    expect(batch.stats.fully_impl).toBe(0);
   });
 });

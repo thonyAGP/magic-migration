@@ -512,13 +512,17 @@ ${MULTI_CSS}
   <pre id="panel-content"></pre>
 </div>
 
-<!-- Migration progress overlay (fullscreen, no double scroll) -->
-<div class="migrate-overlay" id="migrate-overlay">
-  <div class="migrate-overlay-header">
+<!-- Migration progress panel (bottom-anchored, collapsible) -->
+<div class="migrate-panel" id="migrate-overlay">
+  <div class="migrate-panel-header" id="migrate-panel-toggle">
     <strong id="migrate-overlay-title">Migration</strong>
-    <button class="action-btn" id="migrate-overlay-close" style="padding:2px 8px;font-size:11px">Close</button>
+    <div style="display:flex;align-items:center;gap:6px">
+      <span id="migrate-panel-badge" class="migrate-badge" style="display:none"></span>
+      <button class="action-btn" id="migrate-overlay-minimize" style="padding:2px 8px;font-size:11px" title="Minimize/Expand">_</button>
+      <button class="action-btn" id="migrate-overlay-close" style="padding:2px 8px;font-size:11px" title="Close">X</button>
+    </div>
   </div>
-  <div class="migrate-overlay-body">
+  <div class="migrate-panel-body" id="migrate-panel-body">
     <div class="progress-bar"><div class="progress-fill" id="mbar"></div></div>
     <div class="p-status" id="mstatus">Connecting...</div>
     <div class="p-elapsed" id="melapsed" style="font-size:12px;color:#8b949e;margin:4px 0;"></div>
@@ -1425,43 +1429,62 @@ const MULTI_CSS = `
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Migration Overlay (fullscreen, no double scroll) */
-.migrate-overlay {
+/* Migration Panel (bottom-anchored, collapsible) */
+.migrate-panel {
   display: none;
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.85);
+  bottom: 0; left: 0; right: 0;
+  background: var(--card);
+  border-top: 2px solid var(--blue);
   z-index: 1000;
-  padding: 20px;
-  overflow-y: auto;
+  flex-direction: column;
+  max-height: 50vh;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+  transition: max-height 0.3s ease;
 }
-.migrate-overlay.visible { display: flex; flex-direction: column; }
-.migrate-overlay-header {
+.migrate-panel.visible { display: flex; }
+.migrate-panel.collapsed { max-height: 42px; }
+.migrate-panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  padding: 8px 16px;
   color: #e2e8f0;
   flex-shrink: 0;
+  cursor: pointer;
+  background: rgba(0,0,0,0.2);
+  user-select: none;
 }
-.migrate-overlay-header strong { font-size: 16px; }
-.migrate-overlay-body {
+.migrate-panel-header strong { font-size: 14px; }
+.migrate-badge {
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: var(--green);
+  color: #000;
+  font-weight: 600;
+}
+.migrate-panel-body {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  padding: 8px 16px 12px;
+  overflow: hidden;
 }
-.migrate-overlay-body .progress-bar { flex-shrink: 0; }
-.migrate-overlay-body .p-status { flex-shrink: 0; }
-.migrate-overlay-body .p-elapsed { flex-shrink: 0; }
-.migrate-overlay-body .p-log {
+.migrate-panel.collapsed .migrate-panel-body { display: none; }
+.migrate-panel-body .progress-bar { flex-shrink: 0; }
+.migrate-panel-body .p-status { flex-shrink: 0; }
+.migrate-panel-body .p-elapsed { flex-shrink: 0; }
+.migrate-panel-body .p-log {
   flex: 1;
   overflow-y: auto;
   font-size: 12px;
   margin-top: 8px;
   min-height: 0;
+  max-height: calc(50vh - 130px);
 }
-.migrate-overlay-body .p-log > div {
+.migrate-panel-body .p-log > div {
   padding: 2px 0;
   border-bottom: 1px solid #1e293b;
   color: #cbd5e1;
@@ -1944,20 +1967,35 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     return s + 's';
   }
 
+  var migrateMinimize = document.getElementById('migrate-overlay-minimize');
+  var migratePanelToggle = document.getElementById('migrate-panel-toggle');
+  var migrateBadge = document.getElementById('migrate-panel-badge');
+
   function showMigrateOverlay(title) {
     migrateOverlayTitle.textContent = title;
     document.getElementById('mbar').style.width = '0%';
     document.getElementById('mstatus').textContent = 'Connecting...';
     document.getElementById('melapsed').textContent = '';
     document.getElementById('mlog').innerHTML = '';
+    migrateOverlay.classList.remove('collapsed');
     migrateOverlay.classList.add('visible');
+    migrateMinimize.textContent = '_';
+    if (migrateBadge) migrateBadge.style.display = 'none';
   }
 
   function closeMigrateOverlay() {
     migrateOverlay.classList.remove('visible');
+    migrateOverlay.classList.remove('collapsed');
+  }
+
+  function toggleMigratePanel() {
+    migrateOverlay.classList.toggle('collapsed');
+    migrateMinimize.textContent = migrateOverlay.classList.contains('collapsed') ? '+' : '_';
   }
 
   migrateOverlayClose.addEventListener('click', closeMigrateOverlay);
+  migrateMinimize.addEventListener('click', function(e) { e.stopPropagation(); toggleMigratePanel(); });
+  migratePanelToggle.addEventListener('dblclick', toggleMigratePanel);
 
   function startElapsedTimer(startedAt) {
     var elDiv = document.getElementById('melapsed');
@@ -1987,6 +2025,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     var pct = total > 0 ? Math.round((done / total) * 100) : 0;
     mbar.style.width = pct + '%';
     mstatus.textContent = done + '/' + total + ' (' + pct + '%)';
+    if (migrateBadge) { migrateBadge.textContent = done + '/' + total; migrateBadge.style.display = ''; }
   }
 
   // ─── Confirmation modal ──────────────────────────────────────
@@ -2044,7 +2083,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           + ', coverage ' + r.summary.reviewAvgCoverage + '%';
         var melapsed = document.getElementById('melapsed');
         if (melapsed) melapsed.textContent = 'Total: ' + formatElapsed(Date.now() - migrationStart);
+        if (migrateBadge) { migrateBadge.textContent = 'Done'; migrateBadge.style.background = 'var(--green)'; }
         addMLog('Migration completed');
+        if (r.git) addMLog('[git] Committed ' + r.git.commitSha + ' pushed to ' + r.git.branch);
         return;
       }
 
