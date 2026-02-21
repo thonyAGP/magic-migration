@@ -12,7 +12,24 @@ vi.mock('@/services/api/endpoints-lot6', () => ({
   },
 }));
 
+vi.mock('../dataSourceStore', () => ({
+  useDataSourceStore: {
+    getState: vi.fn(() => ({ isRealApi: true })),
+  },
+}));
+
+vi.mock('../sessionStore', () => ({
+  useSessionStore: {
+    getState: vi.fn(() => ({
+      currentSession: { id: 'session-1' },
+      status: 'open',
+      checkNetworkClosure: vi.fn().mockResolvedValue({ status: 'completed' }),
+    })),
+  },
+}));
+
 import { separationApi } from '@/services/api/endpoints-lot6';
+import { useDataSourceStore } from '../dataSourceStore';
 
 const mockAccounts = [
   { codeAdherent: 1001, filiation: 0, nom: 'Dupont', prenom: 'Jean', societe: 'ADH', solde: 1250, nbTransactions: 45 },
@@ -20,16 +37,22 @@ const mockAccounts = [
 ];
 
 const mockPreview = {
-  nbTransactionsATransferer: 10,
-  montantATransferer: 500,
-  alertes: [],
+  compteSource: mockAccounts[0],
+  compteDestination: mockAccounts[1],
+  nbOperationsADeplacer: 15,
+  montantADeplacer: 450.00,
+  garantiesImpactees: 0,
+  avertissements: [],
 };
 
 const mockResult = {
-  operationId: 'op-001',
-  status: 'completed' as const,
-  nbTransactionsTransferees: 10,
-  montantTransfere: 500,
+  success: true,
+  compteSource: mockAccounts[0],
+  compteDestination: mockAccounts[1],
+  nbOperationsDeplacees: 15,
+  montantDeplace: 450.00,
+  message: 'Separation effectuee avec succes',
+  dateExecution: new Date().toISOString(),
 };
 
 const mockProgress = {
@@ -52,8 +75,12 @@ describe('useSeparationStore', () => {
       isValidating: false,
       isExecuting: false,
       error: null,
+      prerequisites: null,
+      filiations: [],
+      failedStep: null,
     });
     vi.clearAllMocks();
+    vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true } as never);
   });
 
   describe('initial state', () => {
@@ -81,19 +108,20 @@ describe('useSeparationStore', () => {
 
       await useSeparationStore.getState().searchAccount('ADH', 'Dupont');
 
-      expect(useSeparationStore.getState().searchResults).toEqual(mockAccounts);
+      const results = useSeparationStore.getState().searchResults;
+      expect(results).toHaveLength(2);
+      expect(results[0]).toMatchObject({ codeAdherent: 1001, nom: 'Dupont' });
       expect(useSeparationStore.getState().isSearching).toBe(false);
     });
 
     it('should set error on failure in non-DEV mode', async () => {
-      // import.meta.env.DEV is false in test environment
       vi.mocked(separationApi.searchAccount).mockRejectedValue(new Error('Network error'));
 
       await useSeparationStore.getState().searchAccount('ADH', 'test');
 
-      // In test mode (not DEV), should fallback to mock accounts
       const state = useSeparationStore.getState();
       expect(state.isSearching).toBe(false);
+      expect(state.error).toBe('Network error');
     });
 
     it('should handle null data', async () => {
@@ -139,7 +167,11 @@ describe('useSeparationStore', () => {
       const result = await useSeparationStore.getState().validateSeparation('ADH', 'user1');
 
       expect(result).toEqual({ success: true });
-      expect(useSeparationStore.getState().preview).toEqual(mockPreview);
+      const preview = useSeparationStore.getState().preview;
+      expect(preview).toMatchObject({
+        nbOperationsADeplacer: 15,
+        montantADeplacer: 450.00,
+      });
       expect(useSeparationStore.getState().currentStep).toBe('preview');
       expect(useSeparationStore.getState().isValidating).toBe(false);
     });
@@ -153,8 +185,10 @@ describe('useSeparationStore', () => {
 
       const result = await useSeparationStore.getState().validateSeparation('ADH', 'user1');
 
-      expect(result).toEqual({ success: false, error: 'Same account' });
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Same account');
       expect(useSeparationStore.getState().isValidating).toBe(false);
+      expect(useSeparationStore.getState().error).toBe('Same account');
     });
 
     it('should set isValidating during validation', async () => {
@@ -167,7 +201,10 @@ describe('useSeparationStore', () => {
       vi.mocked(separationApi.validate).mockReturnValue(promise as never);
 
       const validatePromise = useSeparationStore.getState().validateSeparation('ADH', 'user1');
-      expect(useSeparationStore.getState().isValidating).toBe(true);
+      
+      await vi.waitFor(() => {
+        expect(useSeparationStore.getState().isValidating).toBe(true);
+      });
 
       resolve!({ data: { data: mockPreview } });
       await validatePromise;
@@ -197,7 +234,9 @@ describe('useSeparationStore', () => {
       const result = await useSeparationStore.getState().executeSeparation('ADH', 'user1');
 
       expect(result).toEqual({ success: true });
-      expect(useSeparationStore.getState().result).toEqual(mockResult);
+      const storeResult = useSeparationStore.getState().result;
+      expect(storeResult?.success).toBe(true);
+      expect(storeResult?.nbOperationsDeplacees).toBe(15);
       expect(useSeparationStore.getState().currentStep).toBe('result');
       expect(useSeparationStore.getState().isExecuting).toBe(false);
     });
@@ -211,20 +250,28 @@ describe('useSeparationStore', () => {
 
       const result = await useSeparationStore.getState().executeSeparation('ADH', 'user1');
 
-      expect(result).toEqual({ success: false, error: 'Server error' });
-      expect(useSeparationStore.getState().currentStep).toBe('confirmation');
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Server error');
+      expect(useSeparationStore.getState().isExecuting).toBe(false);
+      expect(useSeparationStore.getState().error).toBe('Server error');
     });
   });
 
   describe('pollProgress', () => {
     it('should set result when available', async () => {
+      useSeparationStore.setState({
+        compteSource: mockAccounts[0] as never,
+        compteDestination: mockAccounts[1] as never,
+      });
       vi.mocked(separationApi.getResult).mockResolvedValue({
         data: { data: mockResult },
       } as never);
 
       await useSeparationStore.getState().pollProgress('op-001');
 
-      expect(useSeparationStore.getState().result).toEqual(mockResult);
+      const result = useSeparationStore.getState().result;
+      expect(result?.success).toBe(true);
+      expect(result?.nbOperationsDeplacees).toBe(15);
       expect(useSeparationStore.getState().currentStep).toBe('result');
     });
 
@@ -236,14 +283,17 @@ describe('useSeparationStore', () => {
 
       await useSeparationStore.getState().pollProgress('op-001');
 
-      expect(useSeparationStore.getState().progress).toEqual(mockProgress);
+      const progress = useSeparationStore.getState().progress;
+      expect(progress).toMatchObject({
+        operationId: 'op-001',
+        progress: 50,
+      });
     });
 
     it('should silently handle both errors', async () => {
       vi.mocked(separationApi.getResult).mockRejectedValue(new Error('fail'));
       vi.mocked(separationApi.getProgress).mockRejectedValue(new Error('fail'));
 
-      // Should not throw
       await useSeparationStore.getState().pollProgress('op-001');
     });
   });

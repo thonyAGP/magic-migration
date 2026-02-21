@@ -52,7 +52,7 @@ describe('PassCreationForm', () => {
     const villageSelect = screen.getByDisplayValue('Selectionner un village');
     fireEvent.change(villageSelect, { target: { value: 'OPE' } });
     // Dates
-    const allDateInputs = screen.getAllByRole('textbox').length === 0
+    const _allDateInputs = screen.getAllByRole('textbox').length === 0
       ? document.querySelectorAll('input[type="date"]')
       : [];
     // Use direct query for date inputs

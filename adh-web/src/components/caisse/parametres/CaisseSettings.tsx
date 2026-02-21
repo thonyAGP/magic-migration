@@ -31,13 +31,13 @@ export function CaisseSettings({ className }: CaisseSettingsProps) {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
-    if (caisseConfig) {
-      setDeviseDefaut(caisseConfig.deviseDefaut);
-      setModeOffline(caisseConfig.modeOffline);
-      setAutoLogoutMinutes(caisseConfig.autoLogoutMinutes);
-      setImprimanteDefaut(caisseConfig.imprimanteDefaut);
-      setFormatTicket(caisseConfig.formatTicket);
-    }
+    if (!caisseConfig) return;
+
+    setDeviseDefaut(caisseConfig.deviseDefaut);
+    setModeOffline(caisseConfig.modeOffline);
+    setAutoLogoutMinutes(caisseConfig.autoLogoutMinutes);
+    setImprimanteDefaut(caisseConfig.imprimanteDefaut);
+    setFormatTicket(caisseConfig.formatTicket);
   }, [caisseConfig]);
 
   const handleSubmit = useCallback(async () => {

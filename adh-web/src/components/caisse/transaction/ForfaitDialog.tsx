@@ -165,5 +165,3 @@ export function ForfaitDialog({
     </Dialog>
   );
 }
-
-export { calculateDays };

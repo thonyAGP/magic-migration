@@ -80,7 +80,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
 
     useEffect(() => {
       // Resetting highlighted index when search changes is intentional UI sync
-      setHighlightedIndex(0); // eslint-disable-line react-hooks/set-state-in-effect
+      setHighlightedIndex(0);
     }, [search]);
 
     const selectOption = useCallback(

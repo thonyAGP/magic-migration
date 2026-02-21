@@ -13,22 +13,41 @@ vi.mock('@/services/api/endpoints-lot5', () => ({
     completeSession: vi.fn(),
     cancelSession: vi.fn(),
     getSummary: vi.fn(),
+    getGuest: vi.fn(),
+    acceptCheckout: vi.fn(),
+    declineCheckout: vi.fn(),
+    cancelPass: vi.fn(),
+    getVillageConfig: vi.fn(),
+    getSystemStatus: vi.fn(),
+  },
+}));
+
+vi.mock('@/stores/dataSourceStore', () => ({
+  useDataSourceStore: {
+    getState: vi.fn(() => ({ isRealApi: true })),
   },
 }));
 
 import { datacatchApi } from '@/services/api/endpoints-lot5';
+import { useDataSourceStore } from '@/stores/dataSourceStore';
 
 const mockSearchResults = [
-  { id: 1, nom: 'Dupont', prenom: 'Jean', email: 'jean@test.com' },
-  { id: 2, nom: 'Martin', prenom: 'Marie', email: 'marie@test.com' },
+  { customerId: 1, nom: 'Dupont', prenom: 'Jean', email: 'jean@test.com', telephone: '+33601020304', scoreMatch: 95 },
+  { customerId: 2, nom: 'Martin', prenom: 'Marie', email: 'marie@test.com', telephone: '+33601020305', scoreMatch: 88 },
 ];
 
 const mockSession = {
   sessionId: 'sess-001',
+  societe: 'ADH',
+  operateur: 'USR001',
+  customerId: 1,
+  isNewCustomer: false,
   step: 'personal' as const,
-  personalInfo: { nom: 'Dupont', prenom: 'Jean' },
+  personalInfo: { nom: 'Dupont', prenom: 'Jean', email: 'jean@test.com', telephone: '+33601020304' },
   address: null,
   preferences: null,
+  statut: 'en_cours' as const,
+  dateCreation: '2026-02-10T09:00:00Z',
 };
 
 const mockPersonalInfo = {
@@ -66,12 +85,19 @@ describe('useDataCatchStore', () => {
       personalInfo: null,
       address: null,
       preferences: null,
+      counterOccupation: { current: 0, max: 20, waiting: 0 },
+      catchingStats: { treatedToday: 0, avgTimeMinutes: 0, completionRate: 0 },
       isSearching: false,
       isSaving: false,
       isCompleting: false,
       error: null,
+      guestData: null,
+      checkoutStatus: 'idle',
+      villageConfig: null,
+      systemStatus: null,
     });
     vi.clearAllMocks();
+    vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true } as never);
   });
 
   describe('initial state', () => {
@@ -163,7 +189,7 @@ describe('useDataCatchStore', () => {
       const state = useDataCatchStore.getState();
       expect(state.currentSession).toEqual(mockSession);
       expect(state.currentStep).toBe('personal');
-      expect(state.personalInfo).toEqual({ nom: 'Dupont', prenom: 'Jean' });
+      expect(state.personalInfo).toEqual(mockSession.personalInfo);
     });
 
     it('should set error on failure', async () => {

@@ -88,7 +88,7 @@ const MOCK_SEARCH: FactureSearchResult = {
   total: 1,
 };
 
-const MOCK_SUMMARY: FactureSummary = {
+const _MOCK_SUMMARY: FactureSummary = {
   totalHT: 180,
   totalTVA: 36,
   totalTTC: 216,

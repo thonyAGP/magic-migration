@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Input, Label, Badge, Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { CustomerSearchPanelProps } from './types';
-import type { CustomerSearchResult } from '@/types/datacatch';
 
 export function CustomerSearchPanel({
   onSelectCustomer,

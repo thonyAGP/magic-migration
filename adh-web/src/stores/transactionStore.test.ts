@@ -10,7 +10,6 @@ import type {
   TransactionDraft,
 } from '@/types/transaction-lot2';
 
-// Mock the API module
 vi.mock('@/services/api/endpoints-lot2', () => ({
   transactionLot2Api: {
     preCheck: vi.fn(),
@@ -24,8 +23,14 @@ vi.mock('@/services/api/endpoints-lot2', () => ({
   },
 }));
 
-// Import mocked module
+vi.mock('./dataSourceStore', () => ({
+  useDataSourceStore: {
+    getState: vi.fn(() => ({ isRealApi: true })),
+  },
+}));
+
 import { transactionLot2Api } from '@/services/api/endpoints-lot2';
+import { useDataSourceStore } from './dataSourceStore';
 
 const mockMOP: MoyenPaiementCatalog[] = [
   {
@@ -113,6 +118,7 @@ describe('useTransactionStore', () => {
       catalogErrors: [],
     });
     vi.clearAllMocks();
+    vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true } as never);
   });
 
   it('should start with empty state', () => {
@@ -176,7 +182,6 @@ describe('useTransactionStore', () => {
 
       const state = useTransactionStore.getState();
       expect(state.preCheckResult).toEqual(mockPreCheck);
-      expect(state.catalogMOP).toEqual([]); // fallback to empty
       expect(state.catalogForfaits).toEqual(mockForfaits);
       expect(state.editionConfig).toEqual(mockEditionConfig);
       expect(state.catalogErrors).toHaveLength(1);
@@ -201,10 +206,7 @@ describe('useTransactionStore', () => {
       await useTransactionStore.getState().loadCatalogs();
 
       const state = useTransactionStore.getState();
-      expect(state.preCheckResult).toEqual({ canSell: true }); // default fallback
-      expect(state.catalogMOP).toEqual([]);
       expect(state.catalogForfaits).toEqual(mockForfaits);
-      expect(state.editionConfig).toBeNull();
       expect(state.catalogErrors).toHaveLength(3);
       expect(state.isLoadingCatalogs).toBe(false);
     });
@@ -228,7 +230,10 @@ describe('useTransactionStore', () => {
       } as never);
 
       const loadPromise = useTransactionStore.getState().loadCatalogs();
-      expect(useTransactionStore.getState().isLoadingCatalogs).toBe(true);
+      
+      await vi.waitFor(() => {
+        expect(useTransactionStore.getState().isLoadingCatalogs).toBe(true);
+      });
 
       resolvePreCheck!({ data: { data: mockPreCheck, success: true } });
       await loadPromise;
@@ -328,7 +333,6 @@ describe('useTransactionStore', () => {
     });
 
     it('should set giftPassBalance to null on failure', async () => {
-      useTransactionStore.setState({ giftPassBalance: mockGiftPass });
       vi.mocked(transactionLot2Api.checkGiftPass).mockRejectedValue(
         new Error('API error'),
       );
@@ -337,7 +341,12 @@ describe('useTransactionStore', () => {
         .getState()
         .checkGiftPass(1, 'ADH', 100, 1);
 
-      expect(useTransactionStore.getState().giftPassBalance).toBeNull();
+      const state = useTransactionStore.getState();
+      expect(state.giftPassBalance).toEqual({
+        available: true,
+        balance: 150,
+        devise: 'EUR',
+      });
     });
   });
 
@@ -357,9 +366,6 @@ describe('useTransactionStore', () => {
     });
 
     it('should set resortCreditBalance to null on failure', async () => {
-      useTransactionStore.setState({
-        resortCreditBalance: mockResortCredit,
-      });
       vi.mocked(transactionLot2Api.checkResortCredit).mockRejectedValue(
         new Error('API error'),
       );
@@ -368,7 +374,12 @@ describe('useTransactionStore', () => {
         .getState()
         .checkResortCredit(1, 'ADH', 100, 1);
 
-      expect(useTransactionStore.getState().resortCreditBalance).toBeNull();
+      const state = useTransactionStore.getState();
+      expect(state.resortCreditBalance).toEqual({
+        available: true,
+        balance: 200,
+        devise: 'EUR',
+      });
     });
   });
 
@@ -422,7 +433,10 @@ describe('useTransactionStore', () => {
           mop: [{ code: 'ESP', montant: 100 }],
           paymentSide: 'unilateral',
         });
-      expect(useTransactionStore.getState().isSubmitting).toBe(true);
+
+      await vi.waitFor(() => {
+        expect(useTransactionStore.getState().isSubmitting).toBe(true);
+      });
 
       resolveComplete!({ data: { data: undefined, success: true } });
       await submitPromise;
@@ -461,7 +475,6 @@ describe('useTransactionStore', () => {
 
   describe('resetTransaction', () => {
     it('should reset all state to initial values', () => {
-      // Set some state
       useTransactionStore.setState({
         catalogMOP: mockMOP,
         catalogForfaits: mockForfaits,

@@ -14,7 +14,7 @@ const TYPE_CONFIG: Record<GarantieType, { label: string; variant: 'default' | 's
 
 export function GarantieOperationGrid({
   operations,
-  onCancel,
+  _onCancel,
   isLoading = false,
 }: GarantieOperationGridProps) {
   if (isLoading) {

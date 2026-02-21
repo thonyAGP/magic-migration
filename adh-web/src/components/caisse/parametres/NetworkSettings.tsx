@@ -20,14 +20,14 @@ export function NetworkSettings({ className }: NetworkSettingsProps) {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
-    if (networkConfig) {
-      setApiUrl(networkConfig.apiUrl);
-      setTimeout_(networkConfig.timeout);
-      setRetryCount(networkConfig.retryCount);
-      setRetryDelay(networkConfig.retryDelay);
-      setWebsocketUrl(networkConfig.websocketUrl);
-      setHeartbeatInterval(networkConfig.heartbeatInterval);
-    }
+    if (!networkConfig) return;
+
+    setApiUrl(networkConfig.apiUrl);
+    setTimeout_(networkConfig.timeout);
+    setRetryCount(networkConfig.retryCount);
+    setRetryDelay(networkConfig.retryDelay);
+    setWebsocketUrl(networkConfig.websocketUrl);
+    setHeartbeatInterval(networkConfig.heartbeatInterval);
   }, [networkConfig]);
 
   const handleSave = useCallback(async () => {

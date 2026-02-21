@@ -69,7 +69,7 @@ export function LiberationDialog({
 
     setErrors({});
     onValidate(result.data);
-  }, [accountNumber, montant, referenceOrigine, maxAmount, onValidate, liberationSchema]);
+  }, [accountNumber, montant, referenceOrigine, onValidate, liberationSchema]);
 
   const handleClose = useCallback(() => {
     setMontant('');

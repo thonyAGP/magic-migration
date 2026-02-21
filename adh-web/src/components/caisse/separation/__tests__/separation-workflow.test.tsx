@@ -44,7 +44,7 @@ const preview: SeparationPreview = {
   avertissements: ['Attention: garanties actives seront transferees', 'Verifier les operations en cours'],
 };
 
-const previewNoWarnings: SeparationPreview = {
+const _previewNoWarnings: SeparationPreview = {
   ...preview,
   avertissements: [],
   garantiesImpactees: 0,

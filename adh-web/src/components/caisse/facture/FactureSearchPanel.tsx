@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Input, Label, Badge } from '@/components/ui';
-import type { Facture } from '@/types/facture';
 import type { FactureSearchPanelProps } from './types';
 
 const formatEUR = (value: number) =>
@@ -24,6 +23,7 @@ export function FactureSearchPanel({
   onSearch,
   searchResults = [],
   isSearching = false,
+  _onStepError,
 }: FactureSearchPanelProps) {
   const [query, setQuery] = useState('');
   const [dateDebut, setDateDebut] = useState('');

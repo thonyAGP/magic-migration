@@ -24,13 +24,13 @@ export function FusionPage() {
   const preview = useFusionStore((s) => s.preview);
   const result = useFusionStore((s) => s.result);
   const progress = useFusionStore((s) => s.progress);
-  const searchResults = useFusionStore((s) => s.searchResults);
-  const isSearching = useFusionStore((s) => s.isSearching);
-  const isValidating = useFusionStore((s) => s.isValidating);
-  const isExecuting = useFusionStore((s) => s.isExecuting);
+  const _searchResults = useFusionStore((s) => s.searchResults);
+  const _isSearching = useFusionStore((s) => s.isSearching);
+  const _isValidating = useFusionStore((s) => s.isValidating);
+  const _isExecuting = useFusionStore((s) => s.isExecuting);
   const error = useFusionStore((s) => s.error);
   const prerequisites = useFusionStore((s) => s.prerequisites);
-  const searchAccount = useFusionStore((s) => s.searchAccount);
+  const _searchAccount = useFusionStore((s) => s.searchAccount);
   const selectPrincipal = useFusionStore((s) => s.selectPrincipal);
   const selectSecondaire = useFusionStore((s) => s.selectSecondaire);
   const validateFusion = useFusionStore((s) => s.validateFusion);

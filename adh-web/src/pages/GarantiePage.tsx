@@ -124,7 +124,7 @@ export function GarantiePage() {
     setDialogOpen(true);
   }, []);
 
-  const handleRetrait = useCallback(() => {
+  const _handleRetrait = useCallback(() => {
     setDialogMode('retrait');
     setDialogOpen(true);
   }, []);

@@ -29,7 +29,7 @@ const ecartNegatif: SessionEcart = {
   ecartsDevises: [{ deviseCode: 'EUR', attendu: 1000, compte: 950, ecart: -50 }],
 };
 
-const ecartPositif: SessionEcart = {
+const _ecartPositif: SessionEcart = {
   attendu: 1000,
   compte: 1020,
   ecart: 20,
@@ -67,6 +67,7 @@ const menuItems: CaisseMenuItem[] = [
 ];
 
 // --- Tests ---
+
 
 describe('Session Workflow Integration', () => {
   describe('SessionCard with different statuses', () => {

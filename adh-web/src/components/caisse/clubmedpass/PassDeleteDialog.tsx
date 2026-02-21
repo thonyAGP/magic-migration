@@ -24,7 +24,7 @@ const CONFIRMATION_WORD = 'SUPPRIMER';
 export function PassDeleteDialog({
   open,
   onClose,
-  passId,
+  passId: _passId,
   passHolder,
   onConfirm,
 }: PassDeleteDialogProps) {

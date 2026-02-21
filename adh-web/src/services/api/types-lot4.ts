@@ -1,4 +1,3 @@
-import type { GarantieType } from '@/types/garantie';
 import type { FactureType } from '@/types/facture';
 
 // Garantie requests

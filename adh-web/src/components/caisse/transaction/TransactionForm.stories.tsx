@@ -68,7 +68,6 @@ const boutiqueLines: TransactionLineFormData[] = [
   },
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const handleSubmit = async (_data: TransactionFormData) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 };
