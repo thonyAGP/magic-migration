@@ -2055,7 +2055,8 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     tokensIn: 0, tokensOut: 0,
     eventsProcessed: 0,
     estimatedHours: 0,
-    batchPhaseActive: false, batchPhaseStart: 0
+    batchPhaseActive: false, batchPhaseStart: 0,
+    batchProgress: 0, batchElapsedStart: 0, batchReviewsDone: 0
   };
 
   function escAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -2074,6 +2075,10 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     migrateOverlay.classList.add('visible');
     migrateMinimize.textContent = '_';
     if (migrateBadge) migrateBadge.style.display = 'none';
+    // Reset batch progress tracking
+    migrateState.batchProgress = 0;
+    migrateState.batchElapsedStart = 0;
+    migrateState.batchReviewsDone = 0;
   }
 
   function closeMigrateOverlay() {
@@ -2114,34 +2119,44 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
   function computeETA() {
     var remaining = migrateState.totalProgs - migrateState.doneProgs - migrateState.failedProgs;
-    // All individual programs done but migration still running (batch phases: verify, integrate, review)
-    if (remaining <= 0) {
-      if (migrateState.batchPhaseActive) return ' | Phases batch en cours...';
-      return '';
+
+    // ── Batch phase ETA (all programs done, verification/review running) ──
+    if (remaining <= 0 && migrateState.batchPhaseActive) {
+      var bp = migrateState.batchProgress;
+      if (bp > 0 && migrateState.batchElapsedStart > 0) {
+        var batchElapsed = Date.now() - migrateState.batchElapsedStart;
+        var batchRemaining = batchElapsed * ((1 - bp) / bp);
+        return ' | V\\u00e9rification... ETA: ~' + formatElapsed(batchRemaining);
+      }
+      return ' | V\\u00e9rification en cours...';
     }
-    // Parallel factor: with N agents, N programs run concurrently
+    if (remaining <= 0) return '';
+
+    // ── Per-program ETA ──
     var par = migrateState.parallelCount > 1 ? migrateState.parallelCount : 1;
     var durations = migrateState.programDurations;
-    // Filter out trivial programs (<5s) that skipped all phases (no Claude calls)
+    // Filter trivial (<5s) = programs with existing files (no real generation)
     var real = [];
     for (var i = 0; i < durations.length; i++) { if (durations[i] >= 5000) real.push(durations[i]); }
-    // 2+ real durations: average per-program duration / parallel agents
+
+    // If we have real durations (actual generation), use average
     if (real.length >= 2) {
       var sum = 0;
       for (var i = 0; i < real.length; i++) sum += real[i];
       var avgMs = sum / real.length;
       return ' | ETA: ~' + formatElapsed(Math.ceil(remaining / par) * avgMs);
     }
-    // 1 real duration or all trivial: elapsed-based projection (naturally accounts for parallelism)
-    if (real.length === 1 || (durations.length > 0 && real.length === 0)) {
-      var completed = migrateState.doneProgs + migrateState.failedProgs;
-      if (completed > 0) {
-        var elapsed = Date.now() - migrateState.migrationStart;
-        var avgMs = elapsed / completed;
-        return ' | ETA: ~' + formatElapsed(remaining * avgMs);
-      }
+    if (real.length === 1) {
+      return ' | ETA: ~' + formatElapsed(Math.ceil(remaining / par) * real[0]);
     }
-    // 0 completed but we have a pre-calculated estimate (divide by agents if known)
+
+    // All programs trivial (<5s) = existing files, no meaningful ETA for per-program phase
+    var completed = migrateState.doneProgs + migrateState.failedProgs;
+    if (completed > 0 && real.length === 0) {
+      return ' | fichiers existants';
+    }
+
+    // 0 completed: use pre-calculated estimate if available
     if (migrateState.estimatedHours > 0) {
       var estMs = migrateState.estimatedHours * 3600000 / par;
       return ' | ETA: ~' + formatElapsed(estMs);
@@ -2247,12 +2262,15 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     var label = document.getElementById('mp-module-label');
     if (!bar || !label) return;
     var processed = done + migrateState.failedProgs;
-    var pct = total > 0 ? Math.round((processed / total) * 100) : 0;
+    // Progress bar: 0-70% per-program generation, 70-100% batch phases
+    var progPct = total > 0 ? (processed / total) * 70 : 0;
+    var batchPct = migrateState.batchProgress * 30;
+    var pct = Math.min(100, Math.round(progPct + batchPct));
     bar.style.width = pct + '%';
     var eta = computeETA();
     if (migrateState.failedProgs > 0) {
       bar.style.background = 'linear-gradient(90deg, var(--green) 0%, #f59e0b 100%)';
-      label.textContent = done + '/' + total + ' OK, ' + migrateState.failedProgs + ' failed (' + pct + '%)' + eta;
+      label.textContent = done + '/' + total + ' OK, ' + migrateState.failedProgs + ' \\u00e9chou\\u00e9(s) (' + pct + '%)' + eta;
     } else {
       label.textContent = done + '/' + total + ' programmes (' + pct + '%)' + eta;
     }
@@ -2344,6 +2362,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       if (isBatchPhase) {
         migrateState.batchPhaseActive = true;
         if (!migrateState.batchPhaseStart) migrateState.batchPhaseStart = Date.now();
+        if (!migrateState.batchElapsedStart) migrateState.batchElapsedStart = Date.now();
         // Re-activate program timer for per-program batch phases (review)
         if (pid) migrateState.programStartTimes[pid] = Date.now();
         // Refresh progress label to show batch info + ETA
@@ -2394,8 +2413,19 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           var batchDurEl = document.getElementById('mp-dur-' + pid);
           if (batchDurEl) { batchDurEl.textContent = formatElapsed(batchDur); batchDurEl.style.color = '#d2a8ff'; }
         }
-      } else if (phase && !pid) {
-        // Batch-level phase completed - update prog section
+      // Track batch progress for review per-program completions
+      if (migrateState.batchPhaseActive && pid && phase === 'review') {
+        migrateState.batchReviewsDone++;
+        var reviewPct = migrateState.totalProgs > 0 ? migrateState.batchReviewsDone / migrateState.totalProgs : 1;
+        migrateState.batchProgress = 0.7 + 0.3 * reviewPct;
+        updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
+      }
+      if (phase && !pid) {
+        // Batch-level phase completed - update prog section + batch progress
+        if (migrateState.batchPhaseActive && phase === 'integrate') {
+          migrateState.batchProgress = 0.7;
+          updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
+        }
         var titleEl = document.getElementById('mp-prog-title');
         var bar = document.getElementById('mp-prog-bar');
         if (titleEl) { titleEl.textContent = phase.toUpperCase() + ': ' + (msg.message || 'done'); titleEl.style.color = '#3fb950'; }
@@ -2422,8 +2452,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       delete migrateState.programStartTimes[pid];
       var durEl = document.getElementById('mp-dur-' + pid);
       if (durEl) {
-        durEl.textContent = isSkipped ? 'skipped' : formatElapsed(dur);
-        durEl.style.color = isSkipped ? '#6b7280' : '#3fb950';
+        var isExisting = !isSkipped && dur < 3000;
+        durEl.textContent = isSkipped ? 'v\\u00e9rifi\\u00e9' : (isExisting ? 'existant' : formatElapsed(dur));
+        durEl.style.color = isSkipped ? '#6b7280' : (isExisting ? '#8b5cf6' : '#3fb950');
       }
       if (migrateState.programPhases[pid]) {
         if (isSkipped) {
@@ -2517,6 +2548,14 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       addMLog('Migration termin\\u00e9e' + (failed > 0 ? ' (' + failed + ' \\u00e9chou\\u00e9(s))' : ''));
       if (r && r.git) addMLog('[git] Committed ' + r.git.commitSha + ' pushed to ' + r.git.branch);
       addMLog('Migration termin\\u00e9e.');
+      return;
+    }
+
+    if (msg.type === 'verify_pass') {
+      // Verification loop done (TSC + tests) = 40% of batch work
+      migrateState.batchProgress = 0.4;
+      updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
+      addMLog('[verify] ' + (msg.message || ''));
       return;
     }
 
