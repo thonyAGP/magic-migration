@@ -148,8 +148,8 @@ const callClaudeCli = async (options: ClaudeCallOptions): Promise<ClaudeCallResu
 
   try {
     const cmd = process.platform === 'win32'
-      ? `type "${tmpFile}" | ${cliBin} --print ${modelArgs}`
-      : `${cliBin} --print ${modelArgs} < "${tmpFile}"`;
+      ? `type "${tmpFile}" | ${cliBin} --print --output-format json ${modelArgs}`
+      : `${cliBin} --print --output-format json ${modelArgs} < "${tmpFile}"`;
 
     const { stdout } = await execAsync(cmd, {
       timeout: timeoutMs,
@@ -158,12 +158,25 @@ const callClaudeCli = async (options: ClaudeCallOptions): Promise<ClaudeCallResu
       windowsHide: true,
     });
 
-    return {
-      output: stdout.trim(),
-      durationMs: Date.now() - start,
-    };
+    // Parse JSON output to extract text + tokens
+    return parseCliJsonOutput(stdout, Date.now() - start);
   } finally {
     try { unlinkSync(tmpFile); } catch { /* ignore cleanup errors */ }
+  }
+};
+
+/** Parse `claude --print --output-format json` output. */
+const parseCliJsonOutput = (stdout: string, durationMs: number): ClaudeCallResult => {
+  try {
+    const data = JSON.parse(stdout.trim());
+    const text = typeof data.result === 'string' ? data.result : stdout.trim();
+    const tokens = data.usage?.input_tokens && data.usage?.output_tokens
+      ? { input: data.usage.input_tokens, output: data.usage.output_tokens }
+      : undefined;
+    return { output: text, durationMs, tokens };
+  } catch {
+    // Fallback: if JSON parse fails, treat as raw text (old --print behavior)
+    return { output: stdout.trim(), durationMs };
   }
 };
 
