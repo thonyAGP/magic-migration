@@ -155,7 +155,7 @@ const renderEstimationSection = (r: FullMigrationReport): string => {
   if (!est) return '';
 
   const { totalEstimatedHours, remainingHours, avgScore, gradeDistribution, top10 } = est;
-  const completedHours = totalEstimatedHours - remainingHours;
+  const completedHours = Math.round((totalEstimatedHours - remainingHours) * 10) / 10;
   const progressPct = totalEstimatedHours > 0 ? Math.round(completedHours / totalEstimatedHours * 100) : 0;
 
   // Donut for grade distribution

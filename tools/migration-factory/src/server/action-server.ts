@@ -58,7 +58,7 @@ export const startActionServer = async (config: ActionServerConfig): Promise<htt
     try {
       if (pathname === '/' && req.method === 'GET') {
         const html = await generateServerDashboard(config);
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0' });
         res.end(html);
       } else if (pathname === '/api/status' && req.method === 'GET') {
         handleStatus(ctx, res);
