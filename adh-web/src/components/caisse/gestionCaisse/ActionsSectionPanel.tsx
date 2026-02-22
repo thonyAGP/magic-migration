@@ -1,0 +1,111 @@
+import { Button } from "@/components/ui";
+import { cn } from "@/lib/utils";
+
+interface ActionsSectionPanelProps {
+  className?: string;
+  onOuvrirSession?: () => void;
+  onFermerSession?: () => void;
+  onApportCoffre?: () => void;
+  onApportProduit?: () => void;
+  onRemiseCoffre?: () => void;
+  onHistorique?: () => void;
+  onConsultation?: () => void;
+  onReimprimer?: () => void;
+  disabled?: boolean;
+}
+
+export const ActionsSectionPanel = ({
+  className,
+  onOuvrirSession,
+  onFermerSession,
+  onApportCoffre,
+  onApportProduit,
+  onRemiseCoffre,
+  onHistorique,
+  onConsultation,
+  onReimprimer,
+  disabled = false,
+}: ActionsSectionPanelProps) => {
+  return (
+    <div className={cn("flex flex-col gap-3", className)}>
+      <div className="grid grid-cols-2 gap-3">
+        <Button
+          onClick={onOuvrirSession}
+          disabled={disabled}
+          variant="primary"
+          className="w-full"
+        >
+          Ouvrir Session
+        </Button>
+        <Button
+          onClick={onFermerSession}
+          disabled={disabled}
+          variant="primary"
+          className="w-full"
+        >
+          Fermer Session
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        <Button
+          onClick={onApportCoffre}
+          disabled={disabled}
+          variant="secondary"
+          size="sm"
+          className="w-full"
+        >
+          Apport Coffre
+        </Button>
+        <Button
+          onClick={onApportProduit}
+          disabled={disabled}
+          variant="secondary"
+          size="sm"
+          className="w-full"
+        >
+          Apport Produit
+        </Button>
+        <Button
+          onClick={onRemiseCoffre}
+          disabled={disabled}
+          variant="secondary"
+          size="sm"
+          className="w-full"
+        >
+          Remise Coffre
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        <Button
+          onClick={onHistorique}
+          disabled={disabled}
+          variant="secondary"
+          size="sm"
+          className="w-full"
+        >
+          Historique
+        </Button>
+        <Button
+          onClick={onConsultation}
+          disabled={disabled}
+          variant="secondary"
+          size="sm"
+          className="w-full"
+        >
+          Consultation
+        </Button>
+        <Button
+          onClick={onReimprimer}
+          disabled={disabled}
+          variant="secondary"
+          size="sm"
+          className="w-full"
+        >
+          Réimprimer
+        </Button>
+      </div>
+    </div>
+  );
+};

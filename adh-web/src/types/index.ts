@@ -55,3 +55,5 @@ export * from './controleOuvertureCaisse.js';
 export * from './comptageHistorization.js';
 export * from './deviseSession.js';
 export * from './ticketFermetureSession.js';
+export * from './gestionCaisse.js';
+export * from './fermetureCaisse.js';
