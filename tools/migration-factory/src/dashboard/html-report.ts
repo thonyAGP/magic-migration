@@ -67,9 +67,9 @@ const renderKpiCards = (r: FullMigrationReport): string => {
   return `
 <section class="kpi-grid">
   ${kpiCard('Programmes LIVE', String(graph.livePrograms), `${graph.orphanPrograms} orphelins, ${graph.sharedPrograms} partages`, 'var(--blue)')}
-  ${kpiCard('Migrated', `${migrated}/${live}`, `${migratedPct}% (${pipeline.verified} verified, ${pipeline.enriched} enriched)`, 'var(--green)')}
+  ${kpiCard('Migres', `${migrated}/${live}`, `${migratedPct}% (${pipeline.verified} verifies, ${pipeline.enriched} enrichis)`, 'var(--green)')}
   ${kpiCard('Modules livrables', `${modules.deliverable}/${modules.total}`, `${deliveredPct}% des modules`, 'var(--purple)')}
-  ${kpiCard('Decomissionnable', `${decommission.decommissionable}/${decommission.totalLive}`, `${decommission.decommissionPct}% du legacy`, 'var(--orange)')}
+  ${kpiCard('Decomissionnables', `${decommission.decommissionable}/${decommission.totalLive}`, `${decommission.decommissionPct}% du legacy`, 'var(--orange)')}
 </section>`;
 };
 
@@ -98,17 +98,17 @@ const renderPipelineSection = (pipeline: FullMigrationReport['pipeline'], live: 
 <section class="card">
   <h2>Pipeline de migration</h2>
   <div class="pipeline">
-    ${pBar(pipeline.verified, 'var(--green)', 'Verified')}
-    ${pBar(pipeline.enriched, 'var(--blue)', 'Enriched')}
-    ${pBar(pipeline.contracted, 'var(--yellow)', 'Contracted')}
-    ${pBar(pipeline.pending, 'var(--gray)', 'Pending')}
+    ${pBar(pipeline.verified, 'var(--green)', 'Verifie')}
+    ${pBar(pipeline.enriched, 'var(--blue)', 'Enrichi')}
+    ${pBar(pipeline.contracted, 'var(--yellow)', 'Contracte')}
+    ${pBar(pipeline.pending, 'var(--gray)', 'En attente')}
   </div>
   <div class="pipeline-donut-row">
     ${renderDonut([
-      { value: pipeline.verified, color: 'var(--green)', label: 'Verified' },
-      { value: pipeline.enriched, color: 'var(--blue)', label: 'Enriched' },
-      { value: pipeline.contracted, color: 'var(--yellow)', label: 'Contracted' },
-      { value: pipeline.pending, color: 'var(--gray)', label: 'Pending' },
+      { value: pipeline.verified, color: 'var(--green)', label: 'Verifie' },
+      { value: pipeline.enriched, color: 'var(--blue)', label: 'Enrichi' },
+      { value: pipeline.contracted, color: 'var(--yellow)', label: 'Contracte' },
+      { value: pipeline.pending, color: 'var(--gray)', label: 'En attente' },
     ], total)}
   </div>
 </section>`;
@@ -172,7 +172,7 @@ const renderEstimationSection = (r: FullMigrationReport): string => {
       <td class="center">${gradeBadge(p.score.grade)}</td>
       <td class="center">${p.score.normalizedScore}</td>
       <td class="center">${p.score.estimatedHours}h</td>
-      <td><span class="status-pill status-${p.status}">${p.status}</span></td>
+      <td><span class="status-pill status-${p.status}">${statusFr(p.status)}</span></td>
     </tr>`).join('');
 
   return `
@@ -181,7 +181,7 @@ const renderEstimationSection = (r: FullMigrationReport): string => {
   <div class="estimation-grid">
     <div class="estimation-kpi">
       ${kpiCard('Effort total', `${totalEstimatedHours}h`, `Score moyen: ${avgScore}`, 'var(--purple)')}
-      ${kpiCard('Effort restant', `${remainingHours}h`, `${progressPct}% complete`, 'var(--orange)')}
+      ${kpiCard('Effort restant', `${remainingHours}h`, `${progressPct}% termine`, 'var(--orange)')}
     </div>
     <div class="estimation-donut">
       ${gradeTotal > 0 ? renderDonut(gradeSegments, gradeTotal) : '<div class="no-data">Pas de donnees</div>'}
@@ -191,7 +191,7 @@ const renderEstimationSection = (r: FullMigrationReport): string => {
     <div class="bar-track bar-large">
       <div class="bar-fill" style="width: ${progressPct}%; background: linear-gradient(90deg, var(--green), var(--blue))"></div>
     </div>
-    <div class="effort-bar-label">${completedHours}h completes / ${totalEstimatedHours}h total (${progressPct}%)</div>
+    <div class="effort-bar-label">${completedHours}h termines / ${totalEstimatedHours}h total (${progressPct}%)</div>
   </div>
   ${top10.length > 0 ? `
   <h3 style="margin-top:16px;margin-bottom:8px;font-size:14px;color:var(--text-dim)">Top 10 programmes les plus complexes</h3>
@@ -225,7 +225,7 @@ const renderModulesSection = (modules: FullMigrationReport['modules']): string =
   <div class="module-sort">
     <span class="sort-label">Trier par:</span>
     <button class="sort-btn active" data-sort="priority">Priorite</button>
-    <button class="sort-btn" data-sort="readiness">Readiness</button>
+    <button class="sort-btn" data-sort="readiness">Avancement</button>
     <button class="sort-btn" data-sort="name">Nom</button>
   </div>
   <div class="module-list">
@@ -296,10 +296,10 @@ const renderModuleRow = (m: ModuleSummary): string => {
         <span class="module-pct">${m.readinessPct}%</span>
       </div>
       <div class="module-breakdown">
-        <span class="tag tag-green">${m.verified} verified</span>
-        <span class="tag tag-blue">${m.enriched} enriched</span>
-        <span class="tag tag-yellow">${m.contracted} contracted</span>
-        <span class="tag tag-gray">${m.pending} pending</span>
+        <span class="tag tag-green">${m.verified} verifies</span>
+        <span class="tag tag-blue">${m.enriched} enrichis</span>
+        <span class="tag tag-yellow">${m.contracted} contractes</span>
+        <span class="tag tag-gray">${m.pending} en attente</span>
       </div>
       <div class="module-deps">
         <span>${escHtml(unblockText)}</span>
@@ -388,7 +388,7 @@ const renderProgramTable = (programs: ProgramSummary[]): string => {
       <td>${escHtml(String(p.id))}</td>
       <td>${escHtml(p.name)}</td>
       <td class="center">${p.level}</td>
-      <td><span class="status-pill status-${p.status}">${p.status}</span></td>
+      <td><span class="status-pill status-${p.status}">${statusFr(p.status)}</span></td>
       <td class="center">${gradeCell}</td>
       <td class="center">${scoreCell}</td>
       <td class="center">${estCell}</td>
@@ -404,12 +404,12 @@ const renderProgramTable = (programs: ProgramSummary[]): string => {
     <input type="text" id="prog-search" placeholder="Rechercher par nom ou ID..." class="search-input">
     <select id="status-filter" class="filter-select">
       <option value="">Tous les statuts</option>
-      <option value="verified">Verified</option>
-      <option value="enriched">Enriched</option>
-      <option value="contracted">Contracted</option>
-      <option value="pending">Pending</option>
+      <option value="verified">Verifie</option>
+      <option value="enriched">Enrichi</option>
+      <option value="contracted">Contracte</option>
+      <option value="pending">En attente</option>
     </select>
-    <label class="checkbox-label"><input type="checkbox" id="decom-only"> Decomissionnables</label>
+    <label class="checkbox-label"><input type="checkbox" id="decom-only"> Decomissionnables uniquement</label>
   </div>
   <div class="table-scroll">
     <table id="program-table">
@@ -673,7 +673,7 @@ ${MULTI_CSS}
       <h3>Batches</h3>
       <p>Les batches regroupent les programmes par domaine fonctionnel. Ils sont generes automatiquement par la commande <code>plan</code> :</p>
       <table class="help-table">
-        <tr><td><strong>B1</strong></td><td>Ouverture session (8 progs) &mdash; 100% VERIFIED</td></tr>
+        <tr><td><strong>B1</strong></td><td>Ouverture session (8 progs) &mdash; 100% verifie</td></tr>
         <tr><td><strong>B2</strong></td><td>Caisse (17 progs)</td></tr>
         <tr><td><strong>B3</strong></td><td>General 1/2 (25 progs)</td></tr>
         <tr><td><strong>B4</strong></td><td>General 2/2 (23 progs)</td></tr>
@@ -758,10 +758,10 @@ const renderGlobalView = (report: MultiProjectReport): string => {
     }
     const live = r.graph.livePrograms;
     const vPct = live > 0 ? Math.round(r.pipeline.verified / live * 100) : 0;
-    const statusBadge = vPct >= 100 ? '<span class="badge badge-green">COMPLETE</span>'
+    const statusBadge = vPct >= 100 ? '<span class="badge badge-green">TERMINE</span>'
       : vPct > 0 ? '<span class="badge badge-blue">EN COURS</span>'
-      : r.pipeline.contracted > 0 ? '<span class="badge badge-yellow">CONTRACTED</span>'
-      : '<span class="badge badge-gray">PENDING</span>';
+      : r.pipeline.contracted > 0 ? '<span class="badge badge-yellow">CONTRACTE</span>'
+      : '<span class="badge badge-gray">EN ATTENTE</span>';
 
     return `
       <div class="project-card project-card-active" data-goto="${escHtml(p.name)}">
@@ -776,8 +776,8 @@ const renderGlobalView = (report: MultiProjectReport): string => {
         </div>
         <div class="project-card-stats">
           <span>${live} LIVE</span>
-          <span>${r.pipeline.verified} verified</span>
-          <span>${r.pipeline.contracted} contracted</span>
+          <span>${r.pipeline.verified} verifies</span>
+          <span>${r.pipeline.contracted} contractes</span>
           <span>${r.modules.total} modules</span>
         </div>
       </div>`;
@@ -799,8 +799,8 @@ const renderGlobalView = (report: MultiProjectReport): string => {
 <section class="kpi-grid">
   ${kpiCard('Projets actifs', `${g.activeProjects}/${g.totalProjects}`, `${g.totalProjects - g.activeProjects} en attente`, 'var(--purple)')}
   ${kpiCard('Programmes LIVE', String(g.totalLivePrograms), 'Tous projets confondus', 'var(--blue)')}
-  ${kpiCard('Migrated', `${g.totalVerified + g.totalEnriched}/${g.totalLivePrograms}`, `${g.overallProgressPct}% (${g.totalVerified} verified, ${g.totalEnriched} enriched)`, 'var(--green)')}
-  ${kpiCard('Contracted', String(g.totalContracted), `${g.totalContracted} contrats en cours`, 'var(--yellow)')}
+  ${kpiCard('Migres', `${g.totalVerified + g.totalEnriched}/${g.totalLivePrograms}`, `${g.overallProgressPct}% (${g.totalVerified} verifies, ${g.totalEnriched} enrichis)`, 'var(--green)')}
+  ${kpiCard('Contractes', String(g.totalContracted), `${g.totalContracted} contrats en cours`, 'var(--yellow)')}
 </section>
 
 <section class="card">
@@ -846,6 +846,9 @@ const escHtml = (s: string): string =>
 
 const pct = (value: number, total: number): number =>
   total > 0 ? Math.round(value / total * 100) : 0;
+
+const statusFr = (s: string): string =>
+  ({ pending: 'en attente', contracted: 'contracte', enriched: 'enrichi', verified: 'verifie' })[s] ?? s;
 
 // ─── CSS ────────────────────────────────────────────────────────
 
@@ -1743,7 +1746,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       if (b.status === 'verified') return; // Skip completed batches
       var opt = document.createElement('option');
       opt.value = b.id;
-      opt.textContent = b.id + ' - ' + b.name + ' (' + b.programCount + ' progs, ' + b.verified + '/' + b.programCount + ' verified)';
+      opt.textContent = b.id + ' - ' + b.name + ' (' + b.programCount + ' progs, ' + b.verified + '/' + b.programCount + ' verifies)';
       batchSelect.appendChild(opt);
     });
   });
@@ -1826,11 +1829,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         var r = msg.data;
         var elapsed = ((new Date(r.completed).getTime() - new Date(r.started).getTime()) / 1000).toFixed(1);
         pbar.style.width = '100%';
-        pstatus.textContent = 'Done in ' + elapsed + 's: '
-          + r.summary.verified + ' verified, '
-          + r.summary.contracted + ' contracted, '
-          + r.summary.errors + ' errors';
-        addLog('Pipeline completed in ' + elapsed + 's');
+        pstatus.textContent = 'Termine en ' + elapsed + 's : '
+          + r.summary.verified + ' verifies, '
+          + r.summary.contracted + ' contractes, '
+          + r.summary.errors + ' erreurs';
+        addLog('Pipeline termine en ' + elapsed + 's');
         return;
       }
 
@@ -1865,8 +1868,8 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     })
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        var lines = ['Verify ' + (data.dryRun ? '(DRY-RUN)' : '') + ' result:', ''];
-        lines.push(data.verified + ' verified, ' + data.notReady + ' not ready, ' + data.alreadyVerified + ' already verified');
+        var lines = ['Verification ' + (data.dryRun ? '(DRY-RUN)' : '') + ' resultat :', ''];
+        lines.push(data.verified + ' verifies, ' + data.notReady + ' non prets, ' + data.alreadyVerified + ' deja verifies');
         if (data.details && data.details.length > 0) {
           lines.push('', 'Details:');
           data.details.forEach(function(d) {
@@ -1916,10 +1919,10 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       .then(function(r) { return r.json(); })
       .then(function(data) {
         var lines = ['Calibration' + (chkDry.checked ? ' (DRY-RUN)' : ''), ''];
-        lines.push('Verified contracts: ' + data.dataPoints);
-        lines.push('Previous: ' + data.previousHpp + ' h/pt -> Calibrated: ' + data.calibratedHpp + ' h/pt');
-        lines.push('Estimated: ' + data.totalEstimated + 'h | Actual: ' + data.totalActual + 'h');
-        lines.push('Accuracy: ' + data.accuracyPct + '%');
+        lines.push('Contrats verifies : ' + data.dataPoints);
+        lines.push('Avant : ' + data.previousHpp + ' h/pt -> Calibre : ' + data.calibratedHpp + ' h/pt');
+        lines.push('Estime : ' + data.totalEstimated + 'h | Reel : ' + data.totalActual + 'h');
+        lines.push('Precision : ' + data.accuracyPct + '%');
         if (data.details && data.details.length > 0) {
           lines.push('', 'Details:');
           data.details.forEach(function(d) {
