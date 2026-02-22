@@ -2221,12 +2221,15 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (!bar || !label) return;
     var processed = done + migrateState.failedProgs;
     var pct = total > 0 ? Math.round((processed / total) * 100) : 0;
+    // Cap at 95% until migrate_result arrives (batch-wide phases run after all programs complete)
+    if (pct >= 100 && processed >= total) pct = 95;
     bar.style.width = pct + '%';
+    var eta = computeETA();
     if (migrateState.failedProgs > 0) {
       bar.style.background = 'linear-gradient(90deg, var(--green) 0%, #f59e0b 100%)';
-      label.textContent = done + '/' + total + ' OK, ' + migrateState.failedProgs + ' failed (' + pct + '%)';
+      label.textContent = done + '/' + total + ' OK, ' + migrateState.failedProgs + ' failed (' + pct + '%)' + eta;
     } else {
-      label.textContent = done + '/' + total + ' programmes (' + pct + '%)';
+      label.textContent = done + '/' + total + ' programmes (' + pct + '%)' + eta;
     }
     if (migrateBadge) { migrateBadge.textContent = done + '/' + total; migrateBadge.style.display = ''; }
   }
@@ -2356,15 +2359,14 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (msg.type === 'program_completed') {
       var pid = msg.programId;
       var isSkipped = msg.data && msg.data.skipped;
-      if (migrateState.programStartTimes[pid]) {
-        var dur = Date.now() - migrateState.programStartTimes[pid];
-        if (!isSkipped) migrateState.programDurations.push(dur);
-        delete migrateState.programStartTimes[pid];
-        var durEl = document.getElementById('mp-dur-' + pid);
-        if (durEl) {
-          durEl.textContent = isSkipped ? 'skipped' : formatElapsed(dur);
-          durEl.style.color = isSkipped ? '#6b7280' : '#3fb950';
-        }
+      // Prefer server-side duration (accurate), fallback to client-side
+      var dur = (msg.data && msg.data.duration) ? msg.data.duration : (migrateState.programStartTimes[pid] ? Date.now() - migrateState.programStartTimes[pid] : 0);
+      if (!isSkipped && dur > 0) migrateState.programDurations.push(dur);
+      delete migrateState.programStartTimes[pid];
+      var durEl = document.getElementById('mp-dur-' + pid);
+      if (durEl) {
+        durEl.textContent = isSkipped ? 'skipped' : formatElapsed(dur);
+        durEl.style.color = isSkipped ? '#6b7280' : '#3fb950';
       }
       if (migrateState.programPhases[pid]) {
         if (isSkipped) {
