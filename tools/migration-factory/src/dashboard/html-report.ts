@@ -261,8 +261,10 @@ const renderModuleRow = (m: ModuleSummary): string => {
     ? `<span class="tag tag-teal">${escHtml(m.domain)}</span>`
     : '';
 
+  const gradeColorMap: Record<string, string> = { S: 'tag-red', A: 'tag-orange', B: 'tag-yellow', C: 'tag-blue', D: 'tag-green' };
+  const gradeTagClass = gradeColorMap[m.complexityGrade ?? ''] ?? 'tag-orange';
   const gradeLabel = m.complexityGrade
-    ? `<span class="tag tag-orange">${escHtml(m.complexityGrade)} grade</span>`
+    ? `<span class="tag ${gradeTagClass}">Complexite ${escHtml(m.complexityGrade)}</span>`
     : '';
 
   const hoursLabel = m.estimatedHours != null
@@ -1070,6 +1072,7 @@ header h1 {
 .tag {
   font-size: 11px; padding: 1px 6px; border-radius: 4px; display: inline-block;
 }
+.tag-red { background: rgba(248,81,73,0.15); color: var(--red); }
 .tag-green { background: rgba(63,185,80,0.15); color: var(--green); }
 .tag-blue { background: rgba(88,166,255,0.15); color: var(--blue); }
 .tag-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
@@ -1944,7 +1947,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         if (data.batches) {
           data.batches.forEach(function(b) {
             var flag = b.isNew ? 'NEW' : 'EXISTING';
-            lines.push(b.id + '  ' + b.name + '  [' + b.domain + ']  ' + b.memberCount + ' progs  ' + b.complexityGrade + ' grade  ~' + b.estimatedHours + 'h  ' + flag);
+            lines.push(b.id + '  ' + b.name + '  [' + b.domain + ']  ' + b.memberCount + ' progs  Complexite ' + b.complexityGrade + '  ~' + b.estimatedHours + 'h  ' + flag);
           });
         }
         if (!chkDry.checked) {
@@ -2425,13 +2428,19 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           costStr = ', ~$' + (r.summary.estimatedCostUsd || 0).toFixed(2);
           updateTokenDisplay();
         }
-        label.textContent = 'Done: ' + r.summary.completed + '/' + r.summary.total
-          + ' completed' + (failed > 0 ? ', ' + failed + ' failed' : '')
-          + ', ' + r.summary.totalFiles + ' files'
-          + (r.summary.tscClean ? ', TSC clean' : ', TSC errors')
-          + (r.summary.testsPass ? ', tests pass' : ', tests fail')
-          + ', coverage ' + r.summary.reviewAvgCoverage + '%'
-          + costStr;
+        var allSkipped = r.summary.skipped === r.summary.total;
+        if (allSkipped) {
+          label.textContent = 'Done: ' + r.summary.total + '/' + r.summary.total + ' already migrated (nothing to do)' + costStr;
+        } else {
+          label.textContent = 'Done: ' + r.summary.completed + '/' + r.summary.total
+            + ' completed' + (failed > 0 ? ', ' + failed + ' failed' : '')
+            + (r.summary.skipped > 0 ? ', ' + r.summary.skipped + ' skipped' : '')
+            + ', ' + r.summary.totalFiles + ' files'
+            + (r.summary.tscClean ? ', TSC clean' : ', TSC errors')
+            + (r.summary.testsPass ? ', tests pass' : ', tests fail')
+            + ', coverage ' + r.summary.reviewAvgCoverage + '%'
+            + costStr;
+        }
       }
       var elapsed = document.getElementById('mp-elapsed');
       if (elapsed) elapsed.textContent = 'Total: ' + formatElapsed(Date.now() - migrateState.migrationStart);

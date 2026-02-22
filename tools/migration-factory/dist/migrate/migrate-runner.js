@@ -108,6 +108,12 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
     let tscClean = false;
     let testsPass = false;
     const hasRealWork = programResults.some(r => r.status === 'completed' && r.filesGenerated > 0);
+    const allSkipped = programResults.every(r => r.status === 'skipped');
+    // When no real work was done (all programs skipped), report clean state
+    if (allSkipped) {
+        tscClean = true;
+        testsPass = true;
+    }
     if (!config.dryRun && hasRealWork) {
         emit(config, ET.PHASE_STARTED, 'Starting verification loop', { phase: MP.VERIFY_TSC });
         const verifyResult = await runVerifyFixLoop(config, config.maxPasses);
@@ -171,7 +177,10 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
     const costInfo = summary.totalTokens
         ? `, tokens: ${Math.round(summary.totalTokens.input / 1000)}K in / ${Math.round(summary.totalTokens.output / 1000)}K out (~$${summary.estimatedCostUsd?.toFixed(2)})`
         : '';
-    emit(config, ET.MIGRATION_COMPLETED, `Migration complete: ${summary.completed}/${summary.total} programs, ${summary.totalFiles} files in ${formatDuration(totalDuration)}${costInfo}`);
+    const completionMsg = allSkipped
+        ? `Migration complete: ${summary.total}/${summary.total} already migrated (nothing to do) in ${formatDuration(totalDuration)}`
+        : `Migration complete: ${summary.completed}/${summary.total} programs, ${summary.totalFiles} files in ${formatDuration(totalDuration)}${costInfo}`;
+    emit(config, ET.MIGRATION_COMPLETED, completionMsg);
     // Update main tracker batch stats after migration
     if (!config.dryRun && summary.completed > 0) {
         try {
@@ -252,11 +261,13 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
     startTokenAccumulator();
     const aborted = () => config.abortSignal?.aborted === true;
     emit(config, ET.PROGRAM_STARTED, `Starting IDE ${programId}`, { programId });
-    // Skip if contract is verified OR all generation phases already completed in tracker
+    // Skip if contract is verified OR (contract exists as enriched+ AND all generation phases already completed in tracker)
     const contractFile = path.join(config.migrationDir, config.contractSubDir, `${config.contractSubDir}-IDE-${programId}.contract.yaml`);
-    const contractStatus = fs.existsSync(contractFile) ? parseContract(contractFile).overall.status : undefined;
+    const contractExists = fs.existsSync(contractFile);
+    const contractStatus = contractExists ? parseContract(contractFile).overall.status : undefined;
     const allGenPhasesCompleted = GENERATION_PHASES.every(p => isPhaseCompleted(prog, p));
-    const shouldSkip = contractStatus === PipelineStatus.VERIFIED || allGenPhasesCompleted;
+    const isContractEnrichedOrBetter = contractStatus === PipelineStatus.ENRICHED || contractStatus === PipelineStatus.VERIFIED;
+    const shouldSkip = contractStatus === PipelineStatus.VERIFIED || (isContractEnrichedOrBetter && allGenPhasesCompleted);
     if (shouldSkip) {
         flushTokenAccumulator();
         const reason = contractStatus === PipelineStatus.VERIFIED ? 'verified' : 'already generated';
