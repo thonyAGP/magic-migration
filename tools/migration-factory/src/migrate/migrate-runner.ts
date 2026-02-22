@@ -313,15 +313,15 @@ const runProgramGeneration = async (
 
   emit(config, ET.PROGRAM_STARTED, `Starting IDE ${programId}`, { programId });
 
-  // Check if all 10 generation phases are already completed → skip entirely
-  const allGenDone = GENERATION_PHASES.every(p => isPhaseCompleted(prog, p));
-  if (allGenDone) {
+  // Skip only if the contract is already verified (fully done, no more work needed)
+  const contractFile = path.join(config.migrationDir, config.contractSubDir, `${config.contractSubDir}-IDE-${programId}.contract.yaml`);
+  const isVerified = fs.existsSync(contractFile) && parseContract(contractFile).overall.status === PipelineStatus.VERIFIED;
+  if (isVerified) {
     flushTokenAccumulator();
-    // Emit phase_completed for each so dashboard dots turn green
     for (const p of GENERATION_PHASES) {
-      emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: ${p} (already done)`, { phase: p, programId });
+      emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: ${p} (verified)`, { phase: p, programId });
     }
-    emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: already fully migrated (skipped)`, { programId, data: { skipped: true } });
+    emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: already verified (skipped)`, { programId, data: { skipped: true } });
     return {
       result: {
         programId,
