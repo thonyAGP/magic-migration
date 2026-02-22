@@ -4,6 +4,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // ─── Known N/A patterns (learned from B1) ─────────────────────────
 const NA_CALLEE_PATTERNS = [
     /raz\s*current\s*printer/i,
@@ -81,7 +82,7 @@ export const scanCodebase = (rules, tables, callees, variables, options) => {
         }
         // Search for table name (without suffix like ___rec)
         const cleanName = table.name.replace(/_+\w{3}$/, '');
-        const pattern = new RegExp(cleanName.replace(/[_-]+/g, '[_\\-\\s]*'), 'i');
+        const pattern = new RegExp(escapeRegex(cleanName).replace(/[_-]+/g, '[_\\-\\s]*'), 'i');
         const file = findFileContaining(pattern, index);
         if (file) {
             return { ...table, status: 'IMPL', targetFile: relPath(file) };
@@ -94,7 +95,7 @@ export const scanCodebase = (rules, tables, callees, variables, options) => {
             return { ...callee, status: 'N/A', gapNotes: 'Legacy print/utility (N/A for web)' };
         }
         // Search for callee name or IDE reference
-        const namePattern = new RegExp(callee.name.replace(/[^a-zA-Z0-9]/g, '\\s*').substring(0, 30), 'i');
+        const namePattern = new RegExp(escapeRegex(callee.name).replace(/[^a-zA-Z0-9\\]/g, '\\s*').substring(0, 30), 'i');
         const idePattern = new RegExp(`IDE[_\\s-]*${callee.id}`, 'i');
         const file = findFileContaining(namePattern, index) ?? findFileContaining(idePattern, index);
         if (file) {
@@ -104,7 +105,7 @@ export const scanCodebase = (rules, tables, callees, variables, options) => {
     });
     // Scan variables: search for variable names
     const scannedVariables = variables.map(v => {
-        const pattern = new RegExp(v.name.replace(/[^a-zA-Z0-9]/g, '\\s*').substring(0, 25), 'i');
+        const pattern = new RegExp(escapeRegex(v.name).replace(/[^a-zA-Z0-9\\]/g, '\\s*').substring(0, 25), 'i');
         const file = findFileContaining(pattern, index);
         if (file) {
             return { ...v, status: 'IMPL', targetFile: relPath(file) };

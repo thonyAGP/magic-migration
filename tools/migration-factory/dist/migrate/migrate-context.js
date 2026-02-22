@@ -65,7 +65,8 @@ export const loadReferencePatterns = (targetDir) => {
 };
 // ─── Extract spec sections ──────────────────────────────────────
 export const extractSpecSection = (spec, sectionName) => {
-    const regex = new RegExp(`^##\\s+.*${sectionName}.*$`, 'mi');
+    const escaped = sectionName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`^##\\s+.*${escaped}.*$`, 'mi');
     const match = spec.match(regex);
     if (!match)
         return null;

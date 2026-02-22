@@ -133,7 +133,7 @@ export const findRelevantCodeFiles = (
   }
   for (const c of contract.callees) {
     if (c.status !== 'IMPL' && c.status !== 'N/A') {
-      terms.push(c.name.replace(/[^a-zA-Z0-9]/g, '\\s*').slice(0, 30));
+      terms.push(c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/[^a-zA-Z0-9\\]/g, '\\s*').slice(0, 30));
     }
   }
 

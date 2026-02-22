@@ -7,6 +7,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { ContractRule, ContractTable, ContractCallee, ContractVariable, ItemStatus } from '../core/types.js';
 
+const escapeRegex = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 export interface ScanResult {
   rules: ContractRule[];
   tables: ContractTable[];
@@ -124,7 +126,7 @@ export const scanCodebase = (
 
     // Search for table name (without suffix like ___rec)
     const cleanName = table.name.replace(/_+\w{3}$/, '');
-    const pattern = new RegExp(cleanName.replace(/[_-]+/g, '[_\\-\\s]*'), 'i');
+    const pattern = new RegExp(escapeRegex(cleanName).replace(/[_-]+/g, '[_\\-\\s]*'), 'i');
     const file = findFileContaining(pattern, index);
     if (file) {
       return { ...table, status: 'IMPL' as ItemStatus, targetFile: relPath(file) };
@@ -140,7 +142,7 @@ export const scanCodebase = (
 
     // Search for callee name or IDE reference
     const namePattern = new RegExp(
-      callee.name.replace(/[^a-zA-Z0-9]/g, '\\s*').substring(0, 30),
+      escapeRegex(callee.name).replace(/[^a-zA-Z0-9\\]/g, '\\s*').substring(0, 30),
       'i',
     );
     const idePattern = new RegExp(`IDE[_\\s-]*${callee.id}`, 'i');
@@ -153,7 +155,7 @@ export const scanCodebase = (
 
   // Scan variables: search for variable names
   const scannedVariables = variables.map(v => {
-    const pattern = new RegExp(v.name.replace(/[^a-zA-Z0-9]/g, '\\s*').substring(0, 25), 'i');
+    const pattern = new RegExp(escapeRegex(v.name).replace(/[^a-zA-Z0-9\\]/g, '\\s*').substring(0, 25), 'i');
     const file = findFileContaining(pattern, index);
     if (file) {
       return { ...v, status: 'IMPL' as ItemStatus, targetFile: relPath(file) };
