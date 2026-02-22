@@ -13,6 +13,8 @@ export interface AutoContractOptions {
   codebaseDir: string;
   projectDir?: string;
   initialStatus?: PipelineStatus;
+  /** Override programId (fallback when spec header parsing returns 0). */
+  programId?: number | string;
 }
 
 export const generateAutoContract = (options: AutoContractOptions): MigrationContract | null => {
@@ -57,9 +59,13 @@ export const generateAutoContract = (options: AutoContractOptions): MigrationCon
     notes: `Auto-generated from ${path.basename(specFile)}`,
   };
 
+  const resolvedId = options.programId != null
+    ? (typeof options.programId === 'string' ? parseInt(options.programId as string, 10) : options.programId)
+    : parsed.programId;
+
   return {
     program: {
-      id: parsed.programId,
+      id: resolvedId || parsed.programId,
       name: parsed.programName,
       complexity: 'MEDIUM',
       callers: [],

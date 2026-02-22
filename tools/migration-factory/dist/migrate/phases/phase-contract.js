@@ -26,6 +26,7 @@ export const runContractPhase = (programId, config) => {
         specFile,
         codebaseDir,
         projectDir: config.projectDir,
+        programId,
     });
     if (!contract) {
         throw new Error(`Failed to generate contract for IDE ${programId}`);

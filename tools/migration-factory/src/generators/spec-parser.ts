@@ -48,7 +48,10 @@ export const parseSpecContent = (content: string): ParsedSpec => {
 // ─── Header parsing ──────────────────────────────────────────────
 
 const parseIdFromHeader = (content: string): number => {
-  const match = content.match(/^#\s+\w+\s+IDE\s+(\d+)/m);
+  // Try standard format: "# ADH IDE 100" or "## ADH IDE 100"
+  let match = content.match(/^#{1,3}\s+\w+[\s-]+IDE[\s-]+(\d+)/m);
+  // Fallback: extract from filename pattern in notes: "ADH-IDE-100.md"
+  if (!match) match = content.match(/\w+-IDE-(\d+)\.md/);
   return match ? parseInt(match[1], 10) : 0;
 };
 

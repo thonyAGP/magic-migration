@@ -43,6 +43,7 @@ export const runContractPhase = (
     specFile,
     codebaseDir,
     projectDir: config.projectDir,
+    programId,
   });
 
   if (!contract) {

@@ -8,5 +8,7 @@ export interface AutoContractOptions {
     codebaseDir: string;
     projectDir?: string;
     initialStatus?: PipelineStatus;
+    /** Override programId (fallback when spec header parsing returns 0). */
+    programId?: number | string;
 }
 export declare const generateAutoContract: (options: AutoContractOptions) => MigrationContract | null;

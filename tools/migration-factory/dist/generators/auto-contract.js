@@ -43,9 +43,12 @@ export const generateAutoContract = (options) => {
         generated: new Date().toISOString(),
         notes: `Auto-generated from ${path.basename(specFile)}`,
     };
+    const resolvedId = options.programId != null
+        ? (typeof options.programId === 'string' ? parseInt(options.programId, 10) : options.programId)
+        : parsed.programId;
     return {
         program: {
-            id: parsed.programId,
+            id: resolvedId || parsed.programId,
             name: parsed.programName,
             complexity: 'MEDIUM',
             callers: [],
