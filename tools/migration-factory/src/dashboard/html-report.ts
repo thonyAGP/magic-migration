@@ -546,7 +546,7 @@ ${MULTI_CSS}
     <!-- Section 3: Program grid -->
     <div class="mp-grid-section" id="mp-grid-section" style="display:none">
       <table class="mp-grid">
-        <thead><tr><th>IDE</th><th>Programme</th><th></th><th>Phases</th></tr></thead>
+        <thead><tr><th>IDE</th><th>Programme</th><th></th><th>Duree</th><th>Phases</th></tr></thead>
         <tbody id="mp-grid-body"></tbody>
       </table>
     </div>
@@ -1534,6 +1534,7 @@ const MULTI_CSS = `
 .mp-grid td:first-child { color: #8b949e; font-variant-numeric: tabular-nums; }
 .mp-grid td:nth-child(2) { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mp-grid td:nth-child(3) { text-align: center; width: 24px; }
+.mp-dur { font-variant-numeric: tabular-nums; color: #8b949e; font-size: 11px; white-space: nowrap; width: 60px; }
 .mp-row-active { background: rgba(59,130,246,0.1); }
 .mp-row-done td { opacity: 0.6; }
 .mp-dots { display: flex; gap: 2px; }
@@ -2116,6 +2117,14 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     el.textContent = 'Tokens: ' + formatTokens(migrateState.tokensIn) + ' in / ' + formatTokens(migrateState.tokensOut) + ' out (~$' + cost.toFixed(2) + ')';
   }
 
+  function updateRunningDurations() {
+    var now = Date.now();
+    for (var pid in migrateState.programStartTimes) {
+      var el = document.getElementById('mp-dur-' + pid);
+      if (el) el.textContent = formatElapsed(now - migrateState.programStartTimes[pid]);
+    }
+  }
+
   function startElapsedTimer(startedAt) {
     var elDiv = document.getElementById('mp-elapsed');
     if (!elDiv) return 0;
@@ -2123,6 +2132,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       var el = document.getElementById('mp-elapsed');
       if (!el) { clearInterval(tid); return; }
       el.textContent = 'Elapsed: ' + formatElapsed(Date.now() - startedAt) + computeETA();
+      updateRunningDurations();
     }, 1000);
     elDiv.textContent = 'Elapsed: ' + formatElapsed(Date.now() - startedAt);
     return tid;
@@ -2154,6 +2164,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       tr.innerHTML = '<td>' + escAttr(p.id) + '</td>'
         + '<td title="' + escAttr(p.name) + '">' + escAttr(p.name) + '</td>'
         + '<td class="mp-icon" id="mp-icon-' + escAttr(p.id) + '">&#9203;</td>'
+        + '<td class="mp-dur" id="mp-dur-' + escAttr(p.id) + '"></td>'
         + '<td><div class="mp-dots">' + dotsHtml + '</div></td>';
       tbody.appendChild(tr);
     }
@@ -2299,8 +2310,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (msg.type === 'program_completed') {
       var pid = msg.programId;
       if (migrateState.programStartTimes[pid]) {
-        migrateState.programDurations.push(Date.now() - migrateState.programStartTimes[pid]);
+        var dur = Date.now() - migrateState.programStartTimes[pid];
+        migrateState.programDurations.push(dur);
         delete migrateState.programStartTimes[pid];
+        var durEl = document.getElementById('mp-dur-' + pid);
+        if (durEl) { durEl.textContent = formatElapsed(dur); durEl.style.color = '#3fb950'; }
       }
       if (migrateState.programPhases[pid]) {
         var cur = migrateState.programPhases[pid].currentPhase;
@@ -2325,8 +2339,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (msg.type === 'program_failed') {
       var pid = msg.programId;
       if (migrateState.programStartTimes[pid]) {
-        migrateState.programDurations.push(Date.now() - migrateState.programStartTimes[pid]);
+        var failDur = Date.now() - migrateState.programStartTimes[pid];
+        migrateState.programDurations.push(failDur);
         delete migrateState.programStartTimes[pid];
+        var failDurEl = document.getElementById('mp-dur-' + pid);
+        if (failDurEl) { failDurEl.textContent = formatElapsed(failDur); failDurEl.style.color = '#f85149'; }
       }
       if (migrateState.programPhases[pid]) {
         var cur = migrateState.programPhases[pid].currentPhase;
