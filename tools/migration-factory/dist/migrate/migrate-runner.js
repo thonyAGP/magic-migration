@@ -107,7 +107,8 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
     // Phase 10-13: Verify + Fix (sequential, batch-wide)
     let tscClean = false;
     let testsPass = false;
-    if (!config.dryRun && programResults.some(r => r.status === 'completed')) {
+    const hasRealWork = programResults.some(r => r.status === 'completed' && r.filesGenerated > 0);
+    if (!config.dryRun && hasRealWork) {
         emit(config, ET.PHASE_STARTED, 'Starting verification loop', { phase: MP.VERIFY_TSC });
         const verifyResult = await runVerifyFixLoop(config, config.maxPasses);
         tscClean = verifyResult.tscClean;
@@ -251,15 +252,18 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
     startTokenAccumulator();
     const aborted = () => config.abortSignal?.aborted === true;
     emit(config, ET.PROGRAM_STARTED, `Starting IDE ${programId}`, { programId });
-    // Skip only if the contract is already verified (fully done, no more work needed)
+    // Skip if contract is verified OR all generation phases already completed in tracker
     const contractFile = path.join(config.migrationDir, config.contractSubDir, `${config.contractSubDir}-IDE-${programId}.contract.yaml`);
-    const isVerified = fs.existsSync(contractFile) && parseContract(contractFile).overall.status === PipelineStatus.VERIFIED;
-    if (isVerified) {
+    const contractStatus = fs.existsSync(contractFile) ? parseContract(contractFile).overall.status : undefined;
+    const allGenPhasesCompleted = GENERATION_PHASES.every(p => isPhaseCompleted(prog, p));
+    const shouldSkip = contractStatus === PipelineStatus.VERIFIED || allGenPhasesCompleted;
+    if (shouldSkip) {
         flushTokenAccumulator();
+        const reason = contractStatus === PipelineStatus.VERIFIED ? 'verified' : 'already generated';
         for (const p of GENERATION_PHASES) {
-            emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: ${p} (verified)`, { phase: p, programId });
+            emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: ${p} (${reason})`, { phase: p, programId });
         }
-        emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: already verified (skipped)`, { programId, data: { skipped: true } });
+        emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: ${reason} (skipped)`, { programId, data: { skipped: true } });
         return {
             result: {
                 programId,

@@ -1546,6 +1546,7 @@ const MULTI_CSS = `
 .mp-dot.active { background: #f59e0b; animation: mp-pulse 1s ease-in-out infinite; }
 .mp-dot.failed { background: #f85149; }
 @keyframes mp-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.mp-pulse-bar { width: 100% !important; animation: mp-pulse 1.5s ease-in-out infinite; }
 .mp-log-section { padding: 0 16px 8px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .mp-log-toggle { font-size: 12px; color: #8b949e; cursor: pointer; padding: 4px 0; user-select: none; }
 .mp-log-toggle:hover { color: #e2e8f0; }
@@ -2293,16 +2294,29 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (msg.type === 'phase_started') {
       var pid = msg.programId;
       var phase = msg.phase;
-      if (migrateState.programPhases[pid]) {
+      if (pid && migrateState.programPhases[pid]) {
         var prev = migrateState.programPhases[pid].currentPhase;
         if (prev && prev !== phase) {
           migrateState.programPhases[pid].completedPhases[prev] = true;
           updatePhaseDot(pid, prev, 'done');
         }
         migrateState.programPhases[pid].currentPhase = phase;
+        if (phase) updatePhaseDot(pid, phase, 'active');
+        updateProgramProgress(pid, phase);
+      } else if (phase && !pid) {
+        // Batch-level phase (verify-tsc, integrate, review) - show in prog section
+        var section = document.getElementById('mp-prog-section');
+        var titleEl = document.getElementById('mp-prog-title');
+        var bar = document.getElementById('mp-prog-bar');
+        var label = document.getElementById('mp-prog-label');
+        if (section && titleEl) {
+          section.style.display = '';
+          titleEl.textContent = phase.toUpperCase() + ': ' + (msg.message || 'en cours...');
+          titleEl.style.color = '#f59e0b';
+          if (bar) { bar.style.width = ''; bar.style.background = '#f59e0b'; bar.className = 'mp-bar-fill mp-bar-prog mp-pulse-bar'; }
+          if (label) label.textContent = '';
+        }
       }
-      if (phase) updatePhaseDot(pid, phase, 'active');
-      updateProgramProgress(pid, phase);
       addMLog('[' + (phase || '') + '] ' + (msg.message || ''));
       return;
     }
@@ -2310,14 +2324,20 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (msg.type === 'phase_completed') {
       var pid = msg.programId;
       var phase = msg.phase;
-      if (migrateState.programPhases[pid] && phase) {
+      if (pid && migrateState.programPhases[pid] && phase) {
         migrateState.programPhases[pid].completedPhases[phase] = true;
         if (migrateState.programPhases[pid].currentPhase === phase) {
           migrateState.programPhases[pid].currentPhase = null;
         }
+        updatePhaseDot(pid, phase, 'done');
+        updateProgramProgress(pid, null);
+      } else if (phase && !pid) {
+        // Batch-level phase completed - update prog section
+        var titleEl = document.getElementById('mp-prog-title');
+        var bar = document.getElementById('mp-prog-bar');
+        if (titleEl) { titleEl.textContent = phase.toUpperCase() + ': ' + (msg.message || 'done'); titleEl.style.color = '#3fb950'; }
+        if (bar) { bar.className = 'mp-bar-fill mp-bar-prog'; bar.style.width = '100%'; bar.style.background = '#3fb950'; }
       }
-      if (phase) updatePhaseDot(pid, phase, 'done');
-      updateProgramProgress(pid, null);
       addMLog('[' + (phase || '') + '] ' + (msg.message || ''));
       return;
     }
