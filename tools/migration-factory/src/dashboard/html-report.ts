@@ -1542,6 +1542,7 @@ const MULTI_CSS = `
 .mp-dots { display: flex; gap: 2px; }
 .mp-dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; flex-shrink: 0; }
 .mp-dot.done { background: #3fb950; }
+.mp-dot.skipped { background: #6b7280; }
 .mp-dot.active { background: #f59e0b; animation: mp-pulse 1s ease-in-out infinite; }
 .mp-dot.failed { background: #f85149; }
 @keyframes mp-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -2209,7 +2210,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   function updatePhaseDot(progId, phase, state) {
     var dots = document.querySelectorAll('.mp-dot[data-prog="' + progId + '"][data-phase="' + phase + '"]');
     for (var i = 0; i < dots.length; i++) {
-      dots[i].className = 'mp-dot' + (state === 'done' ? ' done' : state === 'active' ? ' active' : state === 'failed' ? ' failed' : '');
+      dots[i].className = 'mp-dot' + (state === 'done' ? ' done' : state === 'active' ? ' active' : state === 'failed' ? ' failed' : state === 'skipped' ? ' skipped' : '');
     }
   }
 
@@ -2334,16 +2335,25 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
     if (msg.type === 'program_completed') {
       var pid = msg.programId;
+      var isSkipped = msg.data && msg.data.skipped;
       if (migrateState.programStartTimes[pid]) {
         var dur = Date.now() - migrateState.programStartTimes[pid];
-        migrateState.programDurations.push(dur);
+        if (!isSkipped) migrateState.programDurations.push(dur);
         delete migrateState.programStartTimes[pid];
         var durEl = document.getElementById('mp-dur-' + pid);
-        if (durEl) { durEl.textContent = formatElapsed(dur); durEl.style.color = '#3fb950'; }
+        if (durEl) {
+          durEl.textContent = isSkipped ? 'skipped' : formatElapsed(dur);
+          durEl.style.color = isSkipped ? '#6b7280' : '#3fb950';
+        }
       }
       if (migrateState.programPhases[pid]) {
-        var cur = migrateState.programPhases[pid].currentPhase;
-        if (cur) { migrateState.programPhases[pid].completedPhases[cur] = true; updatePhaseDot(pid, cur, 'done'); }
+        if (isSkipped) {
+          // Mark all generation phase dots as skipped (grey)
+          for (var si = 0; si < ALL_PHASES.length; si++) updatePhaseDot(pid, ALL_PHASES[si], 'skipped');
+        } else {
+          var cur = migrateState.programPhases[pid].currentPhase;
+          if (cur) { migrateState.programPhases[pid].completedPhases[cur] = true; updatePhaseDot(pid, cur, 'done'); }
+        }
         migrateState.programPhases[pid].status = 'done';
         migrateState.programPhases[pid].currentPhase = null;
       }
@@ -2357,7 +2367,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       migrateState.doneProgs++;
       updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
       updateProgramProgress(null, null);
-      addMLog('[done] IDE ' + pid + ': ' + (msg.message || ''));
+      addMLog(isSkipped ? '[skip] IDE ' + pid + ': already migrated' : '[done] IDE ' + pid + ': ' + (msg.message || ''));
       return;
     }
 

@@ -12,7 +12,7 @@ import type {
   MigrateConfig, MigrateResult, MigrateEvent, MigrateEventType,
   MigrateSummary, ProgramMigrateResult, AnalysisDocument, MigratePhase,
 } from './migrate-types.js';
-import { MigratePhase as MP, MigrateEventType as ET } from './migrate-types.js';
+import { MigratePhase as MP, MigrateEventType as ET, GENERATION_PHASES } from './migrate-types.js';
 import {
   readMigrateTracker, writeMigrateTracker, getOrCreateProgram,
   startPhase, completePhase, failPhase, markProgramCompleted, markProgramFailed,
@@ -312,6 +312,30 @@ const runProgramGeneration = async (
   const aborted = () => config.abortSignal?.aborted === true;
 
   emit(config, ET.PROGRAM_STARTED, `Starting IDE ${programId}`, { programId });
+
+  // Check if all 10 generation phases are already completed → skip entirely
+  const allGenDone = GENERATION_PHASES.every(p => isPhaseCompleted(prog, p));
+  if (allGenDone) {
+    flushTokenAccumulator();
+    // Emit phase_completed for each so dashboard dots turn green
+    for (const p of GENERATION_PHASES) {
+      emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: ${p} (already done)`, { phase: p, programId });
+    }
+    emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: already fully migrated (skipped)`, { programId, data: { skipped: true } });
+    return {
+      result: {
+        programId,
+        programName: `IDE-${programId}`,
+        status: 'skipped',
+        filesGenerated: 0,
+        phasesCompleted: 10,
+        phasesTotal: 10,
+        duration: 0,
+        errors: [],
+      },
+      analysis: null,
+    };
+  }
 
   try {
     // Phase 0: SPEC
