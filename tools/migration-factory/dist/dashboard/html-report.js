@@ -2046,18 +2046,20 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       if (migrateState.batchPhaseActive) return ' | Phases batch en cours...';
       return '';
     }
+    // Parallel factor: with N agents, N programs run concurrently
+    var par = migrateState.parallelCount > 1 ? migrateState.parallelCount : 1;
     var durations = migrateState.programDurations;
     // Filter out trivial programs (<5s) that skipped all phases (no Claude calls)
     var real = [];
     for (var i = 0; i < durations.length; i++) { if (durations[i] >= 5000) real.push(durations[i]); }
-    // 2+ real durations: average of real durations
+    // 2+ real durations: average per-program duration / parallel agents
     if (real.length >= 2) {
       var sum = 0;
       for (var i = 0; i < real.length; i++) sum += real[i];
       var avgMs = sum / real.length;
-      return ' | ETA: ~' + formatElapsed(remaining * avgMs);
+      return ' | ETA: ~' + formatElapsed(Math.ceil(remaining / par) * avgMs);
     }
-    // 1 real duration: projection from elapsed
+    // 1 real duration or all trivial: elapsed-based projection (naturally accounts for parallelism)
     if (real.length === 1 || (durations.length > 0 && real.length === 0)) {
       var completed = migrateState.doneProgs + migrateState.failedProgs;
       if (completed > 0) {
@@ -2066,9 +2068,10 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         return ' | ETA: ~' + formatElapsed(remaining * avgMs);
       }
     }
-    // 0 completed but we have a pre-calculated estimate
+    // 0 completed but we have a pre-calculated estimate (divide by agents if known)
     if (migrateState.estimatedHours > 0) {
-      return ' | ETA: ~' + formatElapsed(migrateState.estimatedHours * 3600000);
+      var estMs = migrateState.estimatedHours * 3600000 / par;
+      return ' | ETA: ~' + formatElapsed(estMs);
     }
     return ' | Estimation en cours...';
   }
