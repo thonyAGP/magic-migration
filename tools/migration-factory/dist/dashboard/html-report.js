@@ -2107,6 +2107,10 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       if (!el) { clearInterval(tid); return; }
       el.textContent = 'Elapsed: ' + formatElapsed(Date.now() - startedAt) + computeETA();
       updateRunningDurations();
+      // Refresh progress label during batch phases so ETA updates
+      if (migrateState.batchPhaseActive) {
+        updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
+      }
     }, 1000);
     elDiv.textContent = 'Elapsed: ' + formatElapsed(Date.now() - startedAt);
     return tid;
@@ -2168,15 +2172,14 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (!bar || !label) return;
     var processed = done + migrateState.failedProgs;
     var pct = total > 0 ? Math.round((processed / total) * 100) : 0;
-    // Cap at 95% until migrate_result arrives (batch-wide phases run after all programs complete)
-    if (pct >= 100 && processed >= total) pct = 95;
     bar.style.width = pct + '%';
     var eta = computeETA();
+    var batchInfo = migrateState.batchPhaseActive ? ' | Phases batch en cours...' : '';
     if (migrateState.failedProgs > 0) {
       bar.style.background = 'linear-gradient(90deg, var(--green) 0%, #f59e0b 100%)';
       label.textContent = done + '/' + total + ' OK, ' + migrateState.failedProgs + ' failed (' + pct + '%)' + eta;
     } else {
-      label.textContent = done + '/' + total + ' programmes (' + pct + '%)' + eta;
+      label.textContent = done + '/' + total + ' programmes (' + pct + '%)' + eta + batchInfo;
     }
     if (migrateBadge) { migrateBadge.textContent = done + '/' + total; migrateBadge.style.display = ''; }
   }
@@ -2256,6 +2259,18 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     if (msg.type === 'phase_started') {
       var pid = msg.programId;
       var phase = msg.phase;
+      var isBatchPhase = phase && migrateState.totalProgs > 0 && (migrateState.doneProgs + migrateState.failedProgs >= migrateState.totalProgs);
+
+      // Detect batch phase regardless of pid presence
+      if (isBatchPhase) {
+        migrateState.batchPhaseActive = true;
+        if (!migrateState.batchPhaseStart) migrateState.batchPhaseStart = Date.now();
+        // Re-activate program timer for per-program batch phases (review)
+        if (pid) migrateState.programStartTimes[pid] = Date.now();
+        // Refresh progress label to show batch info + ETA
+        updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
+      }
+
       if (pid && migrateState.programPhases[pid]) {
         var prev = migrateState.programPhases[pid].currentPhase;
         if (prev && prev !== phase) {
@@ -2265,24 +2280,18 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         migrateState.programPhases[pid].currentPhase = phase;
         if (phase) updatePhaseDot(pid, phase, 'active');
         updateProgramProgress(pid, phase);
-      } else if (phase) {
-        // Batch-level phase (verify-tsc, integrate, review) - may or may not have pid
-        migrateState.batchPhaseActive = true;
-        if (!migrateState.batchPhaseStart) migrateState.batchPhaseStart = Date.now();
-        // Re-activate program timer for per-program batch phases (review)
-        if (pid) migrateState.programStartTimes[pid] = Date.now();
-        if (!pid) {
-          var section = document.getElementById('mp-prog-section');
-          var titleEl = document.getElementById('mp-prog-title');
-          var bar = document.getElementById('mp-prog-bar');
-          var label = document.getElementById('mp-prog-label');
-          if (section && titleEl) {
-            section.style.display = '';
-            titleEl.textContent = phase.toUpperCase() + ': ' + (msg.message || 'en cours...');
-            titleEl.style.color = '#f59e0b';
-            if (bar) { bar.style.width = ''; bar.style.background = '#f59e0b'; bar.className = 'mp-bar-fill mp-bar-prog mp-pulse-bar'; }
-            if (label) label.textContent = '';
-          }
+      } else if (phase && !pid) {
+        // Batch-level phase without pid (verify-tsc, integrate) - show in prog section
+        var section = document.getElementById('mp-prog-section');
+        var titleEl = document.getElementById('mp-prog-title');
+        var bar = document.getElementById('mp-prog-bar');
+        var label = document.getElementById('mp-prog-label');
+        if (section && titleEl) {
+          section.style.display = '';
+          titleEl.textContent = phase.toUpperCase() + ': ' + (msg.message || 'en cours...');
+          titleEl.style.color = '#f59e0b';
+          if (bar) { bar.style.width = ''; bar.style.background = '#f59e0b'; bar.className = 'mp-bar-fill mp-bar-prog mp-pulse-bar'; }
+          if (label) label.textContent = '';
         }
       }
       addMLog('[' + (phase || '') + '] ' + (msg.message || ''));
