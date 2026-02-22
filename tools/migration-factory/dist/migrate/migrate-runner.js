@@ -443,7 +443,10 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
         const programTokens = flushTokenAccumulator();
         const elapsed = Date.now() - start;
         const tokenInfo = programTokens ? `, tokens: ${Math.round(programTokens.input / 1000)}K in / ${Math.round(programTokens.output / 1000)}K out` : '';
-        emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: ${files.length} files generated in ${formatDuration(elapsed)}${tokenInfo}`, { programId, data: programTokens ? { tokens: programTokens } : undefined });
+        const completedData = { duration: elapsed, filesGenerated: files.length };
+        if (programTokens)
+            completedData.tokens = programTokens;
+        emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: ${files.length} files generated in ${formatDuration(elapsed)}${tokenInfo}`, { programId, data: completedData });
         return {
             result: {
                 programId,
