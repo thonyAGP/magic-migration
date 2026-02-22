@@ -1,0 +1,248 @@
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ScreenLayout } from '@/components/layout';
+import { Button, Input, Dialog } from '@/components/ui';
+import { useCharacterValidationStore } from '@/stores/characterValidationStore';
+import { useAuthStore } from '@/stores';
+import { cn } from '@/lib/utils';
+
+export function CharacterValidationPage() {
+  const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+
+  const forbiddenCharacters = useCharacterValidationStore((s) => s.forbiddenCharacters);
+  const lastValidationResult = useCharacterValidationStore((s) => s.lastValidationResult);
+  const isValidating = useCharacterValidationStore((s) => s.isValidating);
+  const error = useCharacterValidationStore((s) => s.error);
+  const validateCharacters = useCharacterValidationStore((s) => s.validateCharacters);
+  const loadForbiddenCharacters = useCharacterValidationStore((s) => s.loadForbiddenCharacters);
+  const checkString = useCharacterValidationStore((s) => s.checkString);
+  const setError = useCharacterValidationStore((s) => s.setError);
+  const setIsValidating = useCharacterValidationStore((s) => s.setIsValidating);
+  const reset = useCharacterValidationStore((s) => s.reset);
+
+  const [inputValue, setInputValue] = useState('');
+  const [showCharListDialog, setShowCharListDialog] = useState(false);
+  const [newChar, setNewChar] = useState('');
+  const [localForbiddenChars, setLocalForbiddenChars] = useState<string[]>([]);
+
+  useEffect(() => {
+    loadForbiddenCharacters();
+    return () => reset();
+  }, [loadForbiddenCharacters, reset]);
+
+  useEffect(() => {
+    setLocalForbiddenChars(forbiddenCharacters);
+  }, [forbiddenCharacters]);
+
+  const handleValidate = useCallback(async () => {
+    if (!inputValue.trim()) {
+      setError('Veuillez saisir un texte à valider');
+      return;
+    }
+    await validateCharacters(inputValue);
+  }, [inputValue, validateCharacters, setError]);
+
+  const handleLocalValidate = useCallback(() => {
+    if (!inputValue.trim()) {
+      setError('Veuillez saisir un texte à valider');
+      return;
+    }
+    checkString(inputValue, localForbiddenChars);
+  }, [inputValue, localForbiddenChars, checkString, setError]);
+
+  const handleAddChar = useCallback(() => {
+    if (!newChar) return;
+    if (!localForbiddenChars.includes(newChar)) {
+      setLocalForbiddenChars((prev) => [...prev, newChar]);
+    }
+    setNewChar('');
+  }, [newChar, localForbiddenChars]);
+
+  const handleRemoveChar = useCallback((char: string) => {
+    setLocalForbiddenChars((prev) => prev.filter((c) => c !== char));
+  }, []);
+
+  const handleBack = useCallback(() => {
+    navigate('/caisse/menu');
+  }, [navigate]);
+
+  const getCharDisplay = (char: string) => {
+    const displayMap: Record<string, string> = {
+      '\n': '\\n',
+      '\r': '\\r',
+      '\t': '\\t',
+      '\0': '\\0',
+      ' ': '(espace)',
+    };
+    return displayMap[char] || char;
+  };
+
+  return (
+    <ScreenLayout>
+      <div className="space-y-6 max-w-4xl mx-auto">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">Validation de caractères</h2>
+            <p className="text-on-surface-muted text-sm mt-1">
+              Vérifier la présence de caractères interdits
+            </p>
+          </div>
+          {user && (
+            <span className="text-xs text-on-surface-muted">
+              {user.prenom} {user.nom}
+            </span>
+          )}
+        </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+            {error}
+          </div>
+        )}
+
+        <div className="bg-surface border border-border rounded-lg p-6 space-y-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-on-surface">
+              Texte à valider
+            </label>
+            <Input
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Saisissez le texte à vérifier..."
+              className="w-full"
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <Button
+              onClick={handleValidate}
+              disabled={isValidating || !inputValue.trim()}
+              className="bg-primary text-white hover:bg-primary-dark disabled:opacity-50"
+            >
+              {isValidating ? 'Validation...' : 'Valider (API)'}
+            </Button>
+            <Button
+              onClick={handleLocalValidate}
+              disabled={!inputValue.trim()}
+              variant="secondary"
+            >
+              Valider (local)
+            </Button>
+            <Button
+              onClick={() => setShowCharListDialog(true)}
+              variant="secondary"
+            >
+              Gérer caractères interdits
+            </Button>
+          </div>
+        </div>
+
+        {lastValidationResult && (
+          <div
+            className={cn(
+              'border rounded-lg p-6',
+              lastValidationResult.isValid
+                ? 'bg-green-50 border-green-200'
+                : 'bg-red-50 border-red-200',
+            )}
+          >
+            <div className="flex items-start gap-4">
+              <div className="text-3xl">
+                {lastValidationResult.isValid ? '✓' : '✗'}
+              </div>
+              <div className="flex-1 space-y-2">
+                <h3 className="font-semibold text-lg">
+                  {lastValidationResult.isValid
+                    ? 'Texte valide'
+                    : 'Caractères interdits détectés'}
+                </h3>
+                {!lastValidationResult.isValid && (
+                  <>
+                    <p className="text-sm">
+                      <strong>Caractères invalides :</strong>{' '}
+                      <code className="bg-white px-2 py-1 rounded">
+                        {lastValidationResult.invalidCharacters
+                          .split('')
+                          .map(getCharDisplay)
+                          .join(', ')}
+                      </code>
+                    </p>
+                    {lastValidationResult.position !== null && (
+                      <p className="text-sm">
+                        <strong>Position :</strong> {lastValidationResult.position}
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-start">
+          <Button onClick={handleBack} variant="secondary">
+            Retour au menu
+          </Button>
+        </div>
+
+        <Dialog
+          open={showCharListDialog}
+          onClose={() => setShowCharListDialog(false)}
+          title="Caractères interdits"
+        >
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <Input
+                value={newChar}
+                onChange={(e) => setNewChar(e.target.value)}
+                placeholder="Nouveau caractère..."
+                maxLength={1}
+                className="flex-1"
+              />
+              <Button onClick={handleAddChar} disabled={!newChar}>
+                Ajouter
+              </Button>
+            </div>
+
+            <div className="max-h-96 overflow-y-auto border border-border rounded-md">
+              {localForbiddenChars.length === 0 ? (
+                <p className="text-center py-8 text-on-surface-muted text-sm">
+                  Aucun caractère interdit défini
+                </p>
+              ) : (
+                <div className="grid grid-cols-4 gap-2 p-4">
+                  {localForbiddenChars.map((char, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between bg-surface-hover border border-border rounded px-3 py-2"
+                    >
+                      <code className="text-sm font-mono">
+                        {getCharDisplay(char)}
+                      </code>
+                      <button
+                        onClick={() => handleRemoveChar(char)}
+                        className="text-red-600 hover:text-red-800 ml-2"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button
+                onClick={() => setShowCharListDialog(false)}
+                variant="secondary"
+              >
+                Fermer
+              </Button>
+            </div>
+          </div>
+        </Dialog>
+      </div>
+    </ScreenLayout>
+  );
+}

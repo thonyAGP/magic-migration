@@ -1,0 +1,352 @@
+{
+  "domain": "recapWorksheet",
+  "domainPascal": "RecapWorksheet",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "RecapWorksheetEntry",
+      "fields": [
+        {
+          "name": "dateComptable",
+          "type": "Date",
+          "source": "param",
+          "nullable": false
+        },
+        {
+          "name": "numeroSession",
+          "type": "number",
+          "source": "param",
+          "nullable": false
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "source": "param",
+          "nullable": false
+        },
+        {
+          "name": "typeApproVersCoffre",
+          "type": "string",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "modePaiement",
+          "type": "string",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "avecChange",
+          "type": "string",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "codeDevise",
+          "type": "string",
+          "source": "param",
+          "nullable": false
+        },
+        {
+          "name": "quantiteDevise",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "tauxDevise",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "montant",
+          "type": "number",
+          "source": "param",
+          "nullable": false
+        },
+        {
+          "name": "montantMonnaie",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "montantProduits",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "montantCartes",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "montantCheque",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "montantOd",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "param",
+          "nullable": false
+        },
+        {
+          "name": "compteVillage",
+          "type": "number",
+          "source": "param",
+          "nullable": false
+        },
+        {
+          "name": "filiation",
+          "type": "number",
+          "source": "param",
+          "nullable": false
+        },
+        {
+          "name": "imputation",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "sousImputation",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "libelle",
+          "type": "string",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "libelleComplementaire",
+          "type": "string",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "nomGm",
+          "type": "string",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "quantiteArticle",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        },
+        {
+          "name": "prixArticle",
+          "type": "number",
+          "source": "param",
+          "nullable": true
+        }
+      ]
+    },
+    {
+      "name": "RecapWorksheetSummary",
+      "fields": [
+        {
+          "name": "numeroSession",
+          "type": "number",
+          "source": "computed",
+          "nullable": false
+        },
+        {
+          "name": "dateComptable",
+          "type": "Date",
+          "source": "computed",
+          "nullable": false
+        },
+        {
+          "name": "totalParDevise",
+          "type": "object",
+          "source": "computed",
+          "nullable": false
+        },
+        {
+          "name": "totalParType",
+          "type": "object",
+          "source": "computed",
+          "nullable": false
+        },
+        {
+          "name": "totalParModePaiement",
+          "type": "object",
+          "source": "computed",
+          "nullable": false
+        },
+        {
+          "name": "totalGeneral",
+          "type": "number",
+          "source": "computed",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "entries",
+      "type": "RecapWorksheetEntry[]",
+      "default": "[]"
+    },
+    {
+      "name": "summary",
+      "type": "RecapWorksheetSummary | null",
+      "default": "null"
+    },
+    {
+      "name": "isGenerating",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "filters",
+      "type": "{ dateDebut?: Date; dateFin?: Date; numeroSession?: number }",
+      "default": "{}"
+    }
+  ],
+  "actions": [
+    {
+      "name": "generateRecapWorksheet",
+      "params": [
+        "numeroSession: number",
+        "dateComptable: Date"
+      ],
+      "businessRules": [
+        "Consolider toutes les données de fermeture de caisse pour la session",
+        "Agréger les mouvements de trésorerie par devise",
+        "Calculer les écarts par type de mouvement",
+        "Calculer les totaux consolidés par mode de paiement",
+        "Générer un tableau récapitulatif formaté"
+      ],
+      "returns": "Promise<RecapWorksheetSummary>"
+    },
+    {
+      "name": "exportRecapWorksheet",
+      "params": [
+        "summary: RecapWorksheetSummary",
+        "format: 'txt' | 'csv' | 'json'"
+      ],
+      "businessRules": [
+        "Formater le tableau selon le format demandé",
+        "Inclure tous les détails de la session",
+        "Générer un fichier téléchargeable"
+      ],
+      "returns": "Promise<Blob>"
+    },
+    {
+      "name": "fetchRecapEntries",
+      "params": [
+        "numeroSession: number"
+      ],
+      "businessRules": [
+        "Charger toutes les entrées de la session depuis la base",
+        "Trier par date comptable et type"
+      ],
+      "returns": "Promise<RecapWorksheetEntry[]>"
+    },
+    {
+      "name": "calculateSummary",
+      "params": [
+        "entries: RecapWorksheetEntry[]"
+      ],
+      "businessRules": [
+        "Agréger les montants par devise",
+        "Agréger les montants par type",
+        "Agréger les montants par mode de paiement",
+        "Calculer le total général",
+        "Identifier les écarts éventuels"
+      ],
+      "returns": "RecapWorksheetSummary"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/recapWorksheet/entries/:numeroSession",
+      "queryParams": [],
+      "response": "RecapWorksheetEntry[]"
+    },
+    {
+      "method": "POST",
+      "path": "/api/recapWorksheet/generate",
+      "queryParams": [],
+      "response": "RecapWorksheetSummary"
+    },
+    {
+      "method": "POST",
+      "path": "/api/recapWorksheet/export",
+      "queryParams": [
+        "format?"
+      ],
+      "response": "Blob"
+    }
+  ],
+  "uiLayout": {
+    "type": "utility-page",
+    "sections": [
+      {
+        "name": "Filtres",
+        "controls": [
+          "Input numéro session",
+          "DatePicker date comptable",
+          "Button Générer"
+        ]
+      },
+      {
+        "name": "Récapitulatif",
+        "controls": [
+          "DataGrid entries (détails)",
+          "SummaryCards (totaux par devise)",
+          "SummaryCards (totaux par type)",
+          "SummaryCards (totaux par mode paiement)",
+          "TotalBar (total général)"
+        ]
+      },
+      {
+        "name": "Export",
+        "controls": [
+          "RadioGroup format (TXT/CSV/JSON)",
+          "Button Exporter"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 10,
+    "description": "10 entrées de recap réparties sur 2 sessions, avec plusieurs devises (EUR, USD, GBP), plusieurs types de mouvements (vente, change, approvisionnement) et plusieurs modes de paiement (espèces, carte, chèque). Les montants varient entre 50 et 5000 EUR équivalent."
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore",
+      "useDeviseStore"
+    ],
+    "sharedTypes": [
+      "Session",
+      "Devise"
+    ],
+    "externalApis": []
+  }
+}

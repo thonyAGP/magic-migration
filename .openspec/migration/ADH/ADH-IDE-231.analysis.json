@@ -1,0 +1,210 @@
+{
+  "domain": "raisonsUtilisation",
+  "domainPascal": "RaisonsUtilisation",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "RaisonUtilisation",
+      "fields": [
+        {
+          "name": "idPrimaire",
+          "type": "number",
+          "source": "cafil069_dat.code_motif",
+          "nullable": false
+        },
+        {
+          "name": "idSecondaire",
+          "type": "number",
+          "source": "cafil069_dat.code_motif_secondaire",
+          "nullable": true
+        },
+        {
+          "name": "commentaire",
+          "type": "string",
+          "source": "cafil069_dat.libelle_motif",
+          "nullable": false
+        },
+        {
+          "name": "existeRaisonSecondaire",
+          "type": "boolean",
+          "source": "computed",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "raisons",
+      "type": "RaisonUtilisation[]",
+      "default": "[]"
+    },
+    {
+      "name": "selectedRaisonPrimaire",
+      "type": "number | null",
+      "default": "null"
+    },
+    {
+      "name": "selectedRaisonSecondaire",
+      "type": "number | null",
+      "default": "null"
+    },
+    {
+      "name": "commentaireSaisi",
+      "type": "string",
+      "default": "\"\""
+    },
+    {
+      "name": "confirmation",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "retourRaison",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "loadRaisonsUtilisation",
+      "params": [
+        "serviceCode?: number"
+      ],
+      "businessRules": [
+        "RM-001: Apply conditional logic for raison selection based on context",
+        "Fetch raisons from cafil069_dat table",
+        "Sort by idPrimaire ascending",
+        "Filter by service if serviceCode provided"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "selectRaisonPrimaire",
+      "params": [
+        "idPrimaire: number"
+      ],
+      "businessRules": [
+        "RM-003: Check if idPrimaire equals 6 for special handling",
+        "Set selectedRaisonPrimaire state",
+        "Reset selectedRaisonSecondaire if no secondary raisons exist",
+        "Update existeRaisonSecondaire flag"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "selectRaisonSecondaire",
+      "params": [
+        "idSecondaire: number"
+      ],
+      "businessRules": [
+        "Set selectedRaisonSecondaire state",
+        "Validate that idSecondaire belongs to current primary raison"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "validerSelection",
+      "params": [],
+      "businessRules": [
+        "RM-002: Validate commentaireSaisi is not empty AND confirmation AND last action is not 'Bt.Abandonner'",
+        "RM-004: Check that confirmation AND selectedRaisonPrimaire is not 0",
+        "Set confirmation to true",
+        "Set retourRaison to true if validation passes",
+        "Return selected raison data to caller (Easy Check-Out)"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "abandonner",
+      "params": [],
+      "businessRules": [
+        "Set confirmation to false",
+        "Set retourRaison to false",
+        "Clear all selections",
+        "Close dialog/modal"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "updateCommentaire",
+      "params": [
+        "commentaire: string"
+      ],
+      "businessRules": [
+        "Update commentaireSaisi state",
+        "Trim whitespace from input"
+      ],
+      "returns": "void"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/raisons-utilisation",
+      "queryParams": [
+        "serviceCode?"
+      ],
+      "response": "RaisonUtilisation[]"
+    }
+  ],
+  "uiLayout": {
+    "type": "modal-dialog",
+    "sections": [
+      {
+        "name": "header",
+        "controls": [
+          "Dialog title: 'Raisons d'utilisation du compte'"
+        ]
+      },
+      {
+        "name": "mainGrid",
+        "controls": [
+          "DataGrid with columns: Code Primaire, Code Secondaire, Libellé",
+          "Row selection (single)",
+          "Sort by Code Primaire ASC"
+        ]
+      },
+      {
+        "name": "commentaireSection",
+        "controls": [
+          "Text input for commentaire (optional)",
+          "Character limit display"
+        ]
+      },
+      {
+        "name": "footer",
+        "controls": [
+          "Button: Valider (primary)",
+          "Button: Abandonner (secondary)"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 10,
+    "description": "Mock raisons include: 1-Paiement service bar, 2-Paiement restaurant, 3-Paiement boutique, 4-Caution, 5-Dépôt espèces, 6-Retrait espèces (special handling), 7-Frais divers, 8-Remboursement, 9-Ajustement compte, 10-Autre motif. Each with primary and optional secondary codes."
+  },
+  "dependencies": {
+    "stores": [
+      "useRaisonsUtilisationStore",
+      "useEasyCheckoutStore"
+    ],
+    "sharedTypes": [
+      "RaisonUtilisation"
+    ],
+    "externalApis": [
+      "GET /api/raisons-utilisation - Fetch raisons from cafil069_dat table"
+    ]
+  }
+}

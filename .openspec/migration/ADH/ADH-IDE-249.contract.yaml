@@ -1,0 +1,47 @@
+program:
+  id: 0
+  name: ""
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 1
+  tables_count: 1
+  expressions_count: 5
+rules:
+  - id: RM-001
+    description: Valeur par defaut si Trim(p.Chambre [C]) est vide
+    condition: Trim(p.Chambre [C])=''
+    variables:
+      - EP
+    status: IMPL
+    target_file: adh-web/src/stores/saisieContenuCaisseStore.ts
+    gap_notes: ""
+variables:
+  - local_id: EP
+    name: p.Chambre
+    type: Real
+    status: IMPL
+    target_file: adh-web/src/components/data/DataGrid.stories.tsx
+    gap_notes: ""
+tables:
+  - id: 34
+    name: hebergement______heb
+    mode: W
+    status: IMPL
+    target_file: adh-web/src/components/caisse/facture/FactureForm.tsx
+    gap_notes: ""
+callees: []
+overall:
+  rules_total: 1
+  rules_impl: 1
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 1
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: enriched
+  generated: 2026-02-22T04:57:00.310Z
+  notes: Auto-generated from ADH-IDE-249.md

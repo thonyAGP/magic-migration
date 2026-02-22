@@ -1,0 +1,101 @@
+import { create } from 'zustand';
+import type {
+  DateRange,
+  SaisieDateState,
+  GetTitreResponse,
+} from '@/types/saisieDate';
+import { useDataSourceStore } from './dataSourceStore';
+import { apiClient } from '@/services/api/apiClient';
+
+const initialState: Omit<SaisieDateState, 'setDateMin' | 'setDateMax' | 'validateDates' | 'submitDates' | 'cancel' | 'reset'> = {
+  dateMin: null,
+  dateMax: null,
+  isValid: false,
+  errorMessage: null,
+};
+
+export const useSaisieDateStore = create<SaisieDateState>()((set, get) => ({
+  ...initialState,
+
+  setDateMin: (date) => {
+    set({ dateMin: date });
+    get().validateDates();
+  },
+
+  setDateMax: (date) => {
+    set({ dateMax: date });
+    get().validateDates();
+  },
+
+  validateDates: () => {
+    const { dateMin, dateMax } = get();
+
+    if (!dateMin && !dateMax) {
+      set({ isValid: false, errorMessage: 'Au moins une date doit être saisie' });
+      return false;
+    }
+
+    if (dateMin && dateMax && dateMin > dateMax) {
+      set({ isValid: false, errorMessage: 'La date minimum doit être inférieure ou égale à la date maximum' });
+      return false;
+    }
+
+    set({ isValid: true, errorMessage: null });
+    return true;
+  },
+
+  submitDates: async () => {
+    const { dateMin, dateMax, validateDates } = get();
+
+    if (!validateDates()) {
+      return null;
+    }
+
+    const { isRealApi } = useDataSourceStore.getState();
+
+    if (!isRealApi) {
+      return { dateMin, dateMax };
+    }
+
+    try {
+      const response = await apiClient.post<DateRange>('/api/saisie-date/submit', {
+        dateMin,
+        dateMax,
+      });
+
+      if (!response.data.success) {
+        set({ errorMessage: response.data.error ?? 'Erreur lors de la soumission' });
+        return null;
+      }
+
+      return response.data.data ?? { dateMin, dateMax };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur lors de la soumission des dates';
+      set({ errorMessage: message });
+      return null;
+    }
+  },
+
+  cancel: () => {
+    set({ ...initialState });
+  },
+
+  reset: () => {
+    set({ ...initialState });
+  },
+}));
+
+export const getTitre = async (): Promise<string> => {
+  const { isRealApi } = useDataSourceStore.getState();
+
+  if (!isRealApi) {
+    return 'Saisie dates';
+  }
+
+  try {
+    const response = await apiClient.get<GetTitreResponse>('/api/saisie-date/titre');
+    return response.data.data?.titre ?? 'Saisie dates';
+  } catch (e: unknown) {
+    return 'Saisie dates';
+  }
+};

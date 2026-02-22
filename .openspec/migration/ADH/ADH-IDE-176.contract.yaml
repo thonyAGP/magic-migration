@@ -1,0 +1,94 @@
+program:
+  id: 0
+  name: ""
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 6
+  tables_count: 3
+  expressions_count: 15
+rules:
+  - id: RM-001
+    description: Si > GO [G] alors 'GO' sinon 'GM')
+    condition: "> GO [G]"
+    variables:
+      - G
+    status: IMPL
+    target_file: adh-web/src/stores/saisieContenuCaisseStore.ts
+    gap_notes: ""
+variables:
+  - local_id: G
+    name: "> GO"
+    type: Real
+    status: IMPL
+    target_file: adh-web/src/components/caisse/clubmedpass/PassCreationForm.tsx
+    gap_notes: ""
+tables:
+  - id: 23
+    name: reseau_cloture___rec
+    mode: W
+    status: IMPL
+    target_file: adh-web/src/services/api/endpoints-facturationAppel.ts
+    gap_notes: ""
+  - id: 155
+    name: historique_pabx
+    mode: W
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 157
+    name: coef__telephone__coe
+    mode: W
+    status: IMPL
+    target_file: adh-web/src/services/api/endpoints-facturationAppel.ts
+    gap_notes: ""
+callees:
+  - id: 16
+    name: Creation O.D
+    calls: 1
+    context: Sous-programme
+    status: MISSING
+    target: ""
+    gap_notes: ""
+  - id: 17
+    name: Deblocage compte GM
+    calls: 1
+    context: Sous-programme
+    status: IMPL
+    target: adh-web/src/components/caisse/printConfiguration/ConfigurationPanel.tsx
+    gap_notes: ""
+  - id: 18
+    name: Test reseau
+    calls: 1
+    context: Sous-programme
+    status: IMPL
+    target: adh-web/src/stores/facturationAppelStore.ts
+    gap_notes: ""
+  - id: 19
+    name: Test si cloture en cours
+    calls: 1
+    context: Fermeture session
+    status: MISSING
+    target: ""
+    gap_notes: ""
+  - id: 36
+    name: Zoom GO/GM
+    calls: 1
+    context: Selection/consultation
+    status: MISSING
+    target: ""
+    gap_notes: ""
+overall:
+  rules_total: 1
+  rules_impl: 1
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 1
+  callees_total: 5
+  callees_impl: 2
+  callees_missing: 3
+  coverage_pct: 60
+  status: enriched
+  generated: 2026-02-22T04:56:59.421Z
+  notes: Auto-generated from ADH-IDE-176.md

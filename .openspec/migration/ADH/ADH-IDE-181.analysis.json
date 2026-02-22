@@ -1,0 +1,137 @@
+{
+  "domain": "printConfiguration",
+  "domainPascal": "PrintConfiguration",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "PrintConfig",
+      "fields": [
+        {
+          "name": "currentListingNum",
+          "type": "number",
+          "source": "parameter",
+          "nullable": false
+        },
+        {
+          "name": "currentPrinterName",
+          "type": "string",
+          "source": "parameter",
+          "nullable": false
+        },
+        {
+          "name": "currentPrinterNum",
+          "type": "number",
+          "source": "parameter",
+          "nullable": false
+        },
+        {
+          "name": "numberCopies",
+          "type": "number",
+          "source": "parameter",
+          "nullable": false
+        },
+        {
+          "name": "specificPrint",
+          "type": "string",
+          "source": "parameter",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "currentConfig",
+      "type": "PrintConfig | null",
+      "default": "null"
+    },
+    {
+      "name": "isInitializing",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "setListingNumber",
+      "params": [
+        "listingNumber: number"
+      ],
+      "businessRules": [
+        "[RM-001] Si SPECIFICPRINT = 'VOID', initialiser les paramètres d'impression par défaut",
+        "SetParam CURRENTLISTINGNUM avec le numéro de listing fourni",
+        "SetParam CURRENTPRINTERNAME à 'VOID'",
+        "SetParam CURRENTPRINTERNUM à 0",
+        "SetParam NUMBERCOPIES à 0"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "resetPrintParameters",
+      "params": [],
+      "businessRules": [
+        "Réinitialiser CURRENTPRINTERNAME à 'VOID'",
+        "Réinitialiser CURRENTPRINTERNUM à 0",
+        "Réinitialiser NUMBERCOPIES à 0"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "getPrintConfig",
+      "params": [],
+      "businessRules": [
+        "Récupérer la configuration d'impression courante"
+      ],
+      "returns": "Promise<PrintConfig>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/print-config/set-listing",
+      "queryParams": [],
+      "response": "void"
+    },
+    {
+      "method": "POST",
+      "path": "/api/print-config/reset",
+      "queryParams": [],
+      "response": "void"
+    },
+    {
+      "method": "GET",
+      "path": "/api/print-config",
+      "queryParams": [],
+      "response": "PrintConfig"
+    }
+  ],
+  "uiLayout": {
+    "type": "utility-service",
+    "sections": [
+      {
+        "name": "configuration",
+        "controls": [
+          "No visible UI - backend utility service only"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 1,
+    "description": "Default print configuration with CURRENTLISTINGNUM=0, CURRENTPRINTERNAME='VOID', CURRENTPRINTERNUM=0, NUMBERCOPIES=0, SPECIFICPRINT='VOID'"
+  },
+  "dependencies": {
+    "stores": [
+      "usePrintConfigStore"
+    ],
+    "sharedTypes": [
+      "PrintConfig"
+    ],
+    "externalApis": []
+  }
+}

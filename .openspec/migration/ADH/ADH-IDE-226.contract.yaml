@@ -1,0 +1,27 @@
+program:
+  id: 0
+  name: ""
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 5
+  tables_count: 0
+  expressions_count: 0
+rules: []
+variables: []
+tables: []
+callees: []
+overall:
+  rules_total: 0
+  rules_impl: 0
+  rules_partial: 0
+  rules_missing: 0
+  rules_na: 0
+  variables_key_count: 0
+  callees_total: 0
+  callees_impl: 0
+  callees_missing: 0
+  coverage_pct: 100
+  status: enriched
+  generated: 2026-02-22T04:42:12.707Z
+  notes: Auto-generated from ADH-IDE-226.md

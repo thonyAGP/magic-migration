@@ -1,0 +1,68 @@
+import { useMemo } from 'react';
+import { DataGrid } from '@/components/ui';
+import type { ArticleSession } from '@/types/recapFermeture';
+import { cn } from '@/lib/utils';
+
+interface ArticlesPanelProps {
+  articles: ArticleSession[];
+  className?: string;
+}
+
+export const ArticlesPanel = ({ articles, className }: ArticlesPanelProps) => {
+  const totalArticles = useMemo(
+    () => articles.reduce((sum, art) => sum + art.totalArticles, 0),
+    [articles]
+  );
+
+  const columns = useMemo(
+    () => [
+      {
+        key: 'chronoHisto',
+        header: 'Chrono',
+        width: '100px',
+      },
+      {
+        key: 'codeArticle',
+        header: 'Code',
+        width: '120px',
+      },
+      {
+        key: 'libelleArticle',
+        header: 'Libellé',
+        flex: 1,
+      },
+      {
+        key: 'totalArticles',
+        header: 'Total',
+        width: '100px',
+        align: 'right' as const,
+      },
+    ],
+    []
+  );
+
+  return (
+    <div className={cn('flex flex-col gap-4', className)}>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Articles de la session</h3>
+        <div className="text-sm text-gray-600">
+          Total: <span className="font-semibold">{totalArticles}</span> article(s)
+        </div>
+      </div>
+
+      <DataGrid
+        data={articles}
+        columns={columns}
+        keyField="chronoHisto"
+        className="flex-1"
+        emptyMessage="Aucun article trouvé pour cette session"
+      />
+
+      <div className="flex justify-end border-t border-gray-200 pt-3">
+        <div className="text-base font-semibold">
+          Total articles: {totalArticles}
+        </div>
+      </div>
+    </div>
+  );
+};

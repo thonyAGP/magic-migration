@@ -1,0 +1,433 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+const mockAuthStore = vi.fn();
+vi.mock('@/stores', () => ({
+  useAuthStore: (selector: unknown) => mockAuthStore(selector),
+}));
+
+const mockSoldeOuvertureStore = vi.fn();
+vi.mock('@/stores/soldeOuvertureStore', () => ({
+  useSoldeOuvertureStore: (selector: unknown) => mockSoldeOuvertureStore(selector),
+}));
+
+import { SoldeOuverturePage } from '@/pages/SoldeOuverturePage';
+import type { SoldeOuverture, SoldeCalculationResult } from '@/types/soldeOuverture';
+
+describe('SoldeOuverturePage', () => {
+  const mockUser = {
+    id: 1,
+    login: 'test',
+    nom: 'Doe',
+    prenom: 'John',
+    droits: [],
+  };
+
+  const mockSoldeOuverture: SoldeOuverture = {
+    societe: 'ADH',
+    deviseLocale: 'EUR',
+    soldeOuverture: 5000,
+    soldeOuvertureMonnaie: 2000,
+    soldeOuvertureProduits: 1000,
+    soldeOuvertureCartes: 1500,
+    soldeOuvertureCheques: 300,
+    soldeOuvertureOd: 200,
+    nbreDevise: 3,
+    uniBi: 'UNI',
+  };
+
+  const mockCalculationResult: SoldeCalculationResult = {
+    totalEur: 5000,
+    details: [
+      { devise: 'EUR', montant: 2000, tauxChange: 1, montantEur: 2000 },
+      { devise: 'USD', montant: 1500, tauxChange: 0.9, montantEur: 1350 },
+      { devise: 'GBP', montant: 2000, tauxChange: 1.15, montantEur: 2300 },
+    ],
+  };
+
+  const mockLoadSoldeOuverture = vi.fn();
+  const mockCalculerSoldeOuverture = vi.fn();
+  const mockUpdateDeviseSession = vi.fn();
+  const mockValiderCoherenceSolde = vi.fn();
+  const mockClearError = vi.fn();
+  const mockReset = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    mockAuthStore.mockImplementation((selector) =>
+      selector({ user: mockUser }),
+    );
+
+    mockSoldeOuvertureStore.mockImplementation((selector) =>
+      selector({
+        soldeOuverture: null,
+        moyensReglement: [],
+        devisesSessions: [],
+        isLoading: false,
+        error: null,
+        isCalculating: false,
+        calculationResult: null,
+        loadSoldeOuverture: mockLoadSoldeOuverture,
+        calculerSoldeOuverture: mockCalculerSoldeOuverture,
+        updateDeviseSession: mockUpdateDeviseSession,
+        validerCoherenceSolde: mockValiderCoherenceSolde,
+        clearError: mockClearError,
+        reset: mockReset,
+      }),
+    );
+  });
+
+  const renderComponent = () =>
+    render(
+      <BrowserRouter>
+        <SoldeOuverturePage />
+      </BrowserRouter>,
+    );
+
+  it('renders without crashing', () => {
+    renderComponent();
+    expect(screen.getByText("Solde d'ouverture")).toBeInTheDocument();
+  });
+
+  it('displays user info', () => {
+    renderComponent();
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+  });
+
+  it('displays loading state', () => {
+    mockSoldeOuvertureStore.mockImplementation((selector) =>
+      selector({
+        soldeOuverture: null,
+        moyensReglement: [],
+        devisesSessions: [],
+        isLoading: true,
+        error: null,
+        isCalculating: false,
+        calculationResult: null,
+        loadSoldeOuverture: mockLoadSoldeOuverture,
+        calculerSoldeOuverture: mockCalculerSoldeOuverture,
+        updateDeviseSession: mockUpdateDeviseSession,
+        validerCoherenceSolde: mockValiderCoherenceSolde,
+        clearError: mockClearError,
+        reset: mockReset,
+      }),
+    );
+
+    renderComponent();
+    expect(screen.getByText('Chargement des données...')).toBeInTheDocument();
+  });
+
+  it('displays error state', () => {
+    const errorMessage = 'Erreur de chargement';
+    mockSoldeOuvertureStore.mockImplementation((selector) =>
+      selector({
+        soldeOuverture: null,
+        moyensReglement: [],
+        devisesSessions: [],
+        isLoading: false,
+        error: errorMessage,
+        isCalculating: false,
+        calculationResult: null,
+        loadSoldeOuverture: mockLoadSoldeOuverture,
+        calculerSoldeOuverture: mockCalculerSoldeOuverture,
+        updateDeviseSession: mockUpdateDeviseSession,
+        validerCoherenceSolde: mockValiderCoherenceSolde,
+        clearError: mockClearError,
+        reset: mockReset,
+      }),
+    );
+
+    renderComponent();
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+  });
+
+  it('clears error when close button clicked', () => {
+    mockSoldeOuvertureStore.mockImplementation((selector) =>
+      selector({
+        soldeOuverture: null,
+        moyensReglement: [],
+        devisesSessions: [],
+        isLoading: false,
+        error: 'Test error',
+        isCalculating: false,
+        calculationResult: null,
+        loadSoldeOuverture: mockLoadSoldeOuverture,
+        calculerSoldeOuverture: mockCalculerSoldeOuverture,
+        updateDeviseSession: mockUpdateDeviseSession,
+        validerCoherenceSolde: mockValiderCoherenceSolde,
+        clearError: mockClearError,
+        reset: mockReset,
+      }),
+    );
+
+    renderComponent();
+    const closeButton = screen.getByText('✕');
+    fireEvent.click(closeButton);
+    expect(mockClearError).toHaveBeenCalledTimes(1);
+  });
+
+  it('handles session ID input change', () => {
+    renderComponent();
+    const input = screen.getByPlaceholderText('Entrez le numéro de session');
+    fireEvent.change(input, { target: { value: '123' } });
+    expect(input).toHaveValue(123);
+  });
+
+  it('calls loadSoldeOuverture when Charger button clicked', async () => {
+    mockLoadSoldeOuverture.mockResolvedValue(undefined);
+    renderComponent();
+
+    const input = screen.getByPlaceholderText('Entrez le numéro de session');
+    fireEvent.change(input, { target: { value: '123' } });
+
+    const loadButton = screen.getByText('Charger');
+    fireEvent.click(loadButton);
+
+    await waitFor(() => {
+      expect(mockLoadSoldeOuverture).toHaveBeenCalledWith('ADH', 123);
+    });
+  });
+
+  it('calls calculerSoldeOuverture when Calculer button clicked', async () => {
+    mockCalculerSoldeOuverture.mockResolvedValue(mockCalculationResult);
+    mockValiderCoherenceSolde.mockResolvedValue({ coherent: true, ecart: null });
+
+    renderComponent();
+
+    const input = screen.getByPlaceholderText('Entrez le numéro de session');
+    fireEvent.change(input, { target: { value: '123' } });
+
+    const calculateButton = screen.getByText('Calculer');
+    fireEvent.click(calculateButton);
+
+    await waitFor(() => {
+      expect(mockCalculerSoldeOuverture).toHaveBeenCalledWith('ADH', 123);
+    });
+  });
+
+  it('calls updateDeviseSession when MAJ Devises button clicked', async () => {
+    mockUpdateDeviseSession.mockResolvedValue(undefined);
+    renderComponent();
+
+    const input = screen.getByPlaceholderText('Entrez le numéro de session');
+    fireEvent.change(input, { target: { value: '123' } });
+
+    const updateButton = screen.getByText('MAJ Devises');
+    fireEvent.click(updateButton);
+
+    await waitFor(() => {
+      expect(mockUpdateDeviseSession).toHaveBeenCalledWith(123);
+    });
+  });
+
+  it('disables buttons when session ID is empty', () => {
+    renderComponent();
+    expect(screen.getByText('Charger')).toBeDisabled();
+    expect(screen.getByText('Calculer')).toBeDisabled();
+    expect(screen.getByText('MAJ Devises')).toBeDisabled();
+  });
+
+  it('displays solde ouverture details when loaded', () => {
+    mockSoldeOuvertureStore.mockImplementation((selector) =>
+      selector({
+        soldeOuverture: mockSoldeOuverture,
+        moyensReglement: [],
+        devisesSessions: [],
+        isLoading: false,
+        error: null,
+        isCalculating: false,
+        calculationResult: null,
+        loadSoldeOuverture: mockLoadSoldeOuverture,
+        calculerSoldeOuverture: mockCalculerSoldeOuverture,
+        updateDeviseSession: mockUpdateDeviseSession,
+        validerCoherenceSolde: mockValiderCoherenceSolde,
+        clearError: mockClearError,
+        reset: mockReset,
+      }),
+    );
+
+    renderComponent();
+    expect(screen.getByText("Détails du solde d'ouverture")).toBeInTheDocument();
+    expect(screen.getByText('ADH')).toBeInTheDocument();
+    expect(screen.getByText('EUR')).toBeInTheDocument();
+    expect(screen.getByText('5\u202f000,00\u00a0€')).toBeInTheDocument();
+  });
+
+  it('displays calculation results when available', () => {
+    mockSoldeOuvertureStore.mockImplementation((selector) =>
+      selector({
+        soldeOuverture: null,
+        moyensReglement: [],
+        devisesSessions: [],
+        isLoading: false,
+        error: null,
+        isCalculating: false,
+        calculationResult: mockCalculationResult,
+        loadSoldeOuverture: mockLoadSoldeOuverture,
+        calculerSoldeOuverture: mockCalculerSoldeOuverture,
+        updateDeviseSession: mockUpdateDeviseSession,
+        validerCoherenceSolde: mockValiderCoherenceSolde,
+        clearError: mockClearError,
+        reset: mockReset,
+      }),
+    );
+
+    renderComponent();
+    expect(screen.getByText('Résultats du calcul')).toBeInTheDocument();
+    expect(screen.getByText('Détail des conversions par devise')).toBeInTheDocument();
+    expect(screen.getByText('USD')).toBeInTheDocument();
+    expect(screen.getByText('GBP')).toBeInTheDocument();
+  });
+
+  it('displays alerts when anomalies detected', () => {
+    const resultWithAnomalies: SoldeCalculationResult = {
+      totalEur: 1000,
+      details: [
+        { devise: 'EUR', montant: -100, tauxChange: 1, montantEur: -100 },
+        { devise: 'USD', montant: 0, tauxChange: 0.9, montantEur: 0 },
+      ],
+    };
+
+    mockSoldeOuvertureStore.mockImplementation((selector) =>
+      selector({
+        soldeOuverture: null,
+        moyensReglement: [],
+        devisesSessions: [],
+        isLoading: false,
+        error: null,
+        isCalculating: false,
+        calculationResult: resultWithAnomalies,
+        loadSoldeOuverture: mockLoadSoldeOuverture,
+        calculerSoldeOuverture: mockCalculerSoldeOuverture,
+        updateDeviseSession: mockUpdateDeviseSession,
+        validerCoherenceSolde: mockValiderCoherenceSolde,
+        clearError: mockClearError,
+        reset: mockReset,
+      }),
+    );
+
+    renderComponent();
+    expect(screen.getByText(/Alertes détectées/)).toBeInTheDocument();
+    expect(screen.getByText(/Montant négatif pour EUR/)).toBeInTheDocument();
+    expect(screen.getByText(/Montant nul pour USD/)).toBeInTheDocument();
+  });
+
+  it('navigates back when Retour button clicked', () => {
+    renderComponent();
+    const backButton = screen.getByText('Retour au menu');
+    fireEvent.click(backButton);
+    expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
+  });
+
+  it('calls reset on unmount', () => {
+    const { unmount } = renderComponent();
+    unmount();
+    expect(mockReset).toHaveBeenCalledTimes(1);
+  });
+
+  it('displays devises sessions table when available', () => {
+    const mockDevisesSessions = [
+      { id: 1, sessionId: 123, deviseCode: 'USD', tauxChange: 0.9, montant: 1500 },
+      { id: 2, sessionId: 123, deviseCode: 'GBP', tauxChange: 1.15, montant: 2000 },
+    ];
+
+    mockSoldeOuvertureStore.mockImplementation((selector) =>
+      selector({
+        soldeOuverture: null,
+        moyensReglement: [],
+        devisesSessions: mockDevisesSessions,
+        isLoading: false,
+        error: null,
+        isCalculating: false,
+        calculationResult: null,
+        loadSoldeOuverture: mockLoadSoldeOuverture,
+        calculerSoldeOuverture: mockCalculerSoldeOuverture,
+        updateDeviseSession: mockUpdateDeviseSession,
+        validerCoherenceSolde: mockValiderCoherenceSolde,
+        clearError: mockClearError,
+        reset: mockReset,
+      }),
+    );
+
+    renderComponent();
+    expect(screen.getByText('Devises de la session')).toBeInTheDocument();
+    expect(screen.getByText('USD')).toBeInTheDocument();
+    expect(screen.getByText('GBP')).toBeInTheDocument();
+  });
+
+  it('validates coherence and shows dialog when incoherent', async () => {
+    mockCalculerSoldeOuverture.mockResolvedValue(mockCalculationResult);
+    mockValiderCoherenceSolde.mockResolvedValue({
+      coherent: false,
+      ecart: 100,
+    });
+
+    mockSoldeOuvertureStore.mockImplementation((selector) =>
+      selector({
+        soldeOuverture: mockSoldeOuverture,
+        moyensReglement: [],
+        devisesSessions: [],
+        isLoading: false,
+        error: null,
+        isCalculating: false,
+        calculationResult: null,
+        loadSoldeOuverture: mockLoadSoldeOuverture,
+        calculerSoldeOuverture: mockCalculerSoldeOuverture,
+        updateDeviseSession: mockUpdateDeviseSession,
+        validerCoherenceSolde: mockValiderCoherenceSolde,
+        clearError: mockClearError,
+        reset: mockReset,
+      }),
+    );
+
+    renderComponent();
+
+    const input = screen.getByPlaceholderText('Entrez le numéro de session');
+    fireEvent.change(input, { target: { value: '123' } });
+
+    const calculateButton = screen.getByText('Calculer');
+    fireEvent.click(calculateButton);
+
+    await waitFor(() => {
+      expect(mockValiderCoherenceSolde).toHaveBeenCalledWith(5000, 5000);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Incohérence détectée')).toBeInTheDocument();
+    });
+  });
+
+  it('formats currency correctly', () => {
+    mockSoldeOuvertureStore.mockImplementation((selector) =>
+      selector({
+        soldeOuverture: mockSoldeOuverture,
+        moyensReglement: [],
+        devisesSessions: [],
+        isLoading: false,
+        error: null,
+        isCalculating: false,
+        calculationResult: null,
+        loadSoldeOuverture: mockLoadSoldeOuverture,
+        calculerSoldeOuverture: mockCalculerSoldeOuverture,
+        updateDeviseSession: mockUpdateDeviseSession,
+        validerCoherenceSolde: mockValiderCoherenceSolde,
+        clearError: mockClearError,
+        reset: mockReset,
+      }),
+    );
+
+    renderComponent();
+    expect(screen.getByText('2\u202f000,00\u00a0€')).toBeInTheDocument();
+  });
+});

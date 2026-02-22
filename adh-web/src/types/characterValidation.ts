@@ -1,0 +1,39 @@
+export interface ValidationResult {
+  isValid: boolean;
+  invalidCharacters: string;
+  position: number | null;
+}
+
+export interface ValidateCharactersRequest {
+  input: string;
+}
+
+export interface ValidateCharactersResponse {
+  result: ValidationResult;
+}
+
+export interface CheckStringRequest {
+  input: string;
+  forbiddenChars: string[];
+}
+
+export interface CheckStringResponse {
+  result: ValidationResult;
+}
+
+export interface ForbiddenCharactersResponse {
+  characters: string[];
+}
+
+export interface CharacterValidationState {
+  forbiddenCharacters: string[];
+  lastValidationResult: ValidationResult | null;
+  isValidating: boolean;
+  error: string | null;
+  validateCharacters: (input: string) => Promise<ValidationResult>;
+  loadForbiddenCharacters: () => Promise<void>;
+  checkString: (input: string, forbiddenChars: string[]) => ValidationResult;
+  setError: (error: string | null) => void;
+  setIsValidating: (isValidating: boolean) => void;
+  reset: () => void;
+}

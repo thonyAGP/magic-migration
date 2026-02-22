@@ -1,0 +1,252 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+const mockGetTitre = vi.fn();
+const mockSetDateMin = vi.fn();
+const mockSetDateMax = vi.fn();
+const mockSubmitDates = vi.fn();
+const mockCancel = vi.fn();
+const mockReset = vi.fn();
+
+vi.mock('@/stores/saisieDateStore', () => ({
+  useSaisieDateStore: (selector: (state: unknown) => unknown) =>
+    selector({
+      dateMin: null,
+      dateMax: null,
+      isValid: true,
+      errorMessage: null,
+      setDateMin: mockSetDateMin,
+      setDateMax: mockSetDateMax,
+      submitDates: mockSubmitDates,
+      cancel: mockCancel,
+      reset: mockReset,
+    }),
+  getTitre: mockGetTitre,
+}));
+
+vi.mock('@/stores', () => ({
+  useAuthStore: (selector: (state: unknown) => unknown) =>
+    selector({
+      user: {
+        prenom: 'Jean',
+        nom: 'Dupont',
+      },
+    }),
+}));
+
+import { SaisieDatePage } from '@/pages/SaisieDatePage';
+
+describe('SaisieDatePage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetTitre.mockResolvedValue('Saisie dates');
+    mockSubmitDates.mockResolvedValue({
+      dateMin: new Date('2026-01-01'),
+      dateMax: new Date('2026-01-31'),
+    });
+  });
+
+  const renderPage = () => {
+    return render(
+      <BrowserRouter>
+        <SaisieDatePage />
+      </BrowserRouter>
+    );
+  };
+
+  it('renders without crashing', () => {
+    renderPage();
+    expect(screen.getByText(/Saisie dates/i)).toBeInTheDocument();
+  });
+
+  it('displays current date and operator info', () => {
+    renderPage();
+    expect(screen.getByText(/Date actuelle:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Opérateur: Jean Dupont/i)).toBeInTheDocument();
+  });
+
+  it('loads and displays titre', async () => {
+    mockGetTitre.mockResolvedValue('Saisie de période');
+    renderPage();
+
+    await waitFor(() => {
+      expect(mockGetTitre).toHaveBeenCalled();
+    });
+  });
+
+  it('handles date min input change', () => {
+    renderPage();
+    const dateMinInput = screen.getByLabelText(/Du:/i) as HTMLInputElement;
+
+    fireEvent.change(dateMinInput, { target: { value: '2026-01-01' } });
+
+    expect(mockSetDateMin).toHaveBeenCalled();
+  });
+
+  it('handles date max input change', () => {
+    renderPage();
+    const dateMaxInput = screen.getByLabelText(/Au:/i) as HTMLInputElement;
+
+    fireEvent.change(dateMaxInput, { target: { value: '2026-01-31' } });
+
+    expect(mockSetDateMax).toHaveBeenCalled();
+  });
+
+  it('displays error message when validation fails', () => {
+    vi.mocked(vi.fn()).mockImplementation((selector) =>
+      selector({
+        dateMin: null,
+        dateMax: null,
+        isValid: false,
+        errorMessage: 'La date de début doit être antérieure à la date de fin',
+        setDateMin: mockSetDateMin,
+        setDateMax: mockSetDateMax,
+        submitDates: mockSubmitDates,
+        cancel: mockCancel,
+        reset: mockReset,
+      })
+    );
+
+    vi.doMock('@/stores/saisieDateStore', () => ({
+      useSaisieDateStore: (selector: (state: unknown) => unknown) =>
+        selector({
+          dateMin: null,
+          dateMax: null,
+          isValid: false,
+          errorMessage: 'La date de début doit être antérieure à la date de fin',
+          setDateMin: mockSetDateMin,
+          setDateMax: mockSetDateMax,
+          submitDates: mockSubmitDates,
+          cancel: mockCancel,
+          reset: mockReset,
+        }),
+      getTitre: mockGetTitre,
+    }));
+
+    renderPage();
+    expect(
+      screen.queryByText(/La date de début doit être antérieure à la date de fin/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it('submits dates when OK button is clicked', async () => {
+    renderPage();
+    const okButton = screen.getByText('OK');
+
+    fireEvent.click(okButton);
+
+    await waitFor(() => {
+      expect(mockSubmitDates).toHaveBeenCalled();
+    });
+  });
+
+  it('navigates to menu after successful submit', async () => {
+    renderPage();
+    const okButton = screen.getByText('OK');
+
+    fireEvent.click(okButton);
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
+    });
+  });
+
+  it('shows loading state during submission', async () => {
+    mockSubmitDates.mockImplementation(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                dateMin: new Date('2026-01-01'),
+                dateMax: new Date('2026-01-31'),
+              }),
+            100
+          )
+        )
+    );
+
+    renderPage();
+    const okButton = screen.getByText('OK');
+
+    fireEvent.click(okButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Validation...')).toBeInTheDocument();
+    });
+  });
+
+  it('disables OK button when dates are invalid', () => {
+    vi.doMock('@/stores/saisieDateStore', () => ({
+      useSaisieDateStore: (selector: (state: unknown) => unknown) =>
+        selector({
+          dateMin: null,
+          dateMax: null,
+          isValid: false,
+          errorMessage: 'Dates invalides',
+          setDateMin: mockSetDateMin,
+          setDateMax: mockSetDateMax,
+          submitDates: mockSubmitDates,
+          cancel: mockCancel,
+          reset: mockReset,
+        }),
+      getTitre: mockGetTitre,
+    }));
+
+    renderPage();
+    const okButton = screen.getByText('OK');
+
+    expect(okButton).toBeDisabled();
+  });
+
+  it('handles cancel button click', () => {
+    renderPage();
+    const cancelButton = screen.getByText('Abandonner');
+
+    fireEvent.click(cancelButton);
+
+    expect(mockCancel).toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
+  });
+
+  it('calls reset on unmount', () => {
+    const { unmount } = renderPage();
+
+    unmount();
+
+    expect(mockReset).toHaveBeenCalled();
+  });
+
+  it('handles empty date input by setting null', () => {
+    renderPage();
+    const dateMinInput = screen.getByLabelText(/Du:/i) as HTMLInputElement;
+
+    fireEvent.change(dateMinInput, { target: { value: '' } });
+
+    expect(mockSetDateMin).toHaveBeenCalled();
+  });
+
+  it('does not navigate when submit fails', async () => {
+    mockSubmitDates.mockResolvedValue(null);
+    renderPage();
+    const okButton = screen.getByText('OK');
+
+    fireEvent.click(okButton);
+
+    await waitFor(() => {
+      expect(mockSubmitDates).toHaveBeenCalled();
+    });
+
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+});

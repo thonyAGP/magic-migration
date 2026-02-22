@@ -1,0 +1,317 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+
+vi.mock('@/stores/integriteDatesStore');
+vi.mock('@/stores', () => ({
+  useAuthStore: vi.fn(),
+}));
+
+import { IntegriteDatesPage } from '@/pages/IntegriteDatesPage';
+import { useIntegriteDatesStore } from '@/stores/integriteDatesStore';
+import { useAuthStore } from '@/stores';
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+describe('IntegriteDatesPage', () => {
+  const mockValidateStore = {
+    checkType: 'O' as const,
+    societe: 'ADH',
+    isLoading: false,
+    error: null,
+    validationResult: null,
+    ouvertureValidation: null,
+    transactionValidation: null,
+    fermetureValidation: null,
+    setCheckType: vi.fn(),
+    setSociete: vi.fn(),
+    validateDateIntegrity: vi.fn(),
+    checkOuverture: vi.fn(),
+    checkTransaction: vi.fn(),
+    checkFermeture: vi.fn(),
+    clearValidationResult: vi.fn(),
+    reset: vi.fn(),
+  };
+
+  const mockAuthStore = {
+    user: {
+      id: 1,
+      nom: 'Dupont',
+      prenom: 'Jean',
+      login: 'jdupont',
+    },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector(mockValidateStore as never)
+    );
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
+      selector(mockAuthStore as never)
+    );
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const renderWithRouter = (ui: React.ReactElement) => {
+    return render(<BrowserRouter>{ui}</BrowserRouter>);
+  };
+
+  it('should render without crashing', () => {
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText('Intégrité des dates')).toBeInTheDocument();
+  });
+
+  it('should display user info when logged in', () => {
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText('Jean Dupont')).toBeInTheDocument();
+  });
+
+  it('should initialize with societe ADH and reset on unmount', () => {
+    const { unmount } = renderWithRouter(<IntegriteDatesPage />);
+    expect(mockValidateStore.setSociete).toHaveBeenCalledWith('ADH');
+    unmount();
+    expect(mockValidateStore.reset).toHaveBeenCalled();
+  });
+
+  it('should render check type buttons', () => {
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText('Ouverture')).toBeInTheDocument();
+    expect(screen.getByText('Transaction')).toBeInTheDocument();
+    expect(screen.getByText('Fermeture')).toBeInTheDocument();
+  });
+
+  it('should change check type when button clicked', () => {
+    renderWithRouter(<IntegriteDatesPage />);
+    const transactionBtn = screen.getByText('Transaction');
+    fireEvent.click(transactionBtn);
+    expect(mockValidateStore.setCheckType).toHaveBeenCalledWith('T');
+  });
+
+  it('should show date and time inputs when transaction type selected', () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({ ...mockValidateStore, checkType: 'T' } as never)
+    );
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByLabelText('Date session')).toBeInTheDocument();
+    expect(screen.getByLabelText('Heure session')).toBeInTheDocument();
+  });
+
+  it('should display error state', () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({ ...mockValidateStore, error: 'Erreur de validation' } as never)
+    );
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText('Erreur de validation')).toBeInTheDocument();
+  });
+
+  it('should display loading state on validate button', () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({ ...mockValidateStore, isLoading: true } as never)
+    );
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText('Validation...')).toBeInTheDocument();
+  });
+
+  it('should call checkOuverture when validate clicked with type O', async () => {
+    mockValidateStore.checkOuverture.mockResolvedValue(true);
+    renderWithRouter(<IntegriteDatesPage />);
+    const validateBtn = screen.getByText('Valider');
+    fireEvent.click(validateBtn);
+    await waitFor(() => {
+      expect(mockValidateStore.clearValidationResult).toHaveBeenCalled();
+      expect(mockValidateStore.checkOuverture).toHaveBeenCalledWith('ADH');
+    });
+  });
+
+  it('should call checkTransaction when validate clicked with type T and date/time', async () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({ ...mockValidateStore, checkType: 'T' } as never)
+    );
+    mockValidateStore.checkTransaction.mockResolvedValue(true);
+    renderWithRouter(<IntegriteDatesPage />);
+
+    const dateInput = screen.getByLabelText('Date session');
+    const timeInput = screen.getByLabelText('Heure session');
+    fireEvent.change(dateInput, { target: { value: '2026-02-21' } });
+    fireEvent.change(timeInput, { target: { value: '14:30' } });
+
+    const validateBtn = screen.getByText('Valider');
+    fireEvent.click(validateBtn);
+
+    await waitFor(() => {
+      expect(mockValidateStore.checkTransaction).toHaveBeenCalledWith(
+        'ADH',
+        '2026-02-21',
+        '14:30'
+      );
+    });
+  });
+
+  it('should call checkFermeture when validate clicked with type F', async () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({ ...mockValidateStore, checkType: 'F' } as never)
+    );
+    mockValidateStore.checkFermeture.mockResolvedValue({ isValid: true, hasAnomaly: false });
+    renderWithRouter(<IntegriteDatesPage />);
+    const validateBtn = screen.getByText('Valider');
+    fireEvent.click(validateBtn);
+    await waitFor(() => {
+      expect(mockValidateStore.checkFermeture).toHaveBeenCalledWith('ADH');
+    });
+  });
+
+  it('should disable validate button when transaction type and missing date or time', () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({ ...mockValidateStore, checkType: 'T' } as never)
+    );
+    renderWithRouter(<IntegriteDatesPage />);
+    const validateBtn = screen.getByText('Valider');
+    expect(validateBtn).toBeDisabled();
+  });
+
+  it('should display success validation result', () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({
+        ...mockValidateStore,
+        validationResult: {
+          checkType: 'O',
+          societe: 'ADH',
+          isValid: true,
+          hasClosureAnomaly: false,
+          timestamp: '2026-02-21T14:30:00',
+        },
+      } as never)
+    );
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText('✓ Validation réussie')).toBeInTheDocument();
+  });
+
+  it('should display failed validation result', () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({
+        ...mockValidateStore,
+        validationResult: {
+          checkType: 'O',
+          societe: 'ADH',
+          isValid: false,
+          hasClosureAnomaly: false,
+          errorMessage: 'Date invalide',
+          timestamp: '2026-02-21T14:30:00',
+        },
+      } as never)
+    );
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText('✗ Validation échouée')).toBeInTheDocument();
+    expect(screen.getByText('Date invalide')).toBeInTheDocument();
+  });
+
+  it('should display anomaly validation result', () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({
+        ...mockValidateStore,
+        validationResult: {
+          checkType: 'F',
+          societe: 'ADH',
+          isValid: true,
+          hasClosureAnomaly: true,
+          timestamp: '2026-02-21T14:30:00',
+        },
+      } as never)
+    );
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText('⚠ Anomalie détectée')).toBeInTheDocument();
+  });
+
+  it('should display ouverture validation details', () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({
+        ...mockValidateStore,
+        validationResult: {
+          checkType: 'O',
+          societe: 'ADH',
+          isValid: false,
+          hasClosureAnomaly: false,
+          timestamp: '2026-02-21T14:30:00',
+        },
+        ouvertureValidation: {
+          isValid: false,
+          dateComptable: '2026-02-20',
+          currentDate: '2026-02-21',
+          delaiExceeded: true,
+        },
+      } as never)
+    );
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText(/Date comptable: 2026-02-20/)).toBeInTheDocument();
+    expect(screen.getByText(/Date actuelle: 2026-02-21/)).toBeInTheDocument();
+    expect(screen.getByText('Délai dépassé')).toBeInTheDocument();
+  });
+
+  it('should display transaction validation details', () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({
+        ...mockValidateStore,
+        validationResult: {
+          checkType: 'T',
+          societe: 'ADH',
+          isValid: true,
+          hasClosureAnomaly: false,
+          timestamp: '2026-02-21T14:30:00',
+        },
+        transactionValidation: {
+          isValid: true,
+          dateSession: '2026-02-21',
+          heureSession: '14:30',
+          currentTimestamp: 1740139800,
+          sessionTimestamp: 1740139800,
+          isTimestampValid: true,
+        },
+      } as never)
+    );
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText(/Date session: 2026-02-21/)).toBeInTheDocument();
+    expect(screen.getByText(/Heure session: 14:30/)).toBeInTheDocument();
+    expect(screen.getByText(/Timestamp valide: Oui/)).toBeInTheDocument();
+  });
+
+  it('should display fermeture validation details', () => {
+    vi.mocked(useIntegriteDatesStore).mockImplementation((selector) =>
+      selector({
+        ...mockValidateStore,
+        validationResult: {
+          checkType: 'F',
+          societe: 'ADH',
+          isValid: false,
+          hasClosureAnomaly: true,
+          timestamp: '2026-02-21T14:30:00',
+        },
+        fermetureValidation: {
+          isValid: false,
+          hasAnomaly: true,
+          blockedReason: 'Ecart détecté',
+        },
+      } as never)
+    );
+    renderWithRouter(<IntegriteDatesPage />);
+    expect(screen.getByText(/Anomalie: Oui/)).toBeInTheDocument();
+    expect(screen.getByText(/Raison: Ecart détecté/)).toBeInTheDocument();
+  });
+
+  it('should navigate back to menu when back button clicked', () => {
+    renderWithRouter(<IntegriteDatesPage />);
+    const backBtn = screen.getByText('Retour au menu');
+    fireEvent.click(backBtn);
+    expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
+  });
+});

@@ -1,0 +1,167 @@
+{
+  "domain": "moyenPaiement",
+  "domainPascal": "MoyenPaiement",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "MoyenPaiement",
+      "fields": [
+        {
+          "name": "code",
+          "type": "string",
+          "source": "moyen_paiement___mop.code_mop",
+          "nullable": false
+        },
+        {
+          "name": "libelle",
+          "type": "string",
+          "source": "moyen_paiement___mop.libelle_mop",
+          "nullable": false
+        },
+        {
+          "name": "classe",
+          "type": "string",
+          "source": "moyen_paiement___mop.classe_mop",
+          "nullable": false
+        },
+        {
+          "name": "typeDevise",
+          "type": "string",
+          "source": "moyen_paiement___mop.type_devise",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "MoyenReglement",
+      "fields": [
+        {
+          "name": "code",
+          "type": "string",
+          "source": "moyens_reglement_mor.code_mor",
+          "nullable": false
+        },
+        {
+          "name": "libelle",
+          "type": "string",
+          "source": "moyens_reglement_mor.libelle_mor",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "moyensPaiement",
+      "type": "MoyenPaiement[]",
+      "default": "[]"
+    },
+    {
+      "name": "selectedMOP",
+      "type": "MoyenPaiement | null",
+      "default": "null"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "getMOPInfo",
+      "params": [
+        "codeMOP: string",
+        "typeDevise: 'UNI' | 'BI'"
+      ],
+      "businessRules": [
+        "RM-001: Si typeDevise != 'B', récupérer infos MOP pour devise unique",
+        "RM-002: Si typeDevise = 'B', récupérer infos MOP pour bi-devises"
+      ],
+      "returns": "Promise<{ classe: string; libelle: string; existe: boolean }>"
+    },
+    {
+      "name": "checkMOPExists",
+      "params": [
+        "codeMOP: string",
+        "societe: string"
+      ],
+      "businessRules": [
+        "Vérifier l'existence du MOP dans la table pour la société donnée"
+      ],
+      "returns": "Promise<boolean>"
+    },
+    {
+      "name": "getMOPByCode",
+      "params": [
+        "codeMOP: string"
+      ],
+      "businessRules": [
+        "Récupérer les détails complets d'un MOP par son code"
+      ],
+      "returns": "Promise<MoyenPaiement | null>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/moyenpaiement/info",
+      "queryParams": [
+        "code",
+        "typeDevise?"
+      ],
+      "response": "{ classe: string; libelle: string; existe: boolean }"
+    },
+    {
+      "method": "GET",
+      "path": "/api/moyenpaiement/{code}",
+      "queryParams": [],
+      "response": "MoyenPaiement"
+    },
+    {
+      "method": "GET",
+      "path": "/api/moyenpaiement/exists",
+      "queryParams": [
+        "code",
+        "societe"
+      ],
+      "response": "{ existe: boolean }"
+    }
+  ],
+  "uiLayout": {
+    "type": "utility-service",
+    "sections": [
+      {
+        "name": "integration",
+        "controls": [
+          "Utilisé par les écrans de vente pour afficher le libellé du MOP",
+          "Utilisé par les générateurs de tickets pour formatter les moyens de paiement",
+          "Utilisé par les écrans de transaction pour valider les MOP saisis"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 10,
+    "description": "Moyens de paiement typiques: CB (Carte Bancaire) classe UNI, ESPECES classe UNI, CHEQUE classe UNI, VIREMENT classe UNI, CHANGE classe BI, CB_ETRANGER classe BI, etc. avec libellés français et codes à 2-3 caractères"
+  },
+  "dependencies": {
+    "stores": [
+      "useTransactionStore",
+      "useSaisieContenuCaisseStore"
+    ],
+    "sharedTypes": [
+      "TypeDevise",
+      "ClasseMOP"
+    ],
+    "externalApis": [
+      "Table moyen_paiement___mop (DB ID 140, 89)",
+      "Table moyens_reglement_mor (DB ID 50)"
+    ]
+  }
+}

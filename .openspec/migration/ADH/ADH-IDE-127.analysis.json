@@ -1,0 +1,294 @@
+{
+  "domain": "soldeOuverture",
+  "domainPascal": "SoldeOuverture",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "SoldeOuverture",
+      "fields": [
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "histo_sessions_caisse_detail.societe",
+          "nullable": false
+        },
+        {
+          "name": "deviseLocale",
+          "type": "string",
+          "source": "histo_sessions_caisse_detail.devise_locale",
+          "nullable": false
+        },
+        {
+          "name": "soldeOuverture",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_ouverture",
+          "nullable": false
+        },
+        {
+          "name": "soldeOuvertureMonnaie",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_ouverture_monnaie",
+          "nullable": false
+        },
+        {
+          "name": "soldeOuvertureProduits",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_ouverture_produits",
+          "nullable": false
+        },
+        {
+          "name": "soldeOuvertureCartes",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_ouverture_cartes",
+          "nullable": false
+        },
+        {
+          "name": "soldeOuvertureCheques",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_ouverture_cheques",
+          "nullable": false
+        },
+        {
+          "name": "soldeOuvertureOd",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.solde_ouverture_od",
+          "nullable": false
+        },
+        {
+          "name": "nbreDevise",
+          "type": "number",
+          "source": "histo_sessions_caisse_detail.nbre_devise",
+          "nullable": false
+        },
+        {
+          "name": "uniBi",
+          "type": "string",
+          "source": "histo_sessions_caisse_detail.uni_bi",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "MoyenReglement",
+      "fields": [
+        {
+          "name": "id",
+          "type": "number",
+          "source": "moyens_reglement_mor.id",
+          "nullable": false
+        },
+        {
+          "name": "code",
+          "type": "string",
+          "source": "moyens_reglement_mor.code",
+          "nullable": false
+        },
+        {
+          "name": "libelle",
+          "type": "string",
+          "source": "moyens_reglement_mor.libelle",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "GestionDeviseSession",
+      "fields": [
+        {
+          "name": "id",
+          "type": "number",
+          "source": "gestion_devise_session.id",
+          "nullable": false
+        },
+        {
+          "name": "sessionId",
+          "type": "number",
+          "source": "gestion_devise_session.session_id",
+          "nullable": false
+        },
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "gestion_devise_session.devise_code",
+          "nullable": false
+        },
+        {
+          "name": "tauxChange",
+          "type": "number",
+          "source": "gestion_devise_session.taux_change",
+          "nullable": false
+        },
+        {
+          "name": "montant",
+          "type": "number",
+          "source": "gestion_devise_session.montant",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "soldeOuverture",
+      "type": "SoldeOuverture | null",
+      "default": "null"
+    },
+    {
+      "name": "moyensReglement",
+      "type": "MoyenReglement[]",
+      "default": "[]"
+    },
+    {
+      "name": "devisesSessions",
+      "type": "GestionDeviseSession[]",
+      "default": "[]"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "isCalculating",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "calculationResult",
+      "type": "{ totalEur: number; details: { devise: string; montant: number; tauxChange: number; montantEur: number }[] } | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "calculerSoldeOuverture",
+      "params": [
+        "societe: string",
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "Appeler updateDeviseSession pour mettre à jour les taux de change avant calcul",
+        "Extraire tous les montants par devise de la session",
+        "Convertir chaque montant devise vers EUR en utilisant les taux actualisés",
+        "Valider que toutes les devises ont un taux de change valide",
+        "Signaler une erreur si une devise manque de taux de change",
+        "Valider que les montants ne sont pas négatifs",
+        "Calculer le solde total en devise de référence (EUR)",
+        "Retourner le détail par devise et le total consolidé"
+      ],
+      "returns": "Promise<{ totalEur: number; details: { devise: string; montant: number; tauxChange: number; montantEur: number }[] }>"
+    },
+    {
+      "name": "updateDeviseSession",
+      "params": [
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "Appeler le service externe (ADH IDE 142) pour actualiser les taux de change",
+        "Rafraîchir les taux de change en vigueur à la date d'ouverture",
+        "Éviter les écarts de change dus à des taux obsolètes"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "loadSoldeOuverture",
+      "params": [
+        "societe: string",
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "Charger les données de solde d'ouverture depuis histo_sessions_caisse_detail",
+        "Charger les moyens de règlement disponibles",
+        "Charger les devises de session depuis gestion_devise_session"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "validerCoherenceSolde",
+      "params": [
+        "soldeEnregistre: number",
+        "soldeCalcule: number"
+      ],
+      "businessRules": [
+        "Comparer le solde d'ouverture enregistré avec le solde calculé rétrospectivement",
+        "Signaler un écart si une différence est détectée",
+        "Un écart indique soit une modification frauduleuse soit une erreur de capture"
+      ],
+      "returns": "Promise<{ coherent: boolean; ecart: number | null }>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/solde-ouverture/calculer",
+      "queryParams": [],
+      "response": "{ totalEur: number; details: { devise: string; montant: number; tauxChange: number; montantEur: number }[] }"
+    },
+    {
+      "method": "GET",
+      "path": "/api/solde-ouverture/:societe/:sessionId",
+      "queryParams": [],
+      "response": "SoldeOuverture"
+    },
+    {
+      "method": "POST",
+      "path": "/api/solde-ouverture/valider-coherence",
+      "queryParams": [],
+      "response": "{ coherent: boolean; ecart: number | null }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/solde-ouverture/update-devise-session",
+      "queryParams": [],
+      "response": "void"
+    }
+  ],
+  "uiLayout": {
+    "type": "service-component",
+    "sections": [
+      {
+        "name": "calculationResults",
+        "controls": [
+          "Total consolidé EUR",
+          "Liste détaillée des conversions par devise",
+          "Indicateurs de cohérence (si validation activée)",
+          "Alertes d'anomalie (devises manquantes, taux invalides, montants négatifs)"
+        ]
+      },
+      {
+        "name": "soldeDetails",
+        "controls": [
+          "Solde ouverture monnaie",
+          "Solde ouverture produits",
+          "Solde ouverture cartes",
+          "Solde ouverture chèques",
+          "Solde ouverture ordre de dépôt"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 5,
+    "description": "Sessions de caisse avec soldes d'ouverture en multi-devises (EUR, USD, GBP, CHF, JPY) avec taux de change réalistes. Inclure des montants variés pour monnaie, produits, cartes, chèques et ordres de dépôt. Générer également des moyens de règlement typiques et des enregistrements de gestion_devise_session avec taux de change cohérents."
+  },
+  "dependencies": {
+    "stores": [
+      "useSoldeOuvertureStore",
+      "useDeviseStore",
+      "useSessionStore"
+    ],
+    "sharedTypes": [
+      "SoldeOuverture",
+      "MoyenReglement",
+      "GestionDeviseSession"
+    ],
+    "externalApis": [
+      "ADH IDE 142 - Devise update session WS (pour actualisation taux de change)"
+    ]
+  }
+}

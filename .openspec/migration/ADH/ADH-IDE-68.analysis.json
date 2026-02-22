@@ -1,0 +1,157 @@
+{
+  "domain": "saisieDate",
+  "domainPascal": "SaisieDate",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "DateRange",
+      "fields": [
+        {
+          "name": "dateMin",
+          "type": "Date",
+          "source": "user input",
+          "nullable": true
+        },
+        {
+          "name": "dateMax",
+          "type": "Date",
+          "source": "user input",
+          "nullable": true
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "dateMin",
+      "type": "Date | null",
+      "default": "null"
+    },
+    {
+      "name": "dateMax",
+      "type": "Date | null",
+      "default": "null"
+    },
+    {
+      "name": "isValid",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "errorMessage",
+      "type": "string | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "setDateMin",
+      "params": [
+        "date: Date | null"
+      ],
+      "businessRules": [
+        "Updates minimum date boundary",
+        "Validates that dateMin <= dateMax if both are set"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "setDateMax",
+      "params": [
+        "date: Date | null"
+      ],
+      "businessRules": [
+        "Updates maximum date boundary",
+        "Validates that dateMin <= dateMax if both are set"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "validateDates",
+      "params": [],
+      "businessRules": [
+        "[RM-001] If NOT valid (negation of v.ok), prevent submission",
+        "dateMin must be <= dateMax if both are provided",
+        "At least one date must be provided"
+      ],
+      "returns": "boolean"
+    },
+    {
+      "name": "submitDates",
+      "params": [],
+      "businessRules": [
+        "Validates date range before submission",
+        "Returns selected date range to parent component/caller",
+        "Sets isValid flag based on validation result"
+      ],
+      "returns": "Promise<DateRange | null>"
+    },
+    {
+      "name": "cancel",
+      "params": [],
+      "businessRules": [
+        "Resets form state",
+        "Returns null to indicate cancellation"
+      ],
+      "returns": "void"
+    },
+    {
+      "name": "reset",
+      "params": [],
+      "businessRules": [
+        "Clears all date fields",
+        "Resets validation state"
+      ],
+      "returns": "void"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/saisie-date/titre",
+      "queryParams": [],
+      "response": "{ titre: string }"
+    }
+  ],
+  "uiLayout": {
+    "type": "modal-dialog",
+    "sections": [
+      {
+        "name": "header",
+        "controls": [
+          "title-label",
+          "current-date-display"
+        ]
+      },
+      {
+        "name": "dateInputs",
+        "controls": [
+          "label-du",
+          "input-date-min",
+          "label-au",
+          "input-date-max"
+        ]
+      },
+      {
+        "name": "footer",
+        "controls": [
+          "button-ok",
+          "button-abandonner"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 5,
+    "description": "Sample date ranges for testing: last week, last month, current month, custom range with min only, custom range with max only"
+  },
+  "dependencies": {
+    "stores": [],
+    "sharedTypes": [
+      "DateRange"
+    ],
+    "externalApis": [
+      "GET /api/saisie-date/titre - Callee IDE 43 (Recuperation du titre)"
+    ]
+  }
+}

@@ -1,0 +1,439 @@
+import { create } from 'zustand';
+import type {
+  EmailAddress,
+  SearchFilters,
+  CreateEmailDto,
+  UpdateEmailDto,
+  GetEmailsResponse,
+  CreateEmailResponse,
+  UpdateEmailResponse,
+  DeleteEmailResponse,
+  SetPrincipalResponse,
+} from '@/types/emailSearch';
+import { apiClient } from '@/services/api/apiClient';
+import type { ApiResponse } from '@/services/api/apiClient';
+import { useDataSourceStore } from '@/stores/dataSourceStore';
+
+interface EmailSearchState {
+  emails: EmailAddress[];
+  selectedEmail: EmailAddress | null;
+  isLoading: boolean;
+  error: string | null;
+  filters: SearchFilters;
+}
+
+interface EmailSearchActions {
+  searchEmails: (filters: SearchFilters) => Promise<void>;
+  createEmail: (data: CreateEmailDto) => Promise<void>;
+  updateEmail: (id: number, data: UpdateEmailDto) => Promise<void>;
+  deleteEmail: (id: number) => Promise<void>;
+  setAsPrincipal: (id: number) => Promise<void>;
+  selectEmail: (email: EmailAddress | null) => void;
+  setFilters: (filters: SearchFilters) => void;
+  clearFilters: () => void;
+  resetState: () => void;
+}
+
+type EmailSearchStore = EmailSearchState & EmailSearchActions;
+
+const MOCK_EMAILS: EmailAddress[] = [
+  {
+    id: 1,
+    societe: 'SKI',
+    compte: '100001',
+    filiation: 0,
+    email: 'jean.dupont@email.com',
+    isPrincipal: true,
+    createdAt: new Date('2026-01-15T10:30:00'),
+    updatedAt: new Date('2026-02-10T14:20:00'),
+  },
+  {
+    id: 2,
+    societe: 'SKI',
+    compte: '100001',
+    filiation: 0,
+    email: 'contact@dupont-family.fr',
+    isPrincipal: false,
+    createdAt: new Date('2026-01-20T09:15:00'),
+    updatedAt: null,
+  },
+  {
+    id: 3,
+    societe: 'SKI',
+    compte: '100001',
+    filiation: 0,
+    email: 'j.dupont@work.com',
+    isPrincipal: false,
+    createdAt: new Date('2026-02-01T16:45:00'),
+    updatedAt: null,
+  },
+  {
+    id: 4,
+    societe: 'SKI',
+    compte: '100002',
+    filiation: 0,
+    email: 'sophie.martin@email.com',
+    isPrincipal: true,
+    createdAt: new Date('2026-01-10T11:00:00'),
+    updatedAt: new Date('2026-02-15T08:30:00'),
+  },
+  {
+    id: 5,
+    societe: 'SKI',
+    compte: '100002',
+    filiation: 0,
+    email: 's.martin@company.fr',
+    isPrincipal: false,
+    createdAt: new Date('2026-01-18T14:20:00'),
+    updatedAt: null,
+  },
+  {
+    id: 6,
+    societe: 'SKI',
+    compte: '100002',
+    filiation: 0,
+    email: 'contact@martin-group.com',
+    isPrincipal: false,
+    createdAt: new Date('2026-02-05T10:10:00'),
+    updatedAt: null,
+  },
+  {
+    id: 7,
+    societe: 'EXCHANGE',
+    compte: '100003',
+    filiation: 1,
+    email: 'pierre.durand@email.com',
+    isPrincipal: true,
+    createdAt: new Date('2026-01-12T09:45:00'),
+    updatedAt: new Date('2026-02-12T15:00:00'),
+  },
+  {
+    id: 8,
+    societe: 'EXCHANGE',
+    compte: '100003',
+    filiation: 1,
+    email: 'p.durand@perso.fr',
+    isPrincipal: false,
+    createdAt: new Date('2026-01-25T13:30:00'),
+    updatedAt: null,
+  },
+  {
+    id: 9,
+    societe: 'EXCHANGE',
+    compte: '100003',
+    filiation: 1,
+    email: 'contact@durand.net',
+    isPrincipal: false,
+    createdAt: new Date('2026-02-08T11:20:00'),
+    updatedAt: null,
+  },
+  {
+    id: 10,
+    societe: 'EXCHANGE',
+    compte: '100004',
+    filiation: 0,
+    email: 'marie.bernard@email.com',
+    isPrincipal: true,
+    createdAt: new Date('2026-01-08T10:00:00'),
+    updatedAt: null,
+  },
+  {
+    id: 11,
+    societe: 'EXCHANGE',
+    compte: '100004',
+    filiation: 0,
+    email: 'm.bernard@work.com',
+    isPrincipal: false,
+    createdAt: new Date('2026-01-22T15:45:00'),
+    updatedAt: null,
+  },
+  {
+    id: 12,
+    societe: 'EXCHANGE',
+    compte: '100004',
+    filiation: 0,
+    email: 'contact@bernard-services.fr',
+    isPrincipal: false,
+    createdAt: new Date('2026-02-03T09:30:00'),
+    updatedAt: null,
+  },
+  {
+    id: 13,
+    societe: 'SKI',
+    compte: '100005',
+    filiation: 0,
+    email: 'luc.petit@email.com',
+    isPrincipal: true,
+    createdAt: new Date('2026-01-05T14:15:00'),
+    updatedAt: new Date('2026-02-18T10:45:00'),
+  },
+  {
+    id: 14,
+    societe: 'SKI',
+    compte: '100005',
+    filiation: 0,
+    email: 'l.petit@company.fr',
+    isPrincipal: false,
+    createdAt: new Date('2026-01-28T11:30:00'),
+    updatedAt: null,
+  },
+  {
+    id: 15,
+    societe: 'SKI',
+    compte: '100005',
+    filiation: 0,
+    email: 'contact@petit-consulting.com',
+    isPrincipal: false,
+    createdAt: new Date('2026-02-11T16:00:00'),
+    updatedAt: null,
+  },
+];
+
+const initialState: EmailSearchState = {
+  emails: [],
+  selectedEmail: null,
+  isLoading: false,
+  error: null,
+  filters: {
+    societe: '',
+    compte: '',
+    filiation: null,
+    email: '',
+  },
+};
+
+export const useEmailSearchStore = create<EmailSearchStore>()((set, get) => ({
+  ...initialState,
+
+  searchEmails: async (filters: SearchFilters) => {
+    const { isRealApi } = useDataSourceStore.getState();
+    set({ isLoading: true, error: null });
+
+    if (!isRealApi) {
+      const filtered = MOCK_EMAILS.filter((email) => {
+        if (filters.societe && email.societe !== filters.societe) return false;
+        if (filters.compte && email.compte !== filters.compte) return false;
+        if (filters.filiation !== null && email.filiation !== filters.filiation) return false;
+        if (filters.email && !email.email.toLowerCase().includes(filters.email.toLowerCase())) return false;
+        return true;
+      });
+      set({ emails: filtered, isLoading: false });
+      return;
+    }
+
+    try {
+      const params: Record<string, string> = {};
+      if (filters.societe) params.societe = filters.societe;
+      if (filters.compte) params.compte = filters.compte;
+      if (filters.filiation !== null) params.filiation = String(filters.filiation);
+      if (filters.email) params.email = filters.email;
+
+      const response = await apiClient.get<ApiResponse<GetEmailsResponse>>('/api/email-search/emails', { params });
+      set({ emails: response.data.data?.data ?? [] });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur recherche emails';
+      set({ emails: [], error: message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  createEmail: async (data: CreateEmailDto) => {
+    const { isRealApi } = useDataSourceStore.getState();
+    set({ isLoading: true, error: null });
+
+    if (!isRealApi) {
+      const newEmail: EmailAddress = {
+        id: Math.max(...MOCK_EMAILS.map((e) => e.id), 0) + 1,
+        societe: data.societe,
+        compte: data.compte,
+        filiation: data.filiation,
+        email: data.email,
+        isPrincipal: data.isPrincipal ?? false,
+        createdAt: new Date(),
+        updatedAt: null,
+      };
+
+      if (data.isPrincipal) {
+        MOCK_EMAILS.forEach((email) => {
+          if (
+            email.societe === data.societe &&
+            email.compte === data.compte &&
+            email.filiation === data.filiation
+          ) {
+            email.isPrincipal = false;
+          }
+        });
+      }
+
+      MOCK_EMAILS.push(newEmail);
+      const { filters } = get();
+      await get().searchEmails(filters);
+      set({ isLoading: false });
+      return;
+    }
+
+    try {
+      const response = await apiClient.post<ApiResponse<CreateEmailResponse>>('/api/email-search/emails', data);
+      const created = response.data.data?.data;
+      if (created) {
+        const currentEmails = get().emails;
+        set({ emails: [...currentEmails, created] });
+      }
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur création email';
+      set({ error: message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  updateEmail: async (id: number, data: UpdateEmailDto) => {
+    const { isRealApi } = useDataSourceStore.getState();
+    set({ isLoading: true, error: null });
+
+    if (!isRealApi) {
+      const emailIndex = MOCK_EMAILS.findIndex((e) => e.id === id);
+      if (emailIndex === -1) {
+        set({ error: 'Email introuvable', isLoading: false });
+        return;
+      }
+
+      const email = MOCK_EMAILS[emailIndex];
+      if (data.email !== undefined) email.email = data.email;
+      if (data.isPrincipal !== undefined && data.isPrincipal) {
+        MOCK_EMAILS.forEach((e) => {
+          if (
+            e.societe === email.societe &&
+            e.compte === email.compte &&
+            e.filiation === email.filiation &&
+            e.id !== id
+          ) {
+            e.isPrincipal = false;
+          }
+        });
+        email.isPrincipal = true;
+      }
+      email.updatedAt = new Date();
+
+      const { filters } = get();
+      await get().searchEmails(filters);
+      set({ isLoading: false });
+      return;
+    }
+
+    try {
+      const response = await apiClient.put<ApiResponse<UpdateEmailResponse>>(`/api/email-search/emails/${id}`, data);
+      const updated = response.data.data?.data;
+      if (updated) {
+        const currentEmails = get().emails;
+        set({ emails: currentEmails.map((e) => (e.id === id ? updated : e)) });
+      }
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur modification email';
+      set({ error: message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  deleteEmail: async (id: number) => {
+    const { isRealApi } = useDataSourceStore.getState();
+    set({ isLoading: true, error: null });
+
+    if (!isRealApi) {
+      const index = MOCK_EMAILS.findIndex((e) => e.id === id);
+      if (index === -1) {
+        set({ error: 'Email introuvable', isLoading: false });
+        return;
+      }
+      MOCK_EMAILS.splice(index, 1);
+      const { filters } = get();
+      await get().searchEmails(filters);
+      set({ isLoading: false });
+      return;
+    }
+
+    try {
+      await apiClient.delete<ApiResponse<DeleteEmailResponse>>(`/api/email-search/emails/${id}`);
+      const currentEmails = get().emails;
+      set({ emails: currentEmails.filter((e) => e.id !== id) });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur suppression email';
+      set({ error: message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  setAsPrincipal: async (id: number) => {
+    const { isRealApi } = useDataSourceStore.getState();
+    set({ isLoading: true, error: null });
+
+    if (!isRealApi) {
+      const email = MOCK_EMAILS.find((e) => e.id === id);
+      if (!email) {
+        set({ error: 'Email introuvable', isLoading: false });
+        return;
+      }
+
+      MOCK_EMAILS.forEach((e) => {
+        if (
+          e.societe === email.societe &&
+          e.compte === email.compte &&
+          e.filiation === email.filiation
+        ) {
+          e.isPrincipal = e.id === id;
+        }
+      });
+
+      const { filters } = get();
+      await get().searchEmails(filters);
+      set({ isLoading: false });
+      return;
+    }
+
+    try {
+      await apiClient.post<ApiResponse<SetPrincipalResponse>>(`/api/email-search/emails/${id}/set-principal`);
+      const currentEmails = get().emails;
+      const email = currentEmails.find((e) => e.id === id);
+      if (email) {
+        set({
+          emails: currentEmails.map((e) =>
+            e.societe === email.societe &&
+            e.compte === email.compte &&
+            e.filiation === email.filiation
+              ? { ...e, isPrincipal: e.id === id }
+              : e,
+          ),
+        });
+      }
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Erreur définition email principal';
+      set({ error: message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  selectEmail: (email: EmailAddress | null) => {
+    set({ selectedEmail: email });
+  },
+
+  setFilters: (filters: SearchFilters) => {
+    set({ filters });
+  },
+
+  clearFilters: () => {
+    set({
+      filters: {
+        societe: '',
+        compte: '',
+        filiation: null,
+        email: '',
+      },
+    });
+  },
+
+  resetState: () => set({ ...initialState }),
+}));

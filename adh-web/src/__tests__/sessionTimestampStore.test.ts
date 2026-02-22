@@ -18,7 +18,7 @@ vi.mock('@/services/api/apiClient', () => ({
 const MOCK_TIMESTAMP_RESPONSE: GetSessionTimestampResponse = {
   sessionDate: new Date('2026-02-21T09:15:00'),
   sessionTime: '09:15',
-  timestamp: 20260221091500,
+  timestamp: 2026022191500,
 };
 
 const MOCK_VALIDATE_RESPONSE: ValidateTimestampResponse = {
@@ -49,7 +49,7 @@ describe('sessionTimestampStore', () => {
       expect(state.isLoading).toBe(false);
       expect(state.error).toBeNull();
       expect(state.sessionTime).toBe('09:15');
-      expect(state.timestamp).toBe(20260221091500);
+      expect(state.timestamp).toBe(2026022191500);
       expect(state.sessionDate).toBeInstanceOf(Date);
     });
 
@@ -87,7 +87,7 @@ describe('sessionTimestampStore', () => {
       expect(state.isLoading).toBe(false);
       expect(state.error).toBeNull();
       expect(state.sessionTime).toBe('09:15');
-      expect(state.timestamp).toBe(20260221091500);
+      expect(state.timestamp).toBe(2026022191500);
       expect(state.sessionDate).toBeInstanceOf(Date);
       expect(apiClient.get).toHaveBeenCalledWith('/api/session/timestamp');
     });
@@ -133,7 +133,7 @@ describe('sessionTimestampStore', () => {
   describe('validateTimestamp', () => {
     it('should validate timestamp within 1440 minutes (24h) in mock mode', async () => {
       useDataSourceStore.setState({ isRealApi: false });
-      const mockTimestamp = 20260221091500;
+      const mockTimestamp = 2026022191500;
       const validTimestamp = mockTimestamp + 10000;
 
       const result = await useSessionTimestampStore.getState().validateTimestamp(validTimestamp);
@@ -143,7 +143,7 @@ describe('sessionTimestampStore', () => {
 
     it('should reject timestamp outside 1440 minutes in mock mode', async () => {
       useDataSourceStore.setState({ isRealApi: false });
-      const mockTimestamp = 20260221091500;
+      const mockTimestamp = 2026022191500;
       const invalidTimestamp = mockTimestamp + 200000;
 
       const result = await useSessionTimestampStore.getState().validateTimestamp(invalidTimestamp);
@@ -153,7 +153,7 @@ describe('sessionTimestampStore', () => {
 
     it('should validate timestamp via API when isRealApi is true', async () => {
       useDataSourceStore.setState({ isRealApi: true });
-      const timestamp = 20260221091500;
+      const timestamp = 2026022191500;
       vi.mocked(apiClient.post).mockResolvedValue({
         data: MOCK_VALIDATE_RESPONSE,
         success: true,
@@ -170,7 +170,7 @@ describe('sessionTimestampStore', () => {
 
     it('should return false and set error on API validation failure', async () => {
       useDataSourceStore.setState({ isRealApi: true });
-      const timestamp = 20260221091500;
+      const timestamp = 2026022191500;
       vi.mocked(apiClient.post).mockRejectedValue(new Error('Validation failed'));
 
       const result = await useSessionTimestampStore.getState().validateTimestamp(timestamp);
@@ -181,7 +181,7 @@ describe('sessionTimestampStore', () => {
 
     it('should return false and set generic error on unknown validation error', async () => {
       useDataSourceStore.setState({ isRealApi: true });
-      const timestamp = 20260221091500;
+      const timestamp = 2026022191500;
       vi.mocked(apiClient.post).mockRejectedValue('Unknown error');
 
       const result = await useSessionTimestampStore.getState().validateTimestamp(timestamp);
@@ -192,8 +192,8 @@ describe('sessionTimestampStore', () => {
 
     it('should ensure timestamp coherence with active caisse sessions', async () => {
       useDataSourceStore.setState({ isRealApi: false });
-      const currentTimestamp = 20260221091500;
-      const validTimestamp = 20260221101500;
+      const currentTimestamp = 2026022191500;
+      const validTimestamp = 2026022110150;
       const diffMinutes = Math.abs(validTimestamp - currentTimestamp) / 100;
 
       const result = await useSessionTimestampStore.getState().validateTimestamp(validTimestamp);
@@ -208,7 +208,7 @@ describe('sessionTimestampStore', () => {
       useSessionTimestampStore.setState({
         sessionDate: new Date(),
         sessionTime: '10:30',
-        timestamp: 20260221103000,
+        timestamp: 2026022110300,
         isLoading: true,
         error: 'Some error',
       });

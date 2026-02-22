@@ -1,0 +1,121 @@
+{
+  "domain": "sessionTimestamp",
+  "domainPascal": "SessionTimestamp",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "SessionTimestamp",
+      "fields": [
+        {
+          "name": "sessionDate",
+          "type": "Date",
+          "source": "derived",
+          "nullable": false
+        },
+        {
+          "name": "sessionTime",
+          "type": "string",
+          "source": "derived",
+          "nullable": false
+        },
+        {
+          "name": "timestamp",
+          "type": "number",
+          "source": "calculation",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "sessionDate",
+      "type": "Date | null",
+      "default": "null"
+    },
+    {
+      "name": "sessionTime",
+      "type": "string",
+      "default": "''"
+    },
+    {
+      "name": "timestamp",
+      "type": "number",
+      "default": "0"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "getSessionTimestamp",
+      "params": [],
+      "businessRules": [
+        "Collecte la date et l'heure de la session utilisateur courante",
+        "Calcule un timestamp numerique pour traçabilité (date*10^5 + heure)",
+        "Garantit la cohérence temporelle pour les opérations de change",
+        "Horodate les transactions de change de devises"
+      ],
+      "returns": "Promise<SessionTimestamp>"
+    },
+    {
+      "name": "validateTimestamp",
+      "params": [
+        "timestamp: number"
+      ],
+      "businessRules": [
+        "Valide que le timestamp est dans une plage acceptable",
+        "Assure la cohérence avec les sessions de caisse actives"
+      ],
+      "returns": "Promise<boolean>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/session/timestamp",
+      "queryParams": [],
+      "response": "SessionTimestamp"
+    },
+    {
+      "method": "GET",
+      "path": "/api/session/current",
+      "queryParams": [],
+      "response": "SessionInfo"
+    }
+  ],
+  "uiLayout": {
+    "type": "utility-component",
+    "sections": [
+      {
+        "name": "hidden",
+        "controls": [
+          "timestamp-provider"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "Mock session timestamps with various dates and times for testing currency exchange operations at different moments"
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore",
+      "useChangeStore"
+    ],
+    "sharedTypes": [
+      "SessionInfo",
+      "SessionTimestamp"
+    ],
+    "externalApis": []
+  }
+}

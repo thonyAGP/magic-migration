@@ -39,8 +39,8 @@ vi.mock('@/components/ui', () => ({
   Button: ({ children, onClick, disabled, variant }: { children: React.ReactNode; onClick?: () => void; disabled?: boolean; variant?: string }) => (
     <button data-testid={`button-${variant || 'default'}`} onClick={onClick} disabled={disabled}>{children}</button>
   ),
-  Dialog: ({ children, open, title, _onClose }: { children: React.ReactNode; open: boolean; title: string; onClose?: () => void }) => (
-    open ? <div data-testid="dialog" role="dialog"><h2>{title}</h2>{children}</div> : null
+  Dialog: ({ children, open, title, onClose }: { children: React.ReactNode; open: boolean; title: string; onClose?: () => void }) => (
+    open ? <div data-testid="dialog" role="dialog"><h2>{title}</h2>{children}<button onClick={onClose}>Close Dialog</button></div> : null
   ),
   Input: ({ value, onChange, id, type, placeholder, autoFocus }: { value: string; onChange: (e: { target: { value: string } }) => void; id: string; type?: string; placeholder?: string; autoFocus?: boolean }) => (
     <input data-testid={id} type={type} value={value} onChange={onChange} placeholder={placeholder} autoFocus={autoFocus} />
@@ -67,6 +67,7 @@ describe('SessionEcartPage', () => {
     mockStore.error = null;
     mockStore.ecartSaved = false;
     mockStore.seuilAlerte = 50;
+    mockStore.validerSeuilEcart = vi.fn(() => ({ exceeded: false, blocking: false }));
   });
 
   it('renders without crashing', () => {
@@ -198,15 +199,16 @@ describe('SessionEcartPage', () => {
     });
   });
 
-  it('shows error when validating without session or devise', () => {
+  it('shows error when validating without session or devise', async () => {
     mockStore.sessionId = null;
     mockStore.deviseCode = null;
-    mockStore.setError = vi.fn();
     render(<SessionEcartPage />);
     const validerButton = screen.getByText('Valider l\'écart');
     fireEvent.click(validerButton);
     
-    expect(mockStore.setError).toHaveBeenCalledWith('Session ou devise manquante');
+    await waitFor(() => {
+      expect(mockStore.setError).toHaveBeenCalledWith('Session ou devise manquante');
+    });
   });
 
   it('requires commentaire when ecart exceeds threshold', () => {

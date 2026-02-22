@@ -1,0 +1,71 @@
+import type { ApiResponse } from "@/services/api/apiClient";
+
+// Fidelisation Remise types (fidelisationRemise domain)
+
+export interface FidelisationRemise {
+  societe: string;
+  compte: number;
+  filiation: number;
+  service: string;
+  imputation: number;
+  fidelisation: string | null;
+  remise: number | null;
+}
+
+export interface RemiseResult {
+  fidelisationId: string | null;
+  montantRemise: number;
+  isValide: boolean;
+  message: string | null;
+}
+
+export interface FidelisationRemiseState {
+  isLoading: boolean;
+  error: string | null;
+  remiseData: FidelisationRemise | null;
+  remiseResult: RemiseResult | null;
+  getFidelisationRemise: (
+    societe: string,
+    compte: number,
+    filiation: number,
+    service: string,
+    imputation: number
+  ) => Promise<void>;
+  validateRemiseEligibility: (remiseData: FidelisationRemise) => Promise<boolean>;
+  calculateMontantRemise: (remiseData: FidelisationRemise) => Promise<number>;
+  setError: (error: string | null) => void;
+  reset: () => void;
+}
+
+export interface GetFidelisationRemiseRequest {
+  societe: string;
+  compte: number;
+  filiation: number;
+  service: string;
+  imputation: number;
+}
+
+export interface GetFidelisationRemiseResponse extends ApiResponse {
+  data: RemiseResult;
+}
+
+export interface ValidateRemiseEligibilityRequest {
+  remiseData: FidelisationRemise;
+}
+
+export interface ValidateRemiseEligibilityResponse extends ApiResponse {
+  data: {
+    isValide: boolean;
+    message?: string;
+  };
+}
+
+export interface CalculateMontantRemiseRequest {
+  remiseData: FidelisationRemise;
+}
+
+export interface CalculateMontantRemiseResponse extends ApiResponse {
+  data: {
+    montantRemise: number;
+  };
+}

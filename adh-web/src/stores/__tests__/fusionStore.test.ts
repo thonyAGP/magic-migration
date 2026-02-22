@@ -174,6 +174,7 @@ describe('useFusionStore', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBe('Conflict detected');
       expect(useFusionStore.getState().isValidating).toBe(false);
+      expect(useFusionStore.getState().error).toBe('Conflict detected');
     });
 
     it('should set isValidating during validation', async () => {
@@ -187,9 +188,8 @@ describe('useFusionStore', () => {
 
       const validatePromise = useFusionStore.getState().validateFusion('ADH', 'user1');
       
-      await vi.waitFor(() => {
-        expect(useFusionStore.getState().isValidating).toBe(true);
-      });
+      await new Promise(r => setTimeout(r, 10));
+      expect(useFusionStore.getState().isValidating).toBe(true);
 
       resolve!({ data: { data: mockPreview } });
       await validatePromise;
@@ -245,6 +245,7 @@ describe('useFusionStore', () => {
       expect(result.error).toBe('Timeout');
       expect(useFusionStore.getState().currentStep).toBe('confirmation');
       expect(useFusionStore.getState().isExecuting).toBe(false);
+      expect(useFusionStore.getState().error).toBe('Timeout');
     });
 
     it('should set step to processing during execution', async () => {
@@ -253,11 +254,13 @@ describe('useFusionStore', () => {
         compteSecondaire: mockAccounts[1] as never,
       });
       let resolve: (v: unknown) => void;
-      const promise = new Promise((r) => { resolve = r; });
+      const executePromise = new Promise((r) => { resolve = r; });
       vi.mocked(fusionApi.validate).mockResolvedValue({ data: { data: mockPreview } } as never);
-      vi.mocked(fusionApi.execute).mockReturnValue(promise as never);
+      vi.mocked(fusionApi.execute).mockReturnValue(executePromise as never);
 
       const execPromise = useFusionStore.getState().executeFusion('ADH', 'user1');
+      
+      await new Promise(r => setTimeout(r, 10));
       expect(useFusionStore.getState().currentStep).toBe('processing');
       expect(useFusionStore.getState().isExecuting).toBe(true);
 
@@ -267,6 +270,7 @@ describe('useFusionStore', () => {
 
       resolve!({ data: { data: { operationId: 'op-002' } } });
       await execPromise;
+      expect(useFusionStore.getState().currentStep).toBe('result');
     });
   });
 
@@ -283,6 +287,7 @@ describe('useFusionStore', () => {
         success: true,
         nbOperationsFusionnees: 23,
         nbGarantiesTransferees: 0,
+        message: 'Fusion effectuee avec succes',
       });
       expect(state.currentStep).toBe('result');
     });
@@ -296,7 +301,7 @@ describe('useFusionStore', () => {
       await useFusionStore.getState().pollProgress('op-002');
 
       const state = useFusionStore.getState();
-      expect(state.progress).toMatchObject({
+      expect(state.progress).toEqual({
         operationId: 'op-002',
         progress: 75,
         status: 'in_progress',

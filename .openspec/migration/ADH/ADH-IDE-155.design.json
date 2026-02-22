@@ -1,0 +1,572 @@
+{
+  "domain": "controleFermetureCaisseWS",
+  "domainPascal": "ControleFermetureCaisseWS",
+  "complexity": "MEDIUM",
+  "entities": [
+    {
+      "name": "PointageDevise",
+      "fields": [
+        {
+          "name": "finPointage",
+          "type": "boolean",
+          "source": "pointage_devise.fin_pointage",
+          "nullable": false
+        },
+        {
+          "name": "devisesPointees",
+          "type": "boolean",
+          "source": "pointage_devise.devises_pointees",
+          "nullable": false
+        },
+        {
+          "name": "deviseLocale",
+          "type": "string",
+          "source": "pointage_devise.devise_locale",
+          "nullable": false
+        },
+        {
+          "name": "nombreDevise",
+          "type": "number",
+          "source": "pointage_devise.nombre_devise",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "PointageArticle",
+      "fields": [
+        {
+          "name": "existeArticleStock",
+          "type": "boolean",
+          "source": "pointage_article.existe_article_stock",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "HistoSessionCaisse",
+      "fields": [
+        {
+          "name": "sessionId",
+          "type": "number",
+          "source": "histo_sessions_caisse.session_id",
+          "nullable": false
+        },
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "histo_sessions_caisse.societe",
+          "nullable": false
+        },
+        {
+          "name": "dateOuverture",
+          "type": "Date",
+          "source": "histo_sessions_caisse.date_ouverture",
+          "nullable": false
+        },
+        {
+          "name": "dateFermeture",
+          "type": "Date",
+          "source": "histo_sessions_caisse.date_fermeture",
+          "nullable": true
+        },
+        {
+          "name": "operateur",
+          "type": "string",
+          "source": "histo_sessions_caisse.operateur",
+          "nullable": false
+        },
+        {
+          "name": "statut",
+          "type": "string",
+          "source": "histo_sessions_caisse.statut",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "GestionDeviseSession",
+      "fields": [
+        {
+          "name": "sessionId",
+          "type": "number",
+          "source": "gestion_devise_session.session_id",
+          "nullable": false
+        },
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "gestion_devise_session.devise_code",
+          "nullable": false
+        },
+        {
+          "name": "montantDeclare",
+          "type": "number",
+          "source": "gestion_devise_session.montant_declare",
+          "nullable": false
+        },
+        {
+          "name": "montantCalcule",
+          "type": "number",
+          "source": "gestion_devise_session.montant_calcule",
+          "nullable": false
+        },
+        {
+          "name": "ecart",
+          "type": "number",
+          "source": "gestion_devise_session.ecart",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "PvComptable",
+      "fields": [
+        {
+          "name": "id",
+          "type": "number",
+          "source": "pv_comptable.id",
+          "nullable": false
+        },
+        {
+          "name": "typeOperation",
+          "type": "string",
+          "source": "pv_comptable.type_operation",
+          "nullable": false
+        },
+        {
+          "name": "montant",
+          "type": "number",
+          "source": "pv_comptable.montant",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "ParametreFermeture",
+      "fields": [
+        {
+          "name": "paramUniBI",
+          "type": "string",
+          "source": "variable_fb",
+          "nullable": false,
+          "description": "B pour Bilateral, U pour Unilateral"
+        },
+        {
+          "name": "param2Caisses",
+          "type": "string",
+          "source": "variable_fi",
+          "nullable": false,
+          "description": "O pour Oui, N pour Non"
+        },
+        {
+          "name": "paramKT",
+          "type": "string",
+          "source": "variable_en",
+          "nullable": false,
+          "description": "K pour Keep, T pour Transfer"
+        },
+        {
+          "name": "hostCourantCoffre",
+          "type": "string",
+          "source": "variable_r",
+          "nullable": false
+        },
+        {
+          "name": "sessionOuverteS",
+          "type": "boolean",
+          "source": "variable_s",
+          "nullable": false
+        },
+        {
+          "name": "terminalCoffre2",
+          "type": "number",
+          "source": "variable_fc",
+          "nullable": true
+        },
+        {
+          "name": "hostnameCoffre2",
+          "type": "string",
+          "source": "variable_fd",
+          "nullable": true
+        }
+      ]
+    },
+    {
+      "name": "EcartDetecte",
+      "fields": [
+        {
+          "name": "moyenPaiement",
+          "type": "string",
+          "source": "calculated",
+          "nullable": false
+        },
+        {
+          "name": "montantAttendu",
+          "type": "number",
+          "source": "calculated",
+          "nullable": false
+        },
+        {
+          "name": "montantDeclare",
+          "type": "number",
+          "source": "calculated",
+          "nullable": false
+        },
+        {
+          "name": "ecart",
+          "type": "number",
+          "source": "calculated",
+          "nullable": false
+        },
+        {
+          "name": "classe",
+          "type": "string",
+          "source": "via_ide_152",
+          "nullable": false
+        },
+        {
+          "name": "libelle",
+          "type": "string",
+          "source": "via_ide_152",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "parametres",
+      "type": "ParametreFermeture | null",
+      "default": "null"
+    },
+    {
+      "name": "ecarts",
+      "type": "EcartDetecte[]",
+      "default": "[]"
+    },
+    {
+      "name": "pointagesDevise",
+      "type": "PointageDevise[]",
+      "default": "[]"
+    },
+    {
+      "name": "pointagesArticle",
+      "type": "PointageArticle[]",
+      "default": "[]"
+    },
+    {
+      "name": "session",
+      "type": "HistoSessionCaisse | null",
+      "default": "null"
+    },
+    {
+      "name": "devisesSession",
+      "type": "GestionDeviseSession[]",
+      "default": "[]"
+    },
+    {
+      "name": "pvComptable",
+      "type": "PvComptable[]",
+      "default": "[]"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "validationState",
+      "type": "'idle' | 'validating' | 'success' | 'error'",
+      "default": "'idle'"
+    },
+    {
+      "name": "controleMode",
+      "type": "'unilateral' | 'bilateral'",
+      "default": "'unilateral'"
+    },
+    {
+      "name": "coffre2Enabled",
+      "type": "boolean",
+      "default": "false"
+    }
+  ],
+  "actions": [
+    {
+      "name": "initierControle",
+      "params": [
+        "sessionId: number",
+        "parametres: ParametreFermeture"
+      ],
+      "businessRules": [
+        "RM-001: Si paramUniBI='B', activer mode bilateral",
+        "RM-002: Si param2Caisses='O' ET conditions coffre2 remplies, activer coffre2",
+        "Charger les données de session depuis histo_sessions_caisse",
+        "Initialiser les pointages depuis pointage_devise et pointage_article"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "validerControle",
+      "params": [],
+      "businessRules": [
+        "Vérifier l'intégrité entre déclarations opérateur et mouvements",
+        "Appeler IDE 135 pour générer le tableau récapitulatif des ventes",
+        "Calculer les écarts par moyen de paiement",
+        "Appeler IDE 152 pour récupérer classes et libellés MOP",
+        "Stocker les écarts détectés dans state.ecarts"
+      ],
+      "returns": "Promise<{ valide: boolean; ecarts: EcartDetecte[] }>"
+    },
+    {
+      "name": "finaliserFermeture",
+      "params": [],
+      "businessRules": [
+        "RM-003: Si paramKT='K', mode Keep - conserver les données",
+        "RM-004: Si paramKT='T', mode Transfer - transférer vers coffre2",
+        "RM-005/RM-006: Gestion conditionnelle coffre2 selon VG78",
+        "Mettre à jour histo_sessions_caisse (statut=fermé, date_fermeture)",
+        "Appeler IDE 142 pour mettre à jour gestion_devise_session",
+        "Enregistrer pv_comptable et pv_discounts",
+        "Enregistrer pointages finaux (pointage_devise, pointage_article, pointage_appro_remise)"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "calculerEcarts",
+      "params": [],
+      "businessRules": [
+        "Pour chaque devise: écart = montantDeclare - montantCalcule",
+        "Grouper écarts par moyen de paiement",
+        "Appeler IDE 152 pour enrichir avec classe et libellé MOP",
+        "Marquer les écarts > seuil comme critiques"
+      ],
+      "returns": "Promise<EcartDetecte[]>"
+    },
+    {
+      "name": "genererRecapitulatif",
+      "params": [],
+      "businessRules": [
+        "Appeler IDE 135 pour générer le tableau récapitulatif",
+        "Agréger les données de histo_sessions_caisse_detail",
+        "Inclure les écarts détectés",
+        "Produire historique complet pour traçabilité"
+      ],
+      "returns": "Promise<RecapFermetureData>"
+    },
+    {
+      "name": "mettreAJourDevisesSession",
+      "params": [
+        "devises: GestionDeviseSession[]"
+      ],
+      "businessRules": [
+        "Appeler IDE 142 pour mise à jour",
+        "Enregistrer les soldes finaux déclarés",
+        "Calculer et persister les écarts",
+        "Mettre à jour le statut de chaque devise"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "verifierConditionsCoffre2",
+      "params": [],
+      "businessRules": [
+        "RM-002: Vérifier param2Caisses='O'",
+        "RM-002: Vérifier hostCourantCoffre ET sessionOuverteS",
+        "RM-005: Si VG78, utiliser terminalCoffre2 et hostnameCoffre2",
+        "RM-006: Si NOT VG78, utiliser valeurs par défaut"
+      ],
+      "returns": "Promise<boolean>"
+    },
+    {
+      "name": "enregistrerPointagesFinaux",
+      "params": [],
+      "businessRules": [
+        "Enregistrer pointage_devise (finPointage=true, devisesPointees=true)",
+        "Enregistrer pointage_article (existeArticleStock selon inventaire)",
+        "Enregistrer pointage_appro_remise",
+        "Horodater tous les pointages avec timestamp fermeture"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "resetControle",
+      "params": [],
+      "businessRules": [
+        "Réinitialiser tous les state à leurs valeurs par défaut",
+        "Vider la liste des écarts",
+        "Passer validationState à 'idle'"
+      ],
+      "returns": "void"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/controleFermetureCaisseWS/initier",
+      "queryParams": [],
+      "bodyParams": [
+        "sessionId: number",
+        "parametres: ParametreFermeture"
+      ],
+      "response": "{ success: boolean; session: HistoSessionCaisse }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/controleFermetureCaisseWS/valider",
+      "queryParams": [],
+      "bodyParams": [
+        "sessionId: number"
+      ],
+      "response": "{ valide: boolean; ecarts: EcartDetecte[] }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/controleFermetureCaisseWS/finaliser",
+      "queryParams": [],
+      "bodyParams": [
+        "sessionId: number"
+      ],
+      "response": "{ success: boolean; histoId: number }"
+    },
+    {
+      "method": "GET",
+      "path": "/api/controleFermetureCaisseWS/ecarts/{sessionId}",
+      "queryParams": [],
+      "response": "EcartDetecte[]"
+    },
+    {
+      "method": "GET",
+      "path": "/api/controleFermetureCaisseWS/recapitulatif/{sessionId}",
+      "queryParams": [],
+      "response": "RecapFermetureData"
+    },
+    {
+      "method": "POST",
+      "path": "/api/controleFermetureCaisseWS/pointages",
+      "queryParams": [],
+      "bodyParams": [
+        "sessionId: number",
+        "pointages: { devises: PointageDevise[]; articles: PointageArticle[] }"
+      ],
+      "response": "{ success: boolean }"
+    },
+    {
+      "method": "GET",
+      "path": "/api/controleFermetureCaisseWS/parametres/{sessionId}",
+      "queryParams": [],
+      "response": "ParametreFermeture"
+    }
+  ],
+  "uiLayout": {
+    "type": "multi-step-wizard",
+    "sections": [
+      {
+        "name": "ParametresSection",
+        "controls": [
+          "Radio group: Mode fermeture (Unilateral/Bilateral)",
+          "Checkbox: Activer coffre 2",
+          "Radio group: Mode transfert (Keep/Transfer)",
+          "TextField: Host coffre principal (readonly)",
+          "TextField: Host coffre 2 (readonly if not enabled)",
+          "TextField: Terminal coffre 2 (readonly if not enabled)"
+        ]
+      },
+      {
+        "name": "VerificationSection",
+        "controls": [
+          "DataGrid: Pointages devises (devise, montantAttendu, montantDeclare, écart)",
+          "DataGrid: Pointages articles (article, stockAttendu, stockDeclare, écart)",
+          "Alert: Résumé des écarts critiques (si > seuil)",
+          "Button: Valider les contrôles"
+        ]
+      },
+      {
+        "name": "EcartsSection",
+        "controls": [
+          "DataGrid: Détail écarts (moyenPaiement, classe, libellé, montantAttendu, montantDeclare, écart)",
+          "Chip: Statut validation (success/error)",
+          "TextField multiline: Notes/Commentaires (optionnel)"
+        ]
+      },
+      {
+        "name": "RecapitulatifSection",
+        "controls": [
+          "Card: Résumé session (dates, opérateur, statut)",
+          "DataGrid: PV comptable (typeOperation, montant)",
+          "DataGrid: Détails session (via IDE 135)",
+          "Button: Générer rapport PDF",
+          "Button: Finaliser fermeture (primary, disabled si écarts non résolus)"
+        ]
+      },
+      {
+        "name": "ConfirmationSection",
+        "controls": [
+          "Alert success: Fermeture enregistrée",
+          "TextField: ID historique session (readonly)",
+          "Button: Retour dashboard",
+          "Button: Nouvelle session"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "3 sessions de fermeture: (1) session normale sans écarts, (2) session avec écarts mineurs en devises, (3) session avec écarts critiques articles + mode bilateral + coffre2 activé. Inclure 5-7 devises, 10-15 articles, 3-5 moyens de paiement par session."
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore (récupérer sessionId active)",
+      "useDeviseStore (liste devises, taux)",
+      "useArticleStore (liste articles, stock)",
+      "useMoyenPaiementStore (via IDE 152 - classes et libellés)"
+    ],
+    "sharedTypes": [
+      "Session (from useSessionStore)",
+      "Devise (from useDeviseStore)",
+      "Article (from useArticleStore)",
+      "MoyenPaiement (shared)"
+    ],
+    "externalApis": [
+      "IDE 135 - Generation tableau recap WS",
+      "IDE 142 - Devise update session WS",
+      "IDE 152 - Recup Classe et Lib du MOP (IMPL in adh-web/src/types/transaction-lot2.ts)"
+    ],
+    "calleeIntegration": [
+      "IDE 135: GET /api/generationTableauRecap/{sessionId} -> RecapData",
+      "IDE 142: POST /api/deviseUpdateSession -> { sessionId, devises[] }",
+      "IDE 152 (IMPL): Utiliser types existants MoyenPaiement avec classe et libellé"
+    ]
+  },
+  "integrationNotes": {
+    "existingImplementations": [
+      "IDE 152 déjà implémenté dans adh-web/src/types/transaction-lot2.ts - réutiliser les types MoyenPaiement",
+      "Tables devises (90) et articles (77) déjà utilisées dans d'autres composants - vérifier cohérence schémas",
+      "Table comptable (40) utilisée dans SessionOuverture - pattern similaire pour PV comptable"
+    ],
+    "missingDependencies": [
+      "IDE 135 (Generation tableau recap WS) - à implémenter avant finalisation",
+      "IDE 142 (Devise update session WS) - à implémenter avant finalisation",
+      "Tables histo_sessions_caisse_* (246-251) - créer schémas TypeScript + API endpoints"
+    ],
+    "complexityFactors": [
+      "Gestion des 2 modes de fermeture (unilateral/bilateral) avec logique conditionnelle",
+      "Intégration coffre2 avec conditions multiples (RM-002, RM-005, RM-006)",
+      "Calcul d'écarts multi-niveaux (devises, articles, moyens de paiement)",
+      "Workflow multi-étapes avec validation inter-étapes",
+      "Appels séquentiels à IDE 135 et IDE 142 avec dépendances de données"
+    ],
+    "recommendedApproach": [
+      "Phase 1: Implémenter stores de base (ParametreFermeture, EcartDetecte) + UI wizard",
+      "Phase 2: Implémenter calcul écarts + intégration IDE 152 (déjà IMPL)",
+      "Phase 3: Implémenter validation + mock IDE 135/142 pour tests",
+      "Phase 4: Implémenter persistance (write to 7 tables) + intégration réelle IDE 135/142",
+      "Phase 5: Tests E2E avec scénarios complets (sans écart, écarts mineurs, écarts critiques)"
+    ]
+  }
+}

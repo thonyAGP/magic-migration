@@ -1,0 +1,9 @@
+import { apiClient, type ApiResponse } from './apiClient';
+import type { GetTitreResponse } from '@/types/saisieDate';
+
+export const saisieeDateApi = {
+  getTitre: () =>
+    apiClient.get<ApiResponse<GetTitreResponse>>(
+      '/api/saisie-date/titre',
+    ),
+};

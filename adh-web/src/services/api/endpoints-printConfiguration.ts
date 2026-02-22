@@ -1,0 +1,24 @@
+import { apiClient, type ApiResponse } from './apiClient';
+import type {
+  PrintConfig,
+  SetListingRequest,
+  ResetPrintParametersRequest,
+  GetPrintConfigRequest,
+} from '@/types/printConfiguration';
+
+export const printConfigApi = {
+  setListing: (data: SetListingRequest) =>
+    apiClient.post<ApiResponse<void>>(
+      '/print-config/set-listing',
+      data,
+    ),
+  resetPrintParameters: (data: ResetPrintParametersRequest) =>
+    apiClient.post<ApiResponse<void>>(
+      '/print-config/reset',
+      data,
+    ),
+  getPrintConfig: () =>
+    apiClient.get<ApiResponse<PrintConfig>>(
+      '/print-config',
+    ),
+};

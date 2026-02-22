@@ -1,0 +1,229 @@
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ScreenLayout } from '@/components/layout';
+import { Button, Input } from '@/components/ui';
+import { useCalculEquivalentStore } from '@/stores/calculEquivalentStore';
+import { useAuthStore } from '@/stores';
+import type { ConversionParams, OperationType } from '@/types/calculEquivalent';
+
+const DEVISES = [
+  { code: 'EUR', label: 'Euro (EUR)' },
+  { code: 'USD', label: 'Dollar US (USD)' },
+  { code: 'GBP', label: 'Livre Sterling (GBP)' },
+  { code: 'JPY', label: 'Yen Japonais (JPY)' },
+] as const;
+
+const MOYENS_PAIEMENT = [
+  { code: 'ESP', label: 'Espèces' },
+  { code: 'CB', label: 'Carte Bancaire' },
+  { code: 'CHQ', label: 'Chèque' },
+  { code: 'VIR', label: 'Virement' },
+] as const;
+
+export function CalculEquivalentPage() {
+  const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+
+  const isCalculating = useCalculEquivalentStore((s) => s.isCalculating);
+  const error = useCalculEquivalentStore((s) => s.error);
+  const validationErrors = useCalculEquivalentStore((s) => s.validationErrors);
+  const lastConversion = useCalculEquivalentStore((s) => s.lastConversion);
+  const calculerEquivalent = useCalculEquivalentStore((s) => s.calculerEquivalent);
+  const clearError = useCalculEquivalentStore((s) => s.clearError);
+  const resetState = useCalculEquivalentStore((s) => s.resetState);
+
+  const [quantite, setQuantite] = useState<string>('');
+  const [devise, setDevise] = useState<string>('USD');
+  const [typeOperation, setTypeOperation] = useState<OperationType>('A');
+  const [modePaiement, setModePaiement] = useState<string>('ESP');
+
+  useEffect(() => {
+    return () => resetState();
+  }, [resetState]);
+
+  const handleCalculer = useCallback(async () => {
+    clearError();
+
+    const quantiteNum = parseFloat(quantite);
+    if (isNaN(quantiteNum) || quantiteNum <= 0) {
+      return;
+    }
+
+    const params: ConversionParams = {
+      societe: '1',
+      uniBi: 'U',
+      deviseLocale: 'EUR',
+      nombreDecimal: 2,
+      devise,
+      modePaiement,
+      quantite: quantiteNum,
+      typeOperation,
+      typeDevise: devise === 'EUR' ? 0 : devise === 'JPY' ? 2 : 1,
+    };
+
+    await calculerEquivalent(params);
+  }, [quantite, devise, typeOperation, modePaiement, calculerEquivalent, clearError]);
+
+  const handleBack = () => {
+    navigate('/caisse/menu');
+  };
+
+  const getFieldError = (field: string) => {
+    return validationErrors.find((e) => e.field === field)?.message;
+  };
+
+  return (
+    <ScreenLayout>
+      <div className="space-y-6 max-w-2xl mx-auto">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">Calcul d'équivalent</h2>
+            <p className="text-on-surface-muted text-sm mt-1">
+              Conversion de devises
+            </p>
+          </div>
+          {user && (
+            <span className="text-xs text-on-surface-muted">
+              {user.prenom} {user.nom}
+            </span>
+          )}
+        </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+            {error}
+          </div>
+        )}
+
+        <div className="bg-surface border border-border rounded-lg p-6 space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-on-surface mb-2">
+                Montant
+              </label>
+              <Input
+                type="number"
+                value={quantite}
+                onChange={(e) => setQuantite(e.target.value)}
+                placeholder="Montant à convertir"
+                min="0.01"
+                step="0.01"
+                disabled={isCalculating}
+              />
+              {getFieldError('quantite') && (
+                <p className="text-red-600 text-xs mt-1">{getFieldError('quantite')}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-on-surface mb-2">
+                Devise
+              </label>
+              <select
+                value={devise}
+                onChange={(e) => setDevise(e.target.value)}
+                disabled={isCalculating}
+                className="w-full px-3 py-2 border border-border rounded-md bg-white text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {DEVISES.map((d) => (
+                  <option key={d.code} value={d.code}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
+              {getFieldError('devise') && (
+                <p className="text-red-600 text-xs mt-1">{getFieldError('devise')}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-on-surface mb-2">
+                Type d'opération
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    value="A"
+                    checked={typeOperation === 'A'}
+                    onChange={(e) => setTypeOperation(e.target.value as OperationType)}
+                    disabled={isCalculating}
+                    className="w-4 h-4 text-primary focus:ring-primary"
+                  />
+                  <span className="text-sm text-on-surface">Achat</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    value="V"
+                    checked={typeOperation === 'V'}
+                    onChange={(e) => setTypeOperation(e.target.value as OperationType)}
+                    disabled={isCalculating}
+                    className="w-4 h-4 text-primary focus:ring-primary"
+                  />
+                  <span className="text-sm text-on-surface">Vente</span>
+                </label>
+              </div>
+              {getFieldError('typeOperation') && (
+                <p className="text-red-600 text-xs mt-1">{getFieldError('typeOperation')}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-on-surface mb-2">
+                Mode de paiement
+              </label>
+              <select
+                value={modePaiement}
+                onChange={(e) => setModePaiement(e.target.value)}
+                disabled={isCalculating}
+                className="w-full px-3 py-2 border border-border rounded-md bg-white text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {MOYENS_PAIEMENT.map((m) => (
+                  <option key={m.code} value={m.code}>
+                    {m.label}
+                  </option>
+                ))}
+              </select>
+              {getFieldError('modePaiement') && (
+                <p className="text-red-600 text-xs mt-1">{getFieldError('modePaiement')}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-border">
+            <Button
+              onClick={handleCalculer}
+              disabled={isCalculating || !quantite || parseFloat(quantite) <= 0}
+              className="w-full"
+            >
+              {isCalculating ? 'Calcul en cours...' : 'Calculer'}
+            </Button>
+          </div>
+
+          {lastConversion && (
+            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-green-900">Équivalent:</span>
+                <span className="text-2xl font-bold text-green-700">
+                  {lastConversion.equivalent.toFixed(2)} EUR
+                </span>
+              </div>
+              {lastConversion.taux && (
+                <p className="text-xs text-green-700 mt-2">
+                  Taux appliqué: {lastConversion.taux.toFixed(4)}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-start">
+          <Button onClick={handleBack} variant="secondary">
+            Retour au menu
+          </Button>
+        </div>
+      </div>
+    </ScreenLayout>
+  );
+}

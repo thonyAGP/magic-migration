@@ -311,23 +311,9 @@ describe("saisieContenuCaisseStore", () => {
     });
 
     it("should set isValidating to true during validation", async () => {
-      const stateDuringValidation = { isValidating: false };
-
-      const originalGetState = useSaisieContenuCaisseStore.getState;
-      const getStateSpy = vi.fn(() => {
-        const state = originalGetState();
-        if (state.isValidating) {
-          stateDuringValidation.isValidating = true;
-        }
-        return state;
-      });
-
-      vi.spyOn(useSaisieContenuCaisseStore, "getState").mockImplementation(getStateSpy);
-
       const store = useSaisieContenuCaisseStore.getState();
+      
       const validatePromise = store.validateComptage();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
       
       const stateDuring = useSaisieContenuCaisseStore.getState();
       expect(stateDuring.isValidating).toBe(true);
@@ -336,8 +322,6 @@ describe("saisieContenuCaisseStore", () => {
 
       const stateAfter = useSaisieContenuCaisseStore.getState();
       expect(stateAfter.isValidating).toBe(false);
-
-      vi.restoreAllMocks();
     });
 
     it("should apply RM-001 rule and reject if shouldProcess is false", async () => {
@@ -495,9 +479,8 @@ describe("saisieContenuCaisseStore", () => {
 
     it("should set isPersisting to true during persist", async () => {
       const store = useSaisieContenuCaisseStore.getState();
+      
       const persistPromise = store.persistComptage(123, MOCK_VALIDATION_RESULT);
-
-      await new Promise(resolve => setTimeout(resolve, 0));
       
       const stateDuring = useSaisieContenuCaisseStore.getState();
       expect(stateDuring.isPersisting).toBe(true);

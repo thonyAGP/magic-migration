@@ -1,0 +1,221 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+
+vi.mock('@/stores/printConfigurationStore');
+vi.mock('@/stores');
+
+import { PrintConfigurationPage } from '@/pages/PrintConfigurationPage';
+import { usePrintConfigStore } from '@/stores/printConfigurationStore';
+import { useAuthStore } from '@/stores';
+import type { PrintConfig } from '@/types/printConfiguration';
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+const mockPrintConfig: PrintConfig = {
+  currentListingNum: 42,
+  currentPrinterName: 'HP LaserJet',
+  currentPrinterNum: 1,
+  numberCopies: 2,
+  specificPrint: 'Standard',
+};
+
+describe('PrintConfigurationPage', () => {
+  const mockGetPrintConfig = vi.fn();
+  const mockSetListingNumber = vi.fn();
+  const mockResetPrintParameters = vi.fn();
+  const mockReset = vi.fn();
+  const mockSetError = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    
+    vi.mocked(useAuthStore).mockReturnValue({
+      user: { prenom: 'Jean', nom: 'Dupont' },
+    } as ReturnType<typeof useAuthStore>);
+
+    vi.mocked(usePrintConfigStore).mockReturnValue({
+      currentConfig: null,
+      isInitializing: false,
+      error: null,
+      getPrintConfig: mockGetPrintConfig,
+      setListingNumber: mockSetListingNumber,
+      resetPrintParameters: mockResetPrintParameters,
+      reset: mockReset,
+      setError: mockSetError,
+    } as ReturnType<typeof usePrintConfigStore>);
+  });
+
+  const renderPage = () => {
+    return render(
+      <BrowserRouter>
+        <PrintConfigurationPage />
+      </BrowserRouter>
+    );
+  };
+
+  it('renders without crashing', () => {
+    renderPage();
+    expect(screen.getByText('Configuration impression')).toBeInTheDocument();
+  });
+
+  it('displays user name when authenticated', () => {
+    renderPage();
+    expect(screen.getByText('Jean Dupont')).toBeInTheDocument();
+  });
+
+  it('calls getPrintConfig on mount', () => {
+    renderPage();
+    expect(mockGetPrintConfig).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls reset on unmount', () => {
+    const { unmount } = renderPage();
+    unmount();
+    expect(mockReset).toHaveBeenCalledTimes(1);
+  });
+
+  it('displays loading state', () => {
+    vi.mocked(usePrintConfigStore).mockReturnValue({
+      currentConfig: null,
+      isInitializing: true,
+      error: null,
+      getPrintConfig: mockGetPrintConfig,
+      setListingNumber: mockSetListingNumber,
+      resetPrintParameters: mockResetPrintParameters,
+      reset: mockReset,
+      setError: mockSetError,
+    } as ReturnType<typeof usePrintConfigStore>);
+
+    renderPage();
+    expect(screen.getByText('Chargement de la configuration...')).toBeInTheDocument();
+  });
+
+  it('displays error state', () => {
+    vi.mocked(usePrintConfigStore).mockReturnValue({
+      currentConfig: null,
+      isInitializing: false,
+      error: 'Erreur de chargement',
+      getPrintConfig: mockGetPrintConfig,
+      setListingNumber: mockSetListingNumber,
+      resetPrintParameters: mockResetPrintParameters,
+      reset: mockReset,
+      setError: mockSetError,
+    } as ReturnType<typeof usePrintConfigStore>);
+
+    renderPage();
+    expect(screen.getByText('Erreur de chargement')).toBeInTheDocument();
+  });
+
+  it('displays no config message when data is absent', () => {
+    renderPage();
+    expect(screen.getByText('Aucune configuration disponible')).toBeInTheDocument();
+  });
+
+  it('displays current configuration when loaded', () => {
+    vi.mocked(usePrintConfigStore).mockReturnValue({
+      currentConfig: mockPrintConfig,
+      isInitializing: false,
+      error: null,
+      getPrintConfig: mockGetPrintConfig,
+      setListingNumber: mockSetListingNumber,
+      resetPrintParameters: mockResetPrintParameters,
+      reset: mockReset,
+      setError: mockSetError,
+    } as ReturnType<typeof usePrintConfigStore>);
+
+    renderPage();
+    
+    expect(screen.getByText('Configuration actuelle')).toBeInTheDocument();
+    expect(screen.getByText('42')).toBeInTheDocument();
+    expect(screen.getByText('HP LaserJet')).toBeInTheDocument();
+    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('Standard')).toBeInTheDocument();
+  });
+
+  it('calls setListingNumber when increment button is clicked', async () => {
+    mockSetListingNumber.mockResolvedValueOnce(undefined);
+
+    vi.mocked(usePrintConfigStore).mockReturnValue({
+      currentConfig: mockPrintConfig,
+      isInitializing: false,
+      error: null,
+      getPrintConfig: mockGetPrintConfig,
+      setListingNumber: mockSetListingNumber,
+      resetPrintParameters: mockResetPrintParameters,
+      reset: mockReset,
+      setError: mockSetError,
+    } as ReturnType<typeof usePrintConfigStore>);
+
+    renderPage();
+    
+    const incrementButton = screen.getByText('Incrémenter listing');
+    fireEvent.click(incrementButton);
+
+    await waitFor(() => {
+      expect(mockSetListingNumber).toHaveBeenCalledWith(43);
+    });
+  });
+
+  it('calls resetPrintParameters when reset button is clicked', async () => {
+    mockResetPrintParameters.mockResolvedValueOnce(undefined);
+
+    vi.mocked(usePrintConfigStore).mockReturnValue({
+      currentConfig: mockPrintConfig,
+      isInitializing: false,
+      error: null,
+      getPrintConfig: mockGetPrintConfig,
+      setListingNumber: mockSetListingNumber,
+      resetPrintParameters: mockResetPrintParameters,
+      reset: mockReset,
+      setError: mockSetError,
+    } as ReturnType<typeof usePrintConfigStore>);
+
+    renderPage();
+    
+    const resetButton = screen.getByText('Réinitialiser');
+    fireEvent.click(resetButton);
+
+    await waitFor(() => {
+      expect(mockResetPrintParameters).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('disables action buttons when loading', () => {
+    vi.mocked(usePrintConfigStore).mockReturnValue({
+      currentConfig: mockPrintConfig,
+      isInitializing: true,
+      error: null,
+      getPrintConfig: mockGetPrintConfig,
+      setListingNumber: mockSetListingNumber,
+      resetPrintParameters: mockResetPrintParameters,
+      reset: mockReset,
+      setError: mockSetError,
+    } as ReturnType<typeof usePrintConfigStore>);
+
+    renderPage();
+    
+    const incrementButton = screen.getByText('Incrémenter listing');
+    const resetButton = screen.getByText('Réinitialiser');
+
+    expect(incrementButton).toBeDisabled();
+    expect(resetButton).toBeDisabled();
+  });
+
+  it('navigates back when back button is clicked', () => {
+    renderPage();
+    
+    const backButton = screen.getByText('Retour au menu');
+    fireEvent.click(backButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
+  });
+});

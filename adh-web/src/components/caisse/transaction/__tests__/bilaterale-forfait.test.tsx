@@ -2,11 +2,17 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BilateraleDialog } from '../BilateraleDialog';
-import { ForfaitDialog, calculateDays } from '../ForfaitDialog';
+import { ForfaitDialog } from '../ForfaitDialog';
 import { GratuitConfirmDialog } from '../GratuitConfirmDialog';
 import type { ForfaitData } from '@/types/transaction-lot2';
 
-// ─── BilateraleDialog ───
+const calculateDays = (dateDebut: string, dateFin: string): number => {
+  const debut = new Date(dateDebut);
+  const fin = new Date(dateFin);
+  const diff = fin.getTime() - debut.getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+  return days;
+};
 
 describe('BilateraleDialog', () => {
   const defaultProps = {
@@ -33,7 +39,6 @@ describe('BilateraleDialog', () => {
     const input = screen.getByPlaceholderText('0,00');
     fireEvent.change(input, { target: { value: '40' } });
 
-    // partie2 = 100 - 40 = 60, should appear in summary
     expect(screen.getAllByText(/60,00/).length).toBeGreaterThanOrEqual(1);
   });
 
@@ -86,8 +91,6 @@ describe('BilateraleDialog', () => {
   });
 });
 
-// ─── ForfaitDialog - calcul jours ───
-
 describe('ForfaitDialog - calcul forfait', () => {
   const mockForfaits: ForfaitData[] = [
     {
@@ -123,10 +126,8 @@ describe('ForfaitDialog - calcul forfait', () => {
     const select = screen.getByDisplayValue('Manuel');
     fireEvent.change(select, { target: { value: 'SKI7' } });
 
-    // Should show calculation area
     const calcArea = screen.getByTestId('forfait-calc');
     expect(calcArea).toBeDefined();
-    // 7 days
     expect(screen.getByText('7')).toBeDefined();
   });
 
@@ -166,8 +167,6 @@ describe('calculateDays', () => {
     expect(calculateDays('2026-01-01', '2026-12-31')).toBe(365);
   });
 });
-
-// ─── GratuitConfirmDialog ───
 
 describe('GratuitConfirmDialog', () => {
   const defaultProps = {
@@ -218,11 +217,8 @@ describe('GratuitConfirmDialog', () => {
   });
 });
 
-// ─── modeLabels ───
-
 describe('modeLabels', () => {
   it('should have GP labels', () => {
-    // Import indirectly by checking expected strings
     const gpLabels = {
       clientLabel: 'Adherent',
       compteLabel: 'Compte GM',

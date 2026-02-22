@@ -1,0 +1,301 @@
+import type { ApiResponse } from '@/services/api/apiClient';
+
+// ============================================================================
+// DOMAIN TYPES - calculEquivalent (Change Devises - ADH IDE 25)
+// ============================================================================
+
+export type OperationType = 'A' | 'V';
+export type DirectionalType = 'U' | 'B';
+
+export interface TauxChange {
+  societe: string;
+  devise: string;
+  tauxAchat: number;
+  tauxVente: number;
+  typeDevise: number;
+  dateValidite: string;
+  nbDecimales: number;
+}
+
+export interface MoyenReglement {
+  code: string;
+  libelle: string;
+  cdrtDeviseIn: boolean;
+  ordreAffichage: number;
+}
+
+// ============================================================================
+// CONVERSION REQUEST/RESPONSE
+// ============================================================================
+
+export interface ConversionParams {
+  societe: string;
+  uniBi: DirectionalType;
+  deviseLocale: string;
+  nombreDecimal: number;
+  devise: string;
+  modePaiement: string;
+  quantite: number;
+  typeOperation: OperationType;
+  typeDevise: number;
+}
+
+export interface ConversionResult {
+  equivalent: number;
+  cdrtDeviseIn: boolean;
+  taux?: number;
+  quantiteOriginale?: number;
+  deviseOriginale?: string;
+  deviseLocale?: string;
+}
+
+export interface ConversionError {
+  field: keyof ConversionParams;
+  message: string;
+}
+
+// ============================================================================
+// API REQUEST/RESPONSE TYPES
+// ============================================================================
+
+export interface CalculerEquivalentRequest {
+  params: ConversionParams;
+}
+
+export interface CalculerEquivalentResponse extends ApiResponse<ConversionResult> {}
+
+export interface GetTauxChangeRequest {
+  societe: string;
+  devise: string;
+  typeOperation: OperationType;
+  uniBi: DirectionalType;
+}
+
+export interface GetTauxChangeResponse extends ApiResponse<TauxChange> {}
+
+// ============================================================================
+// VALIDATION TYPES
+// ============================================================================
+
+export interface ValidationResult {
+  isValid: boolean;
+  errors: ConversionError[];
+}
+
+// ============================================================================
+// STORE STATE
+// ============================================================================
+
+export interface CalculEquivalentState {
+  isCalculating: boolean;
+  isValidating: boolean;
+  error: string | null;
+  validationErrors: ConversionError[];
+  lastConversion: ConversionResult | null;
+  conversionHistory: ConversionResult[];
+  maxHistorySize: number;
+
+  // Actions
+  calculerEquivalent: (params: ConversionParams) => Promise<ConversionResult>;
+  validateConversionParams: (params: ConversionParams) => Promise<ValidationResult>;
+  getTauxChange: (request: GetTauxChangeRequest) => Promise<TauxChange>;
+  clearError: () => void;
+  clearHistory: () => void;
+  resetState: () => void;
+}
+
+// ============================================================================
+// UI COMPONENT PROPS
+// ============================================================================
+
+export interface ConversionFormProps {
+  onSuccess?: (result: ConversionResult) => void;
+  onError?: (error: string) => void;
+  initialParams?: Partial<ConversionParams>;
+  readonly?: boolean;
+  className?: string;
+}
+
+export interface ConversionResultDisplayProps {
+  result: ConversionResult | null;
+  isLoading?: boolean;
+  error?: string | null;
+  className?: string;
+}
+
+export interface ConversionHistoryProps {
+  items: ConversionResult[];
+  onSelectItem?: (item: ConversionResult) => void;
+  maxItems?: number;
+  className?: string;
+}
+
+// ============================================================================
+// BUSINESS RULES CONSTANTS
+// ============================================================================
+
+export const CONVERSION_RULES = {
+  RM001: '[RM-001] Si typeOperation=A ET uniBi<>B: Appliquer taux achat unidirectionnel',
+  RM002: '[RM-002] Si typeOperation=A ET uniBi=B: Appliquer taux achat bilateral (inverse du taux vente)',
+  RM003: '[RM-003] Si uniBi<>B: Utiliser calcul unidirectionnel standard',
+  RM004: '[RM-004] Si uniBi=B: Utiliser calcul bilateral (division par taux vente)',
+  RM005: '[RM-005] Si typeOperation<>A: Appliquer logique vente (division par taux)',
+} as const;
+
+export const OPERATION_TYPES = {
+  ACHAT: 'A' as const,
+  VENTE: 'V' as const,
+} as const;
+
+export const DIRECTIONAL_TYPES = {
+  UNIDIRECTIONNEL: 'U' as const,
+  BILATERAL: 'B' as const,
+} as const;
+
+// ============================================================================
+// MOCK DATA
+// ============================================================================
+
+export const MOCK_CONVERSION_SCENARIOS = [
+  {
+    name: 'Achat USD unidirectionnel',
+    params: {
+      societe: '1',
+      uniBi: 'U',
+      deviseLocale: 'EUR',
+      nombreDecimal: 2,
+      devise: 'USD',
+      modePaiement: 'ESP',
+      quantite: 100,
+      typeOperation: 'A',
+      typeDevise: 1,
+    },
+    expectedEquivalent: 92.5,
+  },
+  {
+    name: 'Achat EUR bilateral',
+    params: {
+      societe: '1',
+      uniBi: 'B',
+      deviseLocale: 'EUR',
+      nombreDecimal: 2,
+      devise: 'EUR',
+      modePaiement: 'CB',
+      quantite: 100,
+      typeOperation: 'A',
+      typeDevise: 0,
+    },
+    expectedEquivalent: 100,
+  },
+  {
+    name: 'Vente GBP unidirectionnel',
+    params: {
+      societe: '1',
+      uniBi: 'U',
+      deviseLocale: 'EUR',
+      nombreDecimal: 2,
+      devise: 'GBP',
+      modePaiement: 'ESP',
+      quantite: 50,
+      typeOperation: 'V',
+      typeDevise: 1,
+    },
+    expectedEquivalent: 58.75,
+  },
+  {
+    name: 'Vente JPY bilateral',
+    params: {
+      societe: '1',
+      uniBi: 'B',
+      deviseLocale: 'EUR',
+      nombreDecimal: 0,
+      devise: 'JPY',
+      modePaiement: 'CB',
+      quantite: 10000,
+      typeOperation: 'V',
+      typeDevise: 2,
+    },
+    expectedEquivalent: 68.6,
+  },
+  {
+    name: 'Espèces vs CB - USD',
+    params: {
+      societe: '1',
+      uniBi: 'U',
+      deviseLocale: 'EUR',
+      nombreDecimal: 2,
+      devise: 'USD',
+      modePaiement: 'ESP',
+      quantite: 200,
+      typeOperation: 'A',
+      typeDevise: 1,
+    },
+    expectedEquivalent: 185,
+  },
+] as const;
+
+export const MOCK_TAUX_CHANGES: TauxChange[] = [
+  {
+    societe: '1',
+    devise: 'USD',
+    tauxAchat: 0.925,
+    tauxVente: 1.08,
+    typeDevise: 1,
+    dateValidite: '2026-02-22',
+    nbDecimales: 2,
+  },
+  {
+    societe: '1',
+    devise: 'EUR',
+    tauxAchat: 1,
+    tauxVente: 1,
+    typeDevise: 0,
+    dateValidite: '2026-02-22',
+    nbDecimales: 2,
+  },
+  {
+    societe: '1',
+    devise: 'GBP',
+    tauxAchat: 1.175,
+    tauxVente: 1.29,
+    typeDevise: 1,
+    dateValidite: '2026-02-22',
+    nbDecimales: 2,
+  },
+  {
+    societe: '1',
+    devise: 'JPY',
+    tauxAchat: 145.2,
+    tauxVente: 145.8,
+    typeDevise: 2,
+    dateValidite: '2026-02-22',
+    nbDecimales: 0,
+  },
+] as const;
+
+export const MOCK_MOYENS_REGLEMENT: MoyenReglement[] = [
+  {
+    code: 'ESP',
+    libelle: 'Espèces',
+    cdrtDeviseIn: true,
+    ordreAffichage: 1,
+  },
+  {
+    code: 'CB',
+    libelle: 'Carte Bancaire',
+    cdrtDeviseIn: false,
+    ordreAffichage: 2,
+  },
+  {
+    code: 'CHQ',
+    libelle: 'Chèque',
+    cdrtDeviseIn: false,
+    ordreAffichage: 3,
+  },
+  {
+    code: 'VIR',
+    libelle: 'Virement',
+    cdrtDeviseIn: false,
+    ordreAffichage: 4,
+  },
+] as const;

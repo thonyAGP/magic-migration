@@ -1,0 +1,94 @@
+import { useState } from 'react';
+import { Button, Dialog } from '@/components/ui';
+import { useReinitAffPyrStore } from '@/stores/reinitAffPyrStore';
+import { cn } from '@/lib/utils';
+
+interface ResetTriggerPanelProps {
+  className?: string;
+  onResetComplete?: (count: number) => void;
+}
+
+export const ResetTriggerPanel = ({ className, onResetComplete }: ResetTriggerPanelProps) => {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const isProcessing = useReinitAffPyrStore((s) => s.isProcessing);
+  const error = useReinitAffPyrStore((s) => s.error);
+  const resetAllAffectations = useReinitAffPyrStore((s) => s.resetAllAffectations);
+
+  const handleReset = async () => {
+    setShowConfirm(false);
+    setSuccessMessage(null);
+
+    try {
+      const count = await resetAllAffectations();
+      const message = `${count} affectation${count > 1 ? 's' : ''} PYR réinitialisée${count > 1 ? 's' : ''}`;
+      setSuccessMessage(message);
+      onResetComplete?.(count);
+
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch {
+      // Error handled by store
+    }
+  };
+
+  return (
+    <div className={cn('flex flex-col gap-4', className)}>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Réinitialisation globale</h3>
+        <Button
+          onClick={() => setShowConfirm(true)}
+          variant="destructive"
+          disabled={isProcessing}
+        >
+          Réinitialiser affectations PYR
+        </Button>
+      </div>
+
+      {isProcessing && (
+        <div className="flex items-center gap-2 p-4 bg-blue-50 border border-blue-200 rounded">
+          <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm text-blue-900">Réinitialisation en cours...</span>
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="p-4 bg-green-50 border border-green-200 rounded">
+          <p className="text-sm text-green-900">{successMessage}</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded">
+          <p className="text-sm text-red-900">{error.message}</p>
+        </div>
+      )}
+
+      <Dialog open={showConfirm} onClose={() => setShowConfirm(false)}>
+        <div className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Confirmer la réinitialisation</h3>
+          <p className="text-sm text-gray-600 mb-6">
+            Cette action va réinitialiser TOUTES les affectations PYR de la base de données.
+            Cette opération est irréversible.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button
+              onClick={() => setShowConfirm(false)}
+              variant="outline"
+              disabled={isProcessing}
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={handleReset}
+              variant="destructive"
+              disabled={isProcessing}
+            >
+              Réinitialiser
+            </Button>
+          </div>
+        </div>
+      </Dialog>
+    </div>
+  );
+};

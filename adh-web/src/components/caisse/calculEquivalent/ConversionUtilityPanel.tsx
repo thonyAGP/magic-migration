@@ -1,0 +1,184 @@
+import { useState } from 'react';
+import { Button, Input } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import type { OperationType, DirectionalType } from '@/types/calculEquivalent';
+
+interface ConversionUtilityPanelProps {
+  societe: string;
+  deviseLocale: string;
+  onCalculate: (params: {
+    quantite: number;
+    devise: string;
+    typeOperation: OperationType;
+    modePaiement: string;
+    uniBi: DirectionalType;
+    nombreDecimal: number;
+    typeDevise: number;
+  }) => void;
+  equivalent: number | null;
+  isCalculating?: boolean;
+  className?: string;
+}
+
+const DEVISES = [
+  { code: 'EUR', label: 'Euro (EUR)', typeDevise: 0, nbDecimales: 2 },
+  { code: 'USD', label: 'Dollar US (USD)', typeDevise: 1, nbDecimales: 2 },
+  { code: 'GBP', label: 'Livre Sterling (GBP)', typeDevise: 1, nbDecimales: 2 },
+  { code: 'JPY', label: 'Yen Japonais (JPY)', typeDevise: 2, nbDecimales: 0 },
+] as const;
+
+const MOYENS_PAIEMENT = [
+  { code: 'ESP', label: 'Espèces' },
+  { code: 'CB', label: 'Carte Bancaire' },
+  { code: 'CHQ', label: 'Chèque' },
+  { code: 'VIR', label: 'Virement' },
+] as const;
+
+export const ConversionUtilityPanel = ({
+  societe,
+  deviseLocale,
+  onCalculate,
+  equivalent,
+  isCalculating = false,
+  className,
+}: ConversionUtilityPanelProps) => {
+  const [quantite, setQuantite] = useState<string>('');
+  const [devise, setDevise] = useState<string>('USD');
+  const [typeOperation, setTypeOperation] = useState<OperationType>('A');
+  const [modePaiement, setModePaiement] = useState<string>('ESP');
+
+  const selectedDevise = DEVISES.find((d) => d.code === devise);
+
+  const handleCalculer = () => {
+    const quantiteNum = parseFloat(quantite);
+    if (isNaN(quantiteNum) || quantiteNum <= 0 || !selectedDevise) {
+      return;
+    }
+
+    onCalculate({
+      quantite: quantiteNum,
+      devise,
+      typeOperation,
+      modePaiement,
+      uniBi: 'U',
+      nombreDecimal: selectedDevise.nbDecimales,
+      typeDevise: selectedDevise.typeDevise,
+    });
+  };
+
+  const formatEquivalent = (value: number | null): string => {
+    if (value === null) return '';
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: deviseLocale,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  };
+
+  return (
+    <div className={cn('space-y-6', className)}>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label htmlFor="quantite" className="block text-sm font-medium text-gray-700">
+            Quantité
+          </label>
+          <Input
+            id="quantite"
+            type="number"
+            value={quantite}
+            onChange={(e) => setQuantite(e.target.value)}
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+            className="w-full"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="devise" className="block text-sm font-medium text-gray-700">
+            Devise
+          </label>
+          <select
+            id="devise"
+            value={devise}
+            onChange={(e) => setDevise(e.target.value)}
+            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          >
+            {DEVISES.map((d) => (
+              <option key={d.code} value={d.code}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">Type d'opération</label>
+        <div className="flex gap-4">
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              value="A"
+              checked={typeOperation === 'A'}
+              onChange={(e) => setTypeOperation(e.target.value as OperationType)}
+              className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm text-gray-700">Achat</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              value="V"
+              checked={typeOperation === 'V'}
+              onChange={(e) => setTypeOperation(e.target.value as OperationType)}
+              className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-sm text-gray-700">Vente</span>
+          </label>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="modePaiement" className="block text-sm font-medium text-gray-700">
+          Mode de paiement
+        </label>
+        <select
+          id="modePaiement"
+          value={modePaiement}
+          onChange={(e) => setModePaiement(e.target.value)}
+          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          {MOYENS_PAIEMENT.map((m) => (
+            <option key={m.code} value={m.code}>
+              {m.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <Button
+        onClick={handleCalculer}
+        disabled={!quantite || parseFloat(quantite) <= 0 || isCalculating}
+        className="w-full"
+      >
+        {isCalculating ? 'Calcul en cours...' : 'Calculer'}
+      </Button>
+
+      <div className="space-y-2">
+        <label htmlFor="equivalent" className="block text-sm font-medium text-gray-700">
+          Équivalent
+        </label>
+        <Input
+          id="equivalent"
+          type="text"
+          value={formatEquivalent(equivalent)}
+          readOnly
+          className="w-full bg-gray-50 font-mono text-lg font-semibold text-gray-900"
+          placeholder="—"
+        />
+      </div>
+    </div>
+  );
+};

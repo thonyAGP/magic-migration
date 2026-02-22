@@ -1,0 +1,359 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+
+vi.mock('@/stores/fidelisationRemiseStore');
+vi.mock('@/stores');
+
+import { FidelisationRemisePage } from '@/pages/FidelisationRemisePage';
+import { useFidelisationRemiseStore } from '@/stores/fidelisationRemiseStore';
+import { useAuthStore } from '@/stores';
+import type { FidelisationRemise, RemiseResult } from '@/types/fidelisationRemise';
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+describe('FidelisationRemisePage', () => {
+  const mockGetFidelisationRemise = vi.fn();
+  const mockValidateRemiseEligibility = vi.fn();
+  const mockCalculateMontantRemise = vi.fn();
+  const mockReset = vi.fn();
+
+  const mockRemiseData: FidelisationRemise = {
+    societe: 'SOC1',
+    compte: 1001,
+    filiation: 0,
+    service: 'RST',
+    imputation: 101,
+    fidelisation: 'FID123',
+    remise: 10,
+  };
+
+  const mockRemiseResult: RemiseResult = {
+    fidelisationId: 'FID123',
+    montantRemise: 10.5,
+    isValide: true,
+    message: 'Remise appliquée avec succès',
+  };
+
+  beforeEach(() => {
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: false,
+        error: null,
+        remiseData: null,
+        remiseResult: null,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    vi.mocked(useAuthStore).mockImplementation((selector) => {
+      const store = {
+        user: { prenom: 'Jean', nom: 'Dupont' },
+      };
+      return selector(store);
+    });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const renderPage = () => {
+    return render(
+      <BrowserRouter>
+        <FidelisationRemisePage />
+      </BrowserRouter>,
+    );
+  };
+
+  it('should render without crashing', () => {
+    renderPage();
+    expect(screen.getByText('Programme de fidélisation - Remise')).toBeInTheDocument();
+    expect(
+      screen.getByText('Vérification et calcul de remise fidélité'),
+    ).toBeInTheDocument();
+  });
+
+  it('should display user information', () => {
+    renderPage();
+    expect(screen.getByText('Jean Dupont')).toBeInTheDocument();
+  });
+
+  it('should display loading state', () => {
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: true,
+        error: null,
+        remiseData: null,
+        remiseResult: null,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    renderPage();
+    expect(screen.getByRole('generic', { hidden: true })).toHaveClass('animate-spin');
+  });
+
+  it('should display error state', () => {
+    const errorMessage = 'Erreur lors du chargement';
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: false,
+        error: errorMessage,
+        remiseData: null,
+        remiseResult: null,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    renderPage();
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+  });
+
+  it('should display empty state when no data loaded', () => {
+    renderPage();
+    expect(screen.getByText('Aucune information de remise chargée')).toBeInTheDocument();
+    expect(screen.getByText('Charger exemple de remise')).toBeInTheDocument();
+  });
+
+  it('should call getFidelisationRemise when load button clicked', async () => {
+    renderPage();
+    const loadButton = screen.getByText('Charger exemple de remise');
+
+    fireEvent.click(loadButton);
+
+    await waitFor(() => {
+      expect(mockGetFidelisationRemise).toHaveBeenCalledWith('SOC1', 1001, 0, 'RST', 101);
+    });
+  });
+
+  it('should display remise data when loaded with valid status', () => {
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: false,
+        error: null,
+        remiseData: mockRemiseData,
+        remiseResult: mockRemiseResult,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    renderPage();
+
+    expect(screen.getByDisplayValue('FID123')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('10.50 %')).toBeInTheDocument();
+    expect(screen.getByText('Remise valide')).toBeInTheDocument();
+    expect(screen.getByText('Remise appliquée avec succès')).toBeInTheDocument();
+  });
+
+  it('should display remise data with invalid status', () => {
+    const invalidRemiseResult: RemiseResult = {
+      ...mockRemiseResult,
+      isValide: false,
+      message: 'Remise non applicable',
+    };
+
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: false,
+        error: null,
+        remiseData: mockRemiseData,
+        remiseResult: invalidRemiseResult,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    renderPage();
+
+    expect(screen.getByText('Remise non applicable')).toBeInTheDocument();
+  });
+
+  it('should display account details', () => {
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: false,
+        error: null,
+        remiseData: mockRemiseData,
+        remiseResult: mockRemiseResult,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    renderPage();
+
+    expect(screen.getByText('SOC1')).toBeInTheDocument();
+    expect(screen.getByText('1001')).toBeInTheDocument();
+    expect(screen.getByText('0')).toBeInTheDocument();
+    expect(screen.getByText('RST')).toBeInTheDocument();
+    expect(screen.getByText('101')).toBeInTheDocument();
+    expect(screen.getByText('10%')).toBeInTheDocument();
+  });
+
+  it('should call validateRemiseEligibility when validate button clicked', async () => {
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: false,
+        error: null,
+        remiseData: mockRemiseData,
+        remiseResult: mockRemiseResult,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    renderPage();
+    const validateButton = screen.getByText('Valider éligibilité');
+
+    fireEvent.click(validateButton);
+
+    await waitFor(() => {
+      expect(mockValidateRemiseEligibility).toHaveBeenCalledWith(mockRemiseData);
+    });
+  });
+
+  it('should call calculateMontantRemise when calculate button clicked', async () => {
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: false,
+        error: null,
+        remiseData: mockRemiseData,
+        remiseResult: mockRemiseResult,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    renderPage();
+    const calculateButton = screen.getByText('Calculer montant');
+
+    fireEvent.click(calculateButton);
+
+    await waitFor(() => {
+      expect(mockCalculateMontantRemise).toHaveBeenCalledWith(mockRemiseData);
+    });
+  });
+
+  it('should disable action buttons when no remiseData', () => {
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: false,
+        error: null,
+        remiseData: null,
+        remiseResult: mockRemiseResult,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    renderPage();
+
+    const validateButton = screen.getByText('Valider éligibilité');
+    const calculateButton = screen.getByText('Calculer montant');
+
+    expect(validateButton).toBeDisabled();
+    expect(calculateButton).toBeDisabled();
+  });
+
+  it('should navigate back when back button clicked', () => {
+    renderPage();
+    const backButton = screen.getByText('Retour au menu');
+
+    fireEvent.click(backButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
+  });
+
+  it('should call reset on unmount', () => {
+    const { unmount } = renderPage();
+    unmount();
+    expect(mockReset).toHaveBeenCalled();
+  });
+
+  it('should display "Aucun" when fidelisationId is null', () => {
+    const resultWithNoId: RemiseResult = {
+      ...mockRemiseResult,
+      fidelisationId: null,
+    };
+
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: false,
+        error: null,
+        remiseData: mockRemiseData,
+        remiseResult: resultWithNoId,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    renderPage();
+    expect(screen.getByDisplayValue('Aucun')).toBeInTheDocument();
+  });
+
+  it('should display "N/A" when remise base is null', () => {
+    const dataWithNullRemise: FidelisationRemise = {
+      ...mockRemiseData,
+      remise: null,
+    };
+
+    vi.mocked(useFidelisationRemiseStore).mockImplementation((selector) => {
+      const store = {
+        isLoading: false,
+        error: null,
+        remiseData: dataWithNullRemise,
+        remiseResult: mockRemiseResult,
+        getFidelisationRemise: mockGetFidelisationRemise,
+        validateRemiseEligibility: mockValidateRemiseEligibility,
+        calculateMontantRemise: mockCalculateMontantRemise,
+        reset: mockReset,
+      };
+      return selector(store);
+    });
+
+    renderPage();
+    expect(screen.getByText('N/A')).toBeInTheDocument();
+  });
+});

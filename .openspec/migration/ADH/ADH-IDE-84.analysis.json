@@ -1,0 +1,142 @@
+{
+  "domain": "characterValidation",
+  "domainPascal": "CharacterValidation",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "ValidationResult",
+      "fields": [
+        {
+          "name": "isValid",
+          "type": "boolean",
+          "source": "computed",
+          "nullable": false
+        },
+        {
+          "name": "invalidCharacters",
+          "type": "string",
+          "source": "computed",
+          "nullable": false
+        },
+        {
+          "name": "position",
+          "type": "number",
+          "source": "computed",
+          "nullable": true
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "forbiddenCharacters",
+      "type": "string[]",
+      "default": "[]"
+    },
+    {
+      "name": "lastValidationResult",
+      "type": "ValidationResult | null",
+      "default": "null"
+    },
+    {
+      "name": "isValidating",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "validateCharacters",
+      "params": [
+        "input: string"
+      ],
+      "businessRules": [
+        "[RM-001] Vérifie qu'aucun caractère interdit n'est présent dans la chaîne",
+        "Retourne la position du premier caractère invalide si trouvé",
+        "Liste tous les caractères invalides détectés"
+      ],
+      "returns": "Promise<ValidationResult>"
+    },
+    {
+      "name": "loadForbiddenCharacters",
+      "params": [],
+      "businessRules": [
+        "Charge la liste des caractères interdits depuis la configuration",
+        "Initialise la liste par défaut si aucune configuration n'existe"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "checkString",
+      "params": [
+        "input: string",
+        "forbiddenChars: string[]"
+      ],
+      "businessRules": [
+        "Parcourt la chaîne caractère par caractère",
+        "Compare chaque caractère contre la liste interdite",
+        "Arrête au premier caractère invalide trouvé"
+      ],
+      "returns": "ValidationResult"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/validation/forbidden-characters",
+      "queryParams": [],
+      "response": "string[]"
+    },
+    {
+      "method": "POST",
+      "path": "/api/validation/check-string",
+      "queryParams": [],
+      "response": "ValidationResult"
+    }
+  ],
+  "uiLayout": {
+    "type": "utility-component",
+    "sections": [
+      {
+        "name": "validationInput",
+        "controls": [
+          "inputField",
+          "validateButton",
+          "resultDisplay"
+        ]
+      },
+      {
+        "name": "forbiddenCharsList",
+        "controls": [
+          "characterList",
+          "addCharButton",
+          "removeCharButton"
+        ]
+      },
+      {
+        "name": "validationResult",
+        "controls": [
+          "statusIcon",
+          "invalidCharDisplay",
+          "positionIndicator"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 10,
+    "description": "10 test strings with various invalid character combinations: special chars (@#$%), control chars, unicode chars, mixed valid/invalid"
+  },
+  "dependencies": {
+    "stores": [],
+    "sharedTypes": [
+      "ValidationResult"
+    ],
+    "externalApis": []
+  }
+}

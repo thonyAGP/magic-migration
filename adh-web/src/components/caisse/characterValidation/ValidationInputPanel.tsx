@@ -1,0 +1,100 @@
+import { useState, useCallback } from 'react';
+import { Button, Input } from '@/components/ui';
+import { useCharacterValidationStore } from '@/stores/characterValidationStore';
+import { cn } from '@/lib/utils';
+
+interface ValidationInputPanelProps {
+  className?: string;
+}
+
+export const ValidationInputPanel = ({ className }: ValidationInputPanelProps) => {
+  const [inputValue, setInputValue] = useState('');
+  
+  const validateCharacters = useCharacterValidationStore((s) => s.validateCharacters);
+  const lastValidationResult = useCharacterValidationStore((s) => s.lastValidationResult);
+  const isValidating = useCharacterValidationStore((s) => s.isValidating);
+  const error = useCharacterValidationStore((s) => s.error);
+  const setError = useCharacterValidationStore((s) => s.setError);
+
+  const handleValidate = useCallback(async () => {
+    if (!inputValue.trim()) {
+      setError('Veuillez saisir un texte à valider');
+      return;
+    }
+    await validateCharacters(inputValue);
+  }, [inputValue, validateCharacters, setError]);
+
+  const handleKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !isValidating) {
+      handleValidate();
+    }
+  }, [handleValidate, isValidating]);
+
+  return (
+    <div className={cn('flex flex-col gap-4', className)}>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="validation-input" className="text-sm font-medium text-gray-700">
+          Texte à valider
+        </label>
+        <Input
+          id="validation-input"
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Saisissez le texte à vérifier"
+          disabled={isValidating}
+          className="w-full"
+        />
+      </div>
+
+      <div>
+        <Button
+          onClick={handleValidate}
+          disabled={isValidating || !inputValue.trim()}
+          className="w-full sm:w-auto"
+        >
+          {isValidating ? 'Validation...' : 'Valider'}
+        </Button>
+      </div>
+
+      {(lastValidationResult || error) && (
+        <div className="mt-4 p-4 rounded-lg border">
+          {error && (
+            <div className="text-sm text-red-600">
+              {error}
+            </div>
+          )}
+          
+          {lastValidationResult && !error && (
+            <div className="space-y-2">
+              <div className={cn(
+                'text-sm font-medium',
+                lastValidationResult.isValid ? 'text-green-600' : 'text-red-600'
+              )}>
+                {lastValidationResult.isValid ? '✓ Texte valide' : '✗ Caractères interdits détectés'}
+              </div>
+              
+              {!lastValidationResult.isValid && (
+                <div className="space-y-1 text-sm">
+                  <div className="text-gray-700">
+                    <span className="font-medium">Caractères interdits : </span>
+                    <span className="font-mono text-red-600">
+                      {lastValidationResult.invalidCharacters}
+                    </span>
+                  </div>
+                  {lastValidationResult.position !== null && (
+                    <div className="text-gray-700">
+                      <span className="font-medium">Position : </span>
+                      <span>{lastValidationResult.position}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};

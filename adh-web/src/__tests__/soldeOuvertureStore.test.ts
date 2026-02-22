@@ -1,0 +1,454 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { useSoldeOuvertureStore } from '@/stores/soldeOuvertureStore';
+import { apiClient } from '@/services/api/apiClient';
+import { useDataSourceStore } from '@/stores/dataSourceStore';
+import type { ApiResponse } from '@/services/api/apiClient';
+import type {
+  SoldeOuverture,
+  SoldeCalculationResult,
+  CoherenceValidationResult,
+} from '@/types/soldeOuverture';
+
+vi.mock('@/services/api/apiClient', () => ({
+  apiClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
+
+vi.mock('@/stores/dataSourceStore', () => ({
+  useDataSourceStore: {
+    getState: vi.fn(() => ({ isRealApi: false })),
+  },
+}));
+
+const MOCK_SOLDE_OUVERTURE: SoldeOuverture = {
+  societe: 'SOC1',
+  deviseLocale: 'EUR',
+  soldeOuverture: 1200.0,
+  soldeOuvertureMonnaie: 500.0,
+  soldeOuvertureProduits: 350.0,
+  soldeOuvertureCartes: 200.0,
+  soldeOuvertureCheques: 100.0,
+  soldeOuvertureOd: 50.0,
+  nbreDevise: 5,
+  uniBi: 'BI',
+};
+
+const MOCK_CALCULATION_RESULT: SoldeCalculationResult = {
+  totalEur: 1200.0,
+  details: [
+    { devise: 'EUR', montant: 500.0, tauxChange: 1.0, montantEur: 500.0 },
+    { devise: 'USD', montant: 324.0, tauxChange: 1.08, montantEur: 300.0 },
+    { devise: 'GBP', montant: 170.0, tauxChange: 0.85, montantEur: 200.0 },
+    { devise: 'CHF', montant: 95.0, tauxChange: 0.95, montantEur: 100.0 },
+    { devise: 'JPY', montant: 15700.0, tauxChange: 157.0, montantEur: 100.0 },
+  ],
+};
+
+describe('soldeOuvertureStore', () => {
+  beforeEach(() => {
+    useSoldeOuvertureStore.getState().reset();
+    vi.clearAllMocks();
+    vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false });
+  });
+
+  describe('loadSoldeOuverture', () => {
+    it('should load solde ouverture with mock data when isRealApi is false', async () => {
+      await useSoldeOuvertureStore.getState().loadSoldeOuverture('SOC1', 1001);
+
+      const state = useSoldeOuvertureStore.getState();
+      expect(state.soldeOuverture).toEqual(MOCK_SOLDE_OUVERTURE);
+      expect(state.moyensReglement).toHaveLength(5);
+      expect(state.devisesSessions).toHaveLength(5);
+      expect(state.isLoading).toBe(false);
+      expect(state.error).toBeNull();
+    });
+
+    it('should set isLoading to true during load', async () => {
+      let isLoadingDuringCall = false;
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      
+      vi.mocked(apiClient.get).mockImplementation(async () => {
+        isLoadingDuringCall = useSoldeOuvertureStore.getState().isLoading;
+        return { data: { success: true, data: MOCK_SOLDE_OUVERTURE, message: 'Success' } };
+      });
+
+      await useSoldeOuvertureStore.getState().loadSoldeOuverture('SOC1', 1001);
+      
+      expect(isLoadingDuringCall).toBe(true);
+      expect(useSoldeOuvertureStore.getState().isLoading).toBe(false);
+    });
+
+    it('should load solde ouverture from API when isRealApi is true', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      const mockResponse: ApiResponse<SoldeOuverture> = {
+        success: true,
+        data: MOCK_SOLDE_OUVERTURE,
+        message: 'Success',
+      };
+      vi.mocked(apiClient.get).mockResolvedValue({ data: mockResponse });
+
+      await useSoldeOuvertureStore.getState().loadSoldeOuverture('SOC1', 1001);
+
+      expect(apiClient.get).toHaveBeenCalledWith('/api/solde-ouverture/SOC1/1001');
+      const state = useSoldeOuvertureStore.getState();
+      expect(state.soldeOuverture).toEqual(MOCK_SOLDE_OUVERTURE);
+      expect(state.error).toBeNull();
+    });
+
+    it('should handle API error when loading solde ouverture', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      vi.mocked(apiClient.get).mockRejectedValue(new Error('Network error'));
+
+      await useSoldeOuvertureStore.getState().loadSoldeOuverture('SOC1', 1001);
+
+      const state = useSoldeOuvertureStore.getState();
+      expect(state.soldeOuverture).toBeNull();
+      expect(state.error).toBe('Network error');
+      expect(state.isLoading).toBe(false);
+    });
+
+    it('should handle unknown error when loading solde ouverture', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      vi.mocked(apiClient.get).mockRejectedValue('Unknown error');
+
+      await useSoldeOuvertureStore.getState().loadSoldeOuverture('SOC1', 1001);
+
+      const state = useSoldeOuvertureStore.getState();
+      expect(state.error).toBe('Erreur chargement solde ouverture');
+    });
+  });
+
+  describe('calculerSoldeOuverture', () => {
+    it('should calculate solde ouverture with mock data when isRealApi is false', async () => {
+      const result = await useSoldeOuvertureStore
+        .getState()
+        .calculerSoldeOuverture('SOC1', 1001);
+
+      expect(result).toEqual(MOCK_CALCULATION_RESULT);
+      const state = useSoldeOuvertureStore.getState();
+      expect(state.calculationResult).toEqual(MOCK_CALCULATION_RESULT);
+      expect(state.isCalculating).toBe(false);
+      expect(state.error).toBeNull();
+    });
+
+    it('should set isCalculating to true during calculation', async () => {
+      let isCalculatingDuringCall = false;
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      
+      vi.mocked(apiClient.post).mockImplementation(async () => {
+        isCalculatingDuringCall = useSoldeOuvertureStore.getState().isCalculating;
+        return { data: { success: true, data: MOCK_CALCULATION_RESULT, message: 'Success' } };
+      });
+
+      await useSoldeOuvertureStore.getState().calculerSoldeOuverture('SOC1', 1001);
+      
+      expect(isCalculatingDuringCall).toBe(true);
+      expect(useSoldeOuvertureStore.getState().isCalculating).toBe(false);
+    });
+
+    it('should calculate solde ouverture from API when isRealApi is true', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      const mockResponse: ApiResponse<SoldeCalculationResult> = {
+        success: true,
+        data: MOCK_CALCULATION_RESULT,
+        message: 'Success',
+      };
+      vi.mocked(apiClient.post).mockResolvedValue({ data: mockResponse });
+
+      const result = await useSoldeOuvertureStore
+        .getState()
+        .calculerSoldeOuverture('SOC1', 1001);
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/solde-ouverture/calculer', {
+        societe: 'SOC1',
+        sessionId: 1001,
+      });
+      expect(result).toEqual(MOCK_CALCULATION_RESULT);
+      expect(useSoldeOuvertureStore.getState().calculationResult).toEqual(MOCK_CALCULATION_RESULT);
+    });
+
+    it('should throw error when API returns no data', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      const mockResponse: ApiResponse<SoldeCalculationResult> = {
+        success: true,
+        data: null,
+        message: 'Success',
+      };
+      vi.mocked(apiClient.post).mockResolvedValue({ data: mockResponse });
+
+      await expect(
+        useSoldeOuvertureStore.getState().calculerSoldeOuverture('SOC1', 1001),
+      ).rejects.toThrow('Aucune donnée retournée');
+
+      const state = useSoldeOuvertureStore.getState();
+      expect(state.calculationResult).toBeNull();
+      expect(state.error).toBe('Aucune donnée retournée');
+    });
+
+    it('should handle API error when calculating solde ouverture', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      vi.mocked(apiClient.post).mockRejectedValue(new Error('Missing currency rate'));
+
+      await expect(
+        useSoldeOuvertureStore.getState().calculerSoldeOuverture('SOC1', 1001),
+      ).rejects.toThrow('Missing currency rate');
+
+      const state = useSoldeOuvertureStore.getState();
+      expect(state.calculationResult).toBeNull();
+      expect(state.error).toBe('Missing currency rate');
+      expect(state.isCalculating).toBe(false);
+    });
+
+    it('should handle unknown error when calculating solde ouverture', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      vi.mocked(apiClient.post).mockRejectedValue('Unknown error');
+
+      await expect(
+        useSoldeOuvertureStore.getState().calculerSoldeOuverture('SOC1', 1001),
+      ).rejects.toThrow();
+
+      const state = useSoldeOuvertureStore.getState();
+      expect(state.error).toBe('Erreur calcul solde ouverture');
+    });
+
+    it('should validate all currencies have valid exchange rates', async () => {
+      const result = await useSoldeOuvertureStore
+        .getState()
+        .calculerSoldeOuverture('SOC1', 1001);
+
+      result.details.forEach((detail) => {
+        expect(detail.tauxChange).toBeGreaterThan(0);
+      });
+    });
+
+    it('should validate amounts are not negative', async () => {
+      const result = await useSoldeOuvertureStore
+        .getState()
+        .calculerSoldeOuverture('SOC1', 1001);
+
+      result.details.forEach((detail) => {
+        expect(detail.montant).toBeGreaterThanOrEqual(0);
+        expect(detail.montantEur).toBeGreaterThanOrEqual(0);
+      });
+      expect(result.totalEur).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('updateDeviseSession', () => {
+    it('should do nothing when isRealApi is false', async () => {
+      await useSoldeOuvertureStore.getState().updateDeviseSession(1001);
+
+      expect(apiClient.post).not.toHaveBeenCalled();
+      expect(useSoldeOuvertureStore.getState().isLoading).toBe(false);
+    });
+
+    it('should update devise session via API when isRealApi is true', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      const mockResponse: ApiResponse<void> = {
+        success: true,
+        data: null,
+        message: 'Success',
+      };
+      vi.mocked(apiClient.post).mockResolvedValue({ data: mockResponse });
+
+      await useSoldeOuvertureStore.getState().updateDeviseSession(1001);
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/solde-ouverture/update-devise-session', {
+        sessionId: 1001,
+      });
+      expect(useSoldeOuvertureStore.getState().error).toBeNull();
+    });
+
+    it('should handle API error when updating devise session', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      vi.mocked(apiClient.post).mockRejectedValue(new Error('Update failed'));
+
+      await useSoldeOuvertureStore.getState().updateDeviseSession(1001);
+
+      const state = useSoldeOuvertureStore.getState();
+      expect(state.error).toBe('Update failed');
+      expect(state.isLoading).toBe(false);
+    });
+
+    it('should handle unknown error when updating devise session', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      vi.mocked(apiClient.post).mockRejectedValue('Unknown error');
+
+      await useSoldeOuvertureStore.getState().updateDeviseSession(1001);
+
+      expect(useSoldeOuvertureStore.getState().error).toBe(
+        'Erreur mise à jour devises session',
+      );
+    });
+  });
+
+  describe('validerCoherenceSolde', () => {
+    it('should validate coherent solde with mock data when isRealApi is false', async () => {
+      const result = await useSoldeOuvertureStore
+        .getState()
+        .validerCoherenceSolde(1200.0, 1200.0);
+
+      expect(result.coherent).toBe(true);
+      expect(result.ecart).toBeNull();
+      expect(useSoldeOuvertureStore.getState().error).toBeNull();
+    });
+
+    it('should detect ecart when soldes differ with mock data', async () => {
+      const result = await useSoldeOuvertureStore
+        .getState()
+        .validerCoherenceSolde(1200.0, 1150.0);
+
+      expect(result.coherent).toBe(false);
+      expect(result.ecart).toBe(50.0);
+    });
+
+    it('should consider small ecart as coherent within tolerance', async () => {
+      const result = await useSoldeOuvertureStore.getState().validerCoherenceSolde(1200.0, 1200.005);
+
+      expect(result.coherent).toBe(true);
+      expect(result.ecart).toBeNull();
+    });
+
+    it('should validate coherence solde from API when isRealApi is true', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      const mockResult: CoherenceValidationResult = { coherent: false, ecart: 25.5 };
+      const mockResponse: ApiResponse<CoherenceValidationResult> = {
+        success: true,
+        data: mockResult,
+        message: 'Success',
+      };
+      vi.mocked(apiClient.post).mockResolvedValue({ data: mockResponse });
+
+      const result = await useSoldeOuvertureStore
+        .getState()
+        .validerCoherenceSolde(1200.0, 1174.5);
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/solde-ouverture/valider-coherence', {
+        soldeEnregistre: 1200.0,
+        soldeCalcule: 1174.5,
+      });
+      expect(result).toEqual(mockResult);
+    });
+
+    it('should throw error when API returns no data', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      const mockResponse: ApiResponse<CoherenceValidationResult> = {
+        success: true,
+        data: null,
+        message: 'Success',
+      };
+      vi.mocked(apiClient.post).mockResolvedValue({ data: mockResponse });
+
+      await expect(
+        useSoldeOuvertureStore.getState().validerCoherenceSolde(1200.0, 1200.0),
+      ).rejects.toThrow('Aucune donnée retournée');
+    });
+
+    it('should handle API error when validating coherence', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      vi.mocked(apiClient.post).mockRejectedValue(new Error('Validation failed'));
+
+      await expect(
+        useSoldeOuvertureStore.getState().validerCoherenceSolde(1200.0, 1200.0),
+      ).rejects.toThrow('Validation failed');
+
+      expect(useSoldeOuvertureStore.getState().error).toBe('Validation failed');
+    });
+
+    it('should handle unknown error when validating coherence', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: true });
+      vi.mocked(apiClient.post).mockRejectedValue('Unknown error');
+
+      await expect(
+        useSoldeOuvertureStore.getState().validerCoherenceSolde(1200.0, 1200.0),
+      ).rejects.toThrow();
+
+      expect(useSoldeOuvertureStore.getState().error).toBe('Erreur validation cohérence');
+    });
+  });
+
+  describe('setSoldeOuverture', () => {
+    it('should update solde ouverture state', () => {
+      useSoldeOuvertureStore.getState().setSoldeOuverture(MOCK_SOLDE_OUVERTURE);
+      expect(useSoldeOuvertureStore.getState().soldeOuverture).toEqual(MOCK_SOLDE_OUVERTURE);
+    });
+
+    it('should set solde ouverture to null', () => {
+      useSoldeOuvertureStore.getState().setSoldeOuverture(MOCK_SOLDE_OUVERTURE);
+      useSoldeOuvertureStore.getState().setSoldeOuverture(null);
+      expect(useSoldeOuvertureStore.getState().soldeOuverture).toBeNull();
+    });
+  });
+
+  describe('setMoyensReglement', () => {
+    it('should update moyens reglement state', () => {
+      const moyens = [
+        { id: 1, code: 'ESP', libelle: 'Espèces' },
+        { id: 2, code: 'CB', libelle: 'Carte bancaire' },
+      ];
+      useSoldeOuvertureStore.getState().setMoyensReglement(moyens);
+      expect(useSoldeOuvertureStore.getState().moyensReglement).toEqual(moyens);
+    });
+  });
+
+  describe('setDevisesSessions', () => {
+    it('should update devises sessions state', () => {
+      const devises = [
+        { id: 1, sessionId: 1001, deviseCode: 'EUR', tauxChange: 1.0, montant: 500.0 },
+        { id: 2, sessionId: 1001, deviseCode: 'USD', tauxChange: 1.08, montant: 324.0 },
+      ];
+      useSoldeOuvertureStore.getState().setDevisesSessions(devises);
+      expect(useSoldeOuvertureStore.getState().devisesSessions).toEqual(devises);
+    });
+  });
+
+  describe('setCalculationResult', () => {
+    it('should update calculation result state', () => {
+      useSoldeOuvertureStore.getState().setCalculationResult(MOCK_CALCULATION_RESULT);
+      expect(useSoldeOuvertureStore.getState().calculationResult).toEqual(MOCK_CALCULATION_RESULT);
+    });
+
+    it('should set calculation result to null', () => {
+      useSoldeOuvertureStore.getState().setCalculationResult(MOCK_CALCULATION_RESULT);
+      useSoldeOuvertureStore.getState().setCalculationResult(null);
+      expect(useSoldeOuvertureStore.getState().calculationResult).toBeNull();
+    });
+  });
+
+  describe('clearError', () => {
+    it('should clear error state', () => {
+      useSoldeOuvertureStore.setState({ error: 'Test error' });
+      useSoldeOuvertureStore.getState().clearError();
+      expect(useSoldeOuvertureStore.getState().error).toBeNull();
+    });
+  });
+
+  describe('reset', () => {
+    it('should reset all state to initial values', () => {
+      useSoldeOuvertureStore.setState({
+        soldeOuverture: MOCK_SOLDE_OUVERTURE,
+        moyensReglement: [{ id: 1, code: 'ESP', libelle: 'Espèces' }],
+        devisesSessions: [
+          { id: 1, sessionId: 1001, deviseCode: 'EUR', tauxChange: 1.0, montant: 500.0 },
+        ],
+        isLoading: true,
+        error: 'Test error',
+        isCalculating: true,
+        calculationResult: MOCK_CALCULATION_RESULT,
+      });
+
+      useSoldeOuvertureStore.getState().reset();
+
+      const state = useSoldeOuvertureStore.getState();
+      expect(state.soldeOuverture).toBeNull();
+      expect(state.moyensReglement).toEqual([]);
+      expect(state.devisesSessions).toEqual([]);
+      expect(state.isLoading).toBe(false);
+      expect(state.error).toBeNull();
+      expect(state.isCalculating).toBe(false);
+      expect(state.calculationResult).toBeNull();
+    });
+  });
+});

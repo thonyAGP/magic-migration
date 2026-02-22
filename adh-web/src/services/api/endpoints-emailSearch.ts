@@ -1,0 +1,50 @@
+import { apiClient, type ApiResponse } from './apiClient';
+import type {
+  EmailAddress,
+  GetEmailsRequest,
+  GetEmailsResponse,
+  CreateEmailRequest,
+  CreateEmailResponse,
+  UpdateEmailRequest,
+  UpdateEmailResponse,
+  DeleteEmailResponse,
+  SetPrincipalResponse,
+} from '@/types/emailSearch';
+
+export const emailSearchApi = {
+  getEmails: (filters?: GetEmailsRequest) => {
+    const params = new URLSearchParams();
+    if (filters?.societe) params.append('societe', filters.societe);
+    if (filters?.compte) params.append('compte', filters.compte);
+    if (filters?.filiation !== undefined) params.append('filiation', String(filters.filiation));
+    if (filters?.email) params.append('email', filters.email);
+
+    const queryString = params.toString();
+    const url = queryString ? `/api/email-search/emails?${queryString}` : '/api/email-search/emails';
+
+    return apiClient.get<ApiResponse<GetEmailsResponse>>(url);
+  },
+
+  createEmail: (data: CreateEmailRequest) =>
+    apiClient.post<ApiResponse<CreateEmailResponse>>(
+      '/api/email-search/emails',
+      data,
+    ),
+
+  updateEmail: (id: number, data: UpdateEmailRequest) =>
+    apiClient.put<ApiResponse<UpdateEmailResponse>>(
+      `/api/email-search/emails/${id}`,
+      data,
+    ),
+
+  deleteEmail: (id: number) =>
+    apiClient.delete<ApiResponse<DeleteEmailResponse>>(
+      `/api/email-search/emails/${id}`,
+    ),
+
+  setAsPrincipal: (id: number) =>
+    apiClient.post<ApiResponse<SetPrincipalResponse>>(
+      `/api/email-search/emails/${id}/set-principal`,
+      {},
+    ),
+};

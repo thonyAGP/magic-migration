@@ -56,6 +56,23 @@ describe('sessionConcurrencyStore', () => {
     it('should detect conflict in mock mode', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false });
 
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const mockSession: SessionConcurrency = {
+        societe: 'SOC1',
+        compte: 1001,
+        filiation: 0,
+        terminalId: 'TERM01',
+        timestamp: today,
+        codeCalcul: 'C',
+        coffreEnCoursComptage: false,
+      };
+
+      useSessionConcurrencyStore.setState({
+        activeSessions: [mockSession],
+      });
+
       const result = await useSessionConcurrencyStore
         .getState()
         .checkConcurrency('SOC1', 1001, 0);
@@ -127,32 +144,23 @@ describe('sessionConcurrencyStore', () => {
     it('should set loading state during check', async () => {
       vi.mocked(useDataSourceStore.getState).mockReturnValue({ isRealApi: false });
 
-      let loadingDuringCall = false;
-      const originalSetState = useSessionConcurrencyStore.setState;
+      let loadingDuringCheck = false;
+
+      const originalCheckConcurrency = useSessionConcurrencyStore.getState().checkConcurrency;
       
-      vi.spyOn(useSessionConcurrencyStore, 'setState').mockImplementation((partial) => {
-        const result = originalSetState(partial);
-        if (typeof partial === 'function') {
-          const newState = partial(useSessionConcurrencyStore.getState());
-          if ('isLoading' in newState && newState.isLoading === true) {
-            loadingDuringCall = true;
-          }
-        } else if ('isLoading' in partial && partial.isLoading === true) {
-          loadingDuringCall = true;
+      const wrappedCheckConcurrency = async (societe: string, compte: number, filiation: number) => {
+        const checkPromise = originalCheckConcurrency(societe, compte, filiation);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (useSessionConcurrencyStore.getState().isLoading) {
+          loadingDuringCheck = true;
         }
-        return result;
-      });
+        return checkPromise;
+      };
 
-      const promise = useSessionConcurrencyStore
-        .getState()
-        .checkConcurrency('SOC1', 1001, 0);
+      await wrappedCheckConcurrency('SOC1', 1001, 0);
 
-      await promise;
-
-      expect(loadingDuringCall).toBe(true);
+      expect(loadingDuringCheck).toBe(true);
       expect(useSessionConcurrencyStore.getState().isLoading).toBe(false);
-
-      vi.restoreAllMocks();
     });
   });
 

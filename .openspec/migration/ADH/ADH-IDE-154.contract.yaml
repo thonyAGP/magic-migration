@@ -1,0 +1,264 @@
+program:
+  id: 0
+  name: ""
+  complexity: MEDIUM
+  callers: []
+  callees: []
+  tasks_count: 93
+  tables_count: 2
+  expressions_count: 13
+rules:
+  - id: RM-001
+    description: "Condition: W0 fin tache [BH] egale 'F'"
+    condition: W0 fin tache [BH]='F'
+    variables:
+      - FU
+    status: IMPL
+    target_file: adh-web/src/stores/saisieContenuCaisseStore.ts
+    gap_notes: ""
+  - id: RM-002
+    description: Verification que l'imprimante courante est la n1
+    condition: GetParam ('CURRENTPRINTERNUM')=1
+    variables: []
+    status: IMPL
+    target_file: adh-web/src/services/printer/generators/ouvertureTicketGenerator.ts
+    gap_notes: ""
+  - id: RM-003
+    description: Verification que l'imprimante courante est la n9
+    condition: GetParam ('CURRENTPRINTERNUM')=9
+    variables:
+      - EZ
+    status: IMPL
+    target_file: adh-web/src/__tests__/approTicketStore.test.ts
+    gap_notes: ""
+  - id: RM-004
+    description: Condition toujours vraie (flag actif)
+    condition: P0 reimpression D/G [M]='D'
+    variables:
+      - EZ
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: RM-005
+    description: "Condition: P0 reimpression D/G [M] different de"
+    condition: P0 reimpression D/G [M]<>''
+    variables:
+      - EZ
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+variables:
+  - local_id: FU
+    name: W0 fin tache
+    type: Real
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - local_id: EZ
+    name: P0 reimpression D/G
+    type: Parameter
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+tables:
+  - id: 487
+    name: saisie_remise_en_caisse
+    mode: RW
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 510
+    name: pv_discounts
+    mode: RW
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 247
+    name: histo_sessions_caisse_article
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 232
+    name: gestion_devise_session
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/stores/soldeOuvertureStore.ts
+    gap_notes: ""
+  - id: 67
+    name: tables___________tab
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/pages/IntegriteDatesPage.tsx
+    gap_notes: ""
+  - id: 693
+    name: devise_in
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/components/caisse/transaction/schemas.ts
+    gap_notes: ""
+  - id: 463
+    name: heure_de_passage
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 249
+    name: histo_sessions_caisse_detail
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 196
+    name: gestion_article_session
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 31
+    name: gm-complet_______gmc
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 505
+    name: pv_comptable
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 222
+    name: comptage_caisse_histo
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 251
+    name: histo_sessions_caisse_remise
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 266
+    name: cc_comptable
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 77
+    name: articles_________art
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/components/caisse/apportArticles/ArticleEntryPanel.tsx
+    gap_notes: ""
+  - id: 30
+    name: gm-recherche_____gmr
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 50
+    name: moyens_reglement_mor
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/pages/SoldeOuverturePage.tsx
+    gap_notes: ""
+  - id: 70
+    name: date_comptable___dat
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/components/caisse/recapWorksheet/FiltresPanel.tsx
+    gap_notes: ""
+  - id: 324
+    name: frais_change___fchg
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 44
+    name: change___________chg
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/App.tsx
+    gap_notes: ""
+  - id: 147
+    name: change_vente_____chg
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 139
+    name: moyens_reglement_mor
+    mode: R
+    status: IMPL
+    target_file: adh-web/src/pages/SoldeOuverturePage.tsx
+    gap_notes: ""
+  - id: 197
+    name: articles_en_stock
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+  - id: 474
+    name: comptage_caisse_devise
+    mode: R
+    status: MISSING
+    target_file: ""
+    gap_notes: ""
+callees:
+  - id: 22
+    name: Calcul equivalent
+    calls: 6
+    context: Calcul de donnees
+    status: MISSING
+    target: ""
+    gap_notes: ""
+  - id: 43
+    name: Recuperation du titre
+    calls: 1
+    context: Recuperation donnees
+    status: MISSING
+    target: ""
+    gap_notes: ""
+  - id: 179
+    name: Get Printer
+    calls: 1
+    context: Impression ticket/document
+    status: N/A
+    target: ""
+    gap_notes: Legacy print/utility (N/A for web)
+  - id: 180
+    name: Printer choice
+    calls: 1
+    context: Impression ticket/document
+    status: N/A
+    target: ""
+    gap_notes: Legacy print/utility (N/A for web)
+  - id: 181
+    name: Set Listing Number
+    calls: 1
+    context: Configuration impression
+    status: N/A
+    target: ""
+    gap_notes: Legacy print/utility (N/A for web)
+  - id: 182
+    name: Raz Current Printer
+    calls: 1
+    context: Impression ticket/document
+    status: N/A
+    target: ""
+    gap_notes: Legacy print/utility (N/A for web)
+overall:
+  rules_total: 5
+  rules_impl: 3
+  rules_partial: 0
+  rules_missing: 2
+  rules_na: 0
+  variables_key_count: 2
+  callees_total: 6
+  callees_impl: 0
+  callees_missing: 2
+  coverage_pct: 33
+  status: enriched
+  generated: 2026-02-21T10:24:44.217Z
+  notes: Auto-generated from ADH-IDE-154.md

@@ -1,0 +1,275 @@
+{
+  "domain": "emailSearch",
+  "domainPascal": "EmailSearch",
+  "complexity": "MEDIUM",
+  "entities": [
+    {
+      "name": "EmailAddress",
+      "fields": [
+        {
+          "name": "id",
+          "type": "number",
+          "source": "email.id",
+          "nullable": false
+        },
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "email.societe",
+          "nullable": false
+        },
+        {
+          "name": "compte",
+          "type": "string",
+          "source": "email.compte",
+          "nullable": false
+        },
+        {
+          "name": "filiation",
+          "type": "number",
+          "source": "email.filiation",
+          "nullable": false
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "source": "email.email",
+          "nullable": false
+        },
+        {
+          "name": "isPrincipal",
+          "type": "boolean",
+          "source": "email.principal",
+          "nullable": false
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "source": "email.date_creation",
+          "nullable": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "Date",
+          "source": "email.date_modification",
+          "nullable": true
+        }
+      ]
+    },
+    {
+      "name": "GmRecord",
+      "fields": [
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "cafil008_dat.societe",
+          "nullable": false
+        },
+        {
+          "name": "compte",
+          "type": "string",
+          "source": "cafil008_dat.compte",
+          "nullable": false
+        },
+        {
+          "name": "filiation",
+          "type": "number",
+          "source": "cafil008_dat.filiation",
+          "nullable": false
+        },
+        {
+          "name": "nom",
+          "type": "string",
+          "source": "cafil008_dat.nom",
+          "nullable": true
+        },
+        {
+          "name": "prenom",
+          "type": "string",
+          "source": "cafil008_dat.prenom",
+          "nullable": true
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "emails",
+      "type": "EmailAddress[]",
+      "default": "[]"
+    },
+    {
+      "name": "selectedEmail",
+      "type": "EmailAddress | null",
+      "default": "null"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "filters",
+      "type": "SearchFilters",
+      "default": "{ societe: '', compte: '', filiation: null, email: '' }"
+    }
+  ],
+  "actions": [
+    {
+      "name": "searchEmails",
+      "params": [
+        "filters: SearchFilters"
+      ],
+      "businessRules": [
+        "RM-001: Execute search with validated entry conditions",
+        "RM-002: Access email table in READ mode with optional LINK to gm-recherche and fichier_langue",
+        "Multi-criteria search: societe, compte, filiation, email pattern"
+      ],
+      "returns": "Promise<EmailAddress[]>"
+    },
+    {
+      "name": "createEmail",
+      "params": [
+        "data: CreateEmailDto"
+      ],
+      "businessRules": [
+        "RM-002: Access email table in WRITE mode",
+        "RM-002: Write to gm-recherche table (cafil008_dat)",
+        "Validate email format before creation",
+        "Set createdAt timestamp to current date/time"
+      ],
+      "returns": "Promise<EmailAddress>"
+    },
+    {
+      "name": "updateEmail",
+      "params": [
+        "id: number",
+        "data: UpdateEmailDto"
+      ],
+      "businessRules": [
+        "RM-002: Access email table in WRITE mode",
+        "Validate email exists before update",
+        "Update updatedAt timestamp",
+        "Validate email format if email field is being updated"
+      ],
+      "returns": "Promise<EmailAddress>"
+    },
+    {
+      "name": "deleteEmail",
+      "params": [
+        "id: number"
+      ],
+      "businessRules": [
+        "RM-002: Access email table in WRITE mode",
+        "RM-004: Handle error propagation if deletion fails",
+        "Validate email exists before deletion"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "setAsPrincipal",
+      "params": [
+        "id: number"
+      ],
+      "businessRules": [
+        "RM-002: Write to email table",
+        "Only one email can be principal per GM (societe+compte+filiation)",
+        "Unset previous principal email if exists"
+      ],
+      "returns": "Promise<void>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/email-search/emails",
+      "queryParams": [
+        "societe?",
+        "compte?",
+        "filiation?",
+        "email?"
+      ],
+      "response": "EmailAddress[]"
+    },
+    {
+      "method": "POST",
+      "path": "/api/email-search/emails",
+      "queryParams": [],
+      "response": "EmailAddress"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/email-search/emails/:id",
+      "queryParams": [],
+      "response": "EmailAddress"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/email-search/emails/:id",
+      "queryParams": [],
+      "response": "void"
+    },
+    {
+      "method": "POST",
+      "path": "/api/email-search/emails/:id/set-principal",
+      "queryParams": [],
+      "response": "void"
+    }
+  ],
+  "uiLayout": {
+    "type": "search-and-manage-page",
+    "sections": [
+      {
+        "name": "searchFilters",
+        "controls": [
+          "societéInput",
+          "compteInput",
+          "filiationInput",
+          "emailPatternInput",
+          "searchButton",
+          "clearButton"
+        ]
+      },
+      {
+        "name": "resultsGrid",
+        "controls": [
+          "emailDataGrid",
+          "editButton",
+          "deleteButton",
+          "setPrincipalButton",
+          "addNewButton"
+        ]
+      },
+      {
+        "name": "emailForm",
+        "controls": [
+          "societéField",
+          "compteField",
+          "filiationField",
+          "emailField",
+          "isPrincipalCheckbox",
+          "saveButton",
+          "cancelButton"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 15,
+    "description": "Mock data includes 15 email addresses across 5 different GM records (3 emails per GM). Each GM has 1 principal email and 2 secondary emails. Societes: 'SKI', 'EXCHANGE'. Accounts vary from 100001 to 100005. Email patterns: firstname.lastname@email.com, contact@company.fr"
+  },
+  "dependencies": {
+    "stores": [
+      "useEmailSearchStore"
+    ],
+    "sharedTypes": [
+      "GmIdentifier (from shared types)"
+    ],
+    "externalApis": []
+  }
+}

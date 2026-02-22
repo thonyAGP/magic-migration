@@ -1,0 +1,68 @@
+import type { MoyenPaiement } from '@/types/moyenPaiement';
+
+interface IntegrationPanelProps {
+  selectedMOP: MoyenPaiement | null;
+  className?: string;
+}
+
+export const IntegrationPanel = ({ selectedMOP, className }: IntegrationPanelProps) => {
+  const usageExamples = [
+    {
+      screen: 'Écrans de vente',
+      description: 'Affichage du libellé du moyen de paiement',
+      example: selectedMOP ? `"${selectedMOP.libelle}"` : 'Sélectionnez un MOP'
+    },
+    {
+      screen: 'Générateurs de tickets',
+      description: 'Formatage des moyens de paiement',
+      example: selectedMOP
+        ? `Code: ${selectedMOP.code} - ${selectedMOP.libelle} (${selectedMOP.classe})`
+        : 'Sélectionnez un MOP'
+    },
+    {
+      screen: 'Écrans de transaction',
+      description: 'Validation des MOP saisis',
+      example: selectedMOP
+        ? `Classe: ${selectedMOP.classe}, Type: ${selectedMOP.typeDevise}`
+        : 'Sélectionnez un MOP'
+    }
+  ];
+
+  return (
+    <div className={className}>
+      <h3 className="text-sm font-medium text-gray-900 mb-3">Intégration</h3>
+      <div className="space-y-3">
+        {usageExamples.map((usage) => (
+          <div
+            key={usage.screen}
+            className="border border-gray-200 rounded-md p-3 bg-gray-50"
+          >
+            <div className="flex items-start gap-2 mb-2">
+              <div className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5" />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-900">
+                  {usage.screen}
+                </div>
+                <div className="text-xs text-gray-600 mt-0.5">
+                  {usage.description}
+                </div>
+              </div>
+            </div>
+            <div className="mt-2 pl-3.5">
+              <div className="text-xs font-mono bg-white border border-gray-200 rounded px-2 py-1.5 text-gray-700">
+                {usage.example}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {!selectedMOP && (
+        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+          <p className="text-xs text-blue-800">
+            💡 Sélectionnez un moyen de paiement pour voir les exemples d'intégration
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};

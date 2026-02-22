@@ -1,0 +1,113 @@
+{
+  "domain": "titleLookup",
+  "domainPascal": "TitleLookup",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "Title",
+      "fields": [
+        {
+          "name": "code",
+          "type": "string",
+          "source": "arc_transac_detail_bar.code_ecran",
+          "nullable": false
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "source": "arc_transac_detail_bar.nom_ecran",
+          "nullable": false
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "source": "derived",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "titles",
+      "type": "Title[]",
+      "default": "[]"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "getTitleByCode",
+      "params": [
+        "code: string",
+        "programType?: string"
+      ],
+      "businessRules": [
+        "RM-001: Si programType vide, utiliser 'CA' par defaut",
+        "Recherche titre dans table de reference par code",
+        "Retourne libelle titre formate"
+      ],
+      "returns": "Promise<string>"
+    },
+    {
+      "name": "loadTitles",
+      "params": [],
+      "businessRules": [
+        "Charge tous les titres disponibles depuis API",
+        "Met a jour store avec liste complete"
+      ],
+      "returns": "Promise<void>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "GET",
+      "path": "/api/titles",
+      "queryParams": [],
+      "response": "Title[]"
+    },
+    {
+      "method": "GET",
+      "path": "/api/titles/:code",
+      "queryParams": [
+        "programType?"
+      ],
+      "response": "{ label: string }"
+    }
+  ],
+  "uiLayout": {
+    "type": "utility-service",
+    "sections": [
+      {
+        "name": "noVisibleUI",
+        "controls": [
+          "Backend service - no frontend UI component needed"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 5,
+    "description": "Reference titles: M., Mme, Mlle, Dr, etc. avec codes CA, CB, etc."
+  },
+  "dependencies": {
+    "stores": [
+      "useDataSourceStore"
+    ],
+    "sharedTypes": [
+      "Title"
+    ],
+    "externalApis": [
+      "/api/titles"
+    ]
+  }
+}

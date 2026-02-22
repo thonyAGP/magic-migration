@@ -1,0 +1,193 @@
+{
+  "domain": "integriteDates",
+  "domainPascal": "IntegriteDates",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "DateIntegrityCheck",
+      "fields": [
+        {
+          "name": "checkType",
+          "type": "string",
+          "source": "parameter.P_O_T_F",
+          "nullable": false
+        },
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "parameter.P_Societe",
+          "nullable": false
+        },
+        {
+          "name": "isValid",
+          "type": "boolean",
+          "source": "computed",
+          "nullable": false
+        },
+        {
+          "name": "hasClosureAnomaly",
+          "type": "boolean",
+          "source": "computed",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "DateComptable",
+      "fields": [
+        {
+          "name": "checkType",
+          "type": "string",
+          "source": "date_comptable___dat.P_O_T_F",
+          "nullable": false
+        },
+        {
+          "name": "societe",
+          "type": "string",
+          "source": "date_comptable___dat.P_Societe",
+          "nullable": false
+        },
+        {
+          "name": "controleOk",
+          "type": "boolean",
+          "source": "date_comptable___dat.P_Controle_OK",
+          "nullable": false
+        },
+        {
+          "name": "anomalieFermeture",
+          "type": "boolean",
+          "source": "date_comptable___dat.L_Anomalie_pour_Fermeture",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "checkType",
+      "type": "string",
+      "default": "'O'"
+    },
+    {
+      "name": "societe",
+      "type": "string",
+      "default": "''"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "validationResult",
+      "type": "DateIntegrityCheck | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "validateDateIntegrity",
+      "params": [
+        "checkType: string",
+        "societe: string"
+      ],
+      "businessRules": [
+        "RM-001: Si checkType === 'O' (Ouverture), appliquer contrôles spécifiques ouverture",
+        "RM-002: Vérifier que Date() > dateComptable + delai avec gestion VG3",
+        "RM-003: Si Date() > dateComptable + delai ET NOT VG3, déclencher anomalie",
+        "RM-004: Si checkType === 'T' (Transaction), appliquer contrôles transaction",
+        "RM-005: Vérifier que Date()*10^5+Time() >= dateSession*10^5+heureSession",
+        "RM-006: Si checkType === 'F' (Fermeture), appliquer contrôles fermeture",
+        "RM-007: Si anomalie détectée (NOT L), bloquer l'opération"
+      ],
+      "returns": "Promise<DateIntegrityCheck>"
+    },
+    {
+      "name": "checkOuverture",
+      "params": [
+        "societe: string"
+      ],
+      "businessRules": [
+        "RM-001: Vérifier paramètre checkType === 'O'",
+        "RM-002: Valider cohérence date ouverture avec date comptable",
+        "RM-003: Appliquer règle Date() > dateComptable + delai"
+      ],
+      "returns": "Promise<boolean>"
+    },
+    {
+      "name": "checkTransaction",
+      "params": [
+        "societe: string",
+        "dateSession: Date",
+        "heureSession: string"
+      ],
+      "businessRules": [
+        "RM-004: Vérifier paramètre checkType === 'T'",
+        "RM-005: Valider que timestamp actuel >= timestamp session"
+      ],
+      "returns": "Promise<boolean>"
+    },
+    {
+      "name": "checkFermeture",
+      "params": [
+        "societe: string"
+      ],
+      "businessRules": [
+        "RM-006: Vérifier paramètre checkType === 'F'",
+        "RM-007: Détecter anomalies bloquantes pour fermeture"
+      ],
+      "returns": "Promise<{ isValid: boolean; hasAnomaly: boolean }>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/controles/integrite-dates",
+      "queryParams": [],
+      "response": "DateIntegrityCheck"
+    },
+    {
+      "method": "GET",
+      "path": "/api/controles/date-comptable",
+      "queryParams": [
+        "societe",
+        "checkType"
+      ],
+      "response": "DateComptable"
+    }
+  ],
+  "uiLayout": {
+    "type": "validation-service",
+    "sections": [
+      {
+        "name": "dateIntegrityValidation",
+        "controls": [
+          "checkType (hidden)",
+          "societe (hidden)",
+          "validationStatus (indicator)",
+          "errorMessage (alert)"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "Mock validation scenarios: 1 ouverture valide, 1 transaction avec erreur timestamp, 1 fermeture avec anomalie"
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore",
+      "useCaisseStore"
+    ],
+    "sharedTypes": [
+      "DateIntegrityCheck",
+      "DateComptable"
+    ],
+    "externalApis": []
+  }
+}
