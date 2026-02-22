@@ -2413,6 +2413,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           var batchDurEl = document.getElementById('mp-dur-' + pid);
           if (batchDurEl) { batchDurEl.textContent = formatElapsed(batchDur); batchDurEl.style.color = '#d2a8ff'; }
         }
+      }
       // Track batch progress for review per-program completions
       if (migrateState.batchPhaseActive && pid && phase === 'review') {
         migrateState.batchReviewsDone++;
