@@ -53,7 +53,7 @@ const renderHeader = (r: FullMigrationReport): string => {
 <header>
   <h1>Migration Dashboard</h1>
   <div class="subtitle">${escHtml(r.projectName)} &mdash; ${r.graph.livePrograms} programmes LIVE</div>
-  <div class="last-updated">Derniere mise a jour : ${dateStr} a ${timeStr}</div>
+  <div class="last-updated">Derni\u00e8re mise \u00e0 jour : ${dateStr} a ${timeStr}</div>
 </header>`;
 };
 
@@ -67,9 +67,9 @@ const renderKpiCards = (r: FullMigrationReport): string => {
   return `
 <section class="kpi-grid">
   ${kpiCard('Programmes LIVE', String(graph.livePrograms), `${graph.orphanPrograms} orphelins, ${graph.sharedPrograms} partages`, 'var(--blue)')}
-  ${kpiCard('Migres', `${migrated}/${live}`, `${migratedPct}% (${pipeline.verified} verifies, ${pipeline.enriched} enrichis)`, 'var(--green)')}
+  ${kpiCard('Migr\u00e9s', `${migrated}/${live}`, `${migratedPct}% (${pipeline.verified} v\u00e9rifi\u00e9s, ${pipeline.enriched} enrichis)`, 'var(--green)')}
   ${kpiCard('Modules livrables', `${modules.deliverable}/${modules.total}`, `${deliveredPct}% des modules`, 'var(--purple)')}
-  ${kpiCard('Decomissionnables', `${decommission.decommissionable}/${decommission.totalLive}`, `${decommission.decommissionPct}% du legacy`, 'var(--orange)')}
+  ${kpiCard('D\u00e9commissionnables', `${decommission.decommissionable}/${decommission.totalLive}`, `${decommission.decommissionPct}% du legacy`, 'var(--orange)')}
 </section>`;
 };
 
@@ -98,16 +98,16 @@ const renderPipelineSection = (pipeline: FullMigrationReport['pipeline'], live: 
 <section class="card">
   <h2>Pipeline de migration</h2>
   <div class="pipeline">
-    ${pBar(pipeline.verified, 'var(--green)', 'Verifie')}
+    ${pBar(pipeline.verified, 'var(--green)', 'V\u00e9rifi\u00e9')}
     ${pBar(pipeline.enriched, 'var(--blue)', 'Enrichi')}
-    ${pBar(pipeline.contracted, 'var(--yellow)', 'Contracte')}
+    ${pBar(pipeline.contracted, 'var(--yellow)', 'Analys\u00e9')}
     ${pBar(pipeline.pending, 'var(--gray)', 'En attente')}
   </div>
   <div class="pipeline-donut-row">
     ${renderDonut([
-      { value: pipeline.verified, color: 'var(--green)', label: 'Verifie' },
+      { value: pipeline.verified, color: 'var(--green)', label: 'V\u00e9rifi\u00e9' },
       { value: pipeline.enriched, color: 'var(--blue)', label: 'Enrichi' },
-      { value: pipeline.contracted, color: 'var(--yellow)', label: 'Contracte' },
+      { value: pipeline.contracted, color: 'var(--yellow)', label: 'Analys\u00e9' },
       { value: pipeline.pending, color: 'var(--gray)', label: 'En attente' },
     ], total)}
   </div>
@@ -181,17 +181,17 @@ const renderEstimationSection = (r: FullMigrationReport): string => {
   <div class="estimation-grid">
     <div class="estimation-kpi">
       ${kpiCard('Effort total', `${totalEstimatedHours}h`, `Score moyen: ${avgScore}`, 'var(--purple)')}
-      ${kpiCard('Effort restant', `${remainingHours}h`, `${progressPct}% termine`, 'var(--orange)')}
+      ${kpiCard('Effort restant', `${remainingHours}h`, `${progressPct}% termin\u00e9`, 'var(--orange)')}
     </div>
     <div class="estimation-donut">
-      ${gradeTotal > 0 ? renderDonut(gradeSegments, gradeTotal) : '<div class="no-data">Pas de donnees</div>'}
+      ${gradeTotal > 0 ? renderDonut(gradeSegments, gradeTotal) : '<div class="no-data">Pas de donn\u00e9es</div>'}
     </div>
   </div>
   <div class="effort-bar-container">
     <div class="bar-track bar-large">
       <div class="bar-fill" style="width: ${progressPct}%; background: linear-gradient(90deg, var(--green), var(--blue))"></div>
     </div>
-    <div class="effort-bar-label">${completedHours}h termines / ${totalEstimatedHours}h total (${progressPct}%)</div>
+    <div class="effort-bar-label">${completedHours}h termin\u00e9s / ${totalEstimatedHours}h total (${progressPct}%)</div>
   </div>
   ${top10.length > 0 ? `
   <h3 style="margin-top:16px;margin-bottom:8px;font-size:14px;color:var(--text-dim)">Top 10 programmes les plus complexes</h3>
@@ -208,7 +208,7 @@ const renderEstimationSection = (r: FullMigrationReport): string => {
 
 const renderModulesSection = (modules: FullMigrationReport['modules']): string => {
   const { list } = modules;
-  if (list.length === 0) return '<section class="card"><h2>Modules</h2><p>Aucun module detecte.</p></section>';
+  if (list.length === 0) return '<section class="card"><h2>Modules</h2><p>Aucun module d\u00e9tect\u00e9.</p></section>';
 
   const rows = list.map(m => renderModuleRow(m)).join('');
 
@@ -264,7 +264,7 @@ const renderModuleRow = (m: ModuleSummary): string => {
   const gradeColorMap: Record<string, string> = { S: 'tag-red', A: 'tag-orange', B: 'tag-yellow', C: 'tag-blue', D: 'tag-green' };
   const gradeTagClass = gradeColorMap[m.complexityGrade ?? ''] ?? 'tag-orange';
   const gradeLabel = m.complexityGrade
-    ? `<span class="tag ${gradeTagClass}">Complexite ${escHtml(m.complexityGrade)}</span>`
+    ? `<span class="tag ${gradeTagClass}">Complexit\u00e9 ${escHtml(m.complexityGrade)}</span>`
     : '';
 
   const hoursLabel = m.estimatedHours != null
@@ -296,9 +296,9 @@ const renderModuleRow = (m: ModuleSummary): string => {
         <span class="module-pct">${m.readinessPct}%</span>
       </div>
       <div class="module-breakdown">
-        <span class="tag tag-green">${m.verified} verifies</span>
+        <span class="tag tag-green">${m.verified} v\u00e9rifi\u00e9s</span>
         <span class="tag tag-blue">${m.enriched} enrichis</span>
-        <span class="tag tag-yellow">${m.contracted} contractes</span>
+        <span class="tag tag-yellow">${m.contracted} analys\u00e9s</span>
         <span class="tag tag-gray">${m.pending} en attente</span>
       </div>
       <div class="module-deps">
@@ -353,26 +353,26 @@ const renderDecommissionSection = (d: FullMigrationReport['decommission'], live:
   <div class="decommission-grid">
     <div class="decom-stat">
       <div class="decom-value decom-ok">${d.decommissionable}</div>
-      <div class="decom-label">Decomissionnables</div>
+      <div class="decom-label">D\u00e9commissionnables</div>
     </div>
     <div class="decom-stat">
       <div class="decom-value decom-blocked">${d.blockedByStatus}</div>
-      <div class="decom-label">Bloques (non migres)</div>
+      <div class="decom-label">Bloqu\u00e9s (non migr\u00e9s)</div>
     </div>
     <div class="decom-stat">
       <div class="decom-value decom-wait">${d.blockedByCallers}</div>
-      <div class="decom-label">Migres mais callers actifs</div>
+      <div class="decom-label">Migr\u00e9s mais callers actifs</div>
     </div>
     <div class="decom-stat">
       <div class="decom-value decom-shared">${d.sharedBlocked}</div>
-      <div class="decom-label">Partages bloques</div>
+      <div class="decom-label">Partag\u00e9s bloqu\u00e9s</div>
     </div>
   </div>
   <div class="decom-bar-container">
     <div class="bar-track bar-large">
       <div class="bar-fill" style="width: ${d.decommissionPct}%; background: var(--green)"></div>
     </div>
-    <div class="decom-bar-label">${d.decommissionPct}% du legacy decomissionnable (${d.decommissionable}/${d.totalLive})</div>
+    <div class="decom-bar-label">${d.decommissionPct}% du legacy d\u00e9commissionnable (${d.decommissionable}/${d.totalLive})</div>
   </div>
 </section>`;
 
@@ -404,12 +404,12 @@ const renderProgramTable = (programs: ProgramSummary[]): string => {
     <input type="text" id="prog-search" placeholder="Rechercher par nom ou ID..." class="search-input">
     <select id="status-filter" class="filter-select">
       <option value="">Tous les statuts</option>
-      <option value="verified">Verifie</option>
+      <option value="verified">V\u00e9rifi\u00e9</option>
       <option value="enriched">Enrichi</option>
-      <option value="contracted">Contracte</option>
+      <option value="contracted">Analys\u00e9</option>
       <option value="pending">En attente</option>
     </select>
-    <label class="checkbox-label"><input type="checkbox" id="decom-only"> Decomissionnables uniquement</label>
+    <label class="checkbox-label"><input type="checkbox" id="decom-only"> D\u00e9commissionnables uniquement</label>
   </div>
   <div class="table-scroll">
     <table id="program-table">
@@ -476,7 +476,7 @@ ${MULTI_CSS}
 <header>
   <h1>SPECMAP Migration Dashboard</h1>
   <div class="subtitle">${report.global.totalProjects} projets &middot; ${report.global.activeProjects} actif${report.global.activeProjects > 1 ? 's' : ''} &middot; ${report.global.totalLivePrograms} programmes LIVE</div>
-  <div class="last-updated">Derniere mise a jour : ${dateStr} a ${timeStr}</div>
+  <div class="last-updated">Derni\u00e8re mise \u00e0 jour : ${dateStr} a ${timeStr}</div>
 </header>
 
 <nav class="project-tabs-bar">
@@ -612,27 +612,27 @@ ${MULTI_CSS}
     <div class="help-section">
       <h3>Architecture</h3>
       <ul>
-        <li>Chaque <strong>programme Magic</strong> = 1 module fonctionnel (ecran, process, rapport)</li>
+        <li>Chaque <strong>programme Magic</strong> = 1 module fonctionnel (\u00e9cran, process, rapport)</li>
         <li>La migration traite chaque programme <strong>individuellement en 16 phases</strong></li>
-        <li>Un <strong>agent Claude CLI</strong> est lance par programme (ou N en parallele)</li>
+        <li>Un <strong>agent Claude CLI</strong> est lanc\u00e9 par programme (ou N en parall\u00e8le)</li>
         <li>Les <strong>batches</strong> regroupent les programmes par domaine fonctionnel</li>
-        <li>Fichiers generes : types TS, store Zustand, endpoints API, page React, composants, tests</li>
-        <li>Apres migration : verification automatique (TSC + tests) + commit git automatique</li>
+        <li>Fichiers g\u00e9n\u00e9r\u00e9s : types TS, store Zustand, endpoints API, page React, composants, tests</li>
+        <li>Apr\u00e8s migration : v\u00e9rification automatique (TSC + tests) + commit git automatique</li>
       </ul>
     </div>
 
     <div class="help-section">
       <h3>Boutons d'action</h3>
       <table class="help-table">
-        <tr><td><strong>Preflight</strong></td><td>Verifier les pre-requis avant de lancer un batch (contrats, dependances, gaps)</td></tr>
+        <tr><td><strong>Preflight</strong></td><td>V\u00e9rifier les pr\u00e9-requis avant de lancer un batch (contrats, d\u00e9pendances, gaps)</td></tr>
         <tr><td><strong>Run Pipeline</strong></td><td>Executer le pipeline SPECMAP sur un batch (contrat &rarr; verification)</td></tr>
-        <tr><td><strong>Verify</strong></td><td>Auto-verifier les contrats dont tous les items sont IMPL ou N/A</td></tr>
+        <tr><td><strong>Verify</strong></td><td>Auto-v\u00e9rifier les contrats dont tous les items sont IMPL ou N/A</td></tr>
         <tr><td><strong>Gaps</strong></td><td>Afficher le rapport de gaps consolide par contrat</td></tr>
-        <tr><td><strong>Calibrate</strong></td><td>Recalculer l'estimation heures/point depuis les contrats verifies</td></tr>
-        <tr><td><strong>Generate Code</strong></td><td>Generer les fichiers React/TS squelette depuis les contrats</td></tr>
+        <tr><td><strong>Calibrate</strong></td><td>Recalculer l'estimation heures/point depuis les contrats v\u00e9rifi\u00e9s</td></tr>
+        <tr><td><strong>Generate Code</strong></td><td>G\u00e9n\u00e9rer les fichiers React/TS squelette depuis les contrats</td></tr>
         <tr><td><strong>Migrate Module</strong></td><td>Pipeline complet de migration en 16 phases (spec &rarr; code &rarr; test &rarr; review). Ouvre une modale de confirmation.</td></tr>
-        <tr><td><strong>Migration Auto</strong></td><td>Identique a Migrate Module mais sans modale (cible: adh-web, parallele: auto)</td></tr>
-        <tr><td><strong>Analyser</strong></td><td>Detecter les modules fonctionnels et estimer l'effort de migration</td></tr>
+        <tr><td><strong>Migration Auto</strong></td><td>Identique \u00e0 Migrate Module mais sans modale (cible: adh-web, parall\u00e8le: auto)</td></tr>
+        <tr><td><strong>Analyser</strong></td><td>D\u00e9tecter les modules fonctionnels et estimer l'effort de migration</td></tr>
       </table>
     </div>
 
@@ -650,30 +650,30 @@ ${MULTI_CSS}
       <h3>Phases de migration (16)</h3>
       <p>Chaque programme passe par ces 16 phases lors de <strong>Migrate Module</strong> :</p>
       <ol class="help-phases">
-        <li><strong>spec</strong> &mdash; Extraction de la specification depuis le code legacy</li>
-        <li><strong>contract</strong> &mdash; Generation du contrat de migration</li>
-        <li><strong>analyze</strong> &mdash; Analyse du programme (domaine, complexite, dependances)</li>
-        <li><strong>types</strong> &mdash; Generation des types TypeScript</li>
-        <li><strong>store</strong> &mdash; Generation du store Zustand</li>
-        <li><strong>api</strong> &mdash; Generation des endpoints API</li>
-        <li><strong>page</strong> &mdash; Generation de la page React</li>
-        <li><strong>components</strong> &mdash; Generation des composants React</li>
-        <li><strong>tests-unit</strong> &mdash; Generation des tests unitaires</li>
-        <li><strong>tests-ui</strong> &mdash; Generation des tests UI</li>
-        <li><strong>verify-tsc</strong> &mdash; Verification TypeScript (tsc --noEmit)</li>
+        <li><strong>spec</strong> &mdash; Extraction de la sp\u00e9cification depuis le code legacy</li>
+        <li><strong>contract</strong> &mdash; G\u00e9n\u00e9ration du contrat de migration</li>
+        <li><strong>analyze</strong> &mdash; Analyse du programme (domaine, complexit\u00e9, d\u00e9pendances)</li>
+        <li><strong>types</strong> &mdash; G\u00e9n\u00e9ration des types TypeScript</li>
+        <li><strong>store</strong> &mdash; G\u00e9n\u00e9ration du store Zustand</li>
+        <li><strong>api</strong> &mdash; G\u00e9n\u00e9ration des endpoints API</li>
+        <li><strong>page</strong> &mdash; G\u00e9n\u00e9ration de la page React</li>
+        <li><strong>components</strong> &mdash; G\u00e9n\u00e9ration des composants React</li>
+        <li><strong>tests-unit</strong> &mdash; G\u00e9n\u00e9ration des tests unitaires</li>
+        <li><strong>tests-ui</strong> &mdash; G\u00e9n\u00e9ration des tests UI</li>
+        <li><strong>verify-tsc</strong> &mdash; V\u00e9rification TypeScript (tsc --noEmit)</li>
         <li><strong>fix-tsc</strong> &mdash; Correction automatique des erreurs TypeScript</li>
-        <li><strong>verify-tests</strong> &mdash; Execution des tests (vitest)</li>
-        <li><strong>fix-tests</strong> &mdash; Correction automatique des tests echoues</li>
-        <li><strong>integrate</strong> &mdash; Integration dans le routeur et l'index</li>
+        <li><strong>verify-tests</strong> &mdash; Ex\u00e9cution des tests (vitest)</li>
+        <li><strong>fix-tests</strong> &mdash; Correction automatique des tests \u00e9chou\u00e9s</li>
+        <li><strong>integrate</strong> &mdash; Int\u00e9gration dans le routeur et l'index</li>
         <li><strong>review</strong> &mdash; Revue finale et nettoyage</li>
       </ol>
     </div>
 
     <div class="help-section">
       <h3>Batches</h3>
-      <p>Les batches regroupent les programmes par domaine fonctionnel. Ils sont generes automatiquement par la commande <code>plan</code> :</p>
+      <p>Les batches regroupent les programmes par domaine fonctionnel. Ils sont g\u00e9n\u00e9r\u00e9s automatiquement par la commande <code>plan</code> :</p>
       <table class="help-table">
-        <tr><td><strong>B1</strong></td><td>Ouverture session (8 progs) &mdash; 100% verifie</td></tr>
+        <tr><td><strong>B1</strong></td><td>Ouverture session (8 progs) &mdash; 100% v\u00e9rifi\u00e9</td></tr>
         <tr><td><strong>B2</strong></td><td>Caisse (17 progs)</td></tr>
         <tr><td><strong>B3</strong></td><td>General 1/2 (25 progs)</td></tr>
         <tr><td><strong>B4</strong></td><td>General 2/2 (23 progs)</td></tr>
@@ -690,12 +690,12 @@ ${MULTI_CSS}
     <div class="help-section">
       <h3>Commandes CLI</h3>
       <pre class="help-cli">migration-factory serve --port 3070 --dir ADH    # Lancer le dashboard
-migration-factory report --multi                   # Generer rapport HTML statique
+migration-factory report --multi                   # G\u00e9n\u00e9rer rapport HTML statique
 migration-factory pipeline run --batch B2          # Lancer le pipeline SPECMAP
 migration-factory migrate --batch B2 --target adh-web  # Migration complete
-migration-factory migrate --batch B2 --target adh-web --parallel 0  # auto-parallel (detecte les CPUs)
+migration-factory migrate --batch B2 --target adh-web --parallel 0  # auto-parallel (d\u00e9tecte les CPUs)
 migration-factory migrate status                   # Voir la progression
-migration-factory verify                           # Auto-verifier les contrats
+migration-factory verify                           # Auto-v\u00e9rifier les contrats
 migration-factory gaps                             # Rapport de gaps
 migration-factory calibrate                        # Recalculer les estimations
 migration-factory analyze --dir ADH                # Analyser les modules</pre>
@@ -705,11 +705,11 @@ migration-factory analyze --dir ADH                # Analyser les modules</pre>
       <h3>Conseils</h3>
       <ul>
         <li>Cochez <strong>Dry Run</strong> pour simuler sans modifier de fichiers</li>
-        <li>Vous pouvez <strong>rafraichir la page (F5)</strong> pendant une migration &mdash; elle se reconnectera automatiquement</li>
-        <li>Le timer affiche le temps ecoule et une <strong>estimation du temps restant (ETA)</strong> apres le 1er programme termine</li>
-        <li>Le nombre d'agents paralleles est auto-determine (0=auto) et affiche dans l'en-tete</li>
-        <li>Les tokens consommes et le cout estime sont affiches en temps reel (mode API uniquement)</li>
-        <li>Apres migration, verifiez toujours le resultat avec <code>tsc --noEmit</code> et <code>vitest run</code></li>
+        <li>Vous pouvez <strong>rafra\u00eechir la page (F5)</strong> pendant une migration &mdash; elle se reconnectera automatiquement</li>
+        <li>Le timer affiche le temps \u00e9coul\u00e9 et une <strong>estimation du temps restant (ETA)</strong> apr\u00e8s le 1er programme termin\u00e9</li>
+        <li>Le nombre d'agents parall\u00e8les est auto-d\u00e9termin\u00e9 (0=auto) et affich\u00e9 dans l'en-t\u00eate</li>
+        <li>Les tokens consomm\u00e9s et le co\u00fbt estim\u00e9 sont affich\u00e9s en temps r\u00e9el (mode API uniquement)</li>
+        <li>Apr\u00e8s migration, v\u00e9rifiez toujours le r\u00e9sultat avec <code>tsc --noEmit</code> et <code>vitest run</code></li>
       </ul>
     </div>
   </div>
@@ -758,9 +758,9 @@ const renderGlobalView = (report: MultiProjectReport): string => {
     }
     const live = r.graph.livePrograms;
     const vPct = live > 0 ? Math.round(r.pipeline.verified / live * 100) : 0;
-    const statusBadge = vPct >= 100 ? '<span class="badge badge-green">TERMINE</span>'
+    const statusBadge = vPct >= 100 ? '<span class="badge badge-green">TERMIN\u00c9</span>'
       : vPct > 0 ? '<span class="badge badge-blue">EN COURS</span>'
-      : r.pipeline.contracted > 0 ? '<span class="badge badge-yellow">CONTRACTE</span>'
+      : r.pipeline.contracted > 0 ? '<span class="badge badge-yellow">ANALYS\u00c9</span>'
       : '<span class="badge badge-gray">EN ATTENTE</span>';
 
     return `
@@ -776,8 +776,8 @@ const renderGlobalView = (report: MultiProjectReport): string => {
         </div>
         <div class="project-card-stats">
           <span>${live} LIVE</span>
-          <span>${r.pipeline.verified} verifies</span>
-          <span>${r.pipeline.contracted} contractes</span>
+          <span>${r.pipeline.verified} v\u00e9rifi\u00e9s</span>
+          <span>${r.pipeline.contracted} analys\u00e9s</span>
           <span>${r.modules.total} modules</span>
         </div>
       </div>`;
@@ -799,17 +799,17 @@ const renderGlobalView = (report: MultiProjectReport): string => {
 <section class="kpi-grid">
   ${kpiCard('Projets actifs', `${g.activeProjects}/${g.totalProjects}`, `${g.totalProjects - g.activeProjects} en attente`, 'var(--purple)')}
   ${kpiCard('Programmes LIVE', String(g.totalLivePrograms), 'Tous projets confondus', 'var(--blue)')}
-  ${kpiCard('Migres', `${g.totalVerified + g.totalEnriched}/${g.totalLivePrograms}`, `${g.overallProgressPct}% (${g.totalVerified} verifies, ${g.totalEnriched} enrichis)`, 'var(--green)')}
-  ${kpiCard('Contractes', String(g.totalContracted), `${g.totalContracted} contrats en cours`, 'var(--yellow)')}
+  ${kpiCard('Migr\u00e9s', `${g.totalVerified + g.totalEnriched}/${g.totalLivePrograms}`, `${g.overallProgressPct}% (${g.totalVerified} v\u00e9rifi\u00e9s, ${g.totalEnriched} enrichis)`, 'var(--green)')}
+  ${kpiCard('Analys\u00e9s', String(g.totalContracted), `${g.totalContracted} programmes analys\u00e9s`, 'var(--yellow)')}
 </section>
 
 <section class="card">
   <h2>Pipeline globale</h2>
   <div class="pipeline">
-    ${pBar(g.totalVerified, 'var(--green)', 'Verified')}
-    ${pBar(g.totalEnriched, 'var(--blue)', 'Enriched')}
-    ${pBar(g.totalContracted, 'var(--yellow)', 'Contracted')}
-    ${pBar(g.totalPending, 'var(--gray)', 'Pending')}
+    ${pBar(g.totalVerified, 'var(--green)', 'V\u00e9rifi\u00e9')}
+    ${pBar(g.totalEnriched, 'var(--blue)', 'Enrichi')}
+    ${pBar(g.totalContracted, 'var(--yellow)', 'Analys\u00e9')}
+    ${pBar(g.totalPending, 'var(--gray)', 'En attente')}
   </div>
 </section>
 
@@ -848,7 +848,7 @@ const pct = (value: number, total: number): number =>
   total > 0 ? Math.round(value / total * 100) : 0;
 
 const statusFr = (s: string): string =>
-  ({ pending: 'en attente', contracted: 'contracte', enriched: 'enrichi', verified: 'verifie' })[s] ?? s;
+  ({ pending: 'en attente', contracted: 'analys\u00e9', enriched: 'enrichi', verified: 'v\u00e9rifi\u00e9' })[s] ?? s;
 
 // ─── CSS ────────────────────────────────────────────────────────
 
@@ -1746,7 +1746,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       if (b.status === 'verified') return; // Skip completed batches
       var opt = document.createElement('option');
       opt.value = b.id;
-      opt.textContent = b.id + ' - ' + b.name + ' (' + b.programCount + ' progs, ' + b.verified + '/' + b.programCount + ' verifies)';
+      opt.textContent = b.id + ' - ' + b.name + ' (' + b.programCount + ' progs, ' + b.verified + '/' + b.programCount + ' v\\u00e9rifi\\u00e9s)';
       batchSelect.appendChild(opt);
     });
   });
@@ -1754,7 +1754,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   // Preflight
   btnPreflight.addEventListener('click', function() {
     var batch = batchSelect.value;
-    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    if (!batch) { showPanel('Erreur', 'S\\u00e9lectionnez un batch d\\'abord'); return; }
     setLoading(btnPreflight, true);
     fetch('/api/preflight?batch=' + encodeURIComponent(batch))
       .then(function(r) { return r.json(); })
@@ -1778,7 +1778,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   // Run Pipeline (Streaming SSE)
   btnRun.addEventListener('click', function() {
     var batch = batchSelect.value;
-    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    if (!batch) { showPanel('Erreur', 'S\\u00e9lectionnez un batch d\\'abord'); return; }
     setLoading(btnRun, true);
     var dryRun = chkDry.checked;
     var url = '/api/pipeline/stream?batch=' + encodeURIComponent(batch) + '&dryRun=' + dryRun;
@@ -1829,17 +1829,17 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         var r = msg.data;
         var elapsed = ((new Date(r.completed).getTime() - new Date(r.started).getTime()) / 1000).toFixed(1);
         pbar.style.width = '100%';
-        pstatus.textContent = 'Termine en ' + elapsed + 's : '
-          + r.summary.verified + ' verifies, '
-          + r.summary.contracted + ' contractes, '
+        pstatus.textContent = 'Termin\\u00e9 en ' + elapsed + 's : '
+          + r.summary.verified + ' v\\u00e9rifi\\u00e9s, '
+          + r.summary.contracted + ' analys\\u00e9s, '
           + r.summary.errors + ' erreurs';
-        addLog('Pipeline termine en ' + elapsed + 's');
+        addLog('Pipeline termin\\u00e9 en ' + elapsed + 's');
         return;
       }
 
       if (msg.type === 'error') {
         addLog('ERROR: ' + (msg.message || ''));
-        pstatus.textContent = 'Error: ' + (msg.message || '');
+        pstatus.textContent = 'Erreur : ' + (msg.message || '');
         return;
       }
 
@@ -1869,7 +1869,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       .then(function(r) { return r.json(); })
       .then(function(data) {
         var lines = ['Verification ' + (data.dryRun ? '(DRY-RUN)' : '') + ' resultat :', ''];
-        lines.push(data.verified + ' verifies, ' + data.notReady + ' non prets, ' + data.alreadyVerified + ' deja verifies');
+        lines.push(data.verified + ' v\\u00e9rifi\\u00e9s, ' + data.notReady + ' non pr\\u00eats, ' + data.alreadyVerified + ' d\\u00e9j\\u00e0 v\\u00e9rifi\\u00e9s');
         if (data.details && data.details.length > 0) {
           lines.push('', 'Details:');
           data.details.forEach(function(d) {
@@ -1919,7 +1919,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       .then(function(r) { return r.json(); })
       .then(function(data) {
         var lines = ['Calibration' + (chkDry.checked ? ' (DRY-RUN)' : ''), ''];
-        lines.push('Contrats verifies : ' + data.dataPoints);
+        lines.push('Contrats v\\u00e9rifi\\u00e9s : ' + data.dataPoints);
         lines.push('Avant : ' + data.previousHpp + ' h/pt -> Calibre : ' + data.calibratedHpp + ' h/pt');
         lines.push('Estime : ' + data.totalEstimated + 'h | Reel : ' + data.totalActual + 'h');
         lines.push('Precision : ' + data.accuracyPct + '%');
@@ -1944,29 +1944,29 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     })
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        var lines = ['Project Analysis: ' + data.projectName, ''];
-        lines.push('Live programs: ' + data.totalLivePrograms);
-        lines.push('Batches preserved: ' + data.batchesPreserved + ' | Created: ' + data.batchesCreated + ' | Unassigned: ' + data.unassignedCount);
+        var lines = ['Analyse du projet : ' + data.projectName, ''];
+        lines.push('Programmes LIVE : ' + data.totalLivePrograms);
+        lines.push('Batches conserv\\u00e9s : ' + data.batchesPreserved + ' | Cr\\u00e9\\u00e9s : ' + data.batchesCreated + ' | Non assign\\u00e9s : ' + data.unassignedCount);
         lines.push('');
         if (data.batches) {
           data.batches.forEach(function(b) {
-            var flag = b.isNew ? 'NEW' : 'EXISTING';
-            lines.push(b.id + '  ' + b.name + '  [' + b.domain + ']  ' + b.memberCount + ' progs  Complexite ' + b.complexityGrade + '  ~' + b.estimatedHours + 'h  ' + flag);
+            var flag = b.isNew ? 'NOUVEAU' : 'EXISTANT';
+            lines.push(b.id + '  ' + b.name + '  [' + b.domain + ']  ' + b.memberCount + ' progs  Complexit\\u00e9 ' + b.complexityGrade + '  ~' + b.estimatedHours + 'h  ' + flag);
           });
         }
         if (!chkDry.checked) {
-          lines.push('', 'Batches persisted.');
+          lines.push('', 'Batches sauvegard\\u00e9s.');
         }
-        showPanel('Project Analysis', lines.join('\\n'));
+        showPanel('Analyse du projet', lines.join('\\n'));
       })
-      .catch(function(err) { showPanel('Error', String(err)); })
+      .catch(function(err) { showPanel('Erreur', String(err)); })
       .finally(function() { setLoading(btnAnalyze, false); });
   });
 
   // Generate Code (Streaming SSE)
   btnGenerate.addEventListener('click', function() {
     var batch = batchSelect.value;
-    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    if (!batch) { showPanel('Erreur', 'S\\u00e9lectionnez un batch d\\'abord'); return; }
     var outputDir = prompt('Output directory for generated files:', './adh-web/src');
     if (!outputDir) return;
     setLoading(btnGenerate, true);
@@ -2457,9 +2457,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         if (migrateBadge) { migrateBadge.textContent = 'Done'; migrateBadge.style.background = 'var(--green)'; }
       }
       document.getElementById('mp-prog-section').style.display = 'none';
-      addMLog('Migration completed' + (failed > 0 ? ' (' + failed + ' failed)' : ''));
+      addMLog('Migration termin\\u00e9e' + (failed > 0 ? ' (' + failed + ' \\u00e9chou\\u00e9(s))' : ''));
       if (r && r.git) addMLog('[git] Committed ' + r.git.commitSha + ' pushed to ' + r.git.branch);
-      addMLog('Migration terminee.');
+      addMLog('Migration termin\\u00e9e.');
       return;
     }
 
@@ -2571,7 +2571,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   // ─── Migrate Module (opens confirmation modal) ────────────────
   btnMigrate.addEventListener('click', function() {
     var batch = batchSelect.value;
-    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    if (!batch) { showPanel('Erreur', 'S\\u00e9lectionnez un batch d\\'abord'); return; }
 
     var enrichSel = document.getElementById('sel-enrich').value || 'none';
     var claudeMode = enrichSel === 'claude' ? 'api' : 'cli';
@@ -2599,7 +2599,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   // ─── Migration Auto (skip modal, launch immediately) ─────────
   btnMigrateAuto.addEventListener('click', function() {
     var batch = batchSelect.value;
-    if (!batch) { showPanel('Error', 'Select a batch first'); return; }
+    if (!batch) { showPanel('Erreur', 'S\\u00e9lectionnez un batch d\\'abord'); return; }
     var enrichSel = document.getElementById('sel-enrich').value || 'none';
     var claudeMode = enrichSel === 'claude' ? 'api' : 'cli';
     var dryRun = chkDry.checked;
