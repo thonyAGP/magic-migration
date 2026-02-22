@@ -592,100 +592,116 @@ ${MULTI_CSS}
   <div class="help-content">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
       <h2 style="margin:0;font-size:20px">Migration Factory - Guide</h2>
-      <button class="action-btn" id="help-close" style="padding:4px 12px">Close</button>
+      <button class="action-btn" id="help-close" style="padding:4px 12px">Fermer</button>
     </div>
 
     <div class="help-section">
-      <h3>What is this?</h3>
-      <p>The Migration Factory Dashboard is an interactive tool for managing the migration of legacy Magic Unipaas programs to modern React/TypeScript web applications.</p>
-      <p>It orchestrates the full SPECMAP pipeline: <strong>EXTRACT &rarr; MAP &rarr; GAP &rarr; CONTRACT &rarr; ENRICH &rarr; VERIFY</strong></p>
+      <h3>Qu'est-ce que c'est ?</h3>
+      <p>La <strong>Migration Factory</strong> est un outil de migration de programmes legacy Magic Unipaas vers des applications web modernes React/TypeScript.</p>
+      <p>Elle orchestre le pipeline SPECMAP complet : <strong>EXTRACT &rarr; MAP &rarr; GAP &rarr; CONTRACT &rarr; ENRICH &rarr; VERIFY</strong></p>
+      <p>Chaque programme Magic correspond a un module fonctionnel (ecran, processus, rapport). La migration traite chaque programme individuellement en 16 phases automatisees.</p>
     </div>
 
     <div class="help-section">
-      <h3>Action Bar Buttons</h3>
+      <h3>Architecture</h3>
+      <ul>
+        <li>Chaque <strong>programme Magic</strong> = 1 module fonctionnel (ecran, process, rapport)</li>
+        <li>La migration traite chaque programme <strong>individuellement en 16 phases</strong></li>
+        <li>Un <strong>agent Claude CLI</strong> est lance par programme (ou N en parallele)</li>
+        <li>Les <strong>batches</strong> regroupent les programmes par domaine fonctionnel</li>
+        <li>Fichiers generes : types TS, store Zustand, endpoints API, page React, composants, tests</li>
+        <li>Apres migration : verification automatique (TSC + tests) + commit git automatique</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <h3>Boutons d'action</h3>
       <table class="help-table">
-        <tr><td><strong>Preflight</strong></td><td>Check prerequisites before running a batch (contracts, dependencies, gaps)</td></tr>
-        <tr><td><strong>Run Pipeline</strong></td><td>Execute the SPECMAP pipeline on a batch (contract &rarr; verify)</td></tr>
-        <tr><td><strong>Verify</strong></td><td>Auto-verify all contracts where all items are IMPL or N/A</td></tr>
-        <tr><td><strong>Gaps</strong></td><td>Show consolidated gap report by contract</td></tr>
-        <tr><td><strong>Calibrate</strong></td><td>Recalculate hours-per-point estimate from verified contracts</td></tr>
-        <tr><td><strong>Generate Code</strong></td><td>Generate React/TS scaffold files from contracts</td></tr>
-        <tr><td><strong>Migrate Module</strong></td><td>Full 15-phase migration pipeline (spec &rarr; code &rarr; test &rarr; review)</td></tr>
-        <tr><td><strong>Migration Auto</strong></td><td>Same as Migrate Module but skips confirmation modal (target: adh-web, parallel: 1)</td></tr>
+        <tr><td><strong>Preflight</strong></td><td>Verifier les pre-requis avant de lancer un batch (contrats, dependances, gaps)</td></tr>
+        <tr><td><strong>Run Pipeline</strong></td><td>Executer le pipeline SPECMAP sur un batch (contrat &rarr; verification)</td></tr>
+        <tr><td><strong>Verify</strong></td><td>Auto-verifier les contrats dont tous les items sont IMPL ou N/A</td></tr>
+        <tr><td><strong>Gaps</strong></td><td>Afficher le rapport de gaps consolide par contrat</td></tr>
+        <tr><td><strong>Calibrate</strong></td><td>Recalculer l'estimation heures/point depuis les contrats verifies</td></tr>
+        <tr><td><strong>Generate Code</strong></td><td>Generer les fichiers React/TS squelette depuis les contrats</td></tr>
+        <tr><td><strong>Migrate Module</strong></td><td>Pipeline complet de migration en 16 phases (spec &rarr; code &rarr; test &rarr; review). Ouvre une modale de confirmation.</td></tr>
+        <tr><td><strong>Migration Auto</strong></td><td>Identique a Migrate Module mais sans modale (cible: adh-web, parallele: 1)</td></tr>
+        <tr><td><strong>Analyser</strong></td><td>Detecter les modules fonctionnels et estimer l'effort de migration</td></tr>
       </table>
     </div>
 
     <div class="help-section">
-      <h3>Enrichment Modes</h3>
+      <h3>Modes d'enrichissement</h3>
       <table class="help-table">
-        <tr><td><strong>No enrich</strong></td><td>Generate skeleton code only (types, empty components)</td></tr>
-        <tr><td><strong>Heuristic</strong></td><td>Auto-fill types and defaults based on contract data</td></tr>
-        <tr><td><strong>Claude API</strong></td><td>Use Anthropic API with ANTHROPIC_API_KEY for AI-assisted enrichment</td></tr>
-        <tr><td><strong>Claude CLI</strong></td><td>Use local <code>claude --print</code> command for AI-assisted enrichment</td></tr>
+        <tr><td><strong>Sans enrichissement</strong></td><td>Genere uniquement le squelette (types, composants vides)</td></tr>
+        <tr><td><strong>Heuristique</strong></td><td>Remplit automatiquement types et valeurs par defaut depuis le contrat</td></tr>
+        <tr><td><strong>Claude API</strong></td><td>Utilise l'API Anthropic (necessite ANTHROPIC_API_KEY) pour enrichir le code via IA</td></tr>
+        <tr><td><strong>Claude CLI</strong></td><td>Utilise la commande locale <code>claude --print</code> pour enrichir via IA</td></tr>
       </table>
     </div>
 
     <div class="help-section">
-      <h3>Migration Phases (15)</h3>
-      <p>Each program goes through these phases during <strong>Migrate Module</strong>:</p>
+      <h3>Phases de migration (16)</h3>
+      <p>Chaque programme passe par ces 16 phases lors de <strong>Migrate Module</strong> :</p>
       <ol class="help-phases">
-        <li><strong>SPEC</strong> - Extract program specification</li>
-        <li><strong>CONTRACT</strong> - Generate migration contract</li>
-        <li><strong>ENRICH</strong> - AI-enrich contract details</li>
-        <li><strong>SCAFFOLD</strong> - Generate React/TS files</li>
-        <li><strong>IMPLEMENT</strong> - Implement business logic</li>
-        <li><strong>TYPES</strong> - Generate TypeScript types</li>
-        <li><strong>STORE</strong> - Generate Zustand store</li>
-        <li><strong>API</strong> - Generate API endpoints</li>
-        <li><strong>COMPONENT</strong> - Generate React component</li>
-        <li><strong>TEST</strong> - Generate test files</li>
-        <li><strong>INTEGRATE</strong> - Wire into app routing</li>
-        <li><strong>LINT</strong> - Fix lint/type errors</li>
-        <li><strong>BUILD</strong> - Verify build passes</li>
-        <li><strong>TEST_RUN</strong> - Run tests</li>
-        <li><strong>REVIEW</strong> - Final code review</li>
+        <li><strong>spec</strong> &mdash; Extraction de la specification depuis le code legacy</li>
+        <li><strong>contract</strong> &mdash; Generation du contrat de migration</li>
+        <li><strong>analyze</strong> &mdash; Analyse du programme (domaine, complexite, dependances)</li>
+        <li><strong>types</strong> &mdash; Generation des types TypeScript</li>
+        <li><strong>store</strong> &mdash; Generation du store Zustand</li>
+        <li><strong>api</strong> &mdash; Generation des endpoints API</li>
+        <li><strong>page</strong> &mdash; Generation de la page React</li>
+        <li><strong>components</strong> &mdash; Generation des composants React</li>
+        <li><strong>tests-unit</strong> &mdash; Generation des tests unitaires</li>
+        <li><strong>tests-ui</strong> &mdash; Generation des tests UI</li>
+        <li><strong>verify-tsc</strong> &mdash; Verification TypeScript (tsc --noEmit)</li>
+        <li><strong>fix-tsc</strong> &mdash; Correction automatique des erreurs TypeScript</li>
+        <li><strong>verify-tests</strong> &mdash; Execution des tests (vitest)</li>
+        <li><strong>fix-tests</strong> &mdash; Correction automatique des tests echoues</li>
+        <li><strong>integrate</strong> &mdash; Integration dans le routeur et l'index</li>
+        <li><strong>review</strong> &mdash; Revue finale et nettoyage</li>
       </ol>
     </div>
 
     <div class="help-section">
       <h3>Batches</h3>
+      <p>Les batches regroupent les programmes par domaine fonctionnel. Ils sont generes automatiquement par la commande <code>plan</code> :</p>
       <table class="help-table">
-        <tr><td><strong>B1</strong></td><td>Ouverture session (18 progs) - 100% VERIFIED</td></tr>
-        <tr><td><strong>B2</strong></td><td>Fermeture session (IDE 131)</td></tr>
-        <tr><td><strong>B3</strong></td><td>Ventes GP/Boutique (~24 progs)</td></tr>
-        <tr><td><strong>B4</strong></td><td>Extrait compte (~9 progs)</td></tr>
-        <tr><td><strong>B5</strong></td><td>Separation/Fusion (~8 progs)</td></tr>
+        <tr><td><strong>B1</strong></td><td>Ouverture session (8 progs) &mdash; 100% VERIFIED</td></tr>
+        <tr><td><strong>B2</strong></td><td>Caisse (17 progs)</td></tr>
+        <tr><td><strong>B3</strong></td><td>General 1/2 (25 progs)</td></tr>
+        <tr><td><strong>B4</strong></td><td>General 2/2 (23 progs)</td></tr>
+        <tr><td><strong>B5</strong></td><td>Impression (13 progs)</td></tr>
+        <tr><td><strong>B6</strong></td><td>Compte (8 progs)</td></tr>
+        <tr><td><strong>B7</strong></td><td>Change (10 progs)</td></tr>
+        <tr><td><strong>B8</strong></td><td>Stock (3 progs)</td></tr>
+        <tr><td><strong>B9</strong></td><td>Ventes (16 progs)</td></tr>
+        <tr><td><strong>B10</strong></td><td>Divers (8 progs)</td></tr>
+        <tr><td><strong>B11-B18</strong></td><td>Sous-arbres independants (3-18 progs chacun)</td></tr>
       </table>
     </div>
 
     <div class="help-section">
-      <h3>CLI Commands</h3>
-      <pre class="help-cli">migration-factory serve --port 3070 --dir ADH    # Start dashboard
-migration-factory report --multi                   # Generate static HTML
-migration-factory pipeline run --batch B1          # Run pipeline
-migration-factory migrate --batch B1 --target adh-web  # Full migration
-migration-factory migrate status                   # Check progress
-migration-factory verify                           # Auto-verify contracts
-migration-factory gaps                             # Gap report
-migration-factory calibrate                        # Recalculate estimates</pre>
+      <h3>Commandes CLI</h3>
+      <pre class="help-cli">migration-factory serve --port 3070 --dir ADH    # Lancer le dashboard
+migration-factory report --multi                   # Generer rapport HTML statique
+migration-factory pipeline run --batch B2          # Lancer le pipeline SPECMAP
+migration-factory migrate --batch B2 --target adh-web  # Migration complete
+migration-factory migrate --batch B2 --target adh-web --parallel 3  # 3 agents en parallele
+migration-factory migrate status                   # Voir la progression
+migration-factory verify                           # Auto-verifier les contrats
+migration-factory gaps                             # Rapport de gaps
+migration-factory calibrate                        # Recalculer les estimations
+migration-factory analyze --dir ADH                # Analyser les modules</pre>
     </div>
 
     <div class="help-section">
-      <h3>Tips</h3>
+      <h3>Conseils</h3>
       <ul>
-        <li>Use <strong>Dry Run</strong> checkbox to preview actions without modifying files</li>
-        <li>You can <strong>refresh the page</strong> during a migration - it will reconnect and show progress</li>
-        <li>The elapsed timer shows how long the current migration has been running</li>
-        <li>Events are polled every 3 seconds after reconnection</li>
-      </ul>
-    </div>
-
-    <div class="help-section" style="opacity:0.7">
-      <h3>Planned Improvements</h3>
-      <ul>
-        <li>Timer per event to detect blockages (green/orange/red)</li>
-        <li>Estimated time remaining based on average speed</li>
-        <li>Target directory browser with history</li>
+        <li>Cochez <strong>Dry Run</strong> pour simuler sans modifier de fichiers</li>
+        <li>Vous pouvez <strong>rafraichir la page (F5)</strong> pendant une migration &mdash; elle se reconnectera automatiquement</li>
+        <li>Le timer affiche le temps ecoule et une <strong>estimation du temps restant (ETA)</strong> apres le 1er programme termine</li>
+        <li>Le nombre d'agents paralleles est affiche dans l'en-tete du panneau de migration</li>
+        <li>Apres migration, verifiez toujours le resultat avec <code>tsc --noEmit</code> et <code>vitest run</code></li>
       </ul>
     </div>
   </div>
@@ -2020,7 +2036,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     totalProgs: 0, doneProgs: 0, failedProgs: 0,
     programList: [],
     programPhases: {},
-    migrationStart: 0, elapsedTid: 0, logCollapsed: false
+    migrationStart: 0, elapsedTid: 0, logCollapsed: false,
+    activeBtn: null, parallelCount: 1,
+    programStartTimes: {}, programDurations: []
   };
 
   function escAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -2062,13 +2080,25 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     migrateState.logCollapsed = section.classList.contains('collapsed');
   });
 
+  function computeETA() {
+    var durations = migrateState.programDurations;
+    if (durations.length === 0) return '';
+    var sum = 0;
+    for (var i = 0; i < durations.length; i++) sum += durations[i];
+    var avgMs = sum / durations.length;
+    var remaining = migrateState.totalProgs - migrateState.doneProgs - migrateState.failedProgs;
+    if (remaining <= 0) return '';
+    var etaMs = remaining * avgMs;
+    return ' | ETA: ~' + formatElapsed(etaMs);
+  }
+
   function startElapsedTimer(startedAt) {
     var elDiv = document.getElementById('mp-elapsed');
     if (!elDiv) return 0;
     var tid = setInterval(function() {
       var el = document.getElementById('mp-elapsed');
       if (!el) { clearInterval(tid); return; }
-      el.textContent = 'Elapsed: ' + formatElapsed(Date.now() - startedAt);
+      el.textContent = 'Elapsed: ' + formatElapsed(Date.now() - startedAt) + computeETA();
     }, 1000);
     elDiv.textContent = 'Elapsed: ' + formatElapsed(Date.now() - startedAt);
     return tid;
@@ -2181,6 +2211,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
     if (msg.type === 'program_started') {
       var pid = msg.programId;
+      migrateState.programStartTimes[pid] = Date.now();
       if (migrateState.programPhases[pid]) {
         migrateState.programPhases[pid].status = 'running';
         migrateState.programPhases[pid].currentPhase = null;
@@ -2233,8 +2264,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
     if (msg.type === 'program_completed') {
       var pid = msg.programId;
+      if (migrateState.programStartTimes[pid]) {
+        migrateState.programDurations.push(Date.now() - migrateState.programStartTimes[pid]);
+        delete migrateState.programStartTimes[pid];
+      }
       if (migrateState.programPhases[pid]) {
-        // Mark all remaining phases as done (program finished all 10 gen phases)
         var cur = migrateState.programPhases[pid].currentPhase;
         if (cur) { migrateState.programPhases[pid].completedPhases[cur] = true; updatePhaseDot(pid, cur, 'done'); }
         migrateState.programPhases[pid].status = 'done';
@@ -2250,6 +2284,10 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
     if (msg.type === 'program_failed') {
       var pid = msg.programId;
+      if (migrateState.programStartTimes[pid]) {
+        migrateState.programDurations.push(Date.now() - migrateState.programStartTimes[pid]);
+        delete migrateState.programStartTimes[pid];
+      }
       if (migrateState.programPhases[pid]) {
         var cur = migrateState.programPhases[pid].currentPhase;
         if (cur) updatePhaseDot(pid, cur, 'failed');
@@ -2313,9 +2351,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   modalCancel.addEventListener('click', function() { confirmModal.classList.remove('visible'); });
   confirmModal.addEventListener('click', function(e) { if (e.target === confirmModal) confirmModal.classList.remove('visible'); });
 
-  function launchMigration(batch, targetDir, parallelCount, claudeMode, dryRun) {
+  function launchMigration(batch, targetDir, parallelCount, claudeMode, dryRun, sourceBtn, isAuto) {
     confirmModal.classList.remove('visible');
-    setLoading(btnMigrate, true);
+    setLoading(sourceBtn || btnMigrate, true);
+    migrateState.activeBtn = sourceBtn || btnMigrate;
+    migrateState.parallelCount = parseInt(parallelCount) || 1;
 
     var url = '/api/migrate/stream?batch=' + encodeURIComponent(batch)
       + '&targetDir=' + encodeURIComponent(targetDir)
@@ -2323,13 +2363,18 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       + '&parallel=' + parallelCount
       + '&mode=' + claudeMode;
 
-    showMigrateOverlay('Migrate: ' + batch + ' [' + claudeMode.toUpperCase() + ']' + (dryRun ? ' (DRY-RUN)' : ''));
+    var headerPrefix = isAuto ? 'Migration Auto' : 'Migrate';
+    var parallelInfo = migrateState.parallelCount > 1 ? ' x' + migrateState.parallelCount + ' agents' : '';
+    showMigrateOverlay(headerPrefix + ': ' + batch + ' [' + claudeMode.toUpperCase() + ']' + parallelInfo + (dryRun ? ' (DRY-RUN)' : ''));
     migrateState.migrationStart = Date.now();
     migrateState.elapsedTid = startElapsedTimer(migrateState.migrationStart);
     migrateState.totalProgs = 0;
     migrateState.doneProgs = 0;
+    migrateState.failedProgs = 0;
     migrateState.programList = [];
     migrateState.programPhases = {};
+    migrateState.programStartTimes = {};
+    migrateState.programDurations = [];
 
     var es = new EventSource(url);
     es.onmessage = function(ev) {
@@ -2338,7 +2383,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       if (msg.type === 'stream_end') {
         es.close();
         clearInterval(migrateState.elapsedTid);
-        setLoading(btnMigrate, false);
+        setLoading(migrateState.activeBtn || btnMigrate, false);
         return;
       }
 
@@ -2348,7 +2393,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     es.onerror = function() {
       es.close();
       clearInterval(migrateState.elapsedTid);
-      setLoading(btnMigrate, false);
+      setLoading(migrateState.activeBtn || btnMigrate, false);
       addMLog('Connection lost');
     };
   }
@@ -2377,7 +2422,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     modalLaunch.onclick = function() {
       var targetDir = document.getElementById('modal-target-dir').value || 'adh-web';
       var parallel = document.getElementById('modal-parallel').value || '1';
-      launchMigration(batch, targetDir, parallel, claudeMode, dryRun);
+      launchMigration(batch, targetDir, parallel, claudeMode, dryRun, btnMigrate, false);
     };
   });
 
@@ -2388,7 +2433,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     var enrichSel = document.getElementById('sel-enrich').value || 'none';
     var claudeMode = enrichSel === 'claude' ? 'api' : 'cli';
     var dryRun = chkDry.checked;
-    launchMigration(batch, 'adh-web', '1', claudeMode, dryRun);
+    launchMigration(batch, 'adh-web', '1', claudeMode, dryRun, btnMigrateAuto, true);
   });
 
   // ─── Reconnect on page load if migration is active ───────────
