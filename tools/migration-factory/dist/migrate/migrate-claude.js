@@ -17,6 +17,18 @@ const execAsync = promisify(exec);
 let _mode = 'cli';
 let _apiKey;
 let _globalLogDir;
+// ─── Token accumulator (for tracking per-program usage) ─────────
+let _tokenAccumulator = null;
+/** Start accumulating tokens for the current program. */
+export const startTokenAccumulator = () => { _tokenAccumulator = { input: 0, output: 0 }; };
+/** Stop accumulating and return total tokens since start. Returns null if no API calls tracked tokens. */
+export const flushTokenAccumulator = () => {
+    const result = _tokenAccumulator;
+    _tokenAccumulator = null;
+    if (result && result.input === 0 && result.output === 0)
+        return null;
+    return result;
+};
 /** Configure Claude invocation mode before starting migration. */
 export const configureClaudeMode = (mode, apiKey) => {
     _mode = mode;
@@ -40,6 +52,11 @@ export const callClaude = async (options) => {
     const result = _mode === 'api'
         ? await callClaudeApi(options)
         : await callClaudeCli(options);
+    // Accumulate tokens if tracker is active
+    if (_tokenAccumulator && result.tokens) {
+        _tokenAccumulator.input += result.tokens.input;
+        _tokenAccumulator.output += result.tokens.output;
+    }
     const logDir = options.logDir ?? _globalLogDir;
     if (logDir) {
         logClaudeCall({ ...options, logDir }, result);
@@ -63,9 +80,13 @@ const callClaudeApi = async (options) => {
         .filter((b) => b.type === 'text')
         .map(b => b.text)
         .join('');
+    const tokens = response.usage
+        ? { input: response.usage.input_tokens, output: response.usage.output_tokens }
+        : undefined;
     return {
         output: text.trim(),
         durationMs: Date.now() - start,
+        tokens,
     };
 };
 // ─── CLI mode (claude --print via temp file) ─────────────────────
@@ -77,24 +98,37 @@ const callClaudeCli = async (options) => {
     writeFileSync(tmpFile, prompt, 'utf8');
     try {
         const cmd = process.platform === 'win32'
-            ? `type "${tmpFile}" | ${cliBin} --print ${modelArgs}`
-            : `${cliBin} --print ${modelArgs} < "${tmpFile}"`;
+            ? `type "${tmpFile}" | ${cliBin} --print --output-format json ${modelArgs}`
+            : `${cliBin} --print --output-format json ${modelArgs} < "${tmpFile}"`;
         const { stdout } = await execAsync(cmd, {
             timeout: timeoutMs,
             maxBuffer,
             env: { ...process.env },
             windowsHide: true,
         });
-        return {
-            output: stdout.trim(),
-            durationMs: Date.now() - start,
-        };
+        // Parse JSON output to extract text + tokens
+        return parseCliJsonOutput(stdout, Date.now() - start);
     }
     finally {
         try {
             unlinkSync(tmpFile);
         }
         catch { /* ignore cleanup errors */ }
+    }
+};
+/** Parse `claude --print --output-format json` output. */
+const parseCliJsonOutput = (stdout, durationMs) => {
+    try {
+        const data = JSON.parse(stdout.trim());
+        const text = typeof data.result === 'string' ? data.result : stdout.trim();
+        const tokens = data.usage?.input_tokens && data.usage?.output_tokens
+            ? { input: data.usage.input_tokens, output: data.usage.output_tokens }
+            : undefined;
+        return { output: text, durationMs, tokens };
+    }
+    catch {
+        // Fallback: if JSON parse fails, treat as raw text (old --print behavior)
+        return { output: stdout.trim(), durationMs };
     }
 };
 /**
@@ -161,6 +195,7 @@ const logClaudeCall = (options, result) => {
             promptLength: options.prompt.length,
             responseLength: result.output.length,
             durationMs: result.durationMs,
+            tokens: result.tokens,
         };
         appendFileSync(join(logDir, 'decisions.jsonl'), JSON.stringify(entry) + '\n', 'utf8');
     }

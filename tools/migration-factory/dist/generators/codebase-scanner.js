@@ -5,6 +5,31 @@
 import fs from 'node:fs';
 import path from 'node:path';
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/**
+ * Build a safe regex pattern from a name by extracting alpha words and joining with \s+.
+ * Never produces invalid regex (no special chars, no truncation issues).
+ * Returns null if the name has no usable words.
+ */
+const safeNamePattern = (name, maxLen = 30) => {
+    try {
+        const words = name.match(/[a-zA-Z0-9]+/g);
+        if (!words || words.length === 0)
+            return null;
+        let pattern = '';
+        for (const w of words) {
+            const next = pattern ? pattern + '\\s+' + w : w;
+            if (next.length > maxLen)
+                break;
+            pattern = next;
+        }
+        if (!pattern)
+            pattern = words[0].substring(0, maxLen);
+        return new RegExp(pattern, 'i');
+    }
+    catch {
+        return null;
+    }
+};
 // ─── Known N/A patterns (learned from B1) ─────────────────────────
 const NA_CALLEE_PATTERNS = [
     /raz\s*current\s*printer/i,
@@ -95,9 +120,9 @@ export const scanCodebase = (rules, tables, callees, variables, options) => {
             return { ...callee, status: 'N/A', gapNotes: 'Legacy print/utility (N/A for web)' };
         }
         // Search for callee name or IDE reference
-        const namePattern = new RegExp(escapeRegex(callee.name).replace(/[^a-zA-Z0-9\\]/g, '\\s*').substring(0, 30), 'i');
+        const namePattern = safeNamePattern(callee.name, 30);
         const idePattern = new RegExp(`IDE[_\\s-]*${callee.id}`, 'i');
-        const file = findFileContaining(namePattern, index) ?? findFileContaining(idePattern, index);
+        const file = (namePattern ? findFileContaining(namePattern, index) : undefined) ?? findFileContaining(idePattern, index);
         if (file) {
             return { ...callee, status: 'IMPL', target: relPath(file) };
         }
@@ -105,8 +130,8 @@ export const scanCodebase = (rules, tables, callees, variables, options) => {
     });
     // Scan variables: search for variable names
     const scannedVariables = variables.map(v => {
-        const pattern = new RegExp(escapeRegex(v.name).replace(/[^a-zA-Z0-9\\]/g, '\\s*').substring(0, 25), 'i');
-        const file = findFileContaining(pattern, index);
+        const pattern = safeNamePattern(v.name, 25);
+        const file = pattern ? findFileContaining(pattern, index) : undefined;
         if (file) {
             return { ...v, status: 'IMPL', targetFile: relPath(file) };
         }

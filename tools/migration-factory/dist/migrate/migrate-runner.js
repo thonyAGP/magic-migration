@@ -5,10 +5,11 @@
  */
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
-import { MigratePhase as MP, MigrateEventType as ET } from './migrate-types.js';
+import { MigratePhase as MP, MigrateEventType as ET, GENERATION_PHASES } from './migrate-types.js';
 import { readMigrateTracker, writeMigrateTracker, getOrCreateProgram, startPhase, completePhase, failPhase, markProgramCompleted, markProgramFailed, isPhaseCompleted, } from './migrate-tracker.js';
-import { setClaudeLogDir } from './migrate-claude.js';
+import { setClaudeLogDir, startTokenAccumulator, flushTokenAccumulator } from './migrate-claude.js';
 import { readTracker, writeTracker } from '../core/tracker.js';
 import { parseContract, writeContract } from '../core/contract.js';
 import { PipelineStatus } from '../core/types.js';
@@ -34,6 +35,27 @@ export const formatDuration = (ms) => {
         parts.push(`${m}m`);
     parts.push(`${s}s`);
     return `${parts.join(' ')} (${ms}ms)`;
+};
+// ─── Auto-parallel ────────────────────────────────────────────
+/** Resolve parallel count: 0 = auto (based on CPU cores and program count). */
+export const resolveParallelCount = (requested, programCount) => {
+    if (requested > 0)
+        return requested;
+    const cpus = os.cpus().length;
+    const maxByHardware = Math.min(cpus, 6);
+    const maxByPrograms = Math.max(1, Math.ceil(programCount / 2));
+    return Math.max(1, Math.min(maxByHardware, maxByPrograms));
+};
+// ─── Token cost calculation ──────────────────────────────────
+const PRICING = {
+    sonnet: { input: 3, output: 15 },
+    haiku: { input: 0.25, output: 1.25 },
+    opus: { input: 15, output: 75 },
+};
+export const estimateCostUsd = (tokens, model) => {
+    const key = model && PRICING[model] ? model : 'sonnet';
+    const p = PRICING[key];
+    return (tokens.input / 1_000_000) * p.input + (tokens.output / 1_000_000) * p.output;
 };
 // ─── Main Entry Point ──────────────────────────────────────────
 export const runMigration = async (programIds, batchId, batchName, config) => {
@@ -61,13 +83,20 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
     // Phase 0-9: Generate per program (parallelizable)
     const programResults = [];
     const analyses = new Map();
-    // Run programs with concurrency limit
-    const limit = config.parallel;
+    // Resolve parallel count (0 = auto)
+    const limit = resolveParallelCount(config.parallel, programIds.length);
+    if (limit !== config.parallel) {
+        emit(config, ET.PARALLEL_RESOLVED, `Auto-parallel: ${limit} agents (${os.cpus().length} CPUs, ${programIds.length} programs)`, { data: { requested: config.parallel, resolved: limit, cpus: os.cpus().length } });
+    }
     const chunks = [];
     for (let i = 0; i < programIds.length; i += limit) {
         chunks.push(programIds.slice(i, i + limit));
     }
     for (const chunk of chunks) {
+        if (config.abortSignal?.aborted) {
+            emit(config, ET.MIGRATION_COMPLETED, 'Migration aborted by user');
+            break;
+        }
         const results = await Promise.all(chunk.map(id => runProgramGeneration(id, config, trackerFile)));
         for (const r of results) {
             programResults.push(r.result);
@@ -117,6 +146,15 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
             }
         }
     }
+    // Aggregate token usage
+    const totalTokens = { input: 0, output: 0 };
+    for (const r of programResults) {
+        if (r.tokens) {
+            totalTokens.input += r.tokens.input;
+            totalTokens.output += r.tokens.output;
+        }
+    }
+    const hasTokens = totalTokens.input > 0 || totalTokens.output > 0;
     const summary = {
         total: programIds.length,
         completed: programResults.filter(r => r.status === 'completed').length,
@@ -126,9 +164,13 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
         tscClean,
         testsPass,
         reviewAvgCoverage: reviewCount > 0 ? Math.round(totalCoverage / reviewCount) : 0,
+        ...(hasTokens ? { totalTokens, estimatedCostUsd: estimateCostUsd(totalTokens, config.model) } : {}),
     };
     const totalDuration = Date.now() - migrationStart;
-    emit(config, ET.MIGRATION_COMPLETED, `Migration complete: ${summary.completed}/${summary.total} programs, ${summary.totalFiles} files in ${formatDuration(totalDuration)}`);
+    const costInfo = summary.totalTokens
+        ? `, tokens: ${Math.round(summary.totalTokens.input / 1000)}K in / ${Math.round(summary.totalTokens.output / 1000)}K out (~$${summary.estimatedCostUsd?.toFixed(2)})`
+        : '';
+    emit(config, ET.MIGRATION_COMPLETED, `Migration complete: ${summary.completed}/${summary.total} programs, ${summary.totalFiles} files in ${formatDuration(totalDuration)}${costInfo}`);
     // Update main tracker batch stats after migration
     if (!config.dryRun && summary.completed > 0) {
         try {
@@ -205,10 +247,36 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
     const start = Date.now();
     let analysis = null;
     const files = [];
+    // Start token accumulator for this program
+    startTokenAccumulator();
+    const aborted = () => config.abortSignal?.aborted === true;
     emit(config, ET.PROGRAM_STARTED, `Starting IDE ${programId}`, { programId });
+    // Skip only if the contract is already verified (fully done, no more work needed)
+    const contractFile = path.join(config.migrationDir, config.contractSubDir, `${config.contractSubDir}-IDE-${programId}.contract.yaml`);
+    const isVerified = fs.existsSync(contractFile) && parseContract(contractFile).overall.status === PipelineStatus.VERIFIED;
+    if (isVerified) {
+        flushTokenAccumulator();
+        for (const p of GENERATION_PHASES) {
+            emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: ${p} (verified)`, { phase: p, programId });
+        }
+        emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: already verified (skipped)`, { programId, data: { skipped: true } });
+        return {
+            result: {
+                programId,
+                programName: `IDE-${programId}`,
+                status: 'skipped',
+                filesGenerated: 0,
+                phasesCompleted: 10,
+                phasesTotal: 10,
+                duration: 0,
+                errors: [],
+            },
+            analysis: null,
+        };
+    }
     try {
         // Phase 0: SPEC
-        if (!isPhaseCompleted(prog, MP.SPEC)) {
+        if (!aborted() && !isPhaseCompleted(prog, MP.SPEC)) {
             startPhase(prog, MP.SPEC);
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating spec`, { phase: MP.SPEC, programId });
             const specResult = await runSpecPhase(programId, config);
@@ -219,7 +287,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 1: CONTRACT
-        if (!isPhaseCompleted(prog, MP.CONTRACT)) {
+        if (!aborted() && !isPhaseCompleted(prog, MP.CONTRACT)) {
             startPhase(prog, MP.CONTRACT);
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating contract`, { phase: MP.CONTRACT, programId });
             const contractResult = runContractPhase(programId, config);
@@ -228,7 +296,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 2: ANALYZE
-        if (!isPhaseCompleted(prog, MP.ANALYZE)) {
+        if (!aborted() && !isPhaseCompleted(prog, MP.ANALYZE)) {
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: analyzing (Claude CLI)`, { phase: MP.ANALYZE, programId });
             startPhase(prog, MP.ANALYZE);
             const analyzeResult = await runAnalyzePhase(programId, config);
@@ -259,7 +327,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             throw new Error('Analysis document is required for code generation');
         }
         // Phase 3: TYPES
-        if (!isPhaseCompleted(prog, MP.TYPES)) {
+        if (!aborted() && !isPhaseCompleted(prog, MP.TYPES)) {
             startPhase(prog, MP.TYPES);
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating types`, { phase: MP.TYPES, programId });
             const typesResult = await runTypesPhase(programId, analysis, config);
@@ -270,7 +338,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 4: STORE
-        if (!isPhaseCompleted(prog, MP.STORE)) {
+        if (!aborted() && !isPhaseCompleted(prog, MP.STORE)) {
             startPhase(prog, MP.STORE);
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating store`, { phase: MP.STORE, programId });
             const storeResult = await runStorePhase(programId, analysis, config);
@@ -281,7 +349,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 5: API
-        if (!isPhaseCompleted(prog, MP.API)) {
+        if (!aborted() && !isPhaseCompleted(prog, MP.API)) {
             startPhase(prog, MP.API);
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating api`, { phase: MP.API, programId });
             const apiResult = await runApiPhase(programId, analysis, config);
@@ -292,7 +360,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 6: PAGE
-        if (!isPhaseCompleted(prog, MP.PAGE)) {
+        if (!aborted() && !isPhaseCompleted(prog, MP.PAGE)) {
             startPhase(prog, MP.PAGE);
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating page`, { phase: MP.PAGE, programId });
             const pageResult = await runPagePhase(programId, analysis, config);
@@ -303,7 +371,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 7: COMPONENTS
-        if (!isPhaseCompleted(prog, MP.COMPONENTS)) {
+        if (!aborted() && !isPhaseCompleted(prog, MP.COMPONENTS)) {
             startPhase(prog, MP.COMPONENTS);
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating components`, { phase: MP.COMPONENTS, programId });
             const compResult = await runComponentsPhase(programId, analysis, config);
@@ -316,7 +384,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 8: TESTS-UNIT
-        if (!isPhaseCompleted(prog, MP.TESTS_UNIT)) {
+        if (!aborted() && !isPhaseCompleted(prog, MP.TESTS_UNIT)) {
             startPhase(prog, MP.TESTS_UNIT);
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating unit tests`, { phase: MP.TESTS_UNIT, programId });
             const testUnitResult = await runTestsUnitPhase(programId, analysis, config);
@@ -327,7 +395,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 9: TESTS-UI
-        if (!isPhaseCompleted(prog, MP.TESTS_UI)) {
+        if (!aborted() && !isPhaseCompleted(prog, MP.TESTS_UI)) {
             startPhase(prog, MP.TESTS_UI);
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating UI tests`, { phase: MP.TESTS_UI, programId });
             const testUiResult = await runTestsUiPhase(programId, analysis, config);
@@ -336,6 +404,9 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             if (!testUiResult.skipped)
                 files.push(testUiResult.file);
             saveMigrateTracker(trackerFile, migrateData);
+        }
+        if (aborted()) {
+            emit(config, ET.PROGRAM_FAILED, `IDE ${programId}: aborted`, { programId });
         }
         markProgramCompleted(prog);
         saveMigrateTracker(trackerFile, migrateData);
@@ -354,8 +425,10 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             }
             catch { /* non-critical */ }
         }
+        const programTokens = flushTokenAccumulator();
         const elapsed = Date.now() - start;
-        emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: ${files.length} files generated in ${formatDuration(elapsed)}`, { programId });
+        const tokenInfo = programTokens ? `, tokens: ${Math.round(programTokens.input / 1000)}K in / ${Math.round(programTokens.output / 1000)}K out` : '';
+        emit(config, ET.PROGRAM_COMPLETED, `IDE ${programId}: ${files.length} files generated in ${formatDuration(elapsed)}${tokenInfo}`, { programId, data: programTokens ? { tokens: programTokens } : undefined });
         return {
             result: {
                 programId,
@@ -366,6 +439,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
                 phasesTotal: 10,
                 duration: Date.now() - start,
                 errors: [],
+                tokens: programTokens ?? undefined,
             },
             analysis,
         };
@@ -377,6 +451,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             failPhase(prog, currentPhase, errorMsg);
         markProgramFailed(prog, errorMsg);
         saveMigrateTracker(trackerFile, migrateData);
+        const failedTokens = flushTokenAccumulator();
         const failedElapsed = Date.now() - start;
         emit(config, ET.PROGRAM_FAILED, `IDE ${programId} failed at ${currentPhase ?? 'unknown'} after ${formatDuration(failedElapsed)}: ${errorMsg}`, { programId });
         return {
@@ -389,6 +464,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
                 phasesTotal: 10,
                 duration: Date.now() - start,
                 errors: [errorMsg],
+                tokens: failedTokens ?? undefined,
             },
             analysis,
         };

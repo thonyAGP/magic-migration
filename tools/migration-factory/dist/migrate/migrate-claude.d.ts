@@ -6,6 +6,13 @@
  *
  * Mode is set via configureClaudeMode() before running migration.
  */
+/** Start accumulating tokens for the current program. */
+export declare const startTokenAccumulator: () => void;
+/** Stop accumulating and return total tokens since start. Returns null if no API calls tracked tokens. */
+export declare const flushTokenAccumulator: () => {
+    input: number;
+    output: number;
+} | null;
 /** Configure Claude invocation mode before starting migration. */
 export declare const configureClaudeMode: (mode: "api" | "cli", apiKey?: string) => void;
 /** Set global log directory for all subsequent calls. */
@@ -24,6 +31,10 @@ export interface ClaudeCallOptions {
 export interface ClaudeCallResult {
     output: string;
     durationMs: number;
+    tokens?: {
+        input: number;
+        output: number;
+    };
 }
 export declare const callClaude: (options: ClaudeCallOptions) => Promise<ClaudeCallResult>;
 /**

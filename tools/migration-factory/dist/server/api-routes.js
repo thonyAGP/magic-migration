@@ -222,7 +222,7 @@ export const handleMigrateStream = async (ctx, query, res) => {
     const programs = query.get('programs');
     const rawTargetDir = query.get('targetDir');
     const dryRun = query.get('dryRun') === 'true';
-    const parallel = Number(query.get('parallel') ?? '1');
+    const parallel = Number(query.get('parallel') ?? '0');
     const maxPasses = Number(query.get('maxPasses') ?? '5');
     const model = query.get('model') ?? 'sonnet';
     const claudeMode = (query.get('mode') ?? 'cli');
@@ -264,6 +264,7 @@ export const handleMigrateStream = async (ctx, query, res) => {
         json(res, { error: 'Missing batch or programs parameter' }, 400);
         return;
     }
+    _migrateAbortController = new AbortController();
     const migrateConfig = {
         projectDir: ctx.projectDir,
         targetDir,
@@ -278,6 +279,7 @@ export const handleMigrateStream = async (ctx, query, res) => {
         cliBin: 'claude',
         onEvent: undefined,
         autoCommit: true,
+        abortSignal: _migrateAbortController.signal,
     };
     // Build program list with names for dashboard grid
     const contractDir = path.join(config.migrationDir, config.contractSubDir);
@@ -302,6 +304,7 @@ export const handleMigrateStream = async (ctx, query, res) => {
     catch (err) {
         bufferedSend({ type: 'error', message: String(err) });
     }
+    _migrateAbortController = null;
     endMigration();
     sse.close();
 };
@@ -345,6 +348,18 @@ export const handleMigrateBatchCreate = (ctx, body, res) => {
 };
 export const handleMigrateActive = (_ctx, res) => {
     json(res, getMigrateActiveState());
+};
+// ─── Abort running migration ────────────────────────────────────
+let _migrateAbortController = null;
+export const handleMigrateAbort = (res) => {
+    if (_migrateAbortController) {
+        _migrateAbortController.abort();
+        _migrateAbortController = null;
+        json(res, { aborted: true });
+    }
+    else {
+        json(res, { aborted: false, message: 'No migration running' });
+    }
 };
 // ─── Analyze Project (v11) ───────────────────────────────────────
 export const handleAnalyze = async (ctx, body, res) => {

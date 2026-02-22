@@ -86,6 +86,7 @@ export const MigrateEventType = {
     GIT_STARTED: 'git_started',
     GIT_COMPLETED: 'git_completed',
     GIT_FAILED: 'git_failed',
+    PARALLEL_RESOLVED: 'parallel_resolved',
     ERROR: 'error',
 };
 //# sourceMappingURL=migrate-types.js.map

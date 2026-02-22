@@ -2043,7 +2043,8 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     migrationStart: 0, elapsedTid: 0, logCollapsed: false,
     activeBtn: null, parallelCount: 0,
     programStartTimes: {}, programDurations: [],
-    tokensIn: 0, tokensOut: 0
+    tokensIn: 0, tokensOut: 0,
+    eventsProcessed: 0
   };
 
   function escAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -2475,6 +2476,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     migrateState.programStartTimes = {};
     migrateState.programDurations = [];
 
+    migrateState.eventsProcessed = 0;
     var es = new EventSource(url);
     es.onmessage = function(ev) {
       var msg = JSON.parse(ev.data);
@@ -2487,15 +2489,47 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         return;
       }
 
+      migrateState.eventsProcessed++;
       processMigrateEvent(msg);
     };
 
     es.onerror = function() {
       es.close();
-      clearInterval(migrateState.elapsedTid);
-      setLoading(migrateState.activeBtn || btnMigrate, false);
-      migrateAbortBtn.style.display = 'none';
-      addMLog('Connection lost');
+      addMLog('SSE connection lost - switching to polling...');
+      // Fall back to polling instead of giving up
+      var lastSeen = migrateState.eventsProcessed;
+      var pollFallback = setInterval(function() {
+        fetch('/api/migrate/active').then(function(r) { return r.json(); }).then(function(s) {
+          if (!s.running && s.events.length === 0) {
+            clearInterval(pollFallback);
+            clearInterval(migrateState.elapsedTid);
+            setLoading(migrateState.activeBtn || btnMigrate, false);
+            migrateAbortBtn.style.display = 'none';
+            addMLog('Migration not found - connection lost');
+            return;
+          }
+          // Process only new events
+          for (var i = lastSeen; i < s.events.length; i++) {
+            processMigrateEvent(s.events[i]);
+          }
+          lastSeen = s.events.length;
+          if (!s.running) {
+            clearInterval(pollFallback);
+            clearInterval(migrateState.elapsedTid);
+            setLoading(migrateState.activeBtn || btnMigrate, false);
+            migrateAbortBtn.style.display = 'none';
+            var elapsed = document.getElementById('mp-elapsed');
+            if (elapsed) elapsed.textContent = 'Total: ' + formatElapsed(Date.now() - migrateState.migrationStart);
+            if (migrateBadge) { migrateBadge.textContent = 'Done'; migrateBadge.style.background = 'var(--green)'; }
+          }
+        }).catch(function() {
+          clearInterval(pollFallback);
+          clearInterval(migrateState.elapsedTid);
+          setLoading(migrateState.activeBtn || btnMigrate, false);
+          migrateAbortBtn.style.display = 'none';
+          addMLog('Connection lost');
+        });
+      }, 3000);
     };
   }
 

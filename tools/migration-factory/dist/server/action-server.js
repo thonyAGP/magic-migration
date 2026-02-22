@@ -6,7 +6,7 @@
  */
 import http from 'node:http';
 import { URL } from 'node:url';
-import { json, handleStatus, handleGaps, handlePreflight, handlePipelineRun, handlePipelineStream, handleVerify, handleProjects, handleCalibrate, handleGenerate, handleGenerateStream, handleMigrateStream, handleMigrateStatus, handleMigrateBatchCreate, handleMigrateActive, handleAnalyze, handleAnalyzeGet, } from './api-routes.js';
+import { json, handleStatus, handleGaps, handlePreflight, handlePipelineRun, handlePipelineStream, handleVerify, handleProjects, handleCalibrate, handleGenerate, handleGenerateStream, handleMigrateStream, handleMigrateStatus, handleMigrateBatchCreate, handleMigrateActive, handleMigrateAbort, handleAnalyze, handleAnalyzeGet, } from './api-routes.js';
 import { generateServerDashboard } from './dashboard-html.js';
 import { endMigration } from './migrate-state.js';
 const readBody = (req) => new Promise((resolve, reject) => {
@@ -124,6 +124,9 @@ export const startActionServer = async (config) => {
                     pipelineRunning = false;
                     endMigration();
                 }
+            }
+            else if (pathname === '/api/migrate/abort' && req.method === 'POST') {
+                handleMigrateAbort(res);
             }
             else if (pathname === '/api/migrate/active' && req.method === 'GET') {
                 handleMigrateActive(ctx, res);

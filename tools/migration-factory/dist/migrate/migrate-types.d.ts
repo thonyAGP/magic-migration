@@ -122,6 +122,8 @@ export interface MigrateConfig {
     logDir?: string;
     /** Auto git add + commit + push after successful migration. Default false for CLI, true from dashboard. */
     autoCommit?: boolean;
+    /** AbortSignal to cancel migration in progress. */
+    abortSignal?: AbortSignal;
 }
 /**
  * Returns the model to use for a given phase.
@@ -148,6 +150,7 @@ export declare const MigrateEventType: {
     readonly GIT_STARTED: "git_started";
     readonly GIT_COMPLETED: "git_completed";
     readonly GIT_FAILED: "git_failed";
+    readonly PARALLEL_RESOLVED: "parallel_resolved";
     readonly ERROR: "error";
 };
 export type MigrateEventType = (typeof MigrateEventType)[keyof typeof MigrateEventType];
@@ -182,6 +185,10 @@ export interface ProgramMigrateResult {
     phasesTotal: number;
     duration: number;
     errors: string[];
+    tokens?: {
+        input: number;
+        output: number;
+    };
 }
 export interface MigrateSummary {
     total: number;
@@ -192,6 +199,11 @@ export interface MigrateSummary {
     tscClean: boolean;
     testsPass: boolean;
     reviewAvgCoverage: number;
+    totalTokens?: {
+        input: number;
+        output: number;
+    };
+    estimatedCostUsd?: number;
 }
 export interface ReviewReport {
     programId: string | number;

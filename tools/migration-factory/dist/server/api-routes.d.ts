@@ -22,5 +22,6 @@ export declare const handleMigrateStream: (ctx: RouteContext, query: URLSearchPa
 export declare const handleMigrateStatus: (ctx: RouteContext, res: ServerResponse) => void;
 export declare const handleMigrateBatchCreate: (ctx: RouteContext, body: Record<string, unknown>, res: ServerResponse) => void;
 export declare const handleMigrateActive: (_ctx: RouteContext, res: ServerResponse) => void;
+export declare const handleMigrateAbort: (res: ServerResponse) => void;
 export declare const handleAnalyze: (ctx: RouteContext, body: Record<string, unknown>, res: ServerResponse) => Promise<void>;
 export declare const handleAnalyzeGet: (ctx: RouteContext, res: ServerResponse) => Promise<void>;

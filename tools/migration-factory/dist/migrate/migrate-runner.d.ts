@@ -5,6 +5,12 @@
  */
 import type { MigrateConfig, MigrateResult, MigratePhase } from './migrate-types.js';
 export declare const formatDuration: (ms: number) => string;
+/** Resolve parallel count: 0 = auto (based on CPU cores and program count). */
+export declare const resolveParallelCount: (requested: number, programCount: number) => number;
+export declare const estimateCostUsd: (tokens: {
+    input: number;
+    output: number;
+}, model?: string) => number;
 export declare const runMigration: (programIds: (string | number)[], batchId: string, batchName: string, config: MigrateConfig) => Promise<MigrateResult>;
 export declare const runSinglePhase: (phase: MigratePhase, programIds: (string | number)[], config: MigrateConfig) => Promise<void>;
 export interface MigrateStatusView {
