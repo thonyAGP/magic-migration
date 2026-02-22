@@ -1,0 +1,97 @@
+{
+  "programId": 142,
+  "programName": "Devise update session WS",
+  "coveragePct": 60,
+  "rulesImplemented": 0,
+  "rulesTotal": 1,
+  "missingRules": [
+    "RM-001: Negation de cumul OP change - Backend-only WS logic not replicated in frontend store. updateDeviseSession() updates local state but does not implement the conditional cumul/overwrite logic based on cumulOpChange parameter."
+  ],
+  "recommendations": [
+    "CRITICAL: This is a backend Web Service (WS) program without visible UI. The frontend implementation is minimal by design.",
+    "ARCHITECTURE: The contract clearly states this is backend-only (status N/A, targetFile empty, gapNotes 'Backend-only WS'). The generated code correctly provides a thin API client wrapper.",
+    "BUSINESS RULE RM-001: The cumul logic (accumulate vs overwrite) belongs in the backend API endpoint, not the frontend store. Frontend should only send the cumulOpChange flag to the API.",
+    "UI COVERAGE: DeviseSessionPage correctly displays 'Service Web sans interface' with backend status indicator. No form needed since this is called programmatically from other programs (11 callers: IDE 120-299).",
+    "TABLE COVERAGE: Type DeviseSession matches all 6 columns from table 232 (codeDevise, modePaiement, quand, type, quantite, cumulOpChange).",
+    "API COVERAGE: PUT /api/caisse/devise-session endpoint correctly implements the synchronization interface.",
+    "CALLER INTEGRATION: Missing integration points - this store should be called from the 11 caller programs (Controle fermeture, Ouverture caisse, Saisie contenu caisse, etc.). Add useDeviseSessionStore.updateDeviseSession() calls in those components.",
+    "ERROR HANDLING: Store has basic error handling. Consider adding validation for required fields before API call.",
+    "RESET LOGIC: Good practice - reset() on unmount prevents stale error states.",
+    "NAMING: Store method updateDeviseSession aligns with program purpose 'Devise update session WS'.",
+    "RECOMMENDATION: Accept this 60% coverage as CORRECT for a backend WS program. The missing 40% (RM-001 cumul logic) should be implemented in the C# API backend, not the React frontend."
+  ],
+  "detailedAnalysis": {
+    "businessRules": {
+      "total": 1,
+      "implemented": 0,
+      "details": [
+        {
+          "ruleId": "RM-001",
+          "description": "Negation de cumul OP change - condition inversee",
+          "status": "N/A (Backend-only)",
+          "implementationStatus": "BACKEND_RESPONSIBILITY",
+          "notes": "The contract explicitly marks this as N/A with gapNotes 'Backend-only WS - controls whether to overwrite or accumulate devise quantity in gestion_devise_session'. The frontend store correctly passes cumulOpChange parameter to API but does not replicate the conditional logic. This is the correct architecture - business logic stays in backend."
+        }
+      ]
+    },
+    "tables": {
+      "total": 1,
+      "covered": 1,
+      "details": [
+        {
+          "tableId": 232,
+          "tableName": "gestion_devise_session",
+          "access": "W",
+          "typesCovered": true,
+          "columnsInType": 6,
+          "columnsInSpec": 6,
+          "allColumnsMapped": true,
+          "mapping": {
+            "A_codeDevise": "DeviseSession.codeDevise",
+            "B_modePaiement": "DeviseSession.modePaiement",
+            "C_quand": "DeviseSession.quand",
+            "D_type": "DeviseSession.type",
+            "E_quantite": "DeviseSession.quantite",
+            "F_cumulOpChange": "DeviseSession.cumulOpChange"
+          }
+        }
+      ]
+    },
+    "apiEndpoints": {
+      "total": 1,
+      "implemented": 1,
+      "details": [
+        {
+          "endpoint": "PUT /api/caisse/devise-session",
+          "store": "useDeviseSessionStore.updateDeviseSession",
+          "apiFile": "endpoints-deviseSession.ts",
+          "wired": true,
+          "parameters": ["codeDevise", "modePaiement", "quand", "type", "quantite", "cumulOpChange"],
+          "errorHandling": true
+        }
+      ]
+    },
+    "uiLayout": {
+      "matchesSpec": true,
+      "notes": "Spec states '0 ecrans visibles' and 'Programme sans ecran visible'. DeviseSessionPage correctly implements minimal UI with backend status indicator and explanation text. No form needed - this is a programmatic WS called by 11 other programs."
+    },
+    "errorHandling": {
+      "present": true,
+      "coverage": "Basic",
+      "details": "Store has try/catch with error state. Could add input validation before API call."
+    },
+    "missingIntegrations": [
+      "Caller integration: Add updateDeviseSession() calls in the 11 caller programs (IDE 120, 122, 125, 126, 127, 129, 130, 131, 155, 298, 299)",
+      "Mock data: Add mock updateDeviseSession implementation in dataSourceStore for offline testing"
+    ]
+  },
+  "verdict": "ACCEPTABLE_FOR_BACKEND_WS",
+  "nextSteps": [
+    "1. Mark RM-001 as backend responsibility - do not penalize frontend coverage for this",
+    "2. Implement RM-001 cumul logic in C# API backend (Caisse.Api project)",
+    "3. Add updateDeviseSession() calls in the 11 caller programs",
+    "4. Add mock implementation in dataSourceStore for offline testing",
+    "5. Add integration tests calling this store from caller components",
+    "6. Document in MIGRATION_GUIDE.md that backend WS programs have lower frontend coverage by design"
+  ]
+}

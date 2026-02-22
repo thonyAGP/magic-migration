@@ -1,0 +1,249 @@
+import { useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ScreenLayout } from '@/components/layout';
+import { useSessionListStore } from '@/stores/sessionListStore';
+import { useAuthStore } from '@/stores';
+import { cn } from '@/lib/utils';
+
+export function SessionListPage() {
+  const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+
+  const sessions = useSessionListStore((s) => s.sessions);
+  const isLoading = useSessionListStore((s) => s.isLoading);
+  const error = useSessionListStore((s) => s.error);
+  const filters = useSessionListStore((s) => s.filters);
+  const fetchSessions = useSessionListStore((s) => s.fetchSessions);
+  const setFilters = useSessionListStore((s) => s.setFilters);
+  const clearError = useSessionListStore((s) => s.clearError);
+  const reset = useSessionListStore((s) => s.reset);
+
+  useEffect(() => {
+    fetchSessions(filters);
+    return () => reset();
+  }, [fetchSessions, filters, reset]);
+
+  const handleExisteSessionChange = useCallback(
+    (checked: boolean) => {
+      setFilters({ existeSession: checked });
+    },
+    [setFilters],
+  );
+
+  const handleExisteSessionOuverteChange = useCallback(
+    (checked: boolean) => {
+      setFilters({ existeSessionOuverte: checked });
+    },
+    [setFilters],
+  );
+
+  const handleSocieteChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setFilters({ societe: value === '' ? null : value });
+    },
+    [setFilters],
+  );
+
+  const handleRefresh = useCallback(() => {
+    fetchSessions(filters);
+  }, [fetchSessions, filters]);
+
+  const handleBack = () => {
+    navigate('/caisse/menu');
+  };
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('fr-FR', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    }).format(date);
+  };
+
+  const formatMontant = (montant: number | null) => {
+    if (montant === null) return '-';
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(montant);
+  };
+
+  const getEtatLabel = (etat: string) => {
+    if (etat === 'O') return 'Ouverte';
+    if (etat === '') return 'Fermée';
+    return etat;
+  };
+
+  return (
+    <ScreenLayout>
+      <div className="space-y-6 max-w-6xl mx-auto">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">Sessions de caisse</h2>
+            <p className="text-on-surface-muted text-sm mt-1">
+              Liste des sessions ouvertes et fermées
+            </p>
+          </div>
+          {user && (
+            <span className="text-xs text-on-surface-muted">
+              {user.prenom} {user.nom}
+            </span>
+          )}
+        </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm flex items-center justify-between">
+            <span>{error}</span>
+            <button
+              onClick={clearError}
+              className="text-red-700 hover:text-red-900 font-semibold"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        <div className="bg-surface border border-border rounded-lg p-4">
+          <h3 className="font-medium mb-4">Filtres</h3>
+          <div className="flex flex-wrap gap-6">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filters.existeSession}
+                onChange={(e) => handleExisteSessionChange(e.target.checked)}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-2 focus:ring-primary"
+              />
+              <span className="text-sm">Existe session</span>
+            </label>
+
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filters.existeSessionOuverte}
+                onChange={(e) => handleExisteSessionOuverteChange(e.target.checked)}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-2 focus:ring-primary"
+              />
+              <span className="text-sm">Session ouverte uniquement</span>
+            </label>
+
+            <div className="flex items-center gap-2">
+              <label htmlFor="societe" className="text-sm font-medium">
+                Société:
+              </label>
+              <select
+                id="societe"
+                value={filters.societe || ''}
+                onChange={handleSocieteChange}
+                className="px-3 py-1.5 border border-border rounded-md text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">Toutes</option>
+                <option value="CAI001">CAI001</option>
+                <option value="CAI002">CAI002</option>
+                <option value="CAI003">CAI003</option>
+              </select>
+            </div>
+
+            <button
+              onClick={handleRefresh}
+              disabled={isLoading}
+              className="px-4 py-1.5 bg-primary text-white rounded-md hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              {isLoading ? 'Actualisation...' : 'Actualiser'}
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-surface border border-border rounded-lg overflow-hidden">
+          {isLoading && sessions.length === 0 ? (
+            <div className="p-8 text-center text-on-surface-muted">
+              Chargement des sessions...
+            </div>
+          ) : sessions.length === 0 ? (
+            <div className="p-8 text-center text-on-surface-muted">
+              Aucune session trouvée avec les filtres actuels.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-surface-hover border-b border-border">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-on-surface uppercase tracking-wider">
+                      Société
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-on-surface uppercase tracking-wider">
+                      Caisse
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-on-surface uppercase tracking-wider">
+                      Opérateur
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-on-surface uppercase tracking-wider">
+                      Date ouverture
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-on-surface uppercase tracking-wider">
+                      État
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-on-surface uppercase tracking-wider">
+                      Montant ouverture
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {sessions.map((session) => (
+                    <tr
+                      key={session.id}
+                      className={cn(
+                        'hover:bg-surface-hover transition-colors',
+                        session.etat === 'O' && 'bg-green-50',
+                      )}
+                    >
+                      <td className="px-4 py-3 text-sm text-on-surface">
+                        {session.societe}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-on-surface font-medium">
+                        {session.caisse}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-on-surface">
+                        {session.operateur}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-on-surface">
+                        {formatDate(session.dateOuverture)}
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <span
+                          className={cn(
+                            'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+                            session.etat === 'O'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-gray-100 text-gray-800',
+                          )}
+                        >
+                          {getEtatLabel(session.etat)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-on-surface text-right font-mono">
+                        {formatMontant(session.montantOuverture)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-between items-center">
+          <button
+            onClick={handleBack}
+            className="px-4 py-2 border border-border rounded-md text-on-surface hover:bg-surface-hover"
+          >
+            Retour au menu
+          </button>
+          <p className="text-sm text-on-surface-muted">
+            {sessions.length} session{sessions.length !== 1 ? 's' : ''} affichée
+            {sessions.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+      </div>
+    </ScreenLayout>
+  );
+}

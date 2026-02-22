@@ -1,0 +1,151 @@
+{
+  "domain": "comptageHistorization",
+  "domainPascal": "ComptageHistorization",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "ComptageHistoHeader",
+      "fields": [
+        {
+          "name": "chronoHisto",
+          "type": "number",
+          "source": "comptage_caisse_histo.chrono_histo",
+          "nullable": false
+        },
+        {
+          "name": "chronoSession",
+          "type": "number",
+          "source": "comptage_caisse_histo.chrono_session",
+          "nullable": false
+        },
+        {
+          "name": "dateValidation",
+          "type": "Date",
+          "source": "comptage_caisse_histo.date_validation",
+          "nullable": false
+        },
+        {
+          "name": "timeValidation",
+          "type": "string",
+          "source": "comptage_caisse_histo.time_validation",
+          "nullable": false
+        },
+        {
+          "name": "totalCaisse",
+          "type": "number",
+          "source": "comptage_caisse_histo.total_caisse",
+          "nullable": false
+        },
+        {
+          "name": "quand",
+          "type": "string",
+          "source": "comptage_caisse_histo.quand",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "ComptageHistoDevise",
+      "fields": [
+        {
+          "name": "chronoHisto",
+          "type": "number",
+          "source": "comptage_caisse_devise_histo.chrono_histo",
+          "nullable": false
+        },
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "comptage_caisse_devise_histo.devise_code",
+          "nullable": false
+        },
+        {
+          "name": "montantCompte",
+          "type": "number",
+          "source": "comptage_caisse_devise_histo.montant_compte",
+          "nullable": false
+        },
+        {
+          "name": "ecart",
+          "type": "number",
+          "source": "comptage_caisse_devise_histo.ecart",
+          "nullable": false
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "source": "comptage_caisse_devise_histo.total",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "lastHistoId",
+      "type": "number | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "saveComptageHistorization",
+      "params": [
+        "chronoSession: number",
+        "quand: 'O' | 'F'",
+        "totalCaisse: number",
+        "deviseDetails: Array<{ deviseCode: string; montantCompte: number; ecart: number; total: number }>"
+      ],
+      "businessRules": [
+        "RM-001: Save history record based on 'quand' context (O=ouverture, F=fermeture)",
+        "Insert header into comptage_caisse_histo with auto-generated chronoHisto",
+        "Insert detail lines into comptage_caisse_devise_histo for each devise",
+        "Timestamp with server dateValidation and timeValidation",
+        "Transaction must be atomic - rollback if any insert fails"
+      ],
+      "returns": "Promise<{ chronoHisto: number }>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/comptage-historization/save",
+      "queryParams": [],
+      "response": "{ chronoHisto: number }"
+    }
+  ],
+  "uiLayout": {
+    "type": "backend-only-service",
+    "sections": [
+      {
+        "name": "no-ui",
+        "controls": [
+          "This program is backend-only WS - no frontend UI needed",
+          "Called from frontend via API after comptage completion"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 3,
+    "description": "Mock historization records: 1 ouverture (quand=O), 2 fermetures (quand=F) with multi-devise details (EUR, USD, GBP)"
+  },
+  "dependencies": {
+    "stores": [],
+    "sharedTypes": [
+      "ComptageHistoHeader",
+      "ComptageHistoDevise"
+    ],
+    "externalApis": []
+  }
+}

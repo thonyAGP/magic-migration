@@ -50,6 +50,6 @@ overall:
   callees_impl: 0
   callees_missing: 0
   coverage_pct: 50
-  status: contracted
+  status: enriched
   generated: 2026-02-21T00:04:16.874Z
   notes: Auto-generated from ADH-IDE-118.md

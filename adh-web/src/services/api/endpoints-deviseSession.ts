@@ -1,0 +1,14 @@
+import { apiClient, type ApiResponse } from "@/services/api/apiClient";
+import type {
+  DeviseSession,
+  UpdateDeviseSes sionRequest,
+  UpdateDeviseSes sionResponse,
+} from "@/types/deviseSession";
+
+export const deviseSes sionApi = {
+  updateDeviseSession: (data: UpdateDeviseSes sionRequest) =>
+    apiClient.put<ApiResponse<UpdateDeviseSes sionResponse>>(
+      "/api/caisse/devise-session",
+      data,
+    ),
+};

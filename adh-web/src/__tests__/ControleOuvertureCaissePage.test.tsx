@@ -1,0 +1,171 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+
+const mockNavigate = vi.fn();
+const mockUseAuthStore = vi.fn();
+const mockUseControleOuvertureCaisseStore = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+vi.mock('@/stores', () => ({
+  useAuthStore: (selector: unknown) => mockUseAuthStore(selector),
+}));
+
+vi.mock('@/stores/controleOuvertureCaisseStore', () => ({
+  useControleOuvertureCaisseStore: (selector: unknown) => mockUseControleOuvertureCaisseStore(selector),
+}));
+
+import { ControleOuvertureCaissePage } from '@/pages/ControleOuvertureCaissePage';
+
+const renderPage = () => {
+  return render(
+    <BrowserRouter>
+      <ControleOuvertureCaissePage />
+    </BrowserRouter>
+  );
+};
+
+describe('ControleOuvertureCaissePage', () => {
+  const mockReset = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    mockUseAuthStore.mockImplementation((selector) => {
+      const state = {
+        user: { prenom: 'Jean', nom: 'Dupont' },
+      };
+      return selector(state);
+    });
+
+    mockUseControleOuvertureCaisseStore.mockImplementation((selector) => {
+      const state = {
+        isValidating: false,
+        validationResult: null,
+        validationError: null,
+        reset: mockReset,
+      };
+      return selector(state);
+    });
+  });
+
+  it('renders without crashing', () => {
+    renderPage();
+    expect(screen.getByText('Contrôle d\'ouverture de caisse')).toBeInTheDocument();
+  });
+
+  it('displays user information when logged in', () => {
+    renderPage();
+    expect(screen.getByText('Jean Dupont')).toBeInTheDocument();
+  });
+
+  it('displays service description', () => {
+    renderPage();
+    expect(screen.getByText('Service actif')).toBeInTheDocument();
+    expect(screen.getByText(/Ce service backend effectue les validations suivantes/i)).toBeInTheDocument();
+  });
+
+  it('displays validation list items', () => {
+    renderPage();
+    expect(screen.getByText(/Calcul des totaux de caisse/i)).toBeInTheDocument();
+    expect(screen.getByText(/Validation du routage mode UNI\/BI/i)).toBeInTheDocument();
+    expect(screen.getByText(/Vérification de l'état de la session/i)).toBeInTheDocument();
+    expect(screen.getByText(/Contrôle des permissions opérateur/i)).toBeInTheDocument();
+    expect(screen.getByText(/Validation des paramètres d'ouverture/i)).toBeInTheDocument();
+  });
+
+  it('displays calling programs section', () => {
+    renderPage();
+    expect(screen.getByText('Programmes appelants')).toBeInTheDocument();
+    expect(screen.getByText('IDE 122 - Ouverture caisse')).toBeInTheDocument();
+    expect(screen.getByText('IDE 297 - Ouverture caisse 143')).toBeInTheDocument();
+  });
+
+  it('displays loading state when validating', () => {
+    mockUseControleOuvertureCaisseStore.mockImplementation((selector) => {
+      const state = {
+        isValidating: true,
+        validationResult: null,
+        validationError: null,
+        reset: mockReset,
+      };
+      return selector(state);
+    });
+
+    renderPage();
+    expect(screen.getByText('Validation en cours...')).toBeInTheDocument();
+  });
+
+  it('displays error state when validation fails', () => {
+    mockUseControleOuvertureCaisseStore.mockImplementation((selector) => {
+      const state = {
+        isValidating: false,
+        validationResult: null,
+        validationError: {
+          code: 'ERR_SESSION_ALREADY_OPEN',
+          message: 'Session déjà ouverte',
+          field: 'chronoSession',
+        },
+        reset: mockReset,
+      };
+      return selector(state);
+    });
+
+    renderPage();
+    expect(screen.getByText('Erreur de validation')).toBeInTheDocument();
+    expect(screen.getByText('Code: ERR_SESSION_ALREADY_OPEN')).toBeInTheDocument();
+    expect(screen.getByText('Session déjà ouverte')).toBeInTheDocument();
+    expect(screen.getByText('Champ: chronoSession')).toBeInTheDocument();
+  });
+
+  it('displays success state when validation succeeds', () => {
+    mockUseControleOuvertureCaisseStore.mockImplementation((selector) => {
+      const state = {
+        isValidating: false,
+        validationResult: {
+          caisseCalculee: 1500.50,
+          caisseCalculeeMonnaie: 500.00,
+          caisseCalculeeProduits: 300.25,
+          caisseCalculeeCartes: 600.00,
+          caisseCalculeeCheque: 100.25,
+          caisseCalculeeOd: 0,
+          caisseCalculeeNbDevise: 3,
+        },
+        validationError: null,
+        reset: mockReset,
+      };
+      return selector(state);
+    });
+
+    renderPage();
+    expect(screen.getByText('Validation réussie')).toBeInTheDocument();
+    expect(screen.getByText('Caisse calculée: 1500.50')).toBeInTheDocument();
+    expect(screen.getByText('Monnaie: 500.00')).toBeInTheDocument();
+    expect(screen.getByText('Produits: 300.25')).toBeInTheDocument();
+    expect(screen.getByText('Cartes: 600.00')).toBeInTheDocument();
+    expect(screen.getByText('Chèques: 100.25')).toBeInTheDocument();
+    expect(screen.getByText('Nb devises: 3')).toBeInTheDocument();
+  });
+
+  it('navigates back to menu when back button is clicked', () => {
+    renderPage();
+    const backButton = screen.getByText('Retour au menu');
+    backButton.click();
+    expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
+  });
+
+  it('calls reset on unmount', async () => {
+    const { unmount } = renderPage();
+    unmount();
+    await waitFor(() => {
+      expect(mockReset).toHaveBeenCalled();
+    });
+  });
+});

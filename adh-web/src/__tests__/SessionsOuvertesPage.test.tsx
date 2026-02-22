@@ -1,0 +1,294 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+
+vi.mock('@/stores/sessionsOuvertesStore');
+vi.mock('@/stores', () => ({
+  useAuthStore: vi.fn(),
+}));
+
+import { SessionsOuvertesPage } from '@/pages/SessionsOuvertesPage';
+import { useSessionsOuvertesStore } from '@/stores/sessionsOuvertesStore';
+import { useAuthStore } from '@/stores';
+import type { SessionOuverte } from '@/types/sessionsOuvertes';
+
+const mockSessions: SessionOuverte[] = [
+  {
+    societe: 'MAIN',
+    compte: 'A1234',
+    filiation: 0,
+    numeroSession: 1,
+    operateur: 'OP001',
+    deviseLocale: 'EUR',
+    montantCoffre: 1500.5,
+    dateOuverture: new Date('2026-02-22T08:00:00'),
+    heureOuverture: '08:00',
+  },
+  {
+    societe: 'MAIN',
+    compte: 'B5678',
+    filiation: 1,
+    numeroSession: 2,
+    operateur: 'OP001',
+    deviseLocale: 'EUR',
+    montantCoffre: 2300.75,
+    dateOuverture: new Date('2026-02-22T09:30:00'),
+    heureOuverture: '09:30',
+  },
+  {
+    societe: 'BRANCH',
+    compte: 'C9012',
+    filiation: 0,
+    numeroSession: 3,
+    operateur: 'OP002',
+    deviseLocale: 'USD',
+    montantCoffre: 3200.0,
+    dateOuverture: new Date('2026-02-22T07:15:00'),
+    heureOuverture: '07:15',
+  },
+];
+
+const mockStore = {
+  sessions: [] as SessionOuverte[],
+  isLoading: false,
+  error: null as string | null,
+  selectedSession: null as SessionOuverte | null,
+  filtreSociete: '',
+  filtreOperateur: '',
+  chargerSessionsOuvertes: vi.fn(),
+  selectionnerSession: vi.fn(),
+  verifierExistenceSession: vi.fn(),
+  rafraichir: vi.fn(),
+  appliquerFiltres: vi.fn(),
+  reset: vi.fn(),
+};
+
+const mockAuthStore = {
+  user: {
+    prenom: 'Jean',
+    nom: 'Dupont',
+    operateurCode: 'OP001',
+  },
+};
+
+const renderPage = () =>
+  render(
+    <BrowserRouter>
+      <SessionsOuvertesPage />
+    </BrowserRouter>
+  );
+
+describe('SessionsOuvertesPage', () => {
+  beforeEach(() => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector(mockStore as never)
+    );
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
+      selector(mockAuthStore as never)
+    );
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders without crashing', () => {
+    renderPage();
+    expect(screen.getByText('Sessions ouvertes')).toBeInTheDocument();
+  });
+
+  it('displays loading state', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, isLoading: true } as never)
+    );
+
+    renderPage();
+    expect(screen.getByRole('status', { hidden: true })).toHaveClass('animate-spin');
+  });
+
+  it('calls chargerSessionsOuvertes on mount', () => {
+    renderPage();
+    expect(mockStore.chargerSessionsOuvertes).toHaveBeenCalledTimes(1);
+  });
+
+  it('displays error state', () => {
+    const errorMessage = 'Erreur de chargement';
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, error: errorMessage } as never)
+    );
+
+    renderPage();
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    expect(screen.getByText(errorMessage)).toHaveClass('text-red-700');
+  });
+
+  it('displays empty state when no sessions', () => {
+    renderPage();
+    expect(screen.getByText('Aucune session ouverte')).toBeInTheDocument();
+  });
+
+  it('displays sessions count', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, sessions: mockSessions } as never)
+    );
+
+    renderPage();
+    expect(screen.getByText('3 sessions actives')).toBeInTheDocument();
+  });
+
+  it('displays user info when logged in', () => {
+    renderPage();
+    expect(screen.getByText('Jean Dupont')).toBeInTheDocument();
+  });
+
+  it('groups sessions by societe and operateur', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, sessions: mockSessions } as never)
+    );
+
+    renderPage();
+    expect(screen.getByText('MAIN - OP001')).toBeInTheDocument();
+    expect(screen.getByText('BRANCH - OP002')).toBeInTheDocument();
+  });
+
+  it('displays session details correctly', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, sessions: [mockSessions[0]] } as never)
+    );
+
+    renderPage();
+    expect(screen.getByText('#1')).toBeInTheDocument();
+    expect(screen.getByText('A1234')).toBeInTheDocument();
+    expect(screen.getByText('EUR')).toBeInTheDocument();
+    expect(screen.getByText('1 500,50')).toBeInTheDocument();
+    expect(screen.getByText('08:00')).toBeInTheDocument();
+  });
+
+  it('displays filiation for sessions with filiation > 0', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, sessions: [mockSessions[1]] } as never)
+    );
+
+    renderPage();
+    expect(screen.getByText(/B5678 \(F1\)/)).toBeInTheDocument();
+  });
+
+  it('handles session selection', async () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, sessions: [mockSessions[0]] } as never)
+    );
+
+    renderPage();
+    const sessionButton = screen.getByRole('button', { name: /#1/ });
+    fireEvent.click(sessionButton);
+
+    await waitFor(() => {
+      expect(mockStore.selectionnerSession).toHaveBeenCalledWith(mockSessions[0]);
+    });
+  });
+
+  it('highlights selected session', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({
+        ...mockStore,
+        sessions: [mockSessions[0]],
+        selectedSession: mockSessions[0],
+      } as never)
+    );
+
+    renderPage();
+    const sessionButton = screen.getByRole('button', { name: /#1/ });
+    expect(sessionButton).toHaveClass('bg-primary-light');
+  });
+
+  it('handles refresh button click', async () => {
+    renderPage();
+    const refreshButton = screen.getByRole('button', { name: /Rafraîchir/i });
+    fireEvent.click(refreshButton);
+
+    await waitFor(() => {
+      expect(mockStore.rafraichir).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('disables refresh button when loading', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, isLoading: true } as never)
+    );
+
+    renderPage();
+    const refreshButton = screen.getByRole('button', { name: /Rafraîchir/i });
+    expect(refreshButton).toBeDisabled();
+  });
+
+  it('handles societe filter change', async () => {
+    renderPage();
+    const societeInput = screen.getByPlaceholderText('Filtrer par société');
+    fireEvent.change(societeInput, { target: { value: 'MAIN' } });
+
+    await waitFor(() => {
+      expect(mockStore.appliquerFiltres).toHaveBeenCalledWith('MAIN', '');
+    });
+  });
+
+  it('handles operateur filter change', async () => {
+    renderPage();
+    const operateurInput = screen.getByPlaceholderText('Filtrer par opérateur');
+    fireEvent.change(operateurInput, { target: { value: 'OP001' } });
+
+    await waitFor(() => {
+      expect(mockStore.appliquerFiltres).toHaveBeenCalledWith('', 'OP001');
+    });
+  });
+
+  it('displays current filter values', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({
+        ...mockStore,
+        filtreSociete: 'MAIN',
+        filtreOperateur: 'OP001',
+      } as never)
+    );
+
+    renderPage();
+    const societeInput = screen.getByPlaceholderText('Filtrer par société') as HTMLInputElement;
+    const operateurInput = screen.getByPlaceholderText('Filtrer par opérateur') as HTMLInputElement;
+
+    expect(societeInput.value).toBe('MAIN');
+    expect(operateurInput.value).toBe('OP001');
+  });
+
+  it('calls reset on unmount', () => {
+    const { unmount } = renderPage();
+    unmount();
+    expect(mockStore.reset).toHaveBeenCalledTimes(1);
+  });
+
+  it('displays group session count', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, sessions: mockSessions } as never)
+    );
+
+    renderPage();
+    expect(screen.getByText('2 sessions')).toBeInTheDocument();
+    expect(screen.getByText('1 session')).toBeInTheDocument();
+  });
+
+  it('formats dates correctly', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, sessions: [mockSessions[0]] } as never)
+    );
+
+    renderPage();
+    expect(screen.getByText('22/02/2026')).toBeInTheDocument();
+  });
+
+  it('formats amounts with two decimals', () => {
+    vi.mocked(useSessionsOuvertesStore).mockImplementation((selector) =>
+      selector({ ...mockStore, sessions: [mockSessions[2]] } as never)
+    );
+
+    renderPage();
+    expect(screen.getByText('3 200,00')).toBeInTheDocument();
+  });
+});

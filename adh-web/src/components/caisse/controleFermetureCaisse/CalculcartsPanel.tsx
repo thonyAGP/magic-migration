@@ -1,0 +1,171 @@
+import type { Ecart } from "@/types/controleFermetureCaisse";
+import { cn } from "@/lib/utils";
+
+interface CalculEcartsRow {
+  deviseCode: string;
+  montantAttendu: number;
+  montantDeclare: number;
+  ecart: number;
+  classeMoyenPaiement: string | null;
+  libelleMoyenPaiement: string | null;
+}
+
+interface CalculEcartsPanelProps {
+  ecarts: Ecart[];
+  className?: string;
+}
+
+export const CalculEcartsPanel = ({ ecarts, className }: CalculEcartsPanelProps) => {
+  const rows: CalculEcartsRow[] = ecarts.map((e) => ({
+    deviseCode: e.deviseCode,
+    montantAttendu: e.montantAttendu,
+    montantDeclare: e.montantDeclare,
+    ecart: e.ecart,
+    classeMoyenPaiement: e.classeMoyenPaiement,
+    libelleMoyenPaiement: e.libelleMoyenPaiement,
+  }));
+
+  const hasAlerts = rows.some((r) => r.ecart !== 0);
+  const totalEcart = rows.reduce((sum, r) => sum + Math.abs(r.ecart), 0);
+
+  const formatAmount = (value: number): string => {
+    return value.toFixed(2);
+  };
+
+  return (
+    <div className={cn("flex flex-col gap-4", className)}>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Calcul des Écarts</h2>
+        {hasAlerts && (
+          <div className="flex items-center gap-2 rounded-md bg-yellow-100 px-3 py-1.5 text-sm font-medium text-yellow-900">
+            <svg
+              className="size-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span>Écart détecté: {formatAmount(totalEcart)}</span>
+          </div>
+        )}
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-8 text-center text-gray-500">
+          Aucun écart à afficher
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-md border border-gray-200">
+          <table className="w-full table-auto">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                  Devise
+                </th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                  Attendu
+                </th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                  Déclaré
+                </th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">
+                  Écart
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                  Classe MOP
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                  Libellé
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {rows.map((row, idx) => {
+                const hasEcart = row.ecart !== 0;
+                return (
+                  <tr
+                    key={idx}
+                    className={cn(
+                      "transition-colors hover:bg-gray-50",
+                      hasEcart && "bg-yellow-50"
+                    )}
+                  >
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                      {row.deviseCode}
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm text-gray-700">
+                      {formatAmount(row.montantAttendu)}
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm text-gray-700">
+                      {formatAmount(row.montantDeclare)}
+                    </td>
+                    <td
+                      className={cn(
+                        "px-4 py-3 text-right text-sm font-semibold",
+                        hasEcart ? "text-yellow-900" : "text-gray-700"
+                      )}
+                    >
+                      {formatAmount(row.ecart)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700">
+                      <div className="group relative inline-block">
+                        {row.classeMoyenPaiement || "—"}
+                        {row.classeMoyenPaiement && row.libelleMoyenPaiement && (
+                          <div className="invisible absolute bottom-full left-0 mb-2 w-48 rounded-md bg-gray-900 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
+                            <div className="font-medium">
+                              Classe: {row.classeMoyenPaiement}
+                            </div>
+                            <div className="mt-1 text-gray-300">
+                              {row.libelleMoyenPaiement}
+                            </div>
+                            <div className="absolute left-4 top-full size-0 border-x-4 border-t-4 border-x-transparent border-t-gray-900" />
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700">
+                      {row.libelleMoyenPaiement || "—"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {hasAlerts && (
+        <div className="rounded-md bg-yellow-50 p-4 text-sm text-yellow-800">
+          <div className="flex items-start gap-3">
+            <svg
+              className="mt-0.5 size-5 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <div>
+              <div className="font-medium">Attention</div>
+              <div className="mt-1">
+                Des écarts ont été détectés entre les montants attendus et déclarés.
+                Veuillez vérifier les montants avant de continuer.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

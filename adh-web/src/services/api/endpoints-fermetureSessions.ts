@@ -1,0 +1,34 @@
+import { apiClient, type ApiResponse } from '@/services/api/apiClient';
+import type {
+  Session,
+  UnilateralBilateral,
+  SessionClosureResult,
+  SessionValidation,
+  FetchSessionsRequest,
+} from '@/types/fermetureSessions';
+
+export const fermetureSessionsApi = {
+  getSessions: (filters?: FetchSessionsRequest) => {
+    const query = filters?.statut ? `?statut=${filters.statut}` : '';
+    return apiClient.get<ApiResponse<Session[]>>(
+      `/api/fermeture-sessions/sessions${query}`,
+    );
+  },
+
+  getUnilateralBilateralTypes: () =>
+    apiClient.get<ApiResponse<UnilateralBilateral[]>>(
+      '/api/fermeture-sessions/types',
+    ),
+
+  closeSession: (sessionId: number) =>
+    apiClient.post<ApiResponse<SessionClosureResult>>(
+      `/api/fermeture-sessions/close/${sessionId}`,
+      {},
+    ),
+
+  validateSession: (sessionId: number) =>
+    apiClient.post<ApiResponse<SessionValidation>>(
+      `/api/fermeture-sessions/validate/${sessionId}`,
+      {},
+    ),
+};

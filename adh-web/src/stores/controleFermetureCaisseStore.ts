@@ -1,0 +1,587 @@
+import { create } from 'zustand';
+import type {
+  PointageDevise,
+  PointageArticle,
+  PointageApproRemise,
+  HistoSessionsCaisse,
+  GestionDeviseSession,
+  Ecart,
+  ValiderParametresRequest,
+  ValiderParametresResponse,
+  Configuration2CaissesRequest,
+  GenererTableauRecapResponse,
+  MettreAJourDevisesSessionResponse,
+  RecupererClasseMoyenPaiementResponse,
+  CalculerEcartsResponse,
+  FinaliserFermetureResponse,
+  ValiderIntegriteDonneesResponse,
+  PointagesResponse,
+} from '@/types/controleFermetureCaisse';
+import { apiClient } from '@/services/api/apiClient';
+import type { ApiResponse } from '@/services/api/apiClient';
+import { useDataSourceStore } from '@/stores/dataSourceStore';
+
+interface ControleFermetureCaisseState {
+  sessionId: number | null;
+  deviseLocale: string;
+  parametreUniBi: 'U' | 'B';
+  parametreKT: 'K' | 'T';
+  parametre2Caisses: boolean;
+  hostCourantCoffre: string;
+  sessionOuverte: boolean;
+  terminalCoffre2: number | null;
+  hostnameCoffre2: string;
+  ecarts: Ecart[];
+  devisesPointees: PointageDevise[];
+  articlesPointes: PointageArticle[];
+  approRemisesPointes: PointageApproRemise[];
+  histoSessionDetail: Record<string, unknown>[];
+  histoSessionDevise: Record<string, unknown>[];
+  tableauRecap: Record<string, unknown>[];
+  isLoading: boolean;
+  error: string | null;
+  validationErrors: string[];
+}
+
+interface ControleFermetureCaisseActions {
+  setSessionId: (sessionId: number | null) => void;
+  setDeviseLocale: (devise: string) => void;
+  setParametreUniBi: (param: 'U' | 'B') => void;
+  setParametreKT: (param: 'K' | 'T') => void;
+  setParametre2Caisses: (enabled: boolean) => void;
+  setHostCourantCoffre: (host: string) => void;
+  setSessionOuverte: (opened: boolean) => void;
+  setTerminalCoffre2: (terminal: number | null) => void;
+  setHostnameCoffre2: (hostname: string) => void;
+  validerParametresUniBi: (paramUniBi: 'U' | 'B') => Promise<boolean>;
+  validerConfiguration2Caisses: (
+    param2Caisses: boolean,
+    hostCourant: string,
+    sessionOuverte: boolean,
+  ) => Promise<boolean>;
+  traiterModeKasse: (paramKT: 'K' | 'T') => Promise<void>;
+  configurerCoffre2: (vg78: boolean, terminal: number | null, hostname: string) => Promise<void>;
+  genererTableauRecap: (sessionId: number) => Promise<Record<string, unknown>[]>;
+  mettreAJourDevisesSession: (
+    sessionId: number,
+    devises: GestionDeviseSession[],
+  ) => Promise<void>;
+  recupererClasseMoyenPaiement: (
+    moyenPaiementId: number,
+  ) => Promise<{ classe: string; libelle: string }>;
+  calculerEcarts: (
+    sessionId: number,
+    montantsDeclares: Record<string, number>,
+  ) => Promise<Ecart[]>;
+  finaliserFermeture: (sessionId: number) => Promise<void>;
+  validerIntegriteDonnees: (
+    sessionId: number,
+  ) => Promise<{ valid: boolean; errors: string[] }>;
+  chargerPointages: (sessionId: number) => Promise<void>;
+  reset: () => void;
+}
+
+type ControleFermetureCaisseStore = ControleFermetureCaisseState &
+  ControleFermetureCaisseActions;
+
+const MOCK_DEVISES_POINTEES: PointageDevise[] = [
+  {
+    finPointage: true,
+    devisesPointees: true,
+    deviseLocale: 'EUR',
+    nombreDevises: 5,
+  },
+];
+
+const MOCK_ARTICLES_POINTES: PointageArticle[] = [
+  { existeArticleStock: true },
+];
+
+const MOCK_APPRO_REMISES_POINTES: PointageApproRemise[] = [
+  { id: 1 },
+  { id: 2 },
+  { id: 3 },
+  { id: 4 },
+];
+
+const MOCK_ECARTS: Ecart[] = [
+  {
+    deviseCode: 'EUR',
+    montantAttendu: 1200.0,
+    montantDeclare: 1200.0,
+    ecart: 0,
+    classeMoyenPaiement: 'ESPECE',
+    libelleMoyenPaiement: 'Espèces',
+  },
+  {
+    deviseCode: 'USD',
+    montantAttendu: 500.0,
+    montantDeclare: 550.0,
+    ecart: 50.0,
+    classeMoyenPaiement: 'ESPECE',
+    libelleMoyenPaiement: 'Espèces USD',
+  },
+  {
+    deviseCode: 'GBP',
+    montantAttendu: 300.0,
+    montantDeclare: 280.0,
+    ecart: -20.0,
+    classeMoyenPaiement: 'ESPECE',
+    libelleMoyenPaiement: 'Espèces GBP',
+  },
+];
+
+const MOCK_TABLEAU_RECAP = [
+  {
+    deviseCode: 'EUR',
+    totalVentes: 1500.0,
+    totalRemboursements: 300.0,
+    soldeAttendu: 1200.0,
+    moyenPaiement: 'CB',
+  },
+  {
+    deviseCode: 'EUR',
+    totalVentes: 800.0,
+    totalRemboursements: 0,
+    soldeAttendu: 800.0,
+    moyenPaiement: 'ESPECE',
+  },
+  {
+    deviseCode: 'USD',
+    totalVentes: 500.0,
+    totalRemboursements: 0,
+    soldeAttendu: 500.0,
+    moyenPaiement: 'ESPECE',
+  },
+  {
+    deviseCode: 'GBP',
+    totalVentes: 300.0,
+    totalRemboursements: 0,
+    soldeAttendu: 300.0,
+    moyenPaiement: 'ESPECE',
+  },
+  {
+    deviseCode: 'CHF',
+    totalVentes: 150.0,
+    totalRemboursements: 0,
+    soldeAttendu: 150.0,
+    moyenPaiement: 'ESPECE',
+  },
+];
+
+const MOCK_CLASSE_MOP = {
+  classe: 'CB',
+  libelle: 'Carte bancaire',
+};
+
+const initialState: ControleFermetureCaisseState = {
+  sessionId: null,
+  deviseLocale: '',
+  parametreUniBi: 'U',
+  parametreKT: 'K',
+  parametre2Caisses: false,
+  hostCourantCoffre: '',
+  sessionOuverte: false,
+  terminalCoffre2: null,
+  hostnameCoffre2: '',
+  ecarts: [],
+  devisesPointees: [],
+  articlesPointes: [],
+  approRemisesPointes: [],
+  histoSessionDetail: [],
+  histoSessionDevise: [],
+  tableauRecap: [],
+  isLoading: false,
+  error: null,
+  validationErrors: [],
+};
+
+export const useControleFermetureCaisseStore = create<ControleFermetureCaisseStore>()(
+  (set, get) => ({
+    ...initialState,
+
+    setSessionId: (sessionId) => set({ sessionId }),
+    setDeviseLocale: (devise) => set({ deviseLocale: devise }),
+    setParametreUniBi: (param) => set({ parametreUniBi: param }),
+    setParametreKT: (param) => set({ parametreKT: param }),
+    setParametre2Caisses: (enabled) => set({ parametre2Caisses: enabled }),
+    setHostCourantCoffre: (host) => set({ hostCourantCoffre: host }),
+    setSessionOuverte: (opened) => set({ sessionOuverte: opened }),
+    setTerminalCoffre2: (terminal) => set({ terminalCoffre2: terminal }),
+    setHostnameCoffre2: (hostname) => set({ hostnameCoffre2: hostname }),
+
+    validerParametresUniBi: async (paramUniBi) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null, validationErrors: [] });
+
+      if (!isRealApi) {
+        set({ parametreUniBi: paramUniBi, isLoading: false });
+        return true;
+      }
+
+      try {
+        const payload: ValiderParametresRequest = {
+          paramUniBi,
+          paramKT: get().parametreKT,
+          param2Caisses: get().parametre2Caisses,
+          hostCourant: get().hostCourantCoffre,
+          sessionOuverte: get().sessionOuverte,
+        };
+
+        const response: ApiResponse<ValiderParametresResponse> = await apiClient.post(
+          '/api/caisse/fermeture/valider-parametres',
+          payload,
+        );
+
+        const data = response.data.data;
+        if (!data) {
+          throw new Error('Données de validation manquantes');
+        }
+
+        set({
+          parametreUniBi: paramUniBi,
+          validationErrors: data.errors ?? [],
+          isLoading: false,
+        });
+
+        return data.valid;
+      } catch (e: unknown) {
+        const message =
+          e instanceof Error ? e.message : 'Erreur validation paramètres UNI/BI';
+        set({ error: message, isLoading: false });
+        return false;
+      }
+    },
+
+    validerConfiguration2Caisses: async (param2Caisses, hostCourant, sessionOuverte) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null, validationErrors: [] });
+
+      if (!isRealApi) {
+        set({
+          parametre2Caisses,
+          hostCourantCoffre: hostCourant,
+          sessionOuverte,
+          isLoading: false,
+        });
+        return true;
+      }
+
+      try {
+        const payload: ValiderParametresRequest = {
+          paramUniBi: get().parametreUniBi,
+          paramKT: get().parametreKT,
+          param2Caisses,
+          hostCourant,
+          sessionOuverte,
+        };
+
+        const response: ApiResponse<ValiderParametresResponse> = await apiClient.post(
+          '/api/caisse/fermeture/valider-parametres',
+          payload,
+        );
+
+        const data = response.data.data;
+        if (!data) {
+          throw new Error('Données de validation manquantes');
+        }
+
+        set({
+          parametre2Caisses,
+          hostCourantCoffre: hostCourant,
+          sessionOuverte,
+          validationErrors: data.errors ?? [],
+          isLoading: false,
+        });
+
+        return data.valid;
+      } catch (e: unknown) {
+        const message =
+          e instanceof Error ? e.message : 'Erreur validation configuration 2 caisses';
+        set({ error: message, isLoading: false });
+        return false;
+      }
+    },
+
+    traiterModeKasse: async (paramKT) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null });
+
+      if (!isRealApi) {
+        set({ parametreKT: paramKT, isLoading: false });
+        return;
+      }
+
+      try {
+        const payload: ValiderParametresRequest = {
+          paramUniBi: get().parametreUniBi,
+          paramKT,
+          param2Caisses: get().parametre2Caisses,
+          hostCourant: get().hostCourantCoffre,
+          sessionOuverte: get().sessionOuverte,
+        };
+
+        await apiClient.post('/api/caisse/fermeture/valider-parametres', payload);
+        set({ parametreKT: paramKT });
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : 'Erreur traitement mode K/T';
+        set({ error: message });
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+
+    configurerCoffre2: async (vg78, terminal, hostname) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null });
+
+      if (!isRealApi) {
+        if (vg78) {
+          set({ terminalCoffre2: terminal, hostnameCoffre2: hostname });
+        } else {
+          set({ terminalCoffre2: null, hostnameCoffre2: '' });
+        }
+        set({ isLoading: false });
+        return;
+      }
+
+      try {
+        const payload: Configuration2CaissesRequest = {
+          vg78,
+          terminal,
+          hostname,
+        };
+
+        await apiClient.post('/api/caisse/fermeture/configurer-coffre2', payload);
+
+        if (vg78) {
+          set({ terminalCoffre2: terminal, hostnameCoffre2: hostname });
+        } else {
+          set({ terminalCoffre2: null, hostnameCoffre2: '' });
+        }
+      } catch (e: unknown) {
+        const message =
+          e instanceof Error ? e.message : 'Erreur configuration coffre 2';
+        set({ error: message });
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+
+    genererTableauRecap: async (sessionId) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null });
+
+      if (!isRealApi) {
+        set({ tableauRecap: MOCK_TABLEAU_RECAP, isLoading: false });
+        return MOCK_TABLEAU_RECAP;
+      }
+
+      try {
+        const response: ApiResponse<GenererTableauRecapResponse> = await apiClient.post(
+          `/api/caisse/fermeture/generer-recap?sessionId=${sessionId}`,
+        );
+
+        const data = response.data.data;
+        if (!data) {
+          throw new Error('Données de récapitulatif manquantes');
+        }
+
+        set({ tableauRecap: data.tableauRecap ?? [] });
+        return data.tableauRecap ?? [];
+      } catch (e: unknown) {
+        const message =
+          e instanceof Error ? e.message : 'Erreur génération tableau récapitulatif';
+        set({ tableauRecap: [], error: message });
+        return [];
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+
+    mettreAJourDevisesSession: async (sessionId, devises) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null });
+
+      if (!isRealApi) {
+        set({ isLoading: false });
+        return;
+      }
+
+      try {
+        await apiClient.post<MettreAJourDevisesSessionResponse>(
+          '/api/caisse/fermeture/maj-devises-session',
+          { sessionId, devises },
+        );
+      } catch (e: unknown) {
+        const message =
+          e instanceof Error ? e.message : 'Erreur mise à jour devises session';
+        set({ error: message });
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+
+    recupererClasseMoyenPaiement: async (moyenPaiementId) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null });
+
+      if (!isRealApi) {
+        set({ isLoading: false });
+        return MOCK_CLASSE_MOP;
+      }
+
+      try {
+        const response: ApiResponse<RecupererClasseMoyenPaiementResponse> =
+          await apiClient.get(
+            `/api/caisse/fermeture/classe-moyen-paiement?moyenPaiementId=${moyenPaiementId}`,
+          );
+
+        const data = response.data.data;
+        if (!data) {
+          throw new Error('Données classe moyen paiement manquantes');
+        }
+
+        return { classe: data.classe, libelle: data.libelle };
+      } catch (e: unknown) {
+        const message =
+          e instanceof Error
+            ? e.message
+            : 'Erreur récupération classe moyen paiement';
+        set({ error: message });
+        return { classe: '', libelle: '' };
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+
+    calculerEcarts: async (sessionId, montantsDeclares) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null });
+
+      if (!isRealApi) {
+        set({ ecarts: MOCK_ECARTS, isLoading: false });
+        return MOCK_ECARTS;
+      }
+
+      try {
+        const response: ApiResponse<CalculerEcartsResponse> = await apiClient.post(
+          `/api/caisse/fermeture/calculer-ecarts?sessionId=${sessionId}`,
+          { montantsDeclares },
+        );
+
+        const data = response.data.data;
+        if (!data) {
+          throw new Error('Données écarts manquantes');
+        }
+
+        set({ ecarts: data.ecarts ?? [] });
+        return data.ecarts ?? [];
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : 'Erreur calcul écarts';
+        set({ ecarts: [], error: message });
+        return [];
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+
+    finaliserFermeture: async (sessionId) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null });
+
+      if (!isRealApi) {
+        set({ isLoading: false });
+        return;
+      }
+
+      try {
+        await apiClient.post<FinaliserFermetureResponse>(
+          `/api/caisse/fermeture/finaliser?sessionId=${sessionId}`,
+        );
+      } catch (e: unknown) {
+        const message =
+          e instanceof Error ? e.message : 'Erreur finalisation fermeture';
+        set({ error: message });
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+
+    validerIntegriteDonnees: async (sessionId) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null, validationErrors: [] });
+
+      if (!isRealApi) {
+        set({ isLoading: false, validationErrors: [] });
+        return { valid: true, errors: [] };
+      }
+
+      try {
+        const response: ApiResponse<ValiderIntegriteDonneesResponse> =
+          await apiClient.post(
+            `/api/caisse/fermeture/valider-integrite?sessionId=${sessionId}`,
+          );
+
+        const data = response.data.data;
+        if (!data) {
+          throw new Error('Données validation intégrité manquantes');
+        }
+
+        set({ validationErrors: data.errors ?? [] });
+        return { valid: data.valid, errors: data.errors ?? [] };
+      } catch (e: unknown) {
+        const message =
+          e instanceof Error ? e.message : 'Erreur validation intégrité';
+        set({ error: message, validationErrors: [] });
+        return { valid: false, errors: [message] };
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+
+    chargerPointages: async (sessionId) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null });
+
+      if (!isRealApi) {
+        set({
+          devisesPointees: MOCK_DEVISES_POINTEES,
+          articlesPointes: MOCK_ARTICLES_POINTES,
+          approRemisesPointes: MOCK_APPRO_REMISES_POINTES,
+          isLoading: false,
+        });
+        return;
+      }
+
+      try {
+        const response: ApiResponse<PointagesResponse> = await apiClient.get(
+          `/api/caisse/fermeture/pointages?sessionId=${sessionId}`,
+        );
+
+        const data = response.data.data;
+        if (!data) {
+          throw new Error('Données pointages manquantes');
+        }
+
+        set({
+          devisesPointees: data.devises ?? [],
+          articlesPointes: data.articles ?? [],
+          approRemisesPointes: data.approRemises ?? [],
+        });
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : 'Erreur chargement pointages';
+        set({
+          devisesPointees: [],
+          articlesPointes: [],
+          approRemisesPointes: [],
+          error: message,
+        });
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+
+    reset: () => set({ ...initialState }),
+  }),
+);

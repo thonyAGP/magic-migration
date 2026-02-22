@@ -1,0 +1,66 @@
+import { create } from 'zustand';
+import type {
+  SaveComptageHistorizationRequest,
+  SaveComptageHistorizationResponse,
+} from '@/types/comptageHistorization';
+import { apiClient } from '@/services/api/apiClient';
+import type { ApiResponse } from '@/services/api/apiClient';
+import { useDataSourceStore } from './dataSourceStore';
+
+interface ComptageHistorizationState {
+  isLoading: boolean;
+  error: string | null;
+  lastHistoId: number | null;
+}
+
+interface ComptageHistorizationActions {
+  saveComptageHistorization: (
+    request: SaveComptageHistorizationRequest,
+  ) => Promise<number>;
+  reset: () => void;
+}
+
+type ComptageHistorizationStore = ComptageHistorizationState &
+  ComptageHistorizationActions;
+
+const initialState: ComptageHistorizationState = {
+  isLoading: false,
+  error: null,
+  lastHistoId: null,
+};
+
+export const useComptageHistorizationStore =
+  create<ComptageHistorizationStore>()((set) => ({
+    ...initialState,
+
+    saveComptageHistorization: async (request) => {
+      const { isRealApi } = useDataSourceStore.getState();
+      set({ isLoading: true, error: null });
+
+      if (!isRealApi) {
+        const mockHistoId = Math.floor(Math.random() * 100000) + 1000;
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        set({ lastHistoId: mockHistoId, isLoading: false });
+        return mockHistoId;
+      }
+
+      try {
+        const response = await apiClient.post<
+          ApiResponse<SaveComptageHistorizationResponse>
+        >('/api/comptage-historization/save', request);
+
+        const chronoHisto = response.data.data?.chronoHisto ?? 0;
+        set({ lastHistoId: chronoHisto });
+        return chronoHisto;
+      } catch (e: unknown) {
+        const message =
+          e instanceof Error ? e.message : 'Erreur sauvegarde historisation';
+        set({ error: message, lastHistoId: null });
+        throw e;
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+
+    reset: () => set({ ...initialState }),
+  }));

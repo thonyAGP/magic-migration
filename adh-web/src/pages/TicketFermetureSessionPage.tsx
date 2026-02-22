@@ -1,0 +1,270 @@
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ScreenLayout } from '@/components/layout';
+import { Button, Dialog, Input } from '@/components/ui';
+import { useTicketFermetureSessionStore } from '@/stores/ticketFermetureSessionStore';
+import { useAuthStore } from '@/stores';
+import type { PrinterOption } from '@/types/ticketFermetureSession';
+import { cn } from '@/lib/utils';
+
+export function TicketFermetureSessionPage() {
+  const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+
+  const recapData = useTicketFermetureSessionStore((s) => s.recapData);
+  const montantsComptables = useTicketFermetureSessionStore((s) => s.montantsComptables);
+  const isLoading = useTicketFermetureSessionStore((s) => s.isLoading);
+  const error = useTicketFermetureSessionStore((s) => s.error);
+  const finTache = useTicketFermetureSessionStore((s) => s.finTache);
+  const printerNum = useTicketFermetureSessionStore((s) => s.printerNum);
+  const loadRecapData = useTicketFermetureSessionStore((s) => s.loadRecapData);
+  const loadMontantsComptables = useTicketFermetureSessionStore((s) => s.loadMontantsComptables);
+  const generateTicketFermeture = useTicketFermetureSessionStore((s) => s.generateTicketFermeture);
+  const validateFinTache = useTicketFermetureSessionStore((s) => s.validateFinTache);
+  const selectPrinter = useTicketFermetureSessionStore((s) => s.selectPrinter);
+  const reset = useTicketFermetureSessionStore((s) => s.reset);
+
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedSession, setSelectedSession] = useState<number>(142);
+
+  const societe = 'ADH';
+
+  useEffect(() => {
+    loadRecapData(societe, selectedSession);
+    loadMontantsComptables(societe, selectedSession);
+    return () => reset();
+  }, [loadRecapData, loadMontantsComptables, reset, selectedSession]);
+
+  const handleOpenDialog = useCallback(() => {
+    if (!recapData) return;
+    if (!validateFinTache(finTache)) {
+      alert('Erreur: fin_tache doit être "F" pour procéder');
+      return;
+    }
+    setShowDialog(true);
+  }, [recapData, finTache, validateFinTache]);
+
+  const handleGenerate = useCallback(async () => {
+    if (!recapData) return;
+    await generateTicketFermeture(societe, recapData.session, recapData.dateComptable);
+    setShowDialog(false);
+  }, [recapData, generateTicketFermeture]);
+
+  const handlePrinterChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const val = Number(e.target.value) as PrinterOption;
+      selectPrinter(val);
+    },
+    [selectPrinter],
+  );
+
+  const handleBack = () => {
+    navigate('/caisse/menu');
+  };
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
+
+  const formatDate = (date: Date) =>
+    new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(
+      new Date(date),
+    );
+
+  if (isLoading && !recapData) {
+    return (
+      <ScreenLayout>
+        <div className="flex items-center justify-center h-96">
+          <div className="text-on-surface-muted">Chargement des données...</div>
+        </div>
+      </ScreenLayout>
+    );
+  }
+
+  return (
+    <ScreenLayout>
+      <div className="space-y-6 max-w-4xl mx-auto">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">Ticket de fermeture de session</h2>
+            <p className="text-on-surface-muted text-sm mt-1">
+              Récapitulatif et impression du ticket de clôture
+            </p>
+          </div>
+          {user && (
+            <span className="text-xs text-on-surface-muted">
+              {user.prenom} {user.nom}
+            </span>
+          )}
+        </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+            {error}
+          </div>
+        )}
+
+        {!recapData && !isLoading && (
+          <div className="text-center text-on-surface-muted py-12">
+            Aucune donnée de récapitulatif disponible
+          </div>
+        )}
+
+        {recapData && (
+          <>
+            <div className="bg-surface border border-border rounded-lg p-6 space-y-4">
+              <div className="border-b border-border pb-4">
+                <h3 className="font-semibold text-lg mb-3">Informations de session</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs text-on-surface-muted mb-1">
+                      Numéro de session
+                    </label>
+                    <Input value={recapData.session} readOnly className="bg-surface-muted" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-on-surface-muted mb-1">
+                      Date comptable
+                    </label>
+                    <Input
+                      value={formatDate(recapData.dateComptable)}
+                      readOnly
+                      className="bg-surface-muted"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-on-surface-muted mb-1">Village</label>
+                    <Input value={recapData.nomVillage} readOnly className="bg-surface-muted" />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-lg mb-3">Montants</h3>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-on-surface-muted">Caisse départ</span>
+                    <span className="font-mono font-semibold">
+                      {formatCurrency(recapData.caisseDepart)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-on-surface-muted">Apport coffre</span>
+                    <span className="font-mono font-semibold">
+                      {formatCurrency(recapData.apportCoffre)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-on-surface-muted">Versement</span>
+                    <span className="font-mono font-semibold">
+                      {formatCurrency(recapData.versement)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-on-surface-muted">Retrait</span>
+                    <span className="font-mono font-semibold">
+                      {formatCurrency(recapData.retrait)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-on-surface-muted">Solde cash</span>
+                    <span className="font-mono font-semibold text-green-700">
+                      {formatCurrency(recapData.soldeCash)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-on-surface-muted">Solde carte</span>
+                    <span className="font-mono font-semibold text-green-700">
+                      {formatCurrency(recapData.soldeCarte)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-on-surface-muted">Change</span>
+                    <span className="font-mono font-semibold">
+                      {formatCurrency(recapData.change)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-on-surface-muted">Frais de change</span>
+                    <span className="font-mono font-semibold">
+                      {formatCurrency(recapData.fraisChange)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {montantsComptables.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="font-semibold text-sm mb-2 text-on-surface-muted">
+                    Détails comptables
+                  </h3>
+                  <div className="space-y-1">
+                    {montantsComptables.map((m, idx) => (
+                      <div
+                        key={idx}
+                        className="flex justify-between text-xs py-1 border-b border-border"
+                      >
+                        <span className="text-on-surface-muted">
+                          {m.cumulQuantite} transactions
+                        </span>
+                        <span className="font-mono">{formatCurrency(m.cumulMontant)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3 justify-between">
+              <Button onClick={handleBack} variant="secondary">
+                Retour au menu
+              </Button>
+              <Button onClick={handleOpenDialog} variant="primary" disabled={isLoading}>
+                Générer le ticket
+              </Button>
+            </div>
+          </>
+        )}
+
+        <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Confirmer la génération du ticket</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm text-on-surface-muted mb-2">Imprimante</label>
+                <select
+                  value={printerNum}
+                  onChange={handlePrinterChange}
+                  className="w-full px-3 py-2 border border-border rounded-md bg-surface text-on-surface"
+                >
+                  <option value={1}>Imprimante principale (1)</option>
+                  <option value={9}>Imprimante secondaire (9)</option>
+                </select>
+              </div>
+              {recapData && (
+                <div className="bg-surface-muted p-3 rounded-md text-sm">
+                  <p>
+                    <strong>Session:</strong> {recapData.session}
+                  </p>
+                  <p>
+                    <strong>Date:</strong> {formatDate(recapData.dateComptable)}
+                  </p>
+                  <p>
+                    <strong>Village:</strong> {recapData.nomVillage}
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-3 justify-end">
+              <Button onClick={() => setShowDialog(false)} variant="secondary">
+                Annuler
+              </Button>
+              <Button onClick={handleGenerate} variant="primary" disabled={isLoading}>
+                {isLoading ? 'Génération...' : 'Confirmer'}
+              </Button>
+            </div>
+          </div>
+        </Dialog>
+      </div>
+    </ScreenLayout>
+  );
+}

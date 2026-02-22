@@ -1,0 +1,103 @@
+{
+  "domain": "deviseSession",
+  "domainPascal": "DeviseSession",
+  "complexity": "LOW",
+  "entities": [
+    {
+      "name": "DeviseSession",
+      "fields": [
+        {
+          "name": "codeDevise",
+          "type": "string",
+          "source": "gestion_devise_session.code_devise",
+          "nullable": false
+        },
+        {
+          "name": "modePaiement",
+          "type": "string",
+          "source": "gestion_devise_session.mode_paiement",
+          "nullable": false
+        },
+        {
+          "name": "quand",
+          "type": "string",
+          "source": "gestion_devise_session.quand",
+          "nullable": false
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "source": "gestion_devise_session.type",
+          "nullable": false
+        },
+        {
+          "name": "quantite",
+          "type": "number",
+          "source": "gestion_devise_session.quantite",
+          "nullable": false
+        },
+        {
+          "name": "cumulOpChange",
+          "type": "boolean",
+          "source": "gestion_devise_session.cumul_op_change",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    }
+  ],
+  "actions": [
+    {
+      "name": "updateDeviseSession",
+      "params": [
+        "codeDevise: string",
+        "modePaiement: string",
+        "quand: string",
+        "type: string",
+        "quantite: number",
+        "cumulOpChange: boolean"
+      ],
+      "businessRules": [
+        "RM-001: If cumulOpChange is false, overwrite quantity; otherwise accumulate quantity to existing session record"
+      ],
+      "returns": "Promise<void>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "PUT",
+      "path": "/api/caisse/devise-session",
+      "queryParams": [],
+      "response": "void"
+    }
+  ],
+  "uiLayout": {
+    "type": "no-ui",
+    "sections": [],
+    "description": "Backend-only Web Service program with no visible UI. Called by 11 programs after significant devise operations to synchronize gestion_devise_session table."
+  },
+  "mockData": {
+    "count": 0,
+    "description": "No mock data required - backend-only service program"
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore"
+    ],
+    "sharedTypes": [
+      "DeviseSession"
+    ],
+    "externalApis": []
+  }
+}

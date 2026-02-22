@@ -1,0 +1,124 @@
+import type { SessionDetail, SessionCurrency } from '@/types/sessionHistory';
+import { cn } from '@/lib/utils';
+
+interface SessionDetailsPanelProps {
+  details: SessionDetail | null;
+  currencies: SessionCurrency[];
+  isLoading?: boolean;
+  className?: string;
+}
+
+export const SessionDetailsPanel = ({
+  details,
+  currencies,
+  isLoading = false,
+  className,
+}: SessionDetailsPanelProps) => {
+  if (isLoading) {
+    return (
+      <div className={cn('rounded-lg border border-neutral-200 bg-white p-6', className)}>
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 w-32 rounded bg-neutral-200" />
+          <div className="h-4 w-48 rounded bg-neutral-200" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!details) {
+    return (
+      <div className={cn('rounded-lg border border-neutral-200 bg-white p-6', className)}>
+        <p className="text-sm text-neutral-500">
+          Sélectionnez une session pour afficher les détails
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn('space-y-6', className)}>
+      <div className="rounded-lg border border-neutral-200 bg-white p-6">
+        <h3 className="mb-4 text-lg font-semibold text-neutral-900">
+          Détails de la session
+        </h3>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-neutral-700">ID Session:</span>
+            <span className="text-sm text-neutral-900">{details.sessionId}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-neutral-700">Montant Total:</span>
+            <span className="text-sm font-semibold text-neutral-900">
+              {details.totalAmount.toFixed(2)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-neutral-700">Détails:</span>
+            <span className={cn(
+              'text-sm font-medium',
+              details.hasDetails ? 'text-green-600' : 'text-neutral-500'
+            )}>
+              {details.hasDetails ? 'Disponibles' : 'Non disponibles'}
+            </span>
+          </div>
+          {details.isEndOfHistory && (
+            <div className="mt-4 rounded-md bg-blue-50 p-3">
+              <p className="text-xs text-blue-800">Fin de l'historique</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-neutral-200 bg-white p-6">
+        <h3 className="mb-4 text-lg font-semibold text-neutral-900">
+          Devises
+        </h3>
+        {currencies.length === 0 ? (
+          <p className="text-sm text-neutral-500">Aucune devise enregistrée</p>
+        ) : (
+          <div className="overflow-hidden rounded-md border border-neutral-200">
+            <table className="min-w-full divide-y divide-neutral-200">
+              <thead className="bg-neutral-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-neutral-700">
+                    Code Devise
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-neutral-700">
+                    Montant
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-neutral-700">
+                    Locale
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-200 bg-white">
+                {currencies.map((currency, index) => (
+                  <tr
+                    key={`${currency.currencyCode}-${index}`}
+                    className={cn(
+                      currency.isLocalCurrency && 'bg-blue-50'
+                    )}
+                  >
+                    <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-neutral-900">
+                      {currency.currencyCode}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-neutral-900">
+                      {currency.amount.toFixed(2)}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-center">
+                      {currency.isLocalCurrency && (
+                        <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                          Locale
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

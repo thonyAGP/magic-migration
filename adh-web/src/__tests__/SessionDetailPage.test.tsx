@@ -1,0 +1,147 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+
+vi.mock('@/stores/sessionDetailStore', () => ({
+  useSessionDetailStore: vi.fn(),
+}));
+
+vi.mock('@/stores', () => ({
+  useAuthStore: vi.fn(),
+}));
+
+import { SessionDetailPage } from '@/pages/SessionDetailPage';
+import { useSessionDetailStore } from '@/stores/sessionDetailStore';
+import { useAuthStore } from '@/stores';
+
+const renderWithRouter = (ui: React.ReactElement) => {
+  return render(<BrowserRouter>{ui}</BrowserRouter>);
+};
+
+describe('SessionDetailPage', () => {
+  const mockReset = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    
+    vi.mocked(useSessionDetailStore).mockImplementation((selector) => {
+      const state = {
+        isLoading: false,
+        error: null,
+        reset: mockReset,
+      };
+      return selector(state as any);
+    });
+
+    vi.mocked(useAuthStore).mockImplementation((selector) => {
+      const state = {
+        user: { prenom: 'John', nom: 'Doe' },
+      };
+      return selector(state as any);
+    });
+  });
+
+  it('renders without crashing', () => {
+    renderWithRouter(<SessionDetailPage />);
+    expect(screen.getByText('Détail session')).toBeInTheDocument();
+  });
+
+  it('displays page title and description', () => {
+    renderWithRouter(<SessionDetailPage />);
+    
+    expect(screen.getByText('Détail session')).toBeInTheDocument();
+    expect(screen.getByText('Programme backend de journalisation (aucune interface visible)')).toBeInTheDocument();
+  });
+
+  it('displays user info when authenticated', () => {
+    renderWithRouter(<SessionDetailPage />);
+    
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+  });
+
+  it('hides user info when not authenticated', () => {
+    vi.mocked(useAuthStore).mockImplementation((selector) => {
+      const state = { user: null };
+      return selector(state as any);
+    });
+
+    renderWithRouter(<SessionDetailPage />);
+    
+    expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
+  });
+
+  it('displays program information', () => {
+    renderWithRouter(<SessionDetailPage />);
+    
+    expect(screen.getByText('Programme de journalisation')).toBeInTheDocument();
+    expect(screen.getByText('ADH IDE 125 - DETAIL_SESSION')).toBeInTheDocument();
+  });
+
+  it('displays program description bullets', () => {
+    renderWithRouter(<SessionDetailPage />);
+    
+    expect(screen.getByText(/Ce programme est appelé automatiquement/)).toBeInTheDocument();
+    expect(screen.getByText(/Il crée un audit trail complet/)).toBeInTheDocument();
+    expect(screen.getByText(/Les données sont directement enregistrées/)).toBeInTheDocument();
+  });
+
+  it('displays loading state', () => {
+    vi.mocked(useSessionDetailStore).mockImplementation((selector) => {
+      const state = {
+        isLoading: true,
+        error: null,
+        reset: mockReset,
+      };
+      return selector(state as any);
+    });
+
+    renderWithRouter(<SessionDetailPage />);
+    
+    expect(screen.getByText('Traitement en cours...')).toBeInTheDocument();
+  });
+
+  it('hides loading state when not loading', () => {
+    renderWithRouter(<SessionDetailPage />);
+    
+    expect(screen.queryByText('Traitement en cours...')).not.toBeInTheDocument();
+  });
+
+  it('displays error state', () => {
+    const errorMessage = 'Erreur de connexion au serveur';
+    vi.mocked(useSessionDetailStore).mockImplementation((selector) => {
+      const state = {
+        isLoading: false,
+        error: errorMessage,
+        reset: mockReset,
+      };
+      return selector(state as any);
+    });
+
+    renderWithRouter(<SessionDetailPage />);
+    
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+  });
+
+  it('hides error state when no error', () => {
+    renderWithRouter(<SessionDetailPage />);
+    
+    const errorElement = screen.queryByText(/Erreur/);
+    expect(errorElement).not.toBeInTheDocument();
+  });
+
+  it('displays back button', () => {
+    renderWithRouter(<SessionDetailPage />);
+    
+    expect(screen.getByRole('button', { name: /Retour au menu/i })).toBeInTheDocument();
+  });
+
+  it('calls reset on unmount', () => {
+    const { unmount } = renderWithRouter(<SessionDetailPage />);
+    
+    expect(mockReset).not.toHaveBeenCalled();
+    
+    unmount();
+    
+    expect(mockReset).toHaveBeenCalledTimes(1);
+  });
+});

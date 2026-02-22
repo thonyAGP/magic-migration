@@ -1,0 +1,13 @@
+import { apiClient, type ApiResponse } from "@/services/api/apiClient";
+import type {
+  SaveComptageHistorizationRequest,
+  SaveComptageHistorizationResponse,
+} from "@/types/comptageHistorization";
+
+export const comptageHistorizationApi = {
+  saveComptageHistorization: (data: SaveComptageHistorizationRequest) =>
+    apiClient.post<ApiResponse<SaveComptageHistorizationResponse>>(
+      "/api/comptage-historization/save",
+      data,
+    ),
+};

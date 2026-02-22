@@ -1,0 +1,141 @@
+import { useState, useMemo } from 'react';
+import type { SessionHistoryItem } from '@/types/sessionHistory';
+import { Button } from '@/components/ui';
+import { cn } from '@/lib/utils';
+
+interface OperationsGridPanelProps {
+  sessions: SessionHistoryItem[];
+  onSelectSession?: (sessionId: string) => void;
+  className?: string;
+}
+
+type SortOrder = 'asc' | 'desc';
+
+export const OperationsGridPanel = ({
+  sessions,
+  onSelectSession,
+  className,
+}: OperationsGridPanelProps) => {
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
+  const sortedSessions = useMemo(() => {
+    return [...sessions].sort((a, b) => {
+      const dateA = a.openedDate.getTime();
+      const dateB = b.openedDate.getTime();
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+  }, [sessions, sortOrder]);
+
+  const toggleSortOrder = () => {
+    setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  };
+
+  const handleExport = () => {
+    const headers = ['Timestamp', 'Type', 'Compte', 'Description', 'Montant', 'Devise'];
+    const rows = sortedSessions.map((session) => [
+      `${session.openedDate.toLocaleDateString()} ${session.openedTime}`,
+      session.status,
+      session.operatorId,
+      session.title || '',
+      '',
+      '',
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `historique-sessions-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleRowClick = (sessionId: string) => {
+    if (onSelectSession) {
+      onSelectSession(sessionId);
+    }
+  };
+
+  return (
+    <div className={cn('flex flex-col gap-4', className)}>
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-gray-600">
+          {sortedSessions.length} {sortedSessions.length > 1 ? 'opérations' : 'opération'}
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleSortOrder}
+            className="flex items-center gap-2"
+          >
+            <span>{sortOrder === 'asc' ? '↑' : '↓'}</span>
+            <span>{sortOrder === 'asc' ? 'Plus ancien' : 'Plus récent'}</span>
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            Exporter CSV
+          </Button>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <table className="w-full">
+          <thead className="bg-gray-50 text-sm font-medium text-gray-700">
+            <tr>
+              <th className="px-4 py-3 text-left">Timestamp</th>
+              <th className="px-4 py-3 text-left">Type</th>
+              <th className="px-4 py-3 text-left">Compte</th>
+              <th className="px-4 py-3 text-left">Description</th>
+              <th className="px-4 py-3 text-right">Montant</th>
+              <th className="px-4 py-3 text-center">Devise</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 text-sm">
+            {sortedSessions.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                  Aucune opération trouvée
+                </td>
+              </tr>
+            ) : (
+              sortedSessions.map((session) => (
+                <tr
+                  key={session.sessionId}
+                  onClick={() => handleRowClick(session.sessionId)}
+                  className="cursor-pointer hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-4 py-3 text-gray-900">
+                    {session.openedDate.toLocaleDateString('fr-FR')} {session.openedTime}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={cn(
+                        'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
+                        session.status === 'OUVERTE'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-gray-100 text-gray-700'
+                      )}
+                    >
+                      {session.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-gray-900">{session.operatorId}</td>
+                  <td className="px-4 py-3 text-gray-600">{session.title || '—'}</td>
+                  <td className="px-4 py-3 text-right text-gray-900">—</td>
+                  <td className="px-4 py-3 text-center text-gray-600">—</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};

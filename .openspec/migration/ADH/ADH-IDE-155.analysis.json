@@ -1,0 +1,493 @@
+{
+  "domain": "controleFermetureCaisse",
+  "domainPascal": "ControleFermetureCaisse",
+  "complexity": "HIGH",
+  "entities": [
+    {
+      "name": "PointageDevise",
+      "fields": [
+        {
+          "name": "finPointage",
+          "type": "boolean",
+          "source": "pointage_devise.fin_pointage",
+          "nullable": false
+        },
+        {
+          "name": "devisesPointees",
+          "type": "boolean",
+          "source": "pointage_devise.devises_pointees",
+          "nullable": false
+        },
+        {
+          "name": "deviseLocale",
+          "type": "string",
+          "source": "pointage_devise.devise_locale",
+          "nullable": false
+        },
+        {
+          "name": "nombreDevises",
+          "type": "number",
+          "source": "pointage_devise.nombre_devises",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "PointageArticle",
+      "fields": [
+        {
+          "name": "existeArticleStock",
+          "type": "boolean",
+          "source": "pointage_article.existe_article_stock",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "PointageApproRemise",
+      "fields": [
+        {
+          "name": "id",
+          "type": "number",
+          "source": "pointage_appro_remise.id",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "HistoSessionsCaisse",
+      "fields": [
+        {
+          "name": "sessionId",
+          "type": "number",
+          "source": "histo_sessions_caisse.session_id",
+          "nullable": false
+        },
+        {
+          "name": "dateOuverture",
+          "type": "Date",
+          "source": "histo_sessions_caisse.date_ouverture",
+          "nullable": false
+        },
+        {
+          "name": "dateFermeture",
+          "type": "Date",
+          "source": "histo_sessions_caisse.date_fermeture",
+          "nullable": true
+        },
+        {
+          "name": "operateur",
+          "type": "string",
+          "source": "histo_sessions_caisse.operateur",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "GestionDeviseSession",
+      "fields": [
+        {
+          "name": "sessionId",
+          "type": "number",
+          "source": "gestion_devise_session.session_id",
+          "nullable": false
+        },
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "gestion_devise_session.devise_code",
+          "nullable": false
+        },
+        {
+          "name": "montant",
+          "type": "number",
+          "source": "gestion_devise_session.montant",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "Ecart",
+      "fields": [
+        {
+          "name": "deviseCode",
+          "type": "string",
+          "source": "derived",
+          "nullable": false
+        },
+        {
+          "name": "montantAttendu",
+          "type": "number",
+          "source": "derived",
+          "nullable": false
+        },
+        {
+          "name": "montantDeclare",
+          "type": "number",
+          "source": "derived",
+          "nullable": false
+        },
+        {
+          "name": "ecart",
+          "type": "number",
+          "source": "derived",
+          "nullable": false
+        },
+        {
+          "name": "classeMoyenPaiement",
+          "type": "string",
+          "source": "derived",
+          "nullable": true
+        },
+        {
+          "name": "libelleMoyenPaiement",
+          "type": "string",
+          "source": "derived",
+          "nullable": true
+        }
+      ]
+    }
+  ],
+  "stateFields": [
+    {
+      "name": "sessionId",
+      "type": "number | null",
+      "default": "null"
+    },
+    {
+      "name": "deviseLocale",
+      "type": "string",
+      "default": "''"
+    },
+    {
+      "name": "parametreUniBi",
+      "type": "'U' | 'B'",
+      "default": "'U'"
+    },
+    {
+      "name": "parametreKT",
+      "type": "'K' | 'T'",
+      "default": "'K'"
+    },
+    {
+      "name": "parametre2Caisses",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "hostCourantCoffre",
+      "type": "string",
+      "default": "''"
+    },
+    {
+      "name": "sessionOuverte",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "terminalCoffre2",
+      "type": "number | null",
+      "default": "null"
+    },
+    {
+      "name": "hostnameCoffre2",
+      "type": "string",
+      "default": "''"
+    },
+    {
+      "name": "ecarts",
+      "type": "Ecart[]",
+      "default": "[]"
+    },
+    {
+      "name": "devisesPointees",
+      "type": "PointageDevise[]",
+      "default": "[]"
+    },
+    {
+      "name": "articlesPointes",
+      "type": "PointageArticle[]",
+      "default": "[]"
+    },
+    {
+      "name": "approRemisesPointes",
+      "type": "PointageApproRemise[]",
+      "default": "[]"
+    },
+    {
+      "name": "histoSessionDetail",
+      "type": "any[]",
+      "default": "[]"
+    },
+    {
+      "name": "histoSessionDevise",
+      "type": "any[]",
+      "default": "[]"
+    },
+    {
+      "name": "tableauRecap",
+      "type": "any[]",
+      "default": "[]"
+    },
+    {
+      "name": "isLoading",
+      "type": "boolean",
+      "default": "false"
+    },
+    {
+      "name": "error",
+      "type": "string | null",
+      "default": "null"
+    },
+    {
+      "name": "validationErrors",
+      "type": "string[]",
+      "default": "[]"
+    }
+  ],
+  "actions": [
+    {
+      "name": "validerParametresUniBi",
+      "params": [
+        "paramUniBi: 'U' | 'B'"
+      ],
+      "businessRules": [
+        "RM-001: Si paramètre UNI/BI = 'B', activer mode bidirectionnel pour contrôles devises"
+      ],
+      "returns": "Promise<boolean>"
+    },
+    {
+      "name": "validerConfiguration2Caisses",
+      "params": [
+        "param2Caisses: boolean",
+        "hostCourant: string",
+        "sessionOuverte: boolean"
+      ],
+      "businessRules": [
+        "RM-002: Si paramètre 2 caisses = 'O' ET (host courant coffre ET NOT session ouverte OU paramètre session ouverte), activer gestion coffre2"
+      ],
+      "returns": "Promise<boolean>"
+    },
+    {
+      "name": "traiterModeKasse",
+      "params": [
+        "paramKT: 'K' | 'T'"
+      ],
+      "businessRules": [
+        "RM-003: Si paramètre K/T = 'K', traiter en mode Kasse (comptage caisse)",
+        "RM-004: Si paramètre K/T = 'T', traiter en mode Terminal (comptage terminal)"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "configurerCoffre2",
+      "params": [
+        "vg78: boolean",
+        "terminal: number | null",
+        "hostname: string"
+      ],
+      "businessRules": [
+        "RM-005: Si VG78 alors affecter terminal et hostname coffre2",
+        "RM-006: Si NOT VG78 alors ignorer configuration coffre2"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "genererTableauRecap",
+      "params": [
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "Appel IDE 135 pour générer le tableau récapitulatif des ventes de la session"
+      ],
+      "returns": "Promise<any[]>"
+    },
+    {
+      "name": "mettreAJourDevisesSession",
+      "params": [
+        "sessionId: number",
+        "devises: GestionDeviseSession[]"
+      ],
+      "businessRules": [
+        "Appel IDE 142 pour mettre à jour les devises de session avec soldes finaux déclarés"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "recupererClasseMoyenPaiement",
+      "params": [
+        "moyenPaiementId: number"
+      ],
+      "businessRules": [
+        "Appel IDE 152 pour récupérer classe et libellé du moyen de paiement"
+      ],
+      "returns": "Promise<{ classe: string; libelle: string }>"
+    },
+    {
+      "name": "calculerEcarts",
+      "params": [
+        "sessionId: number",
+        "montantsDeclares: Map<string, number>"
+      ],
+      "businessRules": [
+        "Calculer différences entre comptage physique déclaré et soldes attendus de la session",
+        "Enrichir avec classes et libellés des moyens de paiement (appel IDE 152)",
+        "Détecter erreurs de saisie ou mouvements non enregistrés"
+      ],
+      "returns": "Promise<Ecart[]>"
+    },
+    {
+      "name": "finaliserFermeture",
+      "params": [
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "Mettre à jour histo_sessions_caisse avec date fermeture",
+        "Enregistrer pointages finaux dans pointage_devise, pointage_article, pointage_appro_remise",
+        "Créer entrées historiques pv_comptable et pv_discounts",
+        "Produire historique complet session avec traçabilité écarts et corrections"
+      ],
+      "returns": "Promise<void>"
+    },
+    {
+      "name": "validerIntegriteDonnees",
+      "params": [
+        "sessionId: number"
+      ],
+      "businessRules": [
+        "Vérifier cohérence entre déclarations opérateurs et mouvements enregistrés",
+        "Valider complétude des pointages (devises, articles, appros/remises)",
+        "Détecter incohérences avant finalisation"
+      ],
+      "returns": "Promise<{ valid: boolean; errors: string[] }>"
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "method": "POST",
+      "path": "/api/caisse/fermeture/valider-parametres",
+      "queryParams": [],
+      "response": "{ valid: boolean; errors: string[] }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/caisse/fermeture/generer-recap",
+      "queryParams": [
+        "sessionId"
+      ],
+      "response": "{ tableauRecap: any[] }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/caisse/fermeture/calculer-ecarts",
+      "queryParams": [
+        "sessionId"
+      ],
+      "response": "{ ecarts: Ecart[] }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/caisse/fermeture/maj-devises-session",
+      "queryParams": [],
+      "response": "{ success: boolean }"
+    },
+    {
+      "method": "POST",
+      "path": "/api/caisse/fermeture/finaliser",
+      "queryParams": [
+        "sessionId"
+      ],
+      "response": "{ success: boolean; histoId: number }"
+    },
+    {
+      "method": "GET",
+      "path": "/api/caisse/fermeture/classe-moyen-paiement",
+      "queryParams": [
+        "moyenPaiementId"
+      ],
+      "response": "{ classe: string; libelle: string }"
+    },
+    {
+      "method": "GET",
+      "path": "/api/caisse/fermeture/pointages",
+      "queryParams": [
+        "sessionId"
+      ],
+      "response": "{ devises: PointageDevise[]; articles: PointageArticle[]; approRemises: PointageApproRemise[] }"
+    }
+  ],
+  "uiLayout": {
+    "type": "wizard-multi-step",
+    "sections": [
+      {
+        "name": "Validation Paramètres",
+        "controls": [
+          "Radio UNI/BI",
+          "Checkbox 2 Caisses",
+          "Radio K/T (Kasse/Terminal)",
+          "Input Terminal Coffre2",
+          "Input Hostname Coffre2"
+        ]
+      },
+      {
+        "name": "Génération Récapitulatif",
+        "controls": [
+          "Button Générer Tableau Recap",
+          "DataGrid Tableau Recap (readonly)",
+          "Loader pendant génération"
+        ]
+      },
+      {
+        "name": "Calcul Écarts",
+        "controls": [
+          "DataGrid Écarts (colonnes: Devise, Attendu, Déclaré, Écart, Classe MOP, Libellé)",
+          "Badge Alerte si écart détecté",
+          "Tooltip avec classe/libellé moyen paiement"
+        ]
+      },
+      {
+        "name": "Pointages Finaux",
+        "controls": [
+          "Section Pointage Devises (liste devises pointées)",
+          "Section Pointage Articles (articles en stock)",
+          "Section Pointage Appro/Remises",
+          "Button Valider Pointages"
+        ]
+      },
+      {
+        "name": "Finalisation",
+        "controls": [
+          "Résumé session (ID, Opérateur, Dates)",
+          "Résumé écarts totaux",
+          "Button Finaliser Fermeture",
+          "Confirmation modale avant finalisation",
+          "Loader pendant mise à jour tables"
+        ]
+      }
+    ]
+  },
+  "mockData": {
+    "count": 10,
+    "description": "Mock data: 3 sessions avec écarts variés (0€, +50€, -20€), 5 devises (EUR, USD, GBP, CHF, JPY), 8 articles stock, 4 types appro/remise, 12 lignes tableau recap, classes MOP (CB, ESPECE, CHEQUE, VIREMENT)"
+  },
+  "dependencies": {
+    "stores": [
+      "useSessionStore",
+      "useDeviseStore",
+      "useArticleStore",
+      "useMoyenPaiementStore"
+    ],
+    "sharedTypes": [
+      "SessionCaisse",
+      "Devise",
+      "Article",
+      "MoyenPaiement"
+    ],
+    "externalApis": [
+      "GET /api/sessions/{id}",
+      "GET /api/devises",
+      "GET /api/articles",
+      "GET /api/moyens-paiement/{id}"
+    ]
+  }
+}

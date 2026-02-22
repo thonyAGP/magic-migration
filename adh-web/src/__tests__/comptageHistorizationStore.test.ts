@@ -1,0 +1,360 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { useComptageHistorizationStore } from '@/stores/comptageHistorizationStore';
+import type { SaveComptageHistorizationRequest } from '@/types/comptageHistorization';
+import { apiClient } from '@/services/api/apiClient';
+import type { ApiResponse } from '@/services/api/apiClient';
+import { useDataSourceStore } from '@/stores/dataSourceStore';
+
+vi.mock('@/services/api/apiClient', () => ({
+  apiClient: {
+    post: vi.fn(),
+  },
+}));
+
+const MOCK_OUVERTURE_REQUEST: SaveComptageHistorizationRequest = {
+  chronoSession: 12345,
+  quand: 'O',
+  totalCaisse: 0,
+  deviseDetails: [],
+};
+
+const MOCK_FERMETURE_REQUEST: SaveComptageHistorizationRequest = {
+  chronoSession: 12345,
+  quand: 'F',
+  totalCaisse: 8750,
+  deviseDetails: [
+    {
+      deviseCode: 'EUR',
+      montantCompte: 7500,
+      ecart: 0,
+      total: 7500,
+    },
+    {
+      deviseCode: 'USD',
+      montantCompte: 1000,
+      ecart: 50,
+      total: 1050,
+    },
+    {
+      deviseCode: 'GBP',
+      montantCompte: 200,
+      ecart: 0,
+      total: 200,
+    },
+  ],
+};
+
+const MOCK_SUCCESS_RESPONSE = {
+  data: {
+    success: true,
+    data: {
+      chronoHisto: 1001,
+    },
+  },
+};
+
+describe('comptageHistorizationStore', () => {
+  beforeEach(() => {
+    useComptageHistorizationStore.getState().reset();
+    vi.clearAllMocks();
+    useDataSourceStore.setState({ isRealApi: false });
+  });
+
+  describe('initial state', () => {
+    it('should have correct initial state', () => {
+      const state = useComptageHistorizationStore.getState();
+
+      expect(state.isLoading).toBe(false);
+      expect(state.error).toBeNull();
+      expect(state.lastHistoId).toBeNull();
+    });
+  });
+
+  describe('saveComptageHistorization - mock mode', () => {
+    it('should save ouverture historization with mock data', async () => {
+      const store = useComptageHistorizationStore.getState();
+
+      const chronoHisto =
+        await store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST);
+
+      expect(chronoHisto).toBeGreaterThanOrEqual(1000);
+      expect(chronoHisto).toBeLessThanOrEqual(101000);
+      expect(store.lastHistoId).toBe(chronoHisto);
+      expect(store.isLoading).toBe(false);
+      expect(store.error).toBeNull();
+      expect(apiClient.post).not.toHaveBeenCalled();
+    });
+
+    it('should save fermeture historization with mock data', async () => {
+      const store = useComptageHistorizationStore.getState();
+
+      const chronoHisto =
+        await store.saveComptageHistorization(MOCK_FERMETURE_REQUEST);
+
+      expect(chronoHisto).toBeGreaterThanOrEqual(1000);
+      expect(chronoHisto).toBeLessThanOrEqual(101000);
+      expect(store.lastHistoId).toBe(chronoHisto);
+      expect(store.isLoading).toBe(false);
+      expect(store.error).toBeNull();
+    });
+
+    it('should set isLoading during save operation', async () => {
+      const store = useComptageHistorizationStore.getState();
+
+      const savePromise = store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST);
+
+      expect(useComptageHistorizationStore.getState().isLoading).toBe(true);
+
+      await savePromise;
+
+      expect(useComptageHistorizationStore.getState().isLoading).toBe(false);
+    });
+
+    it('should generate unique chronoHisto for each save', async () => {
+      const store = useComptageHistorizationStore.getState();
+
+      const chrono1 =
+        await store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST);
+      const chrono2 =
+        await store.saveComptageHistorization(MOCK_FERMETURE_REQUEST);
+
+      expect(chrono1).not.toBe(chrono2);
+    });
+  });
+
+  describe('saveComptageHistorization - real API mode', () => {
+    beforeEach(() => {
+      useDataSourceStore.setState({ isRealApi: true });
+    });
+
+    it('should save ouverture historization via API', async () => {
+      vi.mocked(apiClient.post).mockResolvedValue(MOCK_SUCCESS_RESPONSE);
+
+      const store = useComptageHistorizationStore.getState();
+      const chronoHisto =
+        await store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST);
+
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/api/comptage-historization/save',
+        MOCK_OUVERTURE_REQUEST,
+      );
+      expect(chronoHisto).toBe(1001);
+      expect(store.lastHistoId).toBe(1001);
+      expect(store.isLoading).toBe(false);
+      expect(store.error).toBeNull();
+    });
+
+    it('should save fermeture historization with multiple devises via API', async () => {
+      vi.mocked(apiClient.post).mockResolvedValue(MOCK_SUCCESS_RESPONSE);
+
+      const store = useComptageHistorizationStore.getState();
+      const chronoHisto =
+        await store.saveComptageHistorization(MOCK_FERMETURE_REQUEST);
+
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/api/comptage-historization/save',
+        MOCK_FERMETURE_REQUEST,
+      );
+      expect(chronoHisto).toBe(1001);
+      expect(store.lastHistoId).toBe(1001);
+    });
+
+    it('should handle missing chronoHisto in response', async () => {
+      vi.mocked(apiClient.post).mockResolvedValue({
+        data: {
+          success: true,
+          data: null,
+        },
+      } as ApiResponse<null>);
+
+      const store = useComptageHistorizationStore.getState();
+      const chronoHisto =
+        await store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST);
+
+      expect(chronoHisto).toBe(0);
+      expect(store.lastHistoId).toBe(0);
+    });
+
+    it('should handle API error with Error instance', async () => {
+      const errorMessage = 'Transaction atomique echouee';
+      vi.mocked(apiClient.post).mockRejectedValue(new Error(errorMessage));
+
+      const store = useComptageHistorizationStore.getState();
+
+      await expect(
+        store.saveComptageHistorization(MOCK_FERMETURE_REQUEST),
+      ).rejects.toThrow(errorMessage);
+
+      expect(store.error).toBe(errorMessage);
+      expect(store.lastHistoId).toBeNull();
+      expect(store.isLoading).toBe(false);
+    });
+
+    it('should handle API error with unknown error type', async () => {
+      vi.mocked(apiClient.post).mockRejectedValue('Unknown error');
+
+      const store = useComptageHistorizationStore.getState();
+
+      await expect(
+        store.saveComptageHistorization(MOCK_FERMETURE_REQUEST),
+      ).rejects.toBe('Unknown error');
+
+      expect(store.error).toBe('Erreur sauvegarde historisation');
+      expect(store.lastHistoId).toBeNull();
+      expect(store.isLoading).toBe(false);
+    });
+
+    it('should set isLoading during API call', async () => {
+      vi.mocked(apiClient.post).mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            setTimeout(() => resolve(MOCK_SUCCESS_RESPONSE), 100);
+          }),
+      );
+
+      const store = useComptageHistorizationStore.getState();
+      const savePromise = store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST);
+
+      expect(useComptageHistorizationStore.getState().isLoading).toBe(true);
+
+      await savePromise;
+
+      expect(useComptageHistorizationStore.getState().isLoading).toBe(false);
+    });
+
+    it('should clear error on successful save after previous error', async () => {
+      vi.mocked(apiClient.post)
+        .mockRejectedValueOnce(new Error('First error'))
+        .mockResolvedValueOnce(MOCK_SUCCESS_RESPONSE);
+
+      const store = useComptageHistorizationStore.getState();
+
+      await expect(
+        store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST),
+      ).rejects.toThrow('First error');
+      expect(store.error).toBe('First error');
+
+      await store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST);
+      expect(store.error).toBeNull();
+    });
+  });
+
+  describe('business rules', () => {
+    it('should respect RM-001: save ouverture context (quand=O)', async () => {
+      useDataSourceStore.setState({ isRealApi: true });
+      vi.mocked(apiClient.post).mockResolvedValue(MOCK_SUCCESS_RESPONSE);
+
+      const store = useComptageHistorizationStore.getState();
+      await store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST);
+
+      const callArgs = vi.mocked(apiClient.post).mock.calls[0];
+      expect(callArgs[1]).toMatchObject({
+        quand: 'O',
+        totalCaisse: 0,
+      });
+    });
+
+    it('should respect RM-001: save fermeture context (quand=F)', async () => {
+      useDataSourceStore.setState({ isRealApi: true });
+      vi.mocked(apiClient.post).mockResolvedValue(MOCK_SUCCESS_RESPONSE);
+
+      const store = useComptageHistorizationStore.getState();
+      await store.saveComptageHistorization(MOCK_FERMETURE_REQUEST);
+
+      const callArgs = vi.mocked(apiClient.post).mock.calls[0];
+      expect(callArgs[1]).toMatchObject({
+        quand: 'F',
+        totalCaisse: 8750,
+        deviseDetails: expect.arrayContaining([
+          expect.objectContaining({
+            deviseCode: 'EUR',
+            montantCompte: 7500,
+          }),
+        ]),
+      });
+    });
+
+    it('should save atomic transaction with multiple devises', async () => {
+      useDataSourceStore.setState({ isRealApi: true });
+      vi.mocked(apiClient.post).mockResolvedValue(MOCK_SUCCESS_RESPONSE);
+
+      const store = useComptageHistorizationStore.getState();
+      await store.saveComptageHistorization(MOCK_FERMETURE_REQUEST);
+
+      const callArgs = vi.mocked(apiClient.post).mock.calls[0];
+      expect(callArgs[1].deviseDetails).toHaveLength(3);
+      expect(callArgs[1].deviseDetails).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ deviseCode: 'EUR' }),
+          expect.objectContaining({ deviseCode: 'USD' }),
+          expect.objectContaining({ deviseCode: 'GBP' }),
+        ]),
+      );
+    });
+
+    it('should handle ecart values correctly in devise details', async () => {
+      useDataSourceStore.setState({ isRealApi: true });
+      vi.mocked(apiClient.post).mockResolvedValue(MOCK_SUCCESS_RESPONSE);
+
+      const requestWithEcart: SaveComptageHistorizationRequest = {
+        chronoSession: 12345,
+        quand: 'F',
+        totalCaisse: 7550,
+        deviseDetails: [
+          {
+            deviseCode: 'EUR',
+            montantCompte: 7500,
+            ecart: 50,
+            total: 7550,
+          },
+        ],
+      };
+
+      const store = useComptageHistorizationStore.getState();
+      await store.saveComptageHistorization(requestWithEcart);
+
+      const callArgs = vi.mocked(apiClient.post).mock.calls[0];
+      expect(callArgs[1].deviseDetails[0]).toMatchObject({
+        montantCompte: 7500,
+        ecart: 50,
+        total: 7550,
+      });
+    });
+  });
+
+  describe('reset', () => {
+    it('should reset store to initial state', async () => {
+      useDataSourceStore.setState({ isRealApi: true });
+      vi.mocked(apiClient.post).mockResolvedValue(MOCK_SUCCESS_RESPONSE);
+
+      const store = useComptageHistorizationStore.getState();
+      await store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST);
+
+      expect(store.lastHistoId).toBe(1001);
+
+      store.reset();
+
+      const resetState = useComptageHistorizationStore.getState();
+      expect(resetState.isLoading).toBe(false);
+      expect(resetState.error).toBeNull();
+      expect(resetState.lastHistoId).toBeNull();
+    });
+
+    it('should clear error state on reset', async () => {
+      useDataSourceStore.setState({ isRealApi: true });
+      vi.mocked(apiClient.post).mockRejectedValue(new Error('Test error'));
+
+      const store = useComptageHistorizationStore.getState();
+
+      await expect(
+        store.saveComptageHistorization(MOCK_OUVERTURE_REQUEST),
+      ).rejects.toThrow('Test error');
+
+      expect(store.error).toBe('Test error');
+
+      store.reset();
+
+      expect(useComptageHistorizationStore.getState().error).toBeNull();
+    });
+  });
+});

@@ -1,0 +1,13 @@
+import { apiClient, type ApiResponse } from './apiClient';
+import type {
+  LogSessionDetailRequest,
+  LogSessionDetailResponse,
+} from '@/types/sessionDetail';
+
+export const sessionDetailApi = {
+  logSessionDetail: (data: LogSessionDetailRequest): Promise<LogSessionDetailResponse> =>
+    apiClient.post<LogSessionDetailResponse>(
+      '/api/session-detail/log',
+      data,
+    ),
+};

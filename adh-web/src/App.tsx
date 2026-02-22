@@ -46,6 +46,14 @@ import DeversementTransactionPage from '@/pages/DeversementTransactionPage';
 import ChoixPyrPage from '@/pages/ChoixPyrPage';
 import ReinitAffPyrPage from '@/pages/ReinitAffPyrPage';
 import SaisieContenuCaissePage from '@/pages/SaisieContenuCaissePage';
+import SessionHistoryPage from '@/pages/SessionHistoryPage';
+import SessionDetailPage from '@/pages/SessionDetailPage';
+import ControleFermetureCaissePage from '@/pages/ControleFermetureCaissePage';
+import SessionsOuvertesPage from '@/pages/SessionsOuvertesPage';
+import ControleOuvertureCaissePage from '@/pages/ControleOuvertureCaissePage';
+import ComptageHistorizationPage from '@/pages/ComptageHistorizationPage';
+import DeviseSessionPage from '@/pages/DeviseSessionPage';
+import TicketFermetureSessionPage from '@/pages/TicketFermetureSessionPage';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ToastContainer } from '@/components/ui/Toast';
 
@@ -101,6 +109,14 @@ export function App() {
           <Route path="/caisse/session-list" element={<ProtectedRoute><SessionListPage /></ProtectedRoute>} />
           <Route path="/caisse/session-concurrency" element={<ProtectedRoute><SessionConcurrencyPage /></ProtectedRoute>} />
           <Route path="/caisse/session-timestamp" element={<ProtectedRoute><SessionTimestampPage /></ProtectedRoute>} />
+          <Route path="/caisse/session-history" element={<ProtectedRoute><SessionHistoryPage /></ProtectedRoute>} />
+          <Route path="/caisse/session-detail" element={<ProtectedRoute><SessionDetailPage /></ProtectedRoute>} />
+          <Route path="/caisse/controle-fermeture-caisse" element={<ProtectedRoute><ControleFermetureCaissePage /></ProtectedRoute>} />
+          <Route path="/caisse/sessions-ouvertes" element={<ProtectedRoute><SessionsOuvertesPage /></ProtectedRoute>} />
+          <Route path="/caisse/controle-ouverture-caisse" element={<ProtectedRoute><ControleOuvertureCaissePage /></ProtectedRoute>} />
+          <Route path="/caisse/comptage-historization" element={<ProtectedRoute><ComptageHistorizationPage /></ProtectedRoute>} />
+          <Route path="/caisse/devise-session" element={<ProtectedRoute><DeviseSessionPage /></ProtectedRoute>} />
+          <Route path="/caisse/ticket-fermeture-session" element={<ProtectedRoute><TicketFermetureSessionPage /></ProtectedRoute>} />
           <Route path="/caisse/historique" element={<ProtectedRoute><SessionHistoriquePage /></ProtectedRoute>} />
           <Route path="/caisse/reimpression" element={<ProtectedRoute><ReimpressionPage /></ProtectedRoute>} />
           <Route path="/caisse/vente/:mode" element={<ProtectedRoute><TransactionPage /></ProtectedRoute>} />

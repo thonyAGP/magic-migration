@@ -48,13 +48,14 @@
       "name": "Caisse",
       "root": 281,
       "programs": 17,
-      "status": "pending",
+      "status": "enriched",
+      "enriched_date": "2026-02-22",
       "stats": {
         "backend_na": 0,
         "frontend_enrich": 0,
-        "fully_impl": 0,
-        "coverage_avg_frontend": 0,
-        "total_partial": 0,
+        "fully_impl": 15,
+        "coverage_avg_frontend": 69,
+        "total_partial": 2,
         "total_missing": 0
       },
       "priority_order": [
