@@ -2489,16 +2489,19 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           updateTokenDisplay();
         }
         var allSkipped = r.summary.skipped === r.summary.total;
+        var isDryRun = r.dryRun;
+        var prefix = isDryRun ? '[DRY-RUN] ' : '';
         if (allSkipped) {
-          label.textContent = 'Termin\\u00e9 : ' + r.summary.total + '/' + r.summary.total + ' d\\u00e9j\\u00e0 migr\\u00e9s (rien \\u00e0 faire)' + costStr;
+          label.textContent = prefix + 'Termin\\u00e9 : ' + r.summary.total + '/' + r.summary.total + ' d\\u00e9j\\u00e0 migr\\u00e9s (rien \\u00e0 faire)' + costStr;
         } else {
-          label.textContent = 'Done: ' + r.summary.completed + '/' + r.summary.total
-            + ' completed' + (failed > 0 ? ', ' + failed + ' failed' : '')
-            + (r.summary.skipped > 0 ? ', ' + r.summary.skipped + ' skipped' : '')
-            + ', ' + r.summary.totalFiles + ' files'
-            + (r.summary.tscClean ? ', TSC clean' : ', TSC errors')
-            + (r.summary.testsPass ? ', tests pass' : ', tests fail')
-            + ', coverage ' + r.summary.reviewAvgCoverage + '%'
+          var tscLabel = isDryRun ? '' : (r.summary.tscClean ? ', TSC OK' : ', TSC erreurs');
+          var testsLabel = isDryRun ? '' : (r.summary.testsPass ? ', tests OK' : ', tests \\u00e9chou\\u00e9s');
+          var coverageLabel = isDryRun ? '' : ', couverture ' + r.summary.reviewAvgCoverage + '%';
+          label.textContent = prefix + 'Termin\\u00e9 : ' + r.summary.completed + '/' + r.summary.total
+            + ' compl\\u00e9t\\u00e9s' + (failed > 0 ? ', ' + failed + ' \\u00e9chou\\u00e9(s)' : '')
+            + (r.summary.skipped > 0 ? ', ' + r.summary.skipped + ' v\\u00e9rifi\\u00e9s' : '')
+            + ', ' + r.summary.totalFiles + ' fichiers'
+            + tscLabel + testsLabel + coverageLabel
             + costStr;
         }
       }

@@ -112,9 +112,10 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
         }
     }
     // Phase 10-13: Verify + Fix (sequential, batch-wide)
-    let tscClean = false;
-    let testsPass = false;
-    const hasRealWork = programResults.some(r => r.status === 'completed' && r.filesGenerated > 0);
+    // Dry-run: no verification runs, so no errors to report
+    let tscClean = config.dryRun;
+    let testsPass = config.dryRun;
+    const hasRealWork = programResults.some(r => r.status === 'completed');
     const allSkipped = programResults.every(r => r.status === 'skipped');
     // When no real work was done (all programs skipped), report clean state
     if (allSkipped) {
@@ -184,9 +185,10 @@ export const runMigration = async (programIds, batchId, batchName, config) => {
     const costInfo = summary.totalTokens
         ? `, tokens: ${Math.round(summary.totalTokens.input / 1000)}K in / ${Math.round(summary.totalTokens.output / 1000)}K out (~$${summary.estimatedCostUsd?.toFixed(2)})`
         : '';
+    const dryTag = config.dryRun ? '[DRY-RUN] ' : '';
     const completionMsg = allSkipped
-        ? `Migration complete: ${summary.total}/${summary.total} already migrated (nothing to do) in ${formatDuration(totalDuration)}`
-        : `Migration complete: ${summary.completed}/${summary.total} programs, ${summary.totalFiles} files in ${formatDuration(totalDuration)}${costInfo}`;
+        ? `${dryTag}Migration terminee : ${summary.total}/${summary.total} deja migres (rien a faire) en ${formatDuration(totalDuration)}`
+        : `${dryTag}Migration terminee : ${summary.completed}/${summary.total} programmes, ${summary.totalFiles} fichiers en ${formatDuration(totalDuration)}${costInfo}`;
     emit(config, ET.MIGRATION_COMPLETED, completionMsg);
     // Update main tracker batch stats after migration
     if (!config.dryRun && summary.completed > 0) {
@@ -310,8 +312,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             const specResult = await runSpecPhase(programId, config);
             completePhase(prog, MP.SPEC, { file: specResult.specFile, duration: specResult.duration });
             emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: spec done`, { phase: MP.SPEC, programId });
-            if (!specResult.skipped)
-                files.push(specResult.specFile);
+            files.push(specResult.specFile);
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 1: CONTRACT
@@ -361,8 +362,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             const typesResult = await runTypesPhase(programId, analysis, config);
             completePhase(prog, MP.TYPES, { file: typesResult.file, duration: typesResult.duration });
             emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: types done`, { phase: MP.TYPES, programId });
-            if (!typesResult.skipped)
-                files.push(typesResult.file);
+            files.push(typesResult.file);
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 4: STORE
@@ -372,8 +372,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             const storeResult = await runStorePhase(programId, analysis, config);
             completePhase(prog, MP.STORE, { file: storeResult.file, duration: storeResult.duration });
             emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: store done`, { phase: MP.STORE, programId });
-            if (!storeResult.skipped)
-                files.push(storeResult.file);
+            files.push(storeResult.file);
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 5: API
@@ -383,8 +382,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             const apiResult = await runApiPhase(programId, analysis, config);
             completePhase(prog, MP.API, { file: apiResult.file, duration: apiResult.duration });
             emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: api done`, { phase: MP.API, programId });
-            if (!apiResult.skipped)
-                files.push(apiResult.file);
+            files.push(apiResult.file);
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 6: PAGE
@@ -394,8 +392,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             const pageResult = await runPagePhase(programId, analysis, config);
             completePhase(prog, MP.PAGE, { file: pageResult.file, duration: pageResult.duration });
             emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: page done`, { phase: MP.PAGE, programId });
-            if (!pageResult.skipped)
-                files.push(pageResult.file);
+            files.push(pageResult.file);
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 7: COMPONENTS
@@ -404,8 +401,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             emit(config, ET.PHASE_STARTED, `IDE ${programId}: generating components`, { phase: MP.COMPONENTS, programId });
             const compResult = await runComponentsPhase(programId, analysis, config);
             for (const r of compResult.files) {
-                if (!r.skipped)
-                    files.push(r.file);
+                files.push(r.file);
             }
             completePhase(prog, MP.COMPONENTS, { duration: compResult.totalDuration });
             emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: components done`, { phase: MP.COMPONENTS, programId });
@@ -418,8 +414,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             const testUnitResult = await runTestsUnitPhase(programId, analysis, config);
             completePhase(prog, MP.TESTS_UNIT, { file: testUnitResult.file, duration: testUnitResult.duration });
             emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: unit tests done`, { phase: MP.TESTS_UNIT, programId });
-            if (!testUnitResult.skipped)
-                files.push(testUnitResult.file);
+            files.push(testUnitResult.file);
             saveMigrateTracker(trackerFile, migrateData);
         }
         // Phase 9: TESTS-UI
@@ -429,8 +424,7 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
             const testUiResult = await runTestsUiPhase(programId, analysis, config);
             completePhase(prog, MP.TESTS_UI, { file: testUiResult.file, duration: testUiResult.duration });
             emit(config, ET.PHASE_COMPLETED, `IDE ${programId}: UI tests done`, { phase: MP.TESTS_UI, programId });
-            if (!testUiResult.skipped)
-                files.push(testUiResult.file);
+            files.push(testUiResult.file);
             saveMigrateTracker(trackerFile, migrateData);
         }
         if (aborted()) {
