@@ -53,7 +53,7 @@ const renderHeader = (r: FullMigrationReport): string => {
 <header>
   <h1>Migration Dashboard</h1>
   <div class="subtitle">${escHtml(r.projectName)} &mdash; ${r.graph.livePrograms} programmes LIVE</div>
-  <div class="last-updated">Derni\u00e8re mise \u00e0 jour : ${dateStr} a ${timeStr}</div>
+  <div class="last-updated">Derni\u00e8re mise \u00e0 jour : ${dateStr} \u00e0 ${timeStr}</div>
 </header>`;
 };
 
@@ -220,11 +220,11 @@ const renderModulesSection = (modules: FullMigrationReport['modules']): string =
     <button class="filter-btn" data-filter="deliverable">Livrables (${modules.deliverable})</button>
     <button class="filter-btn" data-filter="close">Proches &ge;80% (${modules.close})</button>
     <button class="filter-btn" data-filter="progress">En cours (${modules.inProgress})</button>
-    <button class="filter-btn" data-filter="notstarted">Non demarre (${modules.notStarted})</button>
+    <button class="filter-btn" data-filter="notstarted">Non d\u00e9marr\u00e9 (${modules.notStarted})</button>
   </div>
   <div class="module-sort">
     <span class="sort-label">Trier par:</span>
-    <button class="sort-btn active" data-sort="priority">Priorite</button>
+    <button class="sort-btn active" data-sort="priority">Priorit\u00e9</button>
     <button class="sort-btn" data-sort="readiness">Avancement</button>
     <button class="sort-btn" data-sort="name">Nom</button>
   </div>
@@ -243,7 +243,7 @@ const renderModuleRow = (m: ModuleSummary): string => {
   const statusBadge = m.deliverable ? '<span class="badge badge-green">LIVRABLE</span>'
     : m.readinessPct >= 80 ? '<span class="badge badge-blue">PROCHE</span>'
     : m.readinessPct > 0 ? '<span class="badge badge-yellow">EN COURS</span>'
-    : '<span class="badge badge-gray">NON DEMARRE</span>';
+    : '<span class="badge badge-gray">NON D\u00c9MARR\u00c9</span>';
 
   const blockerText = m.blockerIds.length > 0
     ? `<div class="module-blockers">Bloqueurs: ${m.blockerIds.slice(0, 5).join(', ')}${m.blockerIds.length > 5 ? '...' : ''}</div>`
@@ -272,12 +272,12 @@ const renderModuleRow = (m: ModuleSummary): string => {
     : '';
 
   const depsText = (m.dependsOn?.length ?? 0) > 0
-    ? `Depend de: ${m.dependsOn!.join(', ')}`
-    : 'Depend de: (aucun)';
+    ? `D\u00e9pend de: ${m.dependsOn!.join(', ')}`
+    : 'D\u00e9pend de: (aucun)';
 
   const unblockText = (m.dependedBy?.length ?? 0) > 0
-    ? `Debloque: ${m.dependedBy!.length} module${m.dependedBy!.length > 1 ? 's' : ''}`
-    : 'Debloque: 0 modules';
+    ? `D\u00e9bloque: ${m.dependedBy!.length} module${m.dependedBy!.length > 1 ? 's' : ''}`
+    : 'D\u00e9bloque: 0 modules';
 
   return `
     <div class="module-row" data-status="${statusClass}" data-rank="${m.rank ?? 999}" data-readiness="${m.readinessPct}" data-name="${escHtml(m.rootName)}">
@@ -297,8 +297,8 @@ const renderModuleRow = (m: ModuleSummary): string => {
       </div>
       <div class="module-breakdown">
         <span class="tag tag-green">${m.verified} v\u00e9rifi\u00e9s</span>
-        <span class="tag tag-blue">${m.enriched} enrichis</span>
-        <span class="tag tag-yellow">${m.contracted} analys\u00e9s</span>
+        <span class="tag tag-blue">${m.verified + m.enriched} enrichis</span>
+        <span class="tag tag-yellow">${m.verified + m.enriched + m.contracted} analys\u00e9s</span>
         <span class="tag tag-gray">${m.pending} en attente</span>
       </div>
       <div class="module-deps">
@@ -340,7 +340,7 @@ const renderMigrationSequence = (r: FullMigrationReport): string => {
 
   return `
 <section class="card">
-  <h2>Sequence de migration</h2>
+  <h2>S\u00e9quence de migration</h2>
   <div class="wave-sequence">
     ${waveBlocks}
   </div>
@@ -436,7 +436,7 @@ const renderProgramTable = (programs: ProgramSummary[]): string => {
 
 const renderFooter = (r: FullMigrationReport): string => `
 <footer>
-  <p>Genere le ${new Date(r.generated).toLocaleString('fr-FR')} par Migration Factory</p>
+  <p>G\u00e9n\u00e9r\u00e9 le ${new Date(r.generated).toLocaleString('fr-FR')} par Migration Factory</p>
 </footer>`;
 
 // ═══════════════════════════════════════════════════════════════════
@@ -476,7 +476,7 @@ ${MULTI_CSS}
 <header>
   <h1>SPECMAP Migration Dashboard</h1>
   <div class="subtitle">${report.global.totalProjects} projets &middot; ${report.global.activeProjects} actif${report.global.activeProjects > 1 ? 's' : ''} &middot; ${report.global.totalLivePrograms} programmes LIVE</div>
-  <div class="last-updated">Derni\u00e8re mise \u00e0 jour : ${dateStr} a ${timeStr}</div>
+  <div class="last-updated">Derni\u00e8re mise \u00e0 jour : ${dateStr} \u00e0 ${timeStr}</div>
 </header>
 
 <nav class="project-tabs-bar">
@@ -550,7 +550,7 @@ ${MULTI_CSS}
     <!-- Section 3: Program grid -->
     <div class="mp-grid-section" id="mp-grid-section" style="display:none">
       <table class="mp-grid">
-        <thead><tr><th>IDE</th><th>Programme</th><th></th><th>Duree</th><th>Phases</th></tr></thead>
+        <thead><tr><th>IDE</th><th>Programme</th><th></th><th>Dur\u00e9e</th><th>Phases</th></tr></thead>
         <tbody id="mp-grid-body"></tbody>
       </table>
     </div>
@@ -606,7 +606,7 @@ ${MULTI_CSS}
       <h3>Qu'est-ce que c'est ?</h3>
       <p>La <strong>Migration Factory</strong> est un outil de migration de programmes legacy Magic Unipaas vers des applications web modernes React/TypeScript.</p>
       <p>Elle orchestre le pipeline SPECMAP complet : <strong>EXTRACT &rarr; MAP &rarr; GAP &rarr; CONTRACT &rarr; ENRICH &rarr; VERIFY</strong></p>
-      <p>Chaque programme Magic correspond a un module fonctionnel (ecran, processus, rapport). La migration traite chaque programme individuellement en 16 phases automatisees.</p>
+      <p>Chaque programme Magic correspond \u00e0 un module fonctionnel (\u00e9cran, processus, rapport). La migration traite chaque programme individuellement en 16 phases automatis\u00e9es.</p>
     </div>
 
     <div class="help-section">
@@ -639,9 +639,9 @@ ${MULTI_CSS}
     <div class="help-section">
       <h3>Modes d'enrichissement</h3>
       <table class="help-table">
-        <tr><td><strong>Sans enrichissement</strong></td><td>Genere uniquement le squelette (types, composants vides)</td></tr>
-        <tr><td><strong>Heuristique</strong></td><td>Remplit automatiquement types et valeurs par defaut depuis le contrat</td></tr>
-        <tr><td><strong>Claude API</strong></td><td>Utilise l'API Anthropic (necessite ANTHROPIC_API_KEY) pour enrichir le code via IA</td></tr>
+        <tr><td><strong>Sans enrichissement</strong></td><td>G\u00e9n\u00e8re uniquement le squelette (types, composants vides)</td></tr>
+        <tr><td><strong>Heuristique</strong></td><td>Remplit automatiquement types et valeurs par d\u00e9faut depuis le contrat</td></tr>
+        <tr><td><strong>Claude API</strong></td><td>Utilise l'API Anthropic (n\u00e9cessite ANTHROPIC_API_KEY) pour enrichir le code via IA</td></tr>
         <tr><td><strong>Claude CLI</strong></td><td>Utilise la commande locale <code>claude --print</code> pour enrichir via IA</td></tr>
       </table>
     </div>
@@ -722,7 +722,7 @@ migration-factory analyze --dir ADH                # Analyser les modules</pre>
 ${projectContents}
 
 <footer>
-  <p>Genere le ${dateStr} a ${timeStr} par Migration Factory</p>
+  <p>G\u00e9n\u00e9r\u00e9 le ${dateStr} \u00e0 ${timeStr} par Migration Factory</p>
 </footer>
 
 </div>
@@ -752,7 +752,7 @@ const renderGlobalView = (report: MultiProjectReport): string => {
       <div class="project-card project-card-idle">
         <div class="project-card-name">${escHtml(p.name)}</div>
         <div class="project-card-desc">${escHtml(p.description)}</div>
-        <div class="project-card-status"><span class="badge badge-gray">NON DEMARRE</span></div>
+        <div class="project-card-status"><span class="badge badge-gray">NON D\u00c9MARR\u00c9</span></div>
         <div class="project-card-stat">${p.programCount > 0 ? p.programCount + ' programmes' : ''}</div>
       </div>`;
     }
