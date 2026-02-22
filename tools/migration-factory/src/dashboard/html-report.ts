@@ -1826,7 +1826,6 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           + r.summary.contracted + ' contracted, '
           + r.summary.errors + ' errors';
         addLog('Pipeline completed in ' + elapsed + 's');
-        setTimeout(function() { location.reload(); }, 2000);
         return;
       }
 
@@ -1948,12 +1947,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           });
         }
         if (!chkDry.checked) {
-          lines.push('', 'Batches persisted. Reloading...');
+          lines.push('', 'Batches persisted.');
         }
         showPanel('Project Analysis', lines.join('\\n'));
-        if (!chkDry.checked) {
-          setTimeout(function() { location.reload(); }, 2000);
-        }
       })
       .catch(function(err) { showPanel('Error', String(err)); })
       .finally(function() { setLoading(btnAnalyze, false); });
@@ -2427,8 +2423,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       document.getElementById('mp-prog-section').style.display = 'none';
       addMLog('Migration completed' + (failed > 0 ? ' (' + failed + ' failed)' : ''));
       if (r && r.git) addMLog('[git] Committed ' + r.git.commitSha + ' pushed to ' + r.git.branch);
-      addMLog('Dashboard will refresh in 5s...');
-      setTimeout(function() { location.reload(); }, 5000);
+      addMLog('Migration terminee.');
       return;
     }
 
