@@ -1981,7 +1981,8 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     programStartTimes: {}, programDurations: [],
     tokensIn: 0, tokensOut: 0,
     eventsProcessed: 0,
-    estimatedHours: 0
+    estimatedHours: 0,
+    batchPhaseActive: false, batchPhaseStart: 0
   };
 
   function escAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -2040,7 +2041,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
   function computeETA() {
     var remaining = migrateState.totalProgs - migrateState.doneProgs - migrateState.failedProgs;
-    if (remaining <= 0) return '';
+    // All individual programs done but migration still running (batch phases: verify, integrate, review)
+    if (remaining <= 0) {
+      if (migrateState.batchPhaseActive) return ' | Phases batch en cours...';
+      return '';
+    }
     var durations = migrateState.programDurations;
     // Filter out trivial programs (<5s) that skipped all phases (no Claude calls)
     var real = [];
@@ -2208,12 +2213,20 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       migrateState.totalProgs = msg.programs || 0;
       migrateState.doneProgs = 0;
       migrateState.estimatedHours = msg.estimatedHours || 0;
+      if (msg.parallel > 0) migrateState.parallelCount = msg.parallel;
       if (msg.programList && msg.programList.length) {
         migrateState.programList = msg.programList;
         buildProgramGrid(msg.programList);
       }
       updateModuleProgress(0, migrateState.totalProgs);
-      addMLog('Migration d\\u00e9marr\\u00e9e : ' + migrateState.totalProgs + ' programmes' + (migrateState.estimatedHours > 0 ? ' (~' + migrateState.estimatedHours.toFixed(1) + 'h estim\\u00e9es)' : ''));
+      var agentInfo = msg.parallel > 0 ? ', ' + msg.parallel + ' agents' : '';
+      addMLog('Migration d\\u00e9marr\\u00e9e : ' + migrateState.totalProgs + ' programmes' + agentInfo + (migrateState.estimatedHours > 0 ? ' (~' + migrateState.estimatedHours.toFixed(1) + 'h estim\\u00e9es)' : ''));
+      // Update overlay title with agent count
+      if (msg.parallel > 0) {
+        var title = migrateOverlayTitle.textContent || '';
+        title = title.replace(/\\(auto-parallel\\)/, 'x' + msg.parallel + ' agents');
+        migrateOverlayTitle.textContent = title;
+      }
       return;
     }
 
@@ -2252,18 +2265,24 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         migrateState.programPhases[pid].currentPhase = phase;
         if (phase) updatePhaseDot(pid, phase, 'active');
         updateProgramProgress(pid, phase);
-      } else if (phase && !pid) {
-        // Batch-level phase (verify-tsc, integrate, review) - show in prog section
-        var section = document.getElementById('mp-prog-section');
-        var titleEl = document.getElementById('mp-prog-title');
-        var bar = document.getElementById('mp-prog-bar');
-        var label = document.getElementById('mp-prog-label');
-        if (section && titleEl) {
-          section.style.display = '';
-          titleEl.textContent = phase.toUpperCase() + ': ' + (msg.message || 'en cours...');
-          titleEl.style.color = '#f59e0b';
-          if (bar) { bar.style.width = ''; bar.style.background = '#f59e0b'; bar.className = 'mp-bar-fill mp-bar-prog mp-pulse-bar'; }
-          if (label) label.textContent = '';
+      } else if (phase) {
+        // Batch-level phase (verify-tsc, integrate, review) - may or may not have pid
+        migrateState.batchPhaseActive = true;
+        if (!migrateState.batchPhaseStart) migrateState.batchPhaseStart = Date.now();
+        // Re-activate program timer for per-program batch phases (review)
+        if (pid) migrateState.programStartTimes[pid] = Date.now();
+        if (!pid) {
+          var section = document.getElementById('mp-prog-section');
+          var titleEl = document.getElementById('mp-prog-title');
+          var bar = document.getElementById('mp-prog-bar');
+          var label = document.getElementById('mp-prog-label');
+          if (section && titleEl) {
+            section.style.display = '';
+            titleEl.textContent = phase.toUpperCase() + ': ' + (msg.message || 'en cours...');
+            titleEl.style.color = '#f59e0b';
+            if (bar) { bar.style.width = ''; bar.style.background = '#f59e0b'; bar.className = 'mp-bar-fill mp-bar-prog mp-pulse-bar'; }
+            if (label) label.textContent = '';
+          }
         }
       }
       addMLog('[' + (phase || '') + '] ' + (msg.message || ''));
@@ -2280,6 +2299,13 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         }
         updatePhaseDot(pid, phase, 'done');
         updateProgramProgress(pid, null);
+        // Update duration for batch-level per-program phases (review)
+        if (migrateState.batchPhaseActive && migrateState.programStartTimes[pid]) {
+          var batchDur = Date.now() - migrateState.programStartTimes[pid];
+          delete migrateState.programStartTimes[pid];
+          var batchDurEl = document.getElementById('mp-dur-' + pid);
+          if (batchDurEl) { batchDurEl.textContent = formatElapsed(batchDur); batchDurEl.style.color = '#d2a8ff'; }
+        }
       } else if (phase && !pid) {
         // Batch-level phase completed - update prog section
         var titleEl = document.getElementById('mp-prog-title');
@@ -2303,7 +2329,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       var pid = msg.programId;
       var isSkipped = msg.data && msg.data.skipped;
       // Prefer server-side duration (accurate), fallback to client-side
-      var dur = (msg.data && msg.data.duration) ? msg.data.duration : (migrateState.programStartTimes[pid] ? Date.now() - migrateState.programStartTimes[pid] : 0);
+      var dur = (msg.data && typeof msg.data.duration === 'number') ? msg.data.duration : (migrateState.programStartTimes[pid] ? Date.now() - migrateState.programStartTimes[pid] : 0);
       if (!isSkipped && dur > 0) migrateState.programDurations.push(dur);
       delete migrateState.programStartTimes[pid];
       var durEl = document.getElementById('mp-dur-' + pid);
@@ -2360,6 +2386,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
     if (msg.type === 'migrate_result') {
       var r = msg.data;
+      migrateState.batchPhaseActive = false;
       clearInterval(migrateState.elapsedTid);
       var bar = document.getElementById('mp-module-bar');
       if (bar) bar.style.width = '100%';
@@ -2449,6 +2476,8 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     migrateState.programPhases = {};
     migrateState.programStartTimes = {};
     migrateState.programDurations = [];
+    migrateState.batchPhaseActive = false;
+    migrateState.batchPhaseStart = 0;
 
     migrateState.eventsProcessed = 0;
     var es = new EventSource(url);

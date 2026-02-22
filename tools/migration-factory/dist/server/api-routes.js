@@ -298,7 +298,7 @@ export const handleMigrateStream = async (ctx, query, res) => {
         sse.send(event);
     };
     migrateConfig.onEvent = (event) => bufferedSend(event);
-    bufferedSend({ type: 'migrate_started', batch: batchId, programs: programIds.length, targetDir, dryRun, mode: claudeMode, programList, estimatedHours: batchEstimatedHours || null });
+    bufferedSend({ type: 'migrate_started', batch: batchId, programs: programIds.length, targetDir, dryRun, mode: claudeMode, programList, estimatedHours: batchEstimatedHours || null, parallel });
     try {
         const result = await runMigration(programIds, batchId, batchName, migrateConfig);
         bufferedSend({ type: 'migrate_result', data: result });
