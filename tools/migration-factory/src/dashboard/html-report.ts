@@ -2106,13 +2106,22 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   function computeETA() {
     var durations = migrateState.programDurations;
     if (durations.length === 0) return '';
-    var sum = 0;
-    for (var i = 0; i < durations.length; i++) sum += durations[i];
-    var avgMs = sum / durations.length;
     var remaining = migrateState.totalProgs - migrateState.doneProgs - migrateState.failedProgs;
     if (remaining <= 0) return '';
-    var etaMs = remaining * avgMs;
-    return ' | ETA: ~' + formatElapsed(etaMs);
+    // Filter out trivial programs (<5s) that skipped all phases (no Claude calls)
+    var real = [];
+    for (var i = 0; i < durations.length; i++) { if (durations[i] >= 5000) real.push(durations[i]); }
+    // If no real durations yet, use elapsed/completed as fallback
+    if (real.length === 0) {
+      if (migrateState.doneProgs + migrateState.failedProgs === 0) return '';
+      var elapsed = Date.now() - migrateState.migrationStart;
+      var avgMs = elapsed / (migrateState.doneProgs + migrateState.failedProgs);
+      return ' | ETA: ~' + formatElapsed(remaining * avgMs);
+    }
+    var sum = 0;
+    for (var i = 0; i < real.length; i++) sum += real[i];
+    var avgMs = sum / real.length;
+    return ' | ETA: ~' + formatElapsed(remaining * avgMs);
   }
 
   function formatTokens(n) { return n >= 1000000 ? (n / 1000000).toFixed(1) + 'M' : Math.round(n / 1000) + 'K'; }
