@@ -422,8 +422,8 @@ describe('Action Server', () => {
       const res = await request(port, 'GET', '/');
       const html = res.data as string;
       expect(html).toContain('sel-enrich');
-      expect(html).toContain('No enrich');
-      expect(html).toContain('Heuristic');
+      expect(html).toContain('Sans enrichissement');
+      expect(html).toContain('Heuristique');
       expect(html).toContain('Claude API');
       expect(html).toContain('Claude CLI');
     });
@@ -433,7 +433,7 @@ describe('Action Server', () => {
       const res = await request(port, 'GET', '/');
       const html = res.data as string;
       expect(html).toContain('btn-generate');
-      expect(html).toContain('Generate Code');
+      expect(html).toContain('G\u00e9n\u00e9rer Code');
     });
 
     it('should contain all 6 action buttons', async () => {
@@ -453,7 +453,7 @@ describe('Action Server', () => {
       const res = await request(port, 'GET', '/');
       const html = res.data as string;
       expect(html).toContain('chk-dry');
-      expect(html).toContain('Dry Run');
+      expect(html).toContain('Simulation');
     });
   });
 

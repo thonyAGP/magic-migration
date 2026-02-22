@@ -485,32 +485,32 @@ ${MULTI_CSS}
 </nav>
 
 <div class="action-bar" id="action-bar">
-  <span class="server-badge disconnected" id="server-badge">Offline</span>
+  <span class="server-badge disconnected" id="server-badge">Hors ligne</span>
   <select id="batch-select" class="action-select" disabled>
-    <option value="">Select batch...</option>
+    <option value="">S\u00e9lectionner un batch...</option>
   </select>
-  <button class="action-btn" id="btn-preflight" disabled title="Run 'migration-factory serve' to enable">Preflight</button>
-  <button class="action-btn primary" id="btn-run" disabled title="Run 'migration-factory serve' to enable">Run Pipeline</button>
-  <button class="action-btn" id="btn-verify" disabled title="Run 'migration-factory serve' to enable">Verify</button>
-  <button class="action-btn" id="btn-gaps" disabled title="Run 'migration-factory serve' to enable">Gaps</button>
-  <button class="action-btn" id="btn-calibrate" disabled title="Run 'migration-factory serve' to enable">Calibrate</button>
-  <button class="action-btn" id="btn-generate" disabled title="Run 'migration-factory serve' to enable" style="background:#7c3aed;color:#fff">Generate Code</button>
-  <button class="action-btn" id="btn-migrate" disabled title="Run 'migration-factory serve' to enable" style="background:#059669;color:#fff">Migrate Module</button>
-  <button class="action-btn" id="btn-migrate-auto" disabled title="Run 'migration-factory serve' to enable" style="background:#0d9488;color:#fff">Migration Auto</button>
-  <button class="action-btn" id="btn-analyze" disabled title="Run 'migration-factory serve' to enable" style="background:#6366f1;color:#fff">Analyze Project</button>
+  <button class="action-btn" id="btn-preflight" disabled title="Lancez 'migration-factory serve' pour activer">Pr\u00e9-requis</button>
+  <button class="action-btn primary" id="btn-run" disabled title="Lancez 'migration-factory serve' pour activer">Lancer Pipeline</button>
+  <button class="action-btn" id="btn-verify" disabled title="Lancez 'migration-factory serve' pour activer">V\u00e9rifier</button>
+  <button class="action-btn" id="btn-gaps" disabled title="Lancez 'migration-factory serve' pour activer">Gaps</button>
+  <button class="action-btn" id="btn-calibrate" disabled title="Lancez 'migration-factory serve' pour activer">Calibrer</button>
+  <button class="action-btn" id="btn-generate" disabled title="Lancez 'migration-factory serve' pour activer" style="background:#7c3aed;color:#fff">G\u00e9n\u00e9rer Code</button>
+  <button class="action-btn" id="btn-migrate" disabled title="Lancez 'migration-factory serve' pour activer" style="background:#059669;color:#fff">Migrer Module</button>
+  <button class="action-btn" id="btn-migrate-auto" disabled title="Lancez 'migration-factory serve' pour activer" style="background:#0d9488;color:#fff">Migration Auto</button>
+  <button class="action-btn" id="btn-analyze" disabled title="Lancez 'migration-factory serve' pour activer" style="background:#6366f1;color:#fff">Analyser Projet</button>
   <select id="sel-enrich" disabled title="Enrichment mode" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-main);font-size:12px">
-    <option value="none">No enrich</option>
-    <option value="heuristic" selected>Heuristic</option>
+    <option value="none">Sans enrichissement</option>
+    <option value="heuristic" selected>Heuristique</option>
     <option value="claude">Claude API</option>
     <option value="claude-cli">Claude CLI</option>
   </select>
-  <label style="margin-left:auto;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px"><input type="checkbox" id="chk-dry" disabled> Dry Run</label>
-  <button class="action-btn" id="btn-help" style="padding:4px 10px;font-weight:700;font-size:14px;border-radius:50%;min-width:28px" title="Help &amp; Documentation">?</button>
+  <label style="margin-left:auto;font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px"><input type="checkbox" id="chk-dry" disabled> Simulation</label>
+  <button class="action-btn" id="btn-help" style="padding:4px 10px;font-weight:700;font-size:14px;border-radius:50%;min-width:28px" title="Aide &amp; Documentation">?</button>
 </div>
 <div class="action-panel" id="action-panel">
   <div class="action-panel-header">
-    <strong id="panel-title">Results</strong>
-    <button class="action-btn" id="btn-close" style="padding:2px 8px;font-size:11px">Close</button>
+    <strong id="panel-title">R\u00e9sultats</strong>
+    <button class="action-btn" id="btn-close" style="padding:2px 8px;font-size:11px">Fermer</button>
   </div>
   <pre id="panel-content"></pre>
 </div>
@@ -565,31 +565,31 @@ ${MULTI_CSS}
 <!-- Confirmation modal before migration launch -->
 <div class="modal-backdrop" id="migrate-confirm-modal">
   <div class="modal-content">
-    <h3 style="margin:0 0 16px 0;font-size:18px">Launch Migration</h3>
+    <h3 style="margin:0 0 16px 0;font-size:18px">Lancer la migration</h3>
     <div class="modal-field">
       <label>Batch</label>
       <div id="modal-batch-info" style="font-weight:600"></div>
     </div>
     <div class="modal-field">
-      <label for="modal-target-dir">Target directory</label>
-      <input type="text" id="modal-target-dir" class="modal-input" value="adh-web" placeholder="e.g., adh-web">
+      <label for="modal-target-dir">R\u00e9pertoire cible</label>
+      <input type="text" id="modal-target-dir" class="modal-input" value="adh-web" placeholder="ex: adh-web">
       <div id="modal-target-resolved" style="font-size:11px;color:#8b949e;margin-top:2px"></div>
     </div>
     <div class="modal-field">
-      <label for="modal-parallel">Parallel programs (0 = auto)</label>
+      <label for="modal-parallel">Programmes en parall\u00e8le (0 = auto)</label>
       <input type="number" id="modal-parallel" class="modal-input" value="0" min="0" max="8" style="width:80px">
     </div>
     <div class="modal-field">
-      <label>Claude mode</label>
+      <label>Mode Claude</label>
       <div id="modal-claude-mode" style="font-size:13px;color:#8b949e"></div>
     </div>
     <div class="modal-field">
-      <label>Dry Run</label>
+      <label>Simulation</label>
       <div id="modal-dry-run" style="font-size:13px;color:#8b949e"></div>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
-      <button class="action-btn" id="modal-cancel">Cancel</button>
-      <button class="action-btn primary" id="modal-launch" style="background:#059669;border-color:#059669">Launch Migration</button>
+      <button class="action-btn" id="modal-cancel">Annuler</button>
+      <button class="action-btn primary" id="modal-launch" style="background:#059669;border-color:#059669">Lancer la migration</button>
     </div>
   </div>
 </div>
@@ -624,15 +624,15 @@ ${MULTI_CSS}
     <div class="help-section">
       <h3>Boutons d'action</h3>
       <table class="help-table">
-        <tr><td><strong>Preflight</strong></td><td>V\u00e9rifier les pr\u00e9-requis avant de lancer un batch (contrats, d\u00e9pendances, gaps)</td></tr>
-        <tr><td><strong>Run Pipeline</strong></td><td>Executer le pipeline SPECMAP sur un batch (contrat &rarr; verification)</td></tr>
-        <tr><td><strong>Verify</strong></td><td>Auto-v\u00e9rifier les contrats dont tous les items sont IMPL ou N/A</td></tr>
-        <tr><td><strong>Gaps</strong></td><td>Afficher le rapport de gaps consolide par contrat</td></tr>
-        <tr><td><strong>Calibrate</strong></td><td>Recalculer l'estimation heures/point depuis les contrats v\u00e9rifi\u00e9s</td></tr>
-        <tr><td><strong>Generate Code</strong></td><td>G\u00e9n\u00e9rer les fichiers React/TS squelette depuis les contrats</td></tr>
-        <tr><td><strong>Migrate Module</strong></td><td>Pipeline complet de migration en 16 phases (spec &rarr; code &rarr; test &rarr; review). Ouvre une modale de confirmation.</td></tr>
-        <tr><td><strong>Migration Auto</strong></td><td>Identique \u00e0 Migrate Module mais sans modale (cible: adh-web, parall\u00e8le: auto)</td></tr>
-        <tr><td><strong>Analyser</strong></td><td>D\u00e9tecter les modules fonctionnels et estimer l'effort de migration</td></tr>
+        <tr><td><strong>Pr\u00e9-requis</strong></td><td>V\u00e9rifier les pr\u00e9-requis avant de lancer un batch (contrats, d\u00e9pendances, gaps)</td></tr>
+        <tr><td><strong>Lancer Pipeline</strong></td><td>Ex\u00e9cuter le pipeline SPECMAP sur un batch (contrat &rarr; v\u00e9rification)</td></tr>
+        <tr><td><strong>V\u00e9rifier</strong></td><td>Auto-v\u00e9rifier les contrats dont tous les items sont IMPL ou N/A</td></tr>
+        <tr><td><strong>Gaps</strong></td><td>Afficher le rapport de gaps consolid\u00e9 par contrat</td></tr>
+        <tr><td><strong>Calibrer</strong></td><td>Recalculer l'estimation heures/point depuis les contrats v\u00e9rifi\u00e9s</td></tr>
+        <tr><td><strong>G\u00e9n\u00e9rer Code</strong></td><td>G\u00e9n\u00e9rer les fichiers React/TS squelette depuis les contrats</td></tr>
+        <tr><td><strong>Migrer Module</strong></td><td>Pipeline complet de migration en 16 phases (spec &rarr; code &rarr; test &rarr; review). Ouvre une modale de confirmation.</td></tr>
+        <tr><td><strong>Migration Auto</strong></td><td>Identique \u00e0 Migrer Module mais sans modale (cible: adh-web, parall\u00e8le: auto)</td></tr>
+        <tr><td><strong>Analyser Projet</strong></td><td>D\u00e9tecter les modules fonctionnels et estimer l'effort de migration</td></tr>
       </table>
     </div>
 
@@ -648,7 +648,7 @@ ${MULTI_CSS}
 
     <div class="help-section">
       <h3>Phases de migration (16)</h3>
-      <p>Chaque programme passe par ces 16 phases lors de <strong>Migrate Module</strong> :</p>
+      <p>Chaque programme passe par ces 16 phases lors de <strong>Migrer Module</strong> :</p>
       <ol class="help-phases">
         <li><strong>spec</strong> &mdash; Extraction de la sp\u00e9cification depuis le code legacy</li>
         <li><strong>contract</strong> &mdash; G\u00e9n\u00e9ration du contrat de migration</li>
@@ -704,7 +704,7 @@ migration-factory analyze --dir ADH                # Analyser les modules</pre>
     <div class="help-section">
       <h3>Conseils</h3>
       <ul>
-        <li>Cochez <strong>Dry Run</strong> pour simuler sans modifier de fichiers</li>
+        <li>Cochez <strong>Simulation</strong> pour simuler sans modifier de fichiers</li>
         <li>Vous pouvez <strong>rafra\u00eechir la page (F5)</strong> pendant une migration &mdash; elle se reconnectera automatiquement</li>
         <li>Le timer affiche le temps \u00e9coul\u00e9 et une <strong>estimation du temps restant (ETA)</strong> apr\u00e8s le 1er programme termin\u00e9</li>
         <li>Le nombre d'agents parall\u00e8les est auto-d\u00e9termin\u00e9 (0=auto) et affich\u00e9 dans l'en-t\u00eate</li>
@@ -1704,7 +1704,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   var btnClose = document.getElementById('btn-close');
 
   // Activate UI
-  badge.textContent = 'Connected';
+  badge.textContent = 'Connect\\u00e9';
   badge.className = 'server-badge connected';
   batchSelect.disabled = false;
   btnPreflight.disabled = false;
@@ -1759,18 +1759,18 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     fetch('/api/preflight?batch=' + encodeURIComponent(batch))
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        var lines = ['Preflight: ' + data.batchId + ' - ' + data.batchName, ''];
+        var lines = ['Pr\\u00e9-requis : ' + data.batchId + ' - ' + data.batchName, ''];
         data.checks.forEach(function(c) {
           lines.push((c.passed ? 'OK' : 'FAIL') + '  ' + c.check + ': ' + c.message);
         });
         if (data.programs.length > 0) {
-          lines.push('', 'Programs:');
+          lines.push('', 'Programmes :');
           data.programs.forEach(function(p) {
             lines.push('  IDE ' + p.id + ' - ' + p.name + ' [' + p.action + ']' + (p.gaps > 0 ? ' (' + p.gaps + ' gaps)' : ''));
           });
         }
-        lines.push('', 'Summary: ' + data.summary.willContract + ' contract, ' + data.summary.willVerify + ' verify, ' + data.summary.needsEnrichment + ' enrich, ' + data.summary.alreadyDone + ' done, ' + data.summary.blocked + ' blocked');
-        showPanel('Preflight: ' + batch, lines.join('\\n'));
+        lines.push('', 'R\\u00e9sum\\u00e9 : ' + data.summary.willContract + ' \\u00e0 analyser, ' + data.summary.willVerify + ' \\u00e0 v\\u00e9rifier, ' + data.summary.needsEnrichment + ' \\u00e0 enrichir, ' + data.summary.alreadyDone + ' termin\\u00e9s, ' + data.summary.blocked + ' bloqu\\u00e9s');
+        showPanel('Pr\\u00e9-requis : ' + batch, lines.join('\\n'));
       })
       .finally(function() { setLoading(btnPreflight, false); });
   });
@@ -1810,12 +1810,12 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
       if (msg.type === 'preflight') {
         totalProgs = msg.data.programs.length;
-        pstatus.textContent = 'Preflight OK: ' + totalProgs + ' programs ('
-          + msg.data.summary.alreadyDone + ' done, '
-          + msg.data.summary.ready + ' ready)';
-        addLog('Preflight: ' + msg.data.summary.ready + ' ready, '
-          + msg.data.summary.alreadyDone + ' already done, '
-          + msg.data.summary.blocked + ' blocked');
+        pstatus.textContent = 'Pr\\u00e9-requis OK : ' + totalProgs + ' programmes ('
+          + msg.data.summary.alreadyDone + ' termin\\u00e9s, '
+          + msg.data.summary.ready + ' pr\\u00eats)';
+        addLog('Pr\\u00e9-requis : ' + msg.data.summary.ready + ' pr\\u00eats, '
+          + msg.data.summary.alreadyDone + ' d\\u00e9j\\u00e0 termin\\u00e9s, '
+          + msg.data.summary.blocked + ' bloqu\\u00e9s');
         return;
       }
 
@@ -1868,7 +1868,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     })
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        var lines = ['Verification ' + (data.dryRun ? '(DRY-RUN)' : '') + ' resultat :', ''];
+        var lines = ['V\\u00e9rification ' + (data.dryRun ? '(SIMULATION)' : '') + ' r\\u00e9sultat :', ''];
         lines.push(data.verified + ' v\\u00e9rifi\\u00e9s, ' + data.notReady + ' non pr\\u00eats, ' + data.alreadyVerified + ' d\\u00e9j\\u00e0 v\\u00e9rifi\\u00e9s');
         if (data.details && data.details.length > 0) {
           lines.push('', 'Details:');
@@ -1878,7 +1878,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
             lines.push(line);
           });
         }
-        showPanel('Verify', lines.join('\\n'));
+        showPanel('V\\u00e9rification', lines.join('\\n'));
       })
       .finally(function() { setLoading(btnVerify, false); });
   });
@@ -1889,9 +1889,9 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     fetch('/api/gaps')
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        var lines = ['Gap Report', ''];
+        var lines = ['Rapport de Gaps', ''];
         if (data.contracts.length === 0) {
-          lines.push('No gaps found - all contracts are complete!');
+          lines.push('Aucun gap trouv\\u00e9 - tous les contrats sont complets !');
         } else {
           data.contracts.forEach(function(cg) {
             var pct = cg.total > 0 ? Math.round((cg.impl / cg.total) * 100) : 0;
@@ -1899,11 +1899,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
             cg.gaps.slice(0, 5).forEach(function(g) {
               lines.push('  ' + g.type + ' ' + g.id + ': ' + g.status + (g.notes ? ' - ' + g.notes : ''));
             });
-            if (cg.gaps.length > 5) lines.push('  ... and ' + (cg.gaps.length - 5) + ' more');
+            if (cg.gaps.length > 5) lines.push('  ... et ' + (cg.gaps.length - 5) + ' de plus');
           });
         }
-        lines.push('', 'Total: ' + data.grandTotalGaps + ' gaps (' + data.globalPct + '% complete)');
-        showPanel('Gaps', lines.join('\\n'));
+        lines.push('', 'Total : ' + data.grandTotalGaps + ' gaps (' + data.globalPct + '% complet)');
+        showPanel('Rapport de Gaps', lines.join('\\n'));
       })
       .finally(function() { setLoading(btnGaps, false); });
   });
@@ -1918,15 +1918,15 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     })
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        var lines = ['Calibration' + (chkDry.checked ? ' (DRY-RUN)' : ''), ''];
+        var lines = ['Calibration' + (chkDry.checked ? ' (SIMULATION)' : ''), ''];
         lines.push('Contrats v\\u00e9rifi\\u00e9s : ' + data.dataPoints);
-        lines.push('Avant : ' + data.previousHpp + ' h/pt -> Calibre : ' + data.calibratedHpp + ' h/pt');
-        lines.push('Estime : ' + data.totalEstimated + 'h | Reel : ' + data.totalActual + 'h');
-        lines.push('Precision : ' + data.accuracyPct + '%');
+        lines.push('Avant : ' + data.previousHpp + ' h/pt -> Calibr\\u00e9 : ' + data.calibratedHpp + ' h/pt');
+        lines.push('Estim\\u00e9 : ' + data.totalEstimated + 'h | R\\u00e9el : ' + data.totalActual + 'h');
+        lines.push('Pr\\u00e9cision : ' + data.accuracyPct + '%');
         if (data.details && data.details.length > 0) {
-          lines.push('', 'Details:');
+          lines.push('', 'D\\u00e9tails :');
           data.details.forEach(function(d) {
-            lines.push('  IDE ' + d.programId + ': score=' + d.score + ' est=' + d.estimated + 'h act=' + d.actual + 'h');
+            lines.push('  IDE ' + d.programId + ' : score=' + d.score + ' est=' + d.estimated + 'h r\\u00e9el=' + d.actual + 'h');
           });
         }
         showPanel('Calibration', lines.join('\\n'));
@@ -1967,16 +1967,16 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   btnGenerate.addEventListener('click', function() {
     var batch = batchSelect.value;
     if (!batch) { showPanel('Erreur', 'S\\u00e9lectionnez un batch d\\'abord'); return; }
-    var outputDir = prompt('Output directory for generated files:', './adh-web/src');
+    var outputDir = prompt('R\\u00e9pertoire de sortie pour les fichiers g\\u00e9n\\u00e9r\\u00e9s :', './adh-web/src');
     if (!outputDir) return;
     setLoading(btnGenerate, true);
     var dryRun = chkDry.checked;
     var enrichMode = document.getElementById('sel-enrich').value || 'none';
     var url = '/api/generate/stream?batch=' + encodeURIComponent(batch) + '&outputDir=' + encodeURIComponent(outputDir) + '&dryRun=' + dryRun + '&enrich=' + enrichMode;
 
-    var enrichLabel = enrichMode !== 'none' ? ' [enrich: ' + enrichMode + ']' : '';
-    var lines = ['Code Generation' + (dryRun ? ' (DRY-RUN)' : '') + enrichLabel + ' - Batch ' + batch, 'Output: ' + outputDir, ''];
-    showPanel('Generate Code', lines.join('\\n'));
+    var enrichLabel = enrichMode !== 'none' ? ' [enrichissement: ' + enrichMode + ']' : '';
+    var lines = ['G\\u00e9n\\u00e9ration de code' + (dryRun ? ' (SIMULATION)' : '') + enrichLabel + ' - Batch ' + batch, 'Sortie : ' + outputDir, ''];
+    showPanel('G\\u00e9n\\u00e9ration de code', lines.join('\\n'));
 
     var es = new EventSource(url);
     es.onmessage = function(ev) {
@@ -1989,13 +1989,13 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       }
 
       if (msg.type === 'codegen_started') {
-        lines.push('Starting: ' + msg.total + ' programs');
+        lines.push('D\\u00e9marrage : ' + msg.total + ' programmes');
       } else if (msg.type === 'codegen_program') {
         lines.push('[' + msg.progress + '] IDE ' + msg.programId + ' ' + msg.programName + ': ' + msg.written + ' written, ' + msg.skipped + ' skipped');
       } else if (msg.type === 'codegen_skip') {
         lines.push('SKIP IDE ' + msg.programId + ': ' + msg.message);
       } else if (msg.type === 'codegen_completed') {
-        lines.push('', 'Done: ' + msg.processed + ' programs, ' + msg.totalWritten + ' files ' + (msg.dryRun ? 'would be written' : 'written') + ', ' + msg.totalSkipped + ' skipped');
+        lines.push('', 'Termin\\u00e9 : ' + msg.processed + ' programmes, ' + msg.totalWritten + ' fichiers ' + (msg.dryRun ? '\\u00e0 \\u00e9crire' : '\\u00e9crits') + ', ' + msg.totalSkipped + ' ignor\\u00e9s');
       } else if (msg.type === 'error') {
         lines.push('ERROR: ' + msg.message);
       }
@@ -2006,7 +2006,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     es.onerror = function() {
       es.close();
       setLoading(btnGenerate, false);
-      lines.push('Connection lost');
+      lines.push('Connexion perdue');
       panelContent.textContent = lines.join('\\n');
     };
   });
@@ -2274,7 +2274,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         buildProgramGrid(msg.programList);
       }
       updateModuleProgress(0, migrateState.totalProgs);
-      addMLog('Migration started: ' + migrateState.totalProgs + ' programs');
+      addMLog('Migration d\\u00e9marr\\u00e9e : ' + migrateState.totalProgs + ' programmes');
       return;
     }
 
@@ -2393,7 +2393,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       migrateState.doneProgs++;
       updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
       updateProgramProgress(null, null);
-      addMLog(isSkipped ? '[skip] IDE ' + pid + ': already migrated' : '[done] IDE ' + pid + ': ' + (msg.message || ''));
+      addMLog(isSkipped ? '[ignor\\u00e9] IDE ' + pid + ' : d\\u00e9j\\u00e0 migr\\u00e9' : '[termin\\u00e9] IDE ' + pid + ' : ' + (msg.message || ''));
       return;
     }
 
@@ -2436,7 +2436,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
         }
         var allSkipped = r.summary.skipped === r.summary.total;
         if (allSkipped) {
-          label.textContent = 'Done: ' + r.summary.total + '/' + r.summary.total + ' already migrated (nothing to do)' + costStr;
+          label.textContent = 'Termin\\u00e9 : ' + r.summary.total + '/' + r.summary.total + ' d\\u00e9j\\u00e0 migr\\u00e9s (rien \\u00e0 faire)' + costStr;
         } else {
           label.textContent = 'Done: ' + r.summary.completed + '/' + r.summary.total
             + ' completed' + (failed > 0 ? ', ' + failed + ' failed' : '')
@@ -2496,7 +2496,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       + '&parallel=' + parallelCount
       + '&mode=' + claudeMode;
 
-    var headerPrefix = isAuto ? 'Migration Auto' : 'Migrate';
+    var headerPrefix = isAuto ? 'Migration Auto' : 'Migration';
     var parallelInfo = migrateState.parallelCount > 0 ? ' x' + migrateState.parallelCount + ' agents' : ' (auto-parallel)';
     showMigrateOverlay(headerPrefix + ': ' + batch + ' [' + claudeMode.toUpperCase() + ']' + parallelInfo);
     migrateAbortBtn.style.display = 'inline-block';
