@@ -2247,12 +2247,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     var pct = total > 0 ? Math.round((processed / total) * 100) : 0;
     bar.style.width = pct + '%';
     var eta = computeETA();
-    var batchInfo = migrateState.batchPhaseActive ? ' | Phases batch en cours...' : '';
     if (migrateState.failedProgs > 0) {
       bar.style.background = 'linear-gradient(90deg, var(--green) 0%, #f59e0b 100%)';
       label.textContent = done + '/' + total + ' OK, ' + migrateState.failedProgs + ' failed (' + pct + '%)' + eta;
     } else {
-      label.textContent = done + '/' + total + ' programmes (' + pct + '%)' + eta + batchInfo;
+      label.textContent = done + '/' + total + ' programmes (' + pct + '%)' + eta;
     }
     if (migrateBadge) { migrateBadge.textContent = done + '/' + total; migrateBadge.style.display = ''; }
   }
@@ -2310,9 +2309,13 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       var resolved = msg.data && msg.data.resolved ? msg.data.resolved : 0;
       migrateState.parallelCount = resolved;
       var title = migrateOverlayTitle.textContent || '';
-      title = title.replace(/\(auto-parallel\)/, 'x' + resolved + ' agents (auto)');
-      migrateOverlayTitle.textContent = title;
-      addMLog('Auto-parallel resolved: ' + resolved + ' agents (' + (msg.data && msg.data.cpus || '?') + ' CPUs)');
+      var newTitle = title.replace(/\(auto-parallel\)/, 'x' + resolved + ' agents');
+      if (newTitle === title && resolved > 0) {
+        // Title doesn't contain (auto-parallel) (CLI-started migration), append
+        newTitle = title + ' x' + resolved + ' agents';
+      }
+      migrateOverlayTitle.textContent = newTitle;
+      addMLog('Auto-parallel: ' + resolved + ' agents (' + (msg.data && msg.data.cpus || '?') + ' CPUs)');
       return;
     }
 
