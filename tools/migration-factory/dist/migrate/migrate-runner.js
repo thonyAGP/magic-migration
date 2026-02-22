@@ -426,16 +426,26 @@ const runProgramGeneration = async (programId, config, trackerFile) => {
         markProgramCompleted(prog);
         saveMigrateTracker(trackerFile, migrateData);
         // Promote contract status: contracted → enriched (so verify can then → verified)
+        // Also create minimal enriched contract if none exists (e.g. CONTRACT phase was skipped)
         if (!config.dryRun) {
             try {
                 const project = config.contractSubDir;
-                const contractFile = path.join(config.migrationDir, project, `${project}-IDE-${programId}.contract.yaml`);
-                if (fs.existsSync(contractFile)) {
-                    const contract = parseContract(contractFile);
+                const cFile = path.join(config.migrationDir, project, `${project}-IDE-${programId}.contract.yaml`);
+                if (fs.existsSync(cFile)) {
+                    const contract = parseContract(cFile);
                     if (contract.overall.status === PipelineStatus.CONTRACTED) {
                         contract.overall.status = PipelineStatus.ENRICHED;
-                        writeContract(contract, contractFile);
+                        writeContract(contract, cFile);
                     }
+                }
+                else {
+                    // Create minimal enriched contract so batch progress reflects this program
+                    const minimalContract = {
+                        program: { id: programId, name: `IDE-${programId}`, complexity: 'MEDIUM', callers: [], callees: [], tasksCount: 0, tablesCount: 0, expressionsCount: 0 },
+                        rules: [], variables: [], tables: [], callees: [],
+                        overall: { rulesTotal: 0, rulesImpl: 0, rulesPartial: 0, rulesMissing: 0, rulesNa: 0, variablesKeyCount: 0, calleesTotal: 0, calleesImpl: 0, calleesMissing: 0, coveragePct: 0, status: PipelineStatus.ENRICHED, generated: new Date().toISOString(), notes: 'Auto-created after migration generation' },
+                    };
+                    writeContract(minimalContract, cFile);
                 }
             }
             catch { /* non-critical */ }

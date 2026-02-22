@@ -1736,10 +1736,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
 
   btnClose.addEventListener('click', function() { panel.classList.remove('visible'); });
 
-  // Load batches
+  // Load batches (hide fully verified ones from migration dropdown)
   fetch('/api/status').then(function(r) { return r.json(); }).then(function(batches) {
     if (!Array.isArray(batches)) return;
     batches.forEach(function(b) {
+      if (b.status === 'verified') return; // Skip completed batches
       var opt = document.createElement('option');
       opt.value = b.id;
       opt.textContent = b.id + ' - ' + b.name + ' (' + b.programCount + ' progs, ' + b.verified + '/' + b.programCount + ' verified)';

@@ -85,6 +85,16 @@ export const writeTracker = (tracker, filePath) => {
             },
         } : {}),
     };
+    // Preserve migrate section (written by migrate-tracker.ts) if it exists
+    if (fs.existsSync(filePath)) {
+        try {
+            const existing = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+            if (existing.migrate) {
+                doc.migrate = existing.migrate;
+            }
+        }
+        catch { /* ignore parse errors */ }
+    }
     fs.writeFileSync(filePath, JSON.stringify(doc, null, 2), 'utf8');
 };
 // ─── Update stats in tracker ─────────────────────────────────────

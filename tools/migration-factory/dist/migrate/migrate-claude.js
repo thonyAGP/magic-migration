@@ -107,7 +107,7 @@ const callClaudeCli = async (options) => {
             windowsHide: true,
         });
         // Parse JSON output to extract text + tokens
-        return parseCliJsonOutput(stdout, Date.now() - start);
+        return parseCliJsonOutput(stdout, Date.now() - start, prompt.length);
     }
     finally {
         try {
@@ -117,18 +117,32 @@ const callClaudeCli = async (options) => {
     }
 };
 /** Parse `claude --print --output-format json` output. */
-const parseCliJsonOutput = (stdout, durationMs) => {
+const parseCliJsonOutput = (stdout, durationMs, promptLength) => {
     try {
         const data = JSON.parse(stdout.trim());
         const text = typeof data.result === 'string' ? data.result : stdout.trim();
-        const tokens = data.usage?.input_tokens && data.usage?.output_tokens
-            ? { input: data.usage.input_tokens, output: data.usage.output_tokens }
-            : undefined;
+        // Try exact tokens from CLI JSON (if available)
+        let tokens;
+        if (data.usage?.input_tokens && data.usage?.output_tokens) {
+            tokens = { input: data.usage.input_tokens, output: data.usage.output_tokens };
+        }
+        else {
+            // Estimate tokens from text lengths (~4 chars per token)
+            tokens = {
+                input: Math.ceil(promptLength / 4),
+                output: Math.ceil(text.length / 4),
+            };
+        }
         return { output: text, durationMs, tokens };
     }
     catch {
-        // Fallback: if JSON parse fails, treat as raw text (old --print behavior)
-        return { output: stdout.trim(), durationMs };
+        // Fallback: if JSON parse fails, treat as raw text + estimate tokens
+        const text = stdout.trim();
+        return {
+            output: text,
+            durationMs,
+            tokens: { input: Math.ceil(promptLength / 4), output: Math.ceil(text.length / 4) },
+        };
     }
 };
 /**
