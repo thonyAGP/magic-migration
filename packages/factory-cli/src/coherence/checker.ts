@@ -41,7 +41,6 @@ const checkPageExports = (pagesDir: string, options: CoherenceOptions): Coherenc
   for (const file of pageFiles) {
     const filePath = path.join(pagesDir, file);
     const content = fs.readFileSync(filePath, 'utf8');
-    const pageName = file.replace('.tsx', '');
 
     const hasDefaultExport = /export default \w+/.test(content);
     const namedExportMatch = content.match(/export const (\w+Page)\b/);

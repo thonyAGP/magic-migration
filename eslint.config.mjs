@@ -1,22 +1,14 @@
-import tseslint from '@typescript-eslint/eslint-plugin';
-import tsparser from '@typescript-eslint/parser';
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
 
-export default [
+export default tseslint.config(
   {
-    ignores: ['**/node_modules/**', '**/dist/**', 'adh-web/**'],
+    ignores: ['**/node_modules/**', '**/dist/**'],
   },
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
   {
-    files: ['src/**/*.ts', 'tools/**/*.ts'],
-    languageOptions: {
-      parser: tsparser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-      },
-    },
-    plugins: {
-      '@typescript-eslint': tseslint,
-    },
+    files: ['packages/*/src/**/*.ts', 'packages/*/tests/**/*.ts'],
     rules: {
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
@@ -24,4 +16,4 @@ export default [
       'no-console': 'off',
     },
   },
-];
+);
