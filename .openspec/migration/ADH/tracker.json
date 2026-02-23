@@ -53,9 +53,9 @@
       "stats": {
         "backend_na": 0,
         "frontend_enrich": 0,
-        "fully_impl": 12,
-        "coverage_avg_frontend": 69,
-        "total_partial": 0,
+        "fully_impl": 5,
+        "coverage_avg_frontend": 0,
+        "total_partial": 7,
         "total_missing": 5
       },
       "priority_order": [
@@ -713,9 +713,37 @@
       "completedAt": "2026-02-22T21:43:30.643Z"
     },
     "117": {
-      "status": "pending",
-      "currentPhase": null,
-      "phases": {},
+      "status": "failed",
+      "currentPhase": "types",
+      "phases": {
+        "spec": {
+          "status": "completed",
+          "startedAt": "2026-02-23T20:09:45.524Z",
+          "completedAt": "2026-02-23T20:09:45.530Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\specs\\ADH-IDE-117.md"
+        },
+        "contract": {
+          "status": "completed",
+          "startedAt": "2026-02-23T20:09:45.531Z",
+          "completedAt": "2026-02-23T20:09:45.531Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\migration\\ADH\\ADH-IDE-117.contract.yaml"
+        },
+        "analyze": {
+          "status": "completed",
+          "startedAt": "2026-02-23T20:09:45.532Z",
+          "completedAt": "2026-02-23T20:09:45.557Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\migration\\ADH\\ADH-IDE-117.analysis.json"
+        },
+        "types": {
+          "status": "failed",
+          "startedAt": "2026-02-23T20:09:45.559Z",
+          "error": "Command failed: type \"C:\\Users\\thony\\AppData\\Local\\Temp\\mf-prompt-1771877385561-d09bf8.txt\" | claude --print --output-format json --model haiku\n",
+          "completedAt": "2026-02-23T20:11:45.594Z"
+        }
+      },
       "files": [
         "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\ADH-IDE-117.md",
         "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-117.contract.yaml",
@@ -725,77 +753,90 @@
         "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\services\\api\\endpoints-sessionHistory.ts",
         "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\pages\\SessionHistoryPage.tsx",
         "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\sessionHistoryStore.test.ts",
-        "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\SessionHistoryPage.test.tsx"
+        "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\SessionHistoryPage.test.tsx",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\specs\\ADH-IDE-117.md",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\migration\\ADH\\ADH-IDE-117.contract.yaml",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\migration\\ADH\\ADH-IDE-117.analysis.json"
       ],
-      "errors": [],
+      "errors": [
+        "[types] Command failed: type \"C:\\Users\\thony\\AppData\\Local\\Temp\\mf-prompt-1771877385561-d09bf8.txt\" | claude --print --output-format json --model haiku\n",
+        "Command failed: type \"C:\\Users\\thony\\AppData\\Local\\Temp\\mf-prompt-1771877385561-d09bf8.txt\" | claude --print --output-format json --model haiku\n"
+      ],
       "startedAt": "2026-02-22T21:19:37.897Z",
       "completedAt": "2026-02-22T21:19:37.937Z"
     },
     "118": {
-      "status": "generating",
-      "currentPhase": "tests-unit",
+      "status": "completed",
+      "currentPhase": null,
       "phases": {
         "spec": {
           "status": "completed",
-          "startedAt": "2026-02-23T16:35:32.857Z",
-          "completedAt": "2026-02-23T16:35:32.862Z",
+          "startedAt": "2026-02-23T14:43:44.902Z",
+          "completedAt": "2026-02-23T14:43:44.920Z",
           "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\ADH-IDE-118.md"
         },
         "contract": {
           "status": "completed",
-          "startedAt": "2026-02-23T16:35:32.862Z",
-          "completedAt": "2026-02-23T16:35:32.862Z",
+          "startedAt": "2026-02-23T14:43:44.922Z",
+          "completedAt": "2026-02-23T14:43:44.922Z",
           "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-118.contract.yaml"
         },
         "analyze": {
           "status": "completed",
-          "startedAt": "2026-02-23T16:35:32.863Z",
-          "completedAt": "2026-02-23T16:35:32.908Z",
+          "startedAt": "2026-02-23T14:43:44.924Z",
+          "completedAt": "2026-02-23T14:43:44.931Z",
           "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-118.analysis.json"
         },
         "types": {
           "status": "completed",
-          "startedAt": "2026-02-23T16:35:32.909Z",
-          "completedAt": "2026-02-23T16:35:59.848Z",
-          "duration": 26939,
+          "startedAt": "2026-02-23T14:43:44.932Z",
+          "completedAt": "2026-02-23T14:43:44.939Z",
+          "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\types\\sessionsOuvertes.ts"
         },
         "store": {
           "status": "completed",
-          "startedAt": "2026-02-23T16:35:59.849Z",
-          "completedAt": "2026-02-23T16:36:35.847Z",
-          "duration": 35998,
+          "startedAt": "2026-02-23T14:43:44.941Z",
+          "completedAt": "2026-02-23T14:43:44.947Z",
+          "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\stores\\sessionsOuvertesStore.ts"
         },
         "api": {
           "status": "completed",
-          "startedAt": "2026-02-23T16:36:35.848Z",
-          "completedAt": "2026-02-23T16:36:57.389Z",
-          "duration": 21541,
+          "startedAt": "2026-02-23T14:43:44.949Z",
+          "completedAt": "2026-02-23T14:43:44.956Z",
+          "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\services\\api\\endpoints-sessionsOuvertes.ts"
         },
         "page": {
           "status": "completed",
-          "startedAt": "2026-02-23T16:36:57.391Z",
-          "completedAt": "2026-02-23T16:37:40.826Z",
-          "duration": 43435,
+          "startedAt": "2026-02-23T14:43:44.958Z",
+          "completedAt": "2026-02-23T14:43:44.969Z",
+          "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\pages\\SessionsOuvertesPage.tsx"
         },
         "components": {
           "status": "completed",
-          "startedAt": "2026-02-23T16:37:40.827Z",
-          "completedAt": "2026-02-23T16:38:08.874Z",
-          "duration": 28047
+          "startedAt": "2026-02-23T14:43:44.971Z",
+          "completedAt": "2026-02-23T14:43:44.979Z",
+          "duration": 2
         },
         "tests-unit": {
           "status": "completed",
-          "startedAt": "2026-02-23T16:38:08.875Z",
-          "completedAt": "2026-02-23T16:39:09.445Z",
-          "duration": 60570,
+          "startedAt": "2026-02-23T14:43:44.981Z",
+          "completedAt": "2026-02-23T14:43:44.987Z",
+          "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\sessionsOuvertesStore.test.ts"
+        },
+        "tests-ui": {
+          "status": "completed",
+          "startedAt": "2026-02-23T14:43:44.988Z",
+          "completedAt": "2026-02-23T14:43:45.015Z",
+          "duration": 0,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\SessionsOuvertesPage.test.tsx"
         }
       },
       "files": [
@@ -852,9 +893,37 @@
       "completedAt": "2026-02-22T21:56:27.061Z"
     },
     "125": {
-      "status": "pending",
-      "currentPhase": null,
-      "phases": {},
+      "status": "failed",
+      "currentPhase": "types",
+      "phases": {
+        "spec": {
+          "status": "completed",
+          "startedAt": "2026-02-23T20:07:45.250Z",
+          "completedAt": "2026-02-23T20:07:45.289Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\specs\\ADH-IDE-125.md"
+        },
+        "contract": {
+          "status": "completed",
+          "startedAt": "2026-02-23T20:07:45.291Z",
+          "completedAt": "2026-02-23T20:07:45.291Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\migration\\ADH\\ADH-IDE-125.contract.yaml"
+        },
+        "analyze": {
+          "status": "completed",
+          "startedAt": "2026-02-23T20:07:45.294Z",
+          "completedAt": "2026-02-23T20:07:45.446Z",
+          "duration": 0,
+          "file": "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\migration\\ADH\\ADH-IDE-125.analysis.json"
+        },
+        "types": {
+          "status": "failed",
+          "startedAt": "2026-02-23T20:07:45.448Z",
+          "error": "Command failed: type \"C:\\Users\\thony\\AppData\\Local\\Temp\\mf-prompt-1771877265460-heoh64.txt\" | claude --print --output-format json --model haiku\n",
+          "completedAt": "2026-02-23T20:09:45.502Z"
+        }
+      },
       "files": [
         "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\ADH-IDE-125.md",
         "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-125.contract.yaml",
@@ -864,9 +933,15 @@
         "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\services\\api\\endpoints-saisieContenuCaisse.ts",
         "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\pages\\SaisieContenuCaissePage.tsx",
         "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\saisieContenuCaisseStore.test.ts",
-        "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\SaisieContenuCaissePage.test.tsx"
+        "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\SaisieContenuCaissePage.test.tsx",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\specs\\ADH-IDE-125.md",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\migration\\ADH\\ADH-IDE-125.contract.yaml",
+        "D:\\Projects\\ClubMed\\LecteurMagic\\.openspec\\migration\\ADH\\ADH-IDE-125.analysis.json"
       ],
-      "errors": [],
+      "errors": [
+        "[types] Command failed: type \"C:\\Users\\thony\\AppData\\Local\\Temp\\mf-prompt-1771877265460-heoh64.txt\" | claude --print --output-format json --model haiku\n",
+        "Command failed: type \"C:\\Users\\thony\\AppData\\Local\\Temp\\mf-prompt-1771877265460-heoh64.txt\" | claude --print --output-format json --model haiku\n"
+      ],
       "startedAt": "2026-02-22T21:19:37.816Z",
       "completedAt": "2026-02-22T21:19:37.885Z"
     },
@@ -979,9 +1054,79 @@
       "completedAt": "2026-02-22T21:43:30.666Z"
     },
     "138": {
-      "status": "pending",
+      "status": "completed",
       "currentPhase": null,
-      "phases": {},
+      "phases": {
+        "spec": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:46:10.143Z",
+          "completedAt": "2026-02-23T16:46:10.146Z",
+          "duration": 0,
+          "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\ADH-IDE-138.md"
+        },
+        "contract": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:46:10.147Z",
+          "completedAt": "2026-02-23T16:46:10.148Z",
+          "duration": 0,
+          "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-138.contract.yaml"
+        },
+        "analyze": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:46:10.148Z",
+          "completedAt": "2026-02-23T16:46:10.151Z",
+          "duration": 0,
+          "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-138.analysis.json"
+        },
+        "types": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:46:10.151Z",
+          "completedAt": "2026-02-23T16:46:33.345Z",
+          "duration": 23194,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\types\\ticketFermetureSession.ts"
+        },
+        "store": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:46:33.346Z",
+          "completedAt": "2026-02-23T16:47:20.034Z",
+          "duration": 46688,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\stores\\ticketFermetureSessionStore.ts"
+        },
+        "api": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:47:20.036Z",
+          "completedAt": "2026-02-23T16:47:42.703Z",
+          "duration": 22667,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\services\\api\\endpoints-ticketFermetureSession.ts"
+        },
+        "page": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:47:42.704Z",
+          "completedAt": "2026-02-23T16:48:39.511Z",
+          "duration": 56807,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\pages\\TicketFermetureSessionPage.tsx"
+        },
+        "components": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:48:39.511Z",
+          "completedAt": "2026-02-23T16:49:56.987Z",
+          "duration": 77476
+        },
+        "tests-unit": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:49:56.987Z",
+          "completedAt": "2026-02-23T16:50:59.580Z",
+          "duration": 62592,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\ticketFermetureSessionStore.test.ts"
+        },
+        "tests-ui": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:50:59.581Z",
+          "completedAt": "2026-02-23T16:51:45.440Z",
+          "duration": 45859,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\TicketFermetureSessionPage.test.tsx"
+        }
+      },
       "files": [
         "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\ADH-IDE-138.md",
         "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-138.contract.yaml",
@@ -995,12 +1140,82 @@
       ],
       "errors": [],
       "startedAt": "2026-02-22T21:19:37.947Z",
-      "completedAt": "2026-02-22T21:19:37.956Z"
+      "completedAt": "2026-02-23T16:51:45.441Z"
     },
     "155": {
-      "status": "pending",
+      "status": "completed",
       "currentPhase": null,
-      "phases": {},
+      "phases": {
+        "spec": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:35:32.853Z",
+          "completedAt": "2026-02-23T16:35:32.858Z",
+          "duration": 0,
+          "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\ADH-IDE-155.md"
+        },
+        "contract": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:35:32.859Z",
+          "completedAt": "2026-02-23T16:35:32.859Z",
+          "duration": 0,
+          "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-155.contract.yaml"
+        },
+        "analyze": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:35:32.860Z",
+          "completedAt": "2026-02-23T16:35:32.877Z",
+          "duration": 0,
+          "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-155.analysis.json"
+        },
+        "types": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:35:32.877Z",
+          "completedAt": "2026-02-23T16:36:09.752Z",
+          "duration": 36875,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\types\\controleFermetureCaisse.ts"
+        },
+        "store": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:36:09.753Z",
+          "completedAt": "2026-02-23T16:37:40.181Z",
+          "duration": 90428,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\stores\\controleFermetureCaisseStore.ts"
+        },
+        "api": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:37:40.182Z",
+          "completedAt": "2026-02-23T16:38:07.212Z",
+          "duration": 27029,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\services\\api\\endpoints-controleFermetureCaisse.ts"
+        },
+        "page": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:38:07.213Z",
+          "completedAt": "2026-02-23T16:40:02.348Z",
+          "duration": 115135,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\pages\\ControleFermetureCaissePage.tsx"
+        },
+        "components": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:40:02.351Z",
+          "completedAt": "2026-02-23T16:43:31.231Z",
+          "duration": 208880
+        },
+        "tests-unit": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:43:31.232Z",
+          "completedAt": "2026-02-23T16:45:04.080Z",
+          "duration": 92848,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\controleFermetureCaisseStore.test.ts"
+        },
+        "tests-ui": {
+          "status": "completed",
+          "startedAt": "2026-02-23T16:45:04.080Z",
+          "completedAt": "2026-02-23T16:46:10.121Z",
+          "duration": 66041,
+          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\ControleFermetureCaissePage.test.tsx"
+        }
+      },
       "files": [
         "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\ADH-IDE-155.md",
         "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-155.contract.yaml",
@@ -1014,7 +1229,7 @@
       ],
       "errors": [],
       "startedAt": "2026-02-22T21:31:33.196Z",
-      "completedAt": "2026-02-22T21:31:33.233Z"
+      "completedAt": "2026-02-23T16:46:10.122Z"
     },
     "281": {
       "status": "pending",
