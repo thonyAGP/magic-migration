@@ -13,6 +13,7 @@ publish/
 
 # === Node ===
 node_modules/
+package-lock.json
 .vercel
 
 # === Environment ===
