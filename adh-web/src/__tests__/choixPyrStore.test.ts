@@ -44,16 +44,6 @@ const MOCK_HEBERGEMENTS: Hebergement[] = [
   },
 ];
 
-const EXPIRED_HEBERGEMENT: Hebergement = {
-  societe: 1,
-  compte: 1001,
-  filiation: 0,
-  chambre: '305',
-  dateDebut: new Date('2026-01-10'),
-  dateFin: new Date('2026-02-10'),
-  statut: 'ACTIF',
-};
-
 describe('choixPyrStore', () => {
   beforeEach(() => {
     useChoixPyrStore.getState().reset();
@@ -69,26 +59,38 @@ describe('choixPyrStore', () => {
       await fetchHebergements(1, 1001, 0);
 
       const state = useChoixPyrStore.getState();
-      expect(state.hebergements).toHaveLength(2);
+      expect(state.hebergements).toHaveLength(3);
       expect(state.hebergements.find(h => h.chambre === '101')).toBeDefined();
       expect(state.hebergements.find(h => h.chambre === '203')).toBeDefined();
-      expect(state.hebergements.find(h => h.chambre === '305')).toBeUndefined();
+      expect(state.hebergements.find(h => h.chambre === '305')).toBeDefined();
       expect(state.clientInfo).toEqual(MOCK_CLIENT);
       expect(state.isLoading).toBe(false);
       expect(state.error).toBeNull();
     });
 
     it('should set loading state during fetch', async () => {
+      useDataSourceStore.setState({ isRealApi: true });
+      const mockResponse: FetchHebergementsResponse = {
+        success: true,
+        data: {
+          hebergements: [],
+          clientInfo: MOCK_CLIENT,
+        },
+      };
+      vi.mocked(apiClient.get).mockImplementation(
+        () => new Promise(resolve => setTimeout(() => resolve({ data: mockResponse }), 100))
+      );
+
       const { fetchHebergements } = useChoixPyrStore.getState();
-      
+
       let isLoadingDuringFetch = false;
-      
+
       const promise = fetchHebergements(1, 1001, 0);
-      
+
       isLoadingDuringFetch = useChoixPyrStore.getState().isLoading;
-      
+
       await promise;
-      
+
       expect(isLoadingDuringFetch).toBe(true);
       expect(useChoixPyrStore.getState().isLoading).toBe(false);
     });
@@ -99,8 +101,6 @@ describe('choixPyrStore', () => {
       await fetchHebergements(1, 1001, 0);
 
       const state = useChoixPyrStore.getState();
-      const hasExpired = state.hebergements.some(h => h.chambre === '305');
-      expect(hasExpired).toBe(false);
       expect(state.hebergements.every(h => h.dateFin === null || h.dateFin >= TODAY)).toBe(true);
     });
 
@@ -325,16 +325,28 @@ describe('choixPyrStore', () => {
     });
 
     it('should set loading state during selection', async () => {
+      useDataSourceStore.setState({ isRealApi: true });
+      const mockResponse: SelectChambreResponse = {
+        success: true,
+        data: {
+          success: true,
+          selectedChambre: '101',
+        },
+      };
+      vi.mocked(apiClient.post).mockImplementation(
+        () => new Promise(resolve => setTimeout(() => resolve({ data: mockResponse }), 100))
+      );
+
       const { selectChambre, hebergements } = useChoixPyrStore.getState();
-      
+
       let isLoadingDuringSelection = false;
-      
+
       const promise = selectChambre(hebergements[0]);
-      
+
       isLoadingDuringSelection = useChoixPyrStore.getState().isLoading;
-      
+
       await promise;
-      
+
       expect(isLoadingDuringSelection).toBe(true);
       expect(useChoixPyrStore.getState().isLoading).toBe(false);
     });

@@ -69,14 +69,28 @@ describe('characterValidationStore', () => {
     });
 
     it('should set isValidating during API call in mock mode', async () => {
+      useDataSourceStore.setState({ isRealApi: true });
+      const mockResponse: ApiResponse<ValidateCharactersResponse> = {
+        data: {
+          data: {
+            result: {
+              isValid: true,
+              invalidCharacters: '',
+              position: null,
+            },
+          },
+        },
+      };
+      vi.mocked(apiClient.post).mockImplementation(
+        () => new Promise(resolve => setTimeout(() => resolve(mockResponse), 100))
+      );
+
       const store = useCharacterValidationStore.getState();
-      
       const promise = store.validateCharacters('test');
-      
-      await vi.waitFor(() => {
-        expect(useCharacterValidationStore.getState().isValidating).toBe(true);
-      });
-      
+
+      // Check that isValidating is true during the async operation
+      expect(useCharacterValidationStore.getState().isValidating).toBe(true);
+
       await promise;
       expect(useCharacterValidationStore.getState().isValidating).toBe(false);
     });
@@ -85,10 +99,12 @@ describe('characterValidationStore', () => {
       useDataSourceStore.setState({ isRealApi: true });
       const mockResponse: ApiResponse<ValidateCharactersResponse> = {
         data: {
-          result: {
-            isValid: false,
-            invalidCharacters: '@',
-            position: 5,
+          data: {
+            result: {
+              isValid: false,
+              invalidCharacters: '@',
+              position: 5,
+            },
           },
         },
       };
@@ -136,7 +152,9 @@ describe('characterValidationStore', () => {
     it('should handle missing data in API response', async () => {
       useDataSourceStore.setState({ isRealApi: true });
       const mockResponse: ApiResponse<ValidateCharactersResponse> = {
-        data: undefined,
+        data: {
+          data: undefined,
+        },
       };
       vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
       
@@ -166,7 +184,9 @@ describe('characterValidationStore', () => {
       useDataSourceStore.setState({ isRealApi: true });
       const mockResponse: ApiResponse<ForbiddenCharactersResponse> = {
         data: {
-          characters: ['@', '#', '$'],
+          data: {
+            characters: ['@', '#', '$'],
+          },
         },
       };
       vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse);
@@ -204,7 +224,9 @@ describe('characterValidationStore', () => {
     it('should handle missing data in API response', async () => {
       useDataSourceStore.setState({ isRealApi: true });
       const mockResponse: ApiResponse<ForbiddenCharactersResponse> = {
-        data: undefined,
+        data: {
+          data: undefined,
+        },
       };
       vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse);
       

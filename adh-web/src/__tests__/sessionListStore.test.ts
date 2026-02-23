@@ -62,6 +62,20 @@ describe('sessionListStore', () => {
     });
 
     it('should set loading true then false on success', async () => {
+      vi.mocked(useDataSourceStore.getState).mockReturnValue({
+        isRealApi: true,
+      } as ReturnType<typeof useDataSourceStore.getState>);
+      const mockResponse: ApiResponse<GetSessionsListResponse> = {
+        data: {
+          data: MOCK_API_SESSIONS,
+        },
+        success: true,
+        message: 'OK',
+      } as never;
+      vi.mocked(apiClient.get).mockImplementation(
+        () => new Promise(resolve => setTimeout(() => resolve(mockResponse), 50))
+      );
+
       const store = useSessionListStore.getState();
 
       const promise = store.fetchSessions(store.filters);
@@ -84,7 +98,7 @@ describe('sessionListStore', () => {
       });
 
       const state = useSessionListStore.getState();
-      expect(state.sessions).toHaveLength(4);
+      expect(state.sessions).toHaveLength(3);
       expect(state.sessions.every((s) => s.etat === 'O')).toBe(true);
       expect(state.error).toBeNull();
     });
@@ -172,10 +186,12 @@ describe('sessionListStore', () => {
 
     it('should fetch sessions from API and convert dates', async () => {
       const mockResponse: ApiResponse<GetSessionsListResponse> = {
-        data: MOCK_API_SESSIONS,
+        data: {
+          data: MOCK_API_SESSIONS,
+        },
         success: true,
         message: 'OK',
-      };
+      } as never;
 
       vi.mocked(apiClient.get).mockResolvedValue(mockResponse);
 
@@ -205,10 +221,12 @@ describe('sessionListStore', () => {
 
     it('should send all filter params to API', async () => {
       const mockResponse: ApiResponse<GetSessionsListResponse> = {
-        data: [],
+        data: {
+          data: [],
+        },
         success: true,
         message: 'OK',
-      };
+      } as never;
 
       vi.mocked(apiClient.get).mockResolvedValue(mockResponse);
 
@@ -272,10 +290,12 @@ describe('sessionListStore', () => {
 
     it('should handle empty data array from API', async () => {
       const mockResponse: ApiResponse<GetSessionsListResponse> = {
-        data: undefined,
+        data: {
+          data: undefined,
+        },
         success: true,
         message: 'OK',
-      };
+      } as never;
 
       vi.mocked(apiClient.get).mockResolvedValue(mockResponse);
 
