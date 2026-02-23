@@ -1080,6 +1080,30 @@ const run = async () => {
       break;
     }
 
+    case 'check-coherence': {
+      const cohTargetDir = getArg('target') ?? path.join(projectDir, 'packages', 'migrations', 'adh-web', 'src');
+      const cohFix = hasFlag('fix');
+      const cohDryRun = hasFlag('dry-run');
+
+      const { checkCoherence, summarizeResults } = await import('./coherence/checker.js');
+      const results = checkCoherence(cohTargetDir, { fix: cohFix && !cohDryRun });
+      const summary = summarizeResults(results);
+
+      console.log(`\n  Coherence Check${cohDryRun ? ' (DRY-RUN)' : cohFix ? ' (FIX)' : ''} - ${cohTargetDir}\n`);
+
+      for (const r of results) {
+        const icon = r.status === 'ok' ? 'OK' : r.status === 'warn' ? 'FIX' : 'ERR';
+        console.log(`  [${icon}] ${r.check}: ${r.message}`);
+      }
+
+      console.log(`\n  Summary: ${summary.ok} ok, ${summary.warn} fixed/warnings, ${summary.error} errors`);
+
+      if (summary.error > 0 && !cohFix) {
+        console.log(`\n  Run with --fix to auto-correct issues.`);
+      }
+      break;
+    }
+
     case 'serve': {
       const servePort = Number(getArg('port') ?? 3070);
       const serveDir = getArg('dir') ?? 'ADH';
@@ -1125,6 +1149,7 @@ const run = async () => {
       console.log('  analyze    [--dry-run]                             Detecter les modules fonctionnels et estimer l\'effort');
       console.log('                                                     Exclut les programmes d\'infrastructure (Main, Menu, Init)');
       console.log('                                                     Preserve les batches existants, ajoute les nouveaux au tracker');
+      console.log('  check-coherence --target <dir> [--fix] [--dry-run] Verifier la coherence exports/imports du code genere');
       console.log('  serve      [--port 3070]                           Lancer le dashboard interactif avec API REST');
       console.log('');
       console.log('Options globales :');

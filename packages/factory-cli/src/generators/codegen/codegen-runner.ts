@@ -17,6 +17,7 @@ import { generateStore } from './store-generator.js';
 import { generatePage } from './page-generator.js';
 import { generateApi } from './api-generator.js';
 import { generateTests } from './test-generator.js';
+import { checkCoherence, summarizeResults } from '../../coherence/checker.js';
 
 const runFromModel = (model: CodegenModel, contract: MigrationContract, config: CodegenConfig): CodegenResult => {
   const files: GeneratedFile[] = [
@@ -34,6 +35,13 @@ const runFromModel = (model: CodegenModel, contract: MigrationContract, config: 
       const dir = path.dirname(fullPath);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(fullPath, file.content, 'utf8');
+    }
+
+    // Auto-run coherence checks after file writes
+    const coherenceResults = checkCoherence(config.outputDir, { fix: true });
+    const summary = summarizeResults(coherenceResults);
+    if (summary.warn > 0 || summary.error > 0) {
+      console.log(`  [coherence] ${summary.ok} ok, ${summary.warn} fixed, ${summary.error} errors`);
     }
   }
 

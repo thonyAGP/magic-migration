@@ -95,6 +95,8 @@ export const generatePage = (model: CodegenModel): string => {
   lines.push('  );');
   lines.push('};');
   lines.push('');
+  lines.push(`export default ${domainPascal}Page;`);
+  lines.push('');
 
   return lines.join('\n');
 };
