@@ -1,1 +1,0 @@
-{"version":3,"file":"enrich-model.js","sourceRoot":"","sources":["../../../src/generators/codegen/enrich-model.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAyBH,MAAM,CAAC,MAAM,eAAe,GAAG,GAAmB,EAAE,CAAC,CAAC;IACpD,eAAe,EAAE,EAAE;IACnB,kBAAkB,EAAE,EAAE;IACtB,YAAY,EAAE,EAAE;IAChB,YAAY,EAAE,EAAE;IAChB,cAAc,EAAE,EAAE;CACnB,CAAC,CAAC"}
