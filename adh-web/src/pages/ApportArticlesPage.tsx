@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
-import { Button, Dialog, Input } from '@/components/ui';
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input } from '@/components/ui';
 import { useApportArticlesStore } from '@/stores/apportArticlesStore';
 import { useAuthStore } from '@/stores';
 import { cn } from '@/lib/utils';
@@ -332,28 +332,31 @@ export const ApportArticlesPage = () => {
           </Button>
         </div>
 
-        <Dialog
-          open={showDeleteDialog}
-          onClose={() => setShowDeleteDialog(false)}
-          title="Confirmer la suppression"
-        >
-          <div className="space-y-4">
-            <p className="text-sm text-on-surface-muted">
-              Voulez-vous vraiment supprimer cet article ?
-            </p>
-            <div className="flex gap-3 justify-end">
-              <Button
-                onClick={() => setShowDeleteDialog(false)}
-                variant="outline"
-              >
-                Annuler
-              </Button>
-              <Button onClick={handleConfirmDelete} variant="primary">
-                Supprimer
-              </Button>
-            </div>
-          </div>
-        </Dialog>
+        {showDeleteDialog && (
+          <Dialog open={true} onOpenChange={(open) => !open && setShowDeleteDialog(false)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Confirmer la suppression</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <p className="text-sm text-on-surface-muted">
+                  Voulez-vous vraiment supprimer cet article ?
+                </p>
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    onClick={() => setShowDeleteDialog(false)}
+                    variant="outline"
+                  >
+                    Annuler
+                  </Button>
+                  <Button onClick={handleConfirmDelete} variant="primary">
+                    Supprimer
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </ScreenLayout>
   );

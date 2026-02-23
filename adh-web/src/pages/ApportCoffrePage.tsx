@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
-import { Button, Dialog, Input } from '@/components/ui';
+import { Button, Dialog, DialogContent, DialogHeader, Input } from '@/components/ui';
 import { useApportCoffreStore } from '@/stores/apportCoffreStore';
 import { useAuthStore } from '@/stores';
 import { CONTEXT_LABELS, APPORT_COFFRE_VALIDATION } from '@/types/apportCoffre';
@@ -166,74 +166,80 @@ export function ApportCoffrePage() {
           </>
         )}
 
-        <Dialog open={showDialog} onClose={handleAnnuler}>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-4 border-b border-border">
-              <h3 className="text-lg font-semibold">Apport coffre</h3>
-              <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                {CONTEXT_LABELS[context]}
-              </span>
-            </div>
+        {showDialog && (
+          <Dialog open={true} onOpenChange={(open) => !open && handleAnnuler()}>
+            <DialogContent>
+              <div className="space-y-4">
+                <DialogHeader>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">Apport coffre</h3>
+                    <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                      {CONTEXT_LABELS[context]}
+                    </span>
+                  </div>
+                </DialogHeader>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-                {error}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <div>
+                  <label htmlFor="devise" className="block text-sm font-medium text-on-surface mb-2">
+                    Devise
+                  </label>
+                  <select
+                    id="devise"
+                    value={deviseSelectionnee || ''}
+                    onChange={(e) => handleDeviseChange(e.target.value)}
+                    disabled={isExecuting}
+                    className="w-full px-3 py-2 border border-border rounded-md bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="">-- Sélectionner une devise --</option>
+                    {devises.map((devise) => (
+                      <option key={devise.code} value={devise.code}>
+                        {devise.code} - {devise.libelle}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="montant" className="block text-sm font-medium text-on-surface mb-2">
+                    Montant
+                  </label>
+                  <Input
+                    id="montant"
+                    type="number"
+                    value={montantSaisi === 0 ? '' : montantSaisi.toString()}
+                    onChange={(e) => handleMontantChange(e.target.value)}
+                    disabled={isExecuting}
+                    min={APPORT_COFFRE_VALIDATION.MONTANT_MIN}
+                    max={APPORT_COFFRE_VALIDATION.MONTANT_MAX}
+                    step="0.01"
+                    placeholder="0.00"
+                    className="w-full"
+                  />
+                  {montantSaisi > 0 && (
+                    <p className="text-xs text-on-surface-muted mt-1">
+                      {formatMontant(montantSaisi)}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex gap-3 justify-end pt-4 border-t border-border">
+                  <Button variant="secondary" onClick={handleAnnuler} disabled={isExecuting}>
+                    Annuler
+                  </Button>
+                  <Button onClick={handleValider} disabled={isExecuting}>
+                    {isExecuting ? 'Traitement...' : 'Valider'}
+                  </Button>
+                </div>
               </div>
-            )}
-
-            <div>
-              <label htmlFor="devise" className="block text-sm font-medium text-on-surface mb-2">
-                Devise
-              </label>
-              <select
-                id="devise"
-                value={deviseSelectionnee || ''}
-                onChange={(e) => handleDeviseChange(e.target.value)}
-                disabled={isExecuting}
-                className="w-full px-3 py-2 border border-border rounded-md bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="">-- Sélectionner une devise --</option>
-                {devises.map((devise) => (
-                  <option key={devise.code} value={devise.code}>
-                    {devise.code} - {devise.libelle}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="montant" className="block text-sm font-medium text-on-surface mb-2">
-                Montant
-              </label>
-              <Input
-                id="montant"
-                type="number"
-                value={montantSaisi === 0 ? '' : montantSaisi.toString()}
-                onChange={(e) => handleMontantChange(e.target.value)}
-                disabled={isExecuting}
-                min={APPORT_COFFRE_VALIDATION.MONTANT_MIN}
-                max={APPORT_COFFRE_VALIDATION.MONTANT_MAX}
-                step="0.01"
-                placeholder="0.00"
-                className="w-full"
-              />
-              {montantSaisi > 0 && (
-                <p className="text-xs text-on-surface-muted mt-1">
-                  {formatMontant(montantSaisi)}
-                </p>
-              )}
-            </div>
-
-            <div className="flex gap-3 justify-end pt-4 border-t border-border">
-              <Button variant="secondary" onClick={handleAnnuler} disabled={isExecuting}>
-                Annuler
-              </Button>
-              <Button onClick={handleValider} disabled={isExecuting}>
-                {isExecuting ? 'Traitement...' : 'Valider'}
-              </Button>
-            </div>
-          </div>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </ScreenLayout>
   );
