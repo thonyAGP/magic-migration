@@ -7,7 +7,7 @@ vi.mock('@/stores', () => ({
   useAuthStore: vi.fn(),
 }));
 
-const mockNavigate = vi.fn();
+const _mockNavigate = vi.fn();
 
 import { ApproTicketPage } from '@/pages/ApproTicketPage';
 import { useApproTicketStore } from '@/stores/approTicketStore';

@@ -11,7 +11,7 @@ export const AuthenticationPage = () => {
   const isLoading = useAuthenticationStore((s) => s.isLoading);
   const error = useAuthenticationStore((s) => s.error);
   const getMatricule = useAuthenticationStore((s) => s.getMatricule);
-  const setMatricule = useAuthenticationStore((s) => s.setMatricule);
+  const _setMatricule = useAuthenticationStore((s) => s.setMatricule);
   const setError = useAuthenticationStore((s) => s.setError);
   const reset = useAuthenticationStore((s) => s.reset);
 
@@ -101,3 +101,5 @@ export const AuthenticationPage = () => {
     </ScreenLayout>
   );
 };
+
+export default AuthenticationPage;

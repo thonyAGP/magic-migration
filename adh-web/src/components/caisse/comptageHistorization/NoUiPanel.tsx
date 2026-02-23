@@ -1,4 +1,3 @@
-import type { SaveComptageHistorizationRequest } from '@/types/comptageHistorization';
 import { useComptageHistorizationStore } from '@/stores/comptageHistorizationStore';
 
 interface NoUiPanelProps {

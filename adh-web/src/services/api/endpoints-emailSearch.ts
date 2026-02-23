@@ -1,7 +1,5 @@
 import { apiClient, type ApiResponse } from './apiClient';
 import type {
-  EmailAddress,
-  GetEmailsRequest,
   GetEmailsResponse,
   CreateEmailRequest,
   CreateEmailResponse,

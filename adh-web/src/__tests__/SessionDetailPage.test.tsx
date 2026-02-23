@@ -10,9 +10,8 @@ vi.mock('@/stores', () => ({
   useAuthStore: vi.fn(),
 }));
 
-const mockNavigate = vi.fn();
-
 import { SessionDetailPage } from '@/pages/SessionDetailPage';
+import { mockNavigate as _mockNavigate } from 'react-router-dom';
 import { useSessionDetailStore } from '@/stores/sessionDetailStore';
 import { useAuthStore } from '@/stores';
 

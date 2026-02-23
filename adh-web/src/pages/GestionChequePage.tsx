@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { Button, Input, Dialog } from '@/components/ui';
@@ -17,7 +17,7 @@ export function GestionChequePage() {
   const filiation = user?.filiation || '';
 
   const cheques = useGestionChequeStore((s) => s.cheques);
-  const selectedCheque = useGestionChequeStore((s) => s.selectedCheque);
+  const _selectedCheque = useGestionChequeStore((s) => s.selectedCheque);
   const isLoading = useGestionChequeStore((s) => s.isLoading);
   const error = useGestionChequeStore((s) => s.error);
   const filters = useGestionChequeStore((s) => s.filters);
@@ -48,17 +48,17 @@ export function GestionChequePage() {
     return () => reset();
   }, [reset]);
 
-  useEffect(() => {
-    if (phase === 'historique') {
-      loadHistorique();
-    }
-  }, [phase, filters]);
-
   const loadHistorique = useCallback(async () => {
     if (!societe || !compte || !filiation) return;
     await listerChequesCompte(societe, compte, filiation, filters);
     await calculerTotaux(societe, compte, filiation);
   }, [societe, compte, filiation, filters, listerChequesCompte, calculerTotaux]);
+
+  useEffect(() => {
+    if (phase === 'historique') {
+      loadHistorique();
+    }
+  }, [phase, filters, loadHistorique]);
 
   const handleValidation = useCallback(async () => {
     if (!numeroCheque || !dateEmission) return;
@@ -481,3 +481,5 @@ export function GestionChequePage() {
     </ScreenLayout>
   );
 }
+
+export default GestionChequePage;

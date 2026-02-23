@@ -8,8 +8,8 @@ interface AppelsListPanelProps {
   appels: HistoriqueAppel[];
   isCloture: boolean;
   isLoading: boolean;
-  onFacturer: (appel: HistoriqueAppel, numeroCompte: number, filiation: number, typeCompte: TypeCompte) => Promise<void>;
-  onMarquerGratuit: (appelId: number, raison: string) => Promise<void>;
+  onFacturer: (_appel: HistoriqueAppel, _numeroCompte: number, _filiation: number, _typeCompte: TypeCompte) => Promise<void>;
+  onMarquerGratuit: (_appelId: number, _raison: string) => Promise<void>;
   className?: string;
 }
 

@@ -146,3 +146,5 @@ export function ChoixPyrPage() {
     </ScreenLayout>
   );
 }
+
+export default ChoixPyrPage;

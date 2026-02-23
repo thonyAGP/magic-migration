@@ -4,6 +4,11 @@ import { BrowserRouter } from 'react-router-dom';
 
 const mockNavigate = vi.fn();
 
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return { ...actual, useNavigate: () => mockNavigate };
+});
+
 const mockAuthStore = {
   user: {
     id: '1',
@@ -209,8 +214,10 @@ describe('DeversementTransactionPage', () => {
 
     renderPage();
 
-    const deverserButton = screen.getByRole('button', { name: 'Traitement...' });
-    expect(deverserButton).toBeDisabled();
+    // Multiple "Traitement..." buttons exist (form + dialog render children simultaneously)
+    const traitementButtons = screen.getAllByRole('button', { name: 'Traitement...' });
+    expect(traitementButtons.length).toBeGreaterThanOrEqual(1);
+    expect(traitementButtons[0]).toBeDisabled();
   });
 
   it('displays error message', () => {
@@ -266,7 +273,8 @@ describe('DeversementTransactionPage', () => {
     });
 
     expect(screen.getByText('#12345')).toBeInTheDocument();
-    expect(screen.getByText('150,00 €')).toBeInTheDocument();
+    // "150,00 €" appears in both vente montant and compteGM solde sections
+    expect(screen.getAllByText(/150,00/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Compte')).toBeInTheDocument();
   });
 

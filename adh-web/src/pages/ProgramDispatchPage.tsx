@@ -124,3 +124,5 @@ export function ProgramDispatchPage() {
     </ScreenLayout>
   );
 }
+
+export default ProgramDispatchPage;

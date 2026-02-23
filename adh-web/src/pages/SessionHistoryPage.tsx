@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { useSessionHistoryStore } from '@/stores/sessionHistoryStore';
@@ -23,7 +23,7 @@ export const SessionHistoryPage = () => {
   const selectedSessionCurrencies = useSessionHistoryStore((s) => s.selectedSessionCurrencies);
   const isLoading = useSessionHistoryStore((s) => s.isLoading);
   const error = useSessionHistoryStore((s) => s.error);
-  const filters = useSessionHistoryStore((s) => s.filters);
+  const _filters = useSessionHistoryStore((s) => s.filters);
   const loadSessions = useSessionHistoryStore((s) => s.loadSessions);
   const loadSessionDetails = useSessionHistoryStore((s) => s.loadSessionDetails);
   const loadSessionCurrencies = useSessionHistoryStore((s) => s.loadSessionCurrencies);
@@ -370,3 +370,5 @@ export const SessionHistoryPage = () => {
     </ScreenLayout>
   );
 };
+
+export default SessionHistoryPage;

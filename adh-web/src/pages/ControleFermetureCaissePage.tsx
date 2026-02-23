@@ -519,3 +519,5 @@ export function ControleFermetureCaissePage() {
     </ScreenLayout>
   );
 }
+
+export default ControleFermetureCaissePage;

@@ -62,7 +62,7 @@ export interface CalculerEquivalentRequest {
   params: ConversionParams;
 }
 
-export interface CalculerEquivalentResponse extends ApiResponse<ConversionResult> {}
+export type CalculerEquivalentResponse = ApiResponse<ConversionResult>;
 
 export interface GetTauxChangeRequest {
   societe: string;
@@ -71,7 +71,7 @@ export interface GetTauxChangeRequest {
   uniBi: DirectionalType;
 }
 
-export interface GetTauxChangeResponse extends ApiResponse<TauxChange> {}
+export type GetTauxChangeResponse = ApiResponse<TauxChange>;
 
 // ============================================================================
 // VALIDATION TYPES

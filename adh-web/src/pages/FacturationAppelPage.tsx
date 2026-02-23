@@ -4,7 +4,7 @@ import { ScreenLayout } from '@/components/layout';
 import { Button, Dialog, Input } from '@/components/ui';
 import { useFacturationAppelStore } from '@/stores/facturationAppelStore';
 import { useAuthStore } from '@/stores';
-import type { HistoriqueAppel, FacturationRequest } from '@/types/facturationAppel';
+import type { FacturationRequest } from '@/types/facturationAppel';
 import { cn } from '@/lib/utils';
 
 export function FacturationAppelPage() {
@@ -137,7 +137,7 @@ export function FacturationAppelPage() {
 
   const totalAppels = historiqueAppels.length;
   const totalMontant = historiqueAppels.reduce((sum, a) => sum + a.montant, 0);
-  const appelsFactures = historiqueAppels.filter((a) => a.facture).length;
+  const _appelsFactures = historiqueAppels.filter((a) => a.facture).length;
 
   return (
     <ScreenLayout>
@@ -443,3 +443,5 @@ export function FacturationAppelPage() {
     </ScreenLayout>
   );
 }
+
+export default FacturationAppelPage;

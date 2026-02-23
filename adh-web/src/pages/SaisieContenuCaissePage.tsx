@@ -379,3 +379,5 @@ export const SaisieContenuCaissePage = () => {
     </ScreenLayout>
   );
 };
+
+export default SaisieContenuCaissePage;

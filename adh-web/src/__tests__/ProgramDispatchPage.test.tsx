@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, mockNavigate } from 'react-router-dom';
 
-const mockNavigate = vi.fn();
 const mockUseAuthStore = vi.fn();
 const mockUseProgramDispatchStore = vi.fn();
 

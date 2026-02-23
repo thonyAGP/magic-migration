@@ -3,7 +3,6 @@ import type {
   PrintConfig,
   SetListingRequest,
   ResetPrintParametersRequest,
-  GetPrintConfigRequest,
 } from '@/types/printConfiguration';
 
 export const printConfigApi = {

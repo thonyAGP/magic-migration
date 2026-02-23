@@ -147,3 +147,5 @@ export function SessionDetailPage() {
     </ScreenLayout>
   );
 }
+
+export default SessionDetailPage;

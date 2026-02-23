@@ -1,6 +1,5 @@
 import { apiClient, type ApiResponse } from "@/services/api/apiClient";
 import type {
-  VillageAddress,
   GetVillageAddressResponse,
   SetVillageAddressRequest,
   SetVillageAddressResponse,

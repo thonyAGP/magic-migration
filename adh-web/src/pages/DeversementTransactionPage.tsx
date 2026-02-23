@@ -4,8 +4,7 @@ import { ScreenLayout } from '@/components/layout';
 import { Button, Dialog, Input } from '@/components/ui';
 import { useDeversementTransactionStore } from '@/stores/deversementTransactionStore';
 import { useAuthStore } from '@/stores';
-import { cn } from '@/lib/utils';
-import type { Vente, OperationDiverse, VenteType, OperationDiverseType } from '@/types/deversementTransaction';
+import type { Vente, VenteType, OperationDiverseType } from '@/types/deversementTransaction';
 
 type Phase = 'form' | 'result';
 
@@ -16,19 +15,19 @@ export function DeversementTransactionPage() {
   const vente = useDeversementTransactionStore((s) => s.vente);
   const operationsDiverses = useDeversementTransactionStore((s) => s.operationsDiverses);
   const compteGM = useDeversementTransactionStore((s) => s.compteGM);
-  const hebergement = useDeversementTransactionStore((s) => s.hebergement);
+  const _hebergement = useDeversementTransactionStore((s) => s.hebergement);
   const transfertAffectation = useDeversementTransactionStore((s) => s.transfertAffectation);
   const isProcessing = useDeversementTransactionStore((s) => s.isProcessing);
   const error = useDeversementTransactionStore((s) => s.error);
-  const affectationTransfert = useDeversementTransactionStore((s) => s.affectationTransfert);
+  const _affectationTransfert = useDeversementTransactionStore((s) => s.affectationTransfert);
   const showAffectationModal = useDeversementTransactionStore((s) => s.showAffectationModal);
   const numeroTicket = useDeversementTransactionStore((s) => s.numeroTicket);
-  const venteVrlVsl = useDeversementTransactionStore((s) => s.venteVrlVsl);
-  const complementsBiking = useDeversementTransactionStore((s) => s.complementsBiking);
-  const deversementHistory = useDeversementTransactionStore((s) => s.deversementHistory);
+  const _venteVrlVsl = useDeversementTransactionStore((s) => s.venteVrlVsl);
+  const _complementsBiking = useDeversementTransactionStore((s) => s.complementsBiking);
+  const _deversementHistory = useDeversementTransactionStore((s) => s.deversementHistory);
 
   const setVente = useDeversementTransactionStore((s) => s.setVente);
-  const setAffectationTransfert = useDeversementTransactionStore((s) => s.setAffectationTransfert);
+  const _setAffectationTransfert = useDeversementTransactionStore((s) => s.setAffectationTransfert);
   const setShowAffectationModal = useDeversementTransactionStore((s) => s.setShowAffectationModal);
   const deverserVente = useDeversementTransactionStore((s) => s.deverserVente);
   const affecterTransfert = useDeversementTransactionStore((s) => s.affecterTransfert);
@@ -427,3 +426,5 @@ export function DeversementTransactionPage() {
     </ScreenLayout>
   );
 }
+
+export default DeversementTransactionPage;

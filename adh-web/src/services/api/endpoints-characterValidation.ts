@@ -1,11 +1,9 @@
 import { apiClient, type ApiResponse } from "./apiClient";
 import type {
-  ValidationResult,
-  ValidateCharactersRequest,
-  ValidateCharactersResponse,
   CheckStringRequest,
   CheckStringResponse,
   ForbiddenCharactersResponse,
+  ValidateCharactersResponse,
 } from "@/types/characterValidation";
 
 export const characterValidationApi = {

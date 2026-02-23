@@ -102,3 +102,5 @@ export function DeviseSessionPage() {
     </ScreenLayout>
   );
 }
+
+export default DeviseSessionPage;

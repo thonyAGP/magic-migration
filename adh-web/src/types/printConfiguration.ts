@@ -10,9 +10,9 @@ export interface SetListingRequest {
   listingNumber: number;
 }
 
-export interface ResetPrintParametersRequest {}
+export type ResetPrintParametersRequest = Record<string, unknown>;
 
-export interface GetPrintConfigRequest {}
+export type GetPrintConfigRequest = Record<string, unknown>;
 
 export type PrintConfigAction = 
   | { type: 'SET_CONFIG'; payload: PrintConfig }

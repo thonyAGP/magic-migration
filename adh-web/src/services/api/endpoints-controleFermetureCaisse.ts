@@ -2,18 +2,11 @@ import { apiClient, type ApiResponse } from './apiClient';
 import type {
   ValiderParametresRequest,
   ValiderParametresResponse,
-  GenererTableauRecapRequest,
   GenererTableauRecapResponse,
-  CalculerEcartsRequest,
   CalculerEcartsResponse,
-  MettreAJourDevisesSessionRequest,
-  MettreAJourDevisesSessionResponse,
-  FinaliserFermetureRequest,
   FinaliserFermetureResponse,
-  RecupererClasseMoyenPaiementRequest,
   RecupererClasseMoyenPaiementResponse,
   PointagesResponse,
-  Ecart,
 } from '@/types/controleFermetureCaisse';
 
 export const controleFermetureCaisseApi = {

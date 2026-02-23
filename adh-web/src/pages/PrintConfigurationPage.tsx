@@ -118,3 +118,5 @@ export const PrintConfigurationPage = () => {
     </ScreenLayout>
   );
 };
+
+export default PrintConfigurationPage;

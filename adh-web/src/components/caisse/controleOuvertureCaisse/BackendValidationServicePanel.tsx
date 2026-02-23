@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState as _useState } from 'react';
 import { cn } from '@/lib/utils';
 import type { CaisseControl, CaisseCalculee, ValidationError, ModeUniCheck } from '@/types/controleOuvertureCaisse';
 
@@ -7,16 +7,16 @@ interface BackendValidationServicePanelProps {
 }
 
 export const BackendValidationServicePanel = ({ className }: BackendValidationServicePanelProps) => {
-  const [lastValidation, setLastValidation] = useState<{
+  const [lastValidation, _setLastValidation] = useState<{
     timestamp: Date;
     params: CaisseControl;
     result: CaisseCalculee;
   } | null>(null);
-  const [lastError, setLastError] = useState<{
+  const [lastError, _setLastError] = useState<{
     timestamp: Date;
     error: ValidationError;
   } | null>(null);
-  const [modeCheck, setModeCheck] = useState<{
+  const [modeCheck, _setModeCheck] = useState<{
     mode: string;
     result: ModeUniCheck;
   } | null>(null);

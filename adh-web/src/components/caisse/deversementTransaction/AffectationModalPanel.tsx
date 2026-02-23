@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState as _useState } from 'react';
 import { Dialog, Button, Input } from '@/components/ui';
-import { cn } from '@/lib/utils';
+import { cn as _cn } from '@/lib/utils';
 
 interface AffectationModalPanelProps {
   isOpen: boolean;

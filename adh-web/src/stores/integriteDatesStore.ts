@@ -82,7 +82,7 @@ const initialState: IntegriteDatesState = {
   fermetureValidation: null,
 };
 
-export const useIntegriteDatesStore = create<IntegriteDatesStore>()((set, get) => ({
+export const useIntegriteDatesStore = create<IntegriteDatesStore>()((set, _get) => ({
   ...initialState,
 
   setCheckType: (checkType) => {

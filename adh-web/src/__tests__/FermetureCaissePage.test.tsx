@@ -18,69 +18,71 @@ const mockReset = vi.fn();
 
 const mockAuthUser = { prenom: 'Jean', nom: 'Dupont' };
 
+const mockStoreState: Record<string, unknown> = {
+  recapFermeture: {
+    societe: 'ADH',
+    numeroSession: 1001,
+    moyensPaiement: [
+      {
+        code: 'CASH',
+        libelle: 'Espèces',
+        soldeOuverture: 500,
+        montantCompte: 1200,
+        montantCalcule: 1180,
+        ecart: 20,
+      },
+      {
+        code: 'CB',
+        libelle: 'Cartes bancaires',
+        soldeOuverture: 0,
+        montantCompte: 800,
+        montantCalcule: 800,
+        ecart: 0,
+      },
+    ],
+    totalVersementCoffre: 1000,
+    soldeFinal: 1000,
+  },
+  pointagesDevise: [
+    {
+      societe: 'ADH',
+      numeroSession: 1001,
+      codeDevise: 'EUR',
+      montantOuverture: 500,
+      montantCompte: 1200,
+      montantCalcule: 1180,
+      ecart: 20,
+      commentaireEcart: null,
+    },
+  ],
+  pointagesArticle: [],
+  pointagesApproRemise: [],
+  ecartsDetectes: true,
+  ecartsJustifies: false,
+  tousPointes: true,
+  fermetureValidee: false,
+  isLoading: false,
+  error: null,
+  currentView: 'recap',
+  chargerRecapFermeture: mockChargerRecapFermeture,
+  saisirMontantsComptes: mockSaisirMontantsComptes,
+  calculerEcarts: mockCalculerEcarts,
+  justifierEcart: mockJustifierEcart,
+  effectuerApportCoffre: mockEffectuerApportCoffre,
+  effectuerApportArticles: mockEffectuerApportArticles,
+  effectuerRemiseCaisse: mockEffectuerRemiseCaisse,
+  validerFermeture: mockValiderFermeture,
+  genererTickets: mockGenererTickets,
+  mettreAJourHistorique: vi.fn(),
+  calculerSoldeFinal: vi.fn(),
+  afficherDetailDevises: mockAfficherDetailDevises,
+  setCurrentView: mockSetCurrentView,
+  reset: mockReset,
+};
+
 vi.mock('@/stores/fermetureCaisseStore', () => ({
   useFermetureCaisseStore: (selector: (state: FermetureCaisseState) => unknown) =>
-    selector({
-      recapFermeture: {
-        societe: 'ADH',
-        numeroSession: 1001,
-        moyensPaiement: [
-          {
-            code: 'CASH',
-            libelle: 'Espèces',
-            soldeOuverture: 500,
-            montantCompte: 1200,
-            montantCalcule: 1180,
-            ecart: 20,
-          },
-          {
-            code: 'CB',
-            libelle: 'Cartes bancaires',
-            soldeOuverture: 0,
-            montantCompte: 800,
-            montantCalcule: 800,
-            ecart: 0,
-          },
-        ],
-        totalVersementCoffre: 1000,
-        soldeFinal: 1000,
-      },
-      pointagesDevise: [
-        {
-          societe: 'ADH',
-          numeroSession: 1001,
-          codeDevise: 'EUR',
-          montantOuverture: 500,
-          montantCompte: 1200,
-          montantCalcule: 1180,
-          ecart: 20,
-          commentaireEcart: null,
-        },
-      ],
-      pointagesArticle: [],
-      pointagesApproRemise: [],
-      ecartsDetectes: true,
-      ecartsJustifies: false,
-      tousPointes: true,
-      fermetureValidee: false,
-      isLoading: false,
-      error: null,
-      currentView: 'recap',
-      chargerRecapFermeture: mockChargerRecapFermeture,
-      saisirMontantsComptes: mockSaisirMontantsComptes,
-      calculerEcarts: mockCalculerEcarts,
-      justifierEcart: mockJustifierEcart,
-      effectuerApportCoffre: mockEffectuerApportCoffre,
-      effectuerApportArticles: mockEffectuerApportArticles,
-      effectuerRemiseCaisse: mockEffectuerRemiseCaisse,
-      validerFermeture: mockValiderFermeture,
-      genererTickets: mockGenererTickets,
-      mettreAJourHistorique: vi.fn(),
-      calculerSoldeFinal: vi.fn(),
-      afficherDetailDevises: mockAfficherDetailDevises,
-      setCurrentView: mockSetCurrentView,
-      reset: mockReset,
-    }),
+    selector(mockStoreState as unknown as FermetureCaisseState),
 }));
 
 vi.mock('@/stores', () => ({
@@ -100,6 +102,11 @@ const renderPage = () =>
 describe('FermetureCaissePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Restore default state values that tests may have overridden
+    mockStoreState.ecartsJustifies = false;
+    mockStoreState.fermetureValidee = false;
+    mockStoreState.ecartsDetectes = true;
+    mockStoreState.tousPointes = true;
   });
 
   it('renders without crashing', () => {
@@ -204,11 +211,13 @@ describe('FermetureCaissePage', () => {
   });
 
   it('handles valider fermeture button click', async () => {
+    // Enable the button: validationReady = tousPointes && (!ecartsDetectes || ecartsJustifies) && !fermetureValidee
+    mockStoreState.ecartsJustifies = true;
     renderPage();
     const validationTab = screen.getByText('Validation').closest('button');
-    fireEvent.click(validationTab);
+    fireEvent.click(validationTab!);
     const validerButton = screen.getByText('Valider fermeture').closest('button');
-    fireEvent.click(validerButton);
+    fireEvent.click(validerButton!);
     await waitFor(() => {
       expect(mockValiderFermeture).toHaveBeenCalledWith('ADH', 1001);
     });
@@ -222,11 +231,13 @@ describe('FermetureCaissePage', () => {
   });
 
   it('handles generer tickets button click', async () => {
+    // Enable the button: ticketsReady = fermetureValidee
+    mockStoreState.fermetureValidee = true;
     renderPage();
     const ticketsTab = screen.getByText('Tickets').closest('button');
-    fireEvent.click(ticketsTab);
+    fireEvent.click(ticketsTab!);
     const genererButton = screen.getByText('Generer tickets').closest('button');
-    fireEvent.click(genererButton);
+    fireEvent.click(genererButton!);
     await waitFor(() => {
       expect(mockGenererTickets).toHaveBeenCalledWith('ADH', 1001);
     });
@@ -248,9 +259,11 @@ describe('FermetureCaissePage', () => {
 
   it('displays solde final correctly', () => {
     renderPage();
-    const soldeFinalInput = screen.getByDisplayValue('1000.00');
-    expect(soldeFinalInput).toBeInTheDocument();
-    expect(soldeFinalInput).toHaveAttribute('readonly');
+    // Both solde final and total versement coffre have value 1000.00
+    const inputs = screen.getAllByDisplayValue('1000.00');
+    expect(inputs.length).toBeGreaterThanOrEqual(1);
+    // The first one is solde final (comes first in DOM)
+    expect(inputs[0]).toHaveAttribute('readonly');
   });
 
   it('displays total versement coffre correctly', () => {

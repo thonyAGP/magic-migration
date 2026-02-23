@@ -245,3 +245,5 @@ export function CharacterValidationPage() {
     </ScreenLayout>
   );
 }
+
+export default CharacterValidationPage;

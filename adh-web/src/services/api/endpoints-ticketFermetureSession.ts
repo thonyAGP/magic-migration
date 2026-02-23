@@ -2,8 +2,6 @@ import { apiClient, type ApiResponse } from './apiClient';
 import type {
   RecapFermetureSession,
   MontantComptable,
-  LoadRecapDataRequest,
-  LoadMontantsRequest,
   GenerateTicketRequest,
 } from '@/types/ticketFermetureSession';
 

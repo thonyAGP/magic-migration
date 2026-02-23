@@ -39,14 +39,14 @@ export interface LoadRecapDataRequest {
   session: number;
 }
 
-export interface LoadRecapDataResponse extends ApiResponse<RecapFermetureSession> {}
+export type LoadRecapDataResponse = ApiResponse<RecapFermetureSession>;
 
 export interface LoadMontantsRequest {
   societe: string;
   session: number;
 }
 
-export interface LoadMontantsResponse extends ApiResponse<MontantComptable[]> {}
+export type LoadMontantsResponse = ApiResponse<MontantComptable[]>;
 
 export interface GenerateTicketRequest {
   societe: string;
@@ -55,13 +55,13 @@ export interface GenerateTicketRequest {
   printerNum: number;
 }
 
-export interface GenerateTicketResponse extends ApiResponse<void> {}
+export type GenerateTicketResponse = ApiResponse<void>;
 
 export interface ValidateFinTacheRequest {
   finTache: string;
 }
 
-export interface ValidateFinTacheResponse extends ApiResponse<boolean> {}
+export type ValidateFinTacheResponse = ApiResponse<boolean>;
 
 export interface SelectPrinterRequest {
   printerNum: number;

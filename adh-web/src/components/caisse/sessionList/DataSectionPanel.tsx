@@ -1,6 +1,6 @@
 import type { Session } from '@/types/sessionList';
-import { DataGrid } from '@/components/ui';
-import type { Column } from '@/components/ui/DataGrid';
+import { DataGrid } from '@/components/data/DataGrid';
+import type { Column } from '@/components/data/DataGrid';
 import { cn } from '@/lib/utils';
 
 interface DataSectionPanelProps {

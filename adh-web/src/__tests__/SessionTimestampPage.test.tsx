@@ -1,11 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, mockNavigate } from 'react-router-dom';
 
 const mockGetSessionTimestamp = vi.fn();
 const mockResetState = vi.fn();
 const mockUser = { prenom: 'John', nom: 'Doe' };
-const mockNavigate = vi.fn();
 
 vi.mock('@/stores/sessionTimestampStore', () => ({
   useSessionTimestampStore: vi.fn((selector) => {

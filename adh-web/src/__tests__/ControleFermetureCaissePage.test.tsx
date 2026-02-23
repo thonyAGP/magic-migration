@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, mockNavigate } from 'react-router-dom';
 
-const mockNavigate = vi.fn();
 const mockAuthUser = { nom: 'Dupont', prenom: 'Jean', operateurId: 1 };
 
 const mockStoreInitialState = {
@@ -415,6 +414,7 @@ describe('ControleFermetureCaissePage', () => {
     renderPage();
     await navigateToStep('final');
 
+    // Open confirmation dialog
     const finalizeBtn = screen.getByRole('button', { name: /finaliser fermeture/i });
     fireEvent.click(finalizeBtn);
 
@@ -422,15 +422,15 @@ describe('ControleFermetureCaissePage', () => {
       expect(screen.getByText('Confirmer la finalisation')).toBeInTheDocument();
     });
 
-    // Click "Confirmer" (not "Confirmer la finalisation" which is an h3)
-    const buttons = screen.getAllByRole('button');
-    const confirmBtn = buttons.find((b) => b.textContent === 'Confirmer');
-    fireEvent.click(confirmBtn!);
+    // The dialog is not rendered via DialogContent so it's always in the DOM
+    // Find the exact "Confirmer" button text (not "Finaliser fermeture" or "Annuler")
+    const confirmBtn = screen.getByRole('button', { name: /^confirmer$/i });
+    fireEvent.click(confirmBtn);
 
     await waitFor(() => {
       expect(finaliseFn).toHaveBeenCalledWith(123);
-      expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
     });
+    expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
   });
 
   it('navigates back through steps', async () => {

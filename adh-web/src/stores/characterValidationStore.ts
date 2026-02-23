@@ -3,8 +3,6 @@ import type {
   ValidationResult,
   ValidateCharactersRequest,
   ValidateCharactersResponse,
-  CheckStringRequest,
-  CheckStringResponse,
   ForbiddenCharactersResponse,
   CharacterValidationState,
 } from '@/types/characterValidation';
@@ -42,7 +40,7 @@ const initialState = {
   error: null,
 };
 
-export const useCharacterValidationStore = create<CharacterValidationState>()((set, get) => ({
+export const useCharacterValidationStore = create<CharacterValidationState>()((set, _get) => ({
   ...initialState,
 
   validateCharacters: async (input: string): Promise<ValidationResult> => {

@@ -50,7 +50,7 @@ const MOCK_VALIDATION_ERROR: ValidationError = {
   field: 'chronoSession',
 };
 
-const calculateCaisseTotals = (params: CaisseControl): CaisseCalculee => {
+const _calculateCaisseTotals = (params: CaisseControl): CaisseCalculee => {
   const caisseCalculee = params.soldeInitial + params.approCoffre + params.approArticles;
   const caisseCalculeeMonnaie = params.soldeInitialMonnaie + params.approCoffre;
   const caisseCalculeeProduits = params.soldeInitialProduits + params.approArticles;

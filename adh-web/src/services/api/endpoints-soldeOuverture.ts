@@ -1,15 +1,11 @@
-import { apiClient, type ApiResponse } from './apiClient';
+import { apiClient } from './apiClient';
 import type {
   CalculerSoldeOuvertureRequest,
-  CalculerSoldeOuvertureResponse,
   CoherenceValidationResult,
-  GetSoldeOuvertureResponse,
   SoldeCalculationResult,
   SoldeOuverture,
   UpdateDeviseSessionRequest,
-  UpdateDeviseSessionResponse,
   ValiderCoherenceSoldeRequest,
-  ValiderCoherenceSoldeResponse,
 } from '@/types/soldeOuverture';
 
 export const soldeOuvertureApi = {

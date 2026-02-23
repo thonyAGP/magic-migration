@@ -1,4 +1,4 @@
-import type { GmIdentifier } from "@/types";
+import type { GmIdentifier as _GmIdentifier } from "@/types";
 
 export interface EmailAddress {
   id: number;

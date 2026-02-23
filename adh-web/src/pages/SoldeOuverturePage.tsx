@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { Button, Dialog, Input } from '@/components/ui';
@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores';
 import type { DeviseConversion, CoherenceValidationResult } from '@/types/soldeOuverture';
 import { cn } from '@/lib/utils';
 
-const ALERT_TYPES = {
+const _ALERT_TYPES = {
   MISSING_RATE: 'MISSING_RATE',
   INVALID_RATE: 'INVALID_RATE',
   NEGATIVE_AMOUNT: 'NEGATIVE_AMOUNT',
@@ -15,7 +15,7 @@ const ALERT_TYPES = {
 } as const;
 
 interface Alert {
-  type: keyof typeof ALERT_TYPES;
+  type: keyof typeof _ALERT_TYPES;
   devise: string;
   message: string;
 }
@@ -56,7 +56,7 @@ export function SoldeOuverturePage() {
   const societe = 'ADH';
 
   const soldeOuverture = useSoldeOuvertureStore((s) => s.soldeOuverture);
-  const moyensReglement = useSoldeOuvertureStore((s) => s.moyensReglement);
+  const _moyensReglement = useSoldeOuvertureStore((s) => s.moyensReglement);
   const devisesSessions = useSoldeOuvertureStore((s) => s.devisesSessions);
   const isLoading = useSoldeOuvertureStore((s) => s.isLoading);
   const error = useSoldeOuvertureStore((s) => s.error);
@@ -420,3 +420,5 @@ export function SoldeOuverturePage() {
     </ScreenLayout>
   );
 }
+
+export default SoldeOuverturePage;

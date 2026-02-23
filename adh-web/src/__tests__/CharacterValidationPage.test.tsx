@@ -25,7 +25,7 @@ describe('CharacterValidationPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(useAuthStore).mockReturnValue({
+    const defaultAuthState = {
       user: {
         id: 1,
         login: 'testuser',
@@ -34,9 +34,13 @@ describe('CharacterValidationPage', () => {
         societe: 'SOC01',
         actif: true,
       },
-    } as unknown as ReturnType<typeof useAuthStore>);
+    };
 
-    vi.mocked(useCharacterValidationStore).mockReturnValue({
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
+      selector(defaultAuthState)
+    );
+
+    const defaultValidationState = {
       forbiddenCharacters: ['*', '#', '@'],
       lastValidationResult: null,
       isValidating: false,
@@ -47,7 +51,11 @@ describe('CharacterValidationPage', () => {
       setError: mockSetError,
       setIsValidating: mockSetIsValidating,
       reset: mockReset,
-    } as unknown as ReturnType<typeof useCharacterValidationStore>);
+    };
+
+    vi.mocked(useCharacterValidationStore).mockImplementation((selector) =>
+      selector(defaultValidationState)
+    );
   });
 
   it('renders without crashing', () => {
@@ -57,18 +65,20 @@ describe('CharacterValidationPage', () => {
   });
 
   it('displays loading state when validating', () => {
-    vi.mocked(useCharacterValidationStore).mockReturnValue({
-      forbiddenCharacters: [],
-      lastValidationResult: null,
-      isValidating: true,
-      error: null,
-      validateCharacters: mockValidateCharacters,
-      loadForbiddenCharacters: mockLoadForbiddenCharacters,
-      checkString: mockCheckString,
-      setError: mockSetError,
-      setIsValidating: mockSetIsValidating,
-      reset: mockReset,
-    } as unknown as ReturnType<typeof useCharacterValidationStore>);
+    vi.mocked(useCharacterValidationStore).mockImplementation((selector) =>
+      selector({
+        forbiddenCharacters: [],
+        lastValidationResult: null,
+        isValidating: true,
+        error: null,
+        validateCharacters: mockValidateCharacters,
+        loadForbiddenCharacters: mockLoadForbiddenCharacters,
+        checkString: mockCheckString,
+        setError: mockSetError,
+        setIsValidating: mockSetIsValidating,
+        reset: mockReset,
+      })
+    );
 
     renderWithRouter(<CharacterValidationPage />);
     expect(screen.getByText('Validation...')).toBeInTheDocument();
@@ -81,18 +91,20 @@ describe('CharacterValidationPage', () => {
       position: null,
     };
 
-    vi.mocked(useCharacterValidationStore).mockReturnValue({
-      forbiddenCharacters: ['*', '#'],
-      lastValidationResult: validResult,
-      isValidating: false,
-      error: null,
-      validateCharacters: mockValidateCharacters,
-      loadForbiddenCharacters: mockLoadForbiddenCharacters,
-      checkString: mockCheckString,
-      setError: mockSetError,
-      setIsValidating: mockSetIsValidating,
-      reset: mockReset,
-    } as unknown as ReturnType<typeof useCharacterValidationStore>);
+    vi.mocked(useCharacterValidationStore).mockImplementation((selector) =>
+      selector({
+        forbiddenCharacters: ['*', '#'],
+        lastValidationResult: validResult,
+        isValidating: false,
+        error: null,
+        validateCharacters: mockValidateCharacters,
+        loadForbiddenCharacters: mockLoadForbiddenCharacters,
+        checkString: mockCheckString,
+        setError: mockSetError,
+        setIsValidating: mockSetIsValidating,
+        reset: mockReset,
+      })
+    );
 
     renderWithRouter(<CharacterValidationPage />);
     expect(screen.getByText('Texte valide')).toBeInTheDocument();
@@ -106,18 +118,20 @@ describe('CharacterValidationPage', () => {
       position: 5,
     };
 
-    vi.mocked(useCharacterValidationStore).mockReturnValue({
-      forbiddenCharacters: ['*', '#'],
-      lastValidationResult: invalidResult,
-      isValidating: false,
-      error: null,
-      validateCharacters: mockValidateCharacters,
-      loadForbiddenCharacters: mockLoadForbiddenCharacters,
-      checkString: mockCheckString,
-      setError: mockSetError,
-      setIsValidating: mockSetIsValidating,
-      reset: mockReset,
-    } as unknown as ReturnType<typeof useCharacterValidationStore>);
+    vi.mocked(useCharacterValidationStore).mockImplementation((selector) =>
+      selector({
+        forbiddenCharacters: ['*', '#'],
+        lastValidationResult: invalidResult,
+        isValidating: false,
+        error: null,
+        validateCharacters: mockValidateCharacters,
+        loadForbiddenCharacters: mockLoadForbiddenCharacters,
+        checkString: mockCheckString,
+        setError: mockSetError,
+        setIsValidating: mockSetIsValidating,
+        reset: mockReset,
+      })
+    );
 
     renderWithRouter(<CharacterValidationPage />);
     expect(screen.getByText('Caractères interdits détectés')).toBeInTheDocument();
@@ -164,18 +178,20 @@ describe('CharacterValidationPage', () => {
   });
 
   it('displays error state', () => {
-    vi.mocked(useCharacterValidationStore).mockReturnValue({
-      forbiddenCharacters: [],
-      lastValidationResult: null,
-      isValidating: false,
-      error: 'Erreur de validation',
-      validateCharacters: mockValidateCharacters,
-      loadForbiddenCharacters: mockLoadForbiddenCharacters,
-      checkString: mockCheckString,
-      setError: mockSetError,
-      setIsValidating: mockSetIsValidating,
-      reset: mockReset,
-    } as unknown as ReturnType<typeof useCharacterValidationStore>);
+    vi.mocked(useCharacterValidationStore).mockImplementation((selector) =>
+      selector({
+        forbiddenCharacters: [],
+        lastValidationResult: null,
+        isValidating: false,
+        error: 'Erreur de validation',
+        validateCharacters: mockValidateCharacters,
+        loadForbiddenCharacters: mockLoadForbiddenCharacters,
+        checkString: mockCheckString,
+        setError: mockSetError,
+        setIsValidating: mockSetIsValidating,
+        reset: mockReset,
+      })
+    );
 
     renderWithRouter(<CharacterValidationPage />);
     expect(screen.getByText('Erreur de validation')).toBeInTheDocument();
@@ -250,18 +266,20 @@ describe('CharacterValidationPage', () => {
   });
 
   it('displays special characters with readable labels', () => {
-    vi.mocked(useCharacterValidationStore).mockReturnValue({
-      forbiddenCharacters: ['\n', '\t', ' '],
-      lastValidationResult: null,
-      isValidating: false,
-      error: null,
-      validateCharacters: mockValidateCharacters,
-      loadForbiddenCharacters: mockLoadForbiddenCharacters,
-      checkString: mockCheckString,
-      setError: mockSetError,
-      setIsValidating: mockSetIsValidating,
-      reset: mockReset,
-    } as unknown as ReturnType<typeof useCharacterValidationStore>);
+    vi.mocked(useCharacterValidationStore).mockImplementation((selector) =>
+      selector({
+        forbiddenCharacters: ['\n', '\t', ' '],
+        lastValidationResult: null,
+        isValidating: false,
+        error: null,
+        validateCharacters: mockValidateCharacters,
+        loadForbiddenCharacters: mockLoadForbiddenCharacters,
+        checkString: mockCheckString,
+        setError: mockSetError,
+        setIsValidating: mockSetIsValidating,
+        reset: mockReset,
+      })
+    );
 
     renderWithRouter(<CharacterValidationPage />);
 

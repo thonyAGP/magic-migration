@@ -242,3 +242,5 @@ export function SessionConcurrencyPage() {
     </ScreenLayout>
   );
 }
+
+export default SessionConcurrencyPage;

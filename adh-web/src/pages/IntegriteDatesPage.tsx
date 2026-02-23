@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { Button, Dialog, Input } from '@/components/ui';
 import { useIntegriteDatesStore } from '@/stores/integriteDatesStore';
 import { useAuthStore } from '@/stores';
-import type { DateCheckType } from '@/types/integriteDates';
 import { cn } from '@/lib/utils';
 
 const CHECK_TYPE_LABELS = {
@@ -27,7 +26,7 @@ export function IntegriteDatesPage() {
   const fermetureValidation = useIntegriteDatesStore((s) => s.fermetureValidation);
   const setCheckType = useIntegriteDatesStore((s) => s.setCheckType);
   const setSociete = useIntegriteDatesStore((s) => s.setSociete);
-  const validateDateIntegrity = useIntegriteDatesStore((s) => s.validateDateIntegrity);
+  const _validateDateIntegrity = useIntegriteDatesStore((s) => s.validateDateIntegrity);
   const checkOuverture = useIntegriteDatesStore((s) => s.checkOuverture);
   const checkTransaction = useIntegriteDatesStore((s) => s.checkTransaction);
   const checkFermeture = useIntegriteDatesStore((s) => s.checkFermeture);
@@ -219,3 +218,5 @@ export function IntegriteDatesPage() {
     </ScreenLayout>
   );
 }
+
+export default IntegriteDatesPage;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button, Dialog, Input } from '@/components/ui';
 import { useFacturationAppelStore } from '@/stores/facturationAppelStore';
 import type { HistoriqueAppel, FacturationRequest } from '@/types/facturationAppel';
@@ -23,7 +23,7 @@ export const FacturationPanel = ({ className }: FacturationPanelProps) => {
   const verifierCloture = useFacturationAppelStore((s) => s.verifierCloture);
   const isLoading = useFacturationAppelStore((s) => s.isLoading);
 
-  const handleFacturer = async (appel: HistoriqueAppel) => {
+  const _handleFacturer = async (appel: HistoriqueAppel) => {
     const estCloture = await verifierCloture();
     if (estCloture) {
       alert('Impossible de facturer : le réseau est clôturé');
@@ -34,12 +34,12 @@ export const FacturationPanel = ({ className }: FacturationPanelProps) => {
     setShowFacturationDialog(true);
   };
 
-  const handleMarquerGratuit = (appel: HistoriqueAppel) => {
+  const _handleMarquerGratuit = (appel: HistoriqueAppel) => {
     setSelectedAppel(appel);
     setShowGratuitDialog(true);
   };
 
-  const handleAnnuler = async (appel: HistoriqueAppel) => {
+  const _handleAnnuler = async (appel: HistoriqueAppel) => {
     if (!appel.id) return;
     
     if (!confirm('Confirmer l\'annulation de la facturation ?')) return;

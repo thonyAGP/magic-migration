@@ -4,7 +4,6 @@ import type {
   MOPInfo,
   MOPExistsResponse,
   TypeDevise,
-  ClasseMOP,
 } from "@/types/moyenPaiement";
 
 export const moyenPaiementApi = {

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import type { Cheque } from '@/types/gestionCheque';
 
 interface InformationsChequeFormData {
   numeroCheque: string;
@@ -40,18 +39,21 @@ export const InformationsChequePanel = ({
 
   const validateField = (name: keyof InformationsChequeFormData, value: string): string | undefined => {
     switch (name) {
-      case 'numeroCheque':
+      case 'numeroCheque': {
         if (!value.trim()) return 'Le numéro de chèque est obligatoire';
         if (!/^[0-9]+$/.test(value)) return 'Le numéro de chèque doit contenir uniquement des chiffres';
         return undefined;
-      case 'montant':
+      }
+      case 'montant': {
         if (!value.trim()) return 'Le montant est obligatoire';
         const montantNum = parseFloat(value);
         if (isNaN(montantNum) || montantNum <= 0) return 'Le montant doit être supérieur à 0';
         return undefined;
-      case 'dateEmission':
+      }
+      case 'dateEmission': {
         if (!value.trim()) return 'La date d\'émission est obligatoire';
         return undefined;
+      }
       default:
         return undefined;
     }

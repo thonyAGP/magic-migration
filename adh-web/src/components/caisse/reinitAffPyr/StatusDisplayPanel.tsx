@@ -1,4 +1,3 @@
-import type { AffectationStatusResponse } from '@/types/reinitAffPyr';
 import { cn } from '@/lib/utils';
 
 interface StatusDisplayPanelProps {
@@ -14,18 +13,6 @@ export const StatusDisplayPanel = ({
   isLoading = false,
   className,
 }: StatusDisplayPanelProps) => {
-  const formatDate = (timestamp: number): string => {
-    if (timestamp === 0) return 'Jamais';
-    const date = new Date(timestamp);
-    return new Intl.DateTimeFormat('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
-  };
-
   return (
     <div className={cn('space-y-4 rounded-lg border border-gray-200 bg-white p-4', className)}>
       <h3 className="text-sm font-semibold text-gray-700">Statut des affectations</h3>

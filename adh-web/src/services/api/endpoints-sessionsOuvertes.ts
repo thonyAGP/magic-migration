@@ -2,8 +2,6 @@ import { apiClient, type ApiResponse } from './apiClient';
 import type {
   SessionOuverte,
   GetSessionsOuvertesRequest,
-  GetSessionsOuvertesResponse,
-  VerifierExistenceSessionRequest,
   VerifierExistenceSessionResponse,
 } from '@/types/sessionsOuvertes';
 

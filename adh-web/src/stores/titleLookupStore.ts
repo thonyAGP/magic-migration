@@ -21,7 +21,7 @@ const initialState = {
   error: null as string | null,
 };
 
-export const useTitleLookupStore = create<TitleLookupState>()((set, get) => ({
+export const useTitleLookupStore = create<TitleLookupState>()((set, _get) => ({
   ...initialState,
 
   getTitleByCode: async (code, programType) => {

@@ -2,12 +2,9 @@ import { create } from 'zustand';
 import type {
   GestionChequeState,
   Cheque,
-  ChequeFilters,
   EnregistrerDepotRequest,
   EnregistrerRetraitRequest,
-  ListerChequesRequest,
   ValiderChequeRequest,
-  CalculerTotauxRequest,
 } from '@/types/gestionCheque';
 import type { ApiResponse } from '@/services/api/apiClient';
 import { apiClient } from '@/services/api/apiClient';

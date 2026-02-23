@@ -1,10 +1,6 @@
-import { apiClient, type ApiResponse } from './apiClient';
+import { apiClient } from './apiClient';
 import type {
-  HistoriqueAppel,
-  CoefTelephone,
-  ReseauCloture,
   FacturationRequest,
-  FacturationResponse,
   MarquerGratuitRequest,
   AnnulerFacturationRequest,
   GetHistoriqueAppelsResponse,

@@ -195,3 +195,5 @@ export function RaisonsUtilisationPage() {
     </ScreenLayout>
   );
 }
+
+export default RaisonsUtilisationPage;

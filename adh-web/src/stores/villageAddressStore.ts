@@ -40,7 +40,7 @@ const initialState: VillageAddressState = {
   clearError: () => {},
 };
 
-export const useVillageAddressStore = create<VillageAddressStore>()((set, get) => ({
+export const useVillageAddressStore = create<VillageAddressStore>()((set, _get) => ({
   ...initialState,
 
   setVillageAddress: async (address) => {

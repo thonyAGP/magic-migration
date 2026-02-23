@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/Input';
 import { useRecapWorksheetStore } from '@/stores/recapWorksheetStore';
 import { useAuthStore } from '@/stores';
 import type { RecapWorksheetExportFormat } from '@/types/recapWorksheet';
-import { cn } from '@/lib/utils';
 
 export function RecapWorksheetPage() {
   const navigate = useNavigate();
@@ -16,10 +15,10 @@ export function RecapWorksheetPage() {
   const summary = useRecapWorksheetStore((s) => s.summary);
   const isGenerating = useRecapWorksheetStore((s) => s.isGenerating);
   const error = useRecapWorksheetStore((s) => s.error);
-  const filters = useRecapWorksheetStore((s) => s.filters);
+  const _filters = useRecapWorksheetStore((s) => s.filters);
   const generateRecapWorksheet = useRecapWorksheetStore((s) => s.generateRecapWorksheet);
   const exportRecapWorksheet = useRecapWorksheetStore((s) => s.exportRecapWorksheet);
-  const setFilters = useRecapWorksheetStore((s) => s.setFilters);
+  const _setFilters = useRecapWorksheetStore((s) => s.setFilters);
   const reset = useRecapWorksheetStore((s) => s.reset);
 
   const [numeroSession, setNumeroSession] = useState('');
@@ -294,3 +293,5 @@ export function RecapWorksheetPage() {
     </ScreenLayout>
   );
 }
+
+export default RecapWorksheetPage;

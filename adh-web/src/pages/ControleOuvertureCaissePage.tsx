@@ -115,3 +115,5 @@ export function ControleOuvertureCaissePage() {
     </ScreenLayout>
   );
 }
+
+export default ControleOuvertureCaissePage;

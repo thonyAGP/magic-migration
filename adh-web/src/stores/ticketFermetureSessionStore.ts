@@ -2,9 +2,6 @@ import { create } from 'zustand';
 import type {
   RecapFermetureSession,
   MontantComptable,
-  LoadRecapDataRequest,
-  LoadMontantsRequest,
-  GenerateTicketRequest,
   PrinterOption,
 } from '@/types/ticketFermetureSession';
 import { apiClient } from '@/services/api/apiClient';

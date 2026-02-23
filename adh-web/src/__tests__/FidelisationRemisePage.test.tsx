@@ -2,6 +2,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return { ...actual, useNavigate: () => mockNavigate };
+});
+
 vi.mock('@/stores/fidelisationRemiseStore');
 vi.mock('@/stores');
 
@@ -9,8 +16,6 @@ import { FidelisationRemisePage } from '@/pages/FidelisationRemisePage';
 import { useFidelisationRemiseStore } from '@/stores/fidelisationRemiseStore';
 import { useAuthStore } from '@/stores';
 import type { FidelisationRemise, RemiseResult } from '@/types/fidelisationRemise';
-
-const mockNavigate = vi.fn();
 
 describe('FidelisationRemisePage', () => {
   const mockGetFidelisationRemise = vi.fn();
@@ -187,7 +192,9 @@ describe('FidelisationRemisePage', () => {
 
     renderPage();
 
-    expect(screen.getByText(/Remise non applicable|Remise invalide/)).toBeInTheDocument();
+    // "Remise non applicable" appears both as status text and message
+    const elements = screen.getAllByText('Remise non applicable');
+    expect(elements.length).toBeGreaterThanOrEqual(1);
   });
 
   it('should display account details', () => {

@@ -150,3 +150,5 @@ export function SaisieDatePage() {
     </ScreenLayout>
   );
 }
+
+export default SaisieDatePage;

@@ -4,8 +4,6 @@ import type {
   CoefTelephone,
   ReseauCloture,
   FacturationRequest,
-  MarquerGratuitRequest,
-  AnnulerFacturationRequest,
   GetHistoriqueAppelsResponse,
   GetCoefficientResponse,
   FacturerAppelResponse,
@@ -265,7 +263,7 @@ export const useFacturationAppelStore = create<FacturationAppelStore>()((set, ge
     const { isRealApi } = useDataSourceStore.getState();
     set({ isLoading: true, error: null });
 
-    const { appel, numeroCompte, filiation, typeCompte } = request;
+    const { appel, numeroCompte: _numeroCompte, filiation: _filiation, typeCompte: _typeCompte } = request;
 
     if (appel.gratuite) {
       set({ error: 'Appel gratuit - facturation non autorisée', isLoading: false });

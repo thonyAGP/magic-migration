@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Input } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import type { OperationType, DirectionalType } from '@/types/calculEquivalent';
+import type { OperationType, DirectionalType as _DirectionalType } from '@/types/calculEquivalent';
 
 interface ConversionUtilityPanelProps {
   societe: string;
@@ -35,7 +35,7 @@ const MOYENS_PAIEMENT = [
 ] as const;
 
 export const ConversionUtilityPanel = ({
-  societe,
+  societe: _societe,
   deviseLocale,
   onCalculate,
   equivalent,

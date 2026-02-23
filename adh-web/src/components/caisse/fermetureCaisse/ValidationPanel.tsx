@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui';
 import { useFermetureCaisseStore } from '@/stores/fermetureCaisseStore';
-import { useAuthStore } from '@/stores';
 import { cn } from '@/lib/utils';
 
 interface ValidationPanelProps {
@@ -10,7 +9,6 @@ interface ValidationPanelProps {
 }
 
 export const ValidationPanel = ({ societe, numeroSession, className }: ValidationPanelProps) => {
-  const user = useAuthStore((s) => s.user);
   const tousPointes = useFermetureCaisseStore((s) => s.tousPointes);
   const ecartsDetectes = useFermetureCaisseStore((s) => s.ecartsDetectes);
   const ecartsJustifies = useFermetureCaisseStore((s) => s.ecartsJustifies);

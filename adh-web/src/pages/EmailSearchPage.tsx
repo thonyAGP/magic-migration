@@ -338,3 +338,5 @@ export const EmailSearchPage = () => {
     </ScreenLayout>
   );
 };
+
+export default EmailSearchPage;

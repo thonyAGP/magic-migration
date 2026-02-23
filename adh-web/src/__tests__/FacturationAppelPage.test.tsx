@@ -2,6 +2,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return { ...actual, useNavigate: () => mockNavigate };
+});
+
 vi.mock('@/stores/facturationAppelStore', () => ({
   useFacturationAppelStore: vi.fn(),
 }));
@@ -14,8 +21,6 @@ import { FacturationAppelPage } from '@/pages/FacturationAppelPage';
 import { useFacturationAppelStore } from '@/stores/facturationAppelStore';
 import { useAuthStore } from '@/stores';
 import type { HistoriqueAppel } from '@/types/facturationAppel';
-
-const mockNavigate = vi.fn();
 
 describe('FacturationAppelPage', () => {
   const mockChargerHistoriqueAppels = vi.fn();
@@ -62,6 +67,7 @@ describe('FacturationAppelPage', () => {
   };
 
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.mocked(useFacturationAppelStore).mockImplementation((selector) =>
       selector(defaultStoreState)
     );
@@ -102,6 +108,7 @@ describe('FacturationAppelPage', () => {
 
   it('should call reset on unmount', () => {
     const { unmount } = renderPage();
+    mockReset.mockClear();
     unmount();
     expect(mockReset).toHaveBeenCalledTimes(1);
   });
@@ -234,7 +241,7 @@ describe('FacturationAppelPage', () => {
     );
     renderPage();
     expect(screen.getByText('0123456789')).toBeInTheDocument();
-    expect(screen.getByText('12.50 €')).toBeInTheDocument();
+    expect(screen.getAllByText('12.50 €').length).toBeGreaterThanOrEqual(1);
   });
 
   it('should toggle appel selection on checkbox click', () => {
@@ -333,8 +340,11 @@ describe('FacturationAppelPage', () => {
     const filiationInput = screen.getByPlaceholderText('1');
     fireEvent.change(compteInput, { target: { value: '12345' } });
     fireEvent.change(filiationInput, { target: { value: '1' } });
-    const confirmButton = screen.getByRole('button', { name: /Confirmer/i });
-    fireEvent.click(confirmButton);
+    // Multiple "Confirmer" buttons exist (all dialogs render children without DialogContent).
+    // The facturation one is enabled (compte+filiation filled), others are disabled.
+    const confirmButtons = screen.getAllByRole('button', { name: /^Confirmer$/i });
+    const enabledConfirm = confirmButtons.find((btn) => !btn.hasAttribute('disabled'));
+    fireEvent.click(enabledConfirm!);
     await waitFor(() => {
       expect(mockFacturerAppel).toHaveBeenCalled();
     });
@@ -373,8 +383,9 @@ describe('FacturationAppelPage', () => {
     const filiationInput = screen.getByPlaceholderText('1');
     fireEvent.change(compteInput, { target: { value: '12345' } });
     fireEvent.change(filiationInput, { target: { value: '1' } });
-    const confirmButton = screen.getByRole('button', { name: /Confirmer/i });
-    fireEvent.click(confirmButton);
+    const confirmButtons = screen.getAllByRole('button', { name: /^Confirmer$/i });
+    const enabledConfirm = confirmButtons.find((btn) => !btn.hasAttribute('disabled'));
+    fireEvent.click(enabledConfirm!);
     await waitFor(() => {
       expect(screen.getByText(/Réseau clôturé/i)).toBeInTheDocument();
     });
@@ -414,8 +425,9 @@ describe('FacturationAppelPage', () => {
     const filiationInput = screen.getByPlaceholderText('1');
     fireEvent.change(compteInput, { target: { value: '12345' } });
     fireEvent.change(filiationInput, { target: { value: '1' } });
-    const confirmButton = screen.getByRole('button', { name: /Confirmer/i });
-    fireEvent.click(confirmButton);
+    const confirmButtons = screen.getAllByRole('button', { name: /^Confirmer$/i });
+    const enabledConfirm = confirmButtons.find((btn) => !btn.hasAttribute('disabled'));
+    fireEvent.click(enabledConfirm!);
     await waitFor(() => {
       expect(screen.getByText(/Réseau clôturé/i)).toBeInTheDocument();
     });
@@ -487,8 +499,10 @@ describe('FacturationAppelPage', () => {
     });
     const raisonInput = screen.getByPlaceholderText(/Appel urgence médicale/i);
     fireEvent.change(raisonInput, { target: { value: 'Urgence' } });
-    const confirmButton = screen.getByRole('button', { name: /Confirmer/i });
-    fireEvent.click(confirmButton);
+    // Multiple "Confirmer" buttons exist. The gratuit one is enabled (raison filled), others disabled.
+    const confirmButtons = screen.getAllByRole('button', { name: /^Confirmer$/i });
+    const enabledConfirm = confirmButtons.find((btn) => !btn.hasAttribute('disabled'));
+    fireEvent.click(enabledConfirm!);
     await waitFor(() => {
       expect(mockMarquerGratuit).toHaveBeenCalledWith(1, 'Urgence');
     });

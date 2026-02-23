@@ -149,3 +149,5 @@ const chronoHisto = await saveComptageHistorization({
     </ScreenLayout>
   );
 }
+
+export default ComptageHistorizationPage;

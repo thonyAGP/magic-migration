@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { useSessionsOuvertesStore } from '@/stores/sessionsOuvertesStore';
@@ -18,7 +18,7 @@ export const SessionsOuvertesPage = () => {
   const filtreOperateur = useSessionsOuvertesStore((s) => s.filtreOperateur);
   const chargerSessionsOuvertes = useSessionsOuvertesStore((s) => s.chargerSessionsOuvertes);
   const selectionnerSession = useSessionsOuvertesStore((s) => s.selectionnerSession);
-  const verifierExistenceSession = useSessionsOuvertesStore((s) => s.verifierExistenceSession);
+  const _verifierExistenceSession = useSessionsOuvertesStore((s) => s.verifierExistenceSession);
   const rafraichir = useSessionsOuvertesStore((s) => s.rafraichir);
   const appliquerFiltres = useSessionsOuvertesStore((s) => s.appliquerFiltres);
   const reset = useSessionsOuvertesStore((s) => s.reset);
@@ -199,3 +199,5 @@ export const SessionsOuvertesPage = () => {
     </ScreenLayout>
   );
 };
+
+export default SessionsOuvertesPage;

@@ -1,6 +1,5 @@
 import { apiClient, type ApiResponse } from './apiClient';
 import type {
-  GetMatriculeRequest,
   GetMatriculeResponse,
 } from '@/types/authentication';
 

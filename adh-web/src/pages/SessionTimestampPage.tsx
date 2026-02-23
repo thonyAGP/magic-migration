@@ -108,3 +108,5 @@ export function SessionTimestampPage() {
     </ScreenLayout>
   );
 }
+
+export default SessionTimestampPage;

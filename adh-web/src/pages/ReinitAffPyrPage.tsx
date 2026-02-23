@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { Button, Dialog, Input } from '@/components/ui';
 import { useReinitAffPyrStore } from '@/stores/reinitAffPyrStore';
 import { useAuthStore } from '@/stores';
-import { cn } from '@/lib/utils';
 
 export function ReinitAffPyrPage() {
   const navigate = useNavigate();
@@ -270,3 +269,5 @@ export function ReinitAffPyrPage() {
     </ScreenLayout>
   );
 }
+
+export default ReinitAffPyrPage;

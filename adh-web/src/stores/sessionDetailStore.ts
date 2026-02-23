@@ -3,7 +3,6 @@ import type {
   LogSessionDetailRequest,
   LogSessionDetailResponse,
   SessionDetailState,
-  SessionDetailActions,
   SessionDetailStore,
 } from '@/types/sessionDetail';
 import { apiClient } from '@/services/api/apiClient';

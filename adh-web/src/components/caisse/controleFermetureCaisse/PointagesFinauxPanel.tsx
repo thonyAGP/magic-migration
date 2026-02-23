@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button, Dialog } from '@/components/ui';
 import { useControleFermetureCaisseStore } from '@/stores/controleFermetureCaisseStore';
 import { cn } from '@/lib/utils';
-import type { PointageDevise, PointageArticle, PointageApproRemise } from '@/types/controleFermetureCaisse';
+import type { PointageDevise as _PointageDevise, PointageArticle as _PointageArticle, PointageApproRemise as _PointageApproRemise } from '@/types/controleFermetureCaisse';
 
 interface PointagesFinauxPanelProps {
   onValidate: () => void;

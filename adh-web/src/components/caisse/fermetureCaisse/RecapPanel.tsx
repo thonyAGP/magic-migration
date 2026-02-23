@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect as _useEffect } from 'react';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { RecapFermeture, MoyenPaiement } from '@/types/fermetureCaisse';
@@ -49,7 +49,7 @@ export const RecapPanel = ({
   societe,
   numeroSession,
   recap,
-  ecartsDetectes,
+  ecartsDetectes: _ecartsDetectes,
   isLoading,
   onSaisie,
   onApportCoffre,

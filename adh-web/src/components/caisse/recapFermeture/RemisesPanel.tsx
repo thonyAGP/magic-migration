@@ -16,7 +16,6 @@ export const RemisesPanel = ({
   onSaveRemise,
   className
 }: RemisesPanelProps) => {
-  const [editingRemise, setEditingRemise] = useState<RemiseEnCaisse | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [formData, setFormData] = useState<RemiseEnCaisse>({
     detailProduitRemiseEdite: false,
@@ -25,7 +24,6 @@ export const RemisesPanel = ({
   });
 
   const handleEdit = (remise: RemiseEnCaisse) => {
-    setEditingRemise(remise);
     setFormData({ ...remise });
     setShowDialog(true);
   };
@@ -34,7 +32,6 @@ export const RemisesPanel = ({
     try {
       await onSaveRemise(formData);
       setShowDialog(false);
-      setEditingRemise(null);
     } catch (err) {
       console.error('Erreur sauvegarde remise:', err);
     }
@@ -42,7 +39,6 @@ export const RemisesPanel = ({
 
   const handleCancel = () => {
     setShowDialog(false);
-    setEditingRemise(null);
   };
 
   if (isLoading) {

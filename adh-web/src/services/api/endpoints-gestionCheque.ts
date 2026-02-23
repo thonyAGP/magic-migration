@@ -5,7 +5,6 @@ import type {
   EnregistrerDepotResponse,
   EnregistrerRetraitRequest,
   EnregistrerRetraitResponse,
-  ListerChequesResponse,
   ValiderChequeRequest,
   ValiderChequeResponse,
   CalculerTotauxResponse,

@@ -227,3 +227,5 @@ export function CalculEquivalentPage() {
     </ScreenLayout>
   );
 }
+
+export default CalculEquivalentPage;

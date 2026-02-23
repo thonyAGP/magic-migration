@@ -86,3 +86,5 @@ export function TitleLookupPage() {
     </ScreenLayout>
   );
 }
+
+export default TitleLookupPage;

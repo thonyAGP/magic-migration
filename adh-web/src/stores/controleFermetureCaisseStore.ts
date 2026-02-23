@@ -3,7 +3,6 @@ import type {
   PointageDevise,
   PointageArticle,
   PointageApproRemise,
-  HistoSessionsCaisse,
   GestionDeviseSession,
   Ecart,
   ValiderParametresRequest,

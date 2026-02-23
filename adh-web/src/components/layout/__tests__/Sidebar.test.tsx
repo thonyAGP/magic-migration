@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, setMockLocationPathname } from 'react-router-dom';
 import { Sidebar } from '../Sidebar';
 
 function renderSidebar(currentPath = '/caisse/menu') {
+  setMockLocationPathname(currentPath);
   return render(
     <MemoryRouter initialEntries={[currentPath]}>
       <Sidebar isOpen={true} />

@@ -215,3 +215,5 @@ export function FidelisationRemisePage() {
     </ScreenLayout>
   );
 }
+
+export default FidelisationRemisePage;

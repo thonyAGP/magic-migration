@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { Button, Dialog, Input } from '@/components/ui';
 import { useTicketFermetureSessionStore } from '@/stores/ticketFermetureSessionStore';
 import { useAuthStore } from '@/stores';
 import type { PrinterOption } from '@/types/ticketFermetureSession';
-import { cn } from '@/lib/utils';
 
 export function TicketFermetureSessionPage() {
   const navigate = useNavigate();
@@ -25,15 +24,15 @@ export function TicketFermetureSessionPage() {
   const reset = useTicketFermetureSessionStore((s) => s.reset);
 
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedSession, setSelectedSession] = useState<number>(142);
+  const [_selectedSession, _setSelectedSession] = useState<number>(142);
 
   const societe = 'ADH';
 
   useEffect(() => {
-    loadRecapData(societe, selectedSession);
-    loadMontantsComptables(societe, selectedSession);
+    loadRecapData(societe, _selectedSession);
+    loadMontantsComptables(societe, _selectedSession);
     return () => reset();
-  }, [loadRecapData, loadMontantsComptables, reset, selectedSession]);
+  }, [loadRecapData, loadMontantsComptables, reset, _selectedSession]);
 
   const handleOpenDialog = useCallback(() => {
     if (!recapData) return;
@@ -268,3 +267,5 @@ export function TicketFermetureSessionPage() {
     </ScreenLayout>
   );
 }
+
+export default TicketFermetureSessionPage;

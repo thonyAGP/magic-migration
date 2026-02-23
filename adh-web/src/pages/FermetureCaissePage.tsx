@@ -5,7 +5,7 @@ import { Button } from '@/components/ui';
 import { useFermetureCaisseStore } from '@/stores/fermetureCaisseStore';
 import { useAuthStore } from '@/stores';
 import { cn } from '@/lib/utils';
-import type { FermetureCaisseView, MoyenPaiement } from '@/types/fermetureCaisse';
+import type { MoyenPaiement } from '@/types/fermetureCaisse';
 
 type Tab = 'recap' | 'validation' | 'tickets' | 'detail-devises';
 
@@ -17,7 +17,7 @@ export const FermetureCaissePage = () => {
 
   const recapFermeture = useFermetureCaisseStore((s) => s.recapFermeture);
   const pointagesDevise = useFermetureCaisseStore((s) => s.pointagesDevise);
-  const pointagesArticle = useFermetureCaisseStore((s) => s.pointagesArticle);
+  const _pointagesArticle = useFermetureCaisseStore((s) => s.pointagesArticle);
   const pointagesApproRemise = useFermetureCaisseStore((s) => s.pointagesApproRemise);
   const ecartsDetectes = useFermetureCaisseStore((s) => s.ecartsDetectes);
   const ecartsJustifies = useFermetureCaisseStore((s) => s.ecartsJustifies);
@@ -25,11 +25,11 @@ export const FermetureCaissePage = () => {
   const fermetureValidee = useFermetureCaisseStore((s) => s.fermetureValidee);
   const isLoading = useFermetureCaisseStore((s) => s.isLoading);
   const error = useFermetureCaisseStore((s) => s.error);
-  const currentView = useFermetureCaisseStore((s) => s.currentView);
+  const _currentView = useFermetureCaisseStore((s) => s.currentView);
 
   const chargerRecapFermeture = useFermetureCaisseStore((s) => s.chargerRecapFermeture);
   const saisirMontantsComptes = useFermetureCaisseStore((s) => s.saisirMontantsComptes);
-  const calculerEcarts = useFermetureCaisseStore((s) => s.calculerEcarts);
+  const _calculerEcarts = useFermetureCaisseStore((s) => s.calculerEcarts);
   const justifierEcart = useFermetureCaisseStore((s) => s.justifierEcart);
   const effectuerApportCoffre = useFermetureCaisseStore((s) => s.effectuerApportCoffre);
   const effectuerApportArticles = useFermetureCaisseStore((s) => s.effectuerApportArticles);
@@ -37,7 +37,7 @@ export const FermetureCaissePage = () => {
   const validerFermeture = useFermetureCaisseStore((s) => s.validerFermeture);
   const genererTickets = useFermetureCaisseStore((s) => s.genererTickets);
   const afficherDetailDevises = useFermetureCaisseStore((s) => s.afficherDetailDevises);
-  const setCurrentView = useFermetureCaisseStore((s) => s.setCurrentView);
+  const _setCurrentView = useFermetureCaisseStore((s) => s.setCurrentView);
   const reset = useFermetureCaisseStore((s) => s.reset);
 
   const [activeTab, setActiveTab] = useState<Tab>('recap');

@@ -15,7 +15,7 @@ export const FermetureSessionsPage = () => {
 
   const sessions = useFermetureSessionsStore((s) => s.sessions);
   const currentSession = useFermetureSessionsStore((s) => s.currentSession);
-  const unilateralBilateralTypes = useFermetureSessionsStore((s) => s.unilateralBilateralTypes);
+  const _unilateralBilateralTypes = useFermetureSessionsStore((s) => s.unilateralBilateralTypes);
   const isLoading = useFermetureSessionsStore((s) => s.isLoading);
   const error = useFermetureSessionsStore((s) => s.error);
   const isClosing = useFermetureSessionsStore((s) => s.isClosing);
@@ -305,3 +305,5 @@ export const FermetureSessionsPage = () => {
     </ScreenLayout>
   );
 };
+
+export default FermetureSessionsPage;

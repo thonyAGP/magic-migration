@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { Button, Input } from '@/components/ui';
@@ -10,7 +10,7 @@ export function VillageAddressPage() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
 
-  const villageAddress = useVillageAddressStore((s) => s.villageAddress);
+  const _villageAddress = useVillageAddressStore((s) => s.villageAddress);
   const isLoading = useVillageAddressStore((s) => s.isLoading);
   const error = useVillageAddressStore((s) => s.error);
   const setVillageAddress = useVillageAddressStore((s) => s.setVillageAddress);
@@ -284,3 +284,5 @@ export function VillageAddressPage() {
     </ScreenLayout>
   );
 }
+
+export default VillageAddressPage;

@@ -1,5 +1,5 @@
-import type { Session } from '@/types/session';
-import type { Devise } from '@/types/devise';
+import type { Session as _Session } from '@/types/session';
+import type { Devise as _Devise } from '@/types/devise';
 
 export interface RecapFermeture {
   societe: string;

@@ -4,7 +4,6 @@ import type {
   SessionsOuvertesState,
   GetSessionsOuvertesRequest,
   GetSessionsOuvertesResponse,
-  VerifierExistenceSessionRequest,
   VerifierExistenceSessionResponse,
 } from '@/types/sessionsOuvertes';
 import { apiClient } from '@/services/api/apiClient';

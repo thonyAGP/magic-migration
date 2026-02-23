@@ -122,7 +122,7 @@ const initialState: FidelisationRemiseState = {
   reset: () => {},
 };
 
-export const useFidelisationRemiseStore = create<FidelisationRemiseStore>()((set, get) => ({
+export const useFidelisationRemiseStore = create<FidelisationRemiseStore>()((set, _get) => ({
   ...initialState,
 
   getFidelisationRemise: async (societe, compte, filiation, service, imputation) => {

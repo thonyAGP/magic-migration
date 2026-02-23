@@ -1,18 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { Button } from '@/components/ui';
 import { useGestionCaisseStore } from '@/stores/gestionCaisseStore';
 import { useAuthStore } from '@/stores';
-import { cn } from '@/lib/utils';
 import {
-  SessionStatusCard,
-  MontantsCard,
-  AlertesCard,
-  ActionsCard,
-  MouvementsGrid,
-  HistoriqueDialog,
-  ConsultationDialog,
+  HeaderSectionPanel,
+  MontantsSectionPanel,
+  AlertesSectionPanel,
+  ActionsSectionPanel,
+  MouvementsSectionPanel,
 } from '@/components/caisse/gestionCaisse';
 
 export function GestionCaissePage() {
@@ -21,15 +18,9 @@ export function GestionCaissePage() {
 
   const sessionActive = useGestionCaisseStore((s) => s.sessionActive);
   const parametres = useGestionCaisseStore((s) => s.parametres);
-  const sessionsConcurrentes = useGestionCaisseStore((s) => s.sessionsConcurrentes);
   const mouvements = useGestionCaisseStore((s) => s.mouvements);
-  const historique = useGestionCaisseStore((s) => s.historique);
-  const dateComptable = useGestionCaisseStore((s) => s.dateComptable);
   const isLoading = useGestionCaisseStore((s) => s.isLoading);
   const error = useGestionCaisseStore((s) => s.error);
-  const showHistoriqueDialog = useGestionCaisseStore((s) => s.showHistoriqueDialog);
-  const showConsultationDialog = useGestionCaisseStore((s) => s.showConsultationDialog);
-  const selectedSessionId = useGestionCaisseStore((s) => s.selectedSessionId);
 
   const chargerParametres = useGestionCaisseStore((s) => s.chargerParametres);
   const chargerSessionActive = useGestionCaisseStore((s) => s.chargerSessionActive);
@@ -41,12 +32,8 @@ export function GestionCaissePage() {
   const apportProduit = useGestionCaisseStore((s) => s.apportProduit);
   const remiseCoffre = useGestionCaisseStore((s) => s.remiseCoffre);
   const fermerSession = useGestionCaisseStore((s) => s.fermerSession);
-  const consulterHistorique = useGestionCaisseStore((s) => s.consulterHistorique);
-  const consulterSession = useGestionCaisseStore((s) => s.consulterSession);
   const reimprimerTickets = useGestionCaisseStore((s) => s.reimprimerTickets);
-  const setShowHistoriqueDialog = useGestionCaisseStore((s) => s.setShowHistoriqueDialog);
-  const setShowConsultationDialog = useGestionCaisseStore((s) => s.setShowConsultationDialog);
-  const setSelectedSessionId = useGestionCaisseStore((s) => s.setSelectedSessionId);
+  const consulterHistorique = useGestionCaisseStore((s) => s.consulterHistorique);
   const setError = useGestionCaisseStore((s) => s.setError);
   const reset = useGestionCaisseStore((s) => s.reset);
 
@@ -64,88 +51,43 @@ export function GestionCaissePage() {
       await detecterSessionsConcurrentes();
     };
     init();
-
     return () => reset();
-  }, [
-    chargerParametres,
-    chargerSessionActive,
-    verifierDateComptable,
-    controlerCoffre,
-    detecterSessionsConcurrentes,
-    reset,
-  ]);
+  }, [chargerParametres, chargerSessionActive, verifierDateComptable, controlerCoffre, detecterSessionsConcurrentes, reset]);
 
-  const handleOuvrirSession = useCallback(async () => {
-    await ouvrirSession();
-  }, [ouvrirSession]);
-
-  const handleFermerSession = useCallback(async () => {
-    await fermerSession();
-  }, [fermerSession]);
+  const handleOuvrirSession = useCallback(async () => { await ouvrirSession(); }, [ouvrirSession]);
+  const handleFermerSession = useCallback(async () => { await fermerSession(); }, [fermerSession]);
 
   const handleApportCoffre = useCallback(async () => {
     const montant = parseFloat(montantApport);
-    if (!montant || montant <= 0) {
-      setError('Montant invalide pour apport coffre');
-      return;
-    }
+    if (!montant || montant <= 0) { setError('Montant invalide'); return; }
     await apportCoffre(montant, deviseApport);
     setMontantApport('');
   }, [montantApport, deviseApport, apportCoffre, setError]);
 
   const handleRemiseCoffre = useCallback(async () => {
     const montant = parseFloat(montantRemise);
-    if (!montant || montant <= 0) {
-      setError('Montant invalide pour remise coffre');
-      return;
-    }
+    if (!montant || montant <= 0) { setError('Montant invalide'); return; }
     await remiseCoffre(montant, deviseRemise);
     setMontantRemise('');
   }, [montantRemise, deviseRemise, remiseCoffre, setError]);
 
-  const handleApportProduit = useCallback(async () => {
-    await apportProduit(1, 1);
-  }, [apportProduit]);
-
-  const handleHistorique = useCallback(async () => {
-    await consulterHistorique();
-    setShowHistoriqueDialog(true);
-  }, [consulterHistorique, setShowHistoriqueDialog]);
-
-  const handleConsultation = useCallback(
-    async (sessionId: number) => {
-      await consulterSession(sessionId);
-      setSelectedSessionId(sessionId);
-      setShowConsultationDialog(true);
-    },
-    [consulterSession, setSelectedSessionId, setShowConsultationDialog],
-  );
-
+  const handleApportProduit = useCallback(async () => { await apportProduit(1, 1); }, [apportProduit]);
+  const handleHistorique = useCallback(async () => { await consulterHistorique(); }, [consulterHistorique]);
   const handleReimprimer = useCallback(async () => {
     if (!sessionActive) return;
     await reimprimerTickets(sessionActive.sessionId);
   }, [sessionActive, reimprimerTickets]);
-
-  const handleBack = () => {
-    navigate('/caisse/menu');
-  };
 
   const montantActuel = sessionActive
     ? sessionActive.montantOuverture +
       mouvements
         .filter((m) => m.sessionId === sessionActive.sessionId)
         .reduce((sum, m) => {
-          if (m.type === 'apport_coffre' || m.type === 'apport_produit') {
-            return sum + m.montant;
-          }
-          if (m.type === 'remise_coffre' || m.type === 'retrait_produit') {
-            return sum - m.montant;
-          }
+          if (m.type === 'apport_coffre' || m.type === 'apport_produit') return sum + m.montant;
+          if (m.type === 'remise_coffre' || m.type === 'retrait_produit') return sum - m.montant;
           return sum;
         }, 0)
     : 0;
-
-  const ecart = sessionActive?.ecart ?? null;
 
   if (isLoading && !sessionActive && !parametres) {
     return (
@@ -183,25 +125,21 @@ export function GestionCaissePage() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <SessionStatusCard
-            sessionActive={sessionActive}
-            dateComptable={dateComptable}
-            isLoading={isLoading}
+          <HeaderSectionPanel
+            operateurNom={sessionActive?.operateurNom}
+            dateComptable={sessionActive?.dateOuverture}
+            sessionStatut={sessionActive ? 'Ouverte' : 'Fermée'}
           />
 
-          <MontantsCard
-            sessionActive={sessionActive}
+          <MontantsSectionPanel
+            montantOuverture={sessionActive?.montantOuverture ?? 0}
             montantActuel={montantActuel}
-            ecart={ecart}
-            seuilAlerte={parametres?.seuilAlerte ?? 100}
-            isLoading={isLoading}
+            montantFermeture={0}
+            ecart={sessionActive?.ecart ?? 0}
           />
         </div>
 
-        <AlertesCard
-          sessionsConcurrentes={sessionsConcurrentes}
-          isLoading={isLoading}
-        />
+        <AlertesSectionPanel />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="border border-border rounded-lg p-4 space-y-4">
@@ -255,37 +193,25 @@ export function GestionCaissePage() {
           </div>
         </div>
 
-        <ActionsCard
-          sessionActive={sessionActive}
+        <ActionsSectionPanel
           onOuvrirSession={handleOuvrirSession}
           onFermerSession={handleFermerSession}
           onApportProduit={handleApportProduit}
           onHistorique={handleHistorique}
           onReimprimer={handleReimprimer}
-          isLoading={isLoading}
+          disabled={isLoading}
         />
 
-        <MouvementsGrid mouvements={mouvements} isLoading={isLoading} />
+        <MouvementsSectionPanel />
 
         <div className="flex justify-start">
-          <Button onClick={handleBack} variant="secondary">
+          <Button onClick={() => navigate('/caisse/menu')} variant="secondary">
             Retour au menu
           </Button>
         </div>
-
-        <HistoriqueDialog
-          open={showHistoriqueDialog}
-          onClose={() => setShowHistoriqueDialog(false)}
-          historique={historique}
-          onConsulter={handleConsultation}
-        />
-
-        <ConsultationDialog
-          open={showConsultationDialog}
-          onClose={() => setShowConsultationDialog(false)}
-          sessionId={selectedSessionId}
-        />
       </div>
     </ScreenLayout>
   );
 }
+
+export default GestionCaissePage;

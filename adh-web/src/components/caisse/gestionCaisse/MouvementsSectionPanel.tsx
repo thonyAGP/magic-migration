@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
-import { DataGrid } from '@/components/ui/DataGrid';
+import { DataGrid } from '@/components/data/DataGrid';
 import { useDataSourceStore } from '@/stores/dataSourceStore';
 import { apiClient } from '@/services/api/apiClient';
 import type { ApiResponse } from '@/services/api/apiClient';

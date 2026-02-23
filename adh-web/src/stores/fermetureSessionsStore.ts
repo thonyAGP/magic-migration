@@ -108,7 +108,7 @@ export const useFermetureSessionsStore = create<FermetureSessionsStore>()((set, 
       return;
     }
 
-    const closureCode = generateClosureCode(sessionId);
+    const _closureCode = generateClosureCode(sessionId);
 
     if (!isRealApi) {
       set((state) => ({

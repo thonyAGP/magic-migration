@@ -1,14 +1,8 @@
-import { apiClient, type ApiResponse } from "./apiClient";
+import { apiClient } from "./apiClient";
 import type {
-  GetSessionHistoryRequest,
   GetSessionHistoryResponse,
-  GetSessionDetailsRequest,
   GetSessionDetailsResponse,
-  GetSessionCurrenciesRequest,
   GetSessionCurrenciesResponse,
-  SessionHistoryItem,
-  SessionDetail,
-  SessionCurrency,
 } from "@/types/sessionHistory";
 
 const formatDateParam = (date: Date | undefined): string | undefined => {

@@ -1,8 +1,6 @@
 import { apiClient, type ApiResponse } from './apiClient';
 import type {
   RaisonUtilisation,
-  GetRaisonsUtilisationRequest,
-  GetRaisonsUtilisationResponse,
 } from '@/types/raisonsUtilisation';
 
 export const raisonsUtilisationApi = {

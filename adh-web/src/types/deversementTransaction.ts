@@ -74,39 +74,39 @@ export interface DeverserVenteRequest {
   affectation?: string;
 }
 
-export interface DeverserVenteResponse extends ApiResponse<DeversementResult> {}
+export type DeverserVenteResponse = ApiResponse<DeversementResult>;
 
 export interface AffecterTransfertRequest {
   venteId: number;
   affectation: string;
 }
 
-export interface AffecterTransfertResponse extends ApiResponse<{ success: boolean; transfertId: number }> {}
+export type AffecterTransfertResponse = ApiResponse<{ success: boolean; transfertId: number }>;
 
 export interface RazAffectationRequest {
   venteId: number;
 }
 
-export interface RazAffectationResponse extends ApiResponse<{ success: boolean }> {}
+export type RazAffectationResponse = ApiResponse<{ success: boolean }>;
 
 export interface IncrementNumeroTicketRequest {
   typeVente: 'VRL' | 'VSL';
 }
 
-export interface IncrementNumeroTicketResponse extends ApiResponse<{ numeroTicket: number }> {}
+export type IncrementNumeroTicketResponse = ApiResponse<{ numeroTicket: number }>;
 
 export interface GetCompteGMRequest {
   societe: string;
   compte: string;
 }
 
-export interface GetCompteGMResponse extends ApiResponse<CompteGM> {}
+export type GetCompteGMResponse = ApiResponse<CompteGM>;
 
 export interface GetOperationsDiversesRequest {
   venteId: number;
 }
 
-export interface GetOperationsDiversesResponse extends ApiResponse<OperationDiverse[]> {}
+export type GetOperationsDiversesResponse = ApiResponse<OperationDiverse[]>;
 
 export interface DeversementState {
   vente: Vente | null;

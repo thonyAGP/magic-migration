@@ -319,16 +319,23 @@ describe('EmailSearchPage', () => {
     fireEvent.click(editButton);
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      const dialog = screen.getByRole('dialog');
+      expect(dialog).toBeInTheDocument();
     });
 
-    const emailInputs = screen.getAllByLabelText('Email');
-    const dialogEmailInput = emailInputs[emailInputs.length - 1];
+    const dialog = screen.getByRole('dialog');
+    const emailInputsInDialog = dialog.querySelectorAll('input[id="Email"]');
+    const dialogEmailInput = emailInputsInDialog[0] as HTMLInputElement;
+
     fireEvent.change(dialogEmailInput, { target: { value: 'updated@example.com' } });
 
-    const saveButtons = screen.getAllByText('Modifier');
-    const dialogSaveButton = saveButtons[saveButtons.length - 1];
-    fireEvent.click(dialogSaveButton);
+    const saveButton = Array.from(screen.getAllByRole('button')).find(
+      (btn) => btn.textContent === 'Modifier' && dialog.contains(btn)
+    );
+
+    if (saveButton) {
+      fireEvent.click(saveButton);
+    }
 
     await waitFor(() => {
       expect(mockStore.updateEmail).toHaveBeenCalledWith(1, {

@@ -2,9 +2,6 @@ import { apiClient, type ApiResponse } from './apiClient';
 import type {
   FidelisationRemise,
   RemiseResult,
-  GetFidelisationRemiseRequest,
-  ValidateRemiseEligibilityRequest,
-  CalculateMontantRemiseRequest,
 } from '@/types/fidelisationRemise';
 
 export const fidelisationRemiseApi = {

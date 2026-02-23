@@ -1,10 +1,5 @@
-import { apiClient, type ApiResponse } from '@/services/api/apiClient';
+import { apiClient } from '@/services/api/apiClient';
 import type {
-  TauxChange,
-  ConversionParams,
-  ConversionResult,
-  GetTauxChangeRequest,
-  CalculerEquivalentRequest,
   CalculerEquivalentResponse,
   GetTauxChangeResponse,
 } from '@/types/calculEquivalent';

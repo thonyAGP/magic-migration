@@ -1,18 +1,13 @@
 import { apiClient, type ApiResponse } from "@/services/api/apiClient";
 import type {
-  Vente,
   OperationDiverse,
   CompteGM,
   Hebergement,
   TransfertAffectation,
   ComplementBiking,
-  DeversementResult,
   DeverserVenteRequest,
   AffecterTransfertRequest,
   RazAffectationRequest,
-  IncrementNumeroTicketRequest,
-  GetCompteGMRequest,
-  GetOperationsDiversesRequest,
   OperationDiverseType,
 } from "@/types/deversementTransaction";
 
@@ -41,7 +36,7 @@ export const deversementApi = {
     ),
 
   // DELETE /api/ventes/:id/affectation - Supprimer l'affectation d'une vente
-  razAffectation: (venteId: number, data: RazAffectationRequest) =>
+  razAffectation: (venteId: number, _data: RazAffectationRequest) =>
     apiClient.delete<ApiResponse<{ success: boolean }>>(
       `/api/ventes/${venteId}/affectation`,
     ),

@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Input, Button } from '@/components/ui';
-import { cn } from '@/lib/utils';
 import type { VenteType } from '@/types/deversementTransaction';
 
 interface DeversementFormPanelProps {
   className?: string;
-  onDeverser?: (data: {
+  onDeverser?: (_data: {
     societe: string;
     compte: string;
     filiation: number;
@@ -55,7 +54,7 @@ export const DeversementFormPanel = ({
   const isFormValid = societe && compte && filiation && montant && !isNaN(parseFloat(montant));
 
   return (
-    <div className={cn('bg-white rounded-lg border border-gray-200 p-6', className)}>
+    <div className={`bg-white rounded-lg border border-gray-200 p-6${className ? ` ${className}` : ''}`}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-1">

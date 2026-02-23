@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScreenLayout } from '@/components/layout';
 import { Button, Input, Dialog } from '@/components/ui';
 import { useMoyenPaiementStore } from '@/stores/moyenPaiementStore';
 import { useAuthStore } from '@/stores';
-import type { TypeDevise, ClasseMOP, MoyenPaiement } from '@/types/moyenPaiement';
+import type { TypeDevise, ClasseMOP } from '@/types/moyenPaiement';
 import { cn } from '@/lib/utils';
 
 type Phase = 'lookup' | 'list';
@@ -301,3 +301,5 @@ export function MoyenPaiementPage() {
     </ScreenLayout>
   );
 }
+
+export default MoyenPaiementPage;

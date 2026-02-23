@@ -486,3 +486,5 @@ export function RecapFermeturePage() {
     </ScreenLayout>
   );
 }
+
+export default RecapFermeturePage;

@@ -1,7 +1,5 @@
-import { apiClient, type ApiResponse } from './apiClient';
+import { apiClient } from './apiClient';
 import type {
-  Hebergement,
-  ClientGm,
   FetchHebergementsResponse,
   SelectChambreResponse,
 } from '@/types/choixPyr';

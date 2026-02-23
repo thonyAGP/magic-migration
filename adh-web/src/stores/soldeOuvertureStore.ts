@@ -6,7 +6,6 @@ import type {
   SoldeCalculationResult,
   CoherenceValidationResult,
   CalculerSoldeOuvertureRequest,
-  GetSoldeOuvertureRequest,
   ValiderCoherenceSoldeRequest,
   UpdateDeviseSessionRequest,
 } from '@/types/soldeOuverture';

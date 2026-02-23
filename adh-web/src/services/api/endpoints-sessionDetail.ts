@@ -1,6 +1,5 @@
-import { apiClient, type ApiResponse } from './apiClient';
+import { apiClient } from './apiClient';
 import type {
-  LogSessionDetailRequest,
   LogSessionDetailResponse,
 } from '@/types/sessionDetail';
 

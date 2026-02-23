@@ -1,4 +1,4 @@
-import type { ApiResponse } from "@/services/api/apiClient";
+import type { ApiResponse as _ApiResponse } from "@/services/api/apiClient";
 
 // Comptage Historization - Backend service for saving caisse counting history
 

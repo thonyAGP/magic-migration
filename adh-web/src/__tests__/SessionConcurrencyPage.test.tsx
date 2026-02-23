@@ -1,9 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, mockNavigate } from 'react-router-dom';
 import type { SessionConcurrency } from '@/types/sessionConcurrency';
 
-const mockNavigate = vi.fn();
 const mockCheckConcurrency = vi.fn();
 const mockRegisterSession = vi.fn();
 const mockReleaseSession = vi.fn();

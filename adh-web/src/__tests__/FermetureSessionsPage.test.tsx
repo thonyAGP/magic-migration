@@ -1,9 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, mockNavigate } from 'react-router-dom';
 import type { Session } from '@/types/fermetureSessions';
-
-const mockNavigate = vi.fn();
 const mockLoadSessions = vi.fn();
 const mockLoadUnilateralBilateralTypes = vi.fn();
 const mockFermerSession = vi.fn();
@@ -13,15 +11,19 @@ const mockSetCurrentSession = vi.fn();
 const mockClearError = vi.fn();
 const mockReset = vi.fn();
 
+let mockState = {
+  sessions: [] as Session[],
+  currentSession: null as Session | null,
+  unilateralBilateralTypes: [] as unknown[],
+  isLoading: false,
+  error: null as string | null,
+  isClosing: false,
+};
+
 vi.mock('@/stores/fermetureSessionsStore', () => ({
   useFermetureSessionsStore: (selector: (state: unknown) => unknown) => {
     const state = {
-      sessions: [] as Session[],
-      currentSession: null,
-      unilateralBilateralTypes: [],
-      isLoading: false,
-      error: null,
-      isClosing: false,
+      ...mockState,
       loadSessions: mockLoadSessions,
       loadUnilateralBilateralTypes: mockLoadUnilateralBilateralTypes,
       fermerSession: mockFermerSession,
@@ -71,6 +73,14 @@ const renderComponent = () => {
 describe('FermetureSessionsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockState = {
+      sessions: [],
+      currentSession: null,
+      unilateralBilateralTypes: [],
+      isLoading: false,
+      error: null,
+      isClosing: false,
+    };
     mockLoadSessions.mockResolvedValue(undefined);
     mockLoadUnilateralBilateralTypes.mockResolvedValue(undefined);
     mockFermerSession.mockResolvedValue(undefined);
@@ -96,31 +106,9 @@ describe('FermetureSessionsPage', () => {
   });
 
   it('should display loading state', () => {
-    const { useFermetureSessionsStore: originalMock } = vi.mocked(vi.importActual('@/stores/fermetureSessionsStore') as never);
-    if (originalMock) {
-      originalMock.mockImplementation((selector: (state: unknown) => unknown) => {
-        const state = {
-          sessions: [],
-          currentSession: null,
-          unilateralBilateralTypes: [],
-          isLoading: true,
-          error: null,
-          isClosing: false,
-          loadSessions: mockLoadSessions,
-          loadUnilateralBilateralTypes: mockLoadUnilateralBilateralTypes,
-          fermerSession: mockFermerSession,
-          generateClosureCode: mockGenerateClosureCode,
-          validateSessionClosure: mockValidateSessionClosure,
-          setCurrentSession: mockSetCurrentSession,
-          clearError: mockClearError,
-          reset: mockReset,
-        };
-        return selector(state);
-      });
-    }
-
+    mockState.isLoading = true;
     renderComponent();
-    expect(screen.getByText('Chargement des sessions')).toBeInTheDocument();
+    expect(screen.getByText(/Chargement des sessions/)).toBeInTheDocument();
   });
 
   it('should display empty state when no sessions', () => {
@@ -129,29 +117,7 @@ describe('FermetureSessionsPage', () => {
   });
 
   it('should display sessions when loaded', () => {
-    const { useFermetureSessionsStore: originalMock } = vi.mocked(vi.importActual('@/stores/fermetureSessionsStore') as never);
-    if (originalMock) {
-      originalMock.mockImplementation((selector: (state: unknown) => unknown) => {
-        const state = {
-          sessions: [mockSession, mockSession2],
-          currentSession: null,
-          unilateralBilateralTypes: [],
-          isLoading: false,
-          error: null,
-          isClosing: false,
-          loadSessions: mockLoadSessions,
-          loadUnilateralBilateralTypes: mockLoadUnilateralBilateralTypes,
-          fermerSession: mockFermerSession,
-          generateClosureCode: mockGenerateClosureCode,
-          validateSessionClosure: mockValidateSessionClosure,
-          setCurrentSession: mockSetCurrentSession,
-          clearError: mockClearError,
-          reset: mockReset,
-        };
-        return selector(state);
-      });
-    }
-
+    mockState.sessions = [mockSession, mockSession2];
     renderComponent();
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
@@ -159,57 +125,13 @@ describe('FermetureSessionsPage', () => {
 
   it('should display error state', () => {
     const errorMessage = 'Erreur de chargement';
-    const { useFermetureSessionsStore: originalMock } = vi.mocked(vi.importActual('@/stores/fermetureSessionsStore') as never);
-    if (originalMock) {
-      originalMock.mockImplementation((selector: (state: unknown) => unknown) => {
-        const state = {
-          sessions: [],
-          currentSession: null,
-          unilateralBilateralTypes: [],
-          isLoading: false,
-          error: errorMessage,
-          isClosing: false,
-          loadSessions: mockLoadSessions,
-          loadUnilateralBilateralTypes: mockLoadUnilateralBilateralTypes,
-          fermerSession: mockFermerSession,
-          generateClosureCode: mockGenerateClosureCode,
-          validateSessionClosure: mockValidateSessionClosure,
-          setCurrentSession: mockSetCurrentSession,
-          clearError: mockClearError,
-          reset: mockReset,
-        };
-        return selector(state);
-      });
-    }
-
+    mockState.error = errorMessage;
     renderComponent();
     expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
 
   it('should handle session selection', () => {
-    const { useFermetureSessionsStore: originalMock } = vi.mocked(vi.importActual('@/stores/fermetureSessionsStore') as never);
-    if (originalMock) {
-      originalMock.mockImplementation((selector: (state: unknown) => unknown) => {
-        const state = {
-          sessions: [mockSession],
-          currentSession: null,
-          unilateralBilateralTypes: [],
-          isLoading: false,
-          error: null,
-          isClosing: false,
-          loadSessions: mockLoadSessions,
-          loadUnilateralBilateralTypes: mockLoadUnilateralBilateralTypes,
-          fermerSession: mockFermerSession,
-          generateClosureCode: mockGenerateClosureCode,
-          validateSessionClosure: mockValidateSessionClosure,
-          setCurrentSession: mockSetCurrentSession,
-          clearError: mockClearError,
-          reset: mockReset,
-        };
-        return selector(state);
-      });
-    }
-
+    mockState.sessions = [mockSession];
     renderComponent();
     const radioButton = screen.getByRole('radio');
     fireEvent.click(radioButton);
@@ -217,29 +139,8 @@ describe('FermetureSessionsPage', () => {
   });
 
   it('should initiate closure on button click', async () => {
-    const { useFermetureSessionsStore: originalMock } = vi.mocked(vi.importActual('@/stores/fermetureSessionsStore') as never);
-    if (originalMock) {
-      originalMock.mockImplementation((selector: (state: unknown) => unknown) => {
-        const state = {
-          sessions: [mockSession],
-          currentSession: mockSession,
-          unilateralBilateralTypes: [],
-          isLoading: false,
-          error: null,
-          isClosing: false,
-          loadSessions: mockLoadSessions,
-          loadUnilateralBilateralTypes: mockLoadUnilateralBilateralTypes,
-          fermerSession: mockFermerSession,
-          generateClosureCode: mockGenerateClosureCode,
-          validateSessionClosure: mockValidateSessionClosure,
-          setCurrentSession: mockSetCurrentSession,
-          clearError: mockClearError,
-          reset: mockReset,
-        };
-        return selector(state);
-      });
-    }
-
+    mockState.sessions = [mockSession];
+    mockState.currentSession = mockSession;
     renderComponent();
     const radioButton = screen.getByRole('radio');
     fireEvent.click(radioButton);
@@ -253,11 +154,13 @@ describe('FermetureSessionsPage', () => {
     });
   });
 
-  it('should navigate back to menu on back button click', () => {
+  it('should navigate back to menu on back button click', async () => {
     renderComponent();
     const backButton = screen.getByText('Retour au menu');
     fireEvent.click(backButton);
-    expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
+    });
   });
 
   it('should disable closure button when no session selected', () => {

@@ -95,7 +95,7 @@ export const getTitre = async (): Promise<string> => {
   try {
     const response = await apiClient.get<GetTitreResponse>('/api/saisie-date/titre');
     return response.data.data?.titre ?? 'Saisie dates';
-  } catch (e: unknown) {
+  } catch (_e: unknown) {
     return 'Saisie dates';
   }
 };

@@ -1,7 +1,5 @@
 import { apiClient, type ApiResponse } from './apiClient';
 import type {
-  Session,
-  GetSessionsListRequest,
   GetSessionsListResponse,
 } from '@/types/sessionList';
 

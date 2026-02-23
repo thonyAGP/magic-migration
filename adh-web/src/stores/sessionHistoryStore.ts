@@ -42,7 +42,7 @@ type SessionHistoryStore = SessionHistoryState & SessionHistoryActions;
 const generateMockSessions = (): SessionHistoryItem[] => {
   const sessions: SessionHistoryItem[] = [];
   const operators = ['DUPONT J.', 'MARTIN S.', 'DURAND P.', 'BERNARD L.'];
-  const statuses = ['OUVERTE', 'FERMEE'];
+  const _statuses = ['OUVERTE', 'FERMEE'];
   const now = new Date();
 
   for (let i = 0; i < 10; i++) {

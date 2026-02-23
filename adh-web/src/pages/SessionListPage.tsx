@@ -247,3 +247,5 @@ export function SessionListPage() {
     </ScreenLayout>
   );
 }
+
+export default SessionListPage;

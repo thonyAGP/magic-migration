@@ -1,4 +1,4 @@
-import type { Session } from "@/types";
+import type { Session as _Session } from "@/types";
 
 export interface RecapWorksheetEntry {
   dateComptable: Date;
@@ -91,20 +91,20 @@ export type RecapWorksheetApiResponse<T> = {
   error?: string;
 };
 
-const RECAP_WORKSHEET_EXPORT_FORMATS = ["txt", "csv", "json"] as const;
+const _RECAP_WORKSHEET_EXPORT_FORMATS = ["txt", "csv", "json"] as const;
 export type RecapWorksheetExportFormat =
-  (typeof RECAP_WORKSHEET_EXPORT_FORMATS)[number];
+  (typeof _RECAP_WORKSHEET_EXPORT_FORMATS)[number];
 
-const RECAP_WORKSHEET_TYPES = [
+const _RECAP_WORKSHEET_TYPES = [
   "vente",
   "change",
   "approvisionnement",
   "remboursement",
   "ajustement",
 ] as const;
-export type RecapWorksheetType = (typeof RECAP_WORKSHEET_TYPES)[number];
+export type RecapWorksheetType = (typeof _RECAP_WORKSHEET_TYPES)[number];
 
-const RECAP_WORKSHEET_PAIEMENT_MODES = [
+const _RECAP_WORKSHEET_PAIEMENT_MODES = [
   "especes",
   "carte",
   "cheque",
@@ -113,4 +113,4 @@ const RECAP_WORKSHEET_PAIEMENT_MODES = [
   "od",
 ] as const;
 export type RecapWorksheetPaiementMode =
-  (typeof RECAP_WORKSHEET_PAIEMENT_MODES)[number];
+  (typeof _RECAP_WORKSHEET_PAIEMENT_MODES)[number];
