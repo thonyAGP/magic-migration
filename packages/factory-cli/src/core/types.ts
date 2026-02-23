@@ -228,6 +228,7 @@ export interface BatchStats {
   coverageAvgFrontend: number;
   totalPartial: number;
   totalMissing: number;
+  tokenStats?: { input: number; output: number; costUsd: number };
 }
 
 // ─── Module (Deliverable Subtree) ────────────────────────────────
@@ -487,6 +488,7 @@ export interface FullMigrationReport {
     gradeDistribution: Record<string, number>;
     top10: ProgramEstimation[];
   };
+  tokenStats?: { input: number; output: number; costUsd: number };
 }
 
 export interface ModuleSummary {
@@ -518,6 +520,7 @@ export interface BatchSummary {
   programs: number;
   status: PipelineStatus;
   coveragePct: number;
+  tokenStats?: { input: number; output: number; costUsd: number };
 }
 
 export interface ProgramSummary {

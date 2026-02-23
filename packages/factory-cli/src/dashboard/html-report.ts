@@ -63,12 +63,17 @@ const renderKpiCards = (r: FullMigrationReport): string => {
   const verifiedPct = Math.round(pipeline.verified / live * 100);
   const deliveredPct = modules.total > 0 ? Math.round(modules.deliverable / modules.total * 100) : 0;
 
+  const tokenCard = r.tokenStats
+    ? kpiCard('Tokens IA', `~$${r.tokenStats.costUsd.toFixed(2)}`, `${formatTokenCount(r.tokenStats.input)} in / ${formatTokenCount(r.tokenStats.output)} out (cumul\u00e9)`, '#d2a8ff')
+    : '';
+
   return `
 <section class="kpi-grid">
   ${kpiCard('Programmes LIVE', String(graph.livePrograms), `${graph.orphanPrograms} orphelins, ${graph.sharedPrograms} partages`, 'var(--blue)')}
   ${kpiCard('V\u00e9rifi\u00e9s', `${pipeline.verified}/${live}`, `${verifiedPct}% (${pipeline.enriched} enrichis, ${pipeline.contracted} analys\u00e9s)`, 'var(--green)')}
   ${kpiCard('Modules livrables', `${modules.deliverable}/${modules.total}`, `${deliveredPct}% des modules`, 'var(--purple)')}
   ${kpiCard('D\u00e9commissionnables', `${decommission.decommissionable}/${decommission.totalLive}`, `${decommission.decommissionPct}% du legacy`, 'var(--orange)')}
+  ${tokenCard}
 </section>`;
 };
 
@@ -78,6 +83,9 @@ const kpiCard = (label: string, value: string, detail: string, color: string): s
     <div class="kpi-label">${label}</div>
     <div class="kpi-detail">${detail}</div>
   </div>`;
+
+const formatTokenCount = (n: number): string =>
+  n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` : `${Math.round(n / 1000)}K`;
 
 const renderPipelineSection = (pipeline: FullMigrationReport['pipeline'], live: number): string => {
   const total = live;
@@ -703,13 +711,32 @@ migration-factory analyze --dir ADH                # Analyser les modules</pre>
     </div>
 
     <div class="help-section">
+      <h3>Reprise et r\u00e9silience</h3>
+      <ul>
+        <li>La migration est <strong>reprise automatique</strong> : si interrompue, les programmes d\u00e9j\u00e0 g\u00e9n\u00e9r\u00e9s (10 phases) sont r\u00e9utilis\u00e9s sans re-g\u00e9n\u00e9ration</li>
+        <li>Les programmes repris apparaissent en <span style="color:#58a6ff">bleu (reprise)</span> dans le panneau de migration</li>
+        <li>Le mode d'enrichissement est <strong>m\u00e9moris\u00e9</strong> entre les sessions (localStorage)</li>
+        <li>Vous pouvez <strong>rafra\u00eechir la page (F5)</strong> pendant une migration &mdash; elle se reconnectera automatiquement via SSE</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <h3>Tokens et co\u00fbts</h3>
+      <ul>
+        <li>Les tokens consomm\u00e9s et le co\u00fbt estim\u00e9 sont affich\u00e9s <strong>en temps r\u00e9el</strong> dans le panneau de migration</li>
+        <li>Le co\u00fbt cumul\u00e9 de tous les batches est visible dans le <strong>KPI "Tokens IA"</strong> sur la page principale</li>
+        <li>Chaque projet affiche aussi son co\u00fbt cumul\u00e9 dans les stats de la carte projet</li>
+        <li>Tarification : Sonnet $3/M tokens in, $15/M tokens out</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
       <h3>Conseils</h3>
       <ul>
         <li>Cochez <strong>Simulation</strong> pour simuler sans modifier de fichiers</li>
-        <li>Vous pouvez <strong>rafra\u00eechir la page (F5)</strong> pendant une migration &mdash; elle se reconnectera automatiquement</li>
         <li>Le timer affiche le temps \u00e9coul\u00e9 et une <strong>estimation du temps restant (ETA)</strong> apr\u00e8s le 1er programme termin\u00e9</li>
         <li>Le nombre d'agents parall\u00e8les est auto-d\u00e9termin\u00e9 (0=auto) et affich\u00e9 dans l'en-t\u00eate</li>
-        <li>Les tokens consomm\u00e9s et le co\u00fbt estim\u00e9 sont affich\u00e9s en temps r\u00e9el (mode API uniquement)</li>
+        <li>Le KPI <strong>V\u00e9rifi\u00e9s</strong> ne compte que les contrats enti\u00e8rement valid\u00e9s (tous items IMPL/N/A). Les contrats <em>enrichis</em> par migration apparaissent dans le d\u00e9tail</li>
         <li>Apr\u00e8s migration, v\u00e9rifiez toujours le r\u00e9sultat avec <code>tsc --noEmit</code> et <code>vitest run</code></li>
       </ul>
     </div>
@@ -780,6 +807,7 @@ const renderGlobalView = (report: MultiProjectReport): string => {
           <span>${r.pipeline.verified} v\u00e9rifi\u00e9s</span>
           <span>${r.pipeline.contracted} analys\u00e9s</span>
           <span>${r.modules.total} modules</span>
+          ${r.tokenStats ? `<span style="color:#d2a8ff">~$${r.tokenStats.costUsd.toFixed(2)}</span>` : ''}
         </div>
       </div>`;
   }).join('');

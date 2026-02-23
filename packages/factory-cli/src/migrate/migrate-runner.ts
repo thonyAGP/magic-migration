@@ -244,6 +244,14 @@ export const runMigration = async (
         batchDef.stats.coverageAvgFrontend = summary.reviewAvgCoverage;
         batchDef.stats.totalPartial = summary.failed;
         batchDef.stats.totalMissing = summary.total - summary.completed - summary.failed;
+        if (summary.totalTokens) {
+          const prev = batchDef.stats.tokenStats ?? { input: 0, output: 0, costUsd: 0 };
+          batchDef.stats.tokenStats = {
+            input: prev.input + summary.totalTokens.input,
+            output: prev.output + summary.totalTokens.output,
+            costUsd: (prev.costUsd) + (summary.estimatedCostUsd ?? 0),
+          };
+        }
         if (summary.completed === summary.total && summary.tscClean && summary.testsPass) {
           batchDef.status = 'verified';
           batchDef.verifiedDate = new Date().toISOString().slice(0, 10);

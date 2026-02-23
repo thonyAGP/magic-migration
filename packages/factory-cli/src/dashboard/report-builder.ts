@@ -110,7 +110,19 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
     programs: b.programs,
     status: b.status,
     coveragePct: b.stats.coverageAvgFrontend,
+    ...(b.stats.tokenStats ? { tokenStats: b.stats.tokenStats } : {}),
   }));
+
+  // Aggregate cumulative token stats across all batches
+  const cumulativeTokens = batches.reduce((acc, b) => {
+    if (b.tokenStats) {
+      acc.input += b.tokenStats.input;
+      acc.output += b.tokenStats.output;
+      acc.costUsd += b.tokenStats.costUsd;
+    }
+    return acc;
+  }, { input: 0, output: 0, costUsd: 0 });
+  const hasTokenStats = cumulativeTokens.input > 0 || cumulativeTokens.output > 0;
 
   // Estimation: score each program
   const estimation = estimateProject({
@@ -179,6 +191,7 @@ export const buildReport = (input: ReportInput): FullMigrationReport => {
       gradeDistribution: estimation.gradeDistribution,
       top10: estimation.programs.slice(0, 10),
     },
+    ...(hasTokenStats ? { tokenStats: cumulativeTokens } : {}),
   };
 };
 
