@@ -1,0 +1,107 @@
+﻿{
+    "tables":  {
+                   "all":  [
+                               {
+                                   "logical_name":  "pv_discount_reasons",
+                                   "physical_name":  "pv_discountlist_dat",
+                                   "access_mode":  "READ",
+                                   "id":  382,
+                                   "usage_count":  1
+                               }
+                           ],
+                   "by_access":  {
+                                     "LINK":  [
+
+                                              ],
+                                     "READ":  [
+                                                  {
+                                                      "logical_name":  "pv_discount_reasons",
+                                                      "physical_name":  "pv_discountlist_dat",
+                                                      "access_mode":  "READ",
+                                                      "id":  382,
+                                                      "usage_count":  1
+                                                  }
+                                              ],
+                                     "WRITE":  [
+
+                                               ]
+                                 }
+               },
+    "orphan_analysis":  {
+                            "has_public_name":  false,
+                            "is_ecf_member":  false,
+                            "has_callers":  true,
+                            "status":  "NON_ORPHELIN",
+                            "reason":  "Appele par 2 programme(s): Contrôle nécessité calcul DIN (IDE 215), Skier Profile (IDE 212)"
+                        },
+    "statistics":  {
+                       "callee_count":  0,
+                       "expression_count":  32,
+                       "logic_line_count":  75,
+                       "caller_count":  2,
+                       "task_count":  1,
+                       "disabled_line_count":  0,
+                       "table_count":  null
+                   },
+    "call_graph":  {
+                       "call_chain":  [
+                                          {
+                                              "name":  "Skier Profile",
+                                              "ide":  212,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Contrôle nécessité calcul DIN",
+                                              "ide":  215,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Main Sale-664",
+                                              "ide":  187,
+                                              "level":  2
+                                          },
+                                          {
+                                              "name":  "Main Sale-664",
+                                              "ide":  364,
+                                              "level":  2
+                                          },
+                                          {
+                                              "name":  "Menu",
+                                              "ide":  185,
+                                              "level":  3
+                                          },
+                                          {
+                                              "name":  "START",
+                                              "ide":  143,
+                                              "level":  4
+                                          },
+                                          {
+                                              "name":  "Main Program",
+                                              "ide":  1,
+                                              "level":  5
+                                          }
+                                      ],
+                       "callees":  [
+
+                                   ],
+                       "callers":  [
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Contrôle nécessité calcul DIN",
+                                           "ide":  215
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Skier Profile",
+                                           "ide":  212
+                                       }
+                                   ]
+                   },
+    "metadata":  {
+                     "ide_position":  213,
+                     "pipeline_version":  "7.1",
+                     "project":  "PVE",
+                     "program_name":  "Vérification Skier Profile",
+                     "generated_at":  "2026-02-03 18:56:49"
+                 }
+}

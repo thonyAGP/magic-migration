@@ -1,0 +1,444 @@
+﻿{
+    "table_other_vars":  {
+                             "2":  [
+                                       {
+                                           "letter":  "A",
+                                           "name":  "p.Borne min timestamp",
+                                           "data_type":  "Numeric",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "B",
+                                           "name":  "p.Borne max timestamp",
+                                           "data_type":  "Numeric",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "C",
+                                           "name":  "v.date alpha",
+                                           "data_type":  "Alpha",
+                                           "definition":  "V"
+                                       }
+                                   ],
+                             "6":  [
+                                       {
+                                           "letter":  "A",
+                                           "name":  "p. Test",
+                                           "data_type":  "Logical",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "B",
+                                           "name":  "v.retour log",
+                                           "data_type":  "Logical",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "C",
+                                           "name":  "v.nb enreg lus",
+                                           "data_type":  "Numeric",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "D",
+                                           "name":  "v.nb adresses",
+                                           "data_type":  "Numeric",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "E",
+                                           "name":  "v.lieu de séjour",
+                                           "data_type":  "Alpha",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "F",
+                                           "name":  "v.date time",
+                                           "data_type":  "Alpha",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "G",
+                                           "name":  "v.last time",
+                                           "data_type":  "Numeric",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "H",
+                                           "name":  "v.export iteratif",
+                                           "data_type":  "Logical",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "I",
+                                           "name":  "v.timestamp actuel alpha",
+                                           "data_type":  "Alpha",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "J",
+                                           "name":  "v.timestamp actuel numerique",
+                                           "data_type":  "Numeric",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "K",
+                                           "name":  "v.borne min timestamp",
+                                           "data_type":  "Numeric",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "L",
+                                           "name":  "v.borne max timestamp",
+                                           "data_type":  "Numeric",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "M",
+                                           "name":  "v.intervalle",
+                                           "data_type":  "Numeric",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "N",
+                                           "name":  "v.arret while",
+                                           "data_type":  "Logical",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "O",
+                                           "name":  "v.nb boucles while",
+                                           "data_type":  "Numeric",
+                                           "definition":  "V"
+                                       }
+                                   ],
+                             "7":  [
+                                       {
+                                           "letter":  "A",
+                                           "name":  "v.date time",
+                                           "data_type":  "Alpha",
+                                           "definition":  "V"
+                                       },
+                                       {
+                                           "letter":  "B",
+                                           "name":  "v.ligne export",
+                                           "data_type":  "Alpha",
+                                           "definition":  "V"
+                                       }
+                                   ]
+                         },
+    "variable_mapping":  {
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "v.nb enreg lus",
+                                           "letter":  "C"
+                                       },
+                             "{0,9}":  {
+                                           "type":  "local",
+                                           "name":  "v.timestamp actuel alpha",
+                                           "letter":  "I"
+                                       },
+                             "{0,13}":  {
+                                            "type":  "local",
+                                            "name":  "v.intervalle",
+                                            "letter":  "M"
+                                        },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "p. Test",
+                                           "letter":  "A"
+                                       },
+                             "{0,7}":  {
+                                           "type":  "local",
+                                           "name":  "v.last time",
+                                           "letter":  "G"
+                                       },
+                             "{0,11}":  {
+                                            "type":  "local",
+                                            "name":  "v.borne min timestamp",
+                                            "letter":  "K"
+                                        },
+                             "{0,5}":  {
+                                           "type":  "local",
+                                           "name":  "v.lieu de séjour",
+                                           "letter":  "E"
+                                       },
+                             "{0,15}":  {
+                                            "type":  "local",
+                                            "name":  "v.nb boucles while",
+                                            "letter":  "O"
+                                        },
+                             "{0,8}":  {
+                                           "type":  "local",
+                                           "name":  "v.export iteratif",
+                                           "letter":  "H"
+                                       },
+                             "{0,6}":  {
+                                           "type":  "local",
+                                           "name":  "v.date time",
+                                           "letter":  "F"
+                                       },
+                             "{0,4}":  {
+                                           "type":  "local",
+                                           "name":  "v.nb adresses",
+                                           "letter":  "D"
+                                       },
+                             "{0,10}":  {
+                                            "type":  "local",
+                                            "name":  "v.timestamp actuel numerique",
+                                            "letter":  "J"
+                                        },
+                             "{0,14}":  {
+                                            "type":  "local",
+                                            "name":  "v.arret while",
+                                            "letter":  "N"
+                                        },
+                             "{0,12}":  {
+                                            "type":  "local",
+                                            "name":  "v.borne max timestamp",
+                                            "letter":  "L"
+                                        },
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "v.retour log",
+                                           "letter":  "B"
+                                       }
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+                   "2":  {
+                             "physical":  "paramworgroup_dat",
+                             "name":  "parametre_workgroup",
+                             "access":  "WRITE",
+                             "logical":  "parametre_workgroup"
+                         },
+                   "6":  {
+                             "physical":  "%club_user%_caisse_autor_devise",
+                             "name":  "saisie_autorisations",
+                             "access":  "WRITE",
+                             "logical":  "saisie_autorisations"
+                         },
+                   "7":  {
+                             "physical":  "%club_user%_caisse_recap_devise",
+                             "name":  "recap_devise_cloture",
+                             "access":  "WRITE",
+                             "logical":  "recap_devise_cloture"
+                         }
+               },
+    "statistics":  {
+                       "total_variables":  23,
+                       "mapping_entries":  15,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  23,
+                       "global_count":  0,
+                       "table_count":  3
+                   },
+    "metadata":  {
+                     "ide_position":  14,
+                     "pipeline_version":  "7.2",
+                     "project":  "POO",
+                     "program_name":  "Export Ucopia bck 06/12",
+                     "generated_at":  "2026-02-03 17:39:56"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "p. Test",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "v.date time",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "p.Borne min timestamp",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P. Operation",
+                                        "data_type":  "Alpha",
+                                        "picture":  "50",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "p.Borne min timestamp",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "v.retour log",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "v.ligne export",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1000",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "p.Borne max timestamp",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "p.Borne max timestamp",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "v.nb enreg lus",
+                                        "data_type":  "Numeric",
+                                        "picture":  "9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "v.date alpha",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "v.nb adresses",
+                                        "data_type":  "Numeric",
+                                        "picture":  "9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "v.lieu de séjour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "v.date time",
+                                        "data_type":  "Alpha",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "v.last time",
+                                        "data_type":  "Numeric",
+                                        "picture":  "9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "v.export iteratif",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "v.timestamp actuel alpha",
+                                        "data_type":  "Alpha",
+                                        "picture":  "30",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "v.timestamp actuel numerique",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "v.borne min timestamp",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "v.borne max timestamp",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "M",
+                                        "name":  "v.intervalle",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "N",
+                                        "name":  "v.arret while",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "O",
+                                        "name":  "v.nb boucles while",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

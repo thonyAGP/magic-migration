@@ -1,0 +1,101 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  0,
+                                       "calculation":  0,
+                                       "other":  0,
+                                       "date":  0,
+                                       "constant":  0,
+                                       "string":  3
+                                   },
+                       "total_in_program":  3,
+                       "decoded_count":  3,
+                       "business_rules_count":  0
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+
+                                                      ],
+                                        "CALCULATION":  [
+
+                                                        ],
+                                        "OTHER":  [
+
+                                                  ],
+                                        "DATE":  [
+
+                                                 ],
+                                        "CONSTANT":  [
+
+                                                     ],
+                                        "STRING":  [
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "FileDelete (Trim ({0,1}))",
+                                                           "ide_position":  1,
+                                                           "decoded":  "FileDelete (Trim (\u003e chemin [A]))",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "FileDelete (Trim ({0,1})\u0026\u0027.old\u0027)",
+                                                           "ide_position":  2,
+                                                           "decoded":  "FileDelete (Trim (\u003e chemin [A])\u0026\u0027.old\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "FileRename (Trim ({0,1}),Trim ({0,1})\u0026\u0027.old\u0027)",
+                                                           "ide_position":  3,
+                                                           "decoded":  "FileRename (Trim (\u003e chemin [A]),Trim (\u003e chemin [A])\u0026\u0027.old\u0027)",
+                                                           "type":  "STRING"
+                                                       }
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "FileDelete (Trim ({0,1}))",
+                                        "ide_position":  1,
+                                        "decoded":  "FileDelete (Trim (\u003e chemin [A]))",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "FileDelete (Trim ({0,1})\u0026\u0027.old\u0027)",
+                                        "ide_position":  2,
+                                        "decoded":  "FileDelete (Trim (\u003e chemin [A])\u0026\u0027.old\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "FileRename (Trim ({0,1}),Trim ({0,1})\u0026\u0027.old\u0027)",
+                                        "ide_position":  3,
+                                        "decoded":  "FileRename (Trim (\u003e chemin [A]),Trim (\u003e chemin [A])\u0026\u0027.old\u0027)",
+                                        "type":  "STRING"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  64,
+                     "pipeline_version":  "7.1",
+                     "project":  "POO",
+                     "program_name":  "Suppression Connexion.log",
+                     "generated_at":  "2026-02-03 18:00:09"
+                 }
+}

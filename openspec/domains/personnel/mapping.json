@@ -1,0 +1,319 @@
+﻿{
+    "table_other_vars":  {
+                             "30":  [
+                                        {
+                                            "letter":  "A",
+                                            "name":  "P_Where",
+                                            "data_type":  "Alpha",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "B",
+                                            "name":  "P_DateMin",
+                                            "data_type":  "Date",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "C",
+                                            "name":  "P_DateMax",
+                                            "data_type":  "Date",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "D",
+                                            "name":  "P_TypeTraitement A_P",
+                                            "data_type":  "Alpha",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "E",
+                                            "name":  "P_Total",
+                                            "data_type":  "Numeric",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "F",
+                                            "name":  "PSelect",
+                                            "data_type":  "Numeric",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "G",
+                                            "name":  "w0_Nom",
+                                            "data_type":  "Alpha",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "H",
+                                            "name":  "w0_Prenom",
+                                            "data_type":  "Alpha",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "I",
+                                            "name":  "w0_Titre",
+                                            "data_type":  "Alpha",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "J",
+                                            "name":  "w0_DateSejDeb",
+                                            "data_type":  "Date",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "K",
+                                            "name":  "w0_DateSejFin",
+                                            "data_type":  "Date",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "L",
+                                            "name":  "w0_Type",
+                                            "data_type":  "Alpha",
+                                            "definition":  "V"
+                                        }
+                                    ]
+                         },
+    "variable_mapping":  {
+                             "{0,5}":  {
+                                           "type":  "local",
+                                           "name":  "P_Total",
+                                           "letter":  "E"
+                                       },
+                             "{0,7}":  {
+                                           "type":  "local",
+                                           "name":  "w0_Nom",
+                                           "letter":  "G"
+                                       },
+                             "{0,9}":  {
+                                           "type":  "local",
+                                           "name":  "w0_Titre",
+                                           "letter":  "I"
+                                       },
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "P_DateMin",
+                                           "letter":  "B"
+                                       },
+                             "{0,11}":  {
+                                            "type":  "local",
+                                            "name":  "w0_DateSejFin",
+                                            "letter":  "K"
+                                        },
+                             "{0,4}":  {
+                                           "type":  "local",
+                                           "name":  "P_TypeTraitement A_P",
+                                           "letter":  "D"
+                                       },
+                             "{0,6}":  {
+                                           "type":  "local",
+                                           "name":  "PSelect",
+                                           "letter":  "F"
+                                       },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "P_Where",
+                                           "letter":  "A"
+                                       },
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "P_DateMax",
+                                           "letter":  "C"
+                                       },
+                             "{0,8}":  {
+                                           "type":  "local",
+                                           "name":  "w0_Prenom",
+                                           "letter":  "H"
+                                       },
+                             "{0,10}":  {
+                                            "type":  "local",
+                                            "name":  "w0_DateSejDeb",
+                                            "letter":  "J"
+                                        },
+                             "{0,12}":  {
+                                            "type":  "local",
+                                            "name":  "w0_Type",
+                                            "letter":  "L"
+                                        }
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+                   "31":  {
+                              "physical":  "cafil009_dat",
+                              "name":  "gm-complet_______gmc",
+                              "access":  "LINK",
+                              "logical":  "gm-complet_______gmc"
+                          },
+                   "36":  {
+                              "physical":  "cafil014_dat",
+                              "name":  "client_gm",
+                              "access":  "LINK",
+                              "logical":  "client_gm"
+                          },
+                   "34":  {
+                              "physical":  "cafil012_dat",
+                              "name":  "hebergement______heb",
+                              "access":  "LINK",
+                              "logical":  "hebergement______heb"
+                          },
+                   "589":  {
+                               "physical":  "%club_user%tmp_chclt2_dat",
+                               "name":  "tempo_chambre_client",
+                               "access":  "WRITE",
+                               "logical":  "tempo_chambre_client"
+                           },
+                   "634":  {
+                               "physical":  "ptempo003_dat",
+                               "name":  "tempo_users",
+                               "access":  "WRITE",
+                               "logical":  "tempo_users"
+                           },
+                   "30":  {
+                              "physical":  "cafil008_dat",
+                              "name":  "gm-recherche_____gmr",
+                              "access":  "READ",
+                              "logical":  "gm-recherche_____gmr"
+                          },
+                   "119":  {
+                               "physical":  "cafil097_dat",
+                               "name":  "tables_pays_tel_",
+                               "access":  "LINK",
+                               "logical":  "tables_pays_tel_"
+                           },
+                   "33":  {
+                              "physical":  "cafil011_dat",
+                              "name":  "prestations______pre",
+                              "access":  "LINK",
+                              "logical":  "prestations______pre"
+                          }
+               },
+    "statistics":  {
+                       "total_variables":  12,
+                       "mapping_entries":  12,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  12,
+                       "global_count":  0,
+                       "table_count":  8
+                   },
+    "metadata":  {
+                     "ide_position":  240,
+                     "pipeline_version":  "7.2",
+                     "project":  "PBP",
+                     "program_name":  "Creat 589 634 tempo presta=V2",
+                     "generated_at":  "2026-02-03 15:59:41"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P_Where",
+                                        "data_type":  "Alpha",
+                                        "picture":  "256",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "P_DateMin",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "P_DateMax",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "P_TypeTraitement A_P",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "P_Total",
+                                        "data_type":  "Numeric",
+                                        "picture":  "4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "PSelect",
+                                        "data_type":  "Numeric",
+                                        "picture":  "4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "w0_Nom",
+                                        "data_type":  "Alpha",
+                                        "picture":  "15",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "w0_Prenom",
+                                        "data_type":  "Alpha",
+                                        "picture":  "9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "w0_Titre",
+                                        "data_type":  "Alpha",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "w0_DateSejDeb",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "w0_DateSejFin",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "w0_Type",
+                                        "data_type":  "Alpha",
+                                        "picture":  "15",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

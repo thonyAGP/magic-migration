@@ -1,0 +1,184 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  0,
+                                       "calculation":  0,
+                                       "other":  3,
+                                       "date":  0,
+                                       "constant":  6,
+                                       "string":  0
+                                   },
+                       "total_in_program":  9,
+                       "decoded_count":  9,
+                       "business_rules_count":  0
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+
+                                                      ],
+                                        "CALCULATION":  [
+
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT({0,5})",
+                                                          "ide_position":  3,
+                                                          "decoded":  "NOT([E])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,15}",
+                                                          "ide_position":  4,
+                                                          "decoded":  "[O]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,5}",
+                                                          "ide_position":  7,
+                                                          "decoded":  "[E]",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027GESTION\u0027",
+                                                             "ide_position":  1,
+                                                             "decoded":  "\u0027GESTION\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027O\u0027",
+                                                             "ide_position":  2,
+                                                             "decoded":  "\u0027O\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027PASSWORD\u0027",
+                                                             "ide_position":  5,
+                                                             "decoded":  "\u0027PASSWORD\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027club\u0027",
+                                                             "ide_position":  6,
+                                                             "decoded":  "\u0027club\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027CRY\u0027",
+                                                             "ide_position":  8,
+                                                             "decoded":  "\u0027CRY\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u00271.00\u0027",
+                                                             "ide_position":  9,
+                                                             "decoded":  "\u00271.00\u0027",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027GESTION\u0027",
+                                        "ide_position":  1,
+                                        "decoded":  "\u0027GESTION\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027O\u0027",
+                                        "ide_position":  2,
+                                        "decoded":  "\u0027O\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT({0,5})",
+                                        "ide_position":  3,
+                                        "decoded":  "NOT([E])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,15}",
+                                        "ide_position":  4,
+                                        "decoded":  "[O]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027PASSWORD\u0027",
+                                        "ide_position":  5,
+                                        "decoded":  "\u0027PASSWORD\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027club\u0027",
+                                        "ide_position":  6,
+                                        "decoded":  "\u0027club\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,5}",
+                                        "ide_position":  7,
+                                        "decoded":  "[E]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027CRY\u0027",
+                                        "ide_position":  8,
+                                        "decoded":  "\u0027CRY\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u00271.00\u0027",
+                                        "ide_position":  9,
+                                        "decoded":  "\u00271.00\u0027",
+                                        "type":  "CONSTANT"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  15,
+                     "pipeline_version":  "7.1",
+                     "project":  "Menu",
+                     "program_name":  "MAJ User",
+                     "generated_at":  "2026-02-03 15:13:16"
+                 }
+}

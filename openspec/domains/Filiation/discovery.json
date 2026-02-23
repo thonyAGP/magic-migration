@@ -1,0 +1,144 @@
+﻿{
+    "tables":  {
+                   "all":  [
+                               {
+                                   "logical_name":  "gm-recherche_____gmr",
+                                   "physical_name":  "cafil008_dat",
+                                   "access_mode":  "READ",
+                                   "id":  30,
+                                   "usage_count":  2
+                               },
+                               {
+                                   "logical_name":  "compte_gm________cgm",
+                                   "physical_name":  "cafil025_dat",
+                                   "access_mode":  "LINK",
+                                   "id":  47,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "compte_gm________cgm",
+                                   "physical_name":  "cafil025_dat",
+                                   "access_mode":  "WRITE",
+                                   "id":  47,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "histo_fusionseparation_saisie",
+                                   "physical_name":  "histo_fus_sep_saisie",
+                                   "access_mode":  "LINK",
+                                   "id":  343,
+                                   "usage_count":  2
+                               },
+                               {
+                                   "logical_name":  "histo_fusionseparation_saisie",
+                                   "physical_name":  "histo_fus_sep_saisie",
+                                   "access_mode":  "READ",
+                                   "id":  343,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "histo_fusionseparation_saisie",
+                                   "physical_name":  "histo_fus_sep_saisie",
+                                   "access_mode":  "WRITE",
+                                   "id":  343,
+                                   "usage_count":  2
+                               }
+                           ],
+                   "by_access":  {
+                                     "LINK":  [
+                                                  {
+                                                      "logical_name":  "compte_gm________cgm",
+                                                      "physical_name":  "cafil025_dat",
+                                                      "access_mode":  "LINK",
+                                                      "id":  47,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "histo_fusionseparation_saisie",
+                                                      "physical_name":  "histo_fus_sep_saisie",
+                                                      "access_mode":  "LINK",
+                                                      "id":  343,
+                                                      "usage_count":  2
+                                                  }
+                                              ],
+                                     "READ":  [
+                                                  {
+                                                      "logical_name":  "gm-recherche_____gmr",
+                                                      "physical_name":  "cafil008_dat",
+                                                      "access_mode":  "READ",
+                                                      "id":  30,
+                                                      "usage_count":  2
+                                                  },
+                                                  {
+                                                      "logical_name":  "histo_fusionseparation_saisie",
+                                                      "physical_name":  "histo_fus_sep_saisie",
+                                                      "access_mode":  "READ",
+                                                      "id":  343,
+                                                      "usage_count":  1
+                                                  }
+                                              ],
+                                     "WRITE":  [
+                                                   {
+                                                       "logical_name":  "compte_gm________cgm",
+                                                       "physical_name":  "cafil025_dat",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  47,
+                                                       "usage_count":  1
+                                                   },
+                                                   {
+                                                       "logical_name":  "histo_fusionseparation_saisie",
+                                                       "physical_name":  "histo_fus_sep_saisie",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  343,
+                                                       "usage_count":  2
+                                                   }
+                                               ]
+                                 }
+               },
+    "orphan_analysis":  {
+                            "has_public_name":  false,
+                            "is_ecf_member":  false,
+                            "has_callers":  true,
+                            "status":  "NON_ORPHELIN",
+                            "reason":  "Appele par 1 programme(s): Fusion/Separation (IDE 33)"
+                        },
+    "statistics":  {
+                       "callee_count":  1,
+                       "expression_count":  21,
+                       "logic_line_count":  150,
+                       "caller_count":  1,
+                       "task_count":  6,
+                       "disabled_line_count":  2,
+                       "table_count":  3
+                   },
+    "call_graph":  {
+                       "call_chain":  [
+                                          {
+                                              "name":  "Fusion/Separation",
+                                              "ide":  33,
+                                              "level":  1
+                                          }
+                                      ],
+                       "callees":  [
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Search client avec liste",
+                                           "ide":  17
+                                       }
+                                   ],
+                       "callers":  [
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Fusion/Separation",
+                                           "ide":  33
+                                       }
+                                   ]
+                   },
+    "metadata":  {
+                     "ide_position":  32,
+                     "pipeline_version":  "7.1",
+                     "project":  "WEL",
+                     "program_name":  "Affiche filiations",
+                     "generated_at":  "2026-02-03 21:21:47"
+                 }
+}

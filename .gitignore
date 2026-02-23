@@ -1,90 +1,59 @@
+# === .NET ===
 bin/
 obj/
 *.user
 .vs/
 *.suo
 
-# Build artifacts
+# === Build artifacts ===
+dist/
 build-output/
 publish/
+*.tsbuildinfo
 
-# Temp files
-*.TXT.tmp
-DSIOPtmp*
+# === Node ===
+node_modules/
+.vercel
 
-# Windows reserved names (created by error)
-nul
-
-# Local settings
+# === Environment ===
+.env
+.env*.local
 .claude/settings.local.json
 
-# Credentials
-.env
-
-# Jira local data
-.jira-attachments/
-
-# Temp directories
-migration/caisse/temp_out2/
-
-# Pipeline output (auto-generated, regenerable)
-tools/spec-pipeline-v72/output/
-
-# Knowledge Base (local SQLite)
-.openspec/tickets/patterns.sqlite
-
-# Node (if not used)
-node_modules/
-
-.vercel
-.env*.local
-
-# Playwright MCP logs/screenshots
-.playwright-mcp/
-
-# Temp PowerShell scripts
+# === Temp files ===
+*.TXT.tmp
+DSIOPtmp*
+nul
 temp-*.ps1
-tools/temp-*.ps1
-
-# Temp spec pipeline files
 D:Temp*
 
-# Generated screenshots (keep in tickets only)
-*.png
-!.openspec/tickets/*/attachments/*.png
+# === Generated reports (regenerable) ===
+coverage-report-*.json
+spec-generation-report-*.json
+playwright-report/
+test-results/
 
-# SQLite databases (too large for git)
+# === Pipeline output (auto-generated) ===
+tools/spec-pipeline-v72/output/
+
+# === Knowledge Base (local SQLite) ===
+.openspec/tickets/patterns.sqlite
 tools/MagicKnowledgeBase/magic_kb.sqlite
 
-# Spec pipeline generated folders at root (from spec-pipeline runs)
-/API/
-/Booker/
-/Caisse/
-/Compte/
-/DB/
-/DataCatching/
-/Developpement/
-/Filiation/
-/GM/
-/Management/
-/Members/
-/OD/
-/POS/
-/Paiement/
-/Serie/
-/Suppr/
-/Supprimer/
-/Tickets/
-/Ucopia/
-/V3/
-/application/
-/clients/
-/grec/
-/parametres/
-/personnel/
-/pooling/
-/ready/
-/serveur/
-/ski/
-/temporaire/
-/Téléphone/
+# === Jira local data ===
+.jira-attachments/
+
+# === Playwright MCP ===
+.playwright-mcp/
+
+# === Screenshots (tracked in docs/screenshots/ only) ===
+*.png
+!docs/screenshots/**/*.png
+!.openspec/tickets/*/attachments/*.png
+!packages/migrations/*/public/**/*.png
+
+# === Migration logs (contain connection strings) ===
+.migration-log/
+
+# === Turbo ===
+.turbo/

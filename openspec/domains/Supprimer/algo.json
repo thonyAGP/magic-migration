@@ -1,0 +1,50 @@
+{
+    "program":  "Browse - pv_cust_package",
+    "public_name":  "",
+    "project":  "PVE",
+    "ide":  447,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "Browse - pv_cust_package",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "O",
+                      "logic_lines":  49,
+                      "source_table":  400,
+                      "source_access":  "W",
+                      "has_form":  true,
+                      "initial_mode":  "E",
+                      "ide_path":  "447"
+                  }
+              ],
+    "conditions":  [
+
+                   ],
+    "tables_write":  [
+                         {
+                             "id":  400,
+                             "name":  "pv_cust_rentals",
+                             "physical":  "pv_rentals_dat",
+                             "access":  "W"
+                         }
+                     ],
+    "callees":  [
+
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "Browse",
+                            "cust",
+                            "package"
+                        ],
+    "statistics":  {
+                       "task_count":  1,
+                       "condition_count":  0,
+                       "tables_write_count":  1,
+                       "callee_count":  0,
+                       "parameter_count":  0
+                   }
+}

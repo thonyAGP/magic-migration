@@ -1,0 +1,2167 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  11,
+                                       "calculation":  3,
+                                       "other":  93,
+                                       "date":  0,
+                                       "constant":  13,
+                                       "string":  18
+                                   },
+                       "total_in_program":  138,
+                       "decoded_count":  138,
+                       "business_rules_count":  7
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-001",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF ({0,10}=\u0027P\u0027,{0,2},{0,25})",
+                                                              "decoded":  "IF (\u003eCodeListe [J]=\u0027P\u0027,\u003eDateCalcul [B],\u003eSoldé,Non_soldé,Tous [Y])",
+                                                              "ide_position":  18
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-002",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF ({0,1}=5,{0,5}+14,{0,5})",
+                                                              "decoded":  "IF (\u003eIndex [A]=5,\u003eDateMaxDebut [E]+14,\u003eDateMaxDebut [E])",
+                                                              "ide_position":  30
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-003",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF ({0,1}=6,{0,7}+14,{0,7})",
+                                                              "decoded":  "IF (\u003eIndex [A]=6,\u003eDateMaxFin [G]+14,\u003eDateMaxFin [G])",
+                                                              "ide_position":  31
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-004",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF ({0,407}\u003e0,{0,407},0)",
+                                                              "decoded":  "IF ([OQ]\u003e0,[OQ],0)",
+                                                              "ide_position":  42
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-005",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF ({0,10}\u003c\u003e\u0027P\u0027,{0,79}={0,12} AND Trim(MID ({0,78},2,2))=\u00271\u0027,{0,142}={0,12} AND Trim(MID ({0,147},2,2))=\u00271\u0027)",
+                                                              "decoded":  "IF (\u003eCodeListe [J]\u003c\u003e\u0027P\u0027,w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND Trim(MID (w0_TypeEcran [BZ],2,2))=\u00271\u0027,[EL]=\u003eTypeHebergement [L] AND Trim(MID ([EQ],2,2))=\u00271\u0027)",
+                                                              "ide_position":  75
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "raw":  "IF ({0,10}\u003c\u003e\u0027P\u0027,{0,79}={0,12} AND Trim(MID({0,78},2,2))\u003c\u003e\u00271\u0027,{0,142}={0,12} AND Trim(MID ({0,147},2,2))\u003c\u003e\u00271\u0027)",
+                                                              "ide_position":  76,
+                                                              "decoded":  "IF (\u003eCodeListe [J]\u003c\u003e\u0027P\u0027,w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND Trim(MID(w0_TypeEcran [BZ],2,2))\u003c\u003e\u00271\u0027,[EL]=\u003eTypeHebergement [L] AND Trim(MID ([EQ],2,2))\u003c\u003e\u00271\u0027)",
+                                                              "type":  "CONDITION"
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-006",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF({0,83}=\u0027\u0027 OR {0,83}=\u0027*\u0027,{0,424},{0,83})",
+                                                              "decoded":  "IF(w0_CondArrive [CE]=\u0027\u0027 OR w0_CondArrive [CE]=\u0027*\u0027,[PH],w0_CondArrive [CE])",
+                                                              "ide_position":  127
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-007",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF({32768,88}, CodeVolAller({0,27}, {0,28}), {0,430})",
+                                                              "decoded":  "IF(VG88, CodeVolAller([AA], [AB]), [PN])",
+                                                              "ide_position":  128
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "raw":  "IF({32768,88}, CodeVolRetour({0,27}, {0,28}), {0,429})",
+                                                              "ide_position":  129,
+                                                              "decoded":  "IF(VG88, CodeVolRetour([AA], [AB]), [PM])",
+                                                              "type":  "CONDITION"
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "raw":  "{0,432}*86400+(CASE({0,438},1,12,3,18,0)*3600)",
+                                                              "ide_position":  135,
+                                                              "decoded":  "[PP]*86400+(CASE([PV],1,12,3,18,0)*3600)",
+                                                              "type":  "CONDITION"
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "raw":  "{0,437}*86400+(CASE({0,439},1,14,2,23,6)*3600)",
+                                                              "ide_position":  136,
+                                                              "decoded":  "[PU]*86400+(CASE([PW],1,14,2,23,6)*3600)",
+                                                              "type":  "CONDITION"
+                                                          }
+                                                      ],
+                                        "CALCULATION":  [
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "{0,19}+1",
+                                                                "ide_position":  37,
+                                                                "decoded":  "\u003cTotal [S]+1",
+                                                                "type":  "CALCULATION"
+                                                            },
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "{0,4}*86400+{0,8}*3600",
+                                                                "ide_position":  133,
+                                                                "decoded":  "\u003eDateMinDebut [D]*86400+\u003ew0_HeureMin [H]*3600",
+                                                                "type":  "CALCULATION"
+                                                            },
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "{0,5}*86400 + IF( {0,9}=0,24,{0,9})*3600",
+                                                                "ide_position":  134,
+                                                                "decoded":  "\u003eDateMaxDebut [E]*86400 + IF( \u003ew0_HeureMax [I]=0,24,\u003ew0_HeureMax [I])*3600",
+                                                                "type":  "CALCULATION"
+                                                            }
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,1}",
+                                                          "ide_position":  1,
+                                                          "decoded":  "\u003eIndex [A]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,45}",
+                                                          "ide_position":  4,
+                                                          "decoded":  "[AS]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "GetParam(\u0027SOCIETE\u0027)",
+                                                          "ide_position":  5,
+                                                          "decoded":  "GetParam(\u0027SOCIETE\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,24}",
+                                                          "ide_position":  6,
+                                                          "decoded":  "\u003eLieu Séjour [X]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "CndRange ({0,4}\u003e0,{0,4})",
+                                                          "ide_position":  7,
+                                                          "decoded":  "CndRange (\u003eDateMinDebut [D]\u003e0,\u003eDateMinDebut [D])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "CndRange ({0,5}\u003e0,{0,5})",
+                                                          "ide_position":  8,
+                                                          "decoded":  "CndRange (\u003eDateMaxDebut [E]\u003e0,\u003eDateMaxDebut [E])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "CndRange ({0,6}\u003e0,{0,6})",
+                                                          "ide_position":  9,
+                                                          "decoded":  "CndRange (\u003eDateMinFin [F]\u003e0,\u003eDateMinFin [F])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "CndRange ({0,7}\u003e0,{0,7})",
+                                                          "ide_position":  10,
+                                                          "decoded":  "CndRange (\u003eDateMaxFin [G]\u003e0,\u003eDateMaxFin [G])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,27}",
+                                                          "ide_position":  11,
+                                                          "decoded":  "[AA]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,28}",
+                                                          "ide_position":  12,
+                                                          "decoded":  "[AB]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "GetParam (\u0027LANGUE\u0027)",
+                                                          "ide_position":  13,
+                                                          "decoded":  "GetParam (\u0027LANGUE\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,45}",
+                                                          "ide_position":  14,
+                                                          "decoded":  "[AS]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "CndRange ({0,10}=\u0027P\u0027,{0,25})",
+                                                          "ide_position":  17,
+                                                          "decoded":  "CndRange (\u003eCodeListe [J]=\u0027P\u0027,\u003eSoldé,Non_soldé,Tous [Y])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,72}",
+                                                          "ide_position":  19,
+                                                          "decoded":  "w0_AgeBebe [BT]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,75}",
+                                                          "ide_position":  20,
+                                                          "decoded":  "w0_TelInt [BW]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{32768,1}",
+                                                          "ide_position":  22,
+                                                          "decoded":  "VG1",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,21}",
+                                                          "ide_position":  23,
+                                                          "decoded":  "\u003eTULCategorie [U]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,22}",
+                                                          "ide_position":  24,
+                                                          "decoded":  "\u003eTULNomTable [V]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "Left ({0,79},3)",
+                                                          "ide_position":  27,
+                                                          "decoded":  "Left (w0_NumAdherent [CA],3)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,80}",
+                                                          "ide_position":  28,
+                                                          "decoded":  "w0_Age [CB]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027TRUE\u0027LOG",
+                                                          "ide_position":  29,
+                                                          "decoded":  "\u0027TRUE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,25}",
+                                                          "ide_position":  34,
+                                                          "decoded":  "\u003eSoldé,Non_soldé,Tous [Y]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,33}",
+                                                          "ide_position":  40,
+                                                          "decoded":  "[AG]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,41}",
+                                                          "ide_position":  41,
+                                                          "decoded":  "[AO]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,117} AND (IF(NOT {0,23},{0,417} OR {0,84}=\u0027\u0027,\u0027TRUE\u0027LOG))",
+                                                          "ide_position":  43,
+                                                          "decoded":  "[DM] AND (IF(NOT \u003eGestion Crise [W],[PA] OR W0_CondPresent [CF]=\u0027\u0027,\u0027TRUE\u0027LOG))",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,10}=\u0027P\u0027",
+                                                          "ide_position":  44,
+                                                          "decoded":  "\u003eCodeListe [J]=\u0027P\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,11}={0,83} OR {0,11}=\u0027\u0027",
+                                                          "ide_position":  45,
+                                                          "decoded":  "\u003eLogement [K]=w0_CondArrive [CE] OR \u003eLogement [K]=\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027PL\u0027",
+                                                          "ide_position":  46,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027PL\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027GR\u0027",
+                                                          "ide_position":  47,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027GR\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027RE\u0027",
+                                                          "ide_position":  48,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027RE\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027CA\u0027",
+                                                          "ide_position":  49,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027CA\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027MI\u0027",
+                                                          "ide_position":  50,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027MI\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027BB\u0027",
+                                                          "ide_position":  51,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027BB\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027EN\u0027",
+                                                          "ide_position":  52,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027EN\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027SI\u0027",
+                                                          "ide_position":  53,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027SI\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027NS\u0027",
+                                                          "ide_position":  54,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027NS\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027PY\u0027",
+                                                          "ide_position":  55,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027PY\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027HM\u0027",
+                                                          "ide_position":  56,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027HM\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027VV\u0027",
+                                                          "ide_position":  57,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027VV\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027NV\u0027",
+                                                          "ide_position":  58,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027NV\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027ST\u0027",
+                                                          "ide_position":  59,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027ST\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027SE\u0027",
+                                                          "ide_position":  60,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027SE\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027AG\u0027",
+                                                          "ide_position":  61,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027AG\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027CO\u0027",
+                                                          "ide_position":  62,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027CO\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027PO\u0027",
+                                                          "ide_position":  63,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027PO\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027BA\u0027",
+                                                          "ide_position":  64,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027BA\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027CP\u0027",
+                                                          "ide_position":  65,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027CP\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,197} OR {0,198} OR {0,199} OR {0,200} OR {0,201} OR {0,202}",
+                                                          "ide_position":  66,
+                                                          "decoded":  "[GO] OR [GP] OR [GQ] OR [GR] OR [GS] OR [GT]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79})",
+                                                          "ide_position":  67,
+                                                          "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND {0,28}=0",
+                                                          "ide_position":  68,
+                                                          "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND [AB]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND {0,40}=0 AND {0,50}=\u0027O\u0027",
+                                                          "ide_position":  69,
+                                                          "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND [AN]=0 AND [AX]=\u0027O\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,14}=\u0027\u0027 OR {0,14}=IF ({0,10}=\u0027D\u0027 OR {0,10}=\u0027R\u0027,{0,116},{0,108}) AND {0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79})",
+                                                          "ide_position":  70,
+                                                          "decoded":  "\u003eCodeVol [N]=\u0027\u0027 OR \u003eCodeVol [N]=IF (\u003eCodeListe [J]=\u0027D\u0027 OR \u003eCodeListe [J]=\u0027R\u0027,[DL],[DD]) AND \u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "({0,72}={0,2} AND {0,72}={0,15} AND {0,74}={0,16} OR {0,72}=0 AND {0,74}=\u0027\u0027) AND {0,12}=IF ({0,10}\u003c\u003e\u0027P\u0027,{0,142},{0,79})",
+                                                          "ide_position":  71,
+                                                          "decoded":  "(w0_AgeBebe [BT]=\u003eDateCalcul [B] AND w0_AgeBebe [BT]=\u003eDateVillage [O] AND w0_RetCtlHeb [BV]=\u003eHeureVillage [P] OR w0_AgeBebe [BT]=0 AND w0_RetCtlHeb [BV]=\u0027\u0027) AND \u003eTypeHebergement [L]=IF (\u003eCodeListe [J]\u003c\u003e\u0027P\u0027,[EL],w0_NumAdherent [CA])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND {0,34}=\u0027M\u0027",
+                                                          "ide_position":  72,
+                                                          "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND [AH]=\u0027M\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND ({0,33}\u003c={0,187} AND ({0,405})\u003e0 OR {0,406}\u003e0)",
+                                                          "ide_position":  73,
+                                                          "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND ([AG]\u003c=[GE] AND ([OO])\u003e0 OR [OP]\u003e0)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND ({0,33}\u003c={0,188} AND {0,33}\u003e{0,187})",
+                                                          "ide_position":  74,
+                                                          "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND ([AG]\u003c=[GF] AND [AG]\u003e[GE])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND {0,154}",
+                                                          "ide_position":  77,
+                                                          "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND [EX]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,79}={0,12} AND {0,132} AND {0,189} AND {0,10}=\u0027P\u0027 AND {0,138}=\u0027P\u0027",
+                                                          "ide_position":  80,
+                                                          "decoded":  "w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND [EB] AND [GG] AND \u003eCodeListe [J]=\u0027P\u0027 AND [EH]=\u0027P\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,79}={0,12} AND {0,132} AND {0,189}",
+                                                          "ide_position":  81,
+                                                          "decoded":  "w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND [EB] AND [GG]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,17}\u003e0 AND {0,407}\u003c={0,18} AND {0,407}\u003e={0,17} OR {0,17}=0 AND {0,407}\u003c={0,18} AND ({0,407}\u003e0 OR {0,408}\u003e0) AND {0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79})",
+                                                          "ide_position":  82,
+                                                          "decoded":  "\u003eAgeMini [Q]\u003e0 AND [OQ]\u003c=\u003eAgeMaxi [R] AND [OQ]\u003e=\u003eAgeMini [Q] OR \u003eAgeMini [Q]=0 AND [OQ]\u003c=\u003eAgeMaxi [R] AND ([OQ]\u003e0 OR [OR]\u003e0) AND \u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,79}={0,12}",
+                                                          "ide_position":  83,
+                                                          "decoded":  "w0_NumAdherent [CA]=\u003eTypeHebergement [L]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,179}",
+                                                          "ide_position":  84,
+                                                          "decoded":  "[FW]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,180}",
+                                                          "ide_position":  85,
+                                                          "decoded":  "[FX]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,181}",
+                                                          "ide_position":  86,
+                                                          "decoded":  "[FY]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,51}",
+                                                          "ide_position":  88,
+                                                          "decoded":  "[AY]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,52}",
+                                                          "ide_position":  89,
+                                                          "decoded":  "[AZ]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,53}",
+                                                          "ide_position":  90,
+                                                          "decoded":  "w0_RetCommentaire [BA]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,82}",
+                                                          "ide_position":  92,
+                                                          "decoded":  "w0_CondArrivant [CD]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,10}=\u0027A\u0027",
+                                                          "ide_position":  93,
+                                                          "decoded":  "\u003eCodeListe [J]=\u0027A\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,10}=\u0027V\u0027 AND {0,77}=\u0027P\u0027",
+                                                          "ide_position":  94,
+                                                          "decoded":  "\u003eCodeListe [J]=\u0027V\u0027 AND w0_FaxVille [BY]=\u0027P\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,10}=\u0027P\u0027 AND {0,138}=\u0027P\u0027 AND {0,189}",
+                                                          "ide_position":  95,
+                                                          "decoded":  "\u003eCodeListe [J]=\u0027P\u0027 AND [EH]=\u0027P\u0027 AND [GG]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,10}=\u0027D\u0027 AND {0,77}=\u0027P\u0027",
+                                                          "ide_position":  96,
+                                                          "decoded":  "\u003eCodeListe [J]=\u0027D\u0027 AND w0_FaxVille [BY]=\u0027P\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,10}=\u0027B\u0027 AND {0,138}\u003c\u003e\u0027P\u0027",
+                                                          "ide_position":  97,
+                                                          "decoded":  "\u003eCodeListe [J]=\u0027B\u0027 AND [EH]\u003c\u003e\u0027P\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,10}=\u0027R\u0027",
+                                                          "ide_position":  98,
+                                                          "decoded":  "\u003eCodeListe [J]=\u0027R\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,199} AND {0,189}",
+                                                          "ide_position":  99,
+                                                          "decoded":  "[GQ] AND [GG]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,10}=\u0027P\u0027 AND {0,138}=\u0027P\u0027",
+                                                          "ide_position":  100,
+                                                          "decoded":  "\u003eCodeListe [J]=\u0027P\u0027 AND [EH]=\u0027P\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,61}",
+                                                          "ide_position":  101,
+                                                          "decoded":  "W0_PresenceAv---------... [BI]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,14}=\u0027\u0027",
+                                                          "ide_position":  102,
+                                                          "decoded":  "\u003eCodeVol [N]=\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,197} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,155}) AND {0,72}\u003c\u003e{0,105} AND {0,108}={0,14}",
+                                                          "ide_position":  108,
+                                                          "decoded":  "[GO] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([EY]) AND w0_AgeBebe [BT]\u003c\u003e[DA] AND [DD]=\u003eCodeVol [N]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,198} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,155}) AND {0,72}\u003c\u003e{0,105} AND {0,108}={0,14}",
+                                                          "ide_position":  111,
+                                                          "decoded":  "[GP] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([EY]) AND w0_AgeBebe [BT]\u003c\u003e[DA] AND [DD]=\u003eCodeVol [N]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,200} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,166}) AND {0,75}\u003c\u003e{0,113} AND {0,116}={0,14}",
+                                                          "ide_position":  114,
+                                                          "decoded":  "[GR] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([FJ]) AND w0_TelInt [BW]\u003c\u003e[DI] AND [DL]=\u003eCodeVol [N]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,202} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,166}) AND {0,75}\u003c\u003e{0,113} AND {0,116}={0,14}",
+                                                          "ide_position":  117,
+                                                          "decoded":  "[GT] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([FJ]) AND w0_TelInt [BW]\u003c\u003e[DI] AND [DL]=\u003eCodeVol [N]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "CndRange({0,409}\u003c\u003e\u0027\u0027,{0,409})",
+                                                          "ide_position":  119,
+                                                          "decoded":  "CndRange([OS]\u003c\u003e\u0027\u0027,[OS])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027CO\u0027",
+                                                          "ide_position":  120,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027CO\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=\u0027ST\u0027",
+                                                          "ide_position":  121,
+                                                          "decoded":  "\u003eTopListe [M]=\u0027ST\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "CndRange({0,409}\u003c\u003e\u0027\u0027,{0,409})",
+                                                          "ide_position":  124,
+                                                          "decoded":  "CndRange([OS]\u003c\u003e\u0027\u0027,[OS])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,84}",
+                                                          "ide_position":  125,
+                                                          "decoded":  "W0_CondPresent [CF]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT {0,23}",
+                                                          "ide_position":  126,
+                                                          "decoded":  "NOT \u003eGestion Crise [W]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "MIN({0,4},{0,5})",
+                                                          "ide_position":  130,
+                                                          "decoded":  "MIN(\u003eDateMinDebut [D],\u003eDateMaxDebut [E])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,5}",
+                                                          "ide_position":  131,
+                                                          "decoded":  "\u003eDateMaxDebut [E]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,4}",
+                                                          "ide_position":  132,
+                                                          "decoded":  "\u003eDateMinDebut [D]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT {0,431} OR NOT {0,436} OR\r\n({0,443}\u003c{0,445} AND {0,444}\u003c{0,445}) OR ({0,443}\u003e{0,446} AND {0,444}\u003e{0,445})",
+                                                          "ide_position":  137,
+                                                          "decoded":  "NOT [PO] OR NOT [PT] OR\r\n([QA]\u003c[QC] AND [QB]\u003c[QC]) OR ([QA]\u003e[QD] AND [QB]\u003e[QC])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "({0,450}=\u0027S\u0027 AND {0,449}=0)\r\nOR \r\n({0,450}=\u0027N\u0027 AND {0,449}\u003c\u003e0) \r\nOR \r\n{0,450}=\u0027T\u0027 \r\nOR \r\n{0,450}=\u0027\u0027",
+                                                          "ide_position":  138,
+                                                          "decoded":  "([QH]=\u0027S\u0027 AND [QG]=0)\r\nOR \r\n([QH]=\u0027N\u0027 AND [QG]\u003c\u003e0) \r\nOR \r\n[QH]=\u0027T\u0027 \r\nOR \r\n[QH]=\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027VBEBE\u0027",
+                                                             "ide_position":  2,
+                                                             "decoded":  "\u0027VBEBE\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027VENFA\u0027",
+                                                             "ide_position":  3,
+                                                             "decoded":  "\u0027VENFA\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027H\u0027",
+                                                             "ide_position":  21,
+                                                             "decoded":  "\u0027H\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027M\u0027",
+                                                             "ide_position":  25,
+                                                             "decoded":  "\u0027M\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027TNATI\u0027",
+                                                             "ide_position":  26,
+                                                             "decoded":  "\u0027TNATI\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027A\u0027",
+                                                             "ide_position":  32,
+                                                             "decoded":  "\u0027A\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027Z\u0027",
+                                                             "ide_position":  33,
+                                                             "decoded":  "\u0027Z\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027C\u0027",
+                                                             "ide_position":  35,
+                                                             "decoded":  "\u0027C\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027P\u0027",
+                                                             "ide_position":  36,
+                                                             "decoded":  "\u0027P\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "0",
+                                                             "ide_position":  87,
+                                                             "decoded":  "0",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027\u0027",
+                                                             "ide_position":  91,
+                                                             "decoded":  "\u0027\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027D\u0027",
+                                                             "ide_position":  122,
+                                                             "decoded":  "\u0027D\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027TCLME\u0027",
+                                                             "ide_position":  123,
+                                                             "decoded":  "\u0027TCLME\u0027",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "CndRange (InStr (\u0027PDR\u0027,{0,10})=0,{0,25})",
+                                                           "ide_position":  15,
+                                                           "decoded":  "CndRange (InStr (\u0027PDR\u0027,\u003eCodeListe [J])=0,\u003eSoldé,Non_soldé,Tous [Y])",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "CndRange (InStr (\u0027PAVB\u0027,{0,10})\u003e0,IF ({0,10}=\u0027P\u0027,{0,2},{0,25}))",
+                                                           "ide_position":  16,
+                                                           "decoded":  "CndRange (InStr (\u0027PAVB\u0027,\u003eCodeListe [J])\u003e0,IF (\u003eCodeListe [J]=\u0027P\u0027,\u003eDateCalcul [B],\u003eSoldé,Non_soldé,Tous [Y]))",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,37}\u0026Str ({0,38},\u002710P0Z0\u0027)\u0026{0,39}\u0026Str ({0,40},\u00273L\u0027)",
+                                                           "ide_position":  38,
+                                                           "decoded":  "[AK]\u0026Str ([AL],\u002710P0Z0\u0027)\u0026[AM]\u0026Str ([AN],\u00273L\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,37}\u0026Str ({0,38},\u002710P0Z0\u0027)\u0026\u0027 \u0027\u0026Str ({0,40},\u00273L\u0027)",
+                                                           "ide_position":  39,
+                                                           "decoded":  "[AK]\u0026Str ([AL],\u002710P0Z0\u0027)\u0026\u0027 \u0027\u0026Str ([AN],\u00273L\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND InStr (\u0027VV\u0027,IF ({0,10}=\u0027D\u0027 OR {0,10}=\u0027R\u0027,Left ({0,116},2),Left ({0,108},2)))\u003e0",
+                                                           "ide_position":  78,
+                                                           "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND InStr (\u0027VV\u0027,IF (\u003eCodeListe [J]=\u0027D\u0027 OR \u003eCodeListe [J]=\u0027R\u0027,Left ([DL],2),Left ([DD],2)))\u003e0",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND InStr (\u0027VV\u0027,IF ({0,10}=\u0027D\u0027 OR {0,10}=\u0027R\u0027,Left ({0,116},2),Left ({0,108},2)))=0",
+                                                           "ide_position":  79,
+                                                           "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND InStr (\u0027VV\u0027,IF (\u003eCodeListe [J]=\u0027D\u0027 OR \u003eCodeListe [J]=\u0027R\u0027,Left ([DL],2),Left ([DD],2)))=0",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,197} OR {0,10}=\u0027V\u0027 AND Trim ({0,79})\u0026{0,80}\u003c\u003eTrim ({0,164})\u0026{0,165} AND {0,155} OR {0,10}=\u0027V\u0027 AND NOT ({0,155})",
+                                                           "ide_position":  103,
+                                                           "decoded":  "[GO] OR \u003eCodeListe [J]=\u0027V\u0027 AND Trim (w0_NumAdherent [CA])\u0026w0_Age [CB]\u003c\u003eTrim ([FH])\u0026[FI] AND [EY] OR \u003eCodeListe [J]=\u0027V\u0027 AND NOT ([EY])",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,198} OR {0,10}=\u0027A\u0027 AND Trim ({0,79})\u0026{0,80}\u003c\u003eTrim ({0,164})\u0026{0,165} AND {0,155} OR {0,10}=\u0027A\u0027 AND NOT ({0,155}) AND {0,77}=\u0027P\u0027",
+                                                           "ide_position":  104,
+                                                           "decoded":  "[GP] OR \u003eCodeListe [J]=\u0027A\u0027 AND Trim (w0_NumAdherent [CA])\u0026w0_Age [CB]\u003c\u003eTrim ([FH])\u0026[FI] AND [EY] OR \u003eCodeListe [J]=\u0027A\u0027 AND NOT ([EY]) AND w0_FaxVille [BY]=\u0027P\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,200} OR {0,10}=\u0027D\u0027 AND Trim ({0,79})\u0026{0,80}\u003c\u003eTrim ({0,175})\u0026{0,176} AND {0,166} OR {0,10}=\u0027D\u0027 AND NOT ({0,166}) AND {0,77}=\u0027P\u0027",
+                                                           "ide_position":  105,
+                                                           "decoded":  "[GR] OR \u003eCodeListe [J]=\u0027D\u0027 AND Trim (w0_NumAdherent [CA])\u0026w0_Age [CB]\u003c\u003eTrim ([FS])\u0026[FT] AND [FJ] OR \u003eCodeListe [J]=\u0027D\u0027 AND NOT ([FJ]) AND w0_FaxVille [BY]=\u0027P\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,202} OR {0,10}=\u0027R\u0027 AND Trim ({0,79})\u0026{0,80}\u003c\u003eTrim ({0,175})\u0026{0,176} AND {0,166} OR {0,10}=\u0027R\u0027 AND NOT ({0,166})",
+                                                           "ide_position":  106,
+                                                           "decoded":  "[GT] OR \u003eCodeListe [J]=\u0027R\u0027 AND Trim (w0_NumAdherent [CA])\u0026w0_Age [CB]\u003c\u003eTrim ([FS])\u0026[FT] AND [FJ] OR \u003eCodeListe [J]=\u0027R\u0027 AND NOT ([FJ])",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,197} OR {0,14}\u003c\u003e\u0027\u0027 AND {0,155} AND {0,8}\u003cVal ({0,74},\u00272\u0027) AND {0,9}\u003e=Val ({0,74},\u00272\u0027)",
+                                                           "ide_position":  107,
+                                                           "decoded":  "[GO] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND [EY] AND \u003ew0_HeureMin [H]\u003cVal (w0_RetCtlHeb [BV],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_RetCtlHeb [BV],\u00272\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,197} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,155}) AND {0,72}\u003c\u003e{0,105} AND {0,8}\u003cVal ({0,74},\u00272\u0027) AND {0,9}\u003e=Val ({0,74},\u00272\u0027)",
+                                                           "ide_position":  109,
+                                                           "decoded":  "[GO] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([EY]) AND w0_AgeBebe [BT]\u003c\u003e[DA] AND \u003ew0_HeureMin [H]\u003cVal (w0_RetCtlHeb [BV],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_RetCtlHeb [BV],\u00272\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,198} OR {0,14}\u003c\u003e\u0027\u0027 AND {0,155} AND {0,8}\u003cVal ({0,74},\u00272\u0027) AND {0,9}\u003e=Val ({0,74},\u00272\u0027)",
+                                                           "ide_position":  110,
+                                                           "decoded":  "[GP] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND [EY] AND \u003ew0_HeureMin [H]\u003cVal (w0_RetCtlHeb [BV],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_RetCtlHeb [BV],\u00272\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,198} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,155}) AND {0,72}\u003c\u003e{0,105} AND {0,8}\u003cVal ({0,74},\u00272\u0027) AND {0,9}\u003e=Val ({0,74},\u00272\u0027)",
+                                                           "ide_position":  112,
+                                                           "decoded":  "[GP] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([EY]) AND w0_AgeBebe [BT]\u003c\u003e[DA] AND \u003ew0_HeureMin [H]\u003cVal (w0_RetCtlHeb [BV],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_RetCtlHeb [BV],\u00272\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,200} OR {0,14}\u003c\u003e\u0027\u0027 AND {0,166} AND {0,8}\u003cVal ({0,76},\u00272\u0027) AND {0,9}\u003e=Val ({0,76},\u00272\u0027)",
+                                                           "ide_position":  113,
+                                                           "decoded":  "[GR] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND [FJ] AND \u003ew0_HeureMin [H]\u003cVal (w0_TelExt_Commune [BX],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_TelExt_Commune [BX],\u00272\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,200} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,166}) AND {0,75}\u003c\u003e{0,113} AND {0,8}\u003cVal ({0,76},\u00272\u0027) AND {0,9}\u003e=Val ({0,76},\u00272\u0027)",
+                                                           "ide_position":  115,
+                                                           "decoded":  "[GR] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([FJ]) AND w0_TelInt [BW]\u003c\u003e[DI] AND \u003ew0_HeureMin [H]\u003cVal (w0_TelExt_Commune [BX],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_TelExt_Commune [BX],\u00272\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,202} OR {0,14}\u003c\u003e\u0027\u0027 AND {0,166} AND {0,8}\u003cVal ({0,76},\u00272\u0027) AND {0,9}\u003e=Val ({0,76},\u00272\u0027)",
+                                                           "ide_position":  116,
+                                                           "decoded":  "[GT] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND [FJ] AND \u003ew0_HeureMin [H]\u003cVal (w0_TelExt_Commune [BX],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_TelExt_Commune [BX],\u00272\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,202} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,166}) AND {0,75}\u003c\u003e{0,113} AND {0,8}\u003cVal ({0,76},\u00272\u0027) AND {0,9}\u003e=Val ({0,76},\u00272\u0027)",
+                                                           "ide_position":  118,
+                                                           "decoded":  "[GT] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([FJ]) AND w0_TelInt [BW]\u003c\u003e[DI] AND \u003ew0_HeureMin [H]\u003cVal (w0_TelExt_Commune [BX],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_TelExt_Commune [BX],\u00272\u0027)",
+                                                           "type":  "STRING"
+                                                       }
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,1}",
+                                        "ide_position":  1,
+                                        "decoded":  "\u003eIndex [A]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027VBEBE\u0027",
+                                        "ide_position":  2,
+                                        "decoded":  "\u0027VBEBE\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027VENFA\u0027",
+                                        "ide_position":  3,
+                                        "decoded":  "\u0027VENFA\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,45}",
+                                        "ide_position":  4,
+                                        "decoded":  "[AS]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "GetParam(\u0027SOCIETE\u0027)",
+                                        "ide_position":  5,
+                                        "decoded":  "GetParam(\u0027SOCIETE\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,24}",
+                                        "ide_position":  6,
+                                        "decoded":  "\u003eLieu Séjour [X]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "CndRange ({0,4}\u003e0,{0,4})",
+                                        "ide_position":  7,
+                                        "decoded":  "CndRange (\u003eDateMinDebut [D]\u003e0,\u003eDateMinDebut [D])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "CndRange ({0,5}\u003e0,{0,5})",
+                                        "ide_position":  8,
+                                        "decoded":  "CndRange (\u003eDateMaxDebut [E]\u003e0,\u003eDateMaxDebut [E])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "CndRange ({0,6}\u003e0,{0,6})",
+                                        "ide_position":  9,
+                                        "decoded":  "CndRange (\u003eDateMinFin [F]\u003e0,\u003eDateMinFin [F])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "CndRange ({0,7}\u003e0,{0,7})",
+                                        "ide_position":  10,
+                                        "decoded":  "CndRange (\u003eDateMaxFin [G]\u003e0,\u003eDateMaxFin [G])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,27}",
+                                        "ide_position":  11,
+                                        "decoded":  "[AA]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,28}",
+                                        "ide_position":  12,
+                                        "decoded":  "[AB]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "GetParam (\u0027LANGUE\u0027)",
+                                        "ide_position":  13,
+                                        "decoded":  "GetParam (\u0027LANGUE\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,45}",
+                                        "ide_position":  14,
+                                        "decoded":  "[AS]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "CndRange (InStr (\u0027PDR\u0027,{0,10})=0,{0,25})",
+                                        "ide_position":  15,
+                                        "decoded":  "CndRange (InStr (\u0027PDR\u0027,\u003eCodeListe [J])=0,\u003eSoldé,Non_soldé,Tous [Y])",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "CndRange (InStr (\u0027PAVB\u0027,{0,10})\u003e0,IF ({0,10}=\u0027P\u0027,{0,2},{0,25}))",
+                                        "ide_position":  16,
+                                        "decoded":  "CndRange (InStr (\u0027PAVB\u0027,\u003eCodeListe [J])\u003e0,IF (\u003eCodeListe [J]=\u0027P\u0027,\u003eDateCalcul [B],\u003eSoldé,Non_soldé,Tous [Y]))",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "CndRange ({0,10}=\u0027P\u0027,{0,25})",
+                                        "ide_position":  17,
+                                        "decoded":  "CndRange (\u003eCodeListe [J]=\u0027P\u0027,\u003eSoldé,Non_soldé,Tous [Y])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-001",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF ({0,10}=\u0027P\u0027,{0,2},{0,25})",
+                                        "decoded":  "IF (\u003eCodeListe [J]=\u0027P\u0027,\u003eDateCalcul [B],\u003eSoldé,Non_soldé,Tous [Y])",
+                                        "ide_position":  18
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,72}",
+                                        "ide_position":  19,
+                                        "decoded":  "w0_AgeBebe [BT]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,75}",
+                                        "ide_position":  20,
+                                        "decoded":  "w0_TelInt [BW]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027H\u0027",
+                                        "ide_position":  21,
+                                        "decoded":  "\u0027H\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{32768,1}",
+                                        "ide_position":  22,
+                                        "decoded":  "VG1",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,21}",
+                                        "ide_position":  23,
+                                        "decoded":  "\u003eTULCategorie [U]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,22}",
+                                        "ide_position":  24,
+                                        "decoded":  "\u003eTULNomTable [V]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027M\u0027",
+                                        "ide_position":  25,
+                                        "decoded":  "\u0027M\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TNATI\u0027",
+                                        "ide_position":  26,
+                                        "decoded":  "\u0027TNATI\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Left ({0,79},3)",
+                                        "ide_position":  27,
+                                        "decoded":  "Left (w0_NumAdherent [CA],3)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,80}",
+                                        "ide_position":  28,
+                                        "decoded":  "w0_Age [CB]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TRUE\u0027LOG",
+                                        "ide_position":  29,
+                                        "decoded":  "\u0027TRUE\u0027LOG",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-002",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF ({0,1}=5,{0,5}+14,{0,5})",
+                                        "decoded":  "IF (\u003eIndex [A]=5,\u003eDateMaxDebut [E]+14,\u003eDateMaxDebut [E])",
+                                        "ide_position":  30
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-003",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF ({0,1}=6,{0,7}+14,{0,7})",
+                                        "decoded":  "IF (\u003eIndex [A]=6,\u003eDateMaxFin [G]+14,\u003eDateMaxFin [G])",
+                                        "ide_position":  31
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027A\u0027",
+                                        "ide_position":  32,
+                                        "decoded":  "\u0027A\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027Z\u0027",
+                                        "ide_position":  33,
+                                        "decoded":  "\u0027Z\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,25}",
+                                        "ide_position":  34,
+                                        "decoded":  "\u003eSoldé,Non_soldé,Tous [Y]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027C\u0027",
+                                        "ide_position":  35,
+                                        "decoded":  "\u0027C\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027P\u0027",
+                                        "ide_position":  36,
+                                        "decoded":  "\u0027P\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,19}+1",
+                                        "ide_position":  37,
+                                        "decoded":  "\u003cTotal [S]+1",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,37}\u0026Str ({0,38},\u002710P0Z0\u0027)\u0026{0,39}\u0026Str ({0,40},\u00273L\u0027)",
+                                        "ide_position":  38,
+                                        "decoded":  "[AK]\u0026Str ([AL],\u002710P0Z0\u0027)\u0026[AM]\u0026Str ([AN],\u00273L\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,37}\u0026Str ({0,38},\u002710P0Z0\u0027)\u0026\u0027 \u0027\u0026Str ({0,40},\u00273L\u0027)",
+                                        "ide_position":  39,
+                                        "decoded":  "[AK]\u0026Str ([AL],\u002710P0Z0\u0027)\u0026\u0027 \u0027\u0026Str ([AN],\u00273L\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,33}",
+                                        "ide_position":  40,
+                                        "decoded":  "[AG]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,41}",
+                                        "ide_position":  41,
+                                        "decoded":  "[AO]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-004",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF ({0,407}\u003e0,{0,407},0)",
+                                        "decoded":  "IF ([OQ]\u003e0,[OQ],0)",
+                                        "ide_position":  42
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,117} AND (IF(NOT {0,23},{0,417} OR {0,84}=\u0027\u0027,\u0027TRUE\u0027LOG))",
+                                        "ide_position":  43,
+                                        "decoded":  "[DM] AND (IF(NOT \u003eGestion Crise [W],[PA] OR W0_CondPresent [CF]=\u0027\u0027,\u0027TRUE\u0027LOG))",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,10}=\u0027P\u0027",
+                                        "ide_position":  44,
+                                        "decoded":  "\u003eCodeListe [J]=\u0027P\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,11}={0,83} OR {0,11}=\u0027\u0027",
+                                        "ide_position":  45,
+                                        "decoded":  "\u003eLogement [K]=w0_CondArrive [CE] OR \u003eLogement [K]=\u0027\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027PL\u0027",
+                                        "ide_position":  46,
+                                        "decoded":  "\u003eTopListe [M]=\u0027PL\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027GR\u0027",
+                                        "ide_position":  47,
+                                        "decoded":  "\u003eTopListe [M]=\u0027GR\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027RE\u0027",
+                                        "ide_position":  48,
+                                        "decoded":  "\u003eTopListe [M]=\u0027RE\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027CA\u0027",
+                                        "ide_position":  49,
+                                        "decoded":  "\u003eTopListe [M]=\u0027CA\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027MI\u0027",
+                                        "ide_position":  50,
+                                        "decoded":  "\u003eTopListe [M]=\u0027MI\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027BB\u0027",
+                                        "ide_position":  51,
+                                        "decoded":  "\u003eTopListe [M]=\u0027BB\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027EN\u0027",
+                                        "ide_position":  52,
+                                        "decoded":  "\u003eTopListe [M]=\u0027EN\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027SI\u0027",
+                                        "ide_position":  53,
+                                        "decoded":  "\u003eTopListe [M]=\u0027SI\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027NS\u0027",
+                                        "ide_position":  54,
+                                        "decoded":  "\u003eTopListe [M]=\u0027NS\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027PY\u0027",
+                                        "ide_position":  55,
+                                        "decoded":  "\u003eTopListe [M]=\u0027PY\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027HM\u0027",
+                                        "ide_position":  56,
+                                        "decoded":  "\u003eTopListe [M]=\u0027HM\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027VV\u0027",
+                                        "ide_position":  57,
+                                        "decoded":  "\u003eTopListe [M]=\u0027VV\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027NV\u0027",
+                                        "ide_position":  58,
+                                        "decoded":  "\u003eTopListe [M]=\u0027NV\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027ST\u0027",
+                                        "ide_position":  59,
+                                        "decoded":  "\u003eTopListe [M]=\u0027ST\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027SE\u0027",
+                                        "ide_position":  60,
+                                        "decoded":  "\u003eTopListe [M]=\u0027SE\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027AG\u0027",
+                                        "ide_position":  61,
+                                        "decoded":  "\u003eTopListe [M]=\u0027AG\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027CO\u0027",
+                                        "ide_position":  62,
+                                        "decoded":  "\u003eTopListe [M]=\u0027CO\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027PO\u0027",
+                                        "ide_position":  63,
+                                        "decoded":  "\u003eTopListe [M]=\u0027PO\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027BA\u0027",
+                                        "ide_position":  64,
+                                        "decoded":  "\u003eTopListe [M]=\u0027BA\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027CP\u0027",
+                                        "ide_position":  65,
+                                        "decoded":  "\u003eTopListe [M]=\u0027CP\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,197} OR {0,198} OR {0,199} OR {0,200} OR {0,201} OR {0,202}",
+                                        "ide_position":  66,
+                                        "decoded":  "[GO] OR [GP] OR [GQ] OR [GR] OR [GS] OR [GT]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79})",
+                                        "ide_position":  67,
+                                        "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND {0,28}=0",
+                                        "ide_position":  68,
+                                        "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND [AB]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND {0,40}=0 AND {0,50}=\u0027O\u0027",
+                                        "ide_position":  69,
+                                        "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND [AN]=0 AND [AX]=\u0027O\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,14}=\u0027\u0027 OR {0,14}=IF ({0,10}=\u0027D\u0027 OR {0,10}=\u0027R\u0027,{0,116},{0,108}) AND {0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79})",
+                                        "ide_position":  70,
+                                        "decoded":  "\u003eCodeVol [N]=\u0027\u0027 OR \u003eCodeVol [N]=IF (\u003eCodeListe [J]=\u0027D\u0027 OR \u003eCodeListe [J]=\u0027R\u0027,[DL],[DD]) AND \u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "({0,72}={0,2} AND {0,72}={0,15} AND {0,74}={0,16} OR {0,72}=0 AND {0,74}=\u0027\u0027) AND {0,12}=IF ({0,10}\u003c\u003e\u0027P\u0027,{0,142},{0,79})",
+                                        "ide_position":  71,
+                                        "decoded":  "(w0_AgeBebe [BT]=\u003eDateCalcul [B] AND w0_AgeBebe [BT]=\u003eDateVillage [O] AND w0_RetCtlHeb [BV]=\u003eHeureVillage [P] OR w0_AgeBebe [BT]=0 AND w0_RetCtlHeb [BV]=\u0027\u0027) AND \u003eTypeHebergement [L]=IF (\u003eCodeListe [J]\u003c\u003e\u0027P\u0027,[EL],w0_NumAdherent [CA])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND {0,34}=\u0027M\u0027",
+                                        "ide_position":  72,
+                                        "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND [AH]=\u0027M\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND ({0,33}\u003c={0,187} AND ({0,405})\u003e0 OR {0,406}\u003e0)",
+                                        "ide_position":  73,
+                                        "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND ([AG]\u003c=[GE] AND ([OO])\u003e0 OR [OP]\u003e0)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND ({0,33}\u003c={0,188} AND {0,33}\u003e{0,187})",
+                                        "ide_position":  74,
+                                        "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND ([AG]\u003c=[GF] AND [AG]\u003e[GE])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-005",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF ({0,10}\u003c\u003e\u0027P\u0027,{0,79}={0,12} AND Trim(MID ({0,78},2,2))=\u00271\u0027,{0,142}={0,12} AND Trim(MID ({0,147},2,2))=\u00271\u0027)",
+                                        "decoded":  "IF (\u003eCodeListe [J]\u003c\u003e\u0027P\u0027,w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND Trim(MID (w0_TypeEcran [BZ],2,2))=\u00271\u0027,[EL]=\u003eTypeHebergement [L] AND Trim(MID ([EQ],2,2))=\u00271\u0027)",
+                                        "ide_position":  75
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "IF ({0,10}\u003c\u003e\u0027P\u0027,{0,79}={0,12} AND Trim(MID({0,78},2,2))\u003c\u003e\u00271\u0027,{0,142}={0,12} AND Trim(MID ({0,147},2,2))\u003c\u003e\u00271\u0027)",
+                                        "ide_position":  76,
+                                        "decoded":  "IF (\u003eCodeListe [J]\u003c\u003e\u0027P\u0027,w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND Trim(MID(w0_TypeEcran [BZ],2,2))\u003c\u003e\u00271\u0027,[EL]=\u003eTypeHebergement [L] AND Trim(MID ([EQ],2,2))\u003c\u003e\u00271\u0027)",
+                                        "type":  "CONDITION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND {0,154}",
+                                        "ide_position":  77,
+                                        "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND [EX]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND InStr (\u0027VV\u0027,IF ({0,10}=\u0027D\u0027 OR {0,10}=\u0027R\u0027,Left ({0,116},2),Left ({0,108},2)))\u003e0",
+                                        "ide_position":  78,
+                                        "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND InStr (\u0027VV\u0027,IF (\u003eCodeListe [J]=\u0027D\u0027 OR \u003eCodeListe [J]=\u0027R\u0027,Left ([DL],2),Left ([DD],2)))\u003e0",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79}) AND InStr (\u0027VV\u0027,IF ({0,10}=\u0027D\u0027 OR {0,10}=\u0027R\u0027,Left ({0,116},2),Left ({0,108},2)))=0",
+                                        "ide_position":  79,
+                                        "decoded":  "\u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA]) AND InStr (\u0027VV\u0027,IF (\u003eCodeListe [J]=\u0027D\u0027 OR \u003eCodeListe [J]=\u0027R\u0027,Left ([DL],2),Left ([DD],2)))=0",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,79}={0,12} AND {0,132} AND {0,189} AND {0,10}=\u0027P\u0027 AND {0,138}=\u0027P\u0027",
+                                        "ide_position":  80,
+                                        "decoded":  "w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND [EB] AND [GG] AND \u003eCodeListe [J]=\u0027P\u0027 AND [EH]=\u0027P\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,79}={0,12} AND {0,132} AND {0,189}",
+                                        "ide_position":  81,
+                                        "decoded":  "w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND [EB] AND [GG]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,17}\u003e0 AND {0,407}\u003c={0,18} AND {0,407}\u003e={0,17} OR {0,17}=0 AND {0,407}\u003c={0,18} AND ({0,407}\u003e0 OR {0,408}\u003e0) AND {0,12}=IF ({0,10}=\u0027P\u0027,{0,142},{0,79})",
+                                        "ide_position":  82,
+                                        "decoded":  "\u003eAgeMini [Q]\u003e0 AND [OQ]\u003c=\u003eAgeMaxi [R] AND [OQ]\u003e=\u003eAgeMini [Q] OR \u003eAgeMini [Q]=0 AND [OQ]\u003c=\u003eAgeMaxi [R] AND ([OQ]\u003e0 OR [OR]\u003e0) AND \u003eTypeHebergement [L]=IF (\u003eCodeListe [J]=\u0027P\u0027,[EL],w0_NumAdherent [CA])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,79}={0,12}",
+                                        "ide_position":  83,
+                                        "decoded":  "w0_NumAdherent [CA]=\u003eTypeHebergement [L]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,179}",
+                                        "ide_position":  84,
+                                        "decoded":  "[FW]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,180}",
+                                        "ide_position":  85,
+                                        "decoded":  "[FX]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,181}",
+                                        "ide_position":  86,
+                                        "decoded":  "[FY]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "0",
+                                        "ide_position":  87,
+                                        "decoded":  "0",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,51}",
+                                        "ide_position":  88,
+                                        "decoded":  "[AY]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,52}",
+                                        "ide_position":  89,
+                                        "decoded":  "[AZ]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,53}",
+                                        "ide_position":  90,
+                                        "decoded":  "w0_RetCommentaire [BA]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027\u0027",
+                                        "ide_position":  91,
+                                        "decoded":  "\u0027\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,82}",
+                                        "ide_position":  92,
+                                        "decoded":  "w0_CondArrivant [CD]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,10}=\u0027A\u0027",
+                                        "ide_position":  93,
+                                        "decoded":  "\u003eCodeListe [J]=\u0027A\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,10}=\u0027V\u0027 AND {0,77}=\u0027P\u0027",
+                                        "ide_position":  94,
+                                        "decoded":  "\u003eCodeListe [J]=\u0027V\u0027 AND w0_FaxVille [BY]=\u0027P\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,10}=\u0027P\u0027 AND {0,138}=\u0027P\u0027 AND {0,189}",
+                                        "ide_position":  95,
+                                        "decoded":  "\u003eCodeListe [J]=\u0027P\u0027 AND [EH]=\u0027P\u0027 AND [GG]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,10}=\u0027D\u0027 AND {0,77}=\u0027P\u0027",
+                                        "ide_position":  96,
+                                        "decoded":  "\u003eCodeListe [J]=\u0027D\u0027 AND w0_FaxVille [BY]=\u0027P\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,10}=\u0027B\u0027 AND {0,138}\u003c\u003e\u0027P\u0027",
+                                        "ide_position":  97,
+                                        "decoded":  "\u003eCodeListe [J]=\u0027B\u0027 AND [EH]\u003c\u003e\u0027P\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,10}=\u0027R\u0027",
+                                        "ide_position":  98,
+                                        "decoded":  "\u003eCodeListe [J]=\u0027R\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,199} AND {0,189}",
+                                        "ide_position":  99,
+                                        "decoded":  "[GQ] AND [GG]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,10}=\u0027P\u0027 AND {0,138}=\u0027P\u0027",
+                                        "ide_position":  100,
+                                        "decoded":  "\u003eCodeListe [J]=\u0027P\u0027 AND [EH]=\u0027P\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,61}",
+                                        "ide_position":  101,
+                                        "decoded":  "W0_PresenceAv---------... [BI]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,14}=\u0027\u0027",
+                                        "ide_position":  102,
+                                        "decoded":  "\u003eCodeVol [N]=\u0027\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,197} OR {0,10}=\u0027V\u0027 AND Trim ({0,79})\u0026{0,80}\u003c\u003eTrim ({0,164})\u0026{0,165} AND {0,155} OR {0,10}=\u0027V\u0027 AND NOT ({0,155})",
+                                        "ide_position":  103,
+                                        "decoded":  "[GO] OR \u003eCodeListe [J]=\u0027V\u0027 AND Trim (w0_NumAdherent [CA])\u0026w0_Age [CB]\u003c\u003eTrim ([FH])\u0026[FI] AND [EY] OR \u003eCodeListe [J]=\u0027V\u0027 AND NOT ([EY])",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,198} OR {0,10}=\u0027A\u0027 AND Trim ({0,79})\u0026{0,80}\u003c\u003eTrim ({0,164})\u0026{0,165} AND {0,155} OR {0,10}=\u0027A\u0027 AND NOT ({0,155}) AND {0,77}=\u0027P\u0027",
+                                        "ide_position":  104,
+                                        "decoded":  "[GP] OR \u003eCodeListe [J]=\u0027A\u0027 AND Trim (w0_NumAdherent [CA])\u0026w0_Age [CB]\u003c\u003eTrim ([FH])\u0026[FI] AND [EY] OR \u003eCodeListe [J]=\u0027A\u0027 AND NOT ([EY]) AND w0_FaxVille [BY]=\u0027P\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,200} OR {0,10}=\u0027D\u0027 AND Trim ({0,79})\u0026{0,80}\u003c\u003eTrim ({0,175})\u0026{0,176} AND {0,166} OR {0,10}=\u0027D\u0027 AND NOT ({0,166}) AND {0,77}=\u0027P\u0027",
+                                        "ide_position":  105,
+                                        "decoded":  "[GR] OR \u003eCodeListe [J]=\u0027D\u0027 AND Trim (w0_NumAdherent [CA])\u0026w0_Age [CB]\u003c\u003eTrim ([FS])\u0026[FT] AND [FJ] OR \u003eCodeListe [J]=\u0027D\u0027 AND NOT ([FJ]) AND w0_FaxVille [BY]=\u0027P\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,202} OR {0,10}=\u0027R\u0027 AND Trim ({0,79})\u0026{0,80}\u003c\u003eTrim ({0,175})\u0026{0,176} AND {0,166} OR {0,10}=\u0027R\u0027 AND NOT ({0,166})",
+                                        "ide_position":  106,
+                                        "decoded":  "[GT] OR \u003eCodeListe [J]=\u0027R\u0027 AND Trim (w0_NumAdherent [CA])\u0026w0_Age [CB]\u003c\u003eTrim ([FS])\u0026[FT] AND [FJ] OR \u003eCodeListe [J]=\u0027R\u0027 AND NOT ([FJ])",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,197} OR {0,14}\u003c\u003e\u0027\u0027 AND {0,155} AND {0,8}\u003cVal ({0,74},\u00272\u0027) AND {0,9}\u003e=Val ({0,74},\u00272\u0027)",
+                                        "ide_position":  107,
+                                        "decoded":  "[GO] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND [EY] AND \u003ew0_HeureMin [H]\u003cVal (w0_RetCtlHeb [BV],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_RetCtlHeb [BV],\u00272\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,197} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,155}) AND {0,72}\u003c\u003e{0,105} AND {0,108}={0,14}",
+                                        "ide_position":  108,
+                                        "decoded":  "[GO] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([EY]) AND w0_AgeBebe [BT]\u003c\u003e[DA] AND [DD]=\u003eCodeVol [N]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,197} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,155}) AND {0,72}\u003c\u003e{0,105} AND {0,8}\u003cVal ({0,74},\u00272\u0027) AND {0,9}\u003e=Val ({0,74},\u00272\u0027)",
+                                        "ide_position":  109,
+                                        "decoded":  "[GO] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([EY]) AND w0_AgeBebe [BT]\u003c\u003e[DA] AND \u003ew0_HeureMin [H]\u003cVal (w0_RetCtlHeb [BV],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_RetCtlHeb [BV],\u00272\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,198} OR {0,14}\u003c\u003e\u0027\u0027 AND {0,155} AND {0,8}\u003cVal ({0,74},\u00272\u0027) AND {0,9}\u003e=Val ({0,74},\u00272\u0027)",
+                                        "ide_position":  110,
+                                        "decoded":  "[GP] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND [EY] AND \u003ew0_HeureMin [H]\u003cVal (w0_RetCtlHeb [BV],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_RetCtlHeb [BV],\u00272\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,198} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,155}) AND {0,72}\u003c\u003e{0,105} AND {0,108}={0,14}",
+                                        "ide_position":  111,
+                                        "decoded":  "[GP] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([EY]) AND w0_AgeBebe [BT]\u003c\u003e[DA] AND [DD]=\u003eCodeVol [N]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,198} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,155}) AND {0,72}\u003c\u003e{0,105} AND {0,8}\u003cVal ({0,74},\u00272\u0027) AND {0,9}\u003e=Val ({0,74},\u00272\u0027)",
+                                        "ide_position":  112,
+                                        "decoded":  "[GP] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([EY]) AND w0_AgeBebe [BT]\u003c\u003e[DA] AND \u003ew0_HeureMin [H]\u003cVal (w0_RetCtlHeb [BV],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_RetCtlHeb [BV],\u00272\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,200} OR {0,14}\u003c\u003e\u0027\u0027 AND {0,166} AND {0,8}\u003cVal ({0,76},\u00272\u0027) AND {0,9}\u003e=Val ({0,76},\u00272\u0027)",
+                                        "ide_position":  113,
+                                        "decoded":  "[GR] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND [FJ] AND \u003ew0_HeureMin [H]\u003cVal (w0_TelExt_Commune [BX],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_TelExt_Commune [BX],\u00272\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,200} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,166}) AND {0,75}\u003c\u003e{0,113} AND {0,116}={0,14}",
+                                        "ide_position":  114,
+                                        "decoded":  "[GR] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([FJ]) AND w0_TelInt [BW]\u003c\u003e[DI] AND [DL]=\u003eCodeVol [N]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,200} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,166}) AND {0,75}\u003c\u003e{0,113} AND {0,8}\u003cVal ({0,76},\u00272\u0027) AND {0,9}\u003e=Val ({0,76},\u00272\u0027)",
+                                        "ide_position":  115,
+                                        "decoded":  "[GR] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([FJ]) AND w0_TelInt [BW]\u003c\u003e[DI] AND \u003ew0_HeureMin [H]\u003cVal (w0_TelExt_Commune [BX],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_TelExt_Commune [BX],\u00272\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,202} OR {0,14}\u003c\u003e\u0027\u0027 AND {0,166} AND {0,8}\u003cVal ({0,76},\u00272\u0027) AND {0,9}\u003e=Val ({0,76},\u00272\u0027)",
+                                        "ide_position":  116,
+                                        "decoded":  "[GT] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND [FJ] AND \u003ew0_HeureMin [H]\u003cVal (w0_TelExt_Commune [BX],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_TelExt_Commune [BX],\u00272\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,202} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,166}) AND {0,75}\u003c\u003e{0,113} AND {0,116}={0,14}",
+                                        "ide_position":  117,
+                                        "decoded":  "[GT] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([FJ]) AND w0_TelInt [BW]\u003c\u003e[DI] AND [DL]=\u003eCodeVol [N]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,202} OR {0,14}\u003c\u003e\u0027\u0027 AND NOT ({0,166}) AND {0,75}\u003c\u003e{0,113} AND {0,8}\u003cVal ({0,76},\u00272\u0027) AND {0,9}\u003e=Val ({0,76},\u00272\u0027)",
+                                        "ide_position":  118,
+                                        "decoded":  "[GT] OR \u003eCodeVol [N]\u003c\u003e\u0027\u0027 AND NOT ([FJ]) AND w0_TelInt [BW]\u003c\u003e[DI] AND \u003ew0_HeureMin [H]\u003cVal (w0_TelExt_Commune [BX],\u00272\u0027) AND \u003ew0_HeureMax [I]\u003e=Val (w0_TelExt_Commune [BX],\u00272\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "CndRange({0,409}\u003c\u003e\u0027\u0027,{0,409})",
+                                        "ide_position":  119,
+                                        "decoded":  "CndRange([OS]\u003c\u003e\u0027\u0027,[OS])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027CO\u0027",
+                                        "ide_position":  120,
+                                        "decoded":  "\u003eTopListe [M]=\u0027CO\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=\u0027ST\u0027",
+                                        "ide_position":  121,
+                                        "decoded":  "\u003eTopListe [M]=\u0027ST\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027D\u0027",
+                                        "ide_position":  122,
+                                        "decoded":  "\u0027D\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TCLME\u0027",
+                                        "ide_position":  123,
+                                        "decoded":  "\u0027TCLME\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "CndRange({0,409}\u003c\u003e\u0027\u0027,{0,409})",
+                                        "ide_position":  124,
+                                        "decoded":  "CndRange([OS]\u003c\u003e\u0027\u0027,[OS])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,84}",
+                                        "ide_position":  125,
+                                        "decoded":  "W0_CondPresent [CF]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT {0,23}",
+                                        "ide_position":  126,
+                                        "decoded":  "NOT \u003eGestion Crise [W]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-006",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF({0,83}=\u0027\u0027 OR {0,83}=\u0027*\u0027,{0,424},{0,83})",
+                                        "decoded":  "IF(w0_CondArrive [CE]=\u0027\u0027 OR w0_CondArrive [CE]=\u0027*\u0027,[PH],w0_CondArrive [CE])",
+                                        "ide_position":  127
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-007",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF({32768,88}, CodeVolAller({0,27}, {0,28}), {0,430})",
+                                        "decoded":  "IF(VG88, CodeVolAller([AA], [AB]), [PN])",
+                                        "ide_position":  128
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "IF({32768,88}, CodeVolRetour({0,27}, {0,28}), {0,429})",
+                                        "ide_position":  129,
+                                        "decoded":  "IF(VG88, CodeVolRetour([AA], [AB]), [PM])",
+                                        "type":  "CONDITION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "MIN({0,4},{0,5})",
+                                        "ide_position":  130,
+                                        "decoded":  "MIN(\u003eDateMinDebut [D],\u003eDateMaxDebut [E])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,5}",
+                                        "ide_position":  131,
+                                        "decoded":  "\u003eDateMaxDebut [E]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,4}",
+                                        "ide_position":  132,
+                                        "decoded":  "\u003eDateMinDebut [D]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,4}*86400+{0,8}*3600",
+                                        "ide_position":  133,
+                                        "decoded":  "\u003eDateMinDebut [D]*86400+\u003ew0_HeureMin [H]*3600",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,5}*86400 + IF( {0,9}=0,24,{0,9})*3600",
+                                        "ide_position":  134,
+                                        "decoded":  "\u003eDateMaxDebut [E]*86400 + IF( \u003ew0_HeureMax [I]=0,24,\u003ew0_HeureMax [I])*3600",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,432}*86400+(CASE({0,438},1,12,3,18,0)*3600)",
+                                        "ide_position":  135,
+                                        "decoded":  "[PP]*86400+(CASE([PV],1,12,3,18,0)*3600)",
+                                        "type":  "CONDITION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,437}*86400+(CASE({0,439},1,14,2,23,6)*3600)",
+                                        "ide_position":  136,
+                                        "decoded":  "[PU]*86400+(CASE([PW],1,14,2,23,6)*3600)",
+                                        "type":  "CONDITION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT {0,431} OR NOT {0,436} OR\r\n({0,443}\u003c{0,445} AND {0,444}\u003c{0,445}) OR ({0,443}\u003e{0,446} AND {0,444}\u003e{0,445})",
+                                        "ide_position":  137,
+                                        "decoded":  "NOT [PO] OR NOT [PT] OR\r\n([QA]\u003c[QC] AND [QB]\u003c[QC]) OR ([QA]\u003e[QD] AND [QB]\u003e[QC])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "({0,450}=\u0027S\u0027 AND {0,449}=0)\r\nOR \r\n({0,450}=\u0027N\u0027 AND {0,449}\u003c\u003e0) \r\nOR \r\n{0,450}=\u0027T\u0027 \r\nOR \r\n{0,450}=\u0027\u0027",
+                                        "ide_position":  138,
+                                        "decoded":  "([QH]=\u0027S\u0027 AND [QG]=0)\r\nOR \r\n([QH]=\u0027N\u0027 AND [QG]\u003c\u003e0) \r\nOR \r\n[QH]=\u0027T\u0027 \r\nOR \r\n[QH]=\u0027\u0027",
+                                        "type":  "OTHER"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+                                       {
+                                           "id":  "RM-001",
+                                           "false_value":  "\u003eSoldé,Non_soldé,Tous [Y])",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF (\u003eCodeListe [J]=\u0027P\u0027,\u003eDateCalcul [B],\u003eSoldé,Non_soldé,Tous [Y])",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  18,
+                                           "true_value":  "\u003eDateCalcul [B]",
+                                           "natural_language":  "Si \u003eCodeListe [J]=\u0027P\u0027 alors \u003eDateCalcul [B] sinon \u003eSoldé,Non_soldé,Tous [Y])",
+                                           "condition":  "\u003eCodeListe [J]=\u0027P\u0027",
+                                           "raw_expression":  "IF ({0,10}=\u0027P\u0027,{0,2},{0,25})"
+                                       },
+                                       {
+                                           "id":  "RM-002",
+                                           "false_value":  "\u003eDateMaxDebut [E])",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF (\u003eIndex [A]=5,\u003eDateMaxDebut [E]+14,\u003eDateMaxDebut [E])",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  30,
+                                           "true_value":  "\u003eDateMaxDebut [E]+14",
+                                           "natural_language":  "Si \u003eIndex [A]=5 alors \u003eDateMaxDebut [E]+14 sinon \u003eDateMaxDebut [E])",
+                                           "condition":  "\u003eIndex [A]=5",
+                                           "raw_expression":  "IF ({0,1}=5,{0,5}+14,{0,5})"
+                                       },
+                                       {
+                                           "id":  "RM-003",
+                                           "false_value":  "\u003eDateMaxFin [G])",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF (\u003eIndex [A]=6,\u003eDateMaxFin [G]+14,\u003eDateMaxFin [G])",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  31,
+                                           "true_value":  "\u003eDateMaxFin [G]+14",
+                                           "natural_language":  "Si \u003eIndex [A]=6 alors \u003eDateMaxFin [G]+14 sinon \u003eDateMaxFin [G])",
+                                           "condition":  "\u003eIndex [A]=6",
+                                           "raw_expression":  "IF ({0,1}=6,{0,7}+14,{0,7})"
+                                       },
+                                       {
+                                           "id":  "RM-004",
+                                           "false_value":  "0)",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF ([OQ]\u003e0,[OQ],0)",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  42,
+                                           "true_value":  "[OQ]",
+                                           "natural_language":  "Si [OQ]\u003e0 alors [OQ] sinon 0)",
+                                           "condition":  "[OQ]\u003e0",
+                                           "raw_expression":  "IF ({0,407}\u003e0,{0,407},0)"
+                                       },
+                                       {
+                                           "id":  "RM-005",
+                                           "false_value":  "2,2))=\u00271\u0027,[EL]=\u003eTypeHebergement [L] AND Trim(MID ([EQ],2,2))=\u00271\u0027)",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF (\u003eCodeListe [J]\u003c\u003e\u0027P\u0027,w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND Trim(MID (w0_TypeEcran [BZ],2,2))=\u00271\u0027,[EL]=\u003eTypeHebergement [L] AND Trim(MID ([EQ],2,2))=\u00271\u0027)",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  75,
+                                           "true_value":  "w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND Trim(MID (w0_TypeEcran [BZ]",
+                                           "natural_language":  "Si \u003eCodeListe [J]\u003c\u003e\u0027P\u0027 alors w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND Trim(MID (w0_TypeEcran [BZ] sinon 2,2))=\u00271\u0027,[EL]=\u003eTypeHebergement [L] AND Trim(MID ([EQ],2,2))=\u00271\u0027)",
+                                           "condition":  "\u003eCodeListe [J]\u003c\u003e\u0027P\u0027",
+                                           "raw_expression":  "IF ({0,10}\u003c\u003e\u0027P\u0027,{0,79}={0,12} AND Trim(MID ({0,78},2,2))=\u00271\u0027,{0,142}={0,12} AND Trim(MID ({0,147},2,2))=\u00271\u0027)"
+                                       },
+                                       {
+                                           "id":  "RM-006",
+                                           "false_value":  "w0_CondArrive [CE])",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF(w0_CondArrive [CE]=\u0027\u0027 OR w0_CondArrive [CE]=\u0027*\u0027,[PH],w0_CondArrive [CE])",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  127,
+                                           "true_value":  "[PH]",
+                                           "natural_language":  "Si w0_CondArrive [CE]=\u0027\u0027 OR w0_CondArrive [CE]=\u0027*\u0027 alors [PH] sinon w0_CondArrive [CE])",
+                                           "condition":  "w0_CondArrive [CE]=\u0027\u0027 OR w0_CondArrive [CE]=\u0027*\u0027",
+                                           "raw_expression":  "IF({0,83}=\u0027\u0027 OR {0,83}=\u0027*\u0027,{0,424},{0,83})"
+                                       },
+                                       {
+                                           "id":  "RM-007",
+                                           "false_value":  "[AB]), [PN])",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF(VG88, CodeVolAller([AA], [AB]), [PN])",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  128,
+                                           "true_value":  "CodeVolAller([AA]",
+                                           "natural_language":  "Si VG88 alors CodeVolAller([AA] sinon [AB]), [PN])",
+                                           "condition":  "VG88",
+                                           "raw_expression":  "IF({32768,88}, CodeVolAller({0,27}, {0,28}), {0,430})"
+                                       }
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+                                                                 {
+                                                                     "id":  "RM-001",
+                                                                     "false_value":  "\u003eSoldé,Non_soldé,Tous [Y])",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF (\u003eCodeListe [J]=\u0027P\u0027,\u003eDateCalcul [B],\u003eSoldé,Non_soldé,Tous [Y])",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  18,
+                                                                     "true_value":  "\u003eDateCalcul [B]",
+                                                                     "natural_language":  "Si \u003eCodeListe [J]=\u0027P\u0027 alors \u003eDateCalcul [B] sinon \u003eSoldé,Non_soldé,Tous [Y])",
+                                                                     "condition":  "\u003eCodeListe [J]=\u0027P\u0027",
+                                                                     "raw_expression":  "IF ({0,10}=\u0027P\u0027,{0,2},{0,25})"
+                                                                 },
+                                                                 {
+                                                                     "id":  "RM-002",
+                                                                     "false_value":  "\u003eDateMaxDebut [E])",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF (\u003eIndex [A]=5,\u003eDateMaxDebut [E]+14,\u003eDateMaxDebut [E])",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  30,
+                                                                     "true_value":  "\u003eDateMaxDebut [E]+14",
+                                                                     "natural_language":  "Si \u003eIndex [A]=5 alors \u003eDateMaxDebut [E]+14 sinon \u003eDateMaxDebut [E])",
+                                                                     "condition":  "\u003eIndex [A]=5",
+                                                                     "raw_expression":  "IF ({0,1}=5,{0,5}+14,{0,5})"
+                                                                 },
+                                                                 {
+                                                                     "id":  "RM-003",
+                                                                     "false_value":  "\u003eDateMaxFin [G])",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF (\u003eIndex [A]=6,\u003eDateMaxFin [G]+14,\u003eDateMaxFin [G])",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  31,
+                                                                     "true_value":  "\u003eDateMaxFin [G]+14",
+                                                                     "natural_language":  "Si \u003eIndex [A]=6 alors \u003eDateMaxFin [G]+14 sinon \u003eDateMaxFin [G])",
+                                                                     "condition":  "\u003eIndex [A]=6",
+                                                                     "raw_expression":  "IF ({0,1}=6,{0,7}+14,{0,7})"
+                                                                 },
+                                                                 {
+                                                                     "id":  "RM-004",
+                                                                     "false_value":  "0)",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF ([OQ]\u003e0,[OQ],0)",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  42,
+                                                                     "true_value":  "[OQ]",
+                                                                     "natural_language":  "Si [OQ]\u003e0 alors [OQ] sinon 0)",
+                                                                     "condition":  "[OQ]\u003e0",
+                                                                     "raw_expression":  "IF ({0,407}\u003e0,{0,407},0)"
+                                                                 },
+                                                                 {
+                                                                     "id":  "RM-005",
+                                                                     "false_value":  "2,2))=\u00271\u0027,[EL]=\u003eTypeHebergement [L] AND Trim(MID ([EQ],2,2))=\u00271\u0027)",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF (\u003eCodeListe [J]\u003c\u003e\u0027P\u0027,w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND Trim(MID (w0_TypeEcran [BZ],2,2))=\u00271\u0027,[EL]=\u003eTypeHebergement [L] AND Trim(MID ([EQ],2,2))=\u00271\u0027)",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  75,
+                                                                     "true_value":  "w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND Trim(MID (w0_TypeEcran [BZ]",
+                                                                     "natural_language":  "Si \u003eCodeListe [J]\u003c\u003e\u0027P\u0027 alors w0_NumAdherent [CA]=\u003eTypeHebergement [L] AND Trim(MID (w0_TypeEcran [BZ] sinon 2,2))=\u00271\u0027,[EL]=\u003eTypeHebergement [L] AND Trim(MID ([EQ],2,2))=\u00271\u0027)",
+                                                                     "condition":  "\u003eCodeListe [J]\u003c\u003e\u0027P\u0027",
+                                                                     "raw_expression":  "IF ({0,10}\u003c\u003e\u0027P\u0027,{0,79}={0,12} AND Trim(MID ({0,78},2,2))=\u00271\u0027,{0,142}={0,12} AND Trim(MID ({0,147},2,2))=\u00271\u0027)"
+                                                                 },
+                                                                 {
+                                                                     "id":  "RM-006",
+                                                                     "false_value":  "w0_CondArrive [CE])",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF(w0_CondArrive [CE]=\u0027\u0027 OR w0_CondArrive [CE]=\u0027*\u0027,[PH],w0_CondArrive [CE])",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  127,
+                                                                     "true_value":  "[PH]",
+                                                                     "natural_language":  "Si w0_CondArrive [CE]=\u0027\u0027 OR w0_CondArrive [CE]=\u0027*\u0027 alors [PH] sinon w0_CondArrive [CE])",
+                                                                     "condition":  "w0_CondArrive [CE]=\u0027\u0027 OR w0_CondArrive [CE]=\u0027*\u0027",
+                                                                     "raw_expression":  "IF({0,83}=\u0027\u0027 OR {0,83}=\u0027*\u0027,{0,424},{0,83})"
+                                                                 },
+                                                                 {
+                                                                     "id":  "RM-007",
+                                                                     "false_value":  "[AB]), [PN])",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF(VG88, CodeVolAller([AA], [AB]), [PN])",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  128,
+                                                                     "true_value":  "CodeVolAller([AA]",
+                                                                     "natural_language":  "Si VG88 alors CodeVolAller([AA] sinon [AB]), [PN])",
+                                                                     "condition":  "VG88",
+                                                                     "raw_expression":  "IF({32768,88}, CodeVolAller({0,27}, {0,28}), {0,430})"
+                                                                 }
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  335,
+                     "pipeline_version":  "7.1",
+                     "project":  "PBP",
+                     "program_name":  "Creation tempo toutes GO",
+                     "generated_at":  "2026-02-03 16:29:50"
+                 }
+}

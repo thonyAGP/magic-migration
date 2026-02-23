@@ -1,0 +1,118 @@
+﻿{
+    "table_other_vars":  {
+                             "67":  [
+                                        {
+                                            "letter":  "A",
+                                            "name":  "P0 Société",
+                                            "data_type":  "Alpha",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "B",
+                                            "name":  "P0 Devise Locale",
+                                            "data_type":  "Alpha",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "C",
+                                            "name":  "v. titre ecran",
+                                            "data_type":  "Alpha",
+                                            "definition":  "V"
+                                        }
+                                    ]
+                         },
+    "variable_mapping":  {
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "P0 Devise Locale",
+                                           "letter":  "B"
+                                       },
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "v. titre ecran",
+                                           "letter":  "C"
+                                       },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "P0 Société",
+                                           "letter":  "A"
+                                       }
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+                   "67":  {
+                              "physical":  "cafil045_dat",
+                              "name":  "tables___________tab",
+                              "access":  "READ",
+                              "logical":  "tables___________tab"
+                          },
+                   "139":  {
+                               "physical":  "cafil117_dat",
+                               "name":  "moyens_reglement_mor",
+                               "access":  "LINK",
+                               "logical":  "moyens_reglement_mor"
+                           },
+                   "140":  {
+                               "physical":  "cafil118_dat",
+                               "name":  "moyen_paiement___mop",
+                               "access":  "LINK",
+                               "logical":  "moyen_paiement___mop"
+                           }
+               },
+    "statistics":  {
+                       "total_variables":  3,
+                       "mapping_entries":  3,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  3,
+                       "global_count":  0,
+                       "table_count":  3
+                   },
+    "metadata":  {
+                     "ide_position":  75,
+                     "pipeline_version":  "7.2",
+                     "project":  "GES",
+                     "program_name":  "Bi Moyens de règlement",
+                     "generated_at":  "2026-02-03 11:41:41"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P0 Société",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "P0 Devise Locale",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "v. titre ecran",
+                                        "data_type":  "Alpha",
+                                        "picture":  "45",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

@@ -1,0 +1,63 @@
+﻿{
+    "screen_mockup_ascii":  [
+                                "+--------------------------------------+",
+                                "|       Recup code zone/secteur        |",
+                                "+--------------------------------------+",
+                                "|  [Form content - MDI]                |",
+                                "|                                      |",
+                                "+--------------------------------------+"
+                            ],
+    "statistics":  {
+                       "total_columns":  1,
+                       "total_controls":  0,
+                       "form_count":  1,
+                       "tasks_with_columns":  1,
+                       "tasks_with_controls":  0
+                   },
+    "task_columns":  {
+                         "1":  [
+                                   {
+                                       "letter":  "A",
+                                       "name":  "\u003cCode zone/secteur",
+                                       "data_type":  "Alpha",
+                                       "picture":  "1",
+                                       "definition":  "P",
+                                       "gui_control":  "",
+                                       "readonly":  true
+                                   }
+                               ]
+                     },
+    "metadata":  {
+                     "ide_position":  308,
+                     "pipeline_version":  "7.5",
+                     "project":  "PBP",
+                     "program_name":  "Recup code zone/secteur",
+                     "generated_at":  "2026-02-03 16:19:41"
+                 },
+    "forms":  [
+                  {
+                      "task_isn2":  1,
+                      "form_id":  2,
+                      "v_factor":  null,
+                      "h_factor":  null,
+                      "color":  null,
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Recup code zone/secteur",
+                      "font":  "",
+                      "window_type_str":  "MDI",
+                      "form_units":  null,
+                      "open_task_window":  "N",
+                      "task_ide_position":  "308",
+                      "window_type":  1,
+                      "properties_json":  "{\"_Comment_218\":true,\"_TabbingOrder_318\":\"1\",\"PersistentFormState_493\":true}"
+                  }
+              ],
+    "form_controls":  {
+
+                      }
+}

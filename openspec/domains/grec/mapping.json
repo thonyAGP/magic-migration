@@ -1,0 +1,74 @@
+﻿{
+    "table_other_vars":  {
+                             "30":  [
+                                        {
+                                            "letter":  "A",
+                                            "name":  "v. cdrt recherche",
+                                            "data_type":  "Logical",
+                                            "definition":  "V"
+                                        }
+                                    ]
+                         },
+    "variable_mapping":  {
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "v. cdrt recherche",
+                                           "letter":  "A"
+                                       }
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+                   "30":  {
+                              "physical":  "cafil008_dat",
+                              "name":  "gm-recherche_____gmr",
+                              "access":  "READ",
+                              "logical":  "gm-recherche_____gmr"
+                          },
+                   "315":  {
+                               "physical":  "fiscalitegrec_dat",
+                               "name":  "fi_complet_______gm_go",
+                               "access":  "LINK",
+                               "logical":  "fi_complet_______gm_go"
+                           }
+               },
+    "statistics":  {
+                       "total_variables":  1,
+                       "mapping_entries":  1,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  1,
+                       "global_count":  0,
+                       "table_count":  2
+                   },
+    "metadata":  {
+                     "ide_position":  351,
+                     "pipeline_version":  "7.2",
+                     "project":  "PBP",
+                     "program_name":  "Maj Date de naissance",
+                     "generated_at":  "2026-02-03 16:35:17"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "v. cdrt recherche",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

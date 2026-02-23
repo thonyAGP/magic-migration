@@ -1,0 +1,1 @@
+﻿{"program":"Browse - Fichier Tampon PABX","ide":67,"dbProgramId":6560,"tables":[{"id":1,"logical":"histoticket_dat","physical":"histoticket_dat","access":"WRITE","count":1}],"callers":[],"callees":[],"expressions":[],"expressionCount":0,"parameters":[],"statistics":{"taskCount":1,"logicLineCount":20,"disabledLineCount":0},"callChain":[]}

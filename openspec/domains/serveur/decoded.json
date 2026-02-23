@@ -1,0 +1,99 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  0,
+                                       "calculation":  0,
+                                       "other":  1,
+                                       "date":  0,
+                                       "constant":  1,
+                                       "string":  1
+                                   },
+                       "total_in_program":  3,
+                       "decoded_count":  3,
+                       "business_rules_count":  0
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+
+                                                      ],
+                                        "CALCULATION":  [
+
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,2}",
+                                                          "ide_position":  2,
+                                                          "decoded":  "[B]",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027C\u0027",
+                                                             "ide_position":  1,
+                                                             "decoded":  "\u0027C\u0027",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Left (Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_prog\u0027)),1)=\u0027E\u0027",
+                                                           "ide_position":  3,
+                                                           "decoded":  "Left (Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_prog\u0027)),1)=\u0027E\u0027",
+                                                           "type":  "STRING"
+                                                       }
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027C\u0027",
+                                        "ide_position":  1,
+                                        "decoded":  "\u0027C\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,2}",
+                                        "ide_position":  2,
+                                        "decoded":  "[B]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Left (Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_prog\u0027)),1)=\u0027E\u0027",
+                                        "ide_position":  3,
+                                        "decoded":  "Left (Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_prog\u0027)),1)=\u0027E\u0027",
+                                        "type":  "STRING"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  36,
+                     "pipeline_version":  "7.1",
+                     "project":  "PTR",
+                     "program_name":  "Verification si client/serveur",
+                     "generated_at":  "2026-02-03 18:21:20"
+                 }
+}

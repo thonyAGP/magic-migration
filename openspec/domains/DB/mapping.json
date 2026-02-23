@@ -1,0 +1,131 @@
+﻿{
+    "table_other_vars":  {
+                             "740":  [
+                                         {
+                                             "letter":  "A",
+                                             "name":  "v.retour user",
+                                             "data_type":  "Logical",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "B",
+                                             "name":  "Retour Cryptage",
+                                             "data_type":  "Logical",
+                                             "definition":  "V"
+                                         }
+                                     ]
+                         },
+    "variable_mapping":  {
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "Retour Cryptage",
+                                           "letter":  "B"
+                                       },
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "Cle Cryptage",
+                                           "letter":  "C"
+                                       },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "v.retour user",
+                                           "letter":  "A"
+                                       }
+                         },
+    "table_columns":  {
+                          "740":  [
+                                      {
+                                          "letter":  "C",
+                                          "name":  "Cle Cryptage",
+                                          "data_type":  "Blob",
+                                          "picture":  ""
+                                      }
+                                  ]
+                      },
+    "tables":  {
+                   "109":  {
+                               "physical":  "cafil087_dat",
+                               "name":  "table_utilisateurs",
+                               "access":  "WRITE",
+                               "logical":  "table_utilisateurs"
+                           },
+                   "691":  {
+                               "physical":  "command_par",
+                               "name":  "commandes",
+                               "access":  "LINK",
+                               "logical":  "commandes"
+                           },
+                   "768":  {
+                               "physical":  "motif_no_enreg_na",
+                               "name":  "motif_no_enreg_na",
+                               "access":  "LINK",
+                               "logical":  "motif_no_enreg_na"
+                           },
+                   "740":  {
+                               "physical":  "pv_stockmvt_dat",
+                               "name":  "pv_stock_movements",
+                               "access":  "WRITE",
+                               "logical":  "pv_stock_movements"
+                           },
+                   "718":  {
+                               "physical":  "user_dat",
+                               "name":  "utilisateur______uti",
+                               "access":  "WRITE",
+                               "logical":  "utilisateur______uti"
+                           }
+               },
+    "statistics":  {
+                       "total_variables":  3,
+                       "mapping_entries":  3,
+                       "tables_with_real_columns":  1,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  3,
+                       "global_count":  0,
+                       "table_count":  5
+                   },
+    "metadata":  {
+                     "ide_position":  15,
+                     "pipeline_version":  "7.2",
+                     "project":  "Menu",
+                     "program_name":  "MAJ User",
+                     "generated_at":  "2026-02-03 15:13:13"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "v.retour user",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Retour Cryptage",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "Cle Cryptage",
+                                        "data_type":  "Blob",
+                                        "picture":  "",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

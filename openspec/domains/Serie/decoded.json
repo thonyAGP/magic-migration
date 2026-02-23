@@ -1,0 +1,254 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  0,
+                                       "calculation":  0,
+                                       "other":  7,
+                                       "date":  0,
+                                       "constant":  7,
+                                       "string":  0
+                                   },
+                       "total_in_program":  14,
+                       "decoded_count":  14,
+                       "business_rules_count":  0
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+
+                                                      ],
+                                        "CALCULATION":  [
+
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "ASCIIChr (6)",
+                                                          "ide_position":  2,
+                                                          "decoded":  "ASCIIChr (6)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "ASCIIChr (21)",
+                                                          "ide_position":  3,
+                                                          "decoded":  "ASCIIChr (21)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "ASCIIChr (3)",
+                                                          "ide_position":  4,
+                                                          "decoded":  "ASCIIChr (3)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "ASCIIChr (2)",
+                                                          "ide_position":  5,
+                                                          "decoded":  "ASCIIChr (2)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "WinHWND (0)",
+                                                          "ide_position":  6,
+                                                          "decoded":  "WinHWND (0)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027@\u0027\u0026Translate(\u0027%dll%\u0027)\u0026\u0027scomm.dll.sc_init\u0027",
+                                                          "ide_position":  7,
+                                                          "decoded":  "\u0027@\u0027\u0026Translate(\u0027%dll%\u0027)\u0026\u0027scomm.dll.sc_init\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "Counter(0)=1000",
+                                                          "ide_position":  13,
+                                                          "decoded":  "Counter(0)=1000",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "1",
+                                                             "ide_position":  1,
+                                                             "decoded":  "1",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u00274A4\u0027",
+                                                             "ide_position":  8,
+                                                             "decoded":  "\u00274A4\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027F\u0027",
+                                                             "ide_position":  9,
+                                                             "decoded":  "\u0027F\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027O\u0027",
+                                                             "ide_position":  10,
+                                                             "decoded":  "\u0027O\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "2",
+                                                             "ide_position":  11,
+                                                             "decoded":  "2",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "400",
+                                                             "ide_position":  12,
+                                                             "decoded":  "400",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027V\u0027",
+                                                             "ide_position":  14,
+                                                             "decoded":  "\u0027V\u0027",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "1",
+                                        "ide_position":  1,
+                                        "decoded":  "1",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "ASCIIChr (6)",
+                                        "ide_position":  2,
+                                        "decoded":  "ASCIIChr (6)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "ASCIIChr (21)",
+                                        "ide_position":  3,
+                                        "decoded":  "ASCIIChr (21)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "ASCIIChr (3)",
+                                        "ide_position":  4,
+                                        "decoded":  "ASCIIChr (3)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "ASCIIChr (2)",
+                                        "ide_position":  5,
+                                        "decoded":  "ASCIIChr (2)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "WinHWND (0)",
+                                        "ide_position":  6,
+                                        "decoded":  "WinHWND (0)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027@\u0027\u0026Translate(\u0027%dll%\u0027)\u0026\u0027scomm.dll.sc_init\u0027",
+                                        "ide_position":  7,
+                                        "decoded":  "\u0027@\u0027\u0026Translate(\u0027%dll%\u0027)\u0026\u0027scomm.dll.sc_init\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u00274A4\u0027",
+                                        "ide_position":  8,
+                                        "decoded":  "\u00274A4\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027F\u0027",
+                                        "ide_position":  9,
+                                        "decoded":  "\u0027F\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027O\u0027",
+                                        "ide_position":  10,
+                                        "decoded":  "\u0027O\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "2",
+                                        "ide_position":  11,
+                                        "decoded":  "2",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "400",
+                                        "ide_position":  12,
+                                        "decoded":  "400",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Counter(0)=1000",
+                                        "ide_position":  13,
+                                        "decoded":  "Counter(0)=1000",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027V\u0027",
+                                        "ide_position":  14,
+                                        "decoded":  "\u0027V\u0027",
+                                        "type":  "CONSTANT"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  19,
+                     "pipeline_version":  "7.1",
+                     "project":  "QUA",
+                     "program_name":  "Flush Serial",
+                     "generated_at":  "2026-02-03 20:20:15"
+                 }
+}

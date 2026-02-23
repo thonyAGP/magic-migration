@@ -1,0 +1,87 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  0,
+                                       "calculation":  0,
+                                       "other":  2,
+                                       "date":  0,
+                                       "constant":  0,
+                                       "string":  0
+                                   },
+                       "total_in_program":  2,
+                       "decoded_count":  2,
+                       "business_rules_count":  0
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+
+                                                      ],
+                                        "CALCULATION":  [
+
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{32768,1}",
+                                                          "ide_position":  1,
+                                                          "decoded":  "VG1",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,3}",
+                                                          "ide_position":  2,
+                                                          "decoded":  "[C]",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+
+                                                 ],
+                                        "CONSTANT":  [
+
+                                                     ],
+                                        "STRING":  [
+
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{32768,1}",
+                                        "ide_position":  1,
+                                        "decoded":  "VG1",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,3}",
+                                        "ide_position":  2,
+                                        "decoded":  "[C]",
+                                        "type":  "OTHER"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  308,
+                     "pipeline_version":  "7.1",
+                     "project":  "PBP",
+                     "program_name":  "Recup code zone/secteur",
+                     "generated_at":  "2026-02-03 16:19:38"
+                 }
+}

@@ -1,0 +1,149 @@
+﻿{
+    "tables":  {
+                   "all":  [
+                               {
+                                   "logical_name":  "pv_budget",
+                                   "physical_name":  "pv_budget_dat",
+                                   "access_mode":  "READ",
+                                   "id":  372,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "reedition_ticket",
+                                   "physical_name":  "reedition_ticket",
+                                   "access_mode":  "LINK",
+                                   "id":  887,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "reedition_ticket",
+                                   "physical_name":  "reedition_ticket",
+                                   "access_mode":  "WRITE",
+                                   "id":  887,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "Prestation_Multi",
+                                   "physical_name":  "Prestation_Multi",
+                                   "access_mode":  "LINK",
+                                   "id":  888,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "effectif_Q_new",
+                                   "physical_name":  "effectif_Q_new",
+                                   "access_mode":  "LINK",
+                                   "id":  889,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "Boo_HorairesOuverture",
+                                   "physical_name":  "Boo_HorairesOuverture",
+                                   "access_mode":  "WRITE",
+                                   "id":  897,
+                                   "usage_count":  1
+                               }
+                           ],
+                   "by_access":  {
+                                     "LINK":  [
+                                                  {
+                                                      "logical_name":  "reedition_ticket",
+                                                      "physical_name":  "reedition_ticket",
+                                                      "access_mode":  "LINK",
+                                                      "id":  887,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "Prestation_Multi",
+                                                      "physical_name":  "Prestation_Multi",
+                                                      "access_mode":  "LINK",
+                                                      "id":  888,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "effectif_Q_new",
+                                                      "physical_name":  "effectif_Q_new",
+                                                      "access_mode":  "LINK",
+                                                      "id":  889,
+                                                      "usage_count":  1
+                                                  }
+                                              ],
+                                     "READ":  [
+                                                  {
+                                                      "logical_name":  "pv_budget",
+                                                      "physical_name":  "pv_budget_dat",
+                                                      "access_mode":  "READ",
+                                                      "id":  372,
+                                                      "usage_count":  1
+                                                  }
+                                              ],
+                                     "WRITE":  [
+                                                   {
+                                                       "logical_name":  "reedition_ticket",
+                                                       "physical_name":  "reedition_ticket",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  887,
+                                                       "usage_count":  1
+                                                   },
+                                                   {
+                                                       "logical_name":  "Boo_HorairesOuverture",
+                                                       "physical_name":  "Boo_HorairesOuverture",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  897,
+                                                       "usage_count":  1
+                                                   }
+                                               ]
+                                 }
+               },
+    "orphan_analysis":  {
+                            "has_public_name":  false,
+                            "is_ecf_member":  false,
+                            "has_callers":  true,
+                            "status":  "NON_ORPHELIN",
+                            "reason":  "Appele par 1 programme(s): Synthèse Forfait Ski (IDE 119)"
+                        },
+    "statistics":  {
+                       "callee_count":  2,
+                       "expression_count":  8,
+                       "logic_line_count":  224,
+                       "caller_count":  1,
+                       "task_count":  3,
+                       "disabled_line_count":  1,
+                       "table_count":  5
+                   },
+    "call_graph":  {
+                       "call_chain":  [
+                                          {
+                                              "name":  "Synthèse Forfait Ski",
+                                              "ide":  119,
+                                              "level":  1
+                                          }
+                                      ],
+                       "callees":  [
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Calcul Saison en cours",
+                                           "ide":  118
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Synthèse Forfait Ski Edition",
+                                           "ide":  122
+                                       }
+                                   ],
+                       "callers":  [
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Synthèse Forfait Ski",
+                                           "ide":  119
+                                       }
+                                   ]
+                   },
+    "metadata":  {
+                     "ide_position":  121,
+                     "pipeline_version":  "7.1",
+                     "project":  "PBP",
+                     "program_name":  "Synthèse Forfait Ski Résultat",
+                     "generated_at":  "2026-02-03 15:20:55"
+                 }
+}

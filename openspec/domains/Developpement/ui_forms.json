@@ -1,0 +1,176 @@
+﻿{
+    "screen_mockup_ascii":  [
+                                "+--------------------------------------+",
+                                "|                 IGR                  |",
+                                "+--------------------------------------+",
+                                "|  [Form content - Type0]              |",
+                                "|                                      |",
+                                "+--------------------------------------+"
+                            ],
+    "statistics":  {
+                       "total_columns":  11,
+                       "total_controls":  0,
+                       "form_count":  2,
+                       "tasks_with_columns":  2,
+                       "tasks_with_controls":  0
+                   },
+    "task_columns":  {
+                         "2":  [
+                                   {
+                                       "letter":  "A",
+                                       "name":  "P.Date debut",
+                                       "data_type":  "Date",
+                                       "picture":  "",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   },
+                                   {
+                                       "letter":  "B",
+                                       "name":  "P.Date fin",
+                                       "data_type":  "Date",
+                                       "picture":  "",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   },
+                                   {
+                                       "letter":  "C",
+                                       "name":  "P.Code village",
+                                       "data_type":  "Alpha",
+                                       "picture":  "U3",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   },
+                                   {
+                                       "letter":  "D",
+                                       "name":  "P.Lieu sejour",
+                                       "data_type":  "Alpha",
+                                       "picture":  "U",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   },
+                                   {
+                                       "letter":  "E",
+                                       "name":  "P.Premier lieu sejour",
+                                       "data_type":  "Alpha",
+                                       "picture":  "U",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   },
+                                   {
+                                       "letter":  "F",
+                                       "name":  "P.Nom lieu sejour",
+                                       "data_type":  "Alpha",
+                                       "picture":  "20",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   },
+                                   {
+                                       "letter":  "G",
+                                       "name":  "P Lieu de séjour Saisie ?",
+                                       "data_type":  "Logical",
+                                       "picture":  "",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   },
+                                   {
+                                       "letter":  "H",
+                                       "name":  "P.Gestion crise ?",
+                                       "data_type":  "Logical",
+                                       "picture":  "",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   },
+                                   {
+                                       "letter":  "I",
+                                       "name":  "V.Total nb jh",
+                                       "data_type":  "Numeric",
+                                       "picture":  "N6.1",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   }
+                               ],
+                         "6":  [
+                                   {
+                                       "letter":  "A",
+                                       "name":  "V.Total JH",
+                                       "data_type":  "Numeric",
+                                       "picture":  "N4.1",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   },
+                                   {
+                                       "letter":  "B",
+                                       "name":  "V.Lieu sejour",
+                                       "data_type":  "Alpha",
+                                       "picture":  "U",
+                                       "definition":  "V",
+                                       "gui_control":  "",
+                                       "readonly":  false
+                                   }
+                               ]
+                     },
+    "metadata":  {
+                     "ide_position":  418,
+                     "pipeline_version":  "7.5",
+                     "project":  "PBP",
+                     "program_name":  "Deficit IGR V3  **SAV **",
+                     "generated_at":  "2026-02-03 16:57:59"
+                 },
+    "forms":  [
+                  {
+                      "task_isn2":  2,
+                      "form_id":  1,
+                      "v_factor":  null,
+                      "h_factor":  null,
+                      "color":  null,
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "IGR",
+                      "font":  "",
+                      "window_type_str":  "Type0",
+                      "form_units":  null,
+                      "open_task_window":  "N",
+                      "task_ide_position":  "418.1",
+                      "window_type":  0,
+                      "properties_json":  "{\"_Comment_218\":true}"
+                  },
+                  {
+                      "task_isn2":  6,
+                      "form_id":  1,
+                      "v_factor":  null,
+                      "h_factor":  null,
+                      "color":  null,
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Deficit IGR",
+                      "font":  "",
+                      "window_type_str":  "Type0",
+                      "form_units":  null,
+                      "open_task_window":  "N",
+                      "task_ide_position":  "418.1.1",
+                      "window_type":  0,
+                      "properties_json":  "{\"_Comment_218\":true}"
+                  }
+              ],
+    "form_controls":  {
+
+                      }
+}

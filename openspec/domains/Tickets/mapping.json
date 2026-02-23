@@ -1,0 +1,50 @@
+﻿{
+    "table_other_vars":  {
+
+                         },
+    "variable_mapping":  {
+
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+                   "1":  {
+                             "physical":  "histoticket_dat",
+                             "name":  "histoticket_dat",
+                             "access":  "WRITE",
+                             "logical":  "histoticket_dat"
+                         }
+               },
+    "statistics":  {
+                       "total_variables":  0,
+                       "mapping_entries":  0,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  0,
+                       "global_count":  0,
+                       "table_count":  1
+                   },
+    "metadata":  {
+                     "ide_position":  67,
+                     "pipeline_version":  "7.2",
+                     "project":  "POO",
+                     "program_name":  "Browse - Fichier Tampon PABX",
+                     "generated_at":  "2026-02-03 18:01:14"
+                 },
+    "variables":  {
+                      "local":  [
+
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

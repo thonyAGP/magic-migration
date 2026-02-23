@@ -1,127 +1,79 @@
-# Lecteur Magic - Migration Magic Unipaas
+# Magic Migration
 
-Migration d'applications Magic Unipaas v12.03 vers C# .NET 8.
+Plateforme de migration d'applications Magic Unipaas v12.03 vers des technologies modernes.
 
-## Modules
+**Monorepo Turborepo** | **29 projets Magic** | **4 043 programmes**
 
-### API Caisse (Complet)
-
-API REST pour la gestion de caisse, migrée depuis le module ADH/Gestion Caisse (41 programmes Magic).
-
-**Solution:** `migration/caisse/Caisse.sln`
-
-#### Stack Technique
-
-- .NET 8 / ASP.NET Core Minimal API
-- Entity Framework Core 8 + SQL Server
-- MediatR 12 (CQRS)
-- FluentValidation
-- Serilog
-
-#### Architecture Clean
+## Structure
 
 ```
-src/
-├── Caisse.Api/            # Minimal API endpoints
-├── Caisse.Application/    # CQRS Commands/Queries, Services
-├── Caisse.Domain/         # Entities, Value Objects, Interfaces
-├── Caisse.Infrastructure/ # EF Core, Repositories
-└── Caisse.Shared/         # DTOs, Result pattern
-
-tests/
-└── Caisse.Application.Tests/  # 108 unit tests
+magic-migration/
+├── packages/
+│   ├── parser/                  # @magic-migration/parser - Parser expressions Magic
+│   ├── factory-cli/             # @magic-migration/factory - CLI migration (15 commandes)
+│   ├── specmap-dashboard/       # @magic-migration/dashboard - Dashboard Vercel
+│   └── migrations/
+│       └── adh-web/             # @magic-migration/adh-web - React 19 + Vite 7
+│
+├── services/
+│   ├── caisse-api/              # API REST C# .NET 8 (125 endpoints, 527 tests)
+│   └── mcp-server/              # MCP Server (97 outils Magic)
+│
+├── tools/                       # Scripts PowerShell, KB, pipelines
+├── openspec/                    # Specs, domains JSON, tickets, patterns
+├── docs/                        # Documentation, screenshots
+└── skills/                      # Skills Claude Code (Magic analysis)
 ```
 
-#### Tables Mappées (9)
+## Packages
 
-| Table | Description |
-|-------|-------------|
-| caisse_session | Sessions ouverture/fermeture |
-| caisse_session_detail | Détails mouvements |
-| caisse_session_article | Articles vendus |
-| caisse_session_devise | Devises par session |
-| caisse_session_coffre2 | Coffre réserve |
-| caisse_devise | Config devises |
-| caisse_parametres | Paramètres globaux |
-| cafil045_dat | Table paramètres |
-| devisein_par | Référence devises |
+### @magic-migration/parser
+Parser TypeScript pour expressions Magic Unipaas avec generation de code (TS, C#, Python). 200 fonctions mappees.
 
-#### Endpoints Principaux
-
-```
-POST /api/sessions/ouvrir     # Ouvrir session avec coffre
-POST /api/sessions/fermer     # Fermer session avec validation écart
-GET  /api/sessions/{user}     # Liste sessions utilisateur
-GET  /api/details/{user}/{id} # Détails session
-GET  /api/ecarts/{user}/{id}  # Calcul écarts
-```
-
-#### Flux Ouverture/Fermeture
-
-**Ouverture:**
-- Crée session + 4 détails (I=Initial, C=Comptage, K=CoffretVers, L=CoffretLeve)
-- Crée entrée coffre si montant > 0
-
-**Fermeture:**
-- Calcule écart (attendu vs compté)
-- Bloque si écart > seuil (configurable)
-- Force avec `ForceClosureOnEcart=true`
-
-#### Lancer l'API
+### @magic-migration/factory
+CLI de migration avec 15 commandes : pipeline SPECMAP, code generation, enrichissement IA, dashboard interactif.
 
 ```bash
-cd migration/caisse/src/Caisse.Api
-dotnet run
+cd packages/factory-cli && pnpm build
+node dist/cli.js serve --port 3070 --dir ADH
 ```
 
+### @magic-migration/adh-web
+Application web React 19 migree depuis le module ADH (Adherents/Caisse). Stack: Vite 7, TypeScript 5.9, Tailwind v4, Zustand.
+
+```bash
+cd packages/migrations/adh-web && pnpm dev
+```
+
+### @magic-migration/dashboard
+Dashboard HTML multi-projet deploye sur Vercel : https://specmap-dashboard.vercel.app
+
+## Services
+
+### Caisse API (.NET 8)
+API REST CQRS pour la gestion de caisse. 125 endpoints, 527 tests unitaires.
+
+```bash
+cd services/caisse-api/src/Caisse.Api && dotnet run
+```
 Swagger: http://localhost:5287/swagger
 
-#### Tests
+## Etat migration ADH
+
+| Batch | Domaine | Status |
+|-------|---------|--------|
+| B1 | Ouverture session (8 progs) | 100% VERIFIED |
+| B2 | Caisse (17 progs) | En cours |
+| B3-B18 | General, Impression, Compte... | Pending |
+
+## Scripts
 
 ```bash
-cd migration/caisse
-dotnet test
+pnpm build        # Build tous les packages
+pnpm test         # Tests tous les packages
+pnpm dev          # Dev mode (factory + adh-web)
 ```
-
-108 tests unitaires (validators, écarts, coffre).
-
-#### Configuration
-
-Modifier `appsettings.json` pour la connexion SQL Server:
-
-```json
-{
-  "ConnectionStrings": {
-    "CaisseDb": "Server=...;Database=...;Trusted_Connection=True;TrustServerCertificate=True"
-  }
-}
-```
-
----
-
-### MECANO (Complet)
-
-Scripts SQL pour liste mécanographique.
-
-**Chemin:** `migration/mecano/sql/`
-
----
-
-## Projets Magic Sources
-
-| Projet | Programmes | Rôle | Statut |
-|--------|------------|------|--------|
-| REF | ~700 | Tables partagées | Référence |
-| PBP | ~430 | Editions/Exports | MECANO validé |
-| ADH | 350 | Adhérents/Caisse | API complète |
-| PBG | 394 | Planification/Batch | Exploré |
-| PVE | 448 | Point de Vente/POS | Exploré |
-
-## Documentation
-
-- `.openspec/spec.md` - Spécification complète du projet
-- `skills/magic-unipaas/` - Skill d'analyse Magic
 
 ## Licence
 
-Propriétaire - Usage interne uniquement.
+Proprietaire - Usage interne uniquement.

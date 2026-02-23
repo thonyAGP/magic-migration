@@ -1,0 +1,216 @@
+{
+    "program":  "Export Ucopia bck 06/12",
+    "public_name":  "",
+    "project":  "POO",
+    "ide":  14,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "Export Ucopia bck 06/12",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "B",
+                      "logic_lines":  82,
+                      "source_table":  6,
+                      "source_access":  "R",
+                      "has_form":  true,
+                      "initial_mode":  "M",
+                      "ide_path":  "14"
+                  },
+                  {
+                      "isn2":  2,
+                      "name":  "Export",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  25,
+                      "source_table":  7,
+                      "source_access":  "W",
+                      "has_form":  false,
+                      "initial_mode":  "M",
+                      "ide_path":  "14.1"
+                  },
+                  {
+                      "isn2":  3,
+                      "name":  "Write Log",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  9,
+                      "source_table":  6,
+                      "source_access":  "W",
+                      "has_form":  false,
+                      "initial_mode":  "M",
+                      "ide_path":  "14.2"
+                  },
+                  {
+                      "isn2":  4,
+                      "name":  "Init Table Tempo PRIM",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  35,
+                      "source_table":  2,
+                      "source_access":  "R",
+                      "has_form":  false,
+                      "initial_mode":  "M",
+                      "ide_path":  "14.3"
+                  },
+                  {
+                      "isn2":  7,
+                      "name":  "Init Table Tempo IDX3",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  30,
+                      "source_table":  2,
+                      "source_access":  "W",
+                      "has_form":  false,
+                      "initial_mode":  "M",
+                      "ide_path":  "14.4"
+                  },
+                  {
+                      "isn2":  8,
+                      "name":  "Log Prog",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  3,
+                      "source_table":  null,
+                      "source_access":  "",
+                      "has_form":  false,
+                      "initial_mode":  "M",
+                      "ide_path":  "14.5"
+                  },
+                  {
+                      "isn2":  11,
+                      "name":  "Init Table Tempo PRIM TEST",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  20,
+                      "source_table":  2,
+                      "source_access":  "R",
+                      "has_form":  true,
+                      "initial_mode":  "M",
+                      "ide_path":  "14.6"
+                  },
+                  {
+                      "isn2":  12,
+                      "name":  "Create Temdb",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  2,
+                      "source_table":  null,
+                      "source_access":  "",
+                      "has_form":  false,
+                      "initial_mode":  "E",
+                      "ide_path":  "14.7"
+                  },
+                  {
+                      "isn2":  13,
+                      "name":  "Drop Tempdb",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  1,
+                      "source_table":  null,
+                      "source_access":  "",
+                      "has_form":  false,
+                      "initial_mode":  "E",
+                      "ide_path":  "14.8"
+                  },
+                  {
+                      "isn2":  23,
+                      "name":  "Create Index",
+                      "level":  2,
+                      "parent_isn2":  12,
+                      "task_type":  "B",
+                      "logic_lines":  1,
+                      "source_table":  null,
+                      "source_access":  "",
+                      "has_form":  false,
+                      "initial_mode":  "E",
+                      "ide_path":  "14.7.1"
+                  },
+                  {
+                      "isn2":  24,
+                      "name":  "View Export",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "O",
+                      "logic_lines":  13,
+                      "source_table":  7,
+                      "source_access":  "W",
+                      "has_form":  true,
+                      "initial_mode":  "M",
+                      "ide_path":  "14.9"
+                  }
+              ],
+    "conditions":  [
+                       {
+                           "ide":  28,
+                           "content":  "IF({0,11},\u0027Export Iteratif\u0027,\u0027Export Delta\u0027)",
+                           "decoded":  "IF(v.timestamp actuel num... [K],\u0027Export Iteratif\u0027,\u0027Export Delta\u0027)",
+                           "comment":  "",
+                           "exp_type":  "A"
+                       }
+                   ],
+    "tables_write":  [
+                         {
+                             "id":  2,
+                             "name":  "parametre_workgroup",
+                             "physical":  "paramworgroup_dat",
+                             "access":  "W"
+                         },
+                         {
+                             "id":  6,
+                             "name":  "saisie_autorisations",
+                             "physical":  "%club_user%_caisse_autor_devise",
+                             "access":  "W"
+                         },
+                         {
+                             "id":  7,
+                             "name":  "recap_devise_cloture",
+                             "physical":  "%club_user%_caisse_recap_devise",
+                             "access":  "W"
+                         }
+                     ],
+    "callees":  [
+                    {
+                        "ide":  8,
+                        "name":  "Convert Timestamp",
+                        "public_name":  "",
+                        "count":  3
+                    }
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "bck",
+                            "Create",
+                            "Drop",
+                            "Export",
+                            "IDX3",
+                            "Index",
+                            "Log",
+                            "PRIM",
+                            "Prog",
+                            "Table",
+                            "Temdb",
+                            "Tempdb",
+                            "Tempo",
+                            "Ucopia",
+                            "View",
+                            "Write"
+                        ],
+    "statistics":  {
+                       "task_count":  11,
+                       "condition_count":  1,
+                       "tables_write_count":  3,
+                       "callee_count":  1,
+                       "parameter_count":  0
+                   }
+}

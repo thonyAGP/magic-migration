@@ -1,0 +1,143 @@
+{
+    "program":  "Affiche filiations",
+    "public_name":  "",
+    "project":  "WEL",
+    "ide":  32,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "Affiche filiations",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "O",
+                      "logic_lines":  50,
+                      "source_table":  343,
+                      "source_access":  "W",
+                      "has_form":  true,
+                      "initial_mode":  "M",
+                      "ide_path":  "32"
+                  },
+                  {
+                      "isn2":  2,
+                      "name":  "supprime non pointes",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  3,
+                      "source_table":  343,
+                      "source_access":  "W",
+                      "has_form":  false,
+                      "initial_mode":  "D",
+                      "ide_path":  "32.1"
+                  },
+                  {
+                      "isn2":  3,
+                      "name":  "Creation histo",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  31,
+                      "source_table":  30,
+                      "source_access":  "R",
+                      "has_form":  false,
+                      "initial_mode":  "M",
+                      "ide_path":  "32.2"
+                  },
+                  {
+                      "isn2":  4,
+                      "name":  "CLIENT LIST",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "O",
+                      "logic_lines":  28,
+                      "source_table":  30,
+                      "source_access":  "R",
+                      "has_form":  true,
+                      "initial_mode":  "E",
+                      "ide_path":  "32.3"
+                  },
+                  {
+                      "isn2":  5,
+                      "name":  "Pointage pour fusion et blocag",
+                      "level":  2,
+                      "parent_isn2":  4,
+                      "task_type":  "B",
+                      "logic_lines":  30,
+                      "source_table":  47,
+                      "source_access":  "W",
+                      "has_form":  false,
+                      "initial_mode":  "M",
+                      "ide_path":  "32.3.1"
+                  },
+                  {
+                      "isn2":  6,
+                      "name":  "Compte les pointés",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  8,
+                      "source_table":  343,
+                      "source_access":  "R",
+                      "has_form":  false,
+                      "initial_mode":  "E",
+                      "ide_path":  "32.4"
+                  }
+              ],
+    "conditions":  [
+                       {
+                           "ide":  6,
+                           "content":  "IF({0,15},\u0027√\u0027,\u0027 \u0027)",
+                           "decoded":  "IF([O],\u0027√\u0027,\u0027 \u0027)",
+                           "comment":  "",
+                           "exp_type":  "A"
+                       }
+                   ],
+    "tables_write":  [
+                         {
+                             "id":  47,
+                             "name":  "compte_gm________cgm",
+                             "physical":  "cafil025_dat",
+                             "access":  "W"
+                         },
+                         {
+                             "id":  343,
+                             "name":  "histo_fusionseparation_saisie",
+                             "physical":  "histo_fus_sep_saisie",
+                             "access":  "W"
+                         }
+                     ],
+    "callees":  [
+                    {
+                        "ide":  17,
+                        "name":  "Search client avec liste",
+                        "public_name":  "",
+                        "count":  1
+                    }
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "Affiche",
+                            "blocag",
+                            "CLIENT",
+                            "Compte",
+                            "Creation",
+                            "filiations",
+                            "fusion",
+                            "histo",
+                            "LIST",
+                            "non",
+                            "Pointage",
+                            "pointes",
+                            "pointés",
+                            "supprime"
+                        ],
+    "statistics":  {
+                       "task_count":  6,
+                       "condition_count":  1,
+                       "tables_write_count":  2,
+                       "callee_count":  1,
+                       "parameter_count":  0
+                   }
+}

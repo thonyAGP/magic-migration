@@ -1,0 +1,251 @@
+﻿{
+    "table_other_vars":  {
+
+                         },
+    "variable_mapping":  {
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "Parite",
+                                           "letter":  "C"
+                                       },
+                             "{0,9}":  {
+                                           "type":  "local",
+                                           "name":  "Statut Ouverture",
+                                           "letter":  "I"
+                                       },
+                             "{0,13}":  {
+                                            "type":  "local",
+                                            "name":  "v.ETX",
+                                            "letter":  "M"
+                                        },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "Port COM",
+                                           "letter":  "A"
+                                       },
+                             "{0,7}":  {
+                                           "type":  "local",
+                                           "name":  "Windows Handle",
+                                           "letter":  "G"
+                                       },
+                             "{0,11}":  {
+                                            "type":  "local",
+                                            "name":  "v.ACK",
+                                            "letter":  "K"
+                                        },
+                             "{0,5}":  {
+                                           "type":  "local",
+                                           "name":  "Bit Donnee",
+                                           "letter":  "E"
+                                       },
+                             "{0,15}":  {
+                                            "type":  "local",
+                                            "name":  "v.Message Lu",
+                                            "letter":  "O"
+                                        },
+                             "{0,8}":  {
+                                           "type":  "local",
+                                           "name":  "Magic Windows Handle",
+                                           "letter":  "H"
+                                       },
+                             "{0,6}":  {
+                                           "type":  "local",
+                                           "name":  "Version",
+                                           "letter":  "F"
+                                       },
+                             "{0,4}":  {
+                                           "type":  "local",
+                                           "name":  "Bit Arret",
+                                           "letter":  "D"
+                                       },
+                             "{0,16}":  {
+                                            "type":  "local",
+                                            "name":  "v.Nb Car",
+                                            "letter":  "P"
+                                        },
+                             "{0,10}":  {
+                                            "type":  "local",
+                                            "name":  "Statut Fermeture",
+                                            "letter":  "J"
+                                        },
+                             "{0,14}":  {
+                                            "type":  "local",
+                                            "name":  "v.STX",
+                                            "letter":  "N"
+                                        },
+                             "{0,12}":  {
+                                            "type":  "local",
+                                            "name":  "v.NAK",
+                                            "letter":  "L"
+                                        },
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "Vitesse",
+                                           "letter":  "B"
+                                       }
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+
+               },
+    "statistics":  {
+                       "total_variables":  16,
+                       "mapping_entries":  16,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  16,
+                       "global_count":  0,
+                       "table_count":  0
+                   },
+    "metadata":  {
+                     "ide_position":  19,
+                     "pipeline_version":  "7.2",
+                     "project":  "QUA",
+                     "program_name":  "Flush Serial",
+                     "generated_at":  "2026-02-03 20:20:11"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Port COM",
+                                        "data_type":  "Numeric",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Vitesse",
+                                        "data_type":  "Numeric",
+                                        "picture":  "6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "Parite",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "Bit Arret",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "Bit Donnee",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "Version",
+                                        "data_type":  "Alpha",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "Windows Handle",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "Magic Windows Handle",
+                                        "data_type":  "Numeric",
+                                        "picture":  "10",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "Statut Ouverture",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "Statut Fermeture",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N4",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "v.ACK",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "v.NAK",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "M",
+                                        "name":  "v.ETX",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "N",
+                                        "name":  "v.STX",
+                                        "data_type":  "Alpha",
+                                        "picture":  "1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "O",
+                                        "name":  "v.Message Lu",
+                                        "data_type":  "Alpha",
+                                        "picture":  "400",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "P",
+                                        "name":  "v.Nb Car",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

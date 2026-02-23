@@ -1,0 +1,53 @@
+﻿{
+    "screen_mockup_ascii":  [
+                                "+--------------------------------------+",
+                                "|    Verification si client/serveur    |",
+                                "+--------------------------------------+",
+                                "|  [Form content - MDI]                |",
+                                "|                                      |",
+                                "+--------------------------------------+"
+                            ],
+    "statistics":  {
+                       "total_columns":  0,
+                       "total_controls":  0,
+                       "form_count":  1,
+                       "tasks_with_columns":  0,
+                       "tasks_with_controls":  0
+                   },
+    "task_columns":  {
+
+                     },
+    "metadata":  {
+                     "ide_position":  36,
+                     "pipeline_version":  "7.5",
+                     "project":  "PTR",
+                     "program_name":  "Verification si client/serveur",
+                     "generated_at":  "2026-02-03 18:21:23"
+                 },
+    "forms":  [
+                  {
+                      "task_isn2":  1,
+                      "form_id":  2,
+                      "v_factor":  null,
+                      "h_factor":  null,
+                      "color":  null,
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Verification si client/serveur",
+                      "font":  "",
+                      "window_type_str":  "MDI",
+                      "form_units":  null,
+                      "open_task_window":  "N",
+                      "task_ide_position":  "36",
+                      "window_type":  1,
+                      "properties_json":  "{\"_Comment_218\":true,\"_TabbingOrder_318\":\"1\",\"PersistentFormState_493\":true}"
+                  }
+              ],
+    "form_controls":  {
+
+                      }
+}

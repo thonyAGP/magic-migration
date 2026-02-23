@@ -1,0 +1,62 @@
+{
+    "program":  "Menu changement compte",
+    "public_name":  "",
+    "project":  "ADH",
+    "ide":  37,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "Menu changement compte",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "O",
+                      "logic_lines":  32,
+                      "source_table":  null,
+                      "source_access":  "",
+                      "has_form":  false,
+                      "initial_mode":  "",
+                      "ide_path":  "37"
+                  }
+              ],
+    "conditions":  [
+                       {
+                           "ide":  7,
+                           "content":  "IF(Trim({32768,115})\u003c\u003e\u0027\u0027,Trim({32768,115})\u0026\u0027|\u0027,\u0027\u0027)\u0026IF({0,10}=\u00271\u0027,\u0027SEPARATION DE COMPTE\u0027,\u0027FUSION DE COMPTE\u0027)",
+                           "decoded":  "IF(Trim(VG115)\u003c\u003e\u0027\u0027,Trim(VG115)\u0026\u0027|\u0027,\u0027\u0027)\u0026IF(W0 choix action [J]=\u00271\u0027,\u0027SEPARATION DE COMPTE\u0027,\u0027FUSION DE COMPTE\u0027)",
+                           "comment":  "",
+                           "exp_type":  ""
+                       }
+                   ],
+    "tables_write":  [
+
+                     ],
+    "callees":  [
+                    {
+                        "ide":  43,
+                        "name":  "Recuperation du titre",
+                        "public_name":  "",
+                        "count":  1
+                    },
+                    {
+                        "ide":  44,
+                        "name":  "Appel programme",
+                        "public_name":  "",
+                        "count":  1
+                    }
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "changement",
+                            "compte",
+                            "Menu"
+                        ],
+    "statistics":  {
+                       "task_count":  1,
+                       "condition_count":  1,
+                       "tables_write_count":  0,
+                       "callee_count":  2,
+                       "parameter_count":  0
+                   }
+}

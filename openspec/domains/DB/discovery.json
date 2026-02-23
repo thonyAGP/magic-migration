@@ -1,0 +1,132 @@
+﻿{
+    "tables":  {
+                   "all":  [
+                               {
+                                   "logical_name":  "table_utilisateurs",
+                                   "physical_name":  "cafil087_dat",
+                                   "access_mode":  "WRITE",
+                                   "id":  109,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "commandes",
+                                   "physical_name":  "command_par",
+                                   "access_mode":  "LINK",
+                                   "id":  691,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "utilisateur______uti",
+                                   "physical_name":  "user_dat",
+                                   "access_mode":  "WRITE",
+                                   "id":  718,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "pv_stock_movements",
+                                   "physical_name":  "pv_stockmvt_dat",
+                                   "access_mode":  "WRITE",
+                                   "id":  740,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "motif_no_enreg_na",
+                                   "physical_name":  "motif_no_enreg_na",
+                                   "access_mode":  "LINK",
+                                   "id":  768,
+                                   "usage_count":  1
+                               }
+                           ],
+                   "by_access":  {
+                                     "LINK":  [
+                                                  {
+                                                      "logical_name":  "commandes",
+                                                      "physical_name":  "command_par",
+                                                      "access_mode":  "LINK",
+                                                      "id":  691,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "motif_no_enreg_na",
+                                                      "physical_name":  "motif_no_enreg_na",
+                                                      "access_mode":  "LINK",
+                                                      "id":  768,
+                                                      "usage_count":  1
+                                                  }
+                                              ],
+                                     "READ":  [
+
+                                              ],
+                                     "WRITE":  [
+                                                   {
+                                                       "logical_name":  "table_utilisateurs",
+                                                       "physical_name":  "cafil087_dat",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  109,
+                                                       "usage_count":  1
+                                                   },
+                                                   {
+                                                       "logical_name":  "utilisateur______uti",
+                                                       "physical_name":  "user_dat",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  718,
+                                                       "usage_count":  1
+                                                   },
+                                                   {
+                                                       "logical_name":  "pv_stock_movements",
+                                                       "physical_name":  "pv_stockmvt_dat",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  740,
+                                                       "usage_count":  1
+                                                   }
+                                               ]
+                                 }
+               },
+    "orphan_analysis":  {
+                            "has_public_name":  false,
+                            "is_ecf_member":  false,
+                            "has_callers":  true,
+                            "status":  "NON_ORPHELIN",
+                            "reason":  "Appele par 1 programme(s): Recup DataBase (IDE 8)"
+                        },
+    "statistics":  {
+                       "callee_count":  0,
+                       "expression_count":  9,
+                       "logic_line_count":  51,
+                       "caller_count":  1,
+                       "task_count":  3,
+                       "disabled_line_count":  0,
+                       "table_count":  5
+                   },
+    "call_graph":  {
+                       "call_chain":  [
+                                          {
+                                              "name":  "Recup DataBase",
+                                              "ide":  8,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Main Program",
+                                              "ide":  1,
+                                              "level":  2
+                                          }
+                                      ],
+                       "callees":  [
+
+                                   ],
+                       "callers":  [
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Recup DataBase",
+                                           "ide":  8
+                                       }
+                                   ]
+                   },
+    "metadata":  {
+                     "ide_position":  15,
+                     "pipeline_version":  "7.1",
+                     "project":  "Menu",
+                     "program_name":  "MAJ User",
+                     "generated_at":  "2026-02-03 15:13:06"
+                 }
+}

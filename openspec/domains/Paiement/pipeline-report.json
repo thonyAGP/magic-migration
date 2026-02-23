@@ -1,0 +1,8 @@
+﻿{
+    "pipeline_version":  "7.2",
+    "spec_path":  "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\GES-IDE-75.md",
+    "algo_json":  "Paiement\\algo.json",
+    "ide_position":  75,
+    "duration_seconds":  16.6,
+    "project":  "GES"
+}

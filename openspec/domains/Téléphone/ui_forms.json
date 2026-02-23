@@ -1,0 +1,63 @@
+﻿{
+    "screen_mockup_ascii":  [
+                                "+--------------------------------------+",
+                                "|      Suppression Connexion.log       |",
+                                "+--------------------------------------+",
+                                "|  [Form content - MDI]                |",
+                                "|                                      |",
+                                "+--------------------------------------+"
+                            ],
+    "statistics":  {
+                       "total_columns":  1,
+                       "total_controls":  0,
+                       "form_count":  1,
+                       "tasks_with_columns":  1,
+                       "tasks_with_controls":  0
+                   },
+    "task_columns":  {
+                         "1":  [
+                                   {
+                                       "letter":  "A",
+                                       "name":  "\u003e chemin",
+                                       "data_type":  "Alpha",
+                                       "picture":  "150",
+                                       "definition":  "P",
+                                       "gui_control":  "",
+                                       "readonly":  true
+                                   }
+                               ]
+                     },
+    "metadata":  {
+                     "ide_position":  64,
+                     "pipeline_version":  "7.5",
+                     "project":  "POO",
+                     "program_name":  "Suppression Connexion.log",
+                     "generated_at":  "2026-02-03 18:00:12"
+                 },
+    "forms":  [
+                  {
+                      "task_isn2":  1,
+                      "form_id":  2,
+                      "v_factor":  null,
+                      "h_factor":  null,
+                      "color":  null,
+                      "dimensions":  {
+                                         "x":  0,
+                                         "y":  0,
+                                         "width":  0,
+                                         "height":  0
+                                     },
+                      "name":  "Suppression Connexion.log",
+                      "font":  "",
+                      "window_type_str":  "MDI",
+                      "form_units":  null,
+                      "open_task_window":  "N",
+                      "task_ide_position":  "64",
+                      "window_type":  1,
+                      "properties_json":  "{\"_Comment_218\":true,\"_TabbingOrder_318\":\"1\"}"
+                  }
+              ],
+    "form_controls":  {
+
+                      }
+}

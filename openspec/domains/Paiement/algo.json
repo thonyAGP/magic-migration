@@ -1,0 +1,49 @@
+{
+    "program":  "Bi Moyens de règlement",
+    "public_name":  "",
+    "project":  "GES",
+    "ide":  75,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "Bi Moyens de règlement",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "O",
+                      "logic_lines":  51,
+                      "source_table":  67,
+                      "source_access":  "R",
+                      "has_form":  true,
+                      "initial_mode":  "M",
+                      "ide_path":  "75"
+                  }
+              ],
+    "conditions":  [
+
+                   ],
+    "tables_write":  [
+
+                     ],
+    "callees":  [
+                    {
+                        "ide":  30,
+                        "name":  "Recuperation du titre",
+                        "public_name":  "",
+                        "count":  1
+                    }
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "Moyens",
+                            "règlement"
+                        ],
+    "statistics":  {
+                       "task_count":  1,
+                       "condition_count":  0,
+                       "tables_write_count":  0,
+                       "callee_count":  1,
+                       "parameter_count":  0
+                   }
+}

@@ -1,0 +1,219 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  3,
+                                       "calculation":  0,
+                                       "other":  4,
+                                       "date":  1,
+                                       "constant":  0,
+                                       "string":  0
+                                   },
+                       "total_in_program":  8,
+                       "decoded_count":  8,
+                       "business_rules_count":  2
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-001",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF ({0,2}=\u0027COM\u0027,\u0027TELEPHONE\u0027,\u0027MONETIQUE\u0027)",
+                                                              "decoded":  "IF ([B]=\u0027COM\u0027,\u0027TELEPHONE\u0027,\u0027MONETIQUE\u0027)",
+                                                              "ide_position":  6
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-002",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF ({0,4},\u0027Probleme sur le pooling\u0027,\u0027Ok\u0027)",
+                                                              "decoded":  "IF ([D],\u0027Probleme sur le pooling\u0027,\u0027Ok\u0027)",
+                                                              "ide_position":  7
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "raw":  "IF ({0,4},11,1)",
+                                                              "ide_position":  8,
+                                                              "decoded":  "IF ([D],11,1)",
+                                                              "type":  "CONDITION"
+                                                          }
+                                                      ],
+                                        "CALCULATION":  [
+
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT {32768,9}",
+                                                          "ide_position":  1,
+                                                          "decoded":  "NOT VG9",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{32768,9}",
+                                                          "ide_position":  2,
+                                                          "decoded":  "VG9",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{32768,10}",
+                                                          "ide_position":  3,
+                                                          "decoded":  "VG10",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{32768,2}",
+                                                          "ide_position":  5,
+                                                          "decoded":  "VG2",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Date ()",
+                                                         "ide_position":  4,
+                                                         "decoded":  "Date ()",
+                                                         "type":  "DATE"
+                                                     }
+                                                 ],
+                                        "CONSTANT":  [
+
+                                                     ],
+                                        "STRING":  [
+
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT {32768,9}",
+                                        "ide_position":  1,
+                                        "decoded":  "NOT VG9",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{32768,9}",
+                                        "ide_position":  2,
+                                        "decoded":  "VG9",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{32768,10}",
+                                        "ide_position":  3,
+                                        "decoded":  "VG10",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Date ()",
+                                        "ide_position":  4,
+                                        "decoded":  "Date ()",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{32768,2}",
+                                        "ide_position":  5,
+                                        "decoded":  "VG2",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-001",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF ({0,2}=\u0027COM\u0027,\u0027TELEPHONE\u0027,\u0027MONETIQUE\u0027)",
+                                        "decoded":  "IF ([B]=\u0027COM\u0027,\u0027TELEPHONE\u0027,\u0027MONETIQUE\u0027)",
+                                        "ide_position":  6
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-002",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF ({0,4},\u0027Probleme sur le pooling\u0027,\u0027Ok\u0027)",
+                                        "decoded":  "IF ([D],\u0027Probleme sur le pooling\u0027,\u0027Ok\u0027)",
+                                        "ide_position":  7
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "IF ({0,4},11,1)",
+                                        "ide_position":  8,
+                                        "decoded":  "IF ([D],11,1)",
+                                        "type":  "CONDITION"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+                                       {
+                                           "id":  "RM-001",
+                                           "false_value":  "\u0027MONETIQUE\u0027)",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF ([B]=\u0027COM\u0027,\u0027TELEPHONE\u0027,\u0027MONETIQUE\u0027)",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  6,
+                                           "true_value":  "\u0027TELEPHONE\u0027",
+                                           "natural_language":  "Si [B]=\u0027COM\u0027 alors \u0027TELEPHONE\u0027 sinon \u0027MONETIQUE\u0027)",
+                                           "condition":  "[B]=\u0027COM\u0027",
+                                           "raw_expression":  "IF ({0,2}=\u0027COM\u0027,\u0027TELEPHONE\u0027,\u0027MONETIQUE\u0027)"
+                                       },
+                                       {
+                                           "id":  "RM-002",
+                                           "false_value":  "\u0027Ok\u0027)",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF ([D],\u0027Probleme sur le pooling\u0027,\u0027Ok\u0027)",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  7,
+                                           "true_value":  "\u0027Probleme sur le pooling\u0027",
+                                           "natural_language":  "Si [D] alors \u0027Probleme sur le pooling\u0027 sinon \u0027Ok\u0027)",
+                                           "condition":  "[D]",
+                                           "raw_expression":  "IF ({0,4},\u0027Probleme sur le pooling\u0027,\u0027Ok\u0027)"
+                                       }
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+                                                                 {
+                                                                     "id":  "RM-001",
+                                                                     "false_value":  "\u0027MONETIQUE\u0027)",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF ([B]=\u0027COM\u0027,\u0027TELEPHONE\u0027,\u0027MONETIQUE\u0027)",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  6,
+                                                                     "true_value":  "\u0027TELEPHONE\u0027",
+                                                                     "natural_language":  "Si [B]=\u0027COM\u0027 alors \u0027TELEPHONE\u0027 sinon \u0027MONETIQUE\u0027)",
+                                                                     "condition":  "[B]=\u0027COM\u0027",
+                                                                     "raw_expression":  "IF ({0,2}=\u0027COM\u0027,\u0027TELEPHONE\u0027,\u0027MONETIQUE\u0027)"
+                                                                 },
+                                                                 {
+                                                                     "id":  "RM-002",
+                                                                     "false_value":  "\u0027Ok\u0027)",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF ([D],\u0027Probleme sur le pooling\u0027,\u0027Ok\u0027)",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  7,
+                                                                     "true_value":  "\u0027Probleme sur le pooling\u0027",
+                                                                     "natural_language":  "Si [D] alors \u0027Probleme sur le pooling\u0027 sinon \u0027Ok\u0027)",
+                                                                     "condition":  "[D]",
+                                                                     "raw_expression":  "IF ({0,4},\u0027Probleme sur le pooling\u0027,\u0027Ok\u0027)"
+                                                                 }
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  43,
+                     "pipeline_version":  "7.1",
+                     "project":  "MAI",
+                     "program_name":  "Visualisation pooling",
+                     "generated_at":  "2026-02-03 14:54:26"
+                 }
+}

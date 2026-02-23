@@ -1,0 +1,91 @@
+{
+    "program":  "MAJ User",
+    "public_name":  "",
+    "project":  "Menu",
+    "ide":  15,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "MAJ User",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "B",
+                      "logic_lines":  38,
+                      "source_table":  740,
+                      "source_access":  "W",
+                      "has_form":  false,
+                      "initial_mode":  "M",
+                      "ide_path":  "15"
+                  },
+                  {
+                      "isn2":  2,
+                      "name":  "Upd Operateur / Utilisateur",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  10,
+                      "source_table":  109,
+                      "source_access":  "W",
+                      "has_form":  false,
+                      "initial_mode":  "M",
+                      "ide_path":  "15.1"
+                  },
+                  {
+                      "isn2":  3,
+                      "name":  "Upd Droits",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "B",
+                      "logic_lines":  3,
+                      "source_table":  718,
+                      "source_access":  "W",
+                      "has_form":  false,
+                      "initial_mode":  "M",
+                      "ide_path":  "15.2"
+                  }
+              ],
+    "conditions":  [
+
+                   ],
+    "tables_write":  [
+                         {
+                             "id":  109,
+                             "name":  "table_utilisateurs",
+                             "physical":  "cafil087_dat",
+                             "access":  "W"
+                         },
+                         {
+                             "id":  718,
+                             "name":  "utilisateur______uti",
+                             "physical":  "user_dat",
+                             "access":  "W"
+                         },
+                         {
+                             "id":  740,
+                             "name":  "pv_stock_movements",
+                             "physical":  "pv_stockmvt_dat",
+                             "access":  "W"
+                         }
+                     ],
+    "callees":  [
+
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "Droits",
+                            "MAJ",
+                            "Operateur",
+                            "Upd",
+                            "User",
+                            "Utilisateur"
+                        ],
+    "statistics":  {
+                       "task_count":  3,
+                       "condition_count":  0,
+                       "tables_write_count":  3,
+                       "callee_count":  0,
+                       "parameter_count":  0
+                   }
+}

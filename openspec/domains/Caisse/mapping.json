@@ -1,0 +1,125 @@
+﻿{
+    "table_other_vars":  {
+                             "249":  [
+                                         {
+                                             "letter":  "A",
+                                             "name":  "Pi.terminal",
+                                             "data_type":  "Numeric",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "B",
+                                             "name":  "Po.Ouverture caisse possible?",
+                                             "data_type":  "Logical",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "C",
+                                             "name":  "e.Caisse ouverte aujourd\u0027hui?",
+                                             "data_type":  "Logical",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "D",
+                                             "name":  "e.Caisse fermée?",
+                                             "data_type":  "Logical",
+                                             "definition":  "V"
+                                         }
+                                     ]
+                         },
+    "variable_mapping":  {
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "Po.Ouverture caisse possible?",
+                                           "letter":  "B"
+                                       },
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "e.Caisse ouverte aujourd\u0027hui?",
+                                           "letter":  "C"
+                                       },
+                             "{0,4}":  {
+                                           "type":  "local",
+                                           "name":  "e.Caisse fermée?",
+                                           "letter":  "D"
+                                       },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "Pi.terminal",
+                                           "letter":  "A"
+                                       }
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+                   "249":  {
+                               "physical":  "caisse_session_detail",
+                               "name":  "histo_sessions_caisse_detail",
+                               "access":  "WRITE",
+                               "logical":  "histo_sessions_caisse_detail"
+                           }
+               },
+    "statistics":  {
+                       "total_variables":  4,
+                       "mapping_entries":  4,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  4,
+                       "global_count":  0,
+                       "table_count":  1
+                   },
+    "metadata":  {
+                     "ide_position":  156,
+                     "pipeline_version":  "7.2",
+                     "project":  "ADH",
+                     "program_name":  "Verif session caisse ouverte2",
+                     "generated_at":  "2026-02-07 07:17:29"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "Pi.terminal",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "Po.Ouverture caisse possible?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "e.Caisse ouverte aujourd\u0027hui?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "e.Caisse fermée?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

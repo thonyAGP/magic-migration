@@ -1,51 +1,44 @@
 {
-    "name": "magic-unipaas-parser",
-    "version": "1.0.0",
-    "description": "Parser for Magic Unipaas v12.03 expressions with code generation",
-    "main": "dist/parser/index.js",
-    "types": "dist/parser/index.d.ts",
-    "scripts": {
-        "build": "tsc",
-        "test": "vitest run",
-        "test:watch": "vitest",
-        "test:coverage": "vitest run --coverage",
-        "lint": "eslint",
-        "clean": "rimraf dist",
-        "test:e2e": "npx playwright test",
-        "test:e2e:api": "npx playwright test api-caisse",
-        "prepare": "husky"
-    },
-    "keywords": [
-        "magic",
-        "unipaas",
-        "parser",
-        "migration",
-        "typescript",
-        "csharp",
-        "python"
-    ],
-    "author": "",
-    "license": "MIT",
-    "devDependencies": {
-        "@commitlint/cli": "^20.4.1",
-        "@commitlint/config-conventional": "^20.4.1",
-        "@playwright/test": "^1.57.0",
-        "@types/node": "^20.10.0",
-        "@typescript-eslint/eslint-plugin": "^8.56.0",
-        "@typescript-eslint/parser": "^8.56.0",
-        "eslint": "^10.0.0",
-        "husky": "^9.1.7",
-        "lint-staged": "^16.2.7",
-        "rimraf": "^5.0.0",
-        "typescript": "^5.9.3",
-        "vitest": "^4.0.18"
-    },
-    "engines": {
-        "node": ">=18.0.0"
-    },
-    "lint-staged": {
-        "*.{ts,tsx,js,jsx}": [
-            "pnpm lint --fix"
-        ]
-    }
+  "name": "@magic-migration/monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Magic Unipaas migration platform - monorepo",
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "dev": "turbo run dev",
+    "test:e2e": "npx playwright test",
+    "test:e2e:api": "npx playwright test api-caisse",
+    "prepare": "husky"
+  },
+  "keywords": [
+    "magic",
+    "unipaas",
+    "migration",
+    "specmap"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.1",
+    "@commitlint/config-conventional": "^20.4.1",
+    "@playwright/test": "^1.57.0",
+    "eslint": "^10.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "turbo": "^2.8.10",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix"
+    ]
+  },
+  "packageManager": "pnpm@10.7.0"
 }

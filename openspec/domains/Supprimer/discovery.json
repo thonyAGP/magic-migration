@@ -1,0 +1,192 @@
+﻿{
+    "tables":  {
+                   "all":  [
+                               {
+                                   "logical_name":  "pv_cust_rentals",
+                                   "physical_name":  "pv_rentals_dat",
+                                   "access_mode":  "WRITE",
+                                   "id":  400,
+                                   "usage_count":  1
+                               }
+                           ],
+                   "by_access":  {
+                                     "LINK":  [
+
+                                              ],
+                                     "READ":  [
+
+                                              ],
+                                     "WRITE":  [
+                                                   {
+                                                       "logical_name":  "pv_cust_rentals",
+                                                       "physical_name":  "pv_rentals_dat",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  400,
+                                                       "usage_count":  1
+                                                   }
+                                               ]
+                                 }
+               },
+    "orphan_analysis":  {
+                            "has_public_name":  false,
+                            "is_ecf_member":  false,
+                            "has_callers":  true,
+                            "status":  "NON_ORPHELIN",
+                            "reason":  "Appele par 14 programme(s): Generate Preview Payments (IDE 189), Main Sale ===V4 (IDE 0), Main Sale ===V4 bck (IDE 352), Main Sale ===V4 (IDE 354), Main Sale ===V4 (IDE 359), Main Sale ===V4 (IDE 409), Main Sale ===V4 (IDE 415), Main Sale ===V4 Booking ACTUEL (IDE 417), Main Sale (IDE 440), Print Invoice or Ticket (IDE 208), Generate Preview Payments 1212 (IDE 434), Generate Preview Payments 1112 (IDE 435), Generate Preview Payments 1012 (IDE 436), Generate Preview Payment 1212E (IDE 437)"
+                        },
+    "statistics":  {
+                       "callee_count":  0,
+                       "expression_count":  1,
+                       "logic_line_count":  49,
+                       "caller_count":  14,
+                       "task_count":  1,
+                       "disabled_line_count":  0,
+                       "table_count":  null
+                   },
+    "call_graph":  {
+                       "call_chain":  [
+                                          {
+                                              "name":  "Main Sale ===V4",
+                                              "ide":  0,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Generate Preview Payments",
+                                              "ide":  189,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Print Invoice or Ticket",
+                                              "ide":  208,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Main Sale ===V4 bck",
+                                              "ide":  352,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Main Sale ===V4",
+                                              "ide":  354,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Menu==V4",
+                                              "ide":  353,
+                                              "level":  2
+                                          },
+                                          {
+                                              "name":  "Menu==V4___",
+                                              "ide":  420,
+                                              "level":  2
+                                          },
+                                          {
+                                              "name":  "Main Sale",
+                                              "ide":  186,
+                                              "level":  2
+                                          },
+                                          {
+                                              "name":  "Main Sale-664",
+                                              "ide":  187,
+                                              "level":  2
+                                          },
+                                          {
+                                              "name":  "Main Sale Sale Bar Code",
+                                              "ide":  214,
+                                              "level":  2
+                                          },
+                                          {
+                                              "name":  "Main Sale",
+                                              "ide":  363,
+                                              "level":  2
+                                          },
+                                          {
+                                              "name":  "Main Sale-664",
+                                              "ide":  364,
+                                              "level":  2
+                                          }
+                                      ],
+                       "callees":  [
+
+                                   ],
+                       "callers":  [
+                                       {
+                                           "calls_count":  3,
+                                           "name":  "Generate Preview Payments",
+                                           "ide":  189
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Main Sale ===V4",
+                                           "ide":  0
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Main Sale ===V4 bck",
+                                           "ide":  352
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Main Sale ===V4",
+                                           "ide":  354
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Main Sale ===V4",
+                                           "ide":  359
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Main Sale ===V4",
+                                           "ide":  409
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Main Sale ===V4",
+                                           "ide":  415
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Main Sale ===V4 Booking ACTUEL",
+                                           "ide":  417
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "Main Sale",
+                                           "ide":  440
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Print Invoice or Ticket",
+                                           "ide":  208
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Generate Preview Payments 1212",
+                                           "ide":  434
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Generate Preview Payments 1112",
+                                           "ide":  435
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Generate Preview Payments 1012",
+                                           "ide":  436
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Generate Preview Payment 1212E",
+                                           "ide":  437
+                                       }
+                                   ]
+                   },
+    "metadata":  {
+                     "ide_position":  447,
+                     "pipeline_version":  "7.1",
+                     "project":  "PVE",
+                     "program_name":  "Browse - pv_cust_package",
+                     "generated_at":  "2026-02-03 20:12:59"
+                 }
+}

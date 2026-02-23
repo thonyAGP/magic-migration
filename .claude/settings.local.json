@@ -88,7 +88,9 @@
       "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" diff --cached --stat)",
       "Bash(Remove-Item \"D:\\\\Projects\\\\Lecteur_Magic\\\\.git\\\\index.lock\" -Force -ErrorAction SilentlyContinue)",
       "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" commit -m \"$\\(cat <<''EOF''\ndocs\\(tickets\\): complete PMS-1453 analysis + fix OpenSpec viewer\n\nPMS-1453 Analysis:\n- Root cause: Missing Picture validation on FIELD_TIME columns\n- Location: ADH IDE 307 Task 307.37 \\(Saisie transaction Nouv vente\\)\n- Solution: Add <Picture id=\"157\" valUnicode=\"HH:MM\"/> to columns 5 and 13\n\nOpenSpec Viewer fix:\n- Update index.json format to match viewer.html expectations\n- Add lastUpdated, reports array, tickets.archived structure\n- Add 10 principal/technical reports\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" push origin master)"
+      "Bash(git -C \"D:\\\\Projects\\\\Lecteur_Magic\" push origin master)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot"
     ]
   }
 }

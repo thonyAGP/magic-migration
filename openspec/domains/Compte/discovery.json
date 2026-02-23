@@ -1,0 +1,61 @@
+﻿{
+    "tables":  {
+                   "by_access":  {
+                                     "LINK":  [
+
+                                              ],
+                                     "READ":  [
+
+                                              ],
+                                     "WRITE":  [
+
+                                               ]
+                                 },
+                   "all":  [
+
+                           ]
+               },
+    "orphan_analysis":  {
+                            "has_public_name":  false,
+                            "is_ecf_member":  false,
+                            "has_callers":  false,
+                            "status":  "ORPHELIN_POTENTIEL",
+                            "reason":  "Aucun caller direct detecte - verifier PublicName et ECF"
+                        },
+    "statistics":  {
+                       "callee_count":  2,
+                       "expression_count":  10,
+                       "logic_line_count":  32,
+                       "caller_count":  0,
+                       "task_count":  1,
+                       "disabled_line_count":  0,
+                       "table_count":  0
+                   },
+    "call_graph":  {
+                       "call_chain":  [
+
+                                      ],
+                       "callees":  [
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Recuperation du titre",
+                                           "ide":  43
+                                       },
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Appel programme",
+                                           "ide":  44
+                                       }
+                                   ],
+                       "callers":  [
+
+                                   ]
+                   },
+    "metadata":  {
+                     "ide_position":  37,
+                     "pipeline_version":  "7.1",
+                     "project":  "ADH",
+                     "program_name":  "Menu changement compte",
+                     "generated_at":  "2026-02-07 06:44:16"
+                 }
+}

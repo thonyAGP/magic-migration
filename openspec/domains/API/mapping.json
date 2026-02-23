@@ -1,0 +1,68 @@
+﻿{
+    "table_other_vars":  {
+                             "368":  [
+                                         {
+                                             "letter":  "A",
+                                             "name":  "v. Retour",
+                                             "data_type":  "Unicode",
+                                             "definition":  "V"
+                                         }
+                                     ]
+                         },
+    "variable_mapping":  {
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "v. Retour",
+                                           "letter":  "A"
+                                       }
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+                   "368":  {
+                               "physical":  "pmsvillage",
+                               "name":  "pms_village",
+                               "access":  "WRITE",
+                               "logical":  "pms_village"
+                           }
+               },
+    "statistics":  {
+                       "total_variables":  1,
+                       "mapping_entries":  1,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  1,
+                       "global_count":  0,
+                       "table_count":  1
+                   },
+    "metadata":  {
+                     "ide_position":  7,
+                     "pipeline_version":  "7.2",
+                     "project":  "TST",
+                     "program_name":  "Test Token API CLUB MED",
+                     "generated_at":  "2026-02-03 20:48:51"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "v. Retour",
+                                        "data_type":  "Unicode",
+                                        "picture":  "2000",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

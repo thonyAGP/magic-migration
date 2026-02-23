@@ -1,0 +1,206 @@
+﻿{
+    "table_other_vars":  {
+                             "30":  [
+                                        {
+                                            "letter":  "A",
+                                            "name":  "V.Total JH",
+                                            "data_type":  "Numeric",
+                                            "definition":  "V"
+                                        },
+                                        {
+                                            "letter":  "B",
+                                            "name":  "V.Lieu sejour",
+                                            "data_type":  "Alpha",
+                                            "definition":  "V"
+                                        }
+                                    ]
+                         },
+    "variable_mapping":  {
+                             "{0,5}":  {
+                                           "type":  "local",
+                                           "name":  "P.Premier lieu sejour",
+                                           "letter":  "E"
+                                       },
+                             "{0,7}":  {
+                                           "type":  "local",
+                                           "name":  "P Lieu de séjour Saisie ?",
+                                           "letter":  "G"
+                                       },
+                             "{0,9}":  {
+                                           "type":  "local",
+                                           "name":  "V.Total nb jh",
+                                           "letter":  "I"
+                                       },
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "P.Date fin",
+                                           "letter":  "B"
+                                       },
+                             "{0,4}":  {
+                                           "type":  "local",
+                                           "name":  "P.Lieu sejour",
+                                           "letter":  "D"
+                                       },
+                             "{0,6}":  {
+                                           "type":  "local",
+                                           "name":  "P.Nom lieu sejour",
+                                           "letter":  "F"
+                                       },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "P.Date debut",
+                                           "letter":  "A"
+                                       },
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "P.Code village",
+                                           "letter":  "C"
+                                       },
+                             "{0,8}":  {
+                                           "type":  "local",
+                                           "name":  "P.Gestion crise ?",
+                                           "letter":  "H"
+                                       }
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+                   "34":  {
+                              "physical":  "cafil012_dat",
+                              "name":  "hebergement______heb",
+                              "access":  "LINK",
+                              "logical":  "hebergement______heb"
+                          },
+                   "802":  {
+                               "physical":  "type_prestation",
+                               "name":  "type_prestation",
+                               "access":  "LINK",
+                               "logical":  "type_prestation"
+                           },
+                   "30":  {
+                              "physical":  "cafil008_dat",
+                              "name":  "gm-recherche_____gmr",
+                              "access":  "READ",
+                              "logical":  "gm-recherche_____gmr"
+                          }
+               },
+    "statistics":  {
+                       "total_variables":  11,
+                       "mapping_entries":  9,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  11,
+                       "global_count":  0,
+                       "table_count":  3
+                   },
+    "metadata":  {
+                     "ide_position":  418,
+                     "pipeline_version":  "7.2",
+                     "project":  "PBP",
+                     "program_name":  "Deficit IGR V3  **SAV **",
+                     "generated_at":  "2026-02-03 16:57:50"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P.Date debut",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "V.Total JH",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N4.1",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "P.Date fin",
+                                        "data_type":  "Date",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "V.Lieu sejour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "P.Code village",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U3",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "P.Lieu sejour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "P.Premier lieu sejour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "P.Nom lieu sejour",
+                                        "data_type":  "Alpha",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "P Lieu de séjour Saisie ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "P.Gestion crise ?",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "V.Total nb jh",
+                                        "data_type":  "Numeric",
+                                        "picture":  "N6.1",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

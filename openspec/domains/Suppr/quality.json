@@ -1,0 +1,151 @@
+﻿{
+    "files_generated":  [
+                            "WEL-IDE-116-summary.md",
+                            "WEL-IDE-116.md"
+                        ],
+    "extraction_coverage":  {
+                                "tables_extracted":  true,
+                                "expressions_decoded":  true,
+                                "callers_extracted":  true,
+                                "callees_extracted":  true,
+                                "variables_mapped":  true,
+                                "forms_extracted":  true
+                            },
+    "audit":  {
+                  "checks":  [
+                                 {
+                                     "detail":  "OK",
+                                     "status":  "PASS",
+                                     "check":  "RULES_NO_PLACEHOLDER"
+                                 },
+                                 {
+                                     "detail":  "4 onglets V7.2",
+                                     "status":  "PASS",
+                                     "check":  "TAB_STRUCTURE"
+                                 },
+                                 {
+                                     "detail":  "V7.2 present",
+                                     "status":  "PASS",
+                                     "check":  "VERSION_72"
+                                 },
+                                 {
+                                     "detail":  "39 ancres",
+                                     "status":  "PASS",
+                                     "check":  "V72_ANCHORS"
+                                 },
+                                 {
+                                     "detail":  "36 liens cliquables",
+                                     "status":  "PASS",
+                                     "check":  "V72_LINKS"
+                                 },
+                                 {
+                                     "detail":  "7 blocs FORM-DATA",
+                                     "status":  "PASS",
+                                     "check":  "V72_FORMDATA"
+                                 },
+                                 {
+                                     "detail":  "3 groupes par role",
+                                     "status":  "PASS",
+                                     "check":  "V72_VAR_ROLES"
+                                 },
+                                 {
+                                     "detail":  "34 types precis",
+                                     "status":  "PASS",
+                                     "check":  "V72_EXPR_TYPES"
+                                 },
+                                 {
+                                     "detail":  "Roles specifiques aux taches",
+                                     "status":  "PASS",
+                                     "check":  "GAP1_SPECIFIC_ROLES"
+                                 },
+                                 {
+                                     "detail":  "Liste sous-taches presente",
+                                     "status":  "PASS",
+                                     "check":  "GAP2_SUBTASKS"
+                                 },
+                                 {
+                                     "detail":  "Variables liees aux taches",
+                                     "status":  "PASS",
+                                     "check":  "GAP2_VARS_TASK"
+                                 },
+                                 {
+                                     "detail":  "3/3 champs enrichis (source/exemple/impact)",
+                                     "status":  "PASS",
+                                     "check":  "GAP3_ENRICHED_RULES"
+                                 },
+                                 {
+                                     "detail":  "6 \u0027Action declenchee\u0027 (ancien)",
+                                     "status":  "FAIL",
+                                     "check":  "GAP4_BTN_ACTIONS"
+                                 },
+                                 {
+                                     "detail":  "Pas de fallback MCP",
+                                     "status":  "PASS",
+                                     "check":  "GAP5_COLUMNS"
+                                 },
+                                 {
+                                     "detail":  "Variables avec contexte (pas de \u0027Xx refs\u0027)",
+                                     "status":  "PASS",
+                                     "check":  "GAP6_VAR_LINKS"
+                                 },
+                                 {
+                                     "detail":  "Migration concrete (pas generique)",
+                                     "status":  "PASS",
+                                     "check":  "GAP7_MIGRATION"
+                                 },
+                                 {
+                                     "detail":  "All T{ISN2} replaced with ide_path",
+                                     "status":  "PASS",
+                                     "check":  "NR_IDE_PATH"
+                                 },
+                                 {
+                                     "detail":  "All [ECRAN] are linked to mockups",
+                                     "status":  "PASS",
+                                     "check":  "NR_ECRAN_LINKS"
+                                 },
+                                 {
+                                     "detail":  "No enriched sections to preserve (first run or basic)",
+                                     "status":  "PASS",
+                                     "check":  "NR_ENRICHED_PRESERVED"
+                                 }
+                             ],
+                  "pass":  18,
+                  "fail":  3,
+                  "warn":  0,
+                  "all_passed":  false
+              },
+    "quality_score":  100,
+    "complexity":  {
+                       "score":  70,
+                       "level":  "HAUTE",
+                       "details":  [
+                                       "Expressions: 110 (MOYENNE)",
+                                       "Taches: 39 (HAUTE)",
+                                       "Tables WRITE: 7 (HAUTE)",
+                                       "Callees: 6 (MOYENNE)",
+                                       "Code desactive: 0.7% (SAIN)"
+                                   ]
+                   },
+    "pipeline_timing":  {
+                            "phases_start":  "2026-02-03 21:52:27",
+                            "assembly_end":  "2026-02-03 21:52:53",
+                            "assembly_start":  "2026-02-03 21:52:48",
+                            "phases_duration":  "20s",
+                            "phases_end":  "2026-02-03 21:52:47"
+                        },
+    "v72_features":  {
+                         "clickable_links":  36,
+                         "variable_roles":  3,
+                         "precise_expr_types":  34,
+                         "anchors":  39,
+                         "form_data_blocks":  7
+                     },
+    "metadata":  {
+                     "pipeline_version":  "7.2",
+                     "generated_at":  "2026-02-03 21:52:53",
+                     "ide_position":  116,
+                     "duration_seconds":  5.1,
+                     "program_name":  "Ventes *Sav au 02/07/2018",
+                     "project":  "WEL"
+                 }
+}

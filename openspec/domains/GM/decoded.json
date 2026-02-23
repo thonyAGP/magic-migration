@@ -1,0 +1,61 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  0,
+                       "by_type":  {
+                                       "condition":  0,
+                                       "calculation":  0,
+                                       "other":  0,
+                                       "date":  0,
+                                       "constant":  0,
+                                       "string":  0
+                                   },
+                       "total_in_program":  0,
+                       "decoded_count":  0,
+                       "business_rules_count":  0
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+
+                                                      ],
+                                        "CALCULATION":  [
+
+                                                        ],
+                                        "OTHER":  [
+
+                                                  ],
+                                        "DATE":  [
+
+                                                 ],
+                                        "CONSTANT":  [
+
+                                                     ],
+                                        "STRING":  [
+
+                                                   ]
+                                    },
+                        "all":  [
+
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  177,
+                     "pipeline_version":  "7.1",
+                     "project":  "ADH",
+                     "program_name":  "Program_176",
+                     "generated_at":  "2026-02-07 07:24:41"
+                 }
+}

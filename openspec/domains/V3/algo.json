@@ -1,0 +1,63 @@
+{
+    "program":  "Maj des lignes saisies V3",
+    "public_name":  "",
+    "project":  "ADH",
+    "ide":  105,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "Maj des lignes saisies V3",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "B",
+                      "logic_lines":  81,
+                      "source_table":  40,
+                      "source_access":  "W",
+                      "has_form":  false,
+                      "initial_mode":  "",
+                      "ide_path":  "105"
+                  }
+              ],
+    "conditions":  [
+                       {
+                           "ide":  17,
+                           "content":  "IF(Trim({0,7})=\u0027\u0027,\u0027TRUE\u0027LOG,IF(Trim({0,7})=\u0027I\u0027,{0,29},{0,36}))",
+                           "decoded":  "IF(Trim(P.i.TypeReglement [G])=\u0027\u0027,\u0027TRUE\u0027LOG,IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ]))",
+                           "comment":  "",
+                           "exp_type":  ""
+                       },
+                       {
+                           "ide":  18,
+                           "content":  "IF(Trim({0,7})=\u0027I\u0027,{0,29},{0,36})",
+                           "decoded":  "IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ])",
+                           "comment":  "",
+                           "exp_type":  ""
+                       }
+                   ],
+    "tables_write":  [
+                         {
+                             "id":  40,
+                             "name":  "comptable________cte",
+                             "physical":  "cafil018_dat",
+                             "access":  "W"
+                         }
+                     ],
+    "callees":  [
+
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "lignes",
+                            "Maj",
+                            "saisies"
+                        ],
+    "statistics":  {
+                       "task_count":  1,
+                       "condition_count":  2,
+                       "tables_write_count":  1,
+                       "callee_count":  0,
+                       "parameter_count":  0
+                   }
+}

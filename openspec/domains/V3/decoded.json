@@ -1,0 +1,428 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  2,
+                                       "calculation":  0,
+                                       "other":  16,
+                                       "date":  2,
+                                       "constant":  0,
+                                       "string":  3
+                                   },
+                       "total_in_program":  23,
+                       "decoded_count":  23,
+                       "business_rules_count":  2
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-001",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF(Trim({0,7})=\u0027\u0027,\u0027TRUE\u0027LOG,IF(Trim({0,7})=\u0027I\u0027,{0,29},{0,36}))",
+                                                              "decoded":  "IF(Trim(P.i.TypeReglement [G])=\u0027\u0027,\u0027TRUE\u0027LOG,IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ]))",
+                                                              "ide_position":  17
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-002",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF(Trim({0,7})=\u0027I\u0027,{0,29},{0,36})",
+                                                              "decoded":  "IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ])",
+                                                              "ide_position":  18
+                                                          }
+                                                      ],
+                                        "CALCULATION":  [
+
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,31}=0 AND NOT {0,8}",
+                                                          "ide_position":  1,
+                                                          "decoded":  "[AE]=0 AND NOT P.i.Facture ECO [H]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,42}=0 AND NOT {0,8}",
+                                                          "ide_position":  2,
+                                                          "decoded":  "[AP]=0 AND NOT P.i.Facture ECO [H]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,4}",
+                                                          "ide_position":  3,
+                                                          "decoded":  "P.i.NumFac [D]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "Time()",
+                                                          "ide_position":  5,
+                                                          "decoded":  "Time()",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,5}",
+                                                          "ide_position":  6,
+                                                          "decoded":  "P.i.NomFacPDF [E]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,1}",
+                                                          "ide_position":  7,
+                                                          "decoded":  "P.i.Societe [A]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,2}",
+                                                          "ide_position":  8,
+                                                          "decoded":  "P.i.Compte [B]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,14}",
+                                                          "ide_position":  10,
+                                                          "decoded":  "[N]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,14}",
+                                                          "ide_position":  13,
+                                                          "decoded":  "[N]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,22}",
+                                                          "ide_position":  14,
+                                                          "decoded":  "[V]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,17} = 0 OR {0,31} = 0",
+                                                          "ide_position":  15,
+                                                          "decoded":  "[Q] = 0 OR [AE] = 0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,6}",
+                                                          "ide_position":  16,
+                                                          "decoded":  "P.i.SelectionManulle [F]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,12}",
+                                                          "ide_position":  19,
+                                                          "decoded":  "v Trouvé Vente [L]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027FALSE\u0027LOG",
+                                                          "ide_position":  20,
+                                                          "decoded":  "\u0027FALSE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,35}",
+                                                          "ide_position":  22,
+                                                          "decoded":  "[AI]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,41}",
+                                                          "ide_position":  23,
+                                                          "decoded":  "[AO]",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Date()",
+                                                         "ide_position":  4,
+                                                         "decoded":  "Date()",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Date()",
+                                                         "ide_position":  9,
+                                                         "decoded":  "Date()",
+                                                         "type":  "DATE"
+                                                     }
+                                                 ],
+                                        "CONSTANT":  [
+
+                                                     ],
+                                        "STRING":  [
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,29} AND Trim({0,7})\u003c\u003e\u0027D\u0027",
+                                                           "ide_position":  11,
+                                                           "decoded":  "[AC] AND Trim(P.i.TypeReglement [G])\u003c\u003e\u0027D\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "{0,36} AND Trim({0,7})\u003c\u003e\u0027I\u0027",
+                                                           "ide_position":  12,
+                                                           "decoded":  "[AJ] AND Trim(P.i.TypeReglement [G])\u003c\u003e\u0027I\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "CndRange(Trim({0,7})=\u0027\u0027,{0,6})",
+                                                           "ide_position":  21,
+                                                           "decoded":  "CndRange(Trim(P.i.TypeReglement [G])=\u0027\u0027,P.i.SelectionManulle [F])",
+                                                           "type":  "STRING"
+                                                       }
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,31}=0 AND NOT {0,8}",
+                                        "ide_position":  1,
+                                        "decoded":  "[AE]=0 AND NOT P.i.Facture ECO [H]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,42}=0 AND NOT {0,8}",
+                                        "ide_position":  2,
+                                        "decoded":  "[AP]=0 AND NOT P.i.Facture ECO [H]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,4}",
+                                        "ide_position":  3,
+                                        "decoded":  "P.i.NumFac [D]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Date()",
+                                        "ide_position":  4,
+                                        "decoded":  "Date()",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Time()",
+                                        "ide_position":  5,
+                                        "decoded":  "Time()",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,5}",
+                                        "ide_position":  6,
+                                        "decoded":  "P.i.NomFacPDF [E]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,1}",
+                                        "ide_position":  7,
+                                        "decoded":  "P.i.Societe [A]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,2}",
+                                        "ide_position":  8,
+                                        "decoded":  "P.i.Compte [B]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Date()",
+                                        "ide_position":  9,
+                                        "decoded":  "Date()",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,14}",
+                                        "ide_position":  10,
+                                        "decoded":  "[N]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,29} AND Trim({0,7})\u003c\u003e\u0027D\u0027",
+                                        "ide_position":  11,
+                                        "decoded":  "[AC] AND Trim(P.i.TypeReglement [G])\u003c\u003e\u0027D\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,36} AND Trim({0,7})\u003c\u003e\u0027I\u0027",
+                                        "ide_position":  12,
+                                        "decoded":  "[AJ] AND Trim(P.i.TypeReglement [G])\u003c\u003e\u0027I\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,14}",
+                                        "ide_position":  13,
+                                        "decoded":  "[N]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,22}",
+                                        "ide_position":  14,
+                                        "decoded":  "[V]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,17} = 0 OR {0,31} = 0",
+                                        "ide_position":  15,
+                                        "decoded":  "[Q] = 0 OR [AE] = 0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,6}",
+                                        "ide_position":  16,
+                                        "decoded":  "P.i.SelectionManulle [F]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-001",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF(Trim({0,7})=\u0027\u0027,\u0027TRUE\u0027LOG,IF(Trim({0,7})=\u0027I\u0027,{0,29},{0,36}))",
+                                        "decoded":  "IF(Trim(P.i.TypeReglement [G])=\u0027\u0027,\u0027TRUE\u0027LOG,IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ]))",
+                                        "ide_position":  17
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-002",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF(Trim({0,7})=\u0027I\u0027,{0,29},{0,36})",
+                                        "decoded":  "IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ])",
+                                        "ide_position":  18
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}",
+                                        "ide_position":  19,
+                                        "decoded":  "v Trouvé Vente [L]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027FALSE\u0027LOG",
+                                        "ide_position":  20,
+                                        "decoded":  "\u0027FALSE\u0027LOG",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "CndRange(Trim({0,7})=\u0027\u0027,{0,6})",
+                                        "ide_position":  21,
+                                        "decoded":  "CndRange(Trim(P.i.TypeReglement [G])=\u0027\u0027,P.i.SelectionManulle [F])",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,35}",
+                                        "ide_position":  22,
+                                        "decoded":  "[AI]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,41}",
+                                        "ide_position":  23,
+                                        "decoded":  "[AO]",
+                                        "type":  "OTHER"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+                                       {
+                                           "id":  "RM-001",
+                                           "false_value":  "IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ]))",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF(Trim(P.i.TypeReglement [G])=\u0027\u0027,\u0027TRUE\u0027LOG,IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ]))",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  17,
+                                           "true_value":  "\u0027TRUE\u0027LOG",
+                                           "natural_language":  "Si Trim(P.i.TypeReglement [G])=\u0027\u0027 alors \u0027TRUE\u0027LOG sinon IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ]))",
+                                           "condition":  "Trim(P.i.TypeReglement [G])=\u0027\u0027",
+                                           "raw_expression":  "IF(Trim({0,7})=\u0027\u0027,\u0027TRUE\u0027LOG,IF(Trim({0,7})=\u0027I\u0027,{0,29},{0,36}))"
+                                       },
+                                       {
+                                           "id":  "RM-002",
+                                           "false_value":  "[AJ])",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ])",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  18,
+                                           "true_value":  "[AC]",
+                                           "natural_language":  "Si Trim(P.i.TypeReglement [G])=\u0027I\u0027 alors [AC] sinon [AJ])",
+                                           "condition":  "Trim(P.i.TypeReglement [G])=\u0027I\u0027",
+                                           "raw_expression":  "IF(Trim({0,7})=\u0027I\u0027,{0,29},{0,36})"
+                                       }
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+                                                               {
+                                                                   "id":  "RM-001",
+                                                                   "false_value":  "IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ]))",
+                                                                   "has_rule":  true,
+                                                                   "decoded_expression":  "IF(Trim(P.i.TypeReglement [G])=\u0027\u0027,\u0027TRUE\u0027LOG,IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ]))",
+                                                                   "type":  "VALIDATION",
+                                                                   "expression_ide":  17,
+                                                                   "true_value":  "\u0027TRUE\u0027LOG",
+                                                                   "natural_language":  "Si Trim(P.i.TypeReglement [G])=\u0027\u0027 alors \u0027TRUE\u0027LOG sinon IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ]))",
+                                                                   "condition":  "Trim(P.i.TypeReglement [G])=\u0027\u0027",
+                                                                   "raw_expression":  "IF(Trim({0,7})=\u0027\u0027,\u0027TRUE\u0027LOG,IF(Trim({0,7})=\u0027I\u0027,{0,29},{0,36}))"
+                                                               },
+                                                               {
+                                                                   "id":  "RM-002",
+                                                                   "false_value":  "[AJ])",
+                                                                   "has_rule":  true,
+                                                                   "decoded_expression":  "IF(Trim(P.i.TypeReglement [G])=\u0027I\u0027,[AC],[AJ])",
+                                                                   "type":  "VALIDATION",
+                                                                   "expression_ide":  18,
+                                                                   "true_value":  "[AC]",
+                                                                   "natural_language":  "Si Trim(P.i.TypeReglement [G])=\u0027I\u0027 alors [AC] sinon [AJ])",
+                                                                   "condition":  "Trim(P.i.TypeReglement [G])=\u0027I\u0027",
+                                                                   "raw_expression":  "IF(Trim({0,7})=\u0027I\u0027,{0,29},{0,36})"
+                                                               }
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  105,
+                     "pipeline_version":  "7.1",
+                     "project":  "ADH",
+                     "program_name":  "Maj des lignes saisies V3",
+                     "generated_at":  "2026-02-07 07:00:43"
+                 }
+}

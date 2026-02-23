@@ -1,0 +1,49 @@
+{
+    "program":  "Allergenes adultes",
+    "public_name":  "",
+    "project":  "PBP",
+    "ide":  222,
+    "tasks":  [
+                  {
+                      "isn2":  14,
+                      "name":  "Allergenes adultes",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "O",
+                      "logic_lines":  43,
+                      "source_table":  69,
+                      "source_access":  "R",
+                      "has_form":  true,
+                      "initial_mode":  "M",
+                      "ide_path":  "222"
+                  }
+              ],
+    "conditions":  [
+
+                   ],
+    "tables_write":  [
+
+                     ],
+    "callees":  [
+                    {
+                        "ide":  223,
+                        "name":  "batch edition allergènes",
+                        "public_name":  "",
+                        "count":  1
+                    }
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "adultes",
+                            "Allergenes"
+                        ],
+    "statistics":  {
+                       "task_count":  1,
+                       "condition_count":  0,
+                       "tables_write_count":  0,
+                       "callee_count":  1,
+                       "parameter_count":  0
+                   }
+}

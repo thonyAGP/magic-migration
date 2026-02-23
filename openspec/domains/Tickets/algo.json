@@ -1,0 +1,51 @@
+{
+    "program":  "Browse - Fichier Tampon PABX",
+    "public_name":  "",
+    "project":  "POO",
+    "ide":  67,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "Browse - Fichier Tampon PABX",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "O",
+                      "logic_lines":  20,
+                      "source_table":  1,
+                      "source_access":  "W",
+                      "has_form":  true,
+                      "initial_mode":  "E",
+                      "ide_path":  "67"
+                  }
+              ],
+    "conditions":  [
+
+                   ],
+    "tables_write":  [
+                         {
+                             "id":  1,
+                             "name":  "histoticket_dat",
+                             "physical":  "histoticket_dat",
+                             "access":  "W"
+                         }
+                     ],
+    "callees":  [
+
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "Browse",
+                            "Fichier",
+                            "PABX",
+                            "Tampon"
+                        ],
+    "statistics":  {
+                       "task_count":  1,
+                       "condition_count":  0,
+                       "tables_write_count":  1,
+                       "callee_count":  0,
+                       "parameter_count":  0
+                   }
+}

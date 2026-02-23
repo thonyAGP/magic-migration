@@ -1,0 +1,76 @@
+﻿{
+    "table_other_vars":  {
+                             "476":  [
+                                         {
+                                             "letter":  "A",
+                                             "name":  "v. type de pooling",
+                                             "data_type":  "Alpha",
+                                             "definition":  "V"
+                                         }
+                                     ]
+                         },
+    "variable_mapping":  {
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "v. type de pooling",
+                                           "letter":  "A"
+                                       }
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+                   "476":  {
+                               "physical":  "%club_user%_caisse_cpte_chgt_act",
+                               "name":  "comptes_pour_changer_activite",
+                               "access":  "READ",
+                               "logical":  "comptes_pour_changer_activite"
+                           }
+               },
+    "statistics":  {
+                       "total_variables":  2,
+                       "mapping_entries":  1,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  2,
+                       "global_count":  0,
+                       "table_count":  1
+                   },
+    "metadata":  {
+                     "ide_position":  43,
+                     "pipeline_version":  "7.2",
+                     "project":  "MAI",
+                     "program_name":  "Visualisation pooling",
+                     "generated_at":  "2026-02-03 14:54:24"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "v. type de pooling",
+                                        "data_type":  "Alpha",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "v. type de pooling",
+                                        "data_type":  "Alpha",
+                                        "picture":  "20",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

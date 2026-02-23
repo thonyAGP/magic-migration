@@ -1,0 +1,182 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  0,
+                                       "calculation":  0,
+                                       "other":  3,
+                                       "date":  1,
+                                       "constant":  3,
+                                       "string":  2
+                                   },
+                       "total_in_program":  9,
+                       "decoded_count":  9,
+                       "business_rules_count":  0
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+
+                                                      ],
+                                        "CALCULATION":  [
+
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,2}",
+                                                          "ide_position":  7,
+                                                          "decoded":  "Po.Ouverture caisse po... [B]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT({0,22}) OR {0,21}",
+                                                          "ide_position":  8,
+                                                          "decoded":  "NOT([V]) OR [U]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027TRUE\u0027LOG",
+                                                          "ide_position":  9,
+                                                          "decoded":  "\u0027TRUE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Date()",
+                                                         "ide_position":  5,
+                                                         "decoded":  "Date()",
+                                                         "type":  "DATE"
+                                                     }
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027I\u0027",
+                                                             "ide_position":  1,
+                                                             "decoded":  "\u0027I\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027O\u0027",
+                                                             "ide_position":  2,
+                                                             "decoded":  "\u0027O\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027F\u0027",
+                                                             "ide_position":  3,
+                                                             "decoded":  "\u0027F\u0027",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Str({0,7},\u00273P0\u0027)",
+                                                           "ide_position":  4,
+                                                           "decoded":  "Str([G],\u00273P0\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,1})",
+                                                           "ide_position":  6,
+                                                           "decoded":  "Trim(Pi.terminal [A])",
+                                                           "type":  "STRING"
+                                                       }
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027I\u0027",
+                                        "ide_position":  1,
+                                        "decoded":  "\u0027I\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027O\u0027",
+                                        "ide_position":  2,
+                                        "decoded":  "\u0027O\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027F\u0027",
+                                        "ide_position":  3,
+                                        "decoded":  "\u0027F\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Str({0,7},\u00273P0\u0027)",
+                                        "ide_position":  4,
+                                        "decoded":  "Str([G],\u00273P0\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Date()",
+                                        "ide_position":  5,
+                                        "decoded":  "Date()",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,1})",
+                                        "ide_position":  6,
+                                        "decoded":  "Trim(Pi.terminal [A])",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,2}",
+                                        "ide_position":  7,
+                                        "decoded":  "Po.Ouverture caisse po... [B]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT({0,22}) OR {0,21}",
+                                        "ide_position":  8,
+                                        "decoded":  "NOT([V]) OR [U]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TRUE\u0027LOG",
+                                        "ide_position":  9,
+                                        "decoded":  "\u0027TRUE\u0027LOG",
+                                        "type":  "OTHER"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  156,
+                     "pipeline_version":  "7.1",
+                     "project":  "ADH",
+                     "program_name":  "Verif session caisse ouverte2",
+                     "generated_at":  "2026-02-07 07:17:33"
+                 }
+}

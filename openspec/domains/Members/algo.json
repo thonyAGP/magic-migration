@@ -1,0 +1,44 @@
+{
+    "program":  "Program_156",
+    "public_name":  "",
+    "project":  "ADH",
+    "ide":  157,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "O",
+                      "logic_lines":  1,
+                      "source_table":  null,
+                      "source_access":  "",
+                      "has_form":  false,
+                      "initial_mode":  "",
+                      "ide_path":  "157"
+                  }
+              ],
+    "conditions":  [
+
+                   ],
+    "tables_write":  [
+
+                     ],
+    "callees":  [
+
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "156",
+                            "Program"
+                        ],
+    "statistics":  {
+                       "task_count":  1,
+                       "condition_count":  0,
+                       "tables_write_count":  0,
+                       "callee_count":  0,
+                       "parameter_count":  0
+                   }
+}

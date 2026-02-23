@@ -1,0 +1,56 @@
+{
+    "program":  "Test Token API CLUB MED",
+    "public_name":  "",
+    "project":  "TST",
+    "ide":  7,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "Test Token API CLUB MED",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "O",
+                      "logic_lines":  11,
+                      "source_table":  368,
+                      "source_access":  "W",
+                      "has_form":  true,
+                      "initial_mode":  "E",
+                      "ide_path":  "7"
+                  }
+              ],
+    "conditions":  [
+
+                   ],
+    "tables_write":  [
+                         {
+                             "id":  368,
+                             "name":  "pms_village",
+                             "physical":  "pmsvillage",
+                             "access":  "W"
+                         }
+                     ],
+    "callees":  [
+                    {
+                        "ide":  6,
+                        "name":  "Batch room ready v2.0",
+                        "public_name":  "",
+                        "count":  1
+                    }
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "API",
+                            "CLUB",
+                            "MED",
+                            "Token"
+                        ],
+    "statistics":  {
+                       "task_count":  1,
+                       "condition_count":  0,
+                       "tables_write_count":  1,
+                       "callee_count":  1,
+                       "parameter_count":  0
+                   }
+}

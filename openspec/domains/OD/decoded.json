@@ -1,0 +1,153 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  0,
+                                       "calculation":  1,
+                                       "other":  2,
+                                       "date":  1,
+                                       "constant":  1,
+                                       "string":  2
+                                   },
+                       "total_in_program":  7,
+                       "decoded_count":  7,
+                       "business_rules_count":  0
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+
+                                                      ],
+                                        "CALCULATION":  [
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "\u0027ftp -s:c:\\temp\\\u0027\u0026Trim ({0,3})",
+                                                                "ide_position":  7,
+                                                                "decoded":  "\u0027ftp -s:c:\\temp\\\u0027\u0026Trim (v.nom script [C])",
+                                                                "type":  "CALCULATION"
+                                                            }
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT (FileExist (\u0027c:\\temp\u0027))",
+                                                          "ide_position":  2,
+                                                          "decoded":  "NOT (FileExist (\u0027c:\\temp\u0027))",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,1}=\u0027G\u0027",
+                                                          "ide_position":  5,
+                                                          "decoded":  "p. Commande [A]=\u0027G\u0027",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "\u0027transftp_\u0027\u0026DStr (Date (),\u0027YYYYMMDD\u0027)\u0026TStr (Time (),\u0027HHMMSS\u0027)\u0026\u0027.txt\u0027",
+                                                         "ide_position":  3,
+                                                         "decoded":  "\u0027transftp_\u0027\u0026DStr (Date (),\u0027YYYYMMDD\u0027)\u0026TStr (Time (),\u0027HHMMSS\u0027)\u0026\u0027.txt\u0027",
+                                                         "type":  "DATE"
+                                                     }
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027cmd /c mkdir c:\\temp\u0027",
+                                                             "ide_position":  1,
+                                                             "decoded":  "\u0027cmd /c mkdir c:\\temp\u0027",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "FileDelete (\u0027c:\\temp\\\u0027\u0026Trim ({0,2}))",
+                                                           "ide_position":  4,
+                                                           "decoded":  "FileDelete (\u0027c:\\temp\\\u0027\u0026Trim (p. Nom Fichier [B]))",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "FileCopy (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_nt_homedir\u0027)\u0026\u0027comm_ftp.txt\u0027,\u0027c:\\temp\\\u0027\u0026Trim ({0,3}))",
+                                                           "ide_position":  6,
+                                                           "decoded":  "FileCopy (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_nt_homedir\u0027)\u0026\u0027comm_ftp.txt\u0027,\u0027c:\\temp\\\u0027\u0026Trim (v.nom script [C]))",
+                                                           "type":  "STRING"
+                                                       }
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027cmd /c mkdir c:\\temp\u0027",
+                                        "ide_position":  1,
+                                        "decoded":  "\u0027cmd /c mkdir c:\\temp\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT (FileExist (\u0027c:\\temp\u0027))",
+                                        "ide_position":  2,
+                                        "decoded":  "NOT (FileExist (\u0027c:\\temp\u0027))",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027transftp_\u0027\u0026DStr (Date (),\u0027YYYYMMDD\u0027)\u0026TStr (Time (),\u0027HHMMSS\u0027)\u0026\u0027.txt\u0027",
+                                        "ide_position":  3,
+                                        "decoded":  "\u0027transftp_\u0027\u0026DStr (Date (),\u0027YYYYMMDD\u0027)\u0026TStr (Time (),\u0027HHMMSS\u0027)\u0026\u0027.txt\u0027",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "FileDelete (\u0027c:\\temp\\\u0027\u0026Trim ({0,2}))",
+                                        "ide_position":  4,
+                                        "decoded":  "FileDelete (\u0027c:\\temp\\\u0027\u0026Trim (p. Nom Fichier [B]))",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,1}=\u0027G\u0027",
+                                        "ide_position":  5,
+                                        "decoded":  "p. Commande [A]=\u0027G\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "FileCopy (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_nt_homedir\u0027)\u0026\u0027comm_ftp.txt\u0027,\u0027c:\\temp\\\u0027\u0026Trim ({0,3}))",
+                                        "ide_position":  6,
+                                        "decoded":  "FileCopy (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_nt_homedir\u0027)\u0026\u0027comm_ftp.txt\u0027,\u0027c:\\temp\\\u0027\u0026Trim (v.nom script [C]))",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027ftp -s:c:\\temp\\\u0027\u0026Trim ({0,3})",
+                                        "ide_position":  7,
+                                        "decoded":  "\u0027ftp -s:c:\\temp\\\u0027\u0026Trim (v.nom script [C])",
+                                        "type":  "CALCULATION"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  22,
+                     "pipeline_version":  "7.1",
+                     "project":  "POO",
+                     "program_name":  "Gestion FTP",
+                     "generated_at":  "2026-02-03 17:43:08"
+                 }
+}

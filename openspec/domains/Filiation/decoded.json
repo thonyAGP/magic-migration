@@ -1,0 +1,374 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  1,
+                                       "calculation":  1,
+                                       "other":  16,
+                                       "date":  0,
+                                       "constant":  3,
+                                       "string":  0
+                                   },
+                       "total_in_program":  21,
+                       "decoded_count":  21,
+                       "business_rules_count":  1
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-001",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF({0,15},\u0027√\u0027,\u0027 \u0027)",
+                                                              "decoded":  "IF([O],\u0027√\u0027,\u0027 \u0027)",
+                                                              "ide_position":  6
+                                                          }
+                                                      ],
+                                        "CALCULATION":  [
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "\u0027MANAGE FILIATIONS -\u0027\u0026\u0027 \u0027\u0026Trim({32768,3})\u0026\u0027 \u0027\u0026Trim({32768,4})",
+                                                                "ide_position":  1,
+                                                                "decoded":  "\u0027MANAGE FILIATIONS -\u0027\u0026\u0027 \u0027\u0026Trim(VG3)\u0026\u0027 \u0027\u0026Trim(VG4)",
+                                                                "type":  "CALCULATION"
+                                                            }
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "ASCIIChr(13)\u0026MlsTrans(\u0027SEARCH CLIENT\u0027)",
+                                                          "ide_position":  3,
+                                                          "decoded":  "ASCIIChr(13)\u0026MlsTrans(\u0027SEARCH CLIENT\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "ASCIIChr(13)\u0026MlsTrans(\u0027VALIDATE\u0027)",
+                                                          "ide_position":  4,
+                                                          "decoded":  "ASCIIChr(13)\u0026MlsTrans(\u0027VALIDATE\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "Rollback(\u0027FALSE\u0027LOG,0)",
+                                                          "ide_position":  5,
+                                                          "decoded":  "Rollback(\u0027FALSE\u0027LOG,0)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027TRUE\u0027LOG",
+                                                          "ide_position":  7,
+                                                          "decoded":  "\u0027TRUE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027FALSE\u0027LOG",
+                                                          "ide_position":  8,
+                                                          "decoded":  "\u0027FALSE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,3}=\u0027E\u0027",
+                                                          "ide_position":  9,
+                                                          "decoded":  "P.Type E/F [C]=\u0027E\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,3}=\u0027E\u0027 AND {0,17}\u003c\u003e0",
+                                                          "ide_position":  10,
+                                                          "decoded":  "P.Type E/F [C]=\u0027E\u0027 AND [Q]\u003c\u003e0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT {0,15}",
+                                                          "ide_position":  11,
+                                                          "decoded":  "NOT [O]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,1}",
+                                                          "ide_position":  12,
+                                                          "decoded":  "P.Chrono [A]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,3}=\u0027E\u0027 AND {0,20}=0",
+                                                          "ide_position":  14,
+                                                          "decoded":  "P.Type E/F [C]=\u0027E\u0027 AND [T]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,3}=\u0027F\u0027 AND {0,20}=0",
+                                                          "ide_position":  15,
+                                                          "decoded":  "P.Type E/F [C]=\u0027F\u0027 AND [T]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "ExpCalc(\u002714\u0027EXP) OR ExpCalc(\u002715\u0027EXP) OR ExpCalc(\u002718\u0027EXP)",
+                                                          "ide_position":  16,
+                                                          "decoded":  "ExpCalc(\u002714\u0027EXP) OR ExpCalc(\u002715\u0027EXP) OR ExpCalc(\u002718\u0027EXP)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,3}\u003c\u003e\u0027\u0027",
+                                                          "ide_position":  17,
+                                                          "decoded":  "P.Type E/F [C]\u003c\u003e\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,3}=\u0027E\u0027 AND {0,4}=\u0027S\u0027 AND {0,20}=1",
+                                                          "ide_position":  18,
+                                                          "decoded":  "P.Type E/F [C]=\u0027E\u0027 AND P.Type operation [D]=\u0027S\u0027 AND [T]=1",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT {0,19}",
+                                                          "ide_position":  19,
+                                                          "decoded":  "NOT [S]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027TRUE\u0027LOG",
+                                                          "ide_position":  21,
+                                                          "decoded":  "\u0027TRUE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027%club_images%Retour.png\u0027",
+                                                             "ide_position":  2,
+                                                             "decoded":  "\u0027%club_images%Retour.png\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027E\u0027",
+                                                             "ide_position":  13,
+                                                             "decoded":  "\u0027E\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027\u0027",
+                                                             "ide_position":  20,
+                                                             "decoded":  "\u0027\u0027",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027MANAGE FILIATIONS -\u0027\u0026\u0027 \u0027\u0026Trim({32768,3})\u0026\u0027 \u0027\u0026Trim({32768,4})",
+                                        "ide_position":  1,
+                                        "decoded":  "\u0027MANAGE FILIATIONS -\u0027\u0026\u0027 \u0027\u0026Trim(VG3)\u0026\u0027 \u0027\u0026Trim(VG4)",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027%club_images%Retour.png\u0027",
+                                        "ide_position":  2,
+                                        "decoded":  "\u0027%club_images%Retour.png\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "ASCIIChr(13)\u0026MlsTrans(\u0027SEARCH CLIENT\u0027)",
+                                        "ide_position":  3,
+                                        "decoded":  "ASCIIChr(13)\u0026MlsTrans(\u0027SEARCH CLIENT\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "ASCIIChr(13)\u0026MlsTrans(\u0027VALIDATE\u0027)",
+                                        "ide_position":  4,
+                                        "decoded":  "ASCIIChr(13)\u0026MlsTrans(\u0027VALIDATE\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Rollback(\u0027FALSE\u0027LOG,0)",
+                                        "ide_position":  5,
+                                        "decoded":  "Rollback(\u0027FALSE\u0027LOG,0)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-001",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF({0,15},\u0027√\u0027,\u0027 \u0027)",
+                                        "decoded":  "IF([O],\u0027√\u0027,\u0027 \u0027)",
+                                        "ide_position":  6
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TRUE\u0027LOG",
+                                        "ide_position":  7,
+                                        "decoded":  "\u0027TRUE\u0027LOG",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027FALSE\u0027LOG",
+                                        "ide_position":  8,
+                                        "decoded":  "\u0027FALSE\u0027LOG",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,3}=\u0027E\u0027",
+                                        "ide_position":  9,
+                                        "decoded":  "P.Type E/F [C]=\u0027E\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,3}=\u0027E\u0027 AND {0,17}\u003c\u003e0",
+                                        "ide_position":  10,
+                                        "decoded":  "P.Type E/F [C]=\u0027E\u0027 AND [Q]\u003c\u003e0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT {0,15}",
+                                        "ide_position":  11,
+                                        "decoded":  "NOT [O]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,1}",
+                                        "ide_position":  12,
+                                        "decoded":  "P.Chrono [A]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027E\u0027",
+                                        "ide_position":  13,
+                                        "decoded":  "\u0027E\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,3}=\u0027E\u0027 AND {0,20}=0",
+                                        "ide_position":  14,
+                                        "decoded":  "P.Type E/F [C]=\u0027E\u0027 AND [T]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,3}=\u0027F\u0027 AND {0,20}=0",
+                                        "ide_position":  15,
+                                        "decoded":  "P.Type E/F [C]=\u0027F\u0027 AND [T]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "ExpCalc(\u002714\u0027EXP) OR ExpCalc(\u002715\u0027EXP) OR ExpCalc(\u002718\u0027EXP)",
+                                        "ide_position":  16,
+                                        "decoded":  "ExpCalc(\u002714\u0027EXP) OR ExpCalc(\u002715\u0027EXP) OR ExpCalc(\u002718\u0027EXP)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,3}\u003c\u003e\u0027\u0027",
+                                        "ide_position":  17,
+                                        "decoded":  "P.Type E/F [C]\u003c\u003e\u0027\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,3}=\u0027E\u0027 AND {0,4}=\u0027S\u0027 AND {0,20}=1",
+                                        "ide_position":  18,
+                                        "decoded":  "P.Type E/F [C]=\u0027E\u0027 AND P.Type operation [D]=\u0027S\u0027 AND [T]=1",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT {0,19}",
+                                        "ide_position":  19,
+                                        "decoded":  "NOT [S]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027\u0027",
+                                        "ide_position":  20,
+                                        "decoded":  "\u0027\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TRUE\u0027LOG",
+                                        "ide_position":  21,
+                                        "decoded":  "\u0027TRUE\u0027LOG",
+                                        "type":  "OTHER"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+                                       {
+                                           "id":  "RM-001",
+                                           "false_value":  "\u0027 \u0027)",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF([O],\u0027√\u0027,\u0027 \u0027)",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  6,
+                                           "true_value":  "\u0027√\u0027",
+                                           "natural_language":  "Si [O] alors \u0027√\u0027 sinon \u0027 \u0027)",
+                                           "condition":  "[O]",
+                                           "raw_expression":  "IF({0,15},\u0027√\u0027,\u0027 \u0027)"
+                                       }
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+                                                                 {
+                                                                     "id":  "RM-001",
+                                                                     "false_value":  "\u0027 \u0027)",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF([O],\u0027√\u0027,\u0027 \u0027)",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  6,
+                                                                     "true_value":  "\u0027√\u0027",
+                                                                     "natural_language":  "Si [O] alors \u0027√\u0027 sinon \u0027 \u0027)",
+                                                                     "condition":  "[O]",
+                                                                     "raw_expression":  "IF({0,15},\u0027√\u0027,\u0027 \u0027)"
+                                                                 }
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  32,
+                     "pipeline_version":  "7.1",
+                     "project":  "WEL",
+                     "program_name":  "Affiche filiations",
+                     "generated_at":  "2026-02-03 21:22:00"
+                 }
+}

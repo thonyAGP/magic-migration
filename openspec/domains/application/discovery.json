@@ -1,0 +1,77 @@
+﻿{
+    "tables":  {
+                   "all":  [
+                               {
+                                   "logical_name":  "vendeur",
+                                   "physical_name":  "codvendeur_dat",
+                                   "access_mode":  "WRITE",
+                                   "id":  277,
+                                   "usage_count":  1
+                               }
+                           ],
+                   "by_access":  {
+                                     "LINK":  [
+
+                                              ],
+                                     "READ":  [
+
+                                              ],
+                                     "WRITE":  [
+                                                   {
+                                                       "logical_name":  "vendeur",
+                                                       "physical_name":  "codvendeur_dat",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  277,
+                                                       "usage_count":  1
+                                                   }
+                                               ]
+                                 }
+               },
+    "orphan_analysis":  {
+                            "has_public_name":  false,
+                            "is_ecf_member":  false,
+                            "has_callers":  true,
+                            "status":  "NON_ORPHELIN",
+                            "reason":  "Appele par 1 programme(s): Menu general (IDE 18)"
+                        },
+    "statistics":  {
+                       "callee_count":  0,
+                       "expression_count":  7,
+                       "logic_line_count":  14,
+                       "caller_count":  1,
+                       "task_count":  2,
+                       "disabled_line_count":  0,
+                       "table_count":  null
+                   },
+    "call_graph":  {
+                       "call_chain":  [
+                                          {
+                                              "name":  "Menu general",
+                                              "ide":  18,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "Main Program",
+                                              "ide":  1,
+                                              "level":  2
+                                          }
+                                      ],
+                       "callees":  [
+
+                                   ],
+                       "callers":  [
+                                       {
+                                           "calls_count":  1,
+                                           "name":  "Menu general",
+                                           "ide":  18
+                                       }
+                                   ]
+                   },
+    "metadata":  {
+                     "ide_position":  12,
+                     "pipeline_version":  "7.1",
+                     "project":  "EXM",
+                     "program_name":  "Saisie Vendeur",
+                     "generated_at":  "2026-02-03 11:13:36"
+                 }
+}

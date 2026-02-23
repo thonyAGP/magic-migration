@@ -1,0 +1,324 @@
+﻿{
+    "table_other_vars":  {
+                             "30":  [
+                                        {
+                                            "letter":  "A",
+                                            "name":  "P.Refresh",
+                                            "data_type":  "Logical",
+                                            "definition":  "V"
+                                        }
+                                    ],
+                             "343":  [
+                                         {
+                                             "letter":  "A",
+                                             "name":  "P.Chrono",
+                                             "data_type":  "Numeric",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "B",
+                                             "name":  "P.Validation",
+                                             "data_type":  "Logical",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "C",
+                                             "name":  "P.Type E/F",
+                                             "data_type":  "Alpha",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "D",
+                                             "name":  "P.Type operation",
+                                             "data_type":  "Alpha",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "E",
+                                             "name":  "P.Type GO/GM",
+                                             "data_type":  "Alpha",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "F",
+                                             "name":  "v.Last Name",
+                                             "data_type":  "Alpha",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "G",
+                                             "name":  "v.First Name",
+                                             "data_type":  "Alpha",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "H",
+                                             "name":  "v.Room",
+                                             "data_type":  "Alpha",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "I",
+                                             "name":  "v.Reponse",
+                                             "data_type":  "Numeric",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "J",
+                                             "name":  "V0.Filtre nom",
+                                             "data_type":  "Alpha",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "K",
+                                             "name":  "V0.Filtre prenom",
+                                             "data_type":  "Alpha",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "L",
+                                             "name":  "V0.Refresh",
+                                             "data_type":  "Logical",
+                                             "definition":  "V"
+                                         },
+                                         {
+                                             "letter":  "M",
+                                             "name":  "V0.Nb enreg selectionne",
+                                             "data_type":  "Numeric",
+                                             "definition":  "V"
+                                         }
+                                     ]
+                         },
+    "variable_mapping":  {
+                             "{0,3}":  {
+                                           "type":  "local",
+                                           "name":  "P.Type E/F",
+                                           "letter":  "C"
+                                       },
+                             "{0,9}":  {
+                                           "type":  "local",
+                                           "name":  "v.Reponse",
+                                           "letter":  "I"
+                                       },
+                             "{0,13}":  {
+                                            "type":  "local",
+                                            "name":  "V0.Nb enreg selectionne",
+                                            "letter":  "M"
+                                        },
+                             "{0,1}":  {
+                                           "type":  "local",
+                                           "name":  "P.Chrono",
+                                           "letter":  "A"
+                                       },
+                             "{0,7}":  {
+                                           "type":  "local",
+                                           "name":  "v.First Name",
+                                           "letter":  "G"
+                                       },
+                             "{0,11}":  {
+                                            "type":  "local",
+                                            "name":  "V0.Filtre prenom",
+                                            "letter":  "K"
+                                        },
+                             "{0,5}":  {
+                                           "type":  "local",
+                                           "name":  "P.Type GO/GM",
+                                           "letter":  "E"
+                                       },
+                             "{0,8}":  {
+                                           "type":  "local",
+                                           "name":  "v.Room",
+                                           "letter":  "H"
+                                       },
+                             "{0,6}":  {
+                                           "type":  "local",
+                                           "name":  "v.Last Name",
+                                           "letter":  "F"
+                                       },
+                             "{0,4}":  {
+                                           "type":  "local",
+                                           "name":  "P.Type operation",
+                                           "letter":  "D"
+                                       },
+                             "{0,10}":  {
+                                            "type":  "local",
+                                            "name":  "V0.Filtre nom",
+                                            "letter":  "J"
+                                        },
+                             "{0,12}":  {
+                                            "type":  "local",
+                                            "name":  "V0.Refresh",
+                                            "letter":  "L"
+                                        },
+                             "{0,2}":  {
+                                           "type":  "local",
+                                           "name":  "P.Validation",
+                                           "letter":  "B"
+                                       }
+                         },
+    "table_columns":  {
+
+                      },
+    "tables":  {
+                   "47":  {
+                              "physical":  "cafil025_dat",
+                              "name":  "compte_gm________cgm",
+                              "access":  "WRITE",
+                              "logical":  "compte_gm________cgm"
+                          },
+                   "343":  {
+                               "physical":  "histo_fus_sep_saisie",
+                               "name":  "histo_fusionseparation_saisie",
+                               "access":  "WRITE",
+                               "logical":  "histo_fusionseparation_saisie"
+                           },
+                   "30":  {
+                              "physical":  "cafil008_dat",
+                              "name":  "gm-recherche_____gmr",
+                              "access":  "READ",
+                              "logical":  "gm-recherche_____gmr"
+                          }
+               },
+    "statistics":  {
+                       "total_variables":  14,
+                       "mapping_entries":  13,
+                       "tables_with_real_columns":  0,
+                       "parameter_count":  0,
+                       "virtual_count":  0,
+                       "local_count":  14,
+                       "global_count":  0,
+                       "table_count":  3
+                   },
+    "metadata":  {
+                     "ide_position":  32,
+                     "pipeline_version":  "7.2",
+                     "project":  "WEL",
+                     "program_name":  "Affiche filiations",
+                     "generated_at":  "2026-02-03 21:21:55"
+                 },
+    "variables":  {
+                      "local":  [
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P.Chrono",
+                                        "data_type":  "Numeric",
+                                        "picture":  "12",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "A",
+                                        "name":  "P.Refresh",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "B",
+                                        "name":  "P.Validation",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "C",
+                                        "name":  "P.Type E/F",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "D",
+                                        "name":  "P.Type operation",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "E",
+                                        "name":  "P.Type GO/GM",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "F",
+                                        "name":  "v.Last Name",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U15",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "G",
+                                        "name":  "v.First Name",
+                                        "data_type":  "Alpha",
+                                        "picture":  "UX9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "H",
+                                        "name":  "v.Room",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U6",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "I",
+                                        "name":  "v.Reponse",
+                                        "data_type":  "Numeric",
+                                        "picture":  "2",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "J",
+                                        "name":  "V0.Filtre nom",
+                                        "data_type":  "Alpha",
+                                        "picture":  "U15",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "K",
+                                        "name":  "V0.Filtre prenom",
+                                        "data_type":  "Alpha",
+                                        "picture":  "UX9",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "L",
+                                        "name":  "V0.Refresh",
+                                        "data_type":  "Logical",
+                                        "picture":  "",
+                                        "source":  ""
+                                    },
+                                    {
+                                        "field_id":  0,
+                                        "letter":  "M",
+                                        "name":  "V0.Nb enreg selectionne",
+                                        "data_type":  "Numeric",
+                                        "picture":  "3",
+                                        "source":  ""
+                                    }
+                                ],
+                      "virtual":  [
+
+                                  ],
+                      "global":  [
+
+                                 ],
+                      "parameters":  [
+
+                                     ]
+                  }
+}

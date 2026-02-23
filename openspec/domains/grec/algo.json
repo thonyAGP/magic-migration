@@ -1,0 +1,50 @@
+{
+    "program":  "Maj Date de naissance",
+    "public_name":  "",
+    "project":  "PBP",
+    "ide":  351,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "Maj Date de naissance",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "O",
+                      "logic_lines":  19,
+                      "source_table":  30,
+                      "source_access":  "R",
+                      "has_form":  true,
+                      "initial_mode":  "E",
+                      "ide_path":  "351"
+                  }
+              ],
+    "conditions":  [
+
+                   ],
+    "tables_write":  [
+
+                     ],
+    "callees":  [
+                    {
+                        "ide":  352,
+                        "name":  "Determination Age Debut Sejour",
+                        "public_name":  "",
+                        "count":  1
+                    }
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "Date",
+                            "Maj",
+                            "naissance"
+                        ],
+    "statistics":  {
+                       "task_count":  1,
+                       "condition_count":  0,
+                       "tables_write_count":  0,
+                       "callee_count":  1,
+                       "parameter_count":  0
+                   }
+}

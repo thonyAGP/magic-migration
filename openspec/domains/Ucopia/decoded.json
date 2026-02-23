@@ -1,0 +1,498 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  1,
+                                       "calculation":  5,
+                                       "other":  15,
+                                       "date":  3,
+                                       "constant":  5,
+                                       "string":  1
+                                   },
+                       "total_in_program":  30,
+                       "decoded_count":  30,
+                       "business_rules_count":  1
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-001",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF({0,11},\u0027Export Iteratif\u0027,\u0027Export Delta\u0027)",
+                                                              "decoded":  "IF(v.borne min timestamp [K],\u0027Export Iteratif\u0027,\u0027Export Delta\u0027)",
+                                                              "ide_position":  28
+                                                          }
+                                                      ],
+                                        "CALCULATION":  [
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "DbDel(\u0027{7,-1}\u0027DSOURCE,\u0027\u0027)",
+                                                                "ide_position":  3,
+                                                                "decoded":  "DbDel(\u0027{7,-1}\u0027DSOURCE,\u0027\u0027)",
+                                                                "type":  "CALCULATION"
+                                                            },
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "{0,14}+{0,17}",
+                                                                "ide_position":  11,
+                                                                "decoded":  "v.arret while [N]+[Q]",
+                                                                "type":  "CALCULATION"
+                                                            },
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "\u0027INIT TABLE PRIM :\u0027\u0026Trim(Str({0,14},\u002710\u0027))\u0026\u0027-\u0027\u0026Trim(Str({0,15},\u002710\u0027))",
+                                                                "ide_position":  18,
+                                                                "decoded":  "\u0027INIT TABLE PRIM :\u0027\u0026Trim(Str(v.arret while [N],\u002710\u0027))\u0026\u0027-\u0027\u0026Trim(Str(v.nb boucles while [O],\u002710\u0027))",
+                                                                "type":  "CALCULATION"
+                                                            },
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "\u0027INIT TABLE PRIM :\u0027\u0026Trim(Str({0,14},\u002710\u0027))\u0026\u0027-EOT\u0027",
+                                                                "ide_position":  20,
+                                                                "decoded":  "\u0027INIT TABLE PRIM :\u0027\u0026Trim(Str(v.arret while [N],\u002710\u0027))\u0026\u0027-EOT\u0027",
+                                                                "type":  "CALCULATION"
+                                                            },
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "{0,22}+1",
+                                                                "ide_position":  30,
+                                                                "decoded":  "[V]+1",
+                                                                "type":  "CALCULATION"
+                                                            }
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "Translate(\u0027%pool_lieu_sejour%\u0027)",
+                                                          "ide_position":  1,
+                                                          "decoded":  "Translate(\u0027%pool_lieu_sejour%\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT({0,9}) OR {0,2}=0",
+                                                          "ide_position":  4,
+                                                          "decoded":  "NOT(v.timestamp actuel alpha [I]) OR v.retour log [B]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,11}",
+                                                          "ide_position":  5,
+                                                          "decoded":  "v.borne min timestamp [K]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "Time()",
+                                                          "ide_position":  7,
+                                                          "decoded":  "Time()",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT({0,18})",
+                                                          "ide_position":  12,
+                                                          "decoded":  "NOT([R])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT({0,19})",
+                                                          "ide_position":  13,
+                                                          "decoded":  "NOT([S])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,19}",
+                                                          "ide_position":  14,
+                                                          "decoded":  "[S]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "DbDiscnt(\u0027Ucp ODBC\u0027)",
+                                                          "ide_position":  15,
+                                                          "decoded":  "DbDiscnt(\u0027Ucp ODBC\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,15}\u003e{0,13}",
+                                                          "ide_position":  16,
+                                                          "decoded":  "v.nb boucles while [O]\u003ev.intervalle [M]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,15}",
+                                                          "ide_position":  17,
+                                                          "decoded":  "v.nb boucles while [O]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,2}",
+                                                          "ide_position":  19,
+                                                          "decoded":  "v.retour log [B]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "FileDelete(Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp_LW.txt\u0027)",
+                                                          "ide_position":  25,
+                                                          "decoded":  "FileDelete(Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp_LW.txt\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "FileRename(Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp.txt\u0027,Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp_LW.txt\u0027)",
+                                                          "ide_position":  26,
+                                                          "decoded":  "FileRename(Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp.txt\u0027,Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp_LW.txt\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,2}",
+                                                          "ide_position":  27,
+                                                          "decoded":  "v.retour log [B]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027Timestamp actuel : \u0027\u0026Left({0,12},10)",
+                                                          "ide_position":  29,
+                                                          "decoded":  "\u0027Timestamp actuel : \u0027\u0026Left(v.borne max timestamp [L],10)",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "DStr(Date(),\u0027DD/MM/YYYY\u0027)\u0026\u0027 \u0027\u0026TStr(Time(),\u0027HHMM\u0027)",
+                                                         "ide_position":  2,
+                                                         "decoded":  "DStr(Date(),\u0027DD/MM/YYYY\u0027)\u0026\u0027 \u0027\u0026TStr(Time(),\u0027HHMM\u0027)",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Date()",
+                                                         "ide_position":  6,
+                                                         "decoded":  "Date()",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "DOW(Date())=1",
+                                                         "ide_position":  24,
+                                                         "decoded":  "DOW(Date())=1",
+                                                         "type":  "DATE"
+                                                     }
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "1504216800",
+                                                             "ide_position":  9,
+                                                             "decoded":  "1504216800",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "432000",
+                                                             "ide_position":  10,
+                                                             "decoded":  "432000",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027FIN INIT TABLE\u0027",
+                                                             "ide_position":  21,
+                                                             "decoded":  "\u0027FIN INIT TABLE\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027EXPORT TABLE\u0027",
+                                                             "ide_position":  22,
+                                                             "decoded":  "\u0027EXPORT TABLE\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027WRITE LOG\u0027",
+                                                             "ide_position":  23,
+                                                             "decoded":  "\u0027WRITE LOG\u0027",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Val(Left({0,12},10),\u002710\u0027)",
+                                                           "ide_position":  8,
+                                                           "decoded":  "Val(Left(v.borne max timestamp [L],10),\u002710\u0027)",
+                                                           "type":  "STRING"
+                                                       }
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Translate(\u0027%pool_lieu_sejour%\u0027)",
+                                        "ide_position":  1,
+                                        "decoded":  "Translate(\u0027%pool_lieu_sejour%\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "DStr(Date(),\u0027DD/MM/YYYY\u0027)\u0026\u0027 \u0027\u0026TStr(Time(),\u0027HHMM\u0027)",
+                                        "ide_position":  2,
+                                        "decoded":  "DStr(Date(),\u0027DD/MM/YYYY\u0027)\u0026\u0027 \u0027\u0026TStr(Time(),\u0027HHMM\u0027)",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "DbDel(\u0027{7,-1}\u0027DSOURCE,\u0027\u0027)",
+                                        "ide_position":  3,
+                                        "decoded":  "DbDel(\u0027{7,-1}\u0027DSOURCE,\u0027\u0027)",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT({0,9}) OR {0,2}=0",
+                                        "ide_position":  4,
+                                        "decoded":  "NOT(v.timestamp actuel alpha [I]) OR v.retour log [B]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,11}",
+                                        "ide_position":  5,
+                                        "decoded":  "v.borne min timestamp [K]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Date()",
+                                        "ide_position":  6,
+                                        "decoded":  "Date()",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Time()",
+                                        "ide_position":  7,
+                                        "decoded":  "Time()",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Val(Left({0,12},10),\u002710\u0027)",
+                                        "ide_position":  8,
+                                        "decoded":  "Val(Left(v.borne max timestamp [L],10),\u002710\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "1504216800",
+                                        "ide_position":  9,
+                                        "decoded":  "1504216800",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "432000",
+                                        "ide_position":  10,
+                                        "decoded":  "432000",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,14}+{0,17}",
+                                        "ide_position":  11,
+                                        "decoded":  "v.arret while [N]+[Q]",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT({0,18})",
+                                        "ide_position":  12,
+                                        "decoded":  "NOT([R])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT({0,19})",
+                                        "ide_position":  13,
+                                        "decoded":  "NOT([S])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,19}",
+                                        "ide_position":  14,
+                                        "decoded":  "[S]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "DbDiscnt(\u0027Ucp ODBC\u0027)",
+                                        "ide_position":  15,
+                                        "decoded":  "DbDiscnt(\u0027Ucp ODBC\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,15}\u003e{0,13}",
+                                        "ide_position":  16,
+                                        "decoded":  "v.nb boucles while [O]\u003ev.intervalle [M]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,15}",
+                                        "ide_position":  17,
+                                        "decoded":  "v.nb boucles while [O]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027INIT TABLE PRIM :\u0027\u0026Trim(Str({0,14},\u002710\u0027))\u0026\u0027-\u0027\u0026Trim(Str({0,15},\u002710\u0027))",
+                                        "ide_position":  18,
+                                        "decoded":  "\u0027INIT TABLE PRIM :\u0027\u0026Trim(Str(v.arret while [N],\u002710\u0027))\u0026\u0027-\u0027\u0026Trim(Str(v.nb boucles while [O],\u002710\u0027))",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,2}",
+                                        "ide_position":  19,
+                                        "decoded":  "v.retour log [B]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027INIT TABLE PRIM :\u0027\u0026Trim(Str({0,14},\u002710\u0027))\u0026\u0027-EOT\u0027",
+                                        "ide_position":  20,
+                                        "decoded":  "\u0027INIT TABLE PRIM :\u0027\u0026Trim(Str(v.arret while [N],\u002710\u0027))\u0026\u0027-EOT\u0027",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027FIN INIT TABLE\u0027",
+                                        "ide_position":  21,
+                                        "decoded":  "\u0027FIN INIT TABLE\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027EXPORT TABLE\u0027",
+                                        "ide_position":  22,
+                                        "decoded":  "\u0027EXPORT TABLE\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027WRITE LOG\u0027",
+                                        "ide_position":  23,
+                                        "decoded":  "\u0027WRITE LOG\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "DOW(Date())=1",
+                                        "ide_position":  24,
+                                        "decoded":  "DOW(Date())=1",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "FileDelete(Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp_LW.txt\u0027)",
+                                        "ide_position":  25,
+                                        "decoded":  "FileDelete(Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp_LW.txt\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "FileRename(Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp.txt\u0027,Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp_LW.txt\u0027)",
+                                        "ide_position":  26,
+                                        "decoded":  "FileRename(Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp.txt\u0027,Translate(\u0027%env%\u0027)\u0026\u0027Log_Prog_Exp_Ucp_LW.txt\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,2}",
+                                        "ide_position":  27,
+                                        "decoded":  "v.retour log [B]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-001",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF({0,11},\u0027Export Iteratif\u0027,\u0027Export Delta\u0027)",
+                                        "decoded":  "IF(v.borne min timestamp [K],\u0027Export Iteratif\u0027,\u0027Export Delta\u0027)",
+                                        "ide_position":  28
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027Timestamp actuel : \u0027\u0026Left({0,12},10)",
+                                        "ide_position":  29,
+                                        "decoded":  "\u0027Timestamp actuel : \u0027\u0026Left(v.borne max timestamp [L],10)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,22}+1",
+                                        "ide_position":  30,
+                                        "decoded":  "[V]+1",
+                                        "type":  "CALCULATION"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+                                       {
+                                           "id":  "RM-001",
+                                           "false_value":  "\u0027Export Delta\u0027)",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF(v.borne min timestamp [K],\u0027Export Iteratif\u0027,\u0027Export Delta\u0027)",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  28,
+                                           "true_value":  "\u0027Export Iteratif\u0027",
+                                           "natural_language":  "Si v.borne min timestamp [K] alors \u0027Export Iteratif\u0027 sinon \u0027Export Delta\u0027)",
+                                           "condition":  "v.borne min timestamp [K]",
+                                           "raw_expression":  "IF({0,11},\u0027Export Iteratif\u0027,\u0027Export Delta\u0027)"
+                                       }
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+                                                                 {
+                                                                     "id":  "RM-001",
+                                                                     "false_value":  "\u0027Export Delta\u0027)",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF(v.borne min timestamp [K],\u0027Export Iteratif\u0027,\u0027Export Delta\u0027)",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  28,
+                                                                     "true_value":  "\u0027Export Iteratif\u0027",
+                                                                     "natural_language":  "Si v.borne min timestamp [K] alors \u0027Export Iteratif\u0027 sinon \u0027Export Delta\u0027)",
+                                                                     "condition":  "v.borne min timestamp [K]",
+                                                                     "raw_expression":  "IF({0,11},\u0027Export Iteratif\u0027,\u0027Export Delta\u0027)"
+                                                                 }
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  14,
+                     "pipeline_version":  "7.1",
+                     "project":  "POO",
+                     "program_name":  "Export Ucopia bck 06/12",
+                     "generated_at":  "2026-02-03 17:40:01"
+                 }
+}

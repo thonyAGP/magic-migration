@@ -1,0 +1,105 @@
+﻿{
+    "tables":  {
+                   "all":  [
+                               {
+                                   "logical_name":  "comptable________cte",
+                                   "physical_name":  "cafil018_dat",
+                                   "access_mode":  "WRITE",
+                                   "id":  40,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "vente",
+                                   "physical_name":  "caisse_vente",
+                                   "access_mode":  "LINK",
+                                   "id":  263,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "maj_appli_tpe",
+                                   "physical_name":  "maj_appli_tpe",
+                                   "access_mode":  "LINK",
+                                   "id":  866,
+                                   "usage_count":  1
+                               },
+                               {
+                                   "logical_name":  "Rayons_Boutique",
+                                   "physical_name":  "rayons_boutique",
+                                   "access_mode":  "LINK",
+                                   "id":  870,
+                                   "usage_count":  1
+                               }
+                           ],
+                   "by_access":  {
+                                     "LINK":  [
+                                                  {
+                                                      "logical_name":  "vente",
+                                                      "physical_name":  "caisse_vente",
+                                                      "access_mode":  "LINK",
+                                                      "id":  263,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "maj_appli_tpe",
+                                                      "physical_name":  "maj_appli_tpe",
+                                                      "access_mode":  "LINK",
+                                                      "id":  866,
+                                                      "usage_count":  1
+                                                  },
+                                                  {
+                                                      "logical_name":  "Rayons_Boutique",
+                                                      "physical_name":  "rayons_boutique",
+                                                      "access_mode":  "LINK",
+                                                      "id":  870,
+                                                      "usage_count":  1
+                                                  }
+                                              ],
+                                     "READ":  [
+
+                                              ],
+                                     "WRITE":  [
+                                                   {
+                                                       "logical_name":  "comptable________cte",
+                                                       "physical_name":  "cafil018_dat",
+                                                       "access_mode":  "WRITE",
+                                                       "id":  40,
+                                                       "usage_count":  1
+                                                   }
+                                               ]
+                                 }
+               },
+    "orphan_analysis":  {
+                            "has_public_name":  false,
+                            "is_ecf_member":  false,
+                            "has_callers":  false,
+                            "status":  "ORPHELIN_POTENTIEL",
+                            "reason":  "Aucun caller direct detecte - verifier PublicName et ECF"
+                        },
+    "statistics":  {
+                       "callee_count":  0,
+                       "expression_count":  23,
+                       "logic_line_count":  81,
+                       "caller_count":  0,
+                       "task_count":  1,
+                       "disabled_line_count":  0,
+                       "table_count":  4
+                   },
+    "call_graph":  {
+                       "call_chain":  [
+
+                                      ],
+                       "callees":  [
+
+                                   ],
+                       "callers":  [
+
+                                   ]
+                   },
+    "metadata":  {
+                     "ide_position":  105,
+                     "pipeline_version":  "7.1",
+                     "project":  "ADH",
+                     "program_name":  "Maj des lignes saisies V3",
+                     "generated_at":  "2026-02-07 07:00:30"
+                 }
+}

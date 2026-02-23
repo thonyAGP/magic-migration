@@ -1,0 +1,151 @@
+﻿{
+    "files_generated":  [
+                            "PBP-IDE-335-summary.md",
+                            "PBP-IDE-335.md"
+                        ],
+    "extraction_coverage":  {
+                                "tables_extracted":  true,
+                                "expressions_decoded":  true,
+                                "callers_extracted":  true,
+                                "callees_extracted":  true,
+                                "variables_mapped":  true,
+                                "forms_extracted":  true
+                            },
+    "audit":  {
+                  "checks":  [
+                                 {
+                                     "detail":  "OK",
+                                     "status":  "PASS",
+                                     "check":  "RULES_NO_PLACEHOLDER"
+                                 },
+                                 {
+                                     "detail":  "4 onglets V7.2",
+                                     "status":  "PASS",
+                                     "check":  "TAB_STRUCTURE"
+                                 },
+                                 {
+                                     "detail":  "V7.2 present",
+                                     "status":  "PASS",
+                                     "check":  "VERSION_72"
+                                 },
+                                 {
+                                     "detail":  "4 ancres",
+                                     "status":  "PASS",
+                                     "check":  "V72_ANCHORS"
+                                 },
+                                 {
+                                     "detail":  "21 liens cliquables",
+                                     "status":  "PASS",
+                                     "check":  "V72_LINKS"
+                                 },
+                                 {
+                                     "detail":  "1 blocs FORM-DATA",
+                                     "status":  "PASS",
+                                     "check":  "V72_FORMDATA"
+                                 },
+                                 {
+                                     "detail":  "2 groupes par role",
+                                     "status":  "PASS",
+                                     "check":  "V72_VAR_ROLES"
+                                 },
+                                 {
+                                     "detail":  "26 types precis",
+                                     "status":  "PASS",
+                                     "check":  "V72_EXPR_TYPES"
+                                 },
+                                 {
+                                     "detail":  "Roles specifiques aux taches",
+                                     "status":  "PASS",
+                                     "check":  "GAP1_SPECIFIC_ROLES"
+                                 },
+                                 {
+                                     "detail":  "Pas de liste sous-taches (programme complexe: 4 taches)",
+                                     "status":  "WARN",
+                                     "check":  "GAP2_SUBTASKS"
+                                 },
+                                 {
+                                     "detail":  "Variables liees aux taches",
+                                     "status":  "PASS",
+                                     "check":  "GAP2_VARS_TASK"
+                                 },
+                                 {
+                                     "detail":  "2/3 champs enrichis (source/exemple/impact)",
+                                     "status":  "PASS",
+                                     "check":  "GAP3_ENRICHED_RULES"
+                                 },
+                                 {
+                                     "detail":  "Actions boutons specifiques",
+                                     "status":  "PASS",
+                                     "check":  "GAP4_BTN_ACTIONS"
+                                 },
+                                 {
+                                     "detail":  "Pas de fallback MCP",
+                                     "status":  "PASS",
+                                     "check":  "GAP5_COLUMNS"
+                                 },
+                                 {
+                                     "detail":  "Variables avec contexte (pas de \u0027Xx refs\u0027)",
+                                     "status":  "PASS",
+                                     "check":  "GAP6_VAR_LINKS"
+                                 },
+                                 {
+                                     "detail":  "Migration concrete (pas generique)",
+                                     "status":  "PASS",
+                                     "check":  "GAP7_MIGRATION"
+                                 },
+                                 {
+                                     "detail":  "All T{ISN2} replaced with ide_path",
+                                     "status":  "PASS",
+                                     "check":  "NR_IDE_PATH"
+                                 },
+                                 {
+                                     "detail":  "All [ECRAN] are linked to mockups",
+                                     "status":  "PASS",
+                                     "check":  "NR_ECRAN_LINKS"
+                                 },
+                                 {
+                                     "detail":  "No enriched sections to preserve (first run or basic)",
+                                     "status":  "PASS",
+                                     "check":  "NR_ENRICHED_PRESERVED"
+                                 }
+                             ],
+                  "pass":  18,
+                  "fail":  0,
+                  "warn":  3,
+                  "all_passed":  true
+              },
+    "quality_score":  100,
+    "complexity":  {
+                       "score":  32,
+                       "level":  "BASSE",
+                       "details":  [
+                                       "Expressions: 138 (MOYENNE)",
+                                       "Taches: 4 (MINIMALE)",
+                                       "Tables WRITE: 2 (BASSE)",
+                                       "Callees: 3 (BASSE)",
+                                       "Code desactive: 0% (SAIN)"
+                                   ]
+                   },
+    "pipeline_timing":  {
+                            "phases_start":  "2026-02-03 16:29:39",
+                            "assembly_end":  "2026-02-03 16:29:55",
+                            "assembly_start":  "2026-02-03 16:29:53",
+                            "phases_duration":  "14s",
+                            "phases_end":  "2026-02-03 16:29:53"
+                        },
+    "v72_features":  {
+                         "clickable_links":  21,
+                         "variable_roles":  2,
+                         "precise_expr_types":  26,
+                         "anchors":  4,
+                         "form_data_blocks":  1
+                     },
+    "metadata":  {
+                     "pipeline_version":  "7.2",
+                     "generated_at":  "2026-02-03 16:29:55",
+                     "ide_position":  335,
+                     "duration_seconds":  2,
+                     "program_name":  "Creation tempo toutes GO",
+                     "project":  "PBP"
+                 }
+}

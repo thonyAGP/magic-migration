@@ -1,0 +1,10 @@
+{
+  "name": "@magic-migration/dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SPECMAP migration dashboard - multi-project HTML viewer",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static site - no build needed'"
+  }
+}

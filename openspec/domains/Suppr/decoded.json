@@ -1,0 +1,1670 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  4,
+                                       "calculation":  1,
+                                       "other":  52,
+                                       "date":  11,
+                                       "constant":  23,
+                                       "string":  19
+                                   },
+                       "total_in_program":  110,
+                       "decoded_count":  110,
+                       "business_rules_count":  3
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-001",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF({0,170}=0,IF({0,29}=\u0027VSL\u0027,{0,13},Date()),{0,89})",
+                                                              "decoded":  "IF(V0.Decline Email receipt [FN]=0,IF([AC]=\u0027VSL\u0027,P0.Date debut sejour [M],Date()),W0 Motif annulation [CK])",
+                                                              "ide_position":  1
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "raw":  "IF({0,170}=0,IF({0,29}=\u0027VSL\u0027,{0,7},{0,90}),{0,90})",
+                                                              "ide_position":  39,
+                                                              "decoded":  "IF(V0.Decline Email receipt [FN]=0,IF([AC]=\u0027VSL\u0027,P0 date fin sejour [G],W0 Titre [CL]),W0 Titre [CL])",
+                                                              "type":  "CONDITION"
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-002",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF({0,95}\u003c\u003e\u0027\u0027,RTrim ({0,94})\u0026Fill (\u0027 \u0027,Len (RTrim ({0,94}))-1)\u0026RTrim ({0,95})\u0026\u0027 \u0027\u0026{0,96},Trim({0,11}))",
+                                                              "decoded":  "IF(W0 Commune [CQ]\u003c\u003e\u0027\u0027,RTrim (W0 Nom de la rue [CP])\u0026Fill (\u0027 \u0027,Len (RTrim (W0 Nom de la rue [CP]))-1)\u0026RTrim (W0 Commune [CQ])\u0026\u0027 \u0027\u0026W0 CP [CR],Trim(P0 Nom \u0026 prenom [K]))",
+                                                              "ide_position":  42
+                                                          },
+                                                          {
+                                                              "comment":  "",
+                                                              "business_rule_id":  "RM-003",
+                                                              "type":  "CONDITION",
+                                                              "raw":  "IF({0,149},{0,152},{32768,43})",
+                                                              "decoded":  "IF(v Nbre ligne de reglem... [ES],V.Multi reglement ligne [EV],VG43)",
+                                                              "ide_position":  44
+                                                          }
+                                                      ],
+                                        "CALCULATION":  [
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "MlsTrans(\u0027SALES\u0027)\u0026\u0027 - \u0027\u0026Trim({0,11})",
+                                                                "ide_position":  59,
+                                                                "decoded":  "MlsTrans(\u0027SALES\u0027)\u0026\u0027 - \u0027\u0026Trim(P0 Nom \u0026 prenom [K])",
+                                                                "type":  "CALCULATION"
+                                                            }
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,1}",
+                                                          "ide_position":  2,
+                                                          "decoded":  "P0 societe [A]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,5}",
+                                                          "ide_position":  3,
+                                                          "decoded":  "P0 code GM [E]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,6}",
+                                                          "ide_position":  4,
+                                                          "decoded":  "P0 filiation [F]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,23}",
+                                                          "ide_position":  10,
+                                                          "decoded":  "W0 code article [W]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,22}=0 AND NOT {0,137}",
+                                                          "ide_position":  11,
+                                                          "decoded":  "W0 nbre articles [V]=0 AND NOT V.VADA ? [EG]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,105}",
+                                                          "ide_position":  12,
+                                                          "decoded":  "WO Classe MOP [DA]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,22}\u003e{0,106} AND NOT ({0,137})",
+                                                          "ide_position":  13,
+                                                          "decoded":  "W0 nbre articles [V]\u003eV0 memo-service [DB] AND NOT (V.VADA ? [EG])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,134}",
+                                                          "ide_position":  14,
+                                                          "decoded":  "W0 choix transac manuelle [ED]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "MlsTrans(\u0027Identité\u0027)",
+                                                          "ide_position":  16,
+                                                          "decoded":  "MlsTrans(\u0027Identité\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "MlsTrans (\u0027\u0026Fin Transaction\u0027)",
+                                                          "ide_position":  18,
+                                                          "decoded":  "MlsTrans (\u0027\u0026Fin Transaction\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "DbRecs (\u0027{578,4}\u0027DSOURCE,\u0027\u0027)\u003e0 AND {0,18}",
+                                                          "ide_position":  19,
+                                                          "decoded":  "DbRecs (\u0027{578,4}\u0027DSOURCE,\u0027\u0027)\u003e0 AND W0 FIN SAISIE OD date [R]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027TRUE\u0027LOG",
+                                                          "ide_position":  20,
+                                                          "decoded":  "\u0027TRUE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "LastClicked()\u003c\u003e\u0027Bouton ABANDON\u0027 AND NOT ({0,137}) AND DbRecs (\u0027{578,4}\u0027DSOURCE,\u0027\u0027)=0",
+                                                          "ide_position":  21,
+                                                          "decoded":  "LastClicked()\u003c\u003e\u0027Bouton ABANDON\u0027 AND NOT (V.VADA ? [EG]) AND DbRecs (\u0027{578,4}\u0027DSOURCE,\u0027\u0027)=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT ({0,135})",
+                                                          "ide_position":  22,
+                                                          "decoded":  "NOT (Bouton Ok [EE])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,1}",
+                                                          "ide_position":  24,
+                                                          "decoded":  "P0 societe [A]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,5}",
+                                                          "ide_position":  25,
+                                                          "decoded":  "P0 code GM [E]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,6}",
+                                                          "ide_position":  26,
+                                                          "decoded":  "P0 filiation [F]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "ASCIIChr (33)",
+                                                          "ide_position":  29,
+                                                          "decoded":  "ASCIIChr (33)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{32768,38}",
+                                                          "ide_position":  30,
+                                                          "decoded":  "VG38",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,23}",
+                                                          "ide_position":  32,
+                                                          "decoded":  "W0 code article [W]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,108}=\u0027\u0027",
+                                                          "ide_position":  33,
+                                                          "decoded":  "V0 validation [DD]=\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,135}",
+                                                          "ide_position":  34,
+                                                          "decoded":  "Bouton Ok [EE]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT ExpCalc(\u002734\u0027EXP)",
+                                                          "ide_position":  35,
+                                                          "decoded":  "NOT ExpCalc(\u002734\u0027EXP)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027FALSE\u0027LOG",
+                                                          "ide_position":  36,
+                                                          "decoded":  "\u0027FALSE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,55}",
+                                                          "ide_position":  37,
+                                                          "decoded":  "W0 service village [BC]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,23}",
+                                                          "ide_position":  38,
+                                                          "decoded":  "W0 code article [W]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "GetParam(\u0027CODELANGUE\u0027)",
+                                                          "ide_position":  40,
+                                                          "decoded":  "GetParam(\u0027CODELANGUE\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{32768,31}\u003e1",
+                                                          "ide_position":  45,
+                                                          "decoded":  "VG31\u003e1",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,189}",
+                                                          "ide_position":  46,
+                                                          "decoded":  "[GG]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,147}",
+                                                          "ide_position":  49,
+                                                          "decoded":  "v Réponse mode paiement [EQ]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,60}",
+                                                          "ide_position":  51,
+                                                          "decoded":  "W0 Lieu sejour [BH]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,61}",
+                                                          "ide_position":  53,
+                                                          "decoded":  "W0 Code reduction [BI]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,159} OR {0,164}",
+                                                          "ide_position":  56,
+                                                          "decoded":  "V.Transaction ok [FC] OR V0.Au moins une ligne [FH]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,206}\u003e1 AND {0,22}=1",
+                                                          "ide_position":  57,
+                                                          "decoded":  "[GX]\u003e1 AND W0 nbre articles [V]=1",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,29}=\u0027TRF\u0027 AND {32768,41}",
+                                                          "ide_position":  58,
+                                                          "decoded":  "[AC]=\u0027TRF\u0027 AND VG41",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "ASCIIChr(13)\u0026MlsTrans(\u0027CONTINUE\u0027)",
+                                                          "ide_position":  60,
+                                                          "decoded":  "ASCIIChr(13)\u0026MlsTrans(\u0027CONTINUE\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "ASCIIChr(13)\u0026MlsTrans(\u0027IDENTITY\u0027)",
+                                                          "ide_position":  61,
+                                                          "decoded":  "ASCIIChr(13)\u0026MlsTrans(\u0027IDENTITY\u0027)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,24}=\u0027VRL\u0027 AND {0,124}=0",
+                                                          "ide_position":  62,
+                                                          "decoded":  "W0.Type article [X]=\u0027VRL\u0027 AND W0 Retour Lecture TPE [DT]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,24}=\u0027VRL\u0027 AND {0,124}=0 AND {0,170}=0",
+                                                          "ide_position":  63,
+                                                          "decoded":  "W0.Type article [X]=\u0027VRL\u0027 AND W0 Retour Lecture TPE [DT]=0 AND V0.Decline Email receipt [FN]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,136}\u003c\u003e6",
+                                                          "ide_position":  64,
+                                                          "decoded":  "W0 Lien Logement Lieu ... [EF]\u003c\u003e6",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,116}=\u0027F\u0027 OR {0,137}",
+                                                          "ide_position":  80,
+                                                          "decoded":  "W0 date fin [DL]=\u0027F\u0027 OR V.VADA ? [EG]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "DbRecs(\u0027{578,4}\u0027DSOURCE,\u0027\u0027)\u003e0",
+                                                          "ide_position":  81,
+                                                          "decoded":  "DbRecs(\u0027{578,4}\u0027DSOURCE,\u0027\u0027)\u003e0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "LastClicked()\u003c\u003e\u0027Bouton FIN SAISIE OD\u0027",
+                                                          "ide_position":  85,
+                                                          "decoded":  "LastClicked()\u003c\u003e\u0027Bouton FIN SAISIE OD\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027TRUE\u0027LOG",
+                                                          "ide_position":  86,
+                                                          "decoded":  "\u0027TRUE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "NOT ExpCalc(\u002790\u0027EXP)",
+                                                          "ide_position":  92,
+                                                          "decoded":  "NOT ExpCalc(\u002790\u0027EXP)",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,202}",
+                                                          "ide_position":  95,
+                                                          "decoded":  "[GT]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,1}",
+                                                          "ide_position":  96,
+                                                          "decoded":  "P0 societe [A]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,5}",
+                                                          "ide_position":  97,
+                                                          "decoded":  "P0 code GM [E]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,6}",
+                                                          "ide_position":  98,
+                                                          "decoded":  "P0 filiation [F]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "FileDelete({0,198})",
+                                                          "ide_position":  103,
+                                                          "decoded":  "FileDelete([GP])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "FileExist({0,198})",
+                                                          "ide_position":  104,
+                                                          "decoded":  "FileExist([GP])",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,210}",
+                                                          "ide_position":  110,
+                                                          "decoded":  "[HB]",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Date ()",
+                                                         "ide_position":  6,
+                                                         "decoded":  "Date ()",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Date ()",
+                                                         "ide_position":  27,
+                                                         "decoded":  "Date ()",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OD_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "ide_position":  87,
+                                                         "decoded":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OD_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "ide_position":  89,
+                                                         "decoded":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Trim({32768,67}) \u0026\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "ide_position":  90,
+                                                         "decoded":  "Trim(VG67) \u0026\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027SIGN_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.gif\u0027",
+                                                         "ide_position":  101,
+                                                         "decoded":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027SIGN_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.gif\u0027",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Trim({32768,68}) \u0026\u0027SIGN_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.gif\u0027",
+                                                         "ide_position":  102,
+                                                         "decoded":  "Trim(VG68) \u0026\u0027SIGN_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.gif\u0027",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "\u0027TICKET_OD_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "ide_position":  106,
+                                                         "decoded":  "\u0027TICKET_OD_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OD_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "ide_position":  107,
+                                                         "decoded":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OD_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "Trim({32768,67}) \u0026\u0027TICKET_OD_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "ide_position":  108,
+                                                         "decoded":  "Trim(VG67) \u0026\u0027TICKET_OD_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "type":  "DATE"
+                                                     },
+                                                     {
+                                                         "comment":  "",
+                                                         "raw":  "\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "ide_position":  109,
+                                                         "decoded":  "\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                                         "type":  "DATE"
+                                                     }
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027F\u0027",
+                                                             "ide_position":  5,
+                                                             "decoded":  "\u0027F\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027N\u0027",
+                                                             "ide_position":  7,
+                                                             "decoded":  "\u0027N\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "0",
+                                                             "ide_position":  8,
+                                                             "decoded":  "0",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027CAISSE\u0027",
+                                                             "ide_position":  9,
+                                                             "decoded":  "\u0027CAISSE\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027A\u0026bandonner\u0027",
+                                                             "ide_position":  17,
+                                                             "decoded":  "\u0027A\u0026bandonner\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "30",
+                                                             "ide_position":  23,
+                                                             "decoded":  "30",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027H\u0027",
+                                                             "ide_position":  28,
+                                                             "decoded":  "\u0027H\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027VISA\u0027",
+                                                             "ide_position":  31,
+                                                             "decoded":  "\u0027VISA\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027\u0027",
+                                                             "ide_position":  41,
+                                                             "decoded":  "\u0027\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027SANS\u0027",
+                                                             "ide_position":  43,
+                                                             "decoded":  "\u0027SANS\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027...\u0027",
+                                                             "ide_position":  47,
+                                                             "decoded":  "\u0027...\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u00272\u0027",
+                                                             "ide_position":  48,
+                                                             "decoded":  "\u00272\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027H\u0027",
+                                                             "ide_position":  50,
+                                                             "decoded":  "\u0027H\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027PL\u0027",
+                                                             "ide_position":  52,
+                                                             "decoded":  "\u0027PL\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027VADA\u0027",
+                                                             "ide_position":  54,
+                                                             "decoded":  "\u0027VADA\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027VADV\u0027",
+                                                             "ide_position":  55,
+                                                             "decoded":  "\u0027VADV\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027\u0027",
+                                                             "ide_position":  65,
+                                                             "decoded":  "\u0027\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "0",
+                                                             "ide_position":  66,
+                                                             "decoded":  "0",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027\u0027",
+                                                             "ide_position":  79,
+                                                             "decoded":  "\u0027\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027VALSALES\u0027",
+                                                             "ide_position":  82,
+                                                             "decoded":  "\u0027VALSALES\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027VSERV\u0027",
+                                                             "ide_position":  93,
+                                                             "decoded":  "\u0027VSERV\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027O\u0027",
+                                                             "ide_position":  94,
+                                                             "decoded":  "\u0027O\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027WELSALES\u0027",
+                                                             "ide_position":  105,
+                                                             "decoded":  "\u0027WELSALES\u0027",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_editod\u0027))=\u0027O\u0027 AND Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_formation\u0027))\u003c\u003e\u0027O\u0027",
+                                                           "ide_position":  15,
+                                                           "decoded":  "Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_editod\u0027))=\u0027O\u0027 AND Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_formation\u0027))\u003c\u003e\u0027O\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,21})\u0026\u00270\u0027",
+                                                           "ide_position":  67,
+                                                           "decoded":  "Trim(V0.Qte [U])\u0026\u00270\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,21})\u0026\u00271\u0027",
+                                                           "ide_position":  68,
+                                                           "decoded":  "Trim(V0.Qte [U])\u0026\u00271\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,21})\u0026\u00272\u0027",
+                                                           "ide_position":  69,
+                                                           "decoded":  "Trim(V0.Qte [U])\u0026\u00272\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,21})\u0026\u00273\u0027",
+                                                           "ide_position":  70,
+                                                           "decoded":  "Trim(V0.Qte [U])\u0026\u00273\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,21})\u0026\u00274\u0027",
+                                                           "ide_position":  71,
+                                                           "decoded":  "Trim(V0.Qte [U])\u0026\u00274\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,21})\u0026\u00275\u0027",
+                                                           "ide_position":  72,
+                                                           "decoded":  "Trim(V0.Qte [U])\u0026\u00275\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,21})\u0026\u00276\u0027",
+                                                           "ide_position":  73,
+                                                           "decoded":  "Trim(V0.Qte [U])\u0026\u00276\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,21})\u0026\u00277\u0027",
+                                                           "ide_position":  74,
+                                                           "decoded":  "Trim(V0.Qte [U])\u0026\u00277\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,21})\u0026\u00278\u0027",
+                                                           "ide_position":  75,
+                                                           "decoded":  "Trim(V0.Qte [U])\u0026\u00278\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,21})\u0026\u00279\u0027",
+                                                           "ide_position":  76,
+                                                           "decoded":  "Trim(V0.Qte [U])\u0026\u00279\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Len(Trim({0,21}))\u003c3",
+                                                           "ide_position":  77,
+                                                           "decoded":  "Len(Trim(V0.Qte [U]))\u003c3",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Val(Trim({0,21}),\u00273\u0027)",
+                                                           "ide_position":  78,
+                                                           "decoded":  "Val(Trim(V0.Qte [U]),\u00273\u0027)",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "MlsTrans(\u0027Validate transaction for a total of\u0027)\u0026Trim(Str(ABS({0,133}),{32768,47}))",
+                                                           "ide_position":  83,
+                                                           "decoded":  "MlsTrans(\u0027Validate transaction for a total of\u0027)\u0026Trim(Str(ABS(W0 choix personne absente [EC]),VG47))",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "MlsTrans(\u0027Total\u0027)\u0026\u0027 \u0027\u0026Trim(Str(ABS({0,133}),{32768,47}))",
+                                                           "ide_position":  84,
+                                                           "decoded":  "MlsTrans(\u0027Total\u0027)\u0026\u0027 \u0027\u0026Trim(Str(ABS(W0 choix personne absente [EC]),VG47))",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,195})",
+                                                           "ide_position":  88,
+                                                           "decoded":  "Trim([GM])",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,108})=\u0027OD\u0027",
+                                                           "ide_position":  91,
+                                                           "decoded":  "Trim(V0 validation [DD])=\u0027OD\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,197})\u003c\u003e\u00270\u0027",
+                                                           "ide_position":  99,
+                                                           "decoded":  "Trim([GO])\u003c\u003e\u00270\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,197})\u003c\u003e\u00270\u0027 AND NOT {0,204}",
+                                                           "ide_position":  100,
+                                                           "decoded":  "Trim([GO])\u003c\u003e\u00270\u0027 AND NOT [GV]",
+                                                           "type":  "STRING"
+                                                       }
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-001",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF({0,170}=0,IF({0,29}=\u0027VSL\u0027,{0,13},Date()),{0,89})",
+                                        "decoded":  "IF(V0.Decline Email receipt [FN]=0,IF([AC]=\u0027VSL\u0027,P0.Date debut sejour [M],Date()),W0 Motif annulation [CK])",
+                                        "ide_position":  1
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,1}",
+                                        "ide_position":  2,
+                                        "decoded":  "P0 societe [A]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,5}",
+                                        "ide_position":  3,
+                                        "decoded":  "P0 code GM [E]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,6}",
+                                        "ide_position":  4,
+                                        "decoded":  "P0 filiation [F]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027F\u0027",
+                                        "ide_position":  5,
+                                        "decoded":  "\u0027F\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Date ()",
+                                        "ide_position":  6,
+                                        "decoded":  "Date ()",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027N\u0027",
+                                        "ide_position":  7,
+                                        "decoded":  "\u0027N\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "0",
+                                        "ide_position":  8,
+                                        "decoded":  "0",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027CAISSE\u0027",
+                                        "ide_position":  9,
+                                        "decoded":  "\u0027CAISSE\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,23}",
+                                        "ide_position":  10,
+                                        "decoded":  "W0 code article [W]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,22}=0 AND NOT {0,137}",
+                                        "ide_position":  11,
+                                        "decoded":  "W0 nbre articles [V]=0 AND NOT V.VADA ? [EG]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,105}",
+                                        "ide_position":  12,
+                                        "decoded":  "WO Classe MOP [DA]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,22}\u003e{0,106} AND NOT ({0,137})",
+                                        "ide_position":  13,
+                                        "decoded":  "W0 nbre articles [V]\u003eV0 memo-service [DB] AND NOT (V.VADA ? [EG])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,134}",
+                                        "ide_position":  14,
+                                        "decoded":  "W0 choix transac manuelle [ED]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_editod\u0027))=\u0027O\u0027 AND Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_formation\u0027))\u003c\u003e\u0027O\u0027",
+                                        "ide_position":  15,
+                                        "decoded":  "Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_editod\u0027))=\u0027O\u0027 AND Trim (INIGet (\u0027[MAGIC_LOGICAL_NAMES]club_formation\u0027))\u003c\u003e\u0027O\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "MlsTrans(\u0027Identité\u0027)",
+                                        "ide_position":  16,
+                                        "decoded":  "MlsTrans(\u0027Identité\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027A\u0026bandonner\u0027",
+                                        "ide_position":  17,
+                                        "decoded":  "\u0027A\u0026bandonner\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "MlsTrans (\u0027\u0026Fin Transaction\u0027)",
+                                        "ide_position":  18,
+                                        "decoded":  "MlsTrans (\u0027\u0026Fin Transaction\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "DbRecs (\u0027{578,4}\u0027DSOURCE,\u0027\u0027)\u003e0 AND {0,18}",
+                                        "ide_position":  19,
+                                        "decoded":  "DbRecs (\u0027{578,4}\u0027DSOURCE,\u0027\u0027)\u003e0 AND W0 FIN SAISIE OD date [R]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TRUE\u0027LOG",
+                                        "ide_position":  20,
+                                        "decoded":  "\u0027TRUE\u0027LOG",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "LastClicked()\u003c\u003e\u0027Bouton ABANDON\u0027 AND NOT ({0,137}) AND DbRecs (\u0027{578,4}\u0027DSOURCE,\u0027\u0027)=0",
+                                        "ide_position":  21,
+                                        "decoded":  "LastClicked()\u003c\u003e\u0027Bouton ABANDON\u0027 AND NOT (V.VADA ? [EG]) AND DbRecs (\u0027{578,4}\u0027DSOURCE,\u0027\u0027)=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT ({0,135})",
+                                        "ide_position":  22,
+                                        "decoded":  "NOT (Bouton Ok [EE])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "30",
+                                        "ide_position":  23,
+                                        "decoded":  "30",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,1}",
+                                        "ide_position":  24,
+                                        "decoded":  "P0 societe [A]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,5}",
+                                        "ide_position":  25,
+                                        "decoded":  "P0 code GM [E]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,6}",
+                                        "ide_position":  26,
+                                        "decoded":  "P0 filiation [F]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Date ()",
+                                        "ide_position":  27,
+                                        "decoded":  "Date ()",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027H\u0027",
+                                        "ide_position":  28,
+                                        "decoded":  "\u0027H\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "ASCIIChr (33)",
+                                        "ide_position":  29,
+                                        "decoded":  "ASCIIChr (33)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{32768,38}",
+                                        "ide_position":  30,
+                                        "decoded":  "VG38",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027VISA\u0027",
+                                        "ide_position":  31,
+                                        "decoded":  "\u0027VISA\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,23}",
+                                        "ide_position":  32,
+                                        "decoded":  "W0 code article [W]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,108}=\u0027\u0027",
+                                        "ide_position":  33,
+                                        "decoded":  "V0 validation [DD]=\u0027\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,135}",
+                                        "ide_position":  34,
+                                        "decoded":  "Bouton Ok [EE]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT ExpCalc(\u002734\u0027EXP)",
+                                        "ide_position":  35,
+                                        "decoded":  "NOT ExpCalc(\u002734\u0027EXP)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027FALSE\u0027LOG",
+                                        "ide_position":  36,
+                                        "decoded":  "\u0027FALSE\u0027LOG",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,55}",
+                                        "ide_position":  37,
+                                        "decoded":  "W0 service village [BC]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,23}",
+                                        "ide_position":  38,
+                                        "decoded":  "W0 code article [W]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "IF({0,170}=0,IF({0,29}=\u0027VSL\u0027,{0,7},{0,90}),{0,90})",
+                                        "ide_position":  39,
+                                        "decoded":  "IF(V0.Decline Email receipt [FN]=0,IF([AC]=\u0027VSL\u0027,P0 date fin sejour [G],W0 Titre [CL]),W0 Titre [CL])",
+                                        "type":  "CONDITION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "GetParam(\u0027CODELANGUE\u0027)",
+                                        "ide_position":  40,
+                                        "decoded":  "GetParam(\u0027CODELANGUE\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027\u0027",
+                                        "ide_position":  41,
+                                        "decoded":  "\u0027\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-002",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF({0,95}\u003c\u003e\u0027\u0027,RTrim ({0,94})\u0026Fill (\u0027 \u0027,Len (RTrim ({0,94}))-1)\u0026RTrim ({0,95})\u0026\u0027 \u0027\u0026{0,96},Trim({0,11}))",
+                                        "decoded":  "IF(W0 Commune [CQ]\u003c\u003e\u0027\u0027,RTrim (W0 Nom de la rue [CP])\u0026Fill (\u0027 \u0027,Len (RTrim (W0 Nom de la rue [CP]))-1)\u0026RTrim (W0 Commune [CQ])\u0026\u0027 \u0027\u0026W0 CP [CR],Trim(P0 Nom \u0026 prenom [K]))",
+                                        "ide_position":  42
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027SANS\u0027",
+                                        "ide_position":  43,
+                                        "decoded":  "\u0027SANS\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "business_rule_id":  "RM-003",
+                                        "type":  "CONDITION",
+                                        "raw":  "IF({0,149},{0,152},{32768,43})",
+                                        "decoded":  "IF(v Nbre ligne de reglem... [ES],V.Multi reglement ligne [EV],VG43)",
+                                        "ide_position":  44
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{32768,31}\u003e1",
+                                        "ide_position":  45,
+                                        "decoded":  "VG31\u003e1",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,189}",
+                                        "ide_position":  46,
+                                        "decoded":  "[GG]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027...\u0027",
+                                        "ide_position":  47,
+                                        "decoded":  "\u0027...\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u00272\u0027",
+                                        "ide_position":  48,
+                                        "decoded":  "\u00272\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,147}",
+                                        "ide_position":  49,
+                                        "decoded":  "v Réponse mode paiement [EQ]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027H\u0027",
+                                        "ide_position":  50,
+                                        "decoded":  "\u0027H\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,60}",
+                                        "ide_position":  51,
+                                        "decoded":  "W0 Lieu sejour [BH]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027PL\u0027",
+                                        "ide_position":  52,
+                                        "decoded":  "\u0027PL\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,61}",
+                                        "ide_position":  53,
+                                        "decoded":  "W0 Code reduction [BI]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027VADA\u0027",
+                                        "ide_position":  54,
+                                        "decoded":  "\u0027VADA\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027VADV\u0027",
+                                        "ide_position":  55,
+                                        "decoded":  "\u0027VADV\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,159} OR {0,164}",
+                                        "ide_position":  56,
+                                        "decoded":  "V.Transaction ok [FC] OR V0.Au moins une ligne [FH]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,206}\u003e1 AND {0,22}=1",
+                                        "ide_position":  57,
+                                        "decoded":  "[GX]\u003e1 AND W0 nbre articles [V]=1",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,29}=\u0027TRF\u0027 AND {32768,41}",
+                                        "ide_position":  58,
+                                        "decoded":  "[AC]=\u0027TRF\u0027 AND VG41",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "MlsTrans(\u0027SALES\u0027)\u0026\u0027 - \u0027\u0026Trim({0,11})",
+                                        "ide_position":  59,
+                                        "decoded":  "MlsTrans(\u0027SALES\u0027)\u0026\u0027 - \u0027\u0026Trim(P0 Nom \u0026 prenom [K])",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "ASCIIChr(13)\u0026MlsTrans(\u0027CONTINUE\u0027)",
+                                        "ide_position":  60,
+                                        "decoded":  "ASCIIChr(13)\u0026MlsTrans(\u0027CONTINUE\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "ASCIIChr(13)\u0026MlsTrans(\u0027IDENTITY\u0027)",
+                                        "ide_position":  61,
+                                        "decoded":  "ASCIIChr(13)\u0026MlsTrans(\u0027IDENTITY\u0027)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,24}=\u0027VRL\u0027 AND {0,124}=0",
+                                        "ide_position":  62,
+                                        "decoded":  "W0.Type article [X]=\u0027VRL\u0027 AND W0 Retour Lecture TPE [DT]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,24}=\u0027VRL\u0027 AND {0,124}=0 AND {0,170}=0",
+                                        "ide_position":  63,
+                                        "decoded":  "W0.Type article [X]=\u0027VRL\u0027 AND W0 Retour Lecture TPE [DT]=0 AND V0.Decline Email receipt [FN]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,136}\u003c\u003e6",
+                                        "ide_position":  64,
+                                        "decoded":  "W0 Lien Logement Lieu ... [EF]\u003c\u003e6",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027\u0027",
+                                        "ide_position":  65,
+                                        "decoded":  "\u0027\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "0",
+                                        "ide_position":  66,
+                                        "decoded":  "0",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,21})\u0026\u00270\u0027",
+                                        "ide_position":  67,
+                                        "decoded":  "Trim(V0.Qte [U])\u0026\u00270\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,21})\u0026\u00271\u0027",
+                                        "ide_position":  68,
+                                        "decoded":  "Trim(V0.Qte [U])\u0026\u00271\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,21})\u0026\u00272\u0027",
+                                        "ide_position":  69,
+                                        "decoded":  "Trim(V0.Qte [U])\u0026\u00272\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,21})\u0026\u00273\u0027",
+                                        "ide_position":  70,
+                                        "decoded":  "Trim(V0.Qte [U])\u0026\u00273\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,21})\u0026\u00274\u0027",
+                                        "ide_position":  71,
+                                        "decoded":  "Trim(V0.Qte [U])\u0026\u00274\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,21})\u0026\u00275\u0027",
+                                        "ide_position":  72,
+                                        "decoded":  "Trim(V0.Qte [U])\u0026\u00275\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,21})\u0026\u00276\u0027",
+                                        "ide_position":  73,
+                                        "decoded":  "Trim(V0.Qte [U])\u0026\u00276\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,21})\u0026\u00277\u0027",
+                                        "ide_position":  74,
+                                        "decoded":  "Trim(V0.Qte [U])\u0026\u00277\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,21})\u0026\u00278\u0027",
+                                        "ide_position":  75,
+                                        "decoded":  "Trim(V0.Qte [U])\u0026\u00278\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,21})\u0026\u00279\u0027",
+                                        "ide_position":  76,
+                                        "decoded":  "Trim(V0.Qte [U])\u0026\u00279\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Len(Trim({0,21}))\u003c3",
+                                        "ide_position":  77,
+                                        "decoded":  "Len(Trim(V0.Qte [U]))\u003c3",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Val(Trim({0,21}),\u00273\u0027)",
+                                        "ide_position":  78,
+                                        "decoded":  "Val(Trim(V0.Qte [U]),\u00273\u0027)",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027\u0027",
+                                        "ide_position":  79,
+                                        "decoded":  "\u0027\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,116}=\u0027F\u0027 OR {0,137}",
+                                        "ide_position":  80,
+                                        "decoded":  "W0 date fin [DL]=\u0027F\u0027 OR V.VADA ? [EG]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "DbRecs(\u0027{578,4}\u0027DSOURCE,\u0027\u0027)\u003e0",
+                                        "ide_position":  81,
+                                        "decoded":  "DbRecs(\u0027{578,4}\u0027DSOURCE,\u0027\u0027)\u003e0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027VALSALES\u0027",
+                                        "ide_position":  82,
+                                        "decoded":  "\u0027VALSALES\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "MlsTrans(\u0027Validate transaction for a total of\u0027)\u0026Trim(Str(ABS({0,133}),{32768,47}))",
+                                        "ide_position":  83,
+                                        "decoded":  "MlsTrans(\u0027Validate transaction for a total of\u0027)\u0026Trim(Str(ABS(W0 choix personne absente [EC]),VG47))",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "MlsTrans(\u0027Total\u0027)\u0026\u0027 \u0027\u0026Trim(Str(ABS({0,133}),{32768,47}))",
+                                        "ide_position":  84,
+                                        "decoded":  "MlsTrans(\u0027Total\u0027)\u0026\u0027 \u0027\u0026Trim(Str(ABS(W0 choix personne absente [EC]),VG47))",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "LastClicked()\u003c\u003e\u0027Bouton FIN SAISIE OD\u0027",
+                                        "ide_position":  85,
+                                        "decoded":  "LastClicked()\u003c\u003e\u0027Bouton FIN SAISIE OD\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TRUE\u0027LOG",
+                                        "ide_position":  86,
+                                        "decoded":  "\u0027TRUE\u0027LOG",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OD_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "ide_position":  87,
+                                        "decoded":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OD_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,195})",
+                                        "ide_position":  88,
+                                        "decoded":  "Trim([GM])",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "ide_position":  89,
+                                        "decoded":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({32768,67}) \u0026\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "ide_position":  90,
+                                        "decoded":  "Trim(VG67) \u0026\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,108})=\u0027OD\u0027",
+                                        "ide_position":  91,
+                                        "decoded":  "Trim(V0 validation [DD])=\u0027OD\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "NOT ExpCalc(\u002790\u0027EXP)",
+                                        "ide_position":  92,
+                                        "decoded":  "NOT ExpCalc(\u002790\u0027EXP)",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027VSERV\u0027",
+                                        "ide_position":  93,
+                                        "decoded":  "\u0027VSERV\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027O\u0027",
+                                        "ide_position":  94,
+                                        "decoded":  "\u0027O\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,202}",
+                                        "ide_position":  95,
+                                        "decoded":  "[GT]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,1}",
+                                        "ide_position":  96,
+                                        "decoded":  "P0 societe [A]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,5}",
+                                        "ide_position":  97,
+                                        "decoded":  "P0 code GM [E]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,6}",
+                                        "ide_position":  98,
+                                        "decoded":  "P0 filiation [F]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,197})\u003c\u003e\u00270\u0027",
+                                        "ide_position":  99,
+                                        "decoded":  "Trim([GO])\u003c\u003e\u00270\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,197})\u003c\u003e\u00270\u0027 AND NOT {0,204}",
+                                        "ide_position":  100,
+                                        "decoded":  "Trim([GO])\u003c\u003e\u00270\u0027 AND NOT [GV]",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027SIGN_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.gif\u0027",
+                                        "ide_position":  101,
+                                        "decoded":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027SIGN_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.gif\u0027",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({32768,68}) \u0026\u0027SIGN_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.gif\u0027",
+                                        "ide_position":  102,
+                                        "decoded":  "Trim(VG68) \u0026\u0027SIGN_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.gif\u0027",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "FileDelete({0,198})",
+                                        "ide_position":  103,
+                                        "decoded":  "FileDelete([GP])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "FileExist({0,198})",
+                                        "ide_position":  104,
+                                        "decoded":  "FileExist([GP])",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027WELSALES\u0027",
+                                        "ide_position":  105,
+                                        "decoded":  "\u0027WELSALES\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TICKET_OD_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "ide_position":  106,
+                                        "decoded":  "\u0027TICKET_OD_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OD_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "ide_position":  107,
+                                        "decoded":  "Translate(\u0027%club_exportdata%\u0027)\u0026\u0027WELCOME\\\u0027\u0026\u0027TICKET_OD_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({32768,67}) \u0026\u0027TICKET_OD_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "ide_position":  108,
+                                        "decoded":  "Trim(VG67) \u0026\u0027TICKET_OD_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str({0,5},\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str({0,6},\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim({32768,15})\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "ide_position":  109,
+                                        "decoded":  "\u0027TICKET_OTHER_PAYMENT_\u0027\u0026Trim(Str(P0 code GM [E],\u00278P0\u0027))\u0026\u0027_\u0027\u0026Trim(Str(P0 filiation [F],\u0027###\u0027))\u0026\u0027_\u0027\u0026Trim(VG15)\u0026\u0027_\u0027\u0026DStr(Date(),\u0027YYMMDD\u0027)\u0026TStr(Time(),\u0027HHMMSS\u0027)\u0026\u0027.pdf\u0027",
+                                        "type":  "DATE"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,210}",
+                                        "ide_position":  110,
+                                        "decoded":  "[HB]",
+                                        "type":  "OTHER"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+                                       {
+                                           "id":  "RM-001",
+                                           "false_value":  "P0.Date debut sejour [M],Date()),W0 Motif annulation [CK])",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF(V0.Decline Email receipt [FN]=0,IF([AC]=\u0027VSL\u0027,P0.Date debut sejour [M],Date()),W0 Motif annulation [CK])",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  1,
+                                           "true_value":  "IF([AC]=\u0027VSL\u0027",
+                                           "natural_language":  "Si V0.Decline Email receipt [FN]=0 alors IF([AC]=\u0027VSL\u0027 sinon P0.Date debut sejour [M],Date()),W0 Motif annulation [CK])",
+                                           "condition":  "V0.Decline Email receipt [FN]=0",
+                                           "raw_expression":  "IF({0,170}=0,IF({0,29}=\u0027VSL\u0027,{0,13},Date()),{0,89})"
+                                       },
+                                       {
+                                           "id":  "RM-002",
+                                           "false_value":  "Len (RTrim (W0 Nom de la rue [CP]))-1)\u0026RTrim (W0 Commune [CQ])\u0026\u0027 \u0027\u0026W0 CP [CR],Trim(P0 Nom \u0026 prenom [K]))",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF(W0 Commune [CQ]\u003c\u003e\u0027\u0027,RTrim (W0 Nom de la rue [CP])\u0026Fill (\u0027 \u0027,Len (RTrim (W0 Nom de la rue [CP]))-1)\u0026RTrim (W0 Commune [CQ])\u0026\u0027 \u0027\u0026W0 CP [CR],Trim(P0 Nom \u0026 prenom [K]))",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  42,
+                                           "true_value":  "RTrim (W0 Nom de la rue [CP])\u0026Fill (\u0027 \u0027",
+                                           "natural_language":  "Si W0 Commune [CQ]\u003c\u003e\u0027\u0027 alors RTrim (W0 Nom de la rue [CP])\u0026Fill (\u0027 \u0027 sinon Len (RTrim (W0 Nom de la rue [CP]))-1)\u0026RTrim (W0 Commune [CQ])\u0026\u0027 \u0027\u0026W0 CP [CR],Trim(P0 Nom \u0026 prenom [K]))",
+                                           "condition":  "W0 Commune [CQ]\u003c\u003e\u0027\u0027",
+                                           "raw_expression":  "IF({0,95}\u003c\u003e\u0027\u0027,RTrim ({0,94})\u0026Fill (\u0027 \u0027,Len (RTrim ({0,94}))-1)\u0026RTrim ({0,95})\u0026\u0027 \u0027\u0026{0,96},Trim({0,11}))"
+                                       },
+                                       {
+                                           "id":  "RM-003",
+                                           "false_value":  "VG43)",
+                                           "has_rule":  true,
+                                           "decoded_expression":  "IF(v Nbre ligne de reglem... [ES],V.Multi reglement ligne [EV],VG43)",
+                                           "type":  "VALIDATION",
+                                           "expression_ide":  44,
+                                           "true_value":  "V.Multi reglement ligne [EV]",
+                                           "natural_language":  "Si v Nbre ligne de reglem... [ES] alors V.Multi reglement ligne [EV] sinon VG43)",
+                                           "condition":  "v Nbre ligne de reglem... [ES]",
+                                           "raw_expression":  "IF({0,149},{0,152},{32768,43})"
+                                       }
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+                                                                 {
+                                                                     "id":  "RM-001",
+                                                                     "false_value":  "P0.Date debut sejour [M],Date()),W0 Motif annulation [CK])",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF(V0.Decline Email receipt [FN]=0,IF([AC]=\u0027VSL\u0027,P0.Date debut sejour [M],Date()),W0 Motif annulation [CK])",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  1,
+                                                                     "true_value":  "IF([AC]=\u0027VSL\u0027",
+                                                                     "natural_language":  "Si V0.Decline Email receipt [FN]=0 alors IF([AC]=\u0027VSL\u0027 sinon P0.Date debut sejour [M],Date()),W0 Motif annulation [CK])",
+                                                                     "condition":  "V0.Decline Email receipt [FN]=0",
+                                                                     "raw_expression":  "IF({0,170}=0,IF({0,29}=\u0027VSL\u0027,{0,13},Date()),{0,89})"
+                                                                 },
+                                                                 {
+                                                                     "id":  "RM-002",
+                                                                     "false_value":  "Len (RTrim (W0 Nom de la rue [CP]))-1)\u0026RTrim (W0 Commune [CQ])\u0026\u0027 \u0027\u0026W0 CP [CR],Trim(P0 Nom \u0026 prenom [K]))",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF(W0 Commune [CQ]\u003c\u003e\u0027\u0027,RTrim (W0 Nom de la rue [CP])\u0026Fill (\u0027 \u0027,Len (RTrim (W0 Nom de la rue [CP]))-1)\u0026RTrim (W0 Commune [CQ])\u0026\u0027 \u0027\u0026W0 CP [CR],Trim(P0 Nom \u0026 prenom [K]))",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  42,
+                                                                     "true_value":  "RTrim (W0 Nom de la rue [CP])\u0026Fill (\u0027 \u0027",
+                                                                     "natural_language":  "Si W0 Commune [CQ]\u003c\u003e\u0027\u0027 alors RTrim (W0 Nom de la rue [CP])\u0026Fill (\u0027 \u0027 sinon Len (RTrim (W0 Nom de la rue [CP]))-1)\u0026RTrim (W0 Commune [CQ])\u0026\u0027 \u0027\u0026W0 CP [CR],Trim(P0 Nom \u0026 prenom [K]))",
+                                                                     "condition":  "W0 Commune [CQ]\u003c\u003e\u0027\u0027",
+                                                                     "raw_expression":  "IF({0,95}\u003c\u003e\u0027\u0027,RTrim ({0,94})\u0026Fill (\u0027 \u0027,Len (RTrim ({0,94}))-1)\u0026RTrim ({0,95})\u0026\u0027 \u0027\u0026{0,96},Trim({0,11}))"
+                                                                 },
+                                                                 {
+                                                                     "id":  "RM-003",
+                                                                     "false_value":  "VG43)",
+                                                                     "has_rule":  true,
+                                                                     "decoded_expression":  "IF(v Nbre ligne de reglem... [ES],V.Multi reglement ligne [EV],VG43)",
+                                                                     "type":  "VALIDATION",
+                                                                     "expression_ide":  44,
+                                                                     "true_value":  "V.Multi reglement ligne [EV]",
+                                                                     "natural_language":  "Si v Nbre ligne de reglem... [ES] alors V.Multi reglement ligne [EV] sinon VG43)",
+                                                                     "condition":  "v Nbre ligne de reglem... [ES]",
+                                                                     "raw_expression":  "IF({0,149},{0,152},{32768,43})"
+                                                                 }
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  116,
+                     "pipeline_version":  "7.1",
+                     "project":  "WEL",
+                     "program_name":  "Ventes *Sav au 02/07/2018",
+                     "generated_at":  "2026-02-03 21:52:43"
+                 }
+}

@@ -1,0 +1,504 @@
+﻿{
+    "statistics":  {
+                       "coverage_percent":  100,
+                       "by_type":  {
+                                       "condition":  0,
+                                       "calculation":  2,
+                                       "other":  20,
+                                       "date":  0,
+                                       "constant":  3,
+                                       "string":  7
+                                   },
+                       "total_in_program":  32,
+                       "decoded_count":  32,
+                       "business_rules_count":  0
+                   },
+    "expressions":  {
+                        "by_type":  {
+                                        "CONDITION":  [
+
+                                                      ],
+                                        "CALCULATION":  [
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "{0,17}+1",
+                                                                "ide_position":  14,
+                                                                "decoded":  "[Q]+1",
+                                                                "type":  "CALCULATION"
+                                                            },
+                                                            {
+                                                                "comment":  "",
+                                                                "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 ski / snow\u0027",
+                                                                "ide_position":  15,
+                                                                "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 ski / snow\u0027",
+                                                                "type":  "CALCULATION"
+                                                            }
+                                                        ],
+                                        "OTHER":  [
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,1}",
+                                                          "ide_position":  1,
+                                                          "decoded":  "P.i.gm_société [A]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,2}",
+                                                          "ide_position":  2,
+                                                          "decoded":  "P.i.gm_compte [B]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,3}",
+                                                          "ide_position":  3,
+                                                          "decoded":  "P.i.gm_filiation [C]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027Please fill in the following field : \u0027\u0026{0,5}",
+                                                          "ide_position":  6,
+                                                          "decoded":  "\u0027Please fill in the following field : \u0027\u0026P.o.message_erreurs [E]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027Please fill in the following fields : \u0027\u0026{0,5}",
+                                                          "ide_position":  7,
+                                                          "decoded":  "\u0027Please fill in the following fields : \u0027\u0026P.o.message_erreurs [E]",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,11}=0",
+                                                          "ide_position":  8,
+                                                          "decoded":  "[K]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,12}=0",
+                                                          "ide_position":  9,
+                                                          "decoded":  "[L]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,16}=0",
+                                                          "ide_position":  10,
+                                                          "decoded":  "[P]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,14}=\u0027\u0027",
+                                                          "ide_position":  11,
+                                                          "decoded":  "[N]=\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,10}=\u0027\u0027",
+                                                          "ide_position":  12,
+                                                          "decoded":  "[J]=\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,13}=0",
+                                                          "ide_position":  13,
+                                                          "decoded":  "[M]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,17}=0",
+                                                          "ide_position":  23,
+                                                          "decoded":  "[Q]=0",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,17}=1",
+                                                          "ide_position":  24,
+                                                          "decoded":  "[Q]=1",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,17}\u003e1",
+                                                          "ide_position":  25,
+                                                          "decoded":  "[Q]\u003e1",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "\u0027TRUE\u0027LOG",
+                                                          "ide_position":  26,
+                                                          "decoded":  "\u0027TRUE\u0027LOG",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,14}\u003c\u003e\u0027\u0027",
+                                                          "ide_position":  27,
+                                                          "decoded":  "[N]\u003c\u003e\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,15}\u003c\u003e\u0027\u0027",
+                                                          "ide_position":  28,
+                                                          "decoded":  "[O]\u003c\u003e\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,15}=\u0027\u0027",
+                                                          "ide_position":  29,
+                                                          "decoded":  "[O]=\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,15}\u003c\u003e\u0027\u0027",
+                                                          "ide_position":  31,
+                                                          "decoded":  "[O]\u003c\u003e\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      },
+                                                      {
+                                                          "comment":  "",
+                                                          "raw":  "{0,14}=\u0027\u0027 AND {0,15}=\u0027\u0027",
+                                                          "ide_position":  32,
+                                                          "decoded":  "[N]=\u0027\u0027 AND [O]=\u0027\u0027",
+                                                          "type":  "OTHER"
+                                                      }
+                                                  ],
+                                        "DATE":  [
+
+                                                 ],
+                                        "CONSTANT":  [
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "\u0027\u0027",
+                                                             "ide_position":  4,
+                                                             "decoded":  "\u0027\u0027",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "0",
+                                                             "ide_position":  5,
+                                                             "decoded":  "0",
+                                                             "type":  "CONSTANT"
+                                                         },
+                                                         {
+                                                             "comment":  "",
+                                                             "raw":  "0",
+                                                             "ide_position":  30,
+                                                             "decoded":  "0",
+                                                             "type":  "CONSTANT"
+                                                         }
+                                                     ],
+                                        "STRING":  [
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 weight category\u0027",
+                                                           "ide_position":  16,
+                                                           "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 weight category\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 height category\u0027",
+                                                           "ide_position":  17,
+                                                           "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 height category\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 shoe size category\u0027",
+                                                           "ide_position":  18,
+                                                           "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 shoe size category\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 skier type\u0027",
+                                                           "ide_position":  19,
+                                                           "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 skier type\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 sex\u0027",
+                                                           "ide_position":  20,
+                                                           "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 sex\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 age level\u0027",
+                                                           "ide_position":  21,
+                                                           "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 age level\u0027",
+                                                           "type":  "STRING"
+                                                       },
+                                                       {
+                                                           "comment":  "",
+                                                           "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 snowboard stance\u0027",
+                                                           "ide_position":  22,
+                                                           "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 snowboard stance\u0027",
+                                                           "type":  "STRING"
+                                                       }
+                                                   ]
+                                    },
+                        "all":  [
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,1}",
+                                        "ide_position":  1,
+                                        "decoded":  "P.i.gm_société [A]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,2}",
+                                        "ide_position":  2,
+                                        "decoded":  "P.i.gm_compte [B]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,3}",
+                                        "ide_position":  3,
+                                        "decoded":  "P.i.gm_filiation [C]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027\u0027",
+                                        "ide_position":  4,
+                                        "decoded":  "\u0027\u0027",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "0",
+                                        "ide_position":  5,
+                                        "decoded":  "0",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027Please fill in the following field : \u0027\u0026{0,5}",
+                                        "ide_position":  6,
+                                        "decoded":  "\u0027Please fill in the following field : \u0027\u0026P.o.message_erreurs [E]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027Please fill in the following fields : \u0027\u0026{0,5}",
+                                        "ide_position":  7,
+                                        "decoded":  "\u0027Please fill in the following fields : \u0027\u0026P.o.message_erreurs [E]",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,11}=0",
+                                        "ide_position":  8,
+                                        "decoded":  "[K]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,12}=0",
+                                        "ide_position":  9,
+                                        "decoded":  "[L]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,16}=0",
+                                        "ide_position":  10,
+                                        "decoded":  "[P]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,14}=\u0027\u0027",
+                                        "ide_position":  11,
+                                        "decoded":  "[N]=\u0027\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,10}=\u0027\u0027",
+                                        "ide_position":  12,
+                                        "decoded":  "[J]=\u0027\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,13}=0",
+                                        "ide_position":  13,
+                                        "decoded":  "[M]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,17}+1",
+                                        "ide_position":  14,
+                                        "decoded":  "[Q]+1",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 ski / snow\u0027",
+                                        "ide_position":  15,
+                                        "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 ski / snow\u0027",
+                                        "type":  "CALCULATION"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 weight category\u0027",
+                                        "ide_position":  16,
+                                        "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 weight category\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 height category\u0027",
+                                        "ide_position":  17,
+                                        "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 height category\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 shoe size category\u0027",
+                                        "ide_position":  18,
+                                        "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 shoe size category\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 skier type\u0027",
+                                        "ide_position":  19,
+                                        "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 skier type\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 sex\u0027",
+                                        "ide_position":  20,
+                                        "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 sex\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 age level\u0027",
+                                        "ide_position":  21,
+                                        "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 age level\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "Trim({0,5})\u0026IF({0,17}\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 snowboard stance\u0027",
+                                        "ide_position":  22,
+                                        "decoded":  "Trim(P.o.message_erreurs [E])\u0026IF([Q]\u003e0,\u0027,\u0027,\u0027\u0027)\u0026\u0027 snowboard stance\u0027",
+                                        "type":  "STRING"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,17}=0",
+                                        "ide_position":  23,
+                                        "decoded":  "[Q]=0",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,17}=1",
+                                        "ide_position":  24,
+                                        "decoded":  "[Q]=1",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,17}\u003e1",
+                                        "ide_position":  25,
+                                        "decoded":  "[Q]\u003e1",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "\u0027TRUE\u0027LOG",
+                                        "ide_position":  26,
+                                        "decoded":  "\u0027TRUE\u0027LOG",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,14}\u003c\u003e\u0027\u0027",
+                                        "ide_position":  27,
+                                        "decoded":  "[N]\u003c\u003e\u0027\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,15}\u003c\u003e\u0027\u0027",
+                                        "ide_position":  28,
+                                        "decoded":  "[O]\u003c\u003e\u0027\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,15}=\u0027\u0027",
+                                        "ide_position":  29,
+                                        "decoded":  "[O]=\u0027\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "0",
+                                        "ide_position":  30,
+                                        "decoded":  "0",
+                                        "type":  "CONSTANT"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,15}\u003c\u003e\u0027\u0027",
+                                        "ide_position":  31,
+                                        "decoded":  "[O]\u003c\u003e\u0027\u0027",
+                                        "type":  "OTHER"
+                                    },
+                                    {
+                                        "comment":  "",
+                                        "raw":  "{0,14}=\u0027\u0027 AND {0,15}=\u0027\u0027",
+                                        "ide_position":  32,
+                                        "decoded":  "[N]=\u0027\u0027 AND [O]=\u0027\u0027",
+                                        "type":  "OTHER"
+                                    }
+                                ]
+                    },
+    "business_rules":  {
+                           "all":  [
+
+                                   ],
+                           "by_criticality":  {
+                                                  "medium":  [
+
+                                                             ],
+                                                  "high":  [
+
+                                                           ]
+                                              }
+                       },
+    "metadata":  {
+                     "ide_position":  213,
+                     "pipeline_version":  "7.1",
+                     "project":  "PVE",
+                     "program_name":  "Vérification Skier Profile",
+                     "generated_at":  "2026-02-03 18:57:03"
+                 }
+}

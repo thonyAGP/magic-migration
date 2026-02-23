@@ -1,0 +1,85 @@
+﻿{
+    "tables":  {
+                   "by_access":  {
+                                     "LINK":  [
+
+                                              ],
+                                     "READ":  [
+
+                                              ],
+                                     "WRITE":  [
+
+                                               ]
+                                 },
+                   "all":  [
+
+                           ]
+               },
+    "orphan_analysis":  {
+                            "has_public_name":  false,
+                            "is_ecf_member":  false,
+                            "has_callers":  true,
+                            "status":  "NON_ORPHELIN",
+                            "reason":  "Appele par 2 programme(s): Transfert ODS Boutique (IDE 16), CB Transfert fichiers GM (IDE 17)"
+                        },
+    "statistics":  {
+                       "callee_count":  0,
+                       "expression_count":  7,
+                       "logic_line_count":  24,
+                       "caller_count":  2,
+                       "task_count":  3,
+                       "disabled_line_count":  0,
+                       "table_count":  0
+                   },
+    "call_graph":  {
+                       "call_chain":  [
+                                          {
+                                              "name":  "Transfert ODS Boutique",
+                                              "ide":  16,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "CB Transfert fichiers GM",
+                                              "ide":  17,
+                                              "level":  1
+                                          },
+                                          {
+                                              "name":  "lancement retail OD",
+                                              "ide":  19,
+                                              "level":  2
+                                          },
+                                          {
+                                              "name":  "Batch sur PABX",
+                                              "ide":  24,
+                                              "level":  2
+                                          },
+                                          {
+                                              "name":  "Main Program",
+                                              "ide":  1,
+                                              "level":  3
+                                          }
+                                      ],
+                       "callees":  [
+
+                                   ],
+                       "callers":  [
+                                       {
+                                           "calls_count":  4,
+                                           "name":  "Transfert ODS Boutique",
+                                           "ide":  16
+                                       },
+                                       {
+                                           "calls_count":  2,
+                                           "name":  "CB Transfert fichiers GM",
+                                           "ide":  17
+                                       }
+                                   ]
+                   },
+    "metadata":  {
+                     "ide_position":  22,
+                     "pipeline_version":  "7.1",
+                     "project":  "POO",
+                     "program_name":  "Gestion FTP",
+                     "generated_at":  "2026-02-03 17:42:55"
+                 }
+}

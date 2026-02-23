@@ -1,0 +1,71 @@
+{
+    "program":  "Visualisation pooling",
+    "public_name":  "",
+    "project":  "MAI",
+    "ide":  43,
+    "tasks":  [
+                  {
+                      "isn2":  1,
+                      "name":  "Visualisation pooling",
+                      "level":  0,
+                      "parent_isn2":  null,
+                      "task_type":  "B",
+                      "logic_lines":  3,
+                      "source_table":  null,
+                      "source_access":  "",
+                      "has_form":  false,
+                      "initial_mode":  "E",
+                      "ide_path":  "43"
+                  },
+                  {
+                      "isn2":  4,
+                      "name":  "Visualisation pooling T2H",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "O",
+                      "logic_lines":  8,
+                      "source_table":  476,
+                      "source_access":  "R",
+                      "has_form":  true,
+                      "initial_mode":  "E",
+                      "ide_path":  "43.1"
+                  },
+                  {
+                      "isn2":  7,
+                      "name":  "Visualisation pooling v1",
+                      "level":  1,
+                      "parent_isn2":  1,
+                      "task_type":  "O",
+                      "logic_lines":  8,
+                      "source_table":  476,
+                      "source_access":  "R",
+                      "has_form":  true,
+                      "initial_mode":  "E",
+                      "ide_path":  "43.2"
+                  }
+              ],
+    "conditions":  [
+
+                   ],
+    "tables_write":  [
+
+                     ],
+    "callees":  [
+
+                ],
+    "parameters":  [
+
+                   ],
+    "domain_keywords":  [
+                            "pooling",
+                            "T2H",
+                            "Visualisation"
+                        ],
+    "statistics":  {
+                       "task_count":  3,
+                       "condition_count":  0,
+                       "tables_write_count":  0,
+                       "callee_count":  0,
+                       "parameter_count":  0
+                   }
+}
