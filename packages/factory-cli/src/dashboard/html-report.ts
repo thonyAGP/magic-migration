@@ -501,7 +501,7 @@ ${MULTI_CSS}
   <button class="action-btn" id="btn-analyze" disabled title="Lancez 'migration-factory serve' pour activer" style="background:#6366f1;color:#fff">Analyser Projet</button>
   <select id="sel-enrich" disabled title="Enrichment mode" style="padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-main);font-size:12px">
     <option value="none">Sans enrichissement</option>
-    <option value="heuristic" selected>Heuristique</option>
+    <option value="heuristic">Heuristique</option>
     <option value="claude">Claude API</option>
     <option value="claude-cli">Claude CLI</option>
   </select>
@@ -1717,7 +1717,15 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
   btnMigrate.disabled = false;
   btnMigrateAuto.disabled = false;
   btnAnalyze.disabled = false;
-  document.getElementById('sel-enrich').disabled = false;
+  var enrichSelect = document.getElementById('sel-enrich');
+  enrichSelect.disabled = false;
+  var savedEnrich = localStorage.getItem('mf-enrich-mode');
+  if (savedEnrich) {
+    for (var i = 0; i < enrichSelect.options.length; i++) {
+      if (enrichSelect.options[i].value === savedEnrich) { enrichSelect.value = savedEnrich; break; }
+    }
+  }
+  enrichSelect.addEventListener('change', function() { localStorage.setItem('mf-enrich-mode', enrichSelect.value); });
   chkDry.disabled = false;
   [btnPreflight, btnRun, btnVerify, btnGaps, btnCalibrate, btnGenerate, btnMigrate, btnMigrateAuto, btnAnalyze].forEach(function(b) { b.title = ''; });
 
@@ -2066,7 +2074,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     document.getElementById('mp-module-bar').style.width = '0%';
     document.getElementById('mp-module-label').textContent = '0/0 (0%)';
     document.getElementById('mp-elapsed').textContent = '';
-    var tokEl = document.getElementById('mp-tokens'); if (tokEl) tokEl.textContent = '';
+    var tokEl = document.getElementById('mp-tokens'); if (tokEl) tokEl.textContent = 'Tokens: --';
     document.getElementById('mp-prog-section').style.display = 'none';
     document.getElementById('mp-grid-section').style.display = 'none';
     document.getElementById('mp-grid-body').innerHTML = '';
@@ -2175,7 +2183,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
     var el = document.getElementById('mp-tokens');
     if (!el) return;
     if (migrateState.tokensIn === 0 && migrateState.tokensOut === 0) {
-      el.textContent = '';
+      el.textContent = 'Tokens: --';
       return;
     }
     var cost = estimateCost(migrateState.tokensIn, migrateState.tokensOut);
@@ -2330,7 +2338,7 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
       var resolved = msg.data && msg.data.resolved ? msg.data.resolved : 0;
       migrateState.parallelCount = resolved;
       var title = migrateOverlayTitle.textContent || '';
-      var newTitle = title.replace(/\(auto-parallel\)/, 'x' + resolved + ' agents');
+      var newTitle = title.replace('(auto-parallel)', 'x' + resolved + ' agents');
       if (newTitle === title && resolved > 0) {
         // Title doesn't contain (auto-parallel) (CLI-started migration), append
         newTitle = title + ' x' + resolved + ' agents';
