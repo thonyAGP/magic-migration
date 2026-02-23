@@ -13,6 +13,13 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     testTimeout: 15000,
+    pool: 'vmThreads',
+    poolOptions: {
+      vmThreads: {
+        maxThreads: 4,
+        minThreads: 1,
+      },
+    },
     alias: {
       'react-router-dom': resolve(__dirname, './src/test/mocks/react-router-dom.tsx'),
     },
