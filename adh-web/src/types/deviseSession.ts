@@ -1,5 +1,3 @@
-import type { ApiResponse } from "@/services/api/apiClient";
-
 export interface DeviseSession {
   codeDevise: string;
   modePaiement: string;
@@ -9,7 +7,7 @@ export interface DeviseSession {
   cumulOpChange: boolean;
 }
 
-export interface UpdateDeviseSes sionRequest {
+export interface UpdateDeviseSessionRequest {
   codeDevise: string;
   modePaiement: string;
   quand: string;
@@ -18,9 +16,9 @@ export interface UpdateDeviseSes sionRequest {
   cumulOpChange: boolean;
 }
 
-export type UpdateDeviseSes sionResponse = void;
+export type UpdateDeviseSessionResponse = void;
 
-export interface DeviseSes sionState {
+export interface DeviseSessionState {
   isLoading: boolean;
   error: string | null;
   updateDeviseSession: (

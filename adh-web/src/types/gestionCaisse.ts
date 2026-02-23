@@ -60,7 +60,7 @@ export interface ApportProduitRequest {
   quantite: number;
 }
 
-export interface RemiseCoffre Request {
+export interface RemiseCoffreRequest {
   montant: number;
   deviseCode: string;
 }
@@ -73,9 +73,9 @@ export interface HistoriqueQueryParams {
 
 export type OuvrirSessionResponse = ApiResponse<SessionCaisse>;
 export type FermerSessionResponse = ApiResponse<SessionCaisse>;
-export type ApportCoffReResponse = ApiResponse<MouvementCaisse>;
+export type ApportCoffreResponse = ApiResponse<MouvementCaisse>;
 export type ApportProduitResponse = ApiResponse<MouvementCaisse>;
-export type RemiseCoffre Response = ApiResponse<MouvementCaisse>;
+export type RemiseCoffreResponse = ApiResponse<MouvementCaisse>;
 export type ParametresCaisseResponse = ApiResponse<ParametresCaisse>;
 export type SessionActiveResponse = ApiResponse<SessionCaisse | null>;
 export type DateComptableResponse = ApiResponse<DateComptable>;

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { UpdateDeviseSessionRequest, DeviseSes sionState } from '@/types/deviseSession';
+import type { UpdateDeviseSessionRequest, DeviseSessionState } from '@/types/deviseSession';
 import { apiClient } from '@/services/api/apiClient';
 import { useDataSourceStore } from '@/stores/dataSourceStore';
 
@@ -15,9 +15,9 @@ interface DeviseSessionActions {
   reset: () => void;
 }
 
-type DeviseSessionStore = DeviseSes sionState & DeviseSessionActions;
+type DeviseSessionStore = DeviseSessionState & DeviseSessionActions;
 
-const initialState: Omit<DeviseSes sionState, 'updateDeviseSession'> = {
+const initialState: Omit<DeviseSessionState, 'updateDeviseSession'> = {
   isLoading: false,
   error: null,
 };
