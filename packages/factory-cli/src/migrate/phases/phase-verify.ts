@@ -12,8 +12,25 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { callClaude, parseFileResponse } from '../migrate-claude.js';
 import { buildFixTscPrompt, buildFixTestsPrompt } from '../migrate-prompts.js';
-import { getModelForPhase, MigratePhase as MP } from '../migrate-types.js';
-import type { MigrateConfig } from '../migrate-types.js';
+import { getModelForPhase, MigratePhase as MP, MigrateEventType as ET } from '../migrate-types.js';
+import type { MigrateConfig, MigrateEvent } from '../migrate-types.js';
+
+/** Emit an event from within the verify phase (uses config.onEvent directly). */
+const emitVerify = (
+  config: MigrateConfig,
+  type: (typeof ET)[keyof typeof ET],
+  message: string,
+  phase: (typeof MP)[keyof typeof MP],
+  data?: Record<string, unknown>,
+): void => {
+  config.onEvent?.({
+    type,
+    timestamp: new Date().toISOString(),
+    message,
+    phase,
+    data,
+  } as MigrateEvent);
+};
 
 const execFileAsync = promisify(execFile);
 
@@ -352,31 +369,69 @@ export const runVerifyFixLoop = async (
   let testsPass = false;
   let tscPasses = 0;
   let testPasses = 0;
+  const testMaxPasses = Math.min(maxPasses, 3);
+
+  // Progress: TSC loop = 0..0.7, Tests loop = 0.7..1.0 of verify phase
+  const tscWeight = 0.7;
 
   // TSC verify+fix loop
   for (let i = 0; i < maxPasses; i++) {
     tscPasses++;
+    const passProgress = tscWeight * (i / maxPasses);
+
+    emitVerify(config, ET.PHASE_STARTED, `TSC pass ${i + 1}/${maxPasses}: running tsc --noEmit`, MP.VERIFY_TSC,
+      { pass: i + 1, maxPasses, verifyProgress: passProgress });
+
     const tscResult = await runVerifyTscPhase(config);
+    const afterVerifyProgress = tscWeight * ((i + 0.5) / maxPasses);
+
     if (tscResult.clean) {
       tscClean = true;
+      emitVerify(config, ET.PHASE_STARTED, `TSC pass ${i + 1}: CLEAN`, MP.VERIFY_TSC,
+        { pass: i + 1, maxPasses, errors: 0, clean: true, verifyProgress: tscWeight });
       break;
     }
+
+    emitVerify(config, ET.PHASE_STARTED, `TSC pass ${i + 1}: ${tscResult.errorCount} errors`, MP.FIX_TSC,
+      { pass: i + 1, maxPasses, errors: tscResult.errorCount, verifyProgress: afterVerifyProgress });
+
     if (i < maxPasses - 1) {
-      await runFixTscPhase(tscResult.errors, config);
+      const fixResult = await runFixTscPhase(tscResult.errors, config);
+      const afterFixProgress = tscWeight * ((i + 1) / maxPasses);
+
+      emitVerify(config, ET.PHASE_STARTED, `Fix TSC pass ${i + 1}: ${fixResult.filesFixed} files fixed`, MP.FIX_TSC,
+        { pass: i + 1, maxPasses, filesFixed: fixResult.filesFixed, verifyProgress: afterFixProgress });
     }
   }
 
   // Tests verify+fix loop (only if tsc is clean)
   if (tscClean) {
-    for (let i = 0; i < Math.min(maxPasses, 3); i++) {
+    for (let i = 0; i < testMaxPasses; i++) {
       testPasses++;
+      const testProgress = tscWeight + (1 - tscWeight) * (i / testMaxPasses);
+
+      emitVerify(config, ET.PHASE_STARTED, `Tests pass ${i + 1}/${testMaxPasses}: running vitest`, MP.VERIFY_TESTS,
+        { pass: i + 1, maxPasses: testMaxPasses, verifyProgress: testProgress });
+
       const testResult = await runVerifyTestsPhase(config, domainFilter);
+
       if (testResult.pass) {
         testsPass = true;
+        emitVerify(config, ET.PHASE_STARTED, `Tests pass ${i + 1}: ALL PASSED (${testResult.passedTests} tests)`, MP.VERIFY_TESTS,
+          { pass: i + 1, maxPasses: testMaxPasses, passed: true, verifyProgress: 1 });
         break;
       }
-      if (i < Math.min(maxPasses, 3) - 1) {
+
+      emitVerify(config, ET.PHASE_STARTED, `Tests pass ${i + 1}: ${testResult.failures.length} failures`, MP.FIX_TESTS,
+        { pass: i + 1, maxPasses: testMaxPasses, failures: testResult.failures.length,
+          verifyProgress: tscWeight + (1 - tscWeight) * ((i + 0.5) / testMaxPasses) });
+
+      if (i < testMaxPasses - 1) {
         await runFixTestsPhase(testResult.failures, config);
+
+        emitVerify(config, ET.PHASE_STARTED, `Fix tests pass ${i + 1}: done`, MP.FIX_TESTS,
+          { pass: i + 1, maxPasses: testMaxPasses,
+            verifyProgress: tscWeight + (1 - tscWeight) * ((i + 1) / testMaxPasses) });
       }
     }
   }

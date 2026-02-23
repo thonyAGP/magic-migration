@@ -2399,6 +2399,11 @@ document.querySelectorAll('.project-card[data-goto]').forEach(card => {
           if (bar) { bar.style.width = ''; bar.style.background = '#f59e0b'; bar.className = 'mp-bar-fill mp-bar-prog mp-pulse-bar'; }
           if (label) label.textContent = '';
         }
+        // Update batch progress from verify loop events (verifyProgress: 0..1 → batchProgress: 0..0.4)
+        if (msg.data && typeof msg.data.verifyProgress === 'number') {
+          migrateState.batchProgress = msg.data.verifyProgress * 0.4;
+          updateModuleProgress(migrateState.doneProgs, migrateState.totalProgs);
+        }
       }
       addMLog('[' + (phase || '') + '] ' + (msg.message || ''));
       return;

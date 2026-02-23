@@ -165,33 +165,46 @@ const callClaudeCli = async (options: ClaudeCallOptions): Promise<ClaudeCallResu
   }
 };
 
-/** Parse `claude --print --output-format json` output. */
+/** Parse `claude --print --output-format json` output.
+ *
+ * The CLI may return either:
+ * - An object: `{ result: "...", usage?: { input_tokens, output_tokens }, cost_usd? }`
+ * - An array:  `[{ type: "result", result: "...", usage?: {...} }]`
+ */
 const parseCliJsonOutput = (stdout: string, durationMs: number, promptLength: number): ClaudeCallResult => {
+  const estimateTokens = (textLen: number) => ({
+    input: Math.ceil(promptLength / 4),
+    output: Math.ceil(textLen / 4),
+  });
+
   try {
-    const data = JSON.parse(stdout.trim());
+    let data = JSON.parse(stdout.trim());
+
+    // Handle array format: [{type:"result", result:"..."}]
+    if (Array.isArray(data)) {
+      data = data.find((item: Record<string, unknown>) => item.type === 'result') ?? data[0] ?? {};
+    }
+
     const text = typeof data.result === 'string' ? data.result : stdout.trim();
 
     // Try exact tokens from CLI JSON (if available)
-    let tokens: { input: number; output: number } | undefined;
-    if (data.usage?.input_tokens && data.usage?.output_tokens) {
-      tokens = { input: data.usage.input_tokens, output: data.usage.output_tokens };
-    } else {
-      // Estimate tokens from text lengths (~4 chars per token)
+    // Use > 0 checks instead of truthiness to avoid 0 being falsy
+    let tokens: { input: number; output: number };
+    const usage = data.usage;
+    if (usage && (usage.input_tokens > 0 || usage.output_tokens > 0)) {
       tokens = {
-        input: Math.ceil(promptLength / 4),
-        output: Math.ceil(text.length / 4),
+        input: usage.input_tokens > 0 ? usage.input_tokens : Math.ceil(promptLength / 4),
+        output: usage.output_tokens > 0 ? usage.output_tokens : Math.ceil(text.length / 4),
       };
+    } else {
+      tokens = estimateTokens(text.length);
     }
 
     return { output: text, durationMs, tokens };
   } catch {
     // Fallback: if JSON parse fails, treat as raw text + estimate tokens
     const text = stdout.trim();
-    return {
-      output: text,
-      durationMs,
-      tokens: { input: Math.ceil(promptLength / 4), output: Math.ceil(text.length / 4) },
-    };
+    return { output: text, durationMs, tokens: estimateTokens(text.length) };
   }
 };
 
