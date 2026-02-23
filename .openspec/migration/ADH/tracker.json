@@ -732,77 +732,70 @@
       "completedAt": "2026-02-22T21:19:37.937Z"
     },
     "118": {
-      "status": "completed",
-      "currentPhase": null,
+      "status": "generating",
+      "currentPhase": "tests-unit",
       "phases": {
         "spec": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.902Z",
-          "completedAt": "2026-02-23T14:43:44.920Z",
+          "startedAt": "2026-02-23T16:35:32.857Z",
+          "completedAt": "2026-02-23T16:35:32.862Z",
           "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\ADH-IDE-118.md"
         },
         "contract": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.922Z",
-          "completedAt": "2026-02-23T14:43:44.922Z",
+          "startedAt": "2026-02-23T16:35:32.862Z",
+          "completedAt": "2026-02-23T16:35:32.862Z",
           "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-118.contract.yaml"
         },
         "analyze": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.924Z",
-          "completedAt": "2026-02-23T14:43:44.931Z",
+          "startedAt": "2026-02-23T16:35:32.863Z",
+          "completedAt": "2026-02-23T16:35:32.908Z",
           "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-118.analysis.json"
         },
         "types": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.932Z",
-          "completedAt": "2026-02-23T14:43:44.939Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:35:32.909Z",
+          "completedAt": "2026-02-23T16:35:59.848Z",
+          "duration": 26939,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\types\\sessionsOuvertes.ts"
         },
         "store": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.941Z",
-          "completedAt": "2026-02-23T14:43:44.947Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:35:59.849Z",
+          "completedAt": "2026-02-23T16:36:35.847Z",
+          "duration": 35998,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\stores\\sessionsOuvertesStore.ts"
         },
         "api": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.949Z",
-          "completedAt": "2026-02-23T14:43:44.956Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:36:35.848Z",
+          "completedAt": "2026-02-23T16:36:57.389Z",
+          "duration": 21541,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\services\\api\\endpoints-sessionsOuvertes.ts"
         },
         "page": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.958Z",
-          "completedAt": "2026-02-23T14:43:44.969Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:36:57.391Z",
+          "completedAt": "2026-02-23T16:37:40.826Z",
+          "duration": 43435,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\pages\\SessionsOuvertesPage.tsx"
         },
         "components": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.971Z",
-          "completedAt": "2026-02-23T14:43:44.979Z",
-          "duration": 2
+          "startedAt": "2026-02-23T16:37:40.827Z",
+          "completedAt": "2026-02-23T16:38:08.874Z",
+          "duration": 28047
         },
         "tests-unit": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.981Z",
-          "completedAt": "2026-02-23T14:43:44.987Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:38:08.875Z",
+          "completedAt": "2026-02-23T16:39:09.445Z",
+          "duration": 60570,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\sessionsOuvertesStore.test.ts"
-        },
-        "tests-ui": {
-          "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.988Z",
-          "completedAt": "2026-02-23T14:43:45.015Z",
-          "duration": 0,
-          "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\SessionsOuvertesPage.test.tsx"
         }
       },
       "files": [
@@ -883,71 +876,71 @@
       "phases": {
         "spec": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.632Z",
-          "completedAt": "2026-02-23T14:43:44.666Z",
+          "startedAt": "2026-02-23T16:26:22.631Z",
+          "completedAt": "2026-02-23T16:26:22.645Z",
           "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\ADH-IDE-131.md"
         },
         "contract": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.667Z",
-          "completedAt": "2026-02-23T14:43:44.667Z",
+          "startedAt": "2026-02-23T16:26:22.646Z",
+          "completedAt": "2026-02-23T16:26:22.646Z",
           "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-131.contract.yaml"
         },
         "analyze": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.670Z",
-          "completedAt": "2026-02-23T14:43:44.683Z",
+          "startedAt": "2026-02-23T16:26:22.647Z",
+          "completedAt": "2026-02-23T16:26:22.744Z",
           "duration": 0,
           "file": "D:\\Projects\\Lecteur_Magic\\.openspec\\migration\\ADH\\ADH-IDE-131.analysis.json"
         },
         "types": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.684Z",
-          "completedAt": "2026-02-23T14:43:44.695Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:26:22.744Z",
+          "completedAt": "2026-02-23T16:26:58.146Z",
+          "duration": 35402,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\types\\fermetureCaisse.ts"
         },
         "store": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.696Z",
-          "completedAt": "2026-02-23T14:43:44.708Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:26:58.148Z",
+          "completedAt": "2026-02-23T16:28:38.149Z",
+          "duration": 100000,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\stores\\fermetureCaisseStore.ts"
         },
         "api": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.709Z",
-          "completedAt": "2026-02-23T14:43:44.720Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:28:38.150Z",
+          "completedAt": "2026-02-23T16:29:03.309Z",
+          "duration": 25159,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\services\\api\\endpoints-fermetureCaisse.ts"
         },
         "page": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.721Z",
-          "completedAt": "2026-02-23T14:43:44.745Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:29:03.311Z",
+          "completedAt": "2026-02-23T16:30:24.625Z",
+          "duration": 81314,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\pages\\FermetureCaissePage.tsx"
         },
         "components": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.747Z",
-          "completedAt": "2026-02-23T14:43:44.765Z",
-          "duration": 3
+          "startedAt": "2026-02-23T16:30:24.627Z",
+          "completedAt": "2026-02-23T16:32:47.263Z",
+          "duration": 142636
         },
         "tests-unit": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.767Z",
-          "completedAt": "2026-02-23T14:43:44.782Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:32:47.264Z",
+          "completedAt": "2026-02-23T16:34:27.929Z",
+          "duration": 100665,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\fermetureCaisseStore.test.ts"
         },
         "tests-ui": {
           "status": "completed",
-          "startedAt": "2026-02-23T14:43:44.784Z",
-          "completedAt": "2026-02-23T14:43:44.839Z",
-          "duration": 0,
+          "startedAt": "2026-02-23T16:34:27.930Z",
+          "completedAt": "2026-02-23T16:35:32.840Z",
+          "duration": 64909,
           "file": "D:\\Projects\\Lecteur_Magic\\adh-web\\src\\__tests__\\FermetureCaissePage.test.tsx"
         }
       },
@@ -964,7 +957,7 @@
       ],
       "errors": [],
       "startedAt": "2026-02-22T20:41:25.796Z",
-      "completedAt": "2026-02-23T14:43:44.841Z"
+      "completedAt": "2026-02-23T16:35:32.840Z"
     },
     "132": {
       "status": "pending",

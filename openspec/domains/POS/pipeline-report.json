@@ -1,8 +1,0 @@
-﻿{
-    "pipeline_version":  "7.2",
-    "spec_path":  "D:\\Projects\\Lecteur_Magic\\.openspec\\specs\\PVE-IDE-213.md",
-    "algo_json":  "POS\\algo.json",
-    "ide_position":  213,
-    "duration_seconds":  25,
-    "project":  "PVE"
-}

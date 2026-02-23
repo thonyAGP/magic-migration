@@ -11,6 +11,11 @@ build-output/
 publish/
 *.tsbuildinfo
 
+# === Binaries ===
+*.exe
+*.dll
+*.sqlite
+
 # === Node ===
 node_modules/
 package-lock.json
@@ -34,12 +39,23 @@ spec-generation-report-*.json
 playwright-report/
 test-results/
 
-# === Pipeline output (auto-generated) ===
+# === Pipeline output (auto-generated, regenerable) ===
 tools/spec-pipeline-v72/output/
+tools/spec-pipeline-v72/regenerate-log.txt
+.openspec/pipeline-output/
+.openspec/index.json
+openspec/domains/**/*.json
 
-# === Knowledge Base (local SQLite) ===
+# === Knowledge Base (local) ===
 .openspec/tickets/patterns.sqlite
 tools/MagicKnowledgeBase/magic_kb.sqlite
+
+# === Large metadata (regenerable) ===
+tools/db-metadata/PHU2512-metadata.json
+tools/KbIndexRunner/index-output.txt
+
+# === Archive (dead code, preserved in git history) ===
+tools/_archive/
 
 # === Jira local data ===
 .jira-attachments/
