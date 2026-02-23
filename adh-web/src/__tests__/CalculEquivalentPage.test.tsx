@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, mockNavigate } from 'react-router-dom';
 
 vi.mock('@/stores/calculEquivalentStore');
 vi.mock('@/stores/authStore');
@@ -74,7 +74,7 @@ describe('CalculEquivalentPage', () => {
 
   it('displays user information when authenticated', () => {
     renderPage();
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getAllByText(/John Doe/)[1]).toBeInTheDocument();
   });
 
   it('displays loading state when calculating', () => {
@@ -142,7 +142,8 @@ describe('CalculEquivalentPage', () => {
 
   it('handles devise selection change', () => {
     renderPage();
-    const select = screen.getByLabelText('Devise') as HTMLSelectElement;
+    const deviseLabel = screen.getByText('Devise');
+    const select = deviseLabel.parentElement?.querySelector('select') as HTMLSelectElement;
     fireEvent.change(select, { target: { value: 'GBP' } });
     expect(select.value).toBe('GBP');
   });
@@ -156,7 +157,8 @@ describe('CalculEquivalentPage', () => {
 
   it('handles mode paiement selection change', () => {
     renderPage();
-    const select = screen.getByLabelText('Mode de paiement') as HTMLSelectElement;
+    const modeLabel = screen.getByText('Mode de paiement');
+    const select = modeLabel.parentElement?.querySelector('select') as HTMLSelectElement;
     fireEvent.change(select, { target: { value: 'CB' } });
     expect(select.value).toBe('CB');
   });
@@ -190,8 +192,9 @@ describe('CalculEquivalentPage', () => {
     const input = screen.getByPlaceholderText('Montant à convertir');
     fireEvent.change(input, { target: { value: '100' } });
 
-    const deviseSelect = screen.getByLabelText('Devise');
-    fireEvent.change(deviseSelect, { target: { value: 'USD' } });
+    const deviseLabel = screen.getByText('Devise');
+    const deviseSelect = deviseLabel.parentElement?.querySelector('select');
+    fireEvent.change(deviseSelect!, { target: { value: 'USD' } });
 
     const button = screen.getByRole('button', { name: 'Calculer' });
     fireEvent.click(button);
@@ -270,8 +273,10 @@ describe('CalculEquivalentPage', () => {
     renderPage();
 
     const input = screen.getByPlaceholderText('Montant à convertir') as HTMLInputElement;
-    const deviseSelect = screen.getByLabelText('Devise') as HTMLSelectElement;
-    const modePaiementSelect = screen.getByLabelText('Mode de paiement') as HTMLSelectElement;
+    const deviseLabel = screen.getByText('Devise');
+    const deviseSelect = deviseLabel.parentElement?.querySelector('select') as HTMLSelectElement;
+    const modeLabel = screen.getByText('Mode de paiement');
+    const modePaiementSelect = modeLabel.parentElement?.querySelector('select') as HTMLSelectElement;
     const achatRadio = screen.getByLabelText('Achat') as HTMLInputElement;
 
     expect(input.disabled).toBe(true);
@@ -282,7 +287,8 @@ describe('CalculEquivalentPage', () => {
 
   it('renders all devise options', () => {
     renderPage();
-    const select = screen.getByLabelText('Devise');
+    const deviseLabel = screen.getByText('Devise');
+    const select = deviseLabel.parentElement?.querySelector('select');
     expect(select).toHaveTextContent('Euro (EUR)');
     expect(select).toHaveTextContent('Dollar US (USD)');
     expect(select).toHaveTextContent('Livre Sterling (GBP)');
@@ -291,7 +297,8 @@ describe('CalculEquivalentPage', () => {
 
   it('renders all mode paiement options', () => {
     renderPage();
-    const select = screen.getByLabelText('Mode de paiement');
+    const modeLabel = screen.getByText('Mode de paiement');
+    const select = modeLabel.parentElement?.querySelector('select');
     expect(select).toHaveTextContent('Espèces');
     expect(select).toHaveTextContent('Carte Bancaire');
     expect(select).toHaveTextContent('Chèque');

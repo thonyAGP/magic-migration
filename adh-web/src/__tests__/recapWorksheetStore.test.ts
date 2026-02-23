@@ -306,6 +306,16 @@ describe('recapWorksheetStore', () => {
   });
 
   describe('exportRecapWorksheet', () => {
+    // Helper to read Blob content
+    const readBlobAsText = async (blob: Blob): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(blob);
+      });
+    };
+
     it('should export as txt format with mock data', async () => {
       useDataSourceStore.setState({ isRealApi: false });
       const { exportRecapWorksheet } = useRecapWorksheetStore.getState();
@@ -313,7 +323,7 @@ describe('recapWorksheetStore', () => {
       const blob = await exportRecapWorksheet(MOCK_SUMMARY, 'txt');
 
       expect(blob.type).toBe('text/plain');
-      const text = await blob.text();
+      const text = await readBlobAsText(blob);
       expect(text).toContain('RECAP WORKSHEET SESSION 1001');
       expect(text).toContain('EUR: 9700.00');
       expect(text).toContain('TOTAL GENERAL: 10378.99 EUR');
@@ -325,7 +335,7 @@ describe('recapWorksheetStore', () => {
 
       const blob = await exportRecapWorksheet(MOCK_SUMMARY, 'csv');
 
-      const text = await blob.text();
+      const text = await readBlobAsText(blob);
       expect(text).toContain('Type,Devise,Montant');
       expect(text).toContain('Devise,EUR,9700.00');
       expect(text).toContain('Type,vente,4700.00');
@@ -337,7 +347,7 @@ describe('recapWorksheetStore', () => {
 
       const blob = await exportRecapWorksheet(MOCK_SUMMARY, 'json');
 
-      const text = await blob.text();
+      const text = await readBlobAsText(blob);
       const parsed = JSON.parse(text);
       expect(parsed.numeroSession).toBe(1001);
       expect(parsed.totalGeneral).toBe(10378.99);

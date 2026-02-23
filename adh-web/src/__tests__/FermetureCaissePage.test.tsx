@@ -88,14 +88,6 @@ vi.mock('@/stores', () => ({
     selector({ user: mockAuthUser }),
 }));
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => vi.fn(),
-  };
-});
-
 import { FermetureCaissePage } from '@/pages/FermetureCaissePage';
 
 const renderPage = () =>
@@ -138,7 +130,7 @@ describe('FermetureCaissePage', () => {
 
   it('displays recap tab by default', () => {
     renderPage();
-    const recapTab = screen.getByRole('button', { name: /Recapitulatif/i });
+    const recapTab = screen.getByText('Recapitulatif').closest('button');
     expect(recapTab).toHaveClass('border-primary');
   });
 
@@ -157,7 +149,7 @@ describe('FermetureCaissePage', () => {
 
   it('handles saisie button click', async () => {
     renderPage();
-    const saisieButtons = screen.getAllByText(/Saisir/i);
+    const saisieButtons = screen.getAllByText('Saisir');
     fireEvent.click(saisieButtons[0]);
     await waitFor(() => {
       expect(mockSaisirMontantsComptes).toHaveBeenCalledWith('CASH');
@@ -166,7 +158,7 @@ describe('FermetureCaissePage', () => {
 
   it('handles apport coffre button click', async () => {
     renderPage();
-    const apportButton = screen.getByRole('button', { name: /Apport coffre/i });
+    const apportButton = screen.getByText('Apport coffre').closest('button');
     fireEvent.click(apportButton);
     await waitFor(() => {
       expect(mockEffectuerApportCoffre).toHaveBeenCalledWith(800);
@@ -175,7 +167,7 @@ describe('FermetureCaissePage', () => {
 
   it('handles apport articles button click', async () => {
     renderPage();
-    const apportButton = screen.getByRole('button', { name: /Apport articles/i });
+    const apportButton = screen.getByText('Apport articles').closest('button');
     fireEvent.click(apportButton);
     await waitFor(() => {
       expect(mockEffectuerApportArticles).toHaveBeenCalledWith('ART001', 10);
@@ -184,7 +176,7 @@ describe('FermetureCaissePage', () => {
 
   it('handles remise button click', async () => {
     renderPage();
-    const remiseButton = screen.getByRole('button', { name: /Remise/i });
+    const remiseButton = screen.getByText('Remise').closest('button');
     fireEvent.click(remiseButton);
     await waitFor(() => {
       expect(mockEffectuerRemiseCaisse).toHaveBeenCalledWith(500);
@@ -193,29 +185,29 @@ describe('FermetureCaissePage', () => {
 
   it('disables justifier ecart button when no ecarts', () => {
     renderPage();
-    const justifierButton = screen.getByRole('button', { name: /Justifier ecart/i });
+    const justifierButton = screen.getByText('Justifier ecart').closest('button');
     expect(justifierButton).not.toBeDisabled();
   });
 
   it('switches to validation tab', () => {
     renderPage();
-    const validationTab = screen.getByRole('button', { name: /Validation/i });
+    const validationTab = screen.getByText('Validation').closest('button');
     fireEvent.click(validationTab);
-    expect(screen.getByText(/Tous les moyens ont ete pointes/i)).toBeInTheDocument();
+    expect(screen.getByText('Tous les moyens ont ete pointes')).toBeInTheDocument();
   });
 
   it('displays validation status correctly', () => {
     renderPage();
-    const validationTab = screen.getByRole('button', { name: /Validation/i });
+    const validationTab = screen.getByText('Validation').closest('button');
     fireEvent.click(validationTab);
-    expect(screen.getByText(/Des ecarts existent et ne sont pas justifies/i)).toBeInTheDocument();
+    expect(screen.getByText('Des ecarts existent et ne sont pas justifies')).toBeInTheDocument();
   });
 
   it('handles valider fermeture button click', async () => {
     renderPage();
-    const validationTab = screen.getByRole('button', { name: /Validation/i });
+    const validationTab = screen.getByText('Validation').closest('button');
     fireEvent.click(validationTab);
-    const validerButton = screen.getByRole('button', { name: /Valider fermeture/i });
+    const validerButton = screen.getByText('Valider fermeture').closest('button');
     fireEvent.click(validerButton);
     await waitFor(() => {
       expect(mockValiderFermeture).toHaveBeenCalledWith('ADH', 1001);
@@ -224,16 +216,16 @@ describe('FermetureCaissePage', () => {
 
   it('switches to tickets tab', () => {
     renderPage();
-    const ticketsTab = screen.getByRole('button', { name: /Tickets/i });
+    const ticketsTab = screen.getByText('Tickets').closest('button');
     fireEvent.click(ticketsTab);
-    expect(screen.getByRole('button', { name: /Generer tickets/i })).toBeInTheDocument();
+    expect(screen.getByText('Generer tickets')).toBeInTheDocument();
   });
 
   it('handles generer tickets button click', async () => {
     renderPage();
-    const ticketsTab = screen.getByRole('button', { name: /Tickets/i });
+    const ticketsTab = screen.getByText('Tickets').closest('button');
     fireEvent.click(ticketsTab);
-    const genererButton = screen.getByRole('button', { name: /Generer tickets/i });
+    const genererButton = screen.getByText('Generer tickets').closest('button');
     fireEvent.click(genererButton);
     await waitFor(() => {
       expect(mockGenererTickets).toHaveBeenCalledWith('ADH', 1001);
@@ -242,16 +234,16 @@ describe('FermetureCaissePage', () => {
 
   it('switches to detail devises tab', () => {
     renderPage();
-    const detailTab = screen.getByRole('button', { name: /Detail devises/i });
+    const detailTab = screen.getByText('Detail devises').closest('button');
     fireEvent.click(detailTab);
     expect(mockAfficherDetailDevises).toHaveBeenCalled();
   });
 
   it('displays detail devises table', () => {
     renderPage();
-    const detailTab = screen.getByRole('button', { name: /Detail devises/i });
+    const detailTab = screen.getByText('Detail devises').closest('button');
     fireEvent.click(detailTab);
-    expect(screen.getByText(/Code devise/i)).toBeInTheDocument();
+    expect(screen.getByText('Code devise')).toBeInTheDocument();
   });
 
   it('displays solde final correctly', () => {

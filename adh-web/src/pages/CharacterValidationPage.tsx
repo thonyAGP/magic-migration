@@ -18,7 +18,6 @@ export function CharacterValidationPage() {
   const loadForbiddenCharacters = useCharacterValidationStore((s) => s.loadForbiddenCharacters);
   const checkString = useCharacterValidationStore((s) => s.checkString);
   const setError = useCharacterValidationStore((s) => s.setError);
-  const setIsValidating = useCharacterValidationStore((s) => s.setIsValidating);
   const reset = useCharacterValidationStore((s) => s.reset);
 
   const [inputValue, setInputValue] = useState('');
@@ -163,9 +162,9 @@ export function CharacterValidationPage() {
                       <strong>Caractères invalides :</strong>{' '}
                       <code className="bg-white px-2 py-1 rounded">
                         {lastValidationResult.invalidCharacters
-                          .split('')
+                          ?.split('')
                           .map(getCharDisplay)
-                          .join(', ')}
+                          .join(', ') || 'N/A'}
                       </code>
                     </p>
                     {lastValidationResult.position !== null && (

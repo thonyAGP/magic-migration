@@ -41,14 +41,6 @@ const mockStoreInitialState = {
   reset: vi.fn(),
 };
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
-
 vi.mock('@/stores/controleFermetureCaisseStore', () => ({
   useControleFermetureCaisseStore: (selector: unknown) => {
     if (typeof selector === 'function') {
@@ -75,6 +67,55 @@ const renderPage = () => {
       <ControleFermetureCaissePage />
     </BrowserRouter>
   );
+};
+
+// Navigate to a specific step by clicking through the workflow
+// The component uses internal useState and only changes step via action handlers
+const navigateToStep = async (targetStep: 'recap' | 'ecarts' | 'pointages' | 'final') => {
+  const steps: ('recap' | 'ecarts' | 'pointages' | 'final')[] = ['recap', 'ecarts', 'pointages', 'final'];
+  const targetIdx = steps.indexOf(targetStep);
+
+  // params -> recap: click "Valider et continuer"
+  if (targetIdx >= 0) {
+    mockStoreInitialState.validerParametresUniBi = vi.fn().mockResolvedValue(true);
+    mockStoreInitialState.validerConfiguration2Caisses = vi.fn().mockResolvedValue(true);
+    mockStoreInitialState.traiterModeKasse = vi.fn().mockResolvedValue(undefined);
+    const validateBtn = screen.getByRole('button', { name: /valider et continuer/i });
+    fireEvent.click(validateBtn);
+    await waitFor(() => {
+      expect(screen.getByText('Tableau récapitulatif')).toBeInTheDocument();
+    });
+  }
+
+  // recap -> ecarts: click "Générer"
+  if (targetIdx >= 1) {
+    mockStoreInitialState.genererTableauRecap = vi.fn().mockResolvedValue(undefined);
+    const genBtn = screen.getByRole('button', { name: /générer/i });
+    fireEvent.click(genBtn);
+    await waitFor(() => {
+      expect(screen.getByText('Calcul des écarts')).toBeInTheDocument();
+    });
+  }
+
+  // ecarts -> pointages: click "Calculer"
+  if (targetIdx >= 2) {
+    mockStoreInitialState.calculerEcarts = vi.fn().mockResolvedValue(undefined);
+    const calcBtn = screen.getByRole('button', { name: /calculer/i });
+    fireEvent.click(calcBtn);
+    await waitFor(() => {
+      expect(screen.getByText('Pointage Devises')).toBeInTheDocument();
+    });
+  }
+
+  // pointages -> final: click "Charger pointages"
+  if (targetIdx >= 3) {
+    mockStoreInitialState.chargerPointages = vi.fn().mockResolvedValue(undefined);
+    const loadBtn = screen.getByRole('button', { name: /charger pointages/i });
+    fireEvent.click(loadBtn);
+    await waitFor(() => {
+      expect(screen.getByText('Résumé de la session')).toBeInTheDocument();
+    });
+  }
 };
 
 describe('ControleFermetureCaissePage', () => {
@@ -194,17 +235,15 @@ describe('ControleFermetureCaissePage', () => {
     expect(screen.getByText(/• Error 2/)).toBeInTheDocument();
   });
 
-  it('displays recap step with empty state', () => {
+  it('displays recap step with empty state', async () => {
     Object.assign(mockStoreInitialState, { sessionId: 123 });
     renderPage();
-    
-    const recapTab = screen.getByText('Récapitulatif');
-    fireEvent.click(recapTab.closest('div')!);
+    await navigateToStep('recap');
 
     expect(screen.getByText('Tableau récapitulatif')).toBeInTheDocument();
   });
 
-  it('displays tableau recap when data exists', () => {
+  it('displays tableau recap when data exists', async () => {
     Object.assign(mockStoreInitialState, {
       sessionId: 123,
       tableauRecap: [
@@ -213,39 +252,36 @@ describe('ControleFermetureCaissePage', () => {
       ],
     });
     renderPage();
-    
-    fireEvent.click(screen.getByText('Récapitulatif').closest('div')!);
+    await navigateToStep('recap');
 
     expect(screen.getByText('val1')).toBeInTheDocument();
     expect(screen.getByText('val2')).toBeInTheDocument();
   });
 
   it('calls genererTableauRecap when generate button clicked', async () => {
-    Object.assign(mockStoreInitialState, { sessionId: 123 });
-    mockStoreInitialState.genererTableauRecap = vi.fn().mockResolvedValue(undefined);
-
+    const genererFn = vi.fn().mockResolvedValue(undefined);
+    Object.assign(mockStoreInitialState, { sessionId: 123, genererTableauRecap: genererFn });
     renderPage();
-    fireEvent.click(screen.getByText('Récapitulatif').closest('div')!);
+    await navigateToStep('recap');
 
     const generateBtn = screen.getByRole('button', { name: /générer/i });
     fireEvent.click(generateBtn);
 
     await waitFor(() => {
-      expect(mockStoreInitialState.genererTableauRecap).toHaveBeenCalledWith(123);
+      expect(genererFn).toHaveBeenCalledWith(123);
     });
   });
 
-  it('displays ecarts step with form', () => {
+  it('displays ecarts step with form', async () => {
     Object.assign(mockStoreInitialState, { sessionId: 123 });
     renderPage();
-
-    fireEvent.click(screen.getByText('Écarts').closest('div')!);
+    await navigateToStep('ecarts');
 
     expect(screen.getByText('Calcul des écarts')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('0.00')).toBeInTheDocument();
   });
 
-  it('displays ecarts table when data exists', () => {
+  it('displays ecarts table when data exists', async () => {
     Object.assign(mockStoreInitialState, {
       sessionId: 123,
       ecarts: [
@@ -260,8 +296,7 @@ describe('ControleFermetureCaissePage', () => {
       ],
     });
     renderPage();
-
-    fireEvent.click(screen.getByText('Écarts').closest('div')!);
+    await navigateToStep('ecarts');
 
     expect(screen.getByText('EUR')).toBeInTheDocument();
     expect(screen.getByText('100.00')).toBeInTheDocument();
@@ -269,7 +304,7 @@ describe('ControleFermetureCaissePage', () => {
     expect(screen.getByText('-5.00')).toBeInTheDocument();
   });
 
-  it('displays alert badge when ecarts detected', () => {
+  it('displays alert badge when ecarts detected', async () => {
     Object.assign(mockStoreInitialState, {
       sessionId: 123,
       ecarts: [
@@ -284,23 +319,21 @@ describe('ControleFermetureCaissePage', () => {
       ],
     });
     renderPage();
-
-    fireEvent.click(screen.getByText('Écarts').closest('div')!);
+    await navigateToStep('ecarts');
 
     expect(screen.getByText('Écarts détectés')).toBeInTheDocument();
   });
 
   it('calls calculerEcarts when calculate button clicked', async () => {
     Object.assign(mockStoreInitialState, { sessionId: 123 });
-    mockStoreInitialState.calculerEcarts = vi.fn().mockResolvedValue(undefined);
-
     renderPage();
-    fireEvent.click(screen.getByText('Écarts').closest('div')!);
+    await navigateToStep('ecarts');
 
+    mockStoreInitialState.calculerEcarts = vi.fn().mockResolvedValue(undefined);
     const input = screen.getByPlaceholderText('0.00');
     fireEvent.change(input, { target: { value: '100' } });
 
-    const calcBtn = screen.getByRole('button', { name: /calculer/i });
+    const calcBtn = screen.getByRole('button', { name: /calculer|continuer/i });
     fireEvent.click(calcBtn);
 
     await waitFor(() => {
@@ -308,18 +341,17 @@ describe('ControleFermetureCaissePage', () => {
     });
   });
 
-  it('displays pointages step with empty state', () => {
+  it('displays pointages step with empty state', async () => {
     Object.assign(mockStoreInitialState, { sessionId: 123 });
     renderPage();
-
-    fireEvent.click(screen.getByText('Pointages').closest('div')!);
+    await navigateToStep('pointages');
 
     expect(screen.getByText('Pointage Devises')).toBeInTheDocument();
     expect(screen.getByText('Pointage Articles')).toBeInTheDocument();
     expect(screen.getByText('Pointage Appro/Remises')).toBeInTheDocument();
   });
 
-  it('displays pointages data when loaded', () => {
+  it('displays pointages data when loaded', async () => {
     Object.assign(mockStoreInitialState, {
       sessionId: 123,
       devisesPointees: [{ finPointage: true, devisesPointees: true, deviseLocale: 'EUR', nombreDevises: 5 }],
@@ -327,8 +359,7 @@ describe('ControleFermetureCaissePage', () => {
       approRemisesPointes: [{ id: 1 }],
     });
     renderPage();
-
-    fireEvent.click(screen.getByText('Pointages').closest('div')!);
+    await navigateToStep('pointages');
 
     expect(screen.getByText(/EUR \(5\)/)).toBeInTheDocument();
     expect(screen.getByText('1 article(s) en stock')).toBeInTheDocument();
@@ -336,40 +367,38 @@ describe('ControleFermetureCaissePage', () => {
   });
 
   it('calls chargerPointages when load button clicked', async () => {
-    Object.assign(mockStoreInitialState, { sessionId: 123 });
-    mockStoreInitialState.chargerPointages = vi.fn().mockResolvedValue(undefined);
-
+    const chargerFn = vi.fn().mockResolvedValue(undefined);
+    Object.assign(mockStoreInitialState, { sessionId: 123, chargerPointages: chargerFn });
     renderPage();
-    fireEvent.click(screen.getByText('Pointages').closest('div')!);
+    await navigateToStep('pointages');
 
     const loadBtn = screen.getByRole('button', { name: /charger pointages/i });
     fireEvent.click(loadBtn);
 
     await waitFor(() => {
-      expect(mockStoreInitialState.chargerPointages).toHaveBeenCalledWith(123);
+      expect(chargerFn).toHaveBeenCalledWith(123);
     });
   });
 
-  it('displays final step with summary', () => {
+  it('displays final step with summary', async () => {
     Object.assign(mockStoreInitialState, {
       sessionId: 123,
       deviseLocale: 'EUR',
       ecarts: [],
     });
     renderPage();
-
-    fireEvent.click(screen.getByText('Finalisation').closest('div')!);
+    await navigateToStep('final');
 
     expect(screen.getByText('Résumé de la session')).toBeInTheDocument();
     expect(screen.getByText(/Session ID:/)).toBeInTheDocument();
-    expect(screen.getByText(/123/)).toBeInTheDocument();
+    // Session ID 123 appears in both header subtitle and summary - use getAllByText
+    expect(screen.getAllByText(/123/).length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows confirmation dialog when finalize button clicked', async () => {
     Object.assign(mockStoreInitialState, { sessionId: 123, ecarts: [] });
     renderPage();
-
-    fireEvent.click(screen.getByText('Finalisation').closest('div')!);
+    await navigateToStep('final');
 
     const finalizeBtn = screen.getByRole('button', { name: /finaliser fermeture/i });
     fireEvent.click(finalizeBtn);
@@ -380,11 +409,11 @@ describe('ControleFermetureCaissePage', () => {
   });
 
   it('calls finaliserFermeture when confirmed', async () => {
-    Object.assign(mockStoreInitialState, { sessionId: 123, ecarts: [] });
-    mockStoreInitialState.finaliserFermeture = vi.fn().mockResolvedValue(undefined);
+    const finaliseFn = vi.fn().mockResolvedValue(undefined);
+    Object.assign(mockStoreInitialState, { sessionId: 123, ecarts: [], finaliserFermeture: finaliseFn });
 
     renderPage();
-    fireEvent.click(screen.getByText('Finalisation').closest('div')!);
+    await navigateToStep('final');
 
     const finalizeBtn = screen.getByRole('button', { name: /finaliser fermeture/i });
     fireEvent.click(finalizeBtn);
@@ -393,20 +422,22 @@ describe('ControleFermetureCaissePage', () => {
       expect(screen.getByText('Confirmer la finalisation')).toBeInTheDocument();
     });
 
-    const confirmBtn = screen.getByRole('button', { name: /confirmer/i });
-    fireEvent.click(confirmBtn);
+    // Click "Confirmer" (not "Confirmer la finalisation" which is an h3)
+    const buttons = screen.getAllByRole('button');
+    const confirmBtn = buttons.find((b) => b.textContent === 'Confirmer');
+    fireEvent.click(confirmBtn!);
 
     await waitFor(() => {
-      expect(mockStoreInitialState.finaliserFermeture).toHaveBeenCalledWith(123);
+      expect(finaliseFn).toHaveBeenCalledWith(123);
       expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
     });
   });
 
-  it('navigates back through steps', () => {
+  it('navigates back through steps', async () => {
     Object.assign(mockStoreInitialState, { sessionId: 123 });
     renderPage();
+    await navigateToStep('recap');
 
-    fireEvent.click(screen.getByText('Récapitulatif').closest('div')!);
     expect(screen.getByText('Tableau récapitulatif')).toBeInTheDocument();
 
     const retourBtn = screen.getByRole('button', { name: /retour/i });

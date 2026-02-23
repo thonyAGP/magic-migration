@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, mockNavigate } from 'react-router-dom';
 
 vi.mock('@/stores/comptageHistorizationStore', () => ({
   useComptageHistorizationStore: vi.fn(),
@@ -19,15 +19,6 @@ vi.mock('@/components/layout', () => ({
 import { ComptageHistorizationPage } from '@/pages/ComptageHistorizationPage';
 import { useComptageHistorizationStore } from '@/stores/comptageHistorizationStore';
 import { useAuthStore } from '@/stores';
-
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
 
 const renderPage = () => {
   return render(

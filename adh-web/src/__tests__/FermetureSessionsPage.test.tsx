@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import type { Session } from '@/types/fermetureSessions';
@@ -12,14 +12,6 @@ const mockValidateSessionClosure = vi.fn();
 const mockSetCurrentSession = vi.fn();
 const mockClearError = vi.fn();
 const mockReset = vi.fn();
-
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
 
 vi.mock('@/stores/fermetureSessionsStore', () => ({
   useFermetureSessionsStore: (selector: (state: unknown) => unknown) => {
@@ -104,8 +96,9 @@ describe('FermetureSessionsPage', () => {
   });
 
   it('should display loading state', () => {
-    vi.mocked(vi.importActual('@/stores/fermetureSessionsStore')).useFermetureSessionsStore = 
-      vi.fn((selector) => {
+    const { useFermetureSessionsStore: originalMock } = vi.mocked(vi.importActual('@/stores/fermetureSessionsStore') as never);
+    if (originalMock) {
+      originalMock.mockImplementation((selector: (state: unknown) => unknown) => {
         const state = {
           sessions: [],
           currentSession: null,
@@ -123,10 +116,11 @@ describe('FermetureSessionsPage', () => {
           reset: mockReset,
         };
         return selector(state);
-      }) as Mock;
+      });
+    }
 
     renderComponent();
-    expect(screen.getByText(/Chargement des sessions/i)).toBeInTheDocument();
+    expect(screen.getByText('Chargement des sessions')).toBeInTheDocument();
   });
 
   it('should display empty state when no sessions', () => {
@@ -135,8 +129,9 @@ describe('FermetureSessionsPage', () => {
   });
 
   it('should display sessions when loaded', () => {
-    vi.mocked(vi.importActual('@/stores/fermetureSessionsStore')).useFermetureSessionsStore = 
-      vi.fn((selector) => {
+    const { useFermetureSessionsStore: originalMock } = vi.mocked(vi.importActual('@/stores/fermetureSessionsStore') as never);
+    if (originalMock) {
+      originalMock.mockImplementation((selector: (state: unknown) => unknown) => {
         const state = {
           sessions: [mockSession, mockSession2],
           currentSession: null,
@@ -154,7 +149,8 @@ describe('FermetureSessionsPage', () => {
           reset: mockReset,
         };
         return selector(state);
-      }) as Mock;
+      });
+    }
 
     renderComponent();
     expect(screen.getByText('1')).toBeInTheDocument();
@@ -163,8 +159,9 @@ describe('FermetureSessionsPage', () => {
 
   it('should display error state', () => {
     const errorMessage = 'Erreur de chargement';
-    vi.mocked(vi.importActual('@/stores/fermetureSessionsStore')).useFermetureSessionsStore = 
-      vi.fn((selector) => {
+    const { useFermetureSessionsStore: originalMock } = vi.mocked(vi.importActual('@/stores/fermetureSessionsStore') as never);
+    if (originalMock) {
+      originalMock.mockImplementation((selector: (state: unknown) => unknown) => {
         const state = {
           sessions: [],
           currentSession: null,
@@ -182,15 +179,17 @@ describe('FermetureSessionsPage', () => {
           reset: mockReset,
         };
         return selector(state);
-      }) as Mock;
+      });
+    }
 
     renderComponent();
     expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
 
   it('should handle session selection', () => {
-    vi.mocked(vi.importActual('@/stores/fermetureSessionsStore')).useFermetureSessionsStore = 
-      vi.fn((selector) => {
+    const { useFermetureSessionsStore: originalMock } = vi.mocked(vi.importActual('@/stores/fermetureSessionsStore') as never);
+    if (originalMock) {
+      originalMock.mockImplementation((selector: (state: unknown) => unknown) => {
         const state = {
           sessions: [mockSession],
           currentSession: null,
@@ -208,7 +207,8 @@ describe('FermetureSessionsPage', () => {
           reset: mockReset,
         };
         return selector(state);
-      }) as Mock;
+      });
+    }
 
     renderComponent();
     const radioButton = screen.getByRole('radio');
@@ -217,8 +217,9 @@ describe('FermetureSessionsPage', () => {
   });
 
   it('should initiate closure on button click', async () => {
-    vi.mocked(vi.importActual('@/stores/fermetureSessionsStore')).useFermetureSessionsStore = 
-      vi.fn((selector) => {
+    const { useFermetureSessionsStore: originalMock } = vi.mocked(vi.importActual('@/stores/fermetureSessionsStore') as never);
+    if (originalMock) {
+      originalMock.mockImplementation((selector: (state: unknown) => unknown) => {
         const state = {
           sessions: [mockSession],
           currentSession: mockSession,
@@ -236,13 +237,14 @@ describe('FermetureSessionsPage', () => {
           reset: mockReset,
         };
         return selector(state);
-      }) as Mock;
+      });
+    }
 
     renderComponent();
     const radioButton = screen.getByRole('radio');
     fireEvent.click(radioButton);
 
-    const closureButton = screen.getByText(/Fermer la session sélectionnée/i);
+    const closureButton = screen.getByText('Fermer la session sélectionnée');
     fireEvent.click(closureButton);
 
     await waitFor(() => {
@@ -253,19 +255,19 @@ describe('FermetureSessionsPage', () => {
 
   it('should navigate back to menu on back button click', () => {
     renderComponent();
-    const backButton = screen.getByText(/Retour au menu/i);
+    const backButton = screen.getByText('Retour au menu');
     fireEvent.click(backButton);
     expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
   });
 
   it('should disable closure button when no session selected', () => {
     renderComponent();
-    const closureButton = screen.getByText(/Fermer la session sélectionnée/i);
+    const closureButton = screen.getByText('Fermer la session sélectionnée');
     expect(closureButton).toBeDisabled();
   });
 
   it('should display user information', () => {
     renderComponent();
-    expect(screen.getByText(/Jean Dupont/i)).toBeInTheDocument();
+    expect(screen.getByText('Jean Dupont')).toBeInTheDocument();
   });
 });

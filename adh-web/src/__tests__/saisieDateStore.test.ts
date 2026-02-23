@@ -20,8 +20,8 @@ vi.mock('@/stores/dataSourceStore', () => ({
 
 const MOCK_DATE_MIN = new Date('2025-01-01');
 const MOCK_DATE_MAX = new Date('2025-12-31');
-const MOCK_DATE_INVALID = new Date('2025-12-31');
-const MOCK_DATE_VALID_MIN = new Date('2025-06-01');
+const _MOCK_DATE_INVALID = new Date('2025-12-31');
+const _MOCK_DATE_VALID_MIN = new Date('2025-06-01');
 
 describe('saisieDateStore', () => {
   beforeEach(() => {

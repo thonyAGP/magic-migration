@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 const mockGetSessionTimestamp = vi.fn();
 const mockResetState = vi.fn();
 const mockUser = { prenom: 'John', nom: 'Doe' };
+const mockNavigate = vi.fn();
 
 vi.mock('@/stores/sessionTimestampStore', () => ({
   useSessionTimestampStore: vi.fn((selector) => {
@@ -31,15 +32,6 @@ vi.mock('@/stores', () => ({
 import { SessionTimestampPage } from '@/pages/SessionTimestampPage';
 import { useSessionTimestampStore } from '@/stores/sessionTimestampStore';
 import { useAuthStore } from '@/stores';
-
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
 
 describe('SessionTimestampPage', () => {
   beforeEach(() => {

@@ -16,14 +16,6 @@ describe('DataSourceToggle', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockIsRealApi = false;
-    const { useDataSourceStore } = vi.mocked(
-      await import('@/stores/dataSourceStore')
-    );
-    useDataSourceStore.mockReturnValue({
-      isRealApi: false,
-      toggle: mockToggle,
-      setRealApi: vi.fn(),
-    });
   });
 
   it('should render Mock label when isRealApi is false', () => {
@@ -50,7 +42,15 @@ describe('DataSourceToggle', () => {
     expect(mockToggle).toHaveBeenCalledOnce();
   });
 
-  it('should have amber styling in mock mode', () => {
+  it('should have amber styling in mock mode', async () => {
+    const { useDataSourceStore } = vi.mocked(
+      await import('@/stores/dataSourceStore')
+    );
+    useDataSourceStore.mockReturnValue({
+      isRealApi: false,
+      toggle: mockToggle,
+      setRealApi: vi.fn(),
+    });
     render(<DataSourceToggle />);
     const btn = screen.getByRole('button');
     expect(btn.className).toContain('amber');

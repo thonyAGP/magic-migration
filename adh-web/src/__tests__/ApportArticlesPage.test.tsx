@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, mockNavigate } from 'react-router-dom';
 
 vi.mock('@/stores/apportArticlesStore', () => ({
   useApportArticlesStore: vi.fn(),
@@ -14,15 +14,6 @@ import { ApportArticlesPage } from '@/pages/ApportArticlesPage';
 import { useApportArticlesStore } from '@/stores/apportArticlesStore';
 import { useAuthStore } from '@/stores';
 import type { ArticleApport } from '@/types/apportArticles';
-
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);

@@ -23,7 +23,7 @@ const MOCK_MOP_INFO_CB: MOPInfo = {
   existe: true,
 };
 
-const MOCK_MOP_INFO_NOT_FOUND: MOPInfo = {
+const _MOCK_MOP_INFO_NOT_FOUND: MOPInfo = {
   classe: 'UNI',
   libelle: '',
   existe: false,

@@ -6,14 +6,6 @@ const mockNavigate = vi.fn();
 const mockUseDeviseSessionStore = vi.fn();
 const mockUseAuthStore = vi.fn();
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
-
 vi.mock('@/stores/deviseSessionStore', () => ({
   useDeviseSessionStore: (selector: (state: unknown) => unknown) =>
     mockUseDeviseSessionStore(selector),

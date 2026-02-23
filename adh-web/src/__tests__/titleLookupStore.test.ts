@@ -11,7 +11,7 @@ vi.mock('@/services/api/apiClient', () => ({
   },
 }));
 
-const MOCK_TITLES: Title[] = [
+const _MOCK_TITLES: Title[] = [
   { code: 'M', label: 'M.', type: 'CA' },
   { code: 'MME', label: 'Mme', type: 'CA' },
   { code: 'MLLE', label: 'Mlle', type: 'CA' },

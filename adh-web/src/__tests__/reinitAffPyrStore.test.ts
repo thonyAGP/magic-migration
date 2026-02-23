@@ -36,48 +36,41 @@ describe('reinitAffPyrStore', () => {
 
   describe('reinitAffectationPyr - Mock Mode', () => {
     it('should reset affectations for societe and compte', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const count = await store.reinitAffectationPyr({
+      const count = await useReinitAffPyrStore.getState().reinitAffectationPyr({
         societe: 'SOC1',
         compte: 1001,
       });
 
+      const state = useReinitAffPyrStore.getState();
       expect(count).toBe(2);
-      expect(store.lastResetCount).toBe(2);
-      expect(store.isProcessing).toBe(false);
-      expect(store.error).toBe(null);
+      expect(state.lastResetCount).toBe(2);
+      expect(state.isProcessing).toBe(false);
+      expect(state.error).toBe(null);
     });
 
     it('should reset affectations filtered by chambre', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const count = await store.reinitAffectationPyr({
+      const count = await useReinitAffPyrStore.getState().reinitAffectationPyr({
         societe: 'SOC1',
         compte: 1001,
         chambre: '101',
       });
 
       expect(count).toBe(1);
-      expect(store.lastResetCount).toBe(1);
+      expect(useReinitAffPyrStore.getState().lastResetCount).toBe(1);
     });
 
     it('should return 0 when no records match filters', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const count = await store.reinitAffectationPyr({
+      const count = await useReinitAffPyrStore.getState().reinitAffectationPyr({
         societe: 'SOC999',
         compte: 9999,
       });
 
       expect(count).toBe(0);
-      expect(store.lastResetCount).toBe(0);
+      expect(useReinitAffPyrStore.getState().lastResetCount).toBe(0);
     });
 
     it('should include empty chambre records', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const count = await store.reinitAffectationPyr({
+      const count = await useReinitAffPyrStore.getState().reinitAffectationPyr({
         societe: 'SOC1',
         compte: 1002,
       });
@@ -86,17 +79,16 @@ describe('reinitAffPyrStore', () => {
     });
 
     it('should set isProcessing to true during operation', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const promise = store.reinitAffectationPyr({
+      const promise = useReinitAffPyrStore.getState().reinitAffectationPyr({
         societe: 'SOC1',
         compte: 1001,
       });
 
+      // Mock mode uses setTimeout, so isProcessing should be true before await
       expect(useReinitAffPyrStore.getState().isProcessing).toBe(true);
-      
+
       await promise;
-      
+
       expect(useReinitAffPyrStore.getState().isProcessing).toBe(false);
     });
   });
@@ -108,19 +100,19 @@ describe('reinitAffPyrStore', () => {
 
     it('should call API with correct params and return count', async () => {
       vi.mocked(apiClient.post).mockResolvedValue({ data: MOCK_RESET_RESPONSE });
-      
-      const store = useReinitAffPyrStore.getState();
-      const count = await store.reinitAffectationPyr({
+
+      const count = await useReinitAffPyrStore.getState().reinitAffectationPyr({
         societe: 'SOC1',
         compte: 1001,
       });
 
+      const state = useReinitAffPyrStore.getState();
       expect(apiClient.post).toHaveBeenCalledWith(
         '/api/reinitAffPyr/reset?societe=SOC1&compte=1001',
       );
       expect(count).toBe(2);
-      expect(store.lastResetCount).toBe(2);
-      expect(store.isProcessing).toBe(false);
+      expect(state.lastResetCount).toBe(2);
+      expect(state.isProcessing).toBe(false);
     });
 
     it('should include chambre in query params when provided', async () => {
@@ -140,34 +132,32 @@ describe('reinitAffPyrStore', () => {
     it('should handle API error and set error state', async () => {
       const apiError = new Error('API connection failed');
       vi.mocked(apiClient.post).mockRejectedValue(apiError);
-      
-      const store = useReinitAffPyrStore.getState();
-      
+
       await expect(
-        store.reinitAffectationPyr({
+        useReinitAffPyrStore.getState().reinitAffectationPyr({
           societe: 'SOC1',
           compte: 1001,
         }),
       ).rejects.toThrow('API connection failed');
 
-      expect(store.error).toEqual(apiError);
-      expect(store.isProcessing).toBe(false);
+      const state = useReinitAffPyrStore.getState();
+      expect(state.error).toEqual(apiError);
+      expect(state.isProcessing).toBe(false);
     });
 
     it('should handle non-Error exceptions', async () => {
       vi.mocked(apiClient.post).mockRejectedValue('String error');
-      
-      const store = useReinitAffPyrStore.getState();
-      
+
       await expect(
-        store.reinitAffectationPyr({
+        useReinitAffPyrStore.getState().reinitAffectationPyr({
           societe: 'SOC1',
           compte: 1001,
         }),
       ).rejects.toThrow('Erreur réinitialisation affectation PYR');
 
-      expect(store.error).toBeInstanceOf(Error);
-      expect(store.isProcessing).toBe(false);
+      const state = useReinitAffPyrStore.getState();
+      expect(state.error).toBeInstanceOf(Error);
+      expect(state.isProcessing).toBe(false);
     });
 
     it('should handle missing data in response', async () => {
@@ -190,25 +180,22 @@ describe('reinitAffPyrStore', () => {
 
   describe('resetAllAffectations - Mock Mode', () => {
     it('should reset all affectations and return total count', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const count = await store.resetAllAffectations();
+      const count = await useReinitAffPyrStore.getState().resetAllAffectations();
 
+      const state = useReinitAffPyrStore.getState();
       expect(count).toBe(10);
-      expect(store.lastResetCount).toBe(10);
-      expect(store.isProcessing).toBe(false);
-      expect(store.error).toBe(null);
+      expect(state.lastResetCount).toBe(10);
+      expect(state.isProcessing).toBe(false);
+      expect(state.error).toBe(null);
     });
 
     it('should set isProcessing during operation', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const promise = store.resetAllAffectations();
+      const promise = useReinitAffPyrStore.getState().resetAllAffectations();
 
       expect(useReinitAffPyrStore.getState().isProcessing).toBe(true);
-      
+
       await promise;
-      
+
       expect(useReinitAffPyrStore.getState().isProcessing).toBe(false);
     });
   });
@@ -224,36 +211,37 @@ describe('reinitAffPyrStore', () => {
         data: { affectedCount: 150 },
       };
       vi.mocked(apiClient.post).mockResolvedValue({ data: mockResponse });
-      
-      const store = useReinitAffPyrStore.getState();
-      const count = await store.resetAllAffectations();
 
+      const count = await useReinitAffPyrStore.getState().resetAllAffectations();
+
+      const state = useReinitAffPyrStore.getState();
       expect(apiClient.post).toHaveBeenCalledWith('/api/reinitAffPyr/reset-all');
       expect(count).toBe(150);
-      expect(store.lastResetCount).toBe(150);
-      expect(store.isProcessing).toBe(false);
+      expect(state.lastResetCount).toBe(150);
+      expect(state.isProcessing).toBe(false);
     });
 
     it('should handle API error and set error state', async () => {
       const apiError = new Error('Server error');
       vi.mocked(apiClient.post).mockRejectedValue(apiError);
-      
-      const store = useReinitAffPyrStore.getState();
-      
-      await expect(store.resetAllAffectations()).rejects.toThrow('Server error');
 
-      expect(store.error).toEqual(apiError);
-      expect(store.isProcessing).toBe(false);
+      await expect(
+        useReinitAffPyrStore.getState().resetAllAffectations(),
+      ).rejects.toThrow('Server error');
+
+      const state = useReinitAffPyrStore.getState();
+      expect(state.error).toEqual(apiError);
+      expect(state.isProcessing).toBe(false);
     });
 
     it('should handle non-Error exceptions', async () => {
       vi.mocked(apiClient.post).mockRejectedValue({ message: 'Object error' });
-      
-      const store = useReinitAffPyrStore.getState();
-      
-      await expect(store.resetAllAffectations()).rejects.toThrow('Erreur réinitialisation globale');
 
-      expect(store.error).toBeInstanceOf(Error);
+      await expect(
+        useReinitAffPyrStore.getState().resetAllAffectations(),
+      ).rejects.toThrow('Erreur réinitialisation globale');
+
+      expect(useReinitAffPyrStore.getState().error).toBeInstanceOf(Error);
     });
 
     it('should handle missing data in response', async () => {
@@ -273,36 +261,28 @@ describe('reinitAffPyrStore', () => {
 
   describe('getAffectationStatus - Mock Mode', () => {
     it('should return status with active affectations', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const status = await store.getAffectationStatus('SOC1', 1001);
+      const status = await useReinitAffPyrStore.getState().getAffectationStatus('SOC1', 1001);
 
       expect(status.hasActiveAffectations).toBe(true);
       expect(status.count).toBe(2);
     });
 
     it('should exclude null and empty affectations', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const status = await store.getAffectationStatus('SOC1', 1003);
+      const status = await useReinitAffPyrStore.getState().getAffectationStatus('SOC1', 1003);
 
       expect(status.hasActiveAffectations).toBe(false);
       expect(status.count).toBe(0);
     });
 
     it('should return false when no records match', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const status = await store.getAffectationStatus('SOC999', 9999);
+      const status = await useReinitAffPyrStore.getState().getAffectationStatus('SOC999', 9999);
 
       expect(status.hasActiveAffectations).toBe(false);
       expect(status.count).toBe(0);
     });
 
     it('should count records with non-empty affectationPyr', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const status = await store.getAffectationStatus('SOC1', 1004);
+      const status = await useReinitAffPyrStore.getState().getAffectationStatus('SOC1', 1004);
 
       expect(status.hasActiveAffectations).toBe(true);
       expect(status.count).toBe(2);
@@ -316,9 +296,8 @@ describe('reinitAffPyrStore', () => {
 
     it('should call API with correct params and return status', async () => {
       vi.mocked(apiClient.get).mockResolvedValue({ data: MOCK_STATUS_RESPONSE });
-      
-      const store = useReinitAffPyrStore.getState();
-      const status = await store.getAffectationStatus('SOC1', 1001);
+
+      const status = await useReinitAffPyrStore.getState().getAffectationStatus('SOC1', 1001);
 
       expect(apiClient.get).toHaveBeenCalledWith(
         '/api/reinitAffPyr/status?societe=SOC1&compte=1001',
@@ -339,26 +318,22 @@ describe('reinitAffPyrStore', () => {
     it('should handle API error and set error state', async () => {
       const apiError = new Error('Connection timeout');
       vi.mocked(apiClient.get).mockRejectedValue(apiError);
-      
-      const store = useReinitAffPyrStore.getState();
-      
+
       await expect(
-        store.getAffectationStatus('SOC1', 1001),
+        useReinitAffPyrStore.getState().getAffectationStatus('SOC1', 1001),
       ).rejects.toThrow('Connection timeout');
 
-      expect(store.error).toEqual(apiError);
+      expect(useReinitAffPyrStore.getState().error).toEqual(apiError);
     });
 
     it('should handle non-Error exceptions', async () => {
       vi.mocked(apiClient.get).mockRejectedValue(null);
-      
-      const store = useReinitAffPyrStore.getState();
-      
+
       await expect(
-        store.getAffectationStatus('SOC1', 1001),
+        useReinitAffPyrStore.getState().getAffectationStatus('SOC1', 1001),
       ).rejects.toThrow('Erreur vérification statut');
 
-      expect(store.error).toBeInstanceOf(Error);
+      expect(useReinitAffPyrStore.getState().error).toBeInstanceOf(Error);
     });
 
     it('should handle missing data in response', async () => {
@@ -380,17 +355,15 @@ describe('reinitAffPyrStore', () => {
     it('should clear error state', async () => {
       useDataSourceStore.setState({ isRealApi: true });
       vi.mocked(apiClient.post).mockRejectedValue(new Error('Test error'));
-      
-      const store = useReinitAffPyrStore.getState();
-      
+
       await expect(
-        store.reinitAffectationPyr({ societe: 'SOC1', compte: 1001 }),
+        useReinitAffPyrStore.getState().reinitAffectationPyr({ societe: 'SOC1', compte: 1001 }),
       ).rejects.toThrow();
-      
+
       expect(useReinitAffPyrStore.getState().error).not.toBe(null);
-      
-      store.clearError();
-      
+
+      useReinitAffPyrStore.getState().clearError();
+
       expect(useReinitAffPyrStore.getState().error).toBe(null);
     });
   });
@@ -399,15 +372,13 @@ describe('reinitAffPyrStore', () => {
     it('should reset store to initial state', async () => {
       useDataSourceStore.setState({ isRealApi: true });
       vi.mocked(apiClient.post).mockResolvedValue({ data: MOCK_RESET_RESPONSE });
-      
-      const store = useReinitAffPyrStore.getState();
-      
-      await store.reinitAffectationPyr({ societe: 'SOC1', compte: 1001 });
-      
+
+      await useReinitAffPyrStore.getState().reinitAffectationPyr({ societe: 'SOC1', compte: 1001 });
+
       expect(useReinitAffPyrStore.getState().lastResetCount).toBe(2);
-      
-      store.reset();
-      
+
+      useReinitAffPyrStore.getState().reset();
+
       const resetStore = useReinitAffPyrStore.getState();
       expect(resetStore.isProcessing).toBe(false);
       expect(resetStore.error).toBe(null);
@@ -417,15 +388,13 @@ describe('reinitAffPyrStore', () => {
 
   describe('Business Rules', () => {
     it('should handle RM-001: empty chambre vs non-empty chambre logic', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const countWithEmptyChambre = await store.reinitAffectationPyr({
+      const countWithEmptyChambre = await useReinitAffPyrStore.getState().reinitAffectationPyr({
         societe: 'SOC1',
         compte: 1002,
         chambre: '',
       });
 
-      const countWithChambre = await store.reinitAffectationPyr({
+      const countWithChambre = await useReinitAffPyrStore.getState().reinitAffectationPyr({
         societe: 'SOC1',
         compte: 1002,
         chambre: '201',
@@ -436,9 +405,7 @@ describe('reinitAffPyrStore', () => {
     });
 
     it('should reset all PYR markers for compte indépendamment des chambres', async () => {
-      const store = useReinitAffPyrStore.getState();
-      
-      const count = await store.reinitAffectationPyr({
+      const count = await useReinitAffPyrStore.getState().reinitAffectationPyr({
         societe: 'SOC1',
         compte: 1004,
       });

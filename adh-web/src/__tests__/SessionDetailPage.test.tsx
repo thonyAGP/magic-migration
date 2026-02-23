@@ -10,6 +10,8 @@ vi.mock('@/stores', () => ({
   useAuthStore: vi.fn(),
 }));
 
+const mockNavigate = vi.fn();
+
 import { SessionDetailPage } from '@/pages/SessionDetailPage';
 import { useSessionDetailStore } from '@/stores/sessionDetailStore';
 import { useAuthStore } from '@/stores';
@@ -30,14 +32,14 @@ describe('SessionDetailPage', () => {
         error: null,
         reset: mockReset,
       };
-      return selector(state as any);
+      return selector(state as never);
     });
 
     vi.mocked(useAuthStore).mockImplementation((selector) => {
       const state = {
         user: { prenom: 'John', nom: 'Doe' },
       };
-      return selector(state as any);
+      return selector(state as never);
     });
   });
 
@@ -62,7 +64,7 @@ describe('SessionDetailPage', () => {
   it('hides user info when not authenticated', () => {
     vi.mocked(useAuthStore).mockImplementation((selector) => {
       const state = { user: null };
-      return selector(state as any);
+      return selector(state as never);
     });
 
     renderWithRouter(<SessionDetailPage />);
@@ -92,7 +94,7 @@ describe('SessionDetailPage', () => {
         error: null,
         reset: mockReset,
       };
-      return selector(state as any);
+      return selector(state as never);
     });
 
     renderWithRouter(<SessionDetailPage />);
@@ -114,7 +116,7 @@ describe('SessionDetailPage', () => {
         error: errorMessage,
         reset: mockReset,
       };
-      return selector(state as any);
+      return selector(state as never);
     });
 
     renderWithRouter(<SessionDetailPage />);

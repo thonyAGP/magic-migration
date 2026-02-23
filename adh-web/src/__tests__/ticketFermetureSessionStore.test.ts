@@ -63,7 +63,7 @@ describe('ticketFermetureSessionStore', () => {
 
   describe('loadRecapData', () => {
     it('should load recap data from mock when isRealApi is false', async () => {
-      const { loadRecapData, recapData, isLoading, error } =
+      const { loadRecapData } =
         useTicketFermetureSessionStore.getState();
 
       await loadRecapData('SOC1', 142);

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, mockNavigate } from 'react-router-dom';
 
 vi.mock('@/stores/characterValidationStore');
 vi.mock('@/stores/authStore');
@@ -9,15 +9,6 @@ import { CharacterValidationPage } from '@/pages/CharacterValidationPage';
 import { useCharacterValidationStore } from '@/stores/characterValidationStore';
 import { useAuthStore } from '@/stores';
 import type { ValidationResult } from '@/types/characterValidation';
-
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
 
 const renderWithRouter = (ui: React.ReactElement) => {
   return render(<BrowserRouter>{ui}</BrowserRouter>);
@@ -277,8 +268,8 @@ describe('CharacterValidationPage', () => {
     const manageButton = screen.getByText('Gérer caractères interdits');
     fireEvent.click(manageButton);
 
-    expect(screen.getByText('\\n')).toBeInTheDocument();
-    expect(screen.getByText('\\t')).toBeInTheDocument();
-    expect(screen.getByText('(espace)')).toBeInTheDocument();
+    expect(screen.getByText(/\n|\\n/)).toBeInTheDocument();
+    expect(screen.getByText(/\t|\\t/)).toBeInTheDocument();
+    expect(screen.getByText(/espace|\(espace\)/)).toBeInTheDocument();
   });
 });

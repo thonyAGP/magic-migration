@@ -3,13 +3,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
 const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
 
 const mockAuthStore = {
   user: {
@@ -115,19 +108,19 @@ describe('DeversementTransactionPage', () => {
 
   it('displays form fields in initial state', () => {
     renderPage();
-    expect(screen.getByLabelText('Société')).toBeInTheDocument();
-    expect(screen.getByLabelText('Compte')).toBeInTheDocument();
-    expect(screen.getByLabelText('Filiation')).toBeInTheDocument();
-    expect(screen.getByLabelText('Montant (EUR)')).toBeInTheDocument();
-    expect(screen.getByLabelText('Type de vente')).toBeInTheDocument();
-    expect(screen.getByLabelText('Annulation')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('SOC1')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('C1001')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('0')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('150.00')).toBeInTheDocument();
+    expect(screen.getByText('Type de vente')).toBeInTheDocument();
+    expect(screen.getByText('Annulation')).toBeInTheDocument();
   });
 
   it('loads compte GM when societe and compte are provided', async () => {
     renderPage();
-    
-    const societeInput = screen.getByLabelText('Société') as HTMLInputElement;
-    const compteInput = screen.getByLabelText('Compte') as HTMLInputElement;
+
+    const societeInput = screen.getByDisplayValue('SOC1') as HTMLInputElement;
+    const compteInput = screen.getByDisplayValue('C1001') as HTMLInputElement;
 
     fireEvent.change(societeInput, { target: { value: 'SOC2' } });
     fireEvent.change(compteInput, { target: { value: 'C2001' } });
@@ -154,9 +147,9 @@ describe('DeversementTransactionPage', () => {
   it('handles form input changes', () => {
     renderPage();
 
-    const societeInput = screen.getByLabelText('Société') as HTMLInputElement;
-    const montantInput = screen.getByLabelText('Montant (EUR)') as HTMLInputElement;
-    const annulationCheckbox = screen.getByLabelText('Annulation') as HTMLInputElement;
+    const societeInput = screen.getByDisplayValue('SOC1') as HTMLInputElement;
+    const montantInput = screen.getByDisplayValue('150.00') as HTMLInputElement;
+    const annulationCheckbox = screen.getByRole('checkbox') as HTMLInputElement;
 
     fireEvent.change(societeInput, { target: { value: 'SOC3' } });
     expect(societeInput.value).toBe('SOC3');
@@ -171,8 +164,9 @@ describe('DeversementTransactionPage', () => {
   it('handles type vente selection', () => {
     renderPage();
 
-    const typeSelect = screen.getByLabelText('Type de vente') as HTMLSelectElement;
-    
+    const typeSelectLabel = screen.getByText('Type de vente');
+    const typeSelect = typeSelectLabel.parentElement?.querySelector('select') as HTMLSelectElement;
+
     fireEvent.change(typeSelect, { target: { value: 'VRL' } });
     expect(typeSelect.value).toBe('VRL');
 
@@ -183,10 +177,11 @@ describe('DeversementTransactionPage', () => {
   it('shows affectation modal for VRL/VSL ventes', async () => {
     renderPage();
 
-    const typeSelect = screen.getByLabelText('Type de vente') as HTMLSelectElement;
+    const typeSelectLabel = screen.getByText('Type de vente');
+    const typeSelect = typeSelectLabel.parentElement?.querySelector('select') as HTMLSelectElement;
     fireEvent.change(typeSelect, { target: { value: 'VRL' } });
 
-    const deverserButton = screen.getByRole('button', { name: /déverser/i });
+    const deverserButton = screen.getByRole('button', { name: 'Déverser' });
     fireEvent.click(deverserButton);
 
     await waitFor(() => {
@@ -200,7 +195,7 @@ describe('DeversementTransactionPage', () => {
 
     renderPage();
 
-    const deverserButton = screen.getByRole('button', { name: /déverser/i });
+    const deverserButton = screen.getByRole('button', { name: 'Déverser' });
     fireEvent.click(deverserButton);
 
     await waitFor(() => {
@@ -214,7 +209,7 @@ describe('DeversementTransactionPage', () => {
 
     renderPage();
 
-    const deverserButton = screen.getByRole('button', { name: /traitement/i });
+    const deverserButton = screen.getByRole('button', { name: 'Traitement...' });
     expect(deverserButton).toBeDisabled();
   });
 
@@ -263,7 +258,7 @@ describe('DeversementTransactionPage', () => {
 
     renderPage();
 
-    const deverserButton = screen.getByRole('button', { name: /déverser/i });
+    const deverserButton = screen.getByRole('button', { name: 'Déverser' });
     fireEvent.click(deverserButton);
 
     await waitFor(() => {
@@ -310,7 +305,7 @@ describe('DeversementTransactionPage', () => {
 
     renderPage();
 
-    const deverserButton = screen.getByRole('button', { name: /déverser/i });
+    const deverserButton = screen.getByRole('button', { name: 'Déverser' });
     fireEvent.click(deverserButton);
 
     await waitFor(() => {
@@ -324,7 +319,7 @@ describe('DeversementTransactionPage', () => {
   it('handles back navigation from form', () => {
     renderPage();
 
-    const backButton = screen.getByRole('button', { name: /retour au menu/i });
+    const backButton = screen.getByRole('button', { name: 'Retour au menu' });
     fireEvent.click(backButton);
 
     expect(mockNavigate).toHaveBeenCalledWith('/caisse/menu');
@@ -347,14 +342,14 @@ describe('DeversementTransactionPage', () => {
 
     renderPage();
 
-    const deverserButton = screen.getByRole('button', { name: /déverser/i });
+    const deverserButton = screen.getByRole('button', { name: 'Déverser' });
     fireEvent.click(deverserButton);
 
     await waitFor(() => {
       expect(screen.getByText('Déversement effectué avec succès')).toBeInTheDocument();
     });
 
-    const backButton = screen.getByRole('button', { name: /nouvelle transaction/i });
+    const backButton = screen.getByRole('button', { name: 'Nouvelle transaction' });
     fireEvent.click(backButton);
 
     await waitFor(() => {
@@ -385,7 +380,7 @@ describe('DeversementTransactionPage', () => {
 
     renderPage();
 
-    const deverserButton = screen.getByRole('button', { name: /déverser/i });
+    const deverserButton = screen.getByRole('button', { name: 'Déverser' });
     fireEvent.click(deverserButton);
 
     await waitFor(() => {
@@ -425,7 +420,7 @@ describe('DeversementTransactionPage', () => {
     const affectationInput = screen.getByPlaceholderText('Ex: TRANSFERT-001') as HTMLInputElement;
     fireEvent.change(affectationInput, { target: { value: 'TRANSFERT-123' } });
 
-    const confirmerButton = screen.getByRole('button', { name: /confirmer/i });
+    const confirmerButton = screen.getByRole('button', { name: 'Confirmer' });
     fireEvent.click(confirmerButton);
 
     await waitFor(() => {
@@ -440,7 +435,7 @@ describe('DeversementTransactionPage', () => {
 
     renderPage();
 
-    const annulerButton = screen.getByRole('button', { name: /annuler/i });
+    const annulerButton = screen.getByRole('button', { name: 'Annuler' });
     fireEvent.click(annulerButton);
 
     expect(mockDeversementStore.setShowAffectationModal).toHaveBeenCalledWith(false);

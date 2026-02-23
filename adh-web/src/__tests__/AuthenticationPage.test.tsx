@@ -1,8 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-
-const mockNavigate = vi.fn();
+import { BrowserRouter, mockNavigate } from 'react-router-dom';
 const mockGetMatricule = vi.fn();
 const mockSetMatricule = vi.fn();
 const mockSetError = vi.fn();
@@ -17,14 +15,6 @@ let mockStoreState = {
   setError: mockSetError,
   reset: mockReset,
 };
-
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
 
 vi.mock('@/stores/authenticationStore', () => ({
   useAuthenticationStore: (selector: (state: typeof mockStoreState) => unknown) => {

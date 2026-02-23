@@ -82,7 +82,7 @@ describe('recapFermetureStore', () => {
 
   describe('loadRecapFermeture', () => {
     it('should load recap in mock mode', async () => {
-      const { loadRecapFermeture, recap, lignesRecap, remises, articles, finTache } = useRecapFermetureStore.getState();
+      const { loadRecapFermeture } = useRecapFermetureStore.getState();
 
       await loadRecapFermeture('SOC1', 42);
 

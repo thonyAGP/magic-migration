@@ -7,6 +7,8 @@ vi.mock('@/stores', () => ({
   useAuthStore: vi.fn(),
 }));
 
+const mockNavigate = vi.fn();
+
 import { ApproTicketPage } from '@/pages/ApproTicketPage';
 import { useApproTicketStore } from '@/stores/approTicketStore';
 import { useAuthStore } from '@/stores';
@@ -392,7 +394,7 @@ describe('ApproTicketPage', () => {
         user: { prenom: 'John', nom: 'Doe' },
         login: vi.fn(),
         logout: vi.fn(),
-      } as unknown as any)
+      } as never)
     );
 
     renderPage();

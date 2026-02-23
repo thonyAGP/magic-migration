@@ -35,7 +35,7 @@ const MOCK_SESSION_2: SessionOuverte = {
   heureOuverture: '08:15',
 };
 
-const MOCK_SESSION_3: SessionOuverte = {
+const _MOCK_SESSION_3: SessionOuverte = {
   societe: 'SMRNS2',
   compte: 'CAI003',
   filiation: 0,

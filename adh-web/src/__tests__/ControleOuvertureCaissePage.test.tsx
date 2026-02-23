@@ -6,14 +6,6 @@ const mockNavigate = vi.fn();
 const mockUseAuthStore = vi.fn();
 const mockUseControleOuvertureCaisseStore = vi.fn();
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
-
 vi.mock('@/stores', () => ({
   useAuthStore: (selector: unknown) => mockUseAuthStore(selector),
 }));

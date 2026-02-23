@@ -239,6 +239,8 @@ describe('facturationAppelStore', () => {
     });
 
     it('should block facturation when cloture is active', async () => {
+      useDataSourceStore.setState({ isRealApi: true });
+
       vi.mocked(apiClient.get).mockResolvedValueOnce({
         data: {
           success: true,
@@ -290,12 +292,11 @@ describe('facturationAppelStore', () => {
         cloture: { cloture_enCours: false, testReseau: 'OK' },
       });
 
-      vi.mocked(apiClient.get).mockResolvedValueOnce({
-        data: {
-          success: true,
-          data: { cloture_enCours: false, testReseau: 'OK' },
-        } as GetClotureStatusResponse,
-      });
+      const mockCloture: GetClotureStatusResponse = {
+        success: true,
+        data: { cloture_enCours: false, testReseau: 'OK' },
+      };
+      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockCloture });
 
       const mockResponse: FacturerAppelResponse = {
         success: true,
@@ -328,12 +329,11 @@ describe('facturationAppelStore', () => {
         cloture: { cloture_enCours: false, testReseau: 'OK' },
       });
 
-      vi.mocked(apiClient.get).mockResolvedValueOnce({
-        data: {
-          success: true,
-          data: { cloture_enCours: false, testReseau: 'OK' },
-        } as GetClotureStatusResponse,
-      });
+      const mockCloture: GetClotureStatusResponse = {
+        success: true,
+        data: { cloture_enCours: false, testReseau: 'OK' },
+      };
+      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockCloture });
 
       vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('Facturation failed'));
 
@@ -368,7 +368,9 @@ describe('facturationAppelStore', () => {
         success: true,
         data: { cloture_enCours: true, testReseau: 'ERREUR' },
       };
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockResponse });
+      vi.mocked(apiClient.get).mockResolvedValueOnce({
+        data: mockResponse,
+      });
 
       const store = useFacturationAppelStore.getState();
       const result = await store.verifierCloture();
@@ -376,6 +378,7 @@ describe('facturationAppelStore', () => {
       expect(result).toBe(true);
       const state = useFacturationAppelStore.getState();
       expect(state.cloture?.cloture_enCours).toBe(true);
+      expect(state.cloture?.testReseau).toBe('ERREUR');
       expect(apiClient.get).toHaveBeenCalledWith('/api/facturation-appel/cloture-status');
     });
 
@@ -389,7 +392,7 @@ describe('facturationAppelStore', () => {
       expect(result).toBe(false);
       const state = useFacturationAppelStore.getState();
       expect(state.error).toBe('Network error');
-      expect(state.cloture).toBe(null);
+      expect(state.cloture).toBeNull();
     });
   });
 
@@ -418,13 +421,16 @@ describe('facturationAppelStore', () => {
         success: true,
         data: { success: true },
       };
-      vi.mocked(apiClient.post).mockResolvedValueOnce({ data: mockResponse });
+      vi.mocked(apiClient.post).mockResolvedValueOnce({
+        data: mockResponse,
+      });
 
       const store = useFacturationAppelStore.getState();
       await store.debloquerCloture();
 
       const state = useFacturationAppelStore.getState();
       expect(state.cloture?.cloture_enCours).toBe(false);
+      expect(state.isLoading).toBe(false);
       expect(apiClient.post).toHaveBeenCalledWith('/api/facturation-appel/debloquer-cloture');
     });
 

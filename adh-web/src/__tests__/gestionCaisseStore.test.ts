@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useGestionCaisseStore } from '@/stores/gestionCaisseStore';
 import { apiClient } from '@/services/api/apiClient';
 import { useDataSourceStore } from '@/stores/dataSourceStore';
-import type { ApiResponse } from '@/services/api/apiClient';
+
 import type {
   ParametresCaisse,
   SessionCaisse,

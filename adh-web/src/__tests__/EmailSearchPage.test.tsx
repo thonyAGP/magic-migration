@@ -322,8 +322,9 @@ describe('EmailSearchPage', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    const emailInput = screen.getByLabelText('Email');
-    fireEvent.change(emailInput, { target: { value: 'updated@example.com' } });
+    const emailInputs = screen.getAllByLabelText('Email');
+    const dialogEmailInput = emailInputs[emailInputs.length - 1];
+    fireEvent.change(dialogEmailInput, { target: { value: 'updated@example.com' } });
 
     const saveButtons = screen.getAllByText('Modifier');
     const dialogSaveButton = saveButtons[saveButtons.length - 1];

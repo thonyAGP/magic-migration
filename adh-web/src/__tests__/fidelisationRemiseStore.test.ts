@@ -41,10 +41,25 @@ const MOCK_NO_FIDELISATION: FidelisationRemise = {
   remise: null,
 };
 
+// Save real store functions before any test can poison them via reset()
+// (production reset() calls set({...initialState}) which includes no-op function stubs)
+const realFunctions = {
+  getFidelisationRemise: useFidelisationRemiseStore.getState().getFidelisationRemise,
+  validateRemiseEligibility: useFidelisationRemiseStore.getState().validateRemiseEligibility,
+  calculateMontantRemise: useFidelisationRemiseStore.getState().calculateMontantRemise,
+  setError: useFidelisationRemiseStore.getState().setError,
+  reset: useFidelisationRemiseStore.getState().reset,
+};
+
 describe('fidelisationRemiseStore', () => {
   beforeEach(() => {
-    const store = useFidelisationRemiseStore.getState();
-    store.reset();
+    useFidelisationRemiseStore.setState({
+      isLoading: false,
+      error: null,
+      remiseData: null,
+      remiseResult: null,
+      ...realFunctions,
+    });
     vi.clearAllMocks();
     useDataSourceStore.setState({ isRealApi: false });
   });
@@ -128,6 +143,7 @@ describe('fidelisationRemiseStore', () => {
           imputation: 201,
         },
       });
+      expect(state.isLoading).toBe(false);
       expect(state.remiseResult).toEqual({
         fidelisationId: 'PLATINUM',
         montantRemise: 20,
@@ -151,35 +167,29 @@ describe('fidelisationRemiseStore', () => {
     });
 
     it('should set loading state during fetch', async () => {
-      let resolvePromise: (() => void) | undefined;
-      const delayedPromise = new Promise<void>((resolve) => {
-        resolvePromise = resolve;
-      });
+      useDataSourceStore.setState({ isRealApi: true });
+      let loadingDuringCall = false;
 
-      const store = useFidelisationRemiseStore.getState();
-      const originalGetState = useDataSourceStore.getState;
-      
-      vi.spyOn(useDataSourceStore, 'getState').mockImplementation(() => {
-        const state = originalGetState();
+      vi.mocked(apiClient.get).mockImplementation(async () => {
+        loadingDuringCall = useFidelisationRemiseStore.getState().isLoading;
         return {
-          ...state,
-          isRealApi: false,
+          data: {
+            data: {
+              fidelisationId: 'GOLD',
+              montantRemise: 15,
+              isValide: true,
+              message: null,
+            },
+            success: true,
+          },
         };
       });
 
-      const promise = (async () => {
-        await delayedPromise;
-        return store.getFidelisationRemise('SOC1', 1001, 0, 'RST', 101);
-      })();
+      const store = useFidelisationRemiseStore.getState();
+      await store.getFidelisationRemise('SOC1', 1001, 0, 'RST', 101);
 
-      await new Promise(resolve => setTimeout(resolve, 0));
-      expect(useFidelisationRemiseStore.getState().isLoading).toBe(true);
-
-      resolvePromise!();
-      await promise;
+      expect(loadingDuringCall).toBe(true);
       expect(useFidelisationRemiseStore.getState().isLoading).toBe(false);
-
-      vi.restoreAllMocks();
     });
   });
 
@@ -356,6 +366,7 @@ describe('fidelisationRemiseStore', () => {
       await useFidelisationRemiseStore.getState().getFidelisationRemise('SOC1', 1001, 0, 'RST', 101);
       const firstResult = useFidelisationRemiseStore.getState().remiseResult;
 
+      useFidelisationRemiseStore.setState({ remiseResult: null });
       await useFidelisationRemiseStore.getState().getFidelisationRemise('SOC1', 1001, 0, 'RST', 101);
       const secondResult = useFidelisationRemiseStore.getState().remiseResult;
 
@@ -364,19 +375,20 @@ describe('fidelisationRemiseStore', () => {
 
     it('should verify remise conforms to client profile', async () => {
       await useFidelisationRemiseStore.getState().getFidelisationRemise('SOC1', 1001, 0, 'RST', 101);
-      const goldRemise = useFidelisationRemiseStore.getState().remiseData;
 
-      expect(goldRemise?.fidelisation).toBe('GOLD');
-      expect(goldRemise?.remise).toBe(15);
+      const state = useFidelisationRemiseStore.getState();
+      expect(state.remiseResult?.fidelisationId).toBe('GOLD');
+      expect(state.remiseResult?.montantRemise).toBe(15);
+      expect(state.remiseResult?.isValide).toBe(true);
     });
 
     it('should apply configured remise rules and thresholds', async () => {
       await useFidelisationRemiseStore.getState().getFidelisationRemise('SOC1', 1002, 0, 'BTQ', 102);
-      const silverRemise = useFidelisationRemiseStore.getState().remiseData;
 
-      expect(silverRemise?.fidelisation).toBe('SILVER');
-      expect(silverRemise?.remise).toBe(10);
-      expect((silverRemise?.remise ?? 0) < 15).toBe(true);
+      const state = useFidelisationRemiseStore.getState();
+      expect(state.remiseResult?.fidelisationId).toBe('SILVER');
+      expect(state.remiseResult?.montantRemise).toBe(10);
+      expect((state.remiseResult?.montantRemise ?? 0) < 15).toBe(true);
     });
   });
 });

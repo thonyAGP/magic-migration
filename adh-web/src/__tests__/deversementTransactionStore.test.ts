@@ -7,7 +7,7 @@ import type {
   OperationDiverse,
   CompteGM,
   Hebergement,
-  TransfertAffectation,
+  // TransfertAffectation,
   DeversementResult,
   ComplementBiking,
 } from '@/types/deversementTransaction';
@@ -34,7 +34,7 @@ const MOCK_VENTE_STANDARD: Vente = {
   operateur: 'MARTIN S.',
 };
 
-const MOCK_VENTE_VRL: Vente = {
+const _MOCK_VENTE_VRL: Vente = {
   id: 3,
   societe: 'SOC1',
   compte: 'C1003',
@@ -47,7 +47,7 @@ const MOCK_VENTE_VRL: Vente = {
   operateur: 'BERNARD L.',
 };
 
-const MOCK_VENTE_ANNULATION: Vente = {
+const _MOCK_VENTE_ANNULATION: Vente = {
   id: 2,
   societe: 'SOC1',
   compte: 'C1002',
@@ -98,7 +98,7 @@ describe('deversementTransactionStore', () => {
 
   describe('setters', () => {
     it('should set vente', () => {
-      const { setVente, vente } = useDeversementTransactionStore.getState();
+      const { setVente } = useDeversementTransactionStore.getState();
       
       setVente(MOCK_VENTE_STANDARD);
       
@@ -172,7 +172,7 @@ describe('deversementTransactionStore', () => {
 
   describe('deverserVente - mock mode', () => {
     it('should create 9 operations diverses for standard vente', async () => {
-      const { deverserVente, operationsDiverses } = useDeversementTransactionStore.getState();
+      const { deverserVente } = useDeversementTransactionStore.getState();
 
       await deverserVente(1, false);
 
