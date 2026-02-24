@@ -22,7 +22,7 @@ import type {
   AgentConcern,
   DoubleVoteSession,
 } from './types.js';
-import { DEFAULT_SWARM_CONFIG, AgentRoles, ConsensusThresholds, VoteValues, ConcernSeverity } from './types.js';
+import { DEFAULT_SWARM_CONFIG, AgentRoles, ConsensusThresholds, VoteValues, ConcernSeverity, AgentTimeouts, VoteNumericValues } from './types.js';
 import { calculateComplexity } from './complexity-calculator.js';
 import { createVoteCollector } from './voting/vote-collector.js';
 import { calculateConsensus } from './voting/consensus-engine.js';
@@ -400,25 +400,68 @@ export class SwarmOrchestrator {
 
     // If executor available and context provided, use real LLM agents
     if (this.executor && contract && context) {
-      for (const analysis of analyses) {
+      // K2.2: Early consensus detection threshold
+      const threshold = context.complexity.requiresDoubleVote
+        ? ConsensusThresholds.CRITICAL
+        : ConsensusThresholds.STANDARD;
+      const minVotesForEarlyCheck = 4; // Check consensus after 4 votes
+
+      // K2.1 & K2.3: Execute agents in parallel with adaptive timeouts
+      const agentPromises = analyses.map(async (analysis) => {
         try {
-          // Execute agent with LLM
-          const vote = await this.executor.executeAgent(
+          // K2.3: Get adaptive timeout for this agent
+          const timeout = AgentTimeouts[analysis.agent];
+
+          // Execute agent with LLM and adaptive timeout
+          const vote = await this.executor!.executeAgent(
             analysis.agent,
             contract,
             context,
+            timeout,
           );
 
           // Convert Vote to AgentVote
           const agentVote: AgentVote = this.convertToAgentVote(vote);
-          voteCollector.submitVote(agentVote);
+          return { success: true, vote: agentVote, agent: analysis.agent };
         } catch (error) {
           console.error(
             `[SWARM] Agent ${analysis.agent} failed:`,
             error instanceof Error ? error.message : 'Unknown error',
           );
           // Fallback to mock vote on error
-          voteCollector.submitVote(this.createMockVote(analysis.agent));
+          return { success: false, vote: this.createMockVote(analysis.agent), agent: analysis.agent };
+        }
+      });
+
+      // K2.2: Process votes as they arrive, check for early consensus
+      const completedVotes: AgentVote[] = [];
+
+      for await (const result of this.raceAgentPromises(agentPromises)) {
+        completedVotes.push(result.vote);
+        voteCollector.submitVote(result.vote);
+
+        // Check for early consensus after N votes
+        if (completedVotes.length >= minVotesForEarlyCheck && completedVotes.length < analyses.length) {
+          const earlyConsensus = calculateConsensus(completedVotes, threshold);
+
+          // K2.2: Early success if consensus already reached
+          if (earlyConsensus.passed) {
+            console.log(
+              `[SWARM] Early consensus detected (${earlyConsensus.score.toFixed(1)}% >= ${threshold}%) after ${completedVotes.length}/${analyses.length} votes - stopping remaining agents`
+            );
+            break;
+          }
+
+          // K2.2: Early fail if consensus impossible even with all remaining APPROVE
+          const remainingVotes = analyses.length - completedVotes.length;
+          const maxPossibleScore = this.calculateMaxPossibleScore(completedVotes, remainingVotes);
+
+          if (maxPossibleScore < threshold) {
+            console.log(
+              `[SWARM] Consensus impossible (max: ${maxPossibleScore.toFixed(1)}% < ${threshold}%) after ${completedVotes.length}/${analyses.length} votes - stopping remaining agents`
+            );
+            break;
+          }
         }
       }
     } else {
@@ -429,6 +472,50 @@ export class SwarmOrchestrator {
     }
 
     return Promise.resolve(voteCollector.getVotes());
+  }
+
+  /**
+   * K2.2: Race agent promises and yield results as they complete
+   */
+  private async *raceAgentPromises(
+    promises: Promise<{ success: boolean; vote: AgentVote; agent: AgentRole }>[]
+  ): AsyncIterableIterator<{ success: boolean; vote: AgentVote; agent: AgentRole }> {
+    // Create indexed promises so we can track which one completed
+    const indexed = promises.map((p, index) => p.then(result => ({ result, index })));
+    const completed = new Set<number>();
+
+    while (completed.size < promises.length) {
+      // Race remaining promises
+      const remaining = indexed.filter((_, i) => !completed.has(i));
+      if (remaining.length === 0) break;
+
+      const { result, index } = await Promise.race(remaining);
+      completed.add(index);
+
+      yield result;
+    }
+  }
+
+  /**
+   * K2.2: Calculate maximum possible consensus score with remaining votes
+   */
+  private calculateMaxPossibleScore(currentVotes: AgentVote[], remainingCount: number): number {
+    // Calculate current weighted score
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+
+    for (const vote of currentVotes) {
+      const voteValue = VoteNumericValues[vote.vote];
+      totalWeightedScore += voteValue * vote.weight;
+      totalWeight += vote.weight;
+    }
+
+    // Assume all remaining votes are APPROVE (1.0) with average weight (1.5)
+    const avgRemainingWeight = 1.5;
+    totalWeightedScore += remainingCount * 1.0 * avgRemainingWeight;
+    totalWeight += remainingCount * avgRemainingWeight;
+
+    return (totalWeightedScore / totalWeight) * 100;
   }
 
   /**

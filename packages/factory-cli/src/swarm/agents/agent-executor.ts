@@ -20,7 +20,7 @@ export class AgentExecutor {
   }
 
   /**
-   * Execute un agent et retourne son vote
+   * Execute un agent et retourne son vote (K2.3: support timeout)
    */
   async executeAgent(
     agent: AgentRole,
@@ -30,12 +30,26 @@ export class AgentExecutor {
       previousVotes?: Vote[];
       complexity: ComplexityScore;
     },
+    timeout?: number,
   ): Promise<Vote> {
     // 1. Build prompt
     const messages = this.promptBuilder.buildAgentPrompt(agent, contract, context);
 
-    // 2. Call LLM
-    const response = await this.client.chat(messages);
+    // K2.3: Apply timeout if provided
+    const executeWithTimeout = async () => {
+      if (timeout) {
+        return Promise.race([
+          this.client.chat(messages),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error(`Agent ${agent} timeout after ${timeout}ms`)), timeout)
+          ),
+        ]);
+      }
+      return this.client.chat(messages);
+    };
+
+    // 2. Call LLM with optional timeout
+    const response = await executeWithTimeout();
 
     // 3. Parse and validate JSON response (validation happens in parseAgentResponse)
     const vote = parseAgentResponse(agent, response.content, {

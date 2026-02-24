@@ -35,6 +35,19 @@ export const AgentWeights: Record<AgentRole, number> = {
 };
 
 /**
+ * K2.3: Adaptive timeouts per agent (milliseconds)
+ * Lighter agents = shorter timeout, heavier agents = longer timeout
+ */
+export const AgentTimeouts: Record<AgentRole, number> = {
+  [AgentRoles.ARCHITECT]: 45000, // 45s - complex architectural analysis
+  [AgentRoles.ANALYST]: 40000, // 40s - thorough correctness review
+  [AgentRoles.DEVELOPER]: 30000, // 30s - implementation feasibility
+  [AgentRoles.TESTER]: 35000, // 35s - test strategy planning
+  [AgentRoles.REVIEWER]: 40000, // 40s - security/performance deep dive
+  [AgentRoles.DOCUMENTOR]: 20000, // 20s - lighter documentation review
+};
+
+/**
  * Vote values representing approval levels
  */
 export const VoteValues = {

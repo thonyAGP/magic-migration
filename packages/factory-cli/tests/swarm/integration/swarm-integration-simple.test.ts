@@ -60,16 +60,14 @@ describe('SWARM Integration Tests - Simplified', () => {
     expect(result.session).toBeDefined();
     expect(result.consensus).toBeDefined();
     expect(result.shouldProceed).toBeDefined();
-    expect(result.session.votes.length).toBeGreaterThanOrEqual(6); // At least 6 agents voted (12 if double vote)
+    // K2.2: Early consensus may stop after 4 votes (at least 4, max 12 if double vote)
+    expect(result.session.votes.length).toBeGreaterThanOrEqual(4);
 
-    // Verify agents voted
+    // K2.2: Verify at least 4 agents voted (early consensus may stop before all 6)
     const agents = result.session.votes.map((v) => v.agent);
-    expect(agents).toContain(AgentRoles.ARCHITECT);
-    expect(agents).toContain(AgentRoles.ANALYST);
-    expect(agents).toContain(AgentRoles.DEVELOPER);
-    expect(agents).toContain(AgentRoles.TESTER);
-    expect(agents).toContain(AgentRoles.REVIEWER);
-    expect(agents).toContain(AgentRoles.DOCUMENTOR);
+    const uniqueAgents = [...new Set(agents)];
+    expect(uniqueAgents.length).toBeGreaterThanOrEqual(4);
+    expect(uniqueAgents.length).toBeLessThanOrEqual(6);
 
     // Verify LLM was called for each agent (6 for first vote, maybe 6 more for double vote if critical)
     expect(mockClient.chat).toHaveBeenCalled();
@@ -158,7 +156,9 @@ describe('SWARM Integration Tests - Simplified', () => {
 
     // Should still complete with mock votes
     expect(result.session).toBeDefined();
-    expect(result.session.votes).toHaveLength(6);
+    // K2.2: Early consensus may stop after 4 votes, so expect 4-6
+    expect(result.session.votes.length).toBeGreaterThanOrEqual(4);
+    expect(result.session.votes.length).toBeLessThanOrEqual(6);
     expect(result.consensus).toBeDefined();
   });
 
@@ -180,7 +180,9 @@ describe('SWARM Integration Tests - Simplified', () => {
 
     // Session should complete (with fallback mock votes)
     expect(result.session.status).toBe('COMPLETED');
-    expect(result.session.votes).toHaveLength(6);
+    // K2.2: Early consensus may stop after 4 votes, so expect 4-6
+    expect(result.session.votes.length).toBeGreaterThanOrEqual(4);
+    expect(result.session.votes.length).toBeLessThanOrEqual(6);
 
     // Votes should have mock justification (fallback was used)
     const hasMockVotes = result.session.votes.some((v) =>
@@ -198,7 +200,9 @@ describe('SWARM Integration Tests - Simplified', () => {
 
     // Session should complete (with fallback mock votes)
     expect(result.session.status).toBe('COMPLETED');
-    expect(result.session.votes).toHaveLength(6);
+    // K2.2: Early consensus may stop after 4 votes, so expect 4-6
+    expect(result.session.votes.length).toBeGreaterThanOrEqual(4);
+    expect(result.session.votes.length).toBeLessThanOrEqual(6);
 
     // All votes should be mock votes (fallback was used for all agents)
     const allMockVotes = result.session.votes.every((v) =>
