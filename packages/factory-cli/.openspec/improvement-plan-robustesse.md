@@ -394,4 +394,44 @@ if (report.gaps.length > 0) process.exit(1);
 
 Score robustesse après Phase 1: ~45% (+22% vs baseline 23%)
 
-### À venir (Phase 2 - Semaine 2)
+---
+
+## 📊 Phase 2 - Traçabilité (Semaine 2) - EN COURS
+
+### 2026-02-24 - Session 2: Infrastructure enrichissement et historisation
+
+- [x] Phase 2.1: Contract enrichment infrastructure - TERMINÉ (commit `c0884bff`)
+  - [x] scripts/enrich-contract-expressions.ts créé (CLI enrichissement)
+    * Support auto-extraction depuis XML Magic (quand disponible)
+    * Mode template pour enrichissement manuel
+    * Dry-run pour prévisualisation
+  - [x] src/verifiers/contract-schema-validator.ts créé (validation structure)
+    * Validation expr_id format (Prg_XXX:Task_YYY:Line_ZZZ:Expr_NNN)
+    * Validation file references (path:line)
+    * Detection template placeholders
+    * Helpers conversion ExpressionTrace ↔ LegacyExpression
+  - [x] tests/contract-schema-validator.test.ts (14 tests, tous passants)
+  - [x] docs/contract-enrichment-guide.md (570 lignes)
+    * Before/after examples
+    * Manual et automatic enrichment methods
+    * Validation patterns et troubleshooting
+    * CI/CD integration
+    * Best practices
+
+- [x] Phase 2.2: Migration history structure - TERMINÉ (commit `6533d8e8`)
+  - [x] .migration-history/ créé (structure complète)
+  - [x] decisions/ - Documentation décisions techniques
+    * README.md (quand documenter, workflow)
+    * TEMPLATE.md (Context, Options, Decision, Why, Test Coverage)
+  - [x] failures/ - Capture automatique échecs
+    * README.md (analyse par phase, temps résolution)
+    * EXAMPLE.json (format complet avec résolution)
+    * Format: Prg_XXX-failed-YYYY-MM-DD-HHMM.json
+  - [x] patterns/ - Catalogue patterns Magic récurrents
+    * README.md (identification, réutilisation)
+    * TEMPLATE.yaml (Magic formula, modern equivalent, test pattern)
+  - [x] Documentation Analytics (grep/jq queries pour métriques)
+
+**Tests**: 576 passed (+14 nouveaux contract-schema-validator), tous passants ✅
+
+### À venir (Phase 2 restante)
